@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>modules</artifactId>
-    <version>2.4.0</version>
+    <version>2.4.1</version>
   </parent>
   <artifactId>marketdata</artifactId>
   <packaging>pom</packaging>
@@ -19,6 +19,7 @@
   <name>Marketdata Modules</name>
 
   <modules>
+    <module>marketdata-core</module>
     <module>bogus</module>
     <module>marketcetera</module>
     <module>csv</module>

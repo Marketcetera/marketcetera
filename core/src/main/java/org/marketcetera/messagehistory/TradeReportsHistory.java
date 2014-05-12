@@ -112,9 +112,9 @@ public class TradeReportsHistory {
                         new LatestReportFunction()), new NotNullReportMatcher());
         mAveragePriceList = new AveragePriceReportList(messageFactory, mAllMessages);
         mReadOnlyAveragePriceList = GlazedLists.readOnlyList(mAveragePriceList);
-        mOpenOrderList = new FilterList<ReportHolder>(
-                new FunctionList<List<ReportHolder>, ReportHolder>(orderIDList,
-                        new OpenOrderListFunction()), new NotNullReportMatcher());
+        mOpenOrderList = new FilterList<ReportHolder>(new FunctionList<List<ReportHolder>,ReportHolder>(orderIDList,
+                                                                                                        new OpenOrderListFunction()),
+                                                                                                        new NotNullReportMatcher());
         mReadOnlyOpenOrderList = GlazedLists.readOnlyList(mOpenOrderList);
 
         mOriginalOrderACKs = new HashMap<OrderID, ReportHolder>();
@@ -190,12 +190,13 @@ public class TradeReportsHistory {
         }
     }
 
-    private void internalAddIncomingMessage(ReportBase inReport) {
+    private void internalAddIncomingMessage(ReportBase inReport)
+    {
         mWriteLock.lock();
         try {
             // check for duplicates
             ReportID uniqueID = inReport.getReportID();
-            if (uniqueID == null) {
+            if(uniqueID == null) {
                 SLF4JLoggerProxy.debug(this, "Recieved report without report id: {}", inReport); //$NON-NLS-1$
             } else {
                 if (mUniqueReportIds.contains(uniqueID)) {
@@ -205,8 +206,7 @@ public class TradeReportsHistory {
                     mUniqueReportIds.add(uniqueID);
                 }
             }
-            if(SLF4JLoggerProxy.isDebugEnabled(this) &&
-                    inReport.getSendingTime() != null) {
+            if(SLF4JLoggerProxy.isDebugEnabled(this) && inReport.getSendingTime() != null) {
                 long sendingTime =0;
                 sendingTime = inReport.getSendingTime().getTime();
                 long systemTime = System.currentTimeMillis();
@@ -220,12 +220,11 @@ public class TradeReportsHistory {
             updateOrderIDMappings(inReport);
             OrderID groupID = getGroupID(inReport);
             String underlying = null;
-            if (inReport instanceof ExecutionReport) {
+            if(inReport instanceof ExecutionReport) {
                 Instrument instrument = ((ExecutionReport) inReport).getInstrument();
                 underlying = mUnderlyingSymbolSupport.getUnderlying(instrument);
             }
             ReportHolder messageHolder = new ReportHolder(inReport, underlying, groupID);
-    
             // The first message that comes in with a specific order id gets stored in a map.  This
             // map is used by #getFirstReport(String) to facilitate CancelReplace
             if (inReport instanceof ExecutionReport
@@ -350,8 +349,7 @@ public class TradeReportsHistory {
         mReadLock.lock();
         try {
             ReportHolder[] holders = mOpenOrderList.toArray(new ReportHolder[mOpenOrderList.size()]);
-            for(ReportHolder holder : holders)
-            {
+            for(ReportHolder holder : holders) {
                 visitor.visitOpenOrderExecutionReports(holder.getReport());
             }
         } finally {

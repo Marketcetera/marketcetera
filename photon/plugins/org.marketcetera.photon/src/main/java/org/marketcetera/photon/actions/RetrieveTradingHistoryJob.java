@@ -16,11 +16,14 @@ import org.marketcetera.core.position.ImmutablePositionSupport;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionEngineFactory;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.marketdata.core.manager.NoMarketDataProvidersAvailable;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.*;
+import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
@@ -37,8 +40,9 @@ import com.google.common.collect.Maps;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public class RetrieveTradingHistoryJob extends Job {
-
+public class RetrieveTradingHistoryJob
+        extends Job
+{
 	/**
 	 * Constructor.
 	 */
@@ -49,7 +53,7 @@ public class RetrieveTradingHistoryJob extends Job {
     protected IStatus run(IProgressMonitor monitor)
     {
         try {
-            String timeString = PhotonPlugin.getDefault().getPreferenceStore().getString(PhotonPreferences.TRADING_HISTORY_START_TIME);
+            String timeString = StringUtils.trimToNull(PhotonPlugin.getDefault().getPreferenceStore().getString(PhotonPreferences.TRADING_HISTORY_START_TIME));
             // this collection will hold the reports that we're going to return - the goal is to collect all reports
             //  since the lastOccurrence date plus any open orders that predate the lastOccurrence
             final Set<ReportBase> allReports = new LinkedHashSet<ReportBase>();
@@ -57,7 +61,7 @@ public class RetrieveTradingHistoryJob extends Job {
             Client client = ClientManager.getInstance();
             List<ReportBaseImpl> openReports = client.getOpenOrders();
             Date positionDate = new Date();
-            if(StringUtils.isNotEmpty(timeString)) {
+            if(timeString != null) {
                 TimeOfDay time = TimeOfDay.create(timeString);
                 if(time != null) {
                     // trade history is enabled, fetch reports since last occurrence
@@ -98,7 +102,24 @@ public class RetrieveTradingHistoryJob extends Job {
                 positions.putAll(ClientManager.getInstance().getAllCurrencyPositionsAsOf(positionDate));
                 EventList<ReportHolder> messages = tradeReportsHistory.getAllMessagesList();
                 ImmutablePositionSupport positionSupport = new ImmutablePositionSupport(positions);
-                PhotonPositionMarketData positionMarketData = new PhotonPositionMarketData(PhotonPlugin.getDefault().getMarketDataManager().getMarketData());
+                IMarketDataManager marketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
+                if(!marketDataManager.isRunning() && marketDataManager.isReconnecting()) {
+                    long startTime = System.currentTimeMillis();
+                    while(!marketDataManager.isRunning()) {
+                        Thread.sleep(250);
+                        if(System.currentTimeMillis()-60000>startTime) {
+                            // forget it, I (kinda) quietly give up
+                            break;
+                        }
+                    }
+                }
+                if(!marketDataManager.isRunning()) {
+                    SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                          "Position market data unavailable from the Market Data Nexus");
+                    SLF4JLoggerProxy.warn(this,
+                                          "Position market data unavailable from the Market Data Nexus");
+                }
+                PhotonPositionMarketData positionMarketData = new PhotonPositionMarketData(marketDataManager.getMarketData());
                 UnderlyingSymbolSupport underlyingSymbolSupport = PhotonPlugin.getDefault().getUnderlyingSymbolSupport();
                 PositionEngine engine = PositionEngineFactory.createFromReportHolders(messages,
                                                                                       positionSupport,
@@ -107,9 +128,14 @@ public class RetrieveTradingHistoryJob extends Job {
                 PhotonPlugin.getDefault().registerPositionEngine(engine);
             }
         } catch (Exception e) {
-            Messages.RETRIEVE_TRADING_HISTORY_JOB_ERROR.error(this, e);
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
+            Messages.RETRIEVE_TRADING_HISTORY_JOB_ERROR.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY);
+            Messages.RETRIEVE_TRADING_HISTORY_JOB_ERROR.error(this,
+                                                              e);
+            if(e instanceof NoMarketDataProvidersAvailable) {
+                return Status.CANCEL_STATUS;
+            }
+            if(e instanceof RuntimeException) {
+                throw (RuntimeException)e;
             } else {
                 // The callable above doesn't throw checked exceptions
                 throw new RuntimeException(e);

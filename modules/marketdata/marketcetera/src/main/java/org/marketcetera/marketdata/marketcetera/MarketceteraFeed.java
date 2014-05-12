@@ -1,5 +1,10 @@
 package org.marketcetera.marketdata.marketcetera;
 
+import static org.marketcetera.marketdata.AssetClass.CURRENCY;
+import static org.marketcetera.marketdata.AssetClass.EQUITY;
+import static org.marketcetera.marketdata.AssetClass.FUTURE;
+import static org.marketcetera.marketdata.AssetClass.OPTION;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.net.URI;
@@ -16,13 +21,19 @@ import java.util.WeakHashMap;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.TimeUnit;
 
-import static org.marketcetera.marketdata.AssetClass.*;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.marketdata.*;
+import org.marketcetera.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.marketdata.AssetClass;
+import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.FIXCorrelationFieldSubscription;
+import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -40,6 +51,7 @@ import quickfix.Initiator;
 import quickfix.LogFactory;
 import quickfix.MemoryStoreFactory;
 import quickfix.Message;
+import quickfix.Message.Header;
 import quickfix.MessageStoreFactory;
 import quickfix.RejectLogon;
 import quickfix.Session;
@@ -49,14 +61,12 @@ import quickfix.SessionSettings;
 import quickfix.SocketInitiator;
 import quickfix.StringField;
 import quickfix.UnsupportedMessageType;
-import quickfix.Message.Header;
 import quickfix.field.MarketDepth;
 import quickfix.field.MsgType;
 import quickfix.field.NoMDEntryTypes;
 import quickfix.field.NoRelatedSym;
 import quickfix.field.SubscriptionRequestType;
 import quickfix.field.Symbol;
-import quickfix.field.TestMessageIndicator;
 import quickfix.fix44.MessageFactory;
 
 import com.google.common.collect.HashMultimap;
@@ -84,7 +94,6 @@ public class MarketceteraFeed
 {
 	private SessionID sessionID;
 	private final IDFactory idFactory;
-	private FeedType feedType;
 	private boolean isRunning = false;
 	private SocketInitiator socketInitiator;
 	private MessageFactory messageFactory;
@@ -93,7 +102,7 @@ public class MarketceteraFeed
     /**
      * static capabilities for this data feed
      */
-    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(Capability.TOP_OF_BOOK,Capability.LATEST_TICK));
+    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(Capability.TOP_OF_BOOK,Capability.LATEST_TICK,Capability.MARKET_STAT));
     /**
      * static supported asset classes for this data feed
      */
@@ -318,14 +327,6 @@ public class MarketceteraFeed
 		Header header = message.getHeader();
 		String msgType = header.getString(MsgType.FIELD);
 		if (MsgType.LOGON.equals(msgType)) {
-			try {
-				boolean testMessageIndicator = header.getBoolean(TestMessageIndicator.FIELD);
-				// TODO bolt this into the abstract feed parent 
-				feedType = testMessageIndicator ? FeedType.SIMULATED
-				                                : FeedType.LIVE;
-			} catch (FieldNotFound fnf) {
-				feedType = FeedType.LIVE;
-			}
 			setFeedStatus(FeedStatus.AVAILABLE);
 			SLF4JLoggerProxy.debug(this,
 			                       "Marketcetera feed received Logon"); //$NON-NLS-1$

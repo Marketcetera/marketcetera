@@ -14,6 +14,7 @@ import org.marketcetera.photon.Messages;
  *
  * @author alissovski
  */
+@SuppressWarnings("deprecation")
 public class CheckForUpdatesAction
     extends Action
     implements IAction, Messages

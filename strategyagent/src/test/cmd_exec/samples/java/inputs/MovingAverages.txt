@@ -1,7 +1,7 @@
 #
 # author:anshul@marketcetera.com
 # since 2.0.0
-# version: $Id: MovingAverages.txt 16154 2012-07-14 16:34:05Z colin $
+# version: $Id$
 #
 #
 # Create the Strategy Module

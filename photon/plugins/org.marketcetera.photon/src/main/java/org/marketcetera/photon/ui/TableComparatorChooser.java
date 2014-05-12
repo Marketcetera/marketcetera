@@ -3,7 +3,6 @@ package org.marketcetera.photon.ui;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Event;
@@ -12,7 +11,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.util.misc.ClassVersion;
-
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.gui.AbstractTableComparatorChooser;
@@ -30,6 +28,7 @@ import ca.odell.glazedlists.swt.EventTableViewer;
  * @version $Id$
  * @since 1.5.0
  */
+@SuppressWarnings("deprecation")
 @ClassVersion("$Id$")
 public final class TableComparatorChooser<E> extends AbstractTableComparatorChooser<E> {
 

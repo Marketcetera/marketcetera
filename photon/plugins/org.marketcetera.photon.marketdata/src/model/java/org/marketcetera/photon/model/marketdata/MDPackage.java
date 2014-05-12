@@ -27,10 +27,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.model.marketdata.MDFactory
  * @model kind="package"
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public interface MDPackage extends EPackage {
+public interface MDPackage
+        extends EPackage
+{
     /**
      * The package name.
      * <!-- begin-user-doc -->
@@ -61,8 +63,7 @@ public interface MDPackage extends EPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    MDPackage eINSTANCE = org.marketcetera.photon.model.marketdata.impl.MDPackageImpl
-            .init();
+    MDPackage eINSTANCE = org.marketcetera.photon.model.marketdata.impl.MDPackageImpl.init();
 
     /**
      * The meta object id for the '{@link org.marketcetera.photon.model.marketdata.impl.MDItemImpl <em>Item</em>}' class.
@@ -267,25 +268,6 @@ public interface MDPackage extends EPackage {
     int MD_MARKETSTAT__PREVIOUS_CLOSE_DATE = MD_ITEM_FEATURE_COUNT + 3;
 
     /**
-     * The number of structural features of the '<em>Marketstat</em>' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int MD_MARKETSTAT__OPEN_PRICE = MD_ITEM_FEATURE_COUNT + 4;
-
-    /**
-     * The feature id for the '<em><b>Open Price</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-
-    int MD_MARKETSTAT__HIGH_PRICE = MD_ITEM_FEATURE_COUNT + 5;
-
-    /**
      * The feature id for the '<em><b>High Price</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -293,7 +275,26 @@ public interface MDPackage extends EPackage {
      * @ordered
      */
 
-    int MD_MARKETSTAT__LOW_PRICE = MD_ITEM_FEATURE_COUNT + 6;
+    int MD_MARKETSTAT__HIGH_PRICE = MD_ITEM_FEATURE_COUNT + 4;
+
+    /**
+     * The feature id for the '<em><b>Low Price</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+
+    int MD_MARKETSTAT__LOW_PRICE = MD_ITEM_FEATURE_COUNT + 5;
+
+    /**
+     * The feature id for the '<em><b>Volume Traded</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int MD_MARKETSTAT__VOLUME_TRADED = MD_ITEM_FEATURE_COUNT + 6;
 
     /**
      * The feature id for the '<em><b>Open Price</b></em>' attribute.
@@ -302,9 +303,7 @@ public interface MDPackage extends EPackage {
      * @generated
      * @ordered
      */
-
-
-    int MD_MARKETSTAT__VOLUME = MD_ITEM_FEATURE_COUNT + 7;
+    int MD_MARKETSTAT__OPEN_PRICE = MD_ITEM_FEATURE_COUNT + 7;
 
     /**
      * The feature id for the '<em><b>Volume</b></em>' attribute.
@@ -313,8 +312,17 @@ public interface MDPackage extends EPackage {
      * @generated
      * @ordered
      */
+    int MD_MARKETSTAT__VOLUME = MD_ITEM_FEATURE_COUNT + 8;
 
-    int MD_MARKETSTAT_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 8;
+    /**
+     * The number of structural features of the '<em>Marketstat</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+
+    int MD_MARKETSTAT_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 9;
 
     /**
      * The meta object id for the '{@link org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl <em>Depth Of Book</em>}' class.
@@ -336,6 +344,7 @@ public interface MDPackage extends EPackage {
     int MD_DEPTH_OF_BOOK__INSTRUMENT = MD_ITEM__INSTRUMENT;
 
     /**
+     * The feature id for the '<em><b>Product</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
@@ -381,13 +390,22 @@ public interface MDPackage extends EPackage {
     int MD_QUOTE = 5;
 
     /**
+     * The feature id for the '<em><b>Instrument</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int MD_QUOTE__INSTRUMENT = MD_ITEM__INSTRUMENT;
+
+    /**
      * The feature id for the '<em><b>Price</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int MD_QUOTE__PRICE = 0;
+    int MD_QUOTE__PRICE = MD_ITEM_FEATURE_COUNT + 0;
 
     /**
      * The feature id for the '<em><b>Size</b></em>' attribute.
@@ -396,7 +414,7 @@ public interface MDPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int MD_QUOTE__SIZE = 1;
+    int MD_QUOTE__SIZE = MD_ITEM_FEATURE_COUNT + 1;
 
     /**
      * The feature id for the '<em><b>Source</b></em>' attribute.
@@ -405,7 +423,7 @@ public interface MDPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int MD_QUOTE__SOURCE = 2;
+    int MD_QUOTE__SOURCE = MD_ITEM_FEATURE_COUNT + 2;
 
     /**
      * The feature id for the '<em><b>Time</b></em>' attribute.
@@ -414,7 +432,7 @@ public interface MDPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int MD_QUOTE__TIME = 3;
+    int MD_QUOTE__TIME = MD_ITEM_FEATURE_COUNT + 3;
 
     /**
      * The number of structural features of the '<em>Quote</em>' class.
@@ -423,7 +441,7 @@ public interface MDPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int MD_QUOTE_FEATURE_COUNT = 4;
+    int MD_QUOTE_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 4;
 
     /**
      * The meta object id for the '<em>Depth Of Book Product</em>' data type.
@@ -618,50 +636,60 @@ public interface MDPackage extends EPackage {
     EAttribute getMDMarketstat_PreviousCloseDate();
 
     /**
-     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate <em>Previous Close Date</em>}'.
+     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getHighPrice <em>High Price</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @return the meta object for the attribute '<em>High Price</em>'.
-     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate()
+     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getHighPrice()
      * @see #getMDMarketstat()
      * @generated
      */
     EAttribute getMDMarketstat_HighPrice();
-    
+
     /**
-     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate <em>Previous Close Date</em>}'.
+     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getLowPrice <em>Low Price</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @return the meta object for the attribute '<em>Low Price</em>'.
-     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate()
+     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getLowPrice()
      * @see #getMDMarketstat()
      * @generated
      */
     EAttribute getMDMarketstat_LowPrice();
-    
+
     /**
-     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate <em>Previous Close Date</em>}'.
+     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getVolumeTraded <em>Volume Traded</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for the attribute '<em>Volume Shares Traded</em>'.
-     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate()
+     * @return the meta object for the attribute '<em>Volume Traded</em>'.
+     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getVolumeTraded()
      * @see #getMDMarketstat()
      * @generated
      */
     EAttribute getMDMarketstat_VolumeTraded();
-    
-    
+
     /**
-     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate <em>Previous Close Date</em>}'.
+     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getOpenPrice <em>Open Price</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for the attribute '<em>Open</em>'.
-     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate()
+     * @return the meta object for the attribute '<em>Open Price</em>'.
+     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getOpenPrice()
      * @see #getMDMarketstat()
      * @generated
      */
     EAttribute getMDMarketstat_OpenPrice();
-    
+
+    /**
+     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getVolume <em>Volume</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Volume</em>'.
+     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getVolume()
+     * @see #getMDMarketstat()
+     * @generated
+     */
+    EAttribute getMDMarketstat_Volume();
+
     /**
      * Returns the meta object for class '{@link org.marketcetera.photon.model.marketdata.MDDepthOfBook <em>Depth Of Book</em>}'.
      * <!-- begin-user-doc -->
@@ -765,7 +793,7 @@ public interface MDPackage extends EPackage {
      * <!-- end-user-doc -->
      * @return the meta object for data type '<em>Depth Of Book Product</em>'.
      * @see org.marketcetera.marketdata.Content
-     * @model instanceClass="org.marketcetera.marketdata.MarketDataRequest.Content"
+     * @model instanceClass="org.marketcetera.marketdata.Content"
      * @generated
      */
     EDataType getDepthOfBookProduct();
@@ -802,7 +830,8 @@ public interface MDPackage extends EPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    interface Literals {
+    interface Literals
+    {
         /**
          * The meta object literal for the '{@link org.marketcetera.photon.model.marketdata.impl.MDItemImpl <em>Item</em>}' class.
          * <!-- begin-user-doc -->
@@ -853,8 +882,7 @@ public interface MDPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute MD_LATEST_TICK__MULTIPLIER = eINSTANCE
-                .getMDLatestTick_Multiplier();
+        EAttribute MD_LATEST_TICK__MULTIPLIER = eINSTANCE.getMDLatestTick_Multiplier();
 
         /**
          * The meta object literal for the '{@link org.marketcetera.photon.model.marketdata.impl.MDTopOfBookImpl <em>Top Of Book</em>}' class.
@@ -872,8 +900,7 @@ public interface MDPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute MD_TOP_OF_BOOK__BID_SIZE = eINSTANCE
-                .getMDTopOfBook_BidSize();
+        EAttribute MD_TOP_OF_BOOK__BID_SIZE = eINSTANCE.getMDTopOfBook_BidSize();
 
         /**
          * The meta object literal for the '<em><b>Bid Price</b></em>' attribute feature.
@@ -881,8 +908,7 @@ public interface MDPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute MD_TOP_OF_BOOK__BID_PRICE = eINSTANCE
-                .getMDTopOfBook_BidPrice();
+        EAttribute MD_TOP_OF_BOOK__BID_PRICE = eINSTANCE.getMDTopOfBook_BidPrice();
 
         /**
          * The meta object literal for the '<em><b>Ask Size</b></em>' attribute feature.
@@ -890,8 +916,7 @@ public interface MDPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute MD_TOP_OF_BOOK__ASK_SIZE = eINSTANCE
-                .getMDTopOfBook_AskSize();
+        EAttribute MD_TOP_OF_BOOK__ASK_SIZE = eINSTANCE.getMDTopOfBook_AskSize();
 
         /**
          * The meta object literal for the '<em><b>Ask Price</b></em>' attribute feature.
@@ -899,8 +924,7 @@ public interface MDPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute MD_TOP_OF_BOOK__ASK_PRICE = eINSTANCE
-                .getMDTopOfBook_AskPrice();
+        EAttribute MD_TOP_OF_BOOK__ASK_PRICE = eINSTANCE.getMDTopOfBook_AskPrice();
 
         /**
          * The meta object literal for the '{@link org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl <em>Marketstat</em>}' class.
@@ -918,8 +942,7 @@ public interface MDPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute MD_MARKETSTAT__CLOSE_PRICE = eINSTANCE
-                .getMDMarketstat_ClosePrice();
+        EAttribute MD_MARKETSTAT__CLOSE_PRICE = eINSTANCE.getMDMarketstat_ClosePrice();
 
         /**
          * The meta object literal for the '<em><b>Close Date</b></em>' attribute feature.
@@ -927,8 +950,7 @@ public interface MDPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute MD_MARKETSTAT__CLOSE_DATE = eINSTANCE
-                .getMDMarketstat_CloseDate();
+        EAttribute MD_MARKETSTAT__CLOSE_DATE = eINSTANCE.getMDMarketstat_CloseDate();
 
         /**
          * The meta object literal for the '<em><b>Open Price</b></em>' attribute feature.
@@ -936,48 +958,48 @@ public interface MDPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute MD_MARKETSTAT__OPEN_PRICE = eINSTANCE
-                .getMDMarketstat_OpenPrice();
-        
+        EAttribute MD_MARKETSTAT__OPEN_PRICE = eINSTANCE.getMDMarketstat_OpenPrice();
+
+        /**
+         * The meta object literal for the '<em><b>Volume</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute MD_MARKETSTAT__VOLUME = eINSTANCE.getMDMarketstat_Volume();
+
         /**
          * The meta object literal for the '<em><b>Low Price</b></em>' attribute feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
          * @generated
          */
-        
-        EAttribute MD_MARKETSTAT__LOW_PRICE = eINSTANCE
-                .getMDMarketstat_LowPrice();        
-        
+
+        EAttribute MD_MARKETSTAT__LOW_PRICE = eINSTANCE.getMDMarketstat_LowPrice();
+
         /**
          * The meta object literal for the '<em><b>Volume Traded</b></em>' attribute feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
          * @generated
          */
-        
-        EAttribute MD_MARKETSTAT__VOLUME = eINSTANCE
-                .getMDMarketstat_VolumeTraded();
-        
-        
+        EAttribute MD_MARKETSTAT__VOLUME_TRADED = eINSTANCE.getMDMarketstat_VolumeTraded();
+
         /**
          * The meta object literal for the '<em><b>High Price</b></em>' attribute feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute MD_MARKETSTAT__HIGH_PRICE = eINSTANCE
-                .getMDMarketstat_HighPrice();
-        
-        
+        EAttribute MD_MARKETSTAT__HIGH_PRICE = eINSTANCE.getMDMarketstat_HighPrice();
+
         /**
          * The meta object literal for the '<em><b>Previous Close Price</b></em>' attribute feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE = eINSTANCE
-                .getMDMarketstat_PreviousClosePrice();
+        EAttribute MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE = eINSTANCE.getMDMarketstat_PreviousClosePrice();
 
         /**
          * The meta object literal for the '<em><b>Previous Close Date</b></em>' attribute feature.
@@ -985,10 +1007,8 @@ public interface MDPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute MD_MARKETSTAT__PREVIOUS_CLOSE_DATE = eINSTANCE
-                .getMDMarketstat_PreviousCloseDate();
+        EAttribute MD_MARKETSTAT__PREVIOUS_CLOSE_DATE = eINSTANCE.getMDMarketstat_PreviousCloseDate();
 
-        
         /**
          * The meta object literal for the '{@link org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl <em>Depth Of Book</em>}' class.
          * <!-- begin-user-doc -->
@@ -1005,8 +1025,7 @@ public interface MDPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute MD_DEPTH_OF_BOOK__PRODUCT = eINSTANCE
-                .getMDDepthOfBook_Product();
+        EAttribute MD_DEPTH_OF_BOOK__PRODUCT = eINSTANCE.getMDDepthOfBook_Product();
 
         /**
          * The meta object literal for the '<em><b>Bids</b></em>' containment reference list feature.

@@ -7,7 +7,7 @@
   <property name="javaSamples" location="${samples}/java/scripts"/>
   <property name="rubySamples" location="${samples}/ruby/scripts"/>
   <!-- assumes workspace folder is a sibling of the metc checkout (dev env) -->
-  <property name="targetWorkspace" location="../../../../../runtime-photon.product"/>
+  <property name="targetWorkspace" location="../../../../runtime-photon.product"/>
   
   <target name="init">
     <echo message="Copying from ${sourceWorkspace} to ${targetWorkspace}"/>

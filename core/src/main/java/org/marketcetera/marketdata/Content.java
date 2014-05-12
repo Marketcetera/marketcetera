@@ -39,19 +39,33 @@ public enum Content
      */
     LEVEL_2,
     /**
-     * Top 10 aggregated quote levels
-     */
-    BBO10,
-    /**
      * latest trade
      */
     LATEST_TICK,
     /**
+     * bbo aggregated to 10 levels
+     */
+    BBO10,
+    /**
+     * national best-bid-and-offer top-of-book
+     */
+    NBBO,
+    /**
      * dividend data
      */
     DIVIDEND,
+    /**
+     * unspecified price-level depth-of-book
+     */
     AGGREGATED_DEPTH,
-    UNAGGREGATED_DEPTH;
+    /**
+     * unspecified order-level depth-of-book
+     */
+    UNAGGREGATED_DEPTH,
+    /**
+     * imbalance events
+     */
+    IMBALANCE;
     /**
      * Determines if this content is relevant to the given event class.
      * 
@@ -83,6 +97,8 @@ public enum Content
                 return (inEventClass.equals(TradeEvent.class));
             case DIVIDEND :
                 return inEventClass.equals(DividendEvent.class);
+            case IMBALANCE :
+                return inEventClass.equals(ImbalanceEvent.class);
             default :
                 throw new UnsupportedOperationException();
         }
@@ -113,6 +129,10 @@ public enum Content
             case MARKET_STAT : return Capability.MARKET_STAT;
             case LATEST_TICK : return Capability.LATEST_TICK;
             case DIVIDEND : return Capability.DIVIDEND;
+            case AGGREGATED_DEPTH: return Capability.AGGREGATED_DEPTH;
+            case NBBO: return Capability.NBBO;
+            case UNAGGREGATED_DEPTH: return Capability.UNAGGREGATED_DEPTH;
+            case IMBALANCE : return Capability.IMBALANCE;
             default : throw new UnsupportedOperationException();
         }
     }

@@ -124,9 +124,9 @@ public class StrategyAgentRemotingTest
                 org.marketcetera.saclient.Messages.ERROR_WS_CONNECT){
             @Override
             protected void run() throws Exception {
-                SAClientFactory.getInstance().create(
+                SAClientFactoryImpl.getInstance().create(
                         new SAClientParameters(DEFAULT_CREDENTIAL, null,
-                                RECEIVER_URL, WS_HOST, WS_PORT));
+                                RECEIVER_URL, WS_HOST, WS_PORT)).start();
             }
         };
         //empty password
@@ -134,9 +134,9 @@ public class StrategyAgentRemotingTest
                 org.marketcetera.saclient.Messages.ERROR_WS_CONNECT){
             @Override
             protected void run() throws Exception {
-                SAClientFactory.getInstance().create(
+                SAClientFactoryImpl.getInstance().create(
                         new SAClientParameters(DEFAULT_CREDENTIAL, "".toCharArray(),
-                                RECEIVER_URL, WS_HOST, WS_PORT));
+                                RECEIVER_URL, WS_HOST, WS_PORT)).start();
             }
         };
         //incorrect password
@@ -144,9 +144,9 @@ public class StrategyAgentRemotingTest
                 org.marketcetera.saclient.Messages.ERROR_WS_CONNECT){
             @Override
             protected void run() throws Exception {
-                SAClientFactory.getInstance().create(
+                SAClientFactoryImpl.getInstance().create(
                         new SAClientParameters(DEFAULT_CREDENTIAL, "what?".toCharArray(),
-                                RECEIVER_URL, WS_HOST, WS_PORT));
+                                RECEIVER_URL, WS_HOST, WS_PORT)).start();
             }
         };
         //incorrect username
@@ -154,9 +154,9 @@ public class StrategyAgentRemotingTest
                 org.marketcetera.saclient.Messages.ERROR_WS_CONNECT){
             @Override
             protected void run() throws Exception {
-                SAClientFactory.getInstance().create(
+                SAClientFactoryImpl.getInstance().create(
                         new SAClientParameters("who", DEFAULT_CREDENTIAL.toCharArray(),
-                                RECEIVER_URL, WS_HOST, WS_PORT));
+                                RECEIVER_URL, WS_HOST, WS_PORT)).start();
             }
         };
         //finally a successful login
@@ -182,26 +182,17 @@ public class StrategyAgentRemotingTest
         final StatelessClientContext ctx = new StatelessClientContext();
         assertNull(ctx.getAppId());
         //context without appID
-        new ExpectedFailure<I18NException>(Messages.APP_MISMATCH,
-                null, DEFAULT_CREDENTIAL){
-            @Override
-            protected void run() throws Exception {
-               authenticator.shouldAllow(ctx, DEFAULT_CREDENTIAL, 
-                       DEFAULT_CREDENTIAL.toCharArray());
-            }
-        };
+        assertTrue(authenticator.shouldAllow(ctx,
+                                             DEFAULT_CREDENTIAL, 
+                                             DEFAULT_CREDENTIAL.toCharArray()));
         //context with invalid appID
-        ctx.setAppId(Util.getAppId("invalid", ApplicationVersion.getVersion()));
-        new ExpectedFailure<I18NException>(Messages.APP_MISMATCH,
-                "invalid", DEFAULT_CREDENTIAL){
-            @Override
-            protected void run() throws Exception {
-               authenticator.shouldAllow(ctx, DEFAULT_CREDENTIAL,
-                       DEFAULT_CREDENTIAL.toCharArray());
-            }
-        };
+        ctx.setAppId(Util.getAppId("invalid",
+                                   ApplicationVersion.getVersion().getVersionInfo()));
+        assertTrue(authenticator.shouldAllow(ctx,
+                                             DEFAULT_CREDENTIAL, 
+                                             DEFAULT_CREDENTIAL.toCharArray()));
         //context with correct name & version number
-        ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME, ApplicationVersion.getVersion()));
+        ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME, ApplicationVersion.getVersion().getVersionInfo()));
         assertTrue(authenticator.shouldAllow(ctx, DEFAULT_CREDENTIAL,
                 DEFAULT_CREDENTIAL.toCharArray()));
         //valid contexts
@@ -728,11 +719,13 @@ public class StrategyAgentRemotingTest
     private static SAClient createClient()
             throws ConnectionException
     {
-        return sSAClient = SAClientFactory.getInstance().create(new SAClientParameters(DEFAULT_CREDENTIAL,
-                                                                                       DEFAULT_CREDENTIAL.toCharArray(),
-                                                                                       RECEIVER_URL,
-                                                                                       WS_HOST,
-                                                                                       WS_PORT));
+        sSAClient = SAClientFactoryImpl.getInstance().create(new SAClientParameters(DEFAULT_CREDENTIAL,
+                                                                                    DEFAULT_CREDENTIAL.toCharArray(),
+                                                                                    RECEIVER_URL,
+                                                                                    WS_HOST,
+                                                                                    WS_PORT));
+        sSAClient.start();
+        return sSAClient;
     }
 
     /**

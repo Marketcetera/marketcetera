@@ -161,7 +161,7 @@ public class EsperModuleTest extends CEPTestBase {
         esperPr.preStart();
         ArrayList<EPStatement> stmts = esperPr.createStatements("select * from ask where instrumentAsString = 'entourage'",
                 "p:every(spike=ask(exchange='sunday'))");
-        junit.framework.Assert.assertEquals(2, stmts.size());
+        org.junit.Assert.assertEquals(2, stmts.size());
         assertFalse("Did not create a regular Esper statement", stmts.get(0).isPattern());
         assertTrue("did not create a pattern statement", stmts.get(1).isPattern());
     }

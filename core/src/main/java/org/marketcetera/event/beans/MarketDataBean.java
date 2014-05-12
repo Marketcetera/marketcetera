@@ -3,9 +3,14 @@ package org.marketcetera.event.beans;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.MarketDataEvent;
+import org.marketcetera.event.Messages;
 import org.marketcetera.event.util.EventServices;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
@@ -20,6 +25,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @NotThreadSafe
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 public class MarketDataBean
         extends EventBean
@@ -176,27 +182,27 @@ public class MarketDataBean
     {
         super.validate();
         if(instrument == null) {
-            EventServices.error(VALIDATION_NULL_INSTRUMENT);
+            EventServices.error(Messages.VALIDATION_NULL_INSTRUMENT);
         }
         if(price == null) {
-            EventServices.error(VALIDATION_NULL_PRICE);
+            EventServices.error(Messages.VALIDATION_NULL_PRICE);
         }
         if(size == null) {
-            EventServices.error(VALIDATION_NULL_SIZE);
+            EventServices.error(Messages.VALIDATION_NULL_SIZE);
         }
         if(exchange == null ||
            exchange.isEmpty()) {
-            EventServices.error(VALIDATION_NULL_EXCHANGE);
+            EventServices.error(Messages.VALIDATION_NULL_EXCHANGE);
         }
         if(exchangeTimestamp == null ||
            exchangeTimestamp.isEmpty()) {
-            EventServices.error(VALIDATION_NULL_EXCHANGE_TIMESTAMP);
+            EventServices.error(Messages.VALIDATION_NULL_EXCHANGE_TIMESTAMP);
         }
         if(eventType == null) {
-            EventServices.error(VALIDATION_NULL_META_TYPE);
+            EventServices.error(Messages.VALIDATION_NULL_META_TYPE);
         }
     }
-    /* (non-Javadoc)
+    /* (non-Javadoc)s
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -310,26 +316,32 @@ public class MarketDataBean
     /**
      * the market data price
      */
+    @XmlAttribute
     private BigDecimal price;
     /**
      * the market data size
      */
+    @XmlAttribute
     private BigDecimal size;
     /**
      * the market data exchange
      */
+    @XmlAttribute
     private String exchange;
     /**
      * the market data exchange timestamp (format is dependent on the market data provider)
      */
+    @XmlAttribute
     private String exchangeTimestamp;
     /**
      * the market data instrument
      */
+    @XmlElement
     private Instrument instrument;
     /**
      * the event meta-type
      */
+    @XmlAttribute
     private EventType eventType = EventType.UNKNOWN;
     private static final long serialVersionUID = 1L;
 }

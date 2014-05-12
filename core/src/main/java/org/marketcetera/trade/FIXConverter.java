@@ -735,49 +735,50 @@ public final class FIXConverter
     }
 
     /**
-     * Returns the FIX Agnostic message form of the given QuickFIX/J
-     * message.
+     * Returns the FIX Agnostic message form of the given QuickFIX/J message.
      *
-     * @param msg The QuickFIX/J message.
-     * @param originator The message originator.
-     * @param brokerID The ID of the broker which generated
-     * the QuickFIX/J message. It may be null.
-     * @param actorID The ID of the actor user of this QuickFIX/J
-     * message. It may be null.
-     * @param viewerID The ID of the viewer user of this QuickFIX/J
-     * message. It may be null.
-     *
-     * @return The FIX Agnostic message.
-     *
-     * @throws MessageCreationException Thrown if conversion fails.
+     * @param inMessage a <code>Message</code> value containing the QuickFIX/J message.
+     * @param inOriginator an <code>Originator</code> value containing the message originator
+     * @param inBrokerID a <code>BrokerID</code> value containing the ID of the broker which generated the QuickFIX/J message or <code>null</code>
+     * @param inHierarchy a <code>Hierarchy</code> value containing the hierarchy of the order
+     * @param inActorID a <code>UserID</code> value containing the ID of the actor user of this QuickFIX/J message or <code>null</code>
+     * @param inViewerID a <code>UserID</code> value containing the ID of the viewer user of this QuickFIX/J message or <code>null</code>
+     * @return a <code>TradeMessage</code> containing the FIX Agnostic message.
+     * @throws MessageCreationException if conversion fails
      */
-
-    public static TradeMessage fromQMessage
-        (Message msg,
-         Originator originator,
-         BrokerID brokerID,
-         UserID actorID,
-         UserID viewerID)
-        throws MessageCreationException
+    public static TradeMessage fromQMessage(Message inMessage,
+                                            Originator inOriginator,
+                                            BrokerID inBrokerID,
+                                            Hierarchy inHierarchy,
+                                            UserID inActorID,
+                                            UserID inViewerID)
+            throws MessageCreationException
     {
-        if (FIXMessageUtil.isExecutionReport(msg)) {
-            return Factory.getInstance().createExecutionReport
-                (msg,brokerID,originator,actorID,viewerID);
+        if(FIXMessageUtil.isExecutionReport(inMessage)) {
+            return Factory.getInstance().createExecutionReport(inMessage,
+                                                               inBrokerID,
+                                                               inOriginator,
+                                                               inHierarchy,
+                                                               inActorID,
+                                                               inViewerID);
         }
-        if (FIXMessageUtil.isCancelReject(msg)) {
-            return Factory.getInstance().createOrderCancelReject
-                (msg,brokerID,originator,actorID,viewerID);
+        if(FIXMessageUtil.isCancelReject(inMessage)) {
+            return Factory.getInstance().createOrderCancelReject(inMessage,
+                                                                 inBrokerID,
+                                                                 inOriginator,
+                                                                 inHierarchy,
+                                                                 inActorID,
+                                                                 inViewerID);
         }
-        return Factory.getInstance().createFIXResponse
-            (msg,brokerID,originator,actorID,viewerID);
+        return Factory.getInstance().createFIXResponse(inMessage,
+                                                       inBrokerID,
+                                                       inOriginator,
+                                                       inHierarchy,
+                                                       inActorID,
+                                                       inViewerID);
     }
-
-
-    // CONSTRUCTORS.
-
     /**
-     * Constructor. It is private so that no instances can be created.
+     * Create a new FIXConverter instance.
      */
-
     private FIXConverter() {}
 }

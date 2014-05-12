@@ -2,12 +2,14 @@ package org.marketcetera.photon;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.databinding.observable.Observables;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.photon.commons.Validate;
@@ -34,8 +36,7 @@ public final class BrokerManager implements IBrokerIdValidator {
     /**
      * The default/null broker.
      */
-    private static final Broker AUTO_SELECT_BROKER = new Broker(
-            Messages.BROKER_MANAGER_AUTO_SELECT.getText(), null);
+    public static final Broker AUTO_SELECT_BROKER = new Broker(Messages.BROKER_MANAGER_AUTO_SELECT.getText(),null,null);
 
     /**
      * Returns the singleton instance for the currently running plug-in.
@@ -46,12 +47,10 @@ public final class BrokerManager implements IBrokerIdValidator {
         return PhotonPlugin.getDefault().getBrokerManager();
     }
 
-    private final IObservableList mAvailableBrokers = new WritableList(
-            new SyncRealm(), Lists.newArrayList(AUTO_SELECT_BROKER),
-            Broker.class);
-
-    private final IObservableList mUnmodifiableAvailableBrokers = Observables
-            .unmodifiableObservableList(mAvailableBrokers);
+    private final IObservableList mAvailableBrokers = new WritableList(new SyncRealm(),
+                                                                       Lists.newArrayList(AUTO_SELECT_BROKER),
+                                                                       Broker.class);
+    private final IObservableList mUnmodifiableAvailableBrokers = Observables.unmodifiableObservableList(mAvailableBrokers);
 
     private final Map<BrokerID, Broker> mBrokerMap = Maps.newHashMap();
 
@@ -78,7 +77,9 @@ public final class BrokerManager implements IBrokerIdValidator {
         availableBrokers.add(AUTO_SELECT_BROKER);
         for (BrokerStatus status : statuses.getBrokers()) {
             if (status.getLoggedOn()) {
-                Broker broker = new Broker(status.getName(), status.getId());
+                Broker broker = new Broker(status.getName(),
+                                           status.getId(),
+                                           status.getBrokerAlgos());
                 mBrokerMap.put(status.getId(), broker);
                 availableBrokers.add(broker);
             }
@@ -132,12 +133,16 @@ public final class BrokerManager implements IBrokerIdValidator {
     public final static class Broker {
         private final String mName;
         private final BrokerID mId;
+        private final Set<BrokerAlgoSpec> algos;
 
-        private Broker(String name, BrokerID id) {
+        private Broker(String name,
+                       BrokerID id,
+                       Set<BrokerAlgoSpec> inAlgos)
+        {
             mName = name;
             mId = id;
+            algos = inAlgos;
         }
-
         /**
          * Returns the broker name.
          * 
@@ -146,7 +151,6 @@ public final class BrokerManager implements IBrokerIdValidator {
         public String getName() {
             return mName;
         }
-
         /**
          * Returns the broker id.
          * 
@@ -154,6 +158,15 @@ public final class BrokerManager implements IBrokerIdValidator {
          */
         public BrokerID getId() {
             return mId;
+        }
+        /**
+         * Get the algos value.
+         *
+         * @return a <code>Set&lt;BrokerAlgoSpec&gt;</code> value
+         */
+        public Set<BrokerAlgoSpec> getAlgos()
+        {
+            return algos;
         }
     }
 
@@ -172,5 +185,4 @@ public final class BrokerManager implements IBrokerIdValidator {
                     broker.getId());
         }
     }
-
 }

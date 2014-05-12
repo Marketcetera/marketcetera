@@ -7,6 +7,8 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.google.common.collect.Lists;
+
 /* $License$ */
 
 /**
@@ -14,9 +16,9 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
-@ClassVersion("$Id: SpringConfig.java 16663 2013-08-23 14:40:19Z colin $")
+@ClassVersion("$Id$")
 public class IterativeSymbolResolver
         implements SymbolResolverService, InitializingBean
 {
@@ -72,5 +74,5 @@ public class IterativeSymbolResolver
     /**
      * list of symbol resolvers
      */
-    private List<SymbolResolver> symbolResolvers;
+    private List<SymbolResolver> symbolResolvers = Lists.newArrayList();
 }

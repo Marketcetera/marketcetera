@@ -51,7 +51,6 @@ public class MapEditorUtil {
 	public static EventList<Entry<String, String>> parseString(String stringList) {
 		String [] pieces = stringList.split("&"); //$NON-NLS-1$
 		EventList<Map.Entry<String, String>> outList = new BasicEventList<Map.Entry<String, String>>();
-		int i = 0;
 		for (String aPiece : pieces) {
 			if (aPiece.contains("=")){ //$NON-NLS-1$
 				String[] keyValueArray = aPiece.split("="); //$NON-NLS-1$
@@ -64,7 +63,6 @@ public class MapEditorUtil {
 							, keyValueArray[1]);
 				}
 				outList.add(outEntry);
-				i++;
 			}
 		}
 		return outList;

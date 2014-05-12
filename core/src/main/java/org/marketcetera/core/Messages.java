@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 0.6.0
  * @version $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface Messages
 {
     /**
@@ -113,6 +113,14 @@ public interface Messages
         new I18NMessage1P(LOGGER,"info_waiting_for_resource"); //$NON-NLS-1$
     static final I18NMessage0P ERROR_FETCHING_VERSION_PROPERTIES =
             new I18NMessage0P(LOGGER, "error_fetching_version_properties");   //$NON-NLS-1$
+    // core
+    static final I18NMessage1P UNABLE_TO_START = new I18NMessage1P(LOGGER,"unable_to_start"); //$NON-NLS-1$
+    static final I18NMessage1P ERROR_DURING_STOP = new I18NMessage1P(LOGGER,"error_during_stop"); //$NON-NLS-1$
+    static final I18NMessage1P STARTED = new I18NMessage1P(LOGGER,"started"); //$NON-NLS-1$
+    static final I18NMessage1P STOPPED = new I18NMessage1P(LOGGER,"stopped"); //$NON-NLS-1$
+    static final I18NMessage1P IGNORING_EXCEPTION = new I18NMessage1P(LOGGER,"ignoring_exception"); //$NON-NLS-1$
+    static final I18NMessage1P INTERRUPTED = new I18NMessage1P(LOGGER,"interrupted"); //$NON-NLS-1$
+    static final I18NMessage1P SHUTTING_DOWN_FROM_ERROR = new I18NMessage1P(LOGGER,"shutting_down_from_error"); //$NON-NLS-1$
     // Application Container
     static final I18NMessage0P APP_COPYRIGHT = new I18NMessage0P(LOGGER,"app_copyright"); //$NON-NLS-1$
     static final I18NMessage2P APP_VERSION_BUILD = new I18NMessage2P(LOGGER,"app_version_build");   //$NON-NLS-1$

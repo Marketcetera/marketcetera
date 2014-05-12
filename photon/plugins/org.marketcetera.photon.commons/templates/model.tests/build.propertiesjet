@@ -1,4 +1,4 @@
-<%@ jet package="org.eclipse.emf.codegen.ecore.templates.model.tests" imports="org.eclipse.emf.codegen.ecore.genmodel.* java.util.*" class="BuildProperties" version="$Id: build.propertiesjet,v 1.10 2008/04/18 04:34:29 davidms Exp $" %>
+<%@ jet package="org.eclipse.emf.codegen.ecore.templates.model.tests" imports="org.eclipse.emf.codegen.ecore.genmodel.* java.util.*" class="BuildProperties" version="$Id$" %>
 <%
 /**
  * <copyright>

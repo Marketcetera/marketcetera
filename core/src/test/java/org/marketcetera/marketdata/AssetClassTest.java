@@ -2,10 +2,7 @@ package org.marketcetera.marketdata;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.marketcetera.marketdata.AssetClass.EQUITY;
-import static org.marketcetera.marketdata.AssetClass.FUTURE;
-import static org.marketcetera.marketdata.AssetClass.OPTION;
-import static org.marketcetera.marketdata.AssetClass.CURRENCY;
+import static org.marketcetera.marketdata.AssetClass.*;
 
 import org.junit.Test;
 
@@ -30,10 +27,11 @@ public class AssetClassTest
             throws Exception
     {
         assertTrue("New asset class added, modify the unit tests accordingly",
-                   AssetClass.values().length == 4);
+                   AssetClass.values().length == 5);
         assertFalse(EQUITY.isValidForUnderlyingSymbols());
         assertTrue(OPTION.isValidForUnderlyingSymbols());
         assertTrue(FUTURE.isValidForUnderlyingSymbols());
         assertFalse(CURRENCY.isValidForUnderlyingSymbols());
+        assertFalse(CONVERTIBLE_BOND.isValidForUnderlyingSymbols());
     }
 }

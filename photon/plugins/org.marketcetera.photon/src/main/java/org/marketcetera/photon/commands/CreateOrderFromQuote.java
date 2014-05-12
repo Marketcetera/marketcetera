@@ -12,15 +12,9 @@ import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
-import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.model.marketdata.MDQuote;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Side;
-import org.marketcetera.trade.TimeInForce;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -40,17 +34,17 @@ import org.marketcetera.util.misc.ClassVersion;
 public class CreateOrderFromQuote extends AbstractHandler {
 
     @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-        Object selection = ((StructuredSelection) HandlerUtil
-                .getActiveMenuSelection(event)).getFirstElement();
-        if (selection instanceof MDQuote) {
-            MDQuote quote = (MDQuote) selection;
+    public Object execute(ExecutionEvent event)
+            throws ExecutionException
+    {
+        Object selection = ((StructuredSelection)HandlerUtil.getActiveMenuSelection(event)).getFirstElement();
+        if(selection instanceof MDQuote) {
+            MDQuote quote = (MDQuote)selection;
             Side side = Side.Sell;
-            if (quote.eContainingFeature() == MDPackage.Literals.MD_DEPTH_OF_BOOK__ASKS) {
+            if(quote.eContainingFeature() == MDPackage.Literals.MD_DEPTH_OF_BOOK__ASKS) {
                 side = Side.Buy;
             }
-            Instrument instrument = ((MDItem) quote.eContainer())
-                    .getInstrument();
+            Instrument instrument = quote.getInstrument();
             OrderSingle newOrder = Factory.getInstance().createOrderSingle();
             newOrder.setInstrument(instrument);
             newOrder.setOrderType(OrderType.Limit);

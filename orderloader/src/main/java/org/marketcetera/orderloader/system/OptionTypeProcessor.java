@@ -1,11 +1,10 @@
 package org.marketcetera.orderloader.system;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.SecurityType;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OptionType;
 import org.marketcetera.orderloader.Messages;
 import org.marketcetera.orderloader.OrderParsingException;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Extracts an {@link org.marketcetera.trade.OptionType} value from an order row and sets it

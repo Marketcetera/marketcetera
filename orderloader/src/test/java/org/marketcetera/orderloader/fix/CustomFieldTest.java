@@ -28,7 +28,7 @@ public class CustomFieldTest extends TestCase
 
     public void testParseCustomFieldValue()
     {
-        CustomField cf = new CustomField<String>(1, null);
+        CustomField<String> cf = new CustomField<String>(1, null);
         assertEquals(42, cf.parseMessageValue("42")); //$NON-NLS-1$
         assertEquals(Integer.class, cf.parseMessageValue("42").getClass()); //$NON-NLS-1$
 

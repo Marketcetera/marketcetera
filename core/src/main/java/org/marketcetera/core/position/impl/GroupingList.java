@@ -116,9 +116,7 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
 
     private void beginEvent() {
         updates.beginEvent();
-        int index = 0;
-        for (SimpleTreeIterator<GroupList> i = new SimpleTreeIterator<GroupList>(groupLists); i
-                .hasNext(); index++) {
+        for (SimpleTreeIterator<GroupList> i = new SimpleTreeIterator<GroupList>(groupLists); i.hasNext();) {
             i.next();
             GroupList group = i.value();
             group.getListEventAssembler().beginEvent();
@@ -178,9 +176,8 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
     }
 
     private void processDelete(int changeIndex, E oldValue) {
-        int index = 0;
         for (SimpleTreeIterator<GroupList> i = new SimpleTreeIterator<GroupList>(groupLists); i
-                .hasNext(); index++) {
+                .hasNext();) {
             i.next();
             GroupList group = i.value();
             int blackIndex = group.barcode.getBlackIndex(changeIndex);

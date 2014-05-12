@@ -14,7 +14,7 @@
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>public-parent</artifactId>
-  <version>2.4.0</version>
+  <version>2.4.1</version>
   <packaging>pom</packaging>
   <name>Marketcetera Public Sources Parent POM</name>
   <description>The root of Marketcetera public sources.</description>
@@ -37,111 +37,114 @@
   <properties>
     <mvn.javase.version>7</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
-    <mvn.spring.version>4.0.0.RELEASE</mvn.spring.version>
-    <mvn.cxf.version>2.7.8</mvn.cxf.version>
-    <mvn.querydsl.version>3.2.4</mvn.querydsl.version>
-    <mvn.springdatajpa.version>1.4.3.RELEASE</mvn.springdatajpa.version>
+    <mvn.spring.version>4.0.2.RELEASE</mvn.spring.version>
+    <mvn.cxf.version>2.7.10</mvn.cxf.version>
+    <mvn.querydsl.version>3.3.1</mvn.querydsl.version>
+    <mvn.springdatajpa.version>1.5.0.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
-    <mvn.hibernate.version>4.2.7.Final</mvn.hibernate.version>
-    <!-- Build Number. -->
-    <mvn.build.number>Development Build</mvn.build.number>
+    <mvn.hibernate.version>4.2.8.Final</mvn.hibernate.version>
   </properties>
   <!-- Marketcetera uses the following versions of some common libraries:
        jaxb:  2.2.6 (provided by Java7, not CXF)
        asm:   4.0
-       cglib: 3.0 -->
+       cglib: 3.1 -->
   <dependencyManagement>
     <dependencies>
       <!-- Compile: local modules -->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>client</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>migration</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>orderloader</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategyagent</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-csv</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-bogus</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-core</artifactId>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-marketcetera</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-yahoo</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-csv</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>misc</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategy</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-esper</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>remote-receiver</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>remote-emitter</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>saclient</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
       </dependency>
       <!-- Compile: QuickFIX/J -->
       <dependency>
@@ -159,11 +162,17 @@
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
           </exclusion>
+	  <!-- exclude jaxb-impl because it's included with Java 7 -->
           <exclusion>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.creditanalytics</groupId>
+        <artifactId>creditanalytics</artifactId>
+        <version>2.2.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
@@ -239,9 +248,9 @@
       </dependency>
       <!-- Compile: Other -->
       <dependency>
-	<groupId>org.ow2.asm</groupId>
-	<artifactId>asm</artifactId>
-	<version>4.0</version>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>4.0</version>
       </dependency>
       <dependency>
         <groupId>org.skife.kasparov</groupId>
@@ -256,7 +265,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.5</version>
+        <version>1.7.6</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -276,7 +285,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.8</version>
+        <version>1.9</version>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
@@ -291,7 +300,7 @@
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
-        <version>1.8.3</version>
+        <version>1.9.1</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate.javax.persistence</groupId>
@@ -338,21 +347,21 @@
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib</artifactId>
-        <version>3.0</version>
+        <version>3.1</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper</artifactId>
-        <version>4.10.0</version>
+        <version>4.11.0</version>
         <!-- esper requires cglib-nodep 2.2 which conflicts in principle with cglib 3.0 -->
         <!-- for now, both are packaged with the SA and Photon :-o -->
         <!--exclusions>
-          <exclusion>
+            <exclusion>
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
-          </exclusion>
-        </exclusions-->
+            </exclusion>
+            </exclusions-->
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
@@ -372,7 +381,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>15.0</version>
+        <version>16.0.1</version>
       </dependency>
       <dependency>
         <groupId>org.ops4j</groupId>
@@ -392,7 +401,7 @@
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>jsr305</artifactId>
-        <version>2.0.2</version>
+        <version>2.0.3</version>
       </dependency>
       <dependency>
         <groupId>org.ow2.sirocco</groupId>
@@ -418,6 +427,28 @@
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
         <version>2.5.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.googlecode.protobuf-rpc-pro</groupId>
+        <artifactId>protobuf-streamer-pro</artifactId>
+        <version>1.2.3</version>
+      </dependency>
+      <dependency>
+        <groupId>com.googlecode.protobuf-rpc-pro</groupId>
+        <artifactId>protobuf-rpc-pro-duplex</artifactId>
+        <version>3.2.2</version>
+      </dependency>
+      <dependency>
+	<groupId>io.netty</groupId>
+	<artifactId>netty</artifactId>
+	<version>3.8.1.Final</version>
+	<scope>runtime</scope>
+      </dependency>
+      <dependency>
+	<groupId>com.jcraft</groupId>
+	<artifactId>jzlib</artifactId>
+	<version>1.1.2</version>
+	<scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>com.mysema.querydsl</groupId>
@@ -479,7 +510,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
-        <version>1.7.5</version>
+        <version>1.7.6</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -517,6 +548,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
           </exclusion>
+	  <!-- exclude jaxb-impl because it's included with Java 7 -->
+	  <exclusion>
+	    <groupId>com.sun.xml.bind</groupId>
+	    <artifactId>jaxb-impl</artifactId>
+	  </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -528,13 +564,13 @@
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-spring</artifactId>
-        <version>3.14</version>
+        <version>3.16</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-        <version>5.1.26</version>
+        <version>5.1.29</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -558,7 +594,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>9.2-1003-jdbc4</version>
+        <version>9.3-1101-jdbc41</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -583,27 +619,27 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util-test</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>client</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
@@ -635,7 +671,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymockclassextension</artifactId>
-        <version>2.3</version>
+        <version>3.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -647,7 +683,7 @@
       <dependency>
         <groupId>org.objenesis</groupId>
         <artifactId>objenesis</artifactId>
-        <version>1.0</version>
+        <version>2.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -659,12 +695,21 @@
     </dependencies>
   </dependencyManagement>
   <build>
+    <!-- **** PLUGIN MANAGEMENT SECTION **** -->
     <pluginManagement>
       <plugins>
         <!-- jar generation. -->
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>2.4</version>
+          <executions>
+            <execution>
+              <id>build-test-jar</id>
+              <goals>
+                <goal>test-jar</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
         <!-- source jar generation -->
         <plugin>
@@ -779,6 +824,7 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    <!-- **** PLUGINS SECTION **** -->
     <plugins>
       <!-- source jar generation -->
       <plugin>
@@ -794,16 +840,46 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Place tests into a jar for use during testing of other packages. -->
+      <!-- Place tests into a jar for use during testing of other packages -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
+      </plugin>
+      <!-- Adds the build number to each JAR -->
+      <plugin>
+	<groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
+	<artifactId>svn-revision-number-maven-plugin</artifactId>
+	<version>1.13</version>
+	<executions>
+	  <execution>
             <goals>
-              <goal>test-jar</goal>
+	      <goal>revision</goal>
             </goals>
-          </execution>
-        </executions>
+	  </execution>
+	</executions>
+	<configuration>
+	  <entries>
+            <entry>
+	      <prefix>svn</prefix>
+            </entry>
+	  </entries>
+	</configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.tmatesoft.svnkit</groupId>
+            <artifactId>svnkit</artifactId>
+            <version>1.8.3-1</version>
+          </dependency>
+          <dependency>
+            <groupId>org.tmatesoft.sqljet</groupId>
+            <artifactId>sqljet</artifactId>
+            <version>1.1.6</version>
+          </dependency>
+          <dependency>
+            <groupId>de.regnis.q.sequence</groupId>
+            <artifactId>sequence-library</artifactId>
+            <version>1.0.2</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
     <extensions>
@@ -813,42 +889,24 @@
         <version>2.5</version>
       </extension>
     </extensions>
+    <resources>
+      <resource>
+	<directory>src/main/resources</directory>
+	<filtering>true</filtering>
+	<includes>
+	  <include>**/metc_version.properties</include>
+	</includes>
+      </resource>
+      <resource>
+	<directory>src/main/resources</directory>
+	<filtering>false</filtering>
+	<excludes>
+	  <exclude>**/metc_version.properties</exclude>
+	</excludes>
+      </resource>
+    </resources>
   </build>
   <profiles>
-    <profile>
-      <id>safe.compile</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-              <showDeprecation>true</showDeprecation>
-              <showWarnings>true</showWarnings>
-              <!--
-                  - Path warnings cause maven to fail, hence excluded; see
-                  - http://jira.codehaus.org/browse/MCOMPILER-59
-              -->
-              <compilerArgument>-Xlint:-path</compilerArgument>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>i18n.tests</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <argLine>-Duser.language=${mvn.jvm.locale.language} -Duser.country=${mvn.jvm.locale.country}
-              -Duser.variant=${mvn.jvm.locale.variant} ${mvn.test.options}
-              </argLine>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <profile>
       <id>release-sign-artifacts</id>
       <activation>
@@ -952,13 +1010,6 @@
         -    </snapshots>
         -  </repository>
     -->
-    <repository>
-      <id>findbugs.googlecode.com</id>
-      <url>http://findbugs.googlecode.com/svn/repos/release-repository</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
     <repository>
       <id>com.springsource.repository.bundles.release</id>
       <name>EBR Spring Release Repository</name>

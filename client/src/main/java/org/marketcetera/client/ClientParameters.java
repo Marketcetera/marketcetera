@@ -7,6 +7,7 @@ import java.beans.ConstructorProperties;
 import java.util.Arrays;
 
 /* $License$ */
+
 /**
  * The set of parameters needed to initialize the client. These parameters
  * are provided to the following methods.
@@ -19,8 +20,9 @@ import java.util.Arrays;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class ClientParameters {
+@ClassVersion("$Id$")
+public class ClientParameters
+{
     /**
      * Gets the user name to use when connecting to the server.
      *
@@ -130,9 +132,13 @@ public class ClientParameters {
             "port",
             "IDPrefix",
             "heartbeatInterval"})
-    public ClientParameters(String inUsername, char[] inPassword,
-                            String inURL, String inHostname, int inPort,
-                            String inIDPrefix, int inHeartbeatInterval) {
+    public ClientParameters(String inUsername,
+                            char[] inPassword,
+                            String inURL,
+                            String inHostname,
+                            int inPort,
+                            String inIDPrefix,
+                            int inHeartbeatInterval) {
         mUsername = inUsername;
         mPassword = inPassword;
         mURL = inURL;
@@ -141,8 +147,6 @@ public class ClientParameters {
         mIDPrefix = inIDPrefix;
         mHeartbeatInterval = inHeartbeatInterval;
     }
-
-
     /**
      * Creates an instance.
      *
@@ -154,13 +158,21 @@ public class ClientParameters {
      * @param inIDPrefix the string to prefix to the orderIDs generated
      * by the client based on the IDs from the server.
      */
-    public ClientParameters(String inUsername, char[] inPassword,
-                            String inURL, String inHostname, int inPort,
-                            String inIDPrefix) {
-        this(inUsername, inPassword, inURL, inHostname, inPort, inIDPrefix,
+    public ClientParameters(String inUsername,
+                            char[] inPassword,
+                            String inURL,
+                            String inHostname,
+                            int inPort,
+                            String inIDPrefix)
+    {
+        this(inUsername,
+             inPassword,
+             inURL,
+             inHostname,
+             inPort,
+             inIDPrefix,
              DEFAULT_HEARTBEAT_INTERVAL);
     }
-
     /**
      * Creates an instance.
      *
@@ -170,11 +182,19 @@ public class ClientParameters {
      * @param inHostname the host name
      * @param inPort the port number
      */
-    public ClientParameters(String inUsername, char[] inPassword, String inURL,
-                            String inHostname, int inPort ) {
-        this(inUsername, inPassword, inURL, inHostname, inPort,null);
+    public ClientParameters(String inUsername,
+                            char[] inPassword,
+                            String inURL,
+                            String inHostname,
+                            int inPort)
+    {
+        this(inUsername,
+             inPassword,
+             inURL,
+             inHostname,
+             inPort,
+             null);
     }
-
     @Override
     public String toString() {
         return "ClientParameters{" +  //$NON-NLS-1$

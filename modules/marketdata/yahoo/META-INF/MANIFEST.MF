@@ -3,8 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.marketcetera.modules.mdata.yahoo;singleton:=true
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Name: Yahoo Marketdata Module
-Bundle-Version: 2.4.0
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 2.4.1
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.marketcetera.core,
  org.marketcetera.core.tests;resolution:=optional,
  org.junit4;resolution:=optional

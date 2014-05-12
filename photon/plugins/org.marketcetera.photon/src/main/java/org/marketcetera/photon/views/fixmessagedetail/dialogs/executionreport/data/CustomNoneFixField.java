@@ -52,5 +52,24 @@ public class CustomNoneFixField extends ExecutionReportNoneFixField {
 	{
 		return -1;
 	}
+	
+    @Override
+    public boolean equals(Object obj)
+   {
+       if (this == obj) {
+           return true;
+       }
+       if (obj == null) {
+           return false;
+       }
+       if (!(obj instanceof CustomNoneFixField)) {
+           return false;
+       }
+       CustomNoneFixField other = (CustomNoneFixField) obj;
+       if (fFieldName.compareTo(other.fFieldName) != 0) {
+           return false;
+       }
+       return true;
+   }
 
 }

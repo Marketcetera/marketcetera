@@ -1,6 +1,9 @@
 package org.marketcetera.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.EquityEvent;
 import org.marketcetera.event.TradeEvent;
@@ -18,8 +21,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ThreadSafe
+@XmlRootElement(name="equityTrade")
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
-final class EquityTradeEventImpl
+public class EquityTradeEventImpl
         extends AbstractTradeEventImpl
         implements EquityEvent
 {
@@ -55,6 +60,13 @@ final class EquityTradeEventImpl
     {
         return description;
     }
+    /**
+     * Create a new EquityTradeEventImpl instance.
+     *
+     * <p>This constructor is intended to be used by JAXB only.
+     */
+    @SuppressWarnings("unused")
+    private EquityTradeEventImpl() {}
     /**
      * provides a human-readable description of this event type (does not need to be localized)
      */

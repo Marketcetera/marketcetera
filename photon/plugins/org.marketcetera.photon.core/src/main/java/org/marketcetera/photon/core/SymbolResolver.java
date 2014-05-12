@@ -1,5 +1,6 @@
 package org.marketcetera.photon.core;
 
+import org.marketcetera.client.ClientManager;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
@@ -11,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public class SymbolResolver
@@ -23,6 +24,9 @@ public class SymbolResolver
     @Override
     public Instrument resolveSymbol(String inSymbol)
     {
+        if(ClientManager.getInstance().isServerAlive()) {
+            return ClientManager.getInstance().resolveSymbol(inSymbol);
+        }
         return symbolResolver.resolveSymbol(inSymbol);
     }
     /**

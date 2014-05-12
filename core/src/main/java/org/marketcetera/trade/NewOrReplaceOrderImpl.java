@@ -1,20 +1,24 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-
 import java.math.BigDecimal;
+
+import org.marketcetera.algo.BrokerAlgo;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
  * Implementation of {@link NewOrReplaceOrder}
  *
  * @author anshul@marketcetera.com
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-class NewOrReplaceOrderImpl extends OrderBaseImpl
-        implements NewOrReplaceOrder {
+@ClassVersion("$Id$")
+class NewOrReplaceOrderImpl
+        extends OrderBaseImpl
+        implements NewOrReplaceOrder
+{
     @Override
     public OrderType getOrderType() {
         return mOrderType;
@@ -74,12 +78,28 @@ class NewOrReplaceOrderImpl extends OrderBaseImpl
     public void setDisplayQuantity(BigDecimal inDisplayQuantity) {
     	mDisplayQuantity = inDisplayQuantity;
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.NewOrReplaceOrder#getBrokerAlgos()
+     */
+    @Override
+    public BrokerAlgo getBrokerAlgo()
+    {
+        return brokerAlgo;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.NewOrReplaceOrder#setBrokerAlgos(java.util.Set)
+     */
+    @Override
+    public void setBrokerAlgo(BrokerAlgo inBrokerAlgo)
+    {
+        brokerAlgo = inBrokerAlgo;
+    }
     private OrderCapacity mOrderCapacity;
     private PositionEffect mPositionEffect;
     private OrderType mOrderType;
     private TimeInForce mTimeInForce;
     private BigDecimal mPrice;
     private BigDecimal mDisplayQuantity;
-    private static final long serialVersionUID = 1L;
+    private BrokerAlgo brokerAlgo;
+    private static final long serialVersionUID = 3745608449209190015L;
 }

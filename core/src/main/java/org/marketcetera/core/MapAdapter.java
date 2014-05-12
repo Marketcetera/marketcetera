@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 public class MapAdapter
         extends XmlAdapter<MapElements[],Map<String,String>>

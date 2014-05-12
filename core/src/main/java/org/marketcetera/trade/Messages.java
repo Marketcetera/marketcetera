@@ -54,8 +54,7 @@ public interface Messages {
             new I18NMessageNP(LOGGER, "execution_report_to_string");   //$NON-NLS-1$
     static final I18NMessageNP ORDER_CANCEL_REJECT_TO_STRING =
             new I18NMessageNP(LOGGER, "order_cancel_reject_to_string");   //$NON-NLS-1$
-    static final I18NMessage5P FIX_RESPONSE_TO_STRING =
-            new I18NMessage5P(LOGGER, "fix_response_to_string");   //$NON-NLS-1$
+    static final I18NMessage6P FIX_RESPONSE_TO_STRING = new I18NMessage6P(LOGGER, "fix_response_to_string");   //$NON-NLS-1$
     static final I18NMessage3P ORDER_SINGLE_SUGGESTION_TO_STRING =
             new I18NMessage3P(LOGGER, "order_single_suggestion_to_string");   //$NON-NLS-1$
     static final I18NMessage2P INVALID_ID_START_VALUE =

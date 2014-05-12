@@ -7,7 +7,14 @@ import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.impl.Messages;
 import org.marketcetera.core.position.impl.PositionEngineImpl;
 import org.marketcetera.messagehistory.ReportHolder;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionType;
+import org.marketcetera.trade.Hierarchy;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
@@ -158,10 +165,11 @@ public class PositionEngineFactory {
         @Override
         public boolean matches(ReportBase item) {
             Originator originator = item.getOriginator();
+            Hierarchy hierarchy = item.getHierarchy();
             if(item instanceof ExecutionReport) {
                 ExecutionReport er = (ExecutionReport)item;
                 ExecutionType executionType = er.getExecutionType();
-                return originator == Originator.Broker && executionType != null && executionType.isFill() && isValid(er);
+                return originator.forPositions() && hierarchy.forPositions() && executionType != null && executionType.isFill() && isValid(er);
             } else {
                 return false;
             }

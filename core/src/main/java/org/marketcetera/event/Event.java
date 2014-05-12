@@ -3,6 +3,8 @@ package org.marketcetera.event;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -28,6 +30,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
+@XmlJavaTypeAdapter(AnyTypeAdapter.class)
 @ClassVersion("$Id$")
 public interface Event
         extends TimestampCarrier, Serializable, Messages
@@ -56,4 +59,16 @@ public interface Event
      * @param inSource an <code>Object</code> value or null
      */
     public void setSource(Object inSource);
+    /**
+     * Gets the provider value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getProvider();
+    /**
+     * Sets the provider value.
+     *
+     * @param inProvider a <code>String</code> value
+     */
+    public void setProvider(String inProvider);
 }

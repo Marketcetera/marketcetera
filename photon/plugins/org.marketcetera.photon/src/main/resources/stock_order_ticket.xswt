@@ -21,72 +21,64 @@
 	            grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" 
 	            verticalAlignment="GridData.FILL" horizontalSpan="5"/>
 			<x:children>
-				<label text="Side"/>
-				<label text="Quantity"/>
-				<label text="Symbol"/>
-				<label text="Order Type"/>
-				<label text="Price"/>
-				<label text="Broker"/>
-				<label text="TIF"/>
-				<combo x:style="BORDER|READ_ONLY" x:id="SideCombo"/>
-				<text x:style="SINGLE|BORDER" x:id="QuantityText" text="">
-			        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
-			            horizontalAlignment="GridData.FILL" 
-			            verticalAlignment="GridData.CENTER"/>
-				</text>
-				<text x:style="SINGLE|BORDER" x:id="SymbolText" text="">
-			        <layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
-			            horizontalAlignment="GridData.FILL" 
-			            verticalAlignment="GridData.CENTER"/>
-				</text>
-				<combo x:style="BORDER|READ_ONLY" x:id="OrderTypeCombo"/>
-				<text x:style="SINGLE|BORDER" x:id="PriceText" text="">
-			        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
-			            horizontalAlignment="GridData.FILL" 
-			            verticalAlignment="GridData.CENTER"/>
-				</text>
-				<combo x:style="BORDER|READ_ONLY" x:id="BrokerCombo" text="">
-			        <layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
-			            horizontalAlignment="GridData.FILL" 
-			            verticalAlignment="GridData.CENTER"/>
-				</combo>
-				<combo x:style="BORDER|READ_ONLY" x:id="TifCombo" text="">
-			        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
-			            horizontalAlignment="GridData.FILL" 
-			            verticalAlignment="GridData.CENTER"/>
-				</combo>
-				<composite>
-					<layout x:class="rowLayout" x:style="HORIZONTAL"/>
-					<layoutData x:class="gridData" horizontalAlignment="GridData.END" horizontalSpan="7"/>
-					<button x:id="SendButton" x:style="PUSH" text="Send" enabled="false"/>
-					<button x:id="ClearButton" x:style="PUSH" text="Clear"/>
-				</composite>
+			    <composite>
+                    <layoutData x:class="gridData" grabExcessHorizontalSpace="false" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.CENTER" horizontalSpan="7"/>
+                    <layout x:class="gridLayout" numColumns="7" marginWidth="1" verticalSpacing="1" horizontalSpacing="10" marginHeight="1" />
+                    <label text="Broker"/>
+                    <label text="Side"/>
+                    <label text="Quantity"/>
+                    <label text="Symbol"/>
+                    <label text="Order Type"/>
+                    <label text="Price"/>
+                    <label text="TIF"/>
+                    <combo x:style="BORDER|READ_ONLY" x:id="BrokerCombo" text="">
+                        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.CENTER" widthHint="200"/>
+                    </combo>
+                    <combo x:style="BORDER|READ_ONLY" x:id="SideCombo"/>
+                    <text x:style="SINGLE|BORDER" x:id="QuantityText" text="">
+                        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.CENTER"/>
+                    </text>
+                    <text x:style="SINGLE|BORDER" x:id="SymbolText" text="">
+                        <layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.CENTER"/>
+                    </text>
+                    <combo x:style="BORDER|READ_ONLY" x:id="OrderTypeCombo"/>
+                    <text x:style="SINGLE|BORDER" x:id="PriceText" text="">
+                        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.CENTER"/>
+                    </text>
+                    <combo x:style="BORDER|READ_ONLY" x:id="TifCombo" text="">
+                        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.CENTER"/>
+                    </combo>
+			    </composite>
 				<section x:id="OtherExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Other" expanded="true" client="_other_composite">
-					<layoutData x:class="gridData" horizontalSpan="2"
-					     verticalAlignment="BEGINNING" horizontalAlignment="FILL" heightHint="200"/>
+					<layoutData x:class="gridData" horizontalSpan="1" verticalAlignment="BEGINNING" horizontalAlignment="FILL" heightHint="200"/>
 					<composite x:id="_other_composite">
-						<layoutData x:class="gridData" horizontalSpan="2" verticalAlignment="BEGINNING"
-							horizontalAlignment="FILL"/>
-						<layout x:class="rowLayout" x:style="HORIZONTAL"/>
+						<layoutData x:class="gridData" horizontalSpan="1" verticalAlignment="BEGINNING" horizontalAlignment="FILL"/>
+                        <layout x:class="gridLayout" numColumns="2" marginWidth="1" verticalSpacing="1" horizontalSpacing="1" marginHeight="1" />
 						<label text="Account:"/>
 						<text x:style="BORDER" x:id="AccountText" text="">
-							<layoutData x:class="rowData" />
+                            <layoutData x:class="gridData" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="FILL" horizontalSpan="1" />
 						</text>
+                        <label text="Iceberg:"/>
+                        <text x:style="BORDER" x:id="DisplayQuantityText" text="">
+                            <layoutData x:class="gridData" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="FILL" horizontalSpan="1" />
+                        </text>
 					</composite>
 				</section>
-				<section x:id="StrategyExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Iceberg" expanded="true" client="_strategy_composite">
-					<layoutData x:class="gridData" horizontalSpan="2"
-					     verticalAlignment="BEGINNING" horizontalAlignment="FILL" heightHint="200"/>
-					<composite x:id="_strategy_composite">
-						<layoutData x:class="gridData" horizontalSpan="2" verticalAlignment="BEGINNING"
-							horizontalAlignment="FILL"/>
-						<layout x:class="rowLayout" x:style="HORIZONTAL"/>
-						<label text="Display:"/>
-						<text x:style="BORDER" x:id="DisplayQuantityText" text="">
-							<layoutData x:class="rowData" />
-						</text>
-					</composite>
-				</section>
+                <section x:id="AlgoExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Broker Algos" expanded="true" client="_algo_composite">
+                    <layoutData x:class="gridData" horizontalSpan="2" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" verticalAlignment="FILL" horizontalAlignment="FILL" heightHint="200"/>
+                    <composite x:id="_algo_composite">
+                        <layout x:class="gridLayout" numColumns="2" marginWidth="1" verticalSpacing="1" horizontalSpacing="1" marginHeight="1" />
+                        <label text="Algo:"/>
+                        <combo x:style="BORDER|READ_ONLY" x:id="AlgoCombo">
+                            <layoutData x:class="gridData" horizontalSpan="1" verticalAlignment="BEGINNING" widthHint="200"/>
+                        </combo>
+                        <table x:id="AlgoTagsTable" x:style="BORDER|FULL_SELECTION" headerVisible="true">
+                            <layoutData x:class="gridData" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="FILL" horizontalSpan="2" />
+                            <tableColumn text="Tag" width="100"/>
+                            <tableColumn text="Value" width="120"/>
+                        </table>
+                    </composite>
+                </section>
 				<section x:id="CustomExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Custom fields" expanded="true" client="_custom_composite">
 					<layoutData x:class="gridData" horizontalSpan="3" grabExcessHorizontalSpace="true"
 					      grabExcessVerticalSpace="true" verticalAlignment="FILL" horizontalAlignment="FILL" heightHint="200"/>
@@ -101,6 +93,12 @@
 						</table>
 					</composite>
 				</section>
+                <composite>
+                    <layout x:class="rowLayout" x:style="HORIZONTAL"/>
+                    <layoutData x:class="gridData" horizontalAlignment="GridData.BEGINNING" horizontalSpan="7"/>
+                    <button x:id="SendButton" x:style="PUSH" text="Send" enabled="false"/>
+                    <button x:id="ClearButton" x:style="PUSH" text="Clear"/>
+                </composite>
 			</x:children>
 		</getBody>
 	</scrolledForm>

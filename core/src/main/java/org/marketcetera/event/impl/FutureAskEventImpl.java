@@ -1,6 +1,10 @@
 package org.marketcetera.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.FutureEvent;
@@ -19,8 +23,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.1.0
  */
 @ThreadSafe
+@XmlRootElement(name="futureAsk")
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
-class FutureAskEventImpl
+public class FutureAskEventImpl
         extends AbstractQuoteEventImpl
         implements AskEvent, FutureEvent
 {
@@ -109,12 +115,23 @@ class FutureAskEventImpl
         return description;
     }
     /**
+     * Create a new FutureAskEventImpl instance.
+     * 
+     * <p>This constructor is intended to be used by JAXB.
+     */
+    @SuppressWarnings("unused")
+    private FutureAskEventImpl()
+    {
+        future = new FutureBean();
+    }
+    /**
      * provides a human-readable description of this event type (does not need to be localized)
      */
     private static final String description = "Future Ask"; //$NON-NLS-1$
     /**
      * the future attributes 
      */
+    @XmlElement
     private final FutureBean future;
     private static final long serialVersionUID = 1L;
 }

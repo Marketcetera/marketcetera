@@ -32,6 +32,20 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 public class OrderHistoryManager
 {
     /**
+     * Gets the root order ID for the given order ID.
+     *
+     * @param inOrderID an <code>OrderID</code> value
+     * @return an <code>OrderID</code> value or <code>null</code>
+     */
+    public OrderID getRootOrderIdFor(OrderID inOrderID)
+    {
+        Deque<ReportBase> orders = getReportHistoryFor(inOrderID);
+        if(orders == null || orders.isEmpty()) {
+            return null;
+        }
+        return orders.getLast().getOrderID();
+    }
+    /**
      * Gets the latest <code>ReportBase</code> for the given <code>OrderID</code>.
      *
      * <p>The given <code>OrderID</code> may correspond to either the

@@ -23,64 +23,105 @@ import org.marketcetera.photon.PhotonPreferences;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public class ConnectionsPreferencePage extends FieldEditorPreferencePage
-		implements IWorkbenchPreferencePage, Messages {
-
-	public static final String ID = "org.marketcetera.photon.preferences.connections"; //$NON-NLS-1$
-
-	private UrlFieldEditor jmsUrlEditor;
-
-	private StringFieldEditor orderIDPrefixEditor;
-
-	private UrlFieldEditor webServiceHostEditor;
-
-	private IntegerFieldEditor webServicePortEditor;
-
-	public ConnectionsPreferencePage() {
-		super(GRID);
-		setPreferenceStore(PhotonPlugin.getDefault().getPreferenceStore());
-	}
-
-	@Override
-	public void init(IWorkbench workbench) {
-	}
-
-	@Override
-	protected void createFieldEditors() {
-		Group group = new Group(getFieldEditorParent(), SWT.NONE);
-		GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(
-				group);
-		GridLayoutFactory.swtDefaults().applyTo(group);
-		group.setText(CONNECTION_PREFERENCES_SERVER_LABEL.getText());
-		Composite composite = new Composite(group, SWT.NONE);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(composite);
-		jmsUrlEditor = new UrlFieldEditor(PhotonPreferences.JMS_URL,
-				CONNECTION_PREFERENCES_JMS_URL_LABEL.getText(), composite);
-		addField(jmsUrlEditor);
-		webServiceHostEditor = new UrlFieldEditor(
-				PhotonPreferences.WEB_SERVICE_HOST,
-				CONNECTION_PREFERENCES_WEB_SERVICE_HOST_LABEL.getText(),
-				composite);
-		addField(webServiceHostEditor);
-
-		webServicePortEditor = new IntegerFieldEditor(
-				PhotonPreferences.WEB_SERVICE_PORT,
-				CONNECTION_PREFERENCES_WEB_SERVICE_PORT_LABEL.getText(),
-				composite);
-		addField(webServicePortEditor);
-
-		orderIDPrefixEditor = new StringFieldEditor(
-				PhotonPreferences.ORDER_ID_PREFIX, ORDER_ID_PREFIX_LABEL
-						.getText(), getFieldEditorParent());
-		addField(orderIDPrefixEditor);
-	}
-
-	@Override
-	public boolean performOk() {
-		jmsUrlEditor.setStringValue(jmsUrlEditor.getStringValue().trim());
-		webServiceHostEditor.setStringValue(webServiceHostEditor
-				.getStringValue().trim());
-		return super.performOk();
-	}
-
+public class ConnectionsPreferencePage
+        extends FieldEditorPreferencePage
+        implements IWorkbenchPreferencePage
+{
+    /**
+     * Create a new ConnectionsPreferencePage instance.
+     */
+    public ConnectionsPreferencePage()
+    {
+        super(GRID);
+        setPreferenceStore(PhotonPlugin.getDefault().getPreferenceStore());
+    }
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+     */
+    @Override
+    public void init(IWorkbench inWorkbench) {}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performOk()
+     */
+    @Override
+    public boolean performOk()
+    {
+        dareJmsUrlEditor.setStringValue(dareJmsUrlEditor.getStringValue().trim());
+        dareWebServiceHostEditor.setStringValue(dareWebServiceHostEditor.getStringValue().trim());
+        nexusWebServiceHostEditor.setStringValue(nexusWebServiceHostEditor.getStringValue().trim());
+        return super.performOk();
+    }
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
+     */
+    @Override
+    protected void createFieldEditors()
+    {
+        Group dareGroup = new Group(getFieldEditorParent(),SWT.NONE);
+        GridDataFactory.fillDefaults().span(2,1).grab(true,false).applyTo(dareGroup);
+        GridLayoutFactory.swtDefaults().applyTo(dareGroup);
+        dareGroup.setText(Messages.CONNECTION_PREFERENCES_SERVER_LABEL.getText());
+        Composite dareComposite = new Composite(dareGroup,SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true,false).applyTo(dareComposite);
+        dareJmsUrlEditor = new UrlFieldEditor(PhotonPreferences.JMS_URL,
+                                          Messages.CONNECTION_PREFERENCES_JMS_URL_LABEL.getText(),
+                                          dareComposite);
+        addField(dareJmsUrlEditor);
+        dareWebServiceHostEditor = new UrlFieldEditor(PhotonPreferences.WEB_SERVICE_HOST,
+                                                      Messages.CONNECTION_PREFERENCES_WEB_SERVICE_HOST_LABEL.getText(),
+                                                      dareComposite);
+        addField(dareWebServiceHostEditor);
+        dareWebServicePortEditor = new IntegerFieldEditor(PhotonPreferences.WEB_SERVICE_PORT,
+                                                          Messages.CONNECTION_PREFERENCES_WEB_SERVICE_PORT_LABEL.getText(),
+                                                          dareComposite);
+        addField(dareWebServicePortEditor);
+        // begin
+        Group nexusGroup = new Group(getFieldEditorParent(),SWT.NONE);
+        GridDataFactory.fillDefaults().span(2,1).grab(true,false).applyTo(nexusGroup);
+        GridLayoutFactory.swtDefaults().applyTo(nexusGroup);
+        nexusGroup.setText(Messages.CONNECTION_PREFERENCES_NEXUS_SERVER_LABEL.getText());
+        Composite nexusComposite = new Composite(nexusGroup,SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true,false).applyTo(nexusComposite);
+        nexusWebServiceHostEditor = new UrlFieldEditor(PhotonPreferences.NEXUS_WEB_SERVICE_HOST,
+                                                       Messages.CONNECTION_PREFERENCES_NEXUS_WEB_SERVICE_HOST_LABEL.getText(),
+                                                       nexusComposite);
+        addField(nexusWebServiceHostEditor);
+        nexusWebServicePortEditor = new IntegerFieldEditor(PhotonPreferences.NEXUS_WEB_SERVICE_PORT,
+                                                           Messages.CONNECTION_PREFERENCES_NEXUS_WEB_SERVICE_PORT_LABEL.getText(),
+                                                           nexusComposite);
+        addField(nexusWebServicePortEditor);
+        // end
+        orderIDPrefixEditor = new StringFieldEditor(PhotonPreferences.ORDER_ID_PREFIX,
+                                                    Messages.ORDER_ID_PREFIX_LABEL.getText(),
+                                                    getFieldEditorParent());
+        addField(orderIDPrefixEditor);
+    }
+    /**
+     * 
+     */
+    public static final String ID = "org.marketcetera.photon.preferences.connections"; //$NON-NLS-1$
+    /**
+     * 
+     */
+    private UrlFieldEditor dareJmsUrlEditor;
+    /**
+     * 
+     */
+    private StringFieldEditor orderIDPrefixEditor;
+    /**
+     * 
+     */
+    private UrlFieldEditor dareWebServiceHostEditor;
+    /**
+     * 
+     */
+    private IntegerFieldEditor dareWebServicePortEditor;
+    /**
+     * 
+     */
+    private UrlFieldEditor nexusWebServiceHostEditor;
+    /**
+     * 
+     */
+    private IntegerFieldEditor nexusWebServicePortEditor;
 }

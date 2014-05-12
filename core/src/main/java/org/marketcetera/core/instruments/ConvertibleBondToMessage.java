@@ -17,7 +17,7 @@ import quickfix.field.Symbol;
  * Prepares FIX messages with the fields necessary for <code>ConvertibleBond</code> instruments.
  *
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 public class ConvertibleBondToMessage
         extends InstrumentToMessage<ConvertibleBond>

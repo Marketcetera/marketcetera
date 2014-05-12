@@ -10,41 +10,32 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Initializes market data request for an instrument.
- * <p>
- * A subclass of this class should be created for every instrument type handled
- * by the system.
  * 
- * @param <I>
- *            The type of instrument handled by this function
+ * <p>A subclass of this class should be created for every instrument type handled by the system.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public abstract class InstrumentRequestAdapter<I extends Instrument> extends
-        InstrumentFunctionHandler<I> {
-
-    /**
-     * Creates an instance that handles the specified instrument subclass.
-     * 
-     * @param instrument
-     *            the instrument subclass handled by this instance.
-     */
-    protected InstrumentRequestAdapter(Class<I> instrument) {
-        super(instrument);
-    }
-
+public abstract class InstrumentRequestAdapter<InstrumentClazz extends Instrument>
+        extends InstrumentFunctionHandler<InstrumentClazz>
+{
     /**
      * Initializes a {@link MarketDataRequestBuilder} for the provided instrument.
      * 
-     * @param instrument
-     *            the instrument
+     * @param inInstrument an <code>I</code> value
      * @return a {@link MarketDataRequestBuilder} with instrument information
      */
-    abstract public MarketDataRequestBuilder initializeRequest(I instrument);
-
-    @SuppressWarnings("unchecked")
-    public static final StaticInstrumentFunctionSelector<InstrumentRequestAdapter> SELECTOR = new StaticInstrumentFunctionSelector<InstrumentRequestAdapter>(
-            InstrumentRequestAdapter.class);
+    abstract public MarketDataRequestBuilder initializeRequest(InstrumentClazz inInstrument);
+    /**
+     * Creates an instance that handles the specified instrument subclass.
+     * 
+     * @param instrument the instrument subclass handled by this instance.
+     */
+    protected InstrumentRequestAdapter(Class<InstrumentClazz> instrument)
+    {
+        super(instrument);
+    }
+    public static final StaticInstrumentFunctionSelector<InstrumentRequestAdapter> SELECTOR = new StaticInstrumentFunctionSelector<InstrumentRequestAdapter>(InstrumentRequestAdapter.class);
 }

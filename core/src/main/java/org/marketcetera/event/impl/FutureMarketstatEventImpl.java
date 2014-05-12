@@ -1,6 +1,10 @@
 package org.marketcetera.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.FutureEvent;
 import org.marketcetera.event.MarketstatEvent;
@@ -19,8 +23,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.1.0
  */
 @ThreadSafe
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name="futureMarketstat")
 @ClassVersion("$Id$")
-class FutureMarketstatEventImpl
+public class FutureMarketstatEventImpl
         extends AbstractMarketstatEventImpl
         implements FutureEvent
 {
@@ -96,8 +102,19 @@ class FutureMarketstatEventImpl
         future.validate();
     }
     /**
+     * Create a new FutureMarketstatEventImpl instance.
+     * 
+     * <p>This constructor is intended to be used by JAXB.
+     */
+    @SuppressWarnings("unused")
+    private FutureMarketstatEventImpl()
+    {
+        future = new FutureBean();
+    }
+    /**
      * the future attributes 
      */
+    @XmlElement
     private final FutureBean future;
     private static final long serialVersionUID = 1L;
 }

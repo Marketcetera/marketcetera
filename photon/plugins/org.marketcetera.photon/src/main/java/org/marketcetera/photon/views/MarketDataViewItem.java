@@ -41,15 +41,17 @@ public class MarketDataViewItem implements ISymbolProvider {
 	/**
 	 * Constructor. Will throw an exception if symbol is null.
 	 * 
-	 * @param instrument
-	 *            equity for item, cannot be null
+	 * @param inMarketData an <code>IMarketData</code> value
+	 * @param inInstrument an <code>Instrument</code> value
 	 */
-	public MarketDataViewItem(IMarketData marketData, Instrument instrument) {
-		Validate.noNullElements(new Object[] { marketData, instrument });
-		mInstrument = instrument;
-		mMarketData = marketData;
-		init();
-	}
+    public MarketDataViewItem(IMarketData inMarketData,
+                              Instrument inInstrument)
+    {
+        Validate.noNullElements(new Object[] { inMarketData, inInstrument });
+        mInstrument = inInstrument;
+        mMarketData = inMarketData;
+        init();
+    }
 
 	@Override
 	public Instrument getInstrument() {

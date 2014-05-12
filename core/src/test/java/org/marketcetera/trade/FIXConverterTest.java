@@ -576,15 +576,23 @@ public class FIXConverterTest
         assertExecReportEquals
             (Factory.getInstance().createExecutionReport
              (msg,brokerID,Originator.Broker,actorID,viewerID),
-             (ExecutionReport)FIXConverter.fromQMessage
-             (msg,Originator.Broker,brokerID,actorID,viewerID));
+             (ExecutionReport)FIXConverter.fromQMessage(msg,
+                                                        Originator.Broker,
+                                                        brokerID,
+                                                        Hierarchy.Flat,
+                                                        actorID,
+                                                        viewerID));
 
         msg=getSystemMessageFactory().newOrderCancelReject();
         assertCancelRejectEquals
             (Factory.getInstance().createOrderCancelReject
              (msg,brokerID,Originator.Broker,actorID,viewerID),
-             (OrderCancelReject)FIXConverter.fromQMessage
-             (msg,Originator.Broker,brokerID,actorID,viewerID));
+             (OrderCancelReject)FIXConverter.fromQMessage(msg,
+                                                          Originator.Broker,
+                                                          brokerID,
+                                                          Hierarchy.Flat,
+                                                          actorID,
+                                                          viewerID));
 
         msg=getSystemMessageFactory().newBusinessMessageReject
             ("QQ",BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE,
@@ -592,8 +600,12 @@ public class FIXConverterTest
         assertFIXResponseEquals
             (Factory.getInstance().createFIXResponse
              (msg,brokerID,Originator.Server,actorID,viewerID),
-             (FIXResponse)FIXConverter.fromQMessage
-             (msg,Originator.Server,brokerID,actorID,viewerID));
+             (FIXResponse)FIXConverter.fromQMessage(msg,
+                                                    Originator.Server,
+                                                    brokerID,
+                                                    Hierarchy.Flat,
+                                                    actorID,
+                                                    viewerID));
     }
 
     @Test

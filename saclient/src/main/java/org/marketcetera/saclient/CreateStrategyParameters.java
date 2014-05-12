@@ -5,8 +5,10 @@ import org.marketcetera.util.misc.ClassVersion;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlMimeType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
+
 import java.io.*;
 
 /* $License$ */
@@ -17,8 +19,9 @@ import java.io.*;
  * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id$")
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name="createStrategyParameters")
+@ClassVersion("$Id$")
 public final class CreateStrategyParameters implements Serializable {
 
     /**
@@ -125,11 +128,26 @@ public final class CreateStrategyParameters implements Serializable {
     public boolean isRouteOrdersToServer() {
         return mRouteOrdersToServer;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("CreateStrategyParameters [mInstanceName=").append(mInstanceName).append(", mStrategyName=")
+                .append(mStrategyName).append(", mLanguage=").append(mLanguage).append(", mParameters=")
+                .append(mParameters).append(", mRouteOrdersToServer=").append(mRouteOrdersToServer)
+                .append(", mStrategySource=").append(mStrategySource).append("]");
+        return builder.toString();
+    }
     /**
      * This constructor has been added for JAXB and is not meant to be
      * used by clients.
      */
-    private CreateStrategyParameters() {
+    @SuppressWarnings("unused")
+    private CreateStrategyParameters()
+    {
         mInstanceName = null;
         mStrategyName = null;
         mLanguage = null;

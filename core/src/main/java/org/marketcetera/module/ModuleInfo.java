@@ -4,6 +4,8 @@ import org.marketcetera.util.misc.ClassVersion;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import java.beans.ConstructorProperties;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -17,8 +19,9 @@ import java.util.Date;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")  //$NON-NLS-1$
+@XmlRootElement(name="moduleInfo")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ClassVersion("$Id$")
 public final class ModuleInfo implements Serializable {
 
     /**
@@ -269,6 +272,7 @@ public final class ModuleInfo implements Serializable {
      * This constructor has been added for JAXB and is not meant to be
      * used.
      */
+    @SuppressWarnings("unused")
     private ModuleInfo() {
         this(null, null, null, null, null, null, null, false, false,
                 false, false, false, null, null, -1, false, -1);

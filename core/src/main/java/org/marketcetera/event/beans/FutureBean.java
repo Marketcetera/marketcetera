@@ -5,6 +5,10 @@ import static org.marketcetera.event.Messages.VALIDATION_NULL_INSTRUMENT;
 import java.io.Serializable;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.marketcetera.event.FutureEvent;
 import org.marketcetera.event.util.EventServices;
@@ -21,6 +25,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.1.0
  */
 @NotThreadSafe
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 public class FutureBean
         implements Serializable
@@ -332,30 +337,36 @@ public class FutureBean
     /**
      * the future type value 
      */
+    @XmlAttribute
     private FutureType futureType;
     /**
      * the underlying asset type value
      */
-    private FutureUnderlyingAssetType underlyingAssetType;
+    private transient FutureUnderlyingAssetType underlyingAssetType;
     /**
      * the delivery type value
      */
+    @XmlAttribute
     private DeliveryType deliveryType;
     /**
      * the standard type value
      */
+    @XmlAttribute
     private StandardType standardType;
     /**
      * the provider symbol of the future, if available
      */
+    @XmlAttribute
     private String providerSymbol;
     /**
      * the instrument of the future
      */
+    @XmlElement
     private Instrument instrument;
     /**
      * the contract size
      */
+    @XmlAttribute
     private int contractSize = 1;
     private final static long serialVersionUID = 1L;
 }

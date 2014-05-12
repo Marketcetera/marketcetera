@@ -5,10 +5,13 @@ import static org.marketcetera.event.Messages.VALIDATION_NULL_INSTRUMENT;
 import java.io.Serializable;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.bind.annotation.*;
 
 import org.marketcetera.event.CurrencyEvent;
 import org.marketcetera.event.util.EventServices;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.DeliveryType;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -18,6 +21,8 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  */
 @NotThreadSafe
+@XmlRootElement(name="currency")
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id: CurrencyBean.java")
 public class CurrencyBean
         implements Serializable
@@ -196,14 +201,17 @@ public class CurrencyBean
     /**
      * the delivery type value
      */
+    @XmlAttribute
     private DeliveryType deliveryType;
     /**
      * the instrument of the currency
      */
+    @XmlElement
     private Instrument instrument;
     /**
      * the contract size
      */
+    @XmlAttribute
     private int contractSize = 1;
     private final static long serialVersionUID = 1L;
 }

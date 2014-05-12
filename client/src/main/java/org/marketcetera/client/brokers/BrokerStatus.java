@@ -1,9 +1,13 @@
 package org.marketcetera.client.brokers;
 
 import java.io.Serializable;
+import java.util.Set;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -34,6 +38,7 @@ public class BrokerStatus
     private final String mName;
     private final BrokerID mId;
     private final boolean mLoggedOn;
+    private final Set<BrokerAlgoSpec> mBrokerAlgos;
 
 
     // CONSTRUCTORS.
@@ -45,18 +50,34 @@ public class BrokerStatus
      * @param name The broker name.
      * @param id The broker ID.
      * @param loggedOn The logon flag.
+     * @param inAlgoSpecs a <code>Set&lt;BrokerAlgoSpec&gt;</code> value
      */
-
-    public BrokerStatus
-        (String name,
-         BrokerID id,
-         boolean loggedOn)
+    public BrokerStatus(String name,
+                        BrokerID id,
+                        boolean loggedOn,
+                        Set<BrokerAlgoSpec> inAlgoSpecs)
     {
         mName=name;
         mId=id;
         mLoggedOn=loggedOn;
+        mBrokerAlgos = inAlgoSpecs;
     }
-
+    /**
+     * Create a new BrokerStatus instance.
+     *
+     * @param inName a <code>String</code> value
+     * @param inId a <code>BrokerID</code> value
+     * @param inLoggedOn a <code>boolean</code> value
+     */
+    public BrokerStatus(String inName,
+                        BrokerID inId,
+                        boolean inLoggedOn)
+    {
+        mName = inName;
+        mId = inId;
+        mLoggedOn = inLoggedOn;
+        mBrokerAlgos = null;
+    }
     /**
      * Creates a new status representation. This empty constructor is
      * intended for use by JAXB.
@@ -67,6 +88,7 @@ public class BrokerStatus
         mName=null;
         mId=null;
         mLoggedOn=false;
+        mBrokerAlgos = null;
     }
 
 
@@ -104,8 +126,15 @@ public class BrokerStatus
     {
         return mLoggedOn;
     }
-
-
+    /**
+     * Get the brokerAlgos value.
+     *
+     * @return a <code>Set&lt;BrokerAlgoSpec&gt;</code> value
+     */
+    public Set<BrokerAlgoSpec> getBrokerAlgos()
+    {
+        return mBrokerAlgos;
+    }
     // Object.
 
     @Override

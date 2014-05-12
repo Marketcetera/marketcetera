@@ -1,28 +1,17 @@
 package org.marketcetera.marketdata;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.lang.SystemUtils;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.DepthOfBookEvent;
-import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.TopOfBookEvent;
+import org.marketcetera.event.*;
 import org.marketcetera.event.impl.DepthOfBookEventBuilder;
 import org.marketcetera.event.impl.TopOfBookEventBuilder;
 import org.marketcetera.event.util.BookPriceComparator;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -144,6 +133,25 @@ public class OrderBook
     public final List<AskEvent> getAskBook()
     {
         return mAskBook.getSortedView(BookPriceComparator.askComparator);
+    }
+    /**
+     * Processes all the events in the given list.
+     *
+     * @param inEvents a <code>List&lt;Event&gt;</code> value
+     * @return a <code>List&lt;QuoteEvent&gt;</code> value containing the events displaced by the change, may be empty
+     * @throws IllegalArgumentException if any quote in the give list is not a <code>QuoteEvent</code> or the event's symbol does not match the book's symbol
+     */
+    public final List<QuoteEvent> processAll(List<Event> inEvents)
+    {
+        List<QuoteEvent> results = Lists.newArrayList();
+        for(Event quote : inEvents) {
+            if(quote instanceof QuoteEvent) {
+                results.add(process((QuoteEvent)quote));
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+        return results;
     }
     /**
      * Processes the given event for the order book.

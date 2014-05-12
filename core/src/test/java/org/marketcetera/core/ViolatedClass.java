@@ -5,6 +5,7 @@ package org.marketcetera.core;
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
+@SuppressWarnings("unused")
 class ViolatedClass{
 
     public static final String HIDDEN_VALUE = "hiddenValue"; //$NON-NLS-1$

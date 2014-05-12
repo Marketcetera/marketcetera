@@ -4,7 +4,12 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
+import org.marketcetera.event.Messages;
 import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.util.EventServices;
@@ -20,6 +25,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @NotThreadSafe
+@XmlRootElement(name="quote")
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 public final class QuoteBean
         extends MarketDataBean
@@ -127,7 +134,7 @@ public final class QuoteBean
     {
         super.validate();
         if(action == null) {
-            EventServices.error(VALIDATION_NULL_QUOTE_ACTION);
+            EventServices.error(Messages.VALIDATION_NULL_QUOTE_ACTION);
         }
     }
     /* (non-Javadoc)
@@ -210,6 +217,7 @@ public final class QuoteBean
     /**
      * the action of the quote
      */
+    @XmlAttribute(name="action")
     private QuoteAction action;
     private static final long serialVersionUID = 1L;
 }

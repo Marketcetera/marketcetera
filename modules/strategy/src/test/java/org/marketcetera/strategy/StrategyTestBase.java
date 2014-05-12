@@ -37,6 +37,7 @@ import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.*;
 import org.marketcetera.marketdata.DateUtils;
@@ -1101,16 +1102,6 @@ public class StrategyTestBase
             return result;
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#addReport(org.marketcetera.trade.ExecutionReport)
-         */
-        @Override
-        public void addReport(FIXMessageWrapper inReport,
-                              BrokerID inBrokerID)
-                throws ConnectionException
-        {
-            throw new UnsupportedOperationException();
-        }
-        /* (non-Javadoc)
          * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReportImpl)
          */
         @Override
@@ -1147,6 +1138,25 @@ public class StrategyTestBase
                 throws ConnectionException
         {
             return Collections.emptyList();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#findRootOrderIdFor(org.marketcetera.trade.OrderID)
+         */
+        @Override
+        public OrderID findRootOrderIdFor(OrderID inOrderID)
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#addReport(org.marketcetera.trade.FIXMessageWrapper, org.marketcetera.trade.BrokerID, org.marketcetera.trade.Hierarchy)
+         */
+        @Override
+        public void addReport(FIXMessageWrapper inReport,
+                              BrokerID inBrokerID,
+                              Hierarchy inHierarchy)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException(); // TODO
         }
     }
     /**

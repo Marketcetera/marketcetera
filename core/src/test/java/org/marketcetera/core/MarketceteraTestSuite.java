@@ -10,14 +10,14 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class MarketceteraTestSuite extends TestSuite {
     public MarketceteraTestSuite() {
         super();
         init();
     }
 
-    public MarketceteraTestSuite(Class aClass) {
+    public MarketceteraTestSuite(Class<?> aClass) {
         super(aClass);
         init();
     }

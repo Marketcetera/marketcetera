@@ -6,12 +6,14 @@ import java.util.*;
 
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
+import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
+
 /**
  * A client end point that communicates with the server.
  * <p>
@@ -34,11 +36,14 @@ import org.marketcetera.util.misc.ClassVersion;
  *      <li>{@link #getReportsSince(Date) fetch past reports} </li>
  *      <li>{@link #getEquityPositionAsOf(Date, Equity)}  fetch equity position} </li>
  *      <li>{@link #getAllEquityPositionsAsOf(Date)}  fetch all open equity positions} </li>
+ *      <li>{@link #getOpenOrders() fetch all visible open orders}</li>
  *      <li>{@link #getOptionPositionAsOf(java.util.Date, Option)}  fetch option position} </li>
  *      <li>{@link #getOptionPositionsAsOf(java.util.Date, String[])}  fetch option positions} </li>
  *      <li>{@link #getAllOptionPositionsAsOf(java.util.Date)}  fetch all open option positions} </li>
- *      <li>{@link #getCurrencyPositionAsOf(Date, Currency)}  fetch currency position} </li>
+ *      <li>{@link #getCurrencyPositionAsOf(Date, Currency)}  fetch currency positions} </li>
  *      <li>{@link #getAllCurrencyPositionsAsOf(java.util.Date)}  fetch all open currency positions} </li>
+ *      <li>{@link #getFuturePositionAsOf(Date, Future)}  fetch future positions} </li>
+ *      <li>{@link #getAllFuturePositionsAsOf(java.util.Date)}  fetch all open future positions} </li>
  * </ul>
  *
  * @author anshul@marketcetera.com
@@ -544,10 +549,12 @@ public interface Client {
      *
      * @param inReport a <code>FIXMessageWrapper</code> value
      * @param inBrokerID a <code>BrokerID</code> value
+     * @param inHierarchy a <code>Hierarchy</code> value
      * @throws ConnectionException if an error occurs connecting to the server
      */
     void addReport(FIXMessageWrapper inReport,
-                   BrokerID inBrokerID)
+                   BrokerID inBrokerID,
+                   Hierarchy inHierarchy)
             throws ConnectionException;
     /**
      * Removes the given report from the persistent report store.
@@ -579,4 +586,11 @@ public interface Client {
      */
     List<ReportBaseImpl> getOpenOrders()
             throws ConnectionException;
+    /**
+     * Find the root order ID for the order chain of the given order ID.
+     *
+     * @param inOrderID an <code>OrderID</code> value
+     * @return an <code>OrderID</code> value
+     */
+    public OrderID findRootOrderIdFor(OrderID inOrderID);
 }

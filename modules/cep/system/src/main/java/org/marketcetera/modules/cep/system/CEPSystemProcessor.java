@@ -115,7 +115,7 @@ public class CEPSystemProcessor extends Module
 
         // find the type they are requesting (ie select * from <type>)
         String type = query.substring(QUERY_PREFIX.length());
-        Class theClass = getClassForRequest(type);
+        Class<?> theClass = getClassForRequest(type);
         if (theClass == null) {
             throw new RequestDataException(new I18NBoundMessage1P(Messages.UNSUPPORTED_TYPE, type));
         }
@@ -133,9 +133,9 @@ public class CEPSystemProcessor extends Module
     /** Checks to see if we are looking at an alias or a fully-qualified class name.
      * Any known alias or valid FQCN is allowed
      */
-    protected Class getClassForRequest(String className) {
+    protected Class<?> getClassForRequest(String className) {
         // first check to see if it's a known pre-canned type
-        Class theClass = mTypeLookupMap.get(className);
+        Class<?> theClass = mTypeLookupMap.get(className);
         if(theClass != null) return theClass;
 
         try {

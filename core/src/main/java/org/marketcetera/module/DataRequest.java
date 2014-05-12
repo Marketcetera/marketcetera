@@ -107,6 +107,14 @@ public final class DataRequest extends DataRequestBase {
                         ? null
                         : getData().toString());
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return toStringRequest().getData();
+    }
 
     private final Object mData;
     private static final long serialVersionUID = 7808821329666070735L;

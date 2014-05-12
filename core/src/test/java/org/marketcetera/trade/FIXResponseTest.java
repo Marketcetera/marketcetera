@@ -72,6 +72,6 @@ public class FIXResponseTest
         assertFIXResponseValues
             (response,brokerID,Originator.Broker,msg,actorID,viewerID);
         response.toString();
-        assertEquals(new HashMap(),response.getFields());
+        assertEquals(new HashMap<>(),response.getFields());
     }
 }

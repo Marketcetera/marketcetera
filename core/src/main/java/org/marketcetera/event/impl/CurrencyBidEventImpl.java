@@ -1,6 +1,10 @@
 package org.marketcetera.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.CurrencyEvent;
@@ -17,8 +21,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id: CurrencyBidEventImpl.java
  */
 @ThreadSafe
+@XmlRootElement(name="currencyBid")
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id: CurrencyBidEventImpl.java")
-class CurrencyBidEventImpl
+public class CurrencyBidEventImpl
         extends AbstractQuoteEventImpl
         implements BidEvent, CurrencyEvent
 {
@@ -75,12 +81,23 @@ class CurrencyBidEventImpl
         return description;
     }
     /**
+     * Create a new CurrencyBidEventImpl instance.
+     *
+     * <p>This constructor is intended to be used by JAXB only.
+     */
+    @SuppressWarnings("unused")
+    private CurrencyBidEventImpl()
+    {
+        currency = new CurrencyBean();
+    }
+    /**
      * provides a human-readable description of this event type (does not need to be localized)
      */
     private static final String description = "Currency Bid"; //$NON-NLS-1$
     /**
      * the currency attributes 
      */
+    @XmlElement
     private final CurrencyBean currency;
     private static final long serialVersionUID = 1L;
 }

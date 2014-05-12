@@ -1,9 +1,7 @@
 package org.marketcetera.metrics;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-
 import javax.management.*;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**

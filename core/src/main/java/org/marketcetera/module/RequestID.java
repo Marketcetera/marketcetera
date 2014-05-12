@@ -1,5 +1,12 @@
 package org.marketcetera.module;
 
+import java.io.Serializable;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 
@@ -12,15 +19,19 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")  //$NON-NLS-1$
-public final class RequestID {
-
+@XmlRootElement(name="requestId")
+@XmlAccessorType(XmlAccessType.NONE)
+@ClassVersion("$Id$")
+public final class RequestID
+        implements Serializable
+{
     /**
      * Creates an instance.
      *
      * @param inValue the string value of this ID.
      */
-    RequestID(String inValue) {
+    public RequestID(String inValue)
+    {
         if(inValue == null) {
             throw new NullPointerException();
         }
@@ -49,6 +60,18 @@ public final class RequestID {
     public String toString() {
         return mValue;
     }
-
+    /**
+     * Create a new RequestID instance.
+     */
+    @SuppressWarnings("unused")
+    private RequestID()
+    {
+        mValue = null;
+    }
+    /**
+     * value of the request Id
+     */
+    @XmlAttribute
     private final String mValue;
+    private static final long serialVersionUID = 3515248813584812567L;
 }

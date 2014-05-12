@@ -624,6 +624,17 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         return this;
     }
     /**
+     * Sets the provider value to use with the new event.
+     *
+     * @param inProvider an <code>Object</code> value or <code>null</code>
+     * @return a <code>TradeEventBuilder</code> value
+     */
+    public QuoteEventBuilder<E> withProvider(String inProvider)
+    {
+        quote.setProvider(inProvider);
+        return this;
+    }
+    /**
      * Sets the instrument value.
      *
      * @param inInstrument an <code>Instrument</code> value or <code>null</code>
@@ -638,6 +649,8 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             future.setInstrument((Future)inInstrument);
         } else if(inInstrument instanceof Currency) {
             currency.setInstrument((Currency)inInstrument);
+        } else if(inInstrument instanceof ConvertibleBond) {
+            convertibleBond.setInstrument((ConvertibleBond)inInstrument);
         }
         if(inInstrument == null) {
             option.setInstrument(null);

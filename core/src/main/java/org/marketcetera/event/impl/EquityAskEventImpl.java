@@ -1,6 +1,9 @@
 package org.marketcetera.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.EquityEvent;
@@ -18,8 +21,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ThreadSafe
+@XmlRootElement(name="equityAsk")
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
-class EquityAskEventImpl
+public class EquityAskEventImpl
         extends AbstractQuoteEventImpl
         implements AskEvent, EquityEvent
 {
@@ -56,6 +61,13 @@ class EquityAskEventImpl
     {
         return description;
     }
+    /**
+     * Create a new EquityAskEventImpl instance.
+     * 
+     * <p>Intended to be used by JAXB only.
+     */
+    @SuppressWarnings("unused")
+    private EquityAskEventImpl() {}
     /**
      * provides a human-readable description of this event type (does not need to be localized)
      */

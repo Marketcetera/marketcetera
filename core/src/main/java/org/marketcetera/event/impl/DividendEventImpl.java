@@ -4,6 +4,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.*;
 import org.marketcetera.event.beans.DividendBean;
@@ -23,8 +27,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ThreadSafe
+@XmlRootElement(name="dividendEvent")
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
-final class DividendEventImpl
+public class DividendEventImpl
         implements DividendEvent, HasEventBean
 {
     /* (non-Javadoc)
@@ -82,6 +88,22 @@ final class DividendEventImpl
     public void setSource(Object inSource)
     {
         dividend.setSource(inSource);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#getProvider()
+     */
+    @Override
+    public String getProvider()
+    {
+        return dividend.getProvider();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#setProvider(java.lang.String)
+     */
+    @Override
+    public void setProvider(String inProvider)
+    {
+        dividend.setProvider(inProvider);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()
@@ -234,8 +256,19 @@ final class DividendEventImpl
         dividend.validate();
     }
     /**
+     * Create a new DividendEventImpl instance.
+     *
+     * <p>This constructor is intended to be used by JAXB only.
+     */
+    @SuppressWarnings("unused")
+    private DividendEventImpl()
+    {
+        dividend = new DividendBean();
+    }
+    /**
      * dividend attributes
      */
+    @XmlElement
     private final DividendBean dividend;
     private static final long serialVersionUID = 1L;
 }

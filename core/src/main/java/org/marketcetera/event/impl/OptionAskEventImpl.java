@@ -3,6 +3,10 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.OptionEvent;
@@ -23,8 +27,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ThreadSafe
+@XmlRootElement(name="optionAsk")
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
-class OptionAskEventImpl
+public class OptionAskEventImpl
         extends AbstractQuoteEventImpl
         implements AskEvent, OptionEvent
 {
@@ -108,12 +114,23 @@ class OptionAskEventImpl
         return description;
     }
     /**
+     * Create a new OptionAskEventImpl instance.
+     * 
+     * <p>This constructor is intended to be used by JAXB.
+     */
+    @SuppressWarnings("unused")
+    private OptionAskEventImpl()
+    {
+        option = new OptionBean();
+    }
+    /**
      * provides a human-readable description of this event type (does not need to be localized)
      */
     private static final String description = "Option Ask"; //$NON-NLS-1$
     /**
      * the option attributes 
      */
+    @XmlElement
     private final OptionBean option;
     private static final long serialVersionUID = 1L;
 }

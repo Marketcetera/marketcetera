@@ -46,8 +46,8 @@ public class MarketDataRequestSupport implements IMarketDataRequestSupport {
     }
 
     @SuppressWarnings("unchecked")
-    private <I extends Instrument> InstrumentRequestAdapter<I> getAdapter(
-            I instrument) {
+    private <I extends Instrument> InstrumentRequestAdapter<I> getAdapter(I instrument)
+    {
         return InstrumentRequestAdapter.SELECTOR.forInstrument(instrument);
     }
 

@@ -6,6 +6,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -43,7 +44,7 @@ public class ExecutionReportViewer
 		TableColumnLayout columnLayout = new TableColumnLayout();
 		parent.setLayout(columnLayout);
 
-		fExecutionReportViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+		fExecutionReportViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE);
 		
 		// Context menu
 		registerContextMenu(fExecutionReportViewer);
@@ -146,4 +147,8 @@ public class ExecutionReportViewer
 		fExecutionReportViewer.refresh();
 	}
 
+	public void addSelectionChangedListener(
+			ISelectionChangedListener iSelectionChangedListener) {
+		fExecutionReportViewer.addSelectionChangedListener(iSelectionChangedListener);
+	}
 }

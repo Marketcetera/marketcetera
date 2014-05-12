@@ -26,7 +26,7 @@ public final class ReportFillMatcher implements Matcher<ReportHolder> {
         if (report instanceof ExecutionReport) {
             ExecutionReport exec = (ExecutionReport) report;
             // disregard ERs that come from the ORS
-            if(exec.getOriginator() == Originator.Server) {
+            if(!exec.getOriginator().forOrders() || !exec.getHierarchy().forOrders()) {
                 return false;
             }
             // disregard ERs that don't have a lastQuantity value

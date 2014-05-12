@@ -50,13 +50,13 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
     public FIXVersionTestSuite() {
     }
 
-    public FIXVersionTestSuite(Class aClass, FIXVersion[] inVersions) {
+    public FIXVersionTestSuite(Class<?> aClass, FIXVersion[] inVersions) {
         super();
         addTestForEachVersion(aClass, inVersions, new HashSet<String>(), new FIXVersion[0]);
         suiteName = aClass.getName();
     }
 
-    public FIXVersionTestSuite(Class aClass, FIXVersion[] inVersions,
+    public FIXVersionTestSuite(Class<?> aClass, FIXVersion[] inVersions,
                                Set<String> exceptionMethods, FIXVersion[] exceptionVersions) {
         super();
         addTestForEachVersion(aClass, inVersions, exceptionMethods, exceptionVersions);
@@ -64,16 +64,16 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
     }
     
     /** Class to introspect, and the set of versions to apply to all tests in that class
-     * Can also have a set of excpetions and a subset of versions to apply to the exceptions
+     * Can also have a set of exceptions and a subset of versions to apply to the exceptions
      * The exceptions should be used for when you have testXXX methods that are only applicable
      * to a subset of FIX versions, such as MARKET_DATA_REQUESTs
      */
-    private void addTestForEachVersion(Class aClass, FIXVersion[] inVersions, Set<String> exceptionMethods, FIXVersion[] exceptionVersions) {
+    private void addTestForEachVersion(Class<?> aClass, FIXVersion[] inVersions, Set<String> exceptionMethods, FIXVersion[] exceptionVersions) {
         String[] testNames = getTestNames(aClass);
 
         for (String name : testNames) {
             try {
-                Constructor constructor = aClass.getConstructor(String.class, FIXVersion.class);
+                Constructor<?> constructor = aClass.getConstructor(String.class, FIXVersion.class);
                 if (exceptionMethods.contains(name)) {
                     addTestWithVersion(constructor, name, exceptionVersions);
                 } else {
@@ -95,13 +95,13 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
         FIXDataDictionaryManager.initialize(map);
     }
 
-    private void addTestWithVersion(Constructor cons, String testName, FIXVersion[] versions) throws Exception {
+    private void addTestWithVersion(Constructor<?> cons, String testName, FIXVersion[] versions) throws Exception {
         for (FIXVersion version : versions) {
             addTest((Test) cons.newInstance(testName, version));
         }
     }
 
-    private String[] getTestNames(Class inClass)
+    private String[] getTestNames(Class<?> inClass)
     {
         Vector<String> testNames = new Vector<String>();
         Method[] methods= inClass.getDeclaredMethods();

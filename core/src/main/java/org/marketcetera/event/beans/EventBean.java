@@ -5,7 +5,12 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.Messages;
 import org.marketcetera.event.util.EventServices;
@@ -35,9 +40,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @NotThreadSafe
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 public class EventBean
-        implements Serializable, Messages
+        implements Serializable
 {
     /**
      * Creates a shallow copy of the given <code>EventBean</code>.
@@ -123,6 +129,24 @@ public class EventBean
         source = inSource;
     }
     /**
+     * Get the provider value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getProvider()
+    {
+        return provider;
+    }
+    /**
+     * Sets the provider value.
+     *
+     * @param inProvider a <code>String</code> value
+     */
+    public void setProvider(String inProvider)
+    {
+        provider = inProvider;
+    }
+    /**
      * Performs validation of the attributes.
      *
      * <p>Subclasses should override this method to validate
@@ -133,11 +157,11 @@ public class EventBean
     public void validate()
     {
         if(messageId < 0) {
-            EventServices.error(new I18NBoundMessage1P(VALIDATION_INVALID_MESSAGEID,
-                                                                 messageId));
+            EventServices.error(new I18NBoundMessage1P(Messages.VALIDATION_INVALID_MESSAGEID,
+                                                       messageId));
         }
         if(timestamp == null) {
-            EventServices.error(VALIDATION_NULL_TIMESTAMP);
+            EventServices.error(Messages.VALIDATION_NULL_TIMESTAMP);
         }
     }
     /**
@@ -161,12 +185,7 @@ public class EventBean
     @Override
     public int hashCode()
     {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (int) (messageId ^ (messageId >>> 32));
-        result = prime * result + ((source == null) ? 0 : source.hashCode());
-        result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
-        return result;
+        return new HashCodeBuilder().append(messageId).append(source).append(provider).append(timestamp).toHashCode();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -184,24 +203,7 @@ public class EventBean
             return false;
         }
         EventBean other = (EventBean) obj;
-        if (messageId != other.messageId) {
-            return false;
-        }
-        if (source == null) {
-            if (other.source != null) {
-                return false;
-            }
-        } else if (!source.equals(other.source)) {
-            return false;
-        }
-        if (timestamp == null) {
-            if (other.timestamp != null) {
-                return false;
-            }
-        } else if (!timestamp.equals(other.timestamp)) {
-            return false;
-        }
-        return true;
+        return new EqualsBuilder().append(messageId,other.messageId).append(source,other.source).append(provider,other.provider).append(timestamp,other.timestamp).isEquals();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -209,9 +211,10 @@ public class EventBean
     @Override
     public String toString()
     {
-        return String.format("Event: [%s with source %s at %s]", //$NON-NLS-1$
+        return String.format("Event: [%s with source %s from %s at %s]", //$NON-NLS-1$
                              messageId,
                              source,
+                             provider,
                              timestamp);
     }
     /**
@@ -226,22 +229,30 @@ public class EventBean
         inRecipient.setMessageId(inDonor.getMessageId());
         inRecipient.setSource(inDonor.getSource());
         inRecipient.setTimestamp(inDonor.getTimestamp());
+        inRecipient.setProvider(inDonor.getProvider());
     }
     /**
      * the event messageId
      */
+    @XmlAttribute
     private long messageId = Long.MIN_VALUE;
     /**
      * the event timestamp
      */
+    @XmlAttribute
     private Date timestamp = null;
     /**
      * the event source
      */
-    private transient volatile Object source;
+    private transient Object source;
+    /**
+     * event provider value
+     */
+    @XmlAttribute
+    private String provider;
     /**
      * counter used to assign default values
      */
     private static final AtomicLong counter = new AtomicLong(0);
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1463953196194132003L;
 }

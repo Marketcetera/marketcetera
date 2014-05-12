@@ -1,4 +1,4 @@
-<%@ jet package="org.eclipse.emf.codegen.ecore.templates.model" imports="org.eclipse.emf.codegen.ecore.genmodel.*" class="ResourceFactoryClass" version="$Id: ResourceFactoryClass.javajet,v 1.12 2009/02/26 19:48:36 emerks Exp $" %>
+<%@ jet package="org.eclipse.emf.codegen.ecore.templates.model" imports="org.eclipse.emf.codegen.ecore.genmodel.*" class="ResourceFactoryClass" version="$Id$" %>
 <%
 /**
  * <copyright>

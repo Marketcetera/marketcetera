@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.QuoteAction;
@@ -143,6 +144,22 @@ public abstract class AbstractQuoteEventImpl
         quote.setSource(inSource);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#getProvider()
+     */
+    @Override
+    public String getProvider()
+    {
+        return quote.getProvider();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#setProvider(java.lang.String)
+     */
+    @Override
+    public void setProvider(String inProvider)
+    {
+        quote.setProvider(inProvider);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getMetaType()
      */
     @Override
@@ -206,14 +223,24 @@ public abstract class AbstractQuoteEventImpl
      * @throws IllegalArgumentException if <code>Action</code> is <code>null</code>
      */
     protected AbstractQuoteEventImpl(QuoteBean inQuote)
-     {
+    {
         quote = QuoteBean.copy(inQuote);
         quote.setDefaults();
         quote.validate();
-     }
+    }
+    /**
+     * Create a new AbstractQuoteEventImpl instance.
+     * 
+     * <p>Intended to be used by JAXB only.
+     */
+    protected AbstractQuoteEventImpl()
+    {
+        quote = new QuoteBean();
+    }
     /**
      * quote attributes
      */
+    @XmlElement
     private final QuoteBean quote;
     private static final long serialVersionUID = 1L;
 }

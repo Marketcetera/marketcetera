@@ -31,7 +31,7 @@ import quickfix.field.UnderlyingSymbol;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public abstract class AbstractMessageTranslator<T>
 {
     /**

@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 import org.marketcetera.util.misc.ClassVersion;
 
-
 /* $License$ */
 
 /**

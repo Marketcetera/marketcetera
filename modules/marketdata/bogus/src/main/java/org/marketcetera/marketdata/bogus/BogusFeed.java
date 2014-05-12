@@ -1,9 +1,6 @@
 package org.marketcetera.marketdata.bogus;
 
-import static org.marketcetera.marketdata.AssetClass.EQUITY;
-import static org.marketcetera.marketdata.AssetClass.FUTURE;
-import static org.marketcetera.marketdata.AssetClass.OPTION;
-import static org.marketcetera.marketdata.AssetClass.CURRENCY;
+import static org.marketcetera.marketdata.AssetClass.*;
 import static org.marketcetera.marketdata.Capability.*;
 import static org.marketcetera.marketdata.bogus.Messages.UNSUPPORTED_OPTION_SPECIFICATION;
 
@@ -15,11 +12,8 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.*;
 import org.marketcetera.options.OptionUtils;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Future;
+import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -236,7 +230,7 @@ public class BogusFeed
     /**
      * supported asset classes
      */
-    private static final Set<AssetClass> assetClasses = EnumSet.of(EQUITY,OPTION,FUTURE,CURRENCY);
+    private static final Set<AssetClass> assetClasses = EnumSet.of(EQUITY,OPTION,FUTURE,CURRENCY,CONVERTIBLE_BOND);
     /**
      * indicates if the feed has been logged in to
      */
@@ -380,6 +374,10 @@ public class BogusFeed
                                                         new I18NBoundMessage1P(UNSUPPORTED_OPTION_SPECIFICATION,
                                                                                symbol));
                             }
+                        }
+                    } else if(marketDataRequest.getAssetClass() == AssetClass.CONVERTIBLE_BOND) {
+                        for(String symbol : symbols) {
+                            exchangeRequests.add(ExchangeRequestBuilder.newRequest().withInstrument(new ConvertibleBond(symbol)).create());
                         }
                     } else {
                         // this is a new asset class and there is no support for it here

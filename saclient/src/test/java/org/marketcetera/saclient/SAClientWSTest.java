@@ -1,37 +1,30 @@
 package org.marketcetera.saclient;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.module.ModuleInfo;
-import org.marketcetera.module.ModuleState;
-import org.marketcetera.module.ModuleTestBase;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.*;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.file.CopyCharsUtils;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
-
-import static org.junit.Assert.*;
 
 /* $License$ */
 /**
@@ -381,9 +374,15 @@ public class SAClientWSTest extends SAClientTestBase {
      * @see org.marketcetera.saclient.SAClientTestBase#getContextClasses()
      */
     @Override
-    protected Class<?>[] getContextClasses()
+    protected ContextClassProvider getContextClassProvider()
     {
-        return new Class<?>[] { TestData.class };
+        return new ContextClassProvider() {
+            @Override
+            public Class<?>[] getContextClasses()
+            {
+                return new Class<?>[] { TestData.class };
+            }
+        };
     }
     /**
      * Tests the API using the supplied tester instance.
@@ -485,8 +484,8 @@ public class SAClientWSTest extends SAClientTestBase {
                 assertEquals(e.isWriteLocked(), a.isWriteLocked());
             } else if (inExpected instanceof Map) {
                 //Convert both maps to the same type
-                Map e = new HashMap<Object,Object>((Map<?,?>) inExpected);
-                Map a = new HashMap<Object,Object>((Map<?,?>) inActual);
+                Map<?,?> e = new HashMap<Object,Object>((Map<?,?>) inExpected);
+                Map<?,?> a = new HashMap<Object,Object>((Map<?,?>) inActual);
                 assertEquals(e, a);
             } else if (inExpected instanceof CreateStrategyParameters) {
                 CreateStrategyParameters e = (CreateStrategyParameters) inExpected;

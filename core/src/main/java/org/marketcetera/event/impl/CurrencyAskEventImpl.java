@@ -1,6 +1,10 @@
 package org.marketcetera.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.CurrencyEvent;
@@ -16,8 +20,10 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  */
 @ThreadSafe
-@ClassVersion("$Id: CurrencyAskEventImpl.java 16154 2012-07-14 16:34:05Z colin $")
-class CurrencyAskEventImpl
+@XmlRootElement(name="currencyAsk")
+@XmlAccessorType(XmlAccessType.NONE)
+@ClassVersion("$Id$")
+public class CurrencyAskEventImpl
         extends AbstractQuoteEventImpl
         implements AskEvent, CurrencyEvent
 {
@@ -65,6 +71,16 @@ class CurrencyAskEventImpl
         currency = CurrencyBean.copy(inCurrency);
         currency.validate();
     }
+    /**
+     * Create a new CurrencyAskEventImpl instance.
+     *
+     * <p>This constructor is intended to be used by JAXB only.
+     */
+    @SuppressWarnings("unused")
+    private CurrencyAskEventImpl()
+    {
+        currency = new CurrencyBean();
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.event.impl.AbstractQuoteEventImpl#getDescription()
      */
@@ -80,6 +96,7 @@ class CurrencyAskEventImpl
     /**
      * the currency attributes 
      */
+    @XmlElement
     private final CurrencyBean currency;
     private static final long serialVersionUID = 1L;
 }

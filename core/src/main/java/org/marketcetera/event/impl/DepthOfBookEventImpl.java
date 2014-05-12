@@ -8,7 +8,10 @@ import java.util.List;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang.SystemUtils;
-import org.marketcetera.event.*;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DepthOfBookEvent;
+import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.event.beans.HasEventBean;
 import org.marketcetera.event.util.EventServices;
@@ -30,7 +33,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id$")
-final class DepthOfBookEventImpl
+public class DepthOfBookEventImpl
         implements DepthOfBookEvent, HasEventBean
 {
     /* (non-Javadoc)
@@ -72,6 +75,22 @@ final class DepthOfBookEventImpl
     public void setSource(Object inSource)
     {
         event.setSource(inSource);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#getProvider()
+     */
+    @Override
+    public String getProvider()
+    {
+        return event.getProvider();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#setProvider(java.lang.String)
+     */
+    @Override
+    public void setProvider(String inProvider)
+    {
+        event.setProvider(inProvider);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()

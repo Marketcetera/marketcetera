@@ -223,7 +223,9 @@ public interface Messages
 			LOGGER, "connection_preferences.web_service_host.label"); //$NON-NLS-1$
 	public static I18NMessage0P CONNECTION_PREFERENCES_WEB_SERVICE_PORT_LABEL = new I18NMessage0P(
 			LOGGER, "connection_preferences.web_service_port.label"); //$NON-NLS-1$
-	
+    public static I18NMessage0P CONNECTION_PREFERENCES_NEXUS_SERVER_LABEL = new I18NMessage0P(LOGGER, "connection_preferences.nexus_server.label"); //$NON-NLS-1$
+    public static I18NMessage0P CONNECTION_PREFERENCES_NEXUS_WEB_SERVICE_HOST_LABEL = new I18NMessage0P(LOGGER,"connection_preferences.nexus_web_service_host.label"); //$NON-NLS-1$
+    public static I18NMessage0P CONNECTION_PREFERENCES_NEXUS_WEB_SERVICE_PORT_LABEL = new I18NMessage0P(LOGGER,"connection_preferences.nexus_web_service_port.label"); //$NON-NLS-1$
     public static I18NMessage0P MARKET_DATA_FEED_LABEL = new I18NMessage0P(LOGGER,
                                                                            "market_data_feed_label"); //$NON-NLS-1$
     public static I18NMessage0P ORDER_ID_PREFIX_LABEL = new I18NMessage0P(LOGGER,
@@ -425,6 +427,10 @@ public interface Messages
 			"market_depth.open_book.mnemonic"); //$NON-NLS-1$
     public static I18NMessage0P MARKET_DEPTH_BBO10_LABEL = new I18NMessage0P(LOGGER,"market_depth.bbo10.label"); //$NON-NLS-1$
     public static I18NMessage0P MARKET_DEPTH_BBO10_MNEMONIC = new I18NMessage0P(LOGGER,"market_depth.bbo10.mnemonic"); //$NON-NLS-1$
+    public static I18NMessage0P MARKET_DEPTH_AGGREGATED_DEPTH_LABEL = new I18NMessage0P(LOGGER,"market_depth.aggregated.label"); //$NON-NLS-1$
+    public static I18NMessage0P MARKET_DEPTH_AGGREGATED_DEPTH_MNEMONIC = new I18NMessage0P(LOGGER,"market_depth.aggregated.mnemonic"); //$NON-NLS-1$
+    public static I18NMessage0P MARKET_DEPTH_UNAGGREGATED_DEPTH_LABEL = new I18NMessage0P(LOGGER,"market_depth.unaggregated.label"); //$NON-NLS-1$
+    public static I18NMessage0P MARKET_DEPTH_UNAGGREGATED_DEPTH_MNEMONIC = new I18NMessage0P(LOGGER,"market_depth.unaggregated.mnemonic"); //$NON-NLS-1$
 	
     public static I18NMessage0P CLIENT_UNDERLYING_SYMBOL_SUPPORT_MAPPING_ERROR = new I18NMessage0P(
             LOGGER, "client_underlying_symbol_support_mapping_error"); //$NON-NLS-1$

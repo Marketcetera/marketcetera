@@ -1,28 +1,28 @@
 package org.marketcetera.orderloader;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.unicode.SignatureCharset;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.trade.Order;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.marketcetera.orderloader.Messages.ERROR_NO_ORDERS;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Pattern;
+import org.apache.commons.lang.SystemUtils;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Factory;
-import org.marketcetera.module.ExpectedFailure;
-import static org.marketcetera.orderloader.Messages.ERROR_NO_ORDERS;
-import org.marketcetera.core.LoggerConfiguration;
-import org.junit.Test;
-import org.junit.BeforeClass;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertArrayEquals;
-import org.apache.commons.lang.SystemUtils;
-
-import java.util.List;
-import java.util.LinkedList;
-import java.util.regex.Pattern;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.IOException;
+import org.marketcetera.trade.Order;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.unicode.SignatureCharset;
 
 /* $License$ */
 /**

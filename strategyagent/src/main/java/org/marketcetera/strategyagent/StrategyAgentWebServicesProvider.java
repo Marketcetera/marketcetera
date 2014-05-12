@@ -4,9 +4,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.marketcetera.saclient.SAService;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateful.Authenticator;
-import org.marketcetera.util.ws.stateful.Server;
-import org.marketcetera.util.ws.stateful.SessionManager;
+import org.marketcetera.util.ws.ContextClassProvider;
+import org.marketcetera.util.ws.stateful.*;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.springframework.context.Lifecycle;
 
@@ -17,11 +16,11 @@ import org.springframework.context.Lifecycle;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public class StrategyAgentWebServicesProvider
-        implements Lifecycle
+        implements Lifecycle, ServerProvider<ClientSession>
 {
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#isRunning()
@@ -41,7 +40,7 @@ public class StrategyAgentWebServicesProvider
                                            port,
                                            authenticator,
                                            sessionManager,
-                                           contextClasses);
+                                           contextClassProvider);
         remoteService = server.publish(serviceProvider,
                                        SAService.class);
         Messages.LOG_REMOTE_WS_CONFIGURED.info(this,
@@ -156,6 +155,7 @@ public class StrategyAgentWebServicesProvider
      *
      * @return a <code>Server<ClientSession></code> value
      */
+    @Override
     public Server<ClientSession> getServer()
     {
         return server;
@@ -181,35 +181,35 @@ public class StrategyAgentWebServicesProvider
     /**
      * Get the contextClasses value.
      *
-     * @return a <code>Class&lt;?&gt;[]</code> value
+     * @return a <code>ContextClassProvider</code> value
      */
-    public Class<?>[] getContextClasses()
+    public ContextClassProvider getContextClasses()
     {
-        return contextClasses;
+        return contextClassProvider;
     }
     /**
      * Sets the contextClasses value.
      *
-     * @param inContextClasses a <code>Class&lt;?&gt;[]</code> value
+     * @param inContextClassProvider a <code>ContextClassProvider</code> value
      */
-    public void setContextClasses(Class<?>[] inContextClasses)
+    public void setContextClasses(ContextClassProvider inContextClassProvider)
     {
-        contextClasses = inContextClasses;
+        contextClassProvider = inContextClassProvider;
     }
     /**
-     * 
+     * manages client sessions
      */
     private SessionManager<ClientSession> sessionManager;
     /**
-     * 
+     * hostname at which to connect
      */
     private String hostname;
     /**
-     * 
+     * port on which to connect
      */
     private int port;
     /**
-     * 
+     * authenticator used to authenticate users
      */
     private Authenticator authenticator;
     /**
@@ -217,19 +217,19 @@ public class StrategyAgentWebServicesProvider
      */
     private ServiceInterface remoteService;
     /**
-     * 
+     * server object representing the server on which to provider services
      */
     private Server<ClientSession> server;
     /**
-     * 
+     * service provider
      */
     private SAService serviceProvider;
     /**
-     * 
+     * provides context classes to aid in marshaling/unmarshaling
      */
-    private Class<?>[] contextClasses;
+    private ContextClassProvider contextClassProvider;
     /**
-     * 
+     * indicates if the provider is running or not
      */
     private final AtomicBoolean running = new AtomicBoolean(false);
 }

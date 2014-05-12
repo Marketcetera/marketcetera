@@ -1,19 +1,26 @@
 package org.marketcetera.trade;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.InMemoryIDFactory;
+import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.SystemFIXMessageFactory;
-import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.core.InMemoryIDFactory;
-import quickfix.*;
-import quickfix.field.*;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.misc.ClassVersion;
 
-import java.util.*;
+import quickfix.Field;
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.StringField;
+import quickfix.field.BeginString;
 
 /* $License$ */
 /**
@@ -24,7 +31,9 @@ import java.util.*;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-class FactoryImpl extends Factory {
+class FactoryImpl
+        extends Factory
+{
     @Override
     public OrderSingle createOrderSingle() {
         OrderSingleImpl order = new OrderSingleImpl();
@@ -105,12 +114,11 @@ class FactoryImpl extends Factory {
     }
 
     @Override
-    public ExecutionReport createExecutionReport(
-            Message inMessage,
-            BrokerID inBrokerID,
-            Originator inOriginator,
-            UserID inActorID,
-            UserID inViewerID)
+    public ExecutionReport createExecutionReport(Message inMessage,
+                                                 BrokerID inBrokerID,
+                                                 Originator inOriginator,
+                                                 UserID inActorID,
+                                                 UserID inViewerID)
             throws MessageCreationException {
         if(inMessage == null) {
             throw new NullPointerException();
@@ -126,15 +134,80 @@ class FactoryImpl extends Factory {
                     Messages.NOT_EXECUTION_REPORT, inMessage.toString()));
         }
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.Factory#createExecutionReport(quickfix.Message, org.marketcetera.trade.BrokerID, org.marketcetera.trade.Originator, org.marketcetera.trade.Hierarchy, org.marketcetera.trade.UserID, org.marketcetera.trade.UserID)
+     */
     @Override
-    public OrderCancelReject createOrderCancelReject(
-            Message inMessage,
-            BrokerID inBrokerID,
-            Originator inOriginator,
-            UserID inActorID,
-            UserID inViewerID)
-            throws MessageCreationException {
+    public ExecutionReport createExecutionReport(Message inMessage,
+                                                 BrokerID inBrokerID,
+                                                 Originator inOriginator,
+                                                 Hierarchy inHierarchy,
+                                                 UserID inActorID,
+                                                 UserID inViewerID)
+            throws MessageCreationException
+    {
+        if(inMessage == null) {
+            throw new NullPointerException();
+        }
+        if(inOriginator == null) {
+            throw new NullPointerException();
+        }
+        if(inHierarchy == null) {
+            throw new NullPointerException();
+        }
+        if(FIXMessageUtil.isExecutionReport(inMessage)) {
+            return new ExecutionReportImpl(inMessage,
+                                           inBrokerID,
+                                           inOriginator,
+                                           inHierarchy,
+                                           inActorID,
+                                           inViewerID);
+        } else {
+            throw new MessageCreationException(new I18NBoundMessage1P(
+                    Messages.NOT_EXECUTION_REPORT, inMessage.toString()));
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.Factory#createOrderCancelReject(quickfix.Message, org.marketcetera.trade.BrokerID, org.marketcetera.trade.Originator, org.marketcetera.trade.Hierarchy, org.marketcetera.trade.UserID, org.marketcetera.trade.UserID)
+     */
+    @Override
+    public OrderCancelReject createOrderCancelReject(Message inMessage,
+                                                     BrokerID inBrokerID,
+                                                     Originator inOriginator,
+                                                     Hierarchy inHierarchy,
+                                                     UserID inActorID,
+                                                     UserID inViewerID)
+            throws MessageCreationException
+    {
+        if(inMessage == null) {
+            throw new NullPointerException();
+        }
+        if(inOriginator == null) {
+            throw new NullPointerException();
+        }
+        if(inHierarchy == null) {
+            throw new NullPointerException();
+        }
+        if(FIXMessageUtil.isCancelReject(inMessage)) {
+            return new OrderCancelRejectImpl(inMessage,
+                                             inBrokerID,
+                                             inOriginator,
+                                             inHierarchy,
+                                             inActorID,
+                                             inViewerID);
+        } else {
+            throw new MessageCreationException(new I18NBoundMessage1P(Messages.NOT_CANCEL_REJECT,
+                                                                      inMessage.toString()));
+        }
+    }
+    @Override
+    public OrderCancelReject createOrderCancelReject(Message inMessage,
+                                                     BrokerID inBrokerID,
+                                                     Originator inOriginator,
+                                                     UserID inActorID,
+                                                     UserID inViewerID)
+            throws MessageCreationException
+    {
         if(inMessage == null) {
             throw new NullPointerException();
         }
@@ -149,14 +222,39 @@ class FactoryImpl extends Factory {
                     Messages.NOT_CANCEL_REJECT, inMessage.toString()));
         }
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.Factory#createFIXResponse(quickfix.Message, org.marketcetera.trade.BrokerID, org.marketcetera.trade.Originator, org.marketcetera.trade.Hierarchy, org.marketcetera.trade.UserID, org.marketcetera.trade.UserID)
+     */
     @Override
-    public FIXResponse createFIXResponse
-        (Message inMessage,
-         BrokerID inBrokerID,
-         Originator inOriginator,
-         UserID inActorID,
-         UserID inViewerID)
+    public FIXResponse createFIXResponse(Message inMessage,
+                                         BrokerID inBrokerID,
+                                         Originator inOriginator,
+                                         Hierarchy inHierarchy,
+                                         UserID inActorID,
+                                         UserID inViewerID)
+    {
+        if(inMessage == null) {
+            throw new NullPointerException();
+        }
+        if(inOriginator == null) {
+            throw new NullPointerException();
+        }
+        if(inHierarchy == null) {
+            throw new NullPointerException();
+        }
+        return new FIXResponseImpl(inMessage,
+                                   inBrokerID,
+                                   inOriginator,
+                                   inHierarchy,
+                                   inActorID,
+                                   inViewerID);
+    }
+    @Override
+    public FIXResponse createFIXResponse(Message inMessage,
+                                         BrokerID inBrokerID,
+                                         Originator inOriginator,
+                                         UserID inActorID,
+                                         UserID inViewerID)
     {
         if (inMessage==null) {
             throw new NullPointerException();

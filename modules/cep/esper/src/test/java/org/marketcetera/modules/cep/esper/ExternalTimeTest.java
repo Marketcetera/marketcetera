@@ -1,14 +1,11 @@
 package org.marketcetera.modules.cep.esper;
 
-import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
-
+import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.List;
-
 import javax.management.JMX;
-
+import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -22,7 +19,6 @@ import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Suggestion;
 import org.marketcetera.util.test.LogTestAssist;
-import org.apache.log4j.Level;
 
 /**
  * Test the external time functionality

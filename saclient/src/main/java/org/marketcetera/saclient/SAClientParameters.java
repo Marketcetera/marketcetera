@@ -1,10 +1,11 @@
 package org.marketcetera.saclient;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.apache.commons.lang.ObjectUtils;
-
 import java.beans.ConstructorProperties;
 import java.util.Arrays;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.ContextClassProvider;
 
 /* $License$ */
 /**
@@ -14,7 +15,7 @@ import java.util.Arrays;
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since 2.0.0
- * @see org.marketcetera.saclient.SAClientFactory#create(SAClientParameters)
+ * @see org.marketcetera.saclient.SAClientFactoryImpl#create(SAClientParameters)
  */
 @ClassVersion("$Id$")
 public class SAClientParameters {
@@ -65,11 +66,19 @@ public class SAClientParameters {
         return mHostname;
     }
     
-    public Class<?>[] getContextClasses()
+    public ContextClassProvider getContextClassProvider()
     {
-        return contextClasses;
+        return contextClassProvider;
     }
-
+    /**
+     * Get the useJms value.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean getUseJms()
+    {
+        return useJms;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -79,7 +88,7 @@ public class SAClientParameters {
 
         return ObjectUtils.equals(mPort, that.mPort)&&
                 Arrays.equals(mPassword, that.mPassword) &&
-                Arrays.equals(contextClasses, that.contextClasses) &&
+                ObjectUtils.equals(contextClassProvider, that.contextClassProvider) &&
                 ObjectUtils.equals(mURL, that.mURL) &&
                 ObjectUtils.equals(mUsername, that.mUsername) &&
                 ObjectUtils.equals(mHostname, that.mHostname);
@@ -89,7 +98,7 @@ public class SAClientParameters {
     public int hashCode() {
         return ObjectUtils.hashCode(mUsername) +
                 Arrays.hashCode(mPassword) +
-                Arrays.hashCode(contextClasses) +
+                ObjectUtils.hashCode(contextClassProvider) +
                 ObjectUtils.hashCode(mHostname) +
                 ObjectUtils.hashCode(mPort) +
                 ObjectUtils.hashCode(mURL);
@@ -104,20 +113,19 @@ public class SAClientParameters {
      * @param inHostname the host name
      * @param inPort the port number
      */
-    @ConstructorProperties(
-            {"username",
-            "password",
-            "URL",
-            "hostname",
-            "port"})
-    public SAClientParameters(String inUsername, char[] inPassword,
-                              String inURL, String inHostname, int inPort) {
+    @ConstructorProperties({ "username","password","URL","hostname","port" })
+    public SAClientParameters(String inUsername,
+                              char[] inPassword,
+                              String inURL,
+                              String inHostname,
+                              int inPort)
+    {
         this(inUsername,
              inPassword,
              inURL,
              inHostname,
              inPort,
-             (Class<?>[])null);
+             null);
     }
     /**
      * Create a new SAClientParameters instance.
@@ -127,7 +135,7 @@ public class SAClientParameters {
      * @param inURL a <code>String</code> value
      * @param inHostname a <code>String</code> value
      * @param inPort an <code>int</code> value
-     * @param inContextClasses a <code>Class&lt;?&gt;...</code> value
+     * @param contextClassProvider a <code>ContextClassProvider</code> value
      */
     @ConstructorProperties({ "username","password","URL","hostname","port","contextClasses" })
     public SAClientParameters(String inUsername,
@@ -135,18 +143,44 @@ public class SAClientParameters {
                               String inURL,
                               String inHostname,
                               int inPort,
-                              Class<?>...inContextClasses)
+                              ContextClassProvider inContextClassProvider)
+    {
+        this(inUsername,
+             inPassword,
+             inURL,
+             inHostname,
+             inPort,
+             inContextClassProvider,
+             true);
+    }
+    /**
+     * Create a new SAClientParameters instance.
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inPassword a <code>char[]</code> value
+     * @param inURL a <code>String</code> value
+     * @param inHostname a <code>String</code> value
+     * @param inPort an <code>int</code> value
+     * @param inContextClassProvider a <code>ContextClassProvider</code> value
+     * @param inUseJms a <code>boolean</code> value
+     */
+    @ConstructorProperties({ "username","password","URL","hostname","port","contextClasses","useJms" })
+    public SAClientParameters(String inUsername,
+                              char[] inPassword,
+                              String inURL,
+                              String inHostname,
+                              int inPort,
+                              ContextClassProvider inContextClassProvider,
+                              boolean inUseJms)
     {
         mUsername = inUsername;
-        mPassword = inPassword == null
-                ? null
-                : Arrays.copyOf(inPassword, inPassword.length);
+        mPassword = inPassword == null ? null : Arrays.copyOf(inPassword,inPassword.length);
         mURL = inURL;
         mHostname = inHostname;
         mPort = inPort;
-        contextClasses = inContextClasses;
+        contextClassProvider = inContextClassProvider;
+        useJms = inUseJms;
     }
-
     @Override
     public String toString() {
         return "ClientParameters{" +  //$NON-NLS-1$
@@ -157,11 +191,11 @@ public class SAClientParameters {
                 ", Port='" + mPort + '\'' +  //$NON-NLS-1$ $NON-NLS-2$
                 '}';  //$NON-NLS-1$
     }
-
+    private final boolean useJms;
     private final String mUsername;
     private final char[] mPassword;
     private final String mHostname;
     private final int mPort;
     private final String mURL;
-    private final Class<?>[] contextClasses;
+    private final ContextClassProvider contextClassProvider;
 }

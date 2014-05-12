@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>photon-maven</artifactId>
-    <version>2.4.0</version>
+    <version>2.4.1</version>
   </parent>
   <artifactId>photon-rcptarget</artifactId>
   <packaging>pom</packaging>
@@ -72,9 +72,7 @@
                       <artifactId>target-platform</artifactId>
                       <version>${mvn.eclipse.version}</version>
                       <type>zip</type>
-		      <excludes>
-			eclipse/plugins/org.hamcrest*
-		      </excludes>
+		      <excludes>eclipse/plugins/org.hamcrest*</excludes>
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.marketcetera</groupId>

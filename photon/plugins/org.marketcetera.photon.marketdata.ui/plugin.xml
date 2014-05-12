@@ -4,11 +4,6 @@
 
    <extension
          point="org.eclipse.ui.preferencePages">
-      <page
-            class="org.marketcetera.photon.internal.marketdata.ui.MarketDataPreferencePage"
-            id="org.marketcetera.photon.marketdata.ui.MarketDataPreferencePage"
-            name="%marketDataPreferencePage.name">
-      </page>
    </extension>
    <extension
          point="org.eclipse.ui.startup">

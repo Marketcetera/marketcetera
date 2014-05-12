@@ -30,7 +30,7 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
 
 /* $License$ */
 
-@WebService(targetNamespace = "http://marketcetera.org/services")
+@WebService(targetNamespace="client")
 @ClassVersion("$Id$")
 @XmlSeeAlso({PositionKeyImpl.class,Equity.class})
 public interface Service
@@ -385,11 +385,13 @@ public interface Service
      * @param inContext a <code>ClientContent</code> value
      * @param inReport a <code>FIXMessageWrapper</code> value
      * @param inBrokerID a <code>BrokerID</code> value
+     * @param inHierarchy a <code>Hierarchy</code> value
      * @throws RemoteException if an error occurs
      */
     void addReport(@WebParam(name="context")ClientContext inContext,
                    @WebParam(name="report")FIXMessageWrapper inReport,
-                   @WebParam(name="brokerID")BrokerID inBrokerID)
+                   @WebParam(name="brokerID")BrokerID inBrokerID,
+                   @WebParam(name="hierarchy")Hierarchy inHierarchy)
             throws RemoteException;
     /**
      * Removes the given report from the persistent report store.
@@ -425,5 +427,16 @@ public interface Service
      * @throws RemoteException if an error occurs
      */
     List<ReportBaseImpl> getOpenOrders(@WebParam(name="context")ClientContext inContext)
+            throws RemoteException;
+    /**
+     * Gets the order ID of the root order in the given order chain.
+     *
+     * @param inServiceContext a <code>ClientContext</code> value
+     * @param inOrderID an <code>OrderID</code> value
+     * @return an <code>OrderID</code> value
+     * @throws RemoteException if an error occurs 
+     */
+    OrderID getRootOrderIdFor(@WebParam(name="context")ClientContext inServiceContext,
+                              @WebParam(name="orderId")OrderID inOrderID)
             throws RemoteException;
 }

@@ -5,7 +5,7 @@
  * All the communication with remote strategy agents is accomplished via
  * {@link org.marketcetera.saclient.SAClient} interface. Instances of
  * this client can be created via
- * {@link org.marketcetera.saclient.SAClientFactory#create(org.marketcetera.saclient.SAClientParameters)}.
+ * {@link org.marketcetera.saclient.SAClientFactoryImpl#create(org.marketcetera.saclient.SAClientParameters)}.
  * <p>
  * The client provides facilitites to deploy / manage strategies onto
  * the remote strategy agent and receive the data emitted by them.

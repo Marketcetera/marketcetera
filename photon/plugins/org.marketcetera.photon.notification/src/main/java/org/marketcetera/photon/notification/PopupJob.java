@@ -89,6 +89,7 @@ public class PopupJob extends AbstractNotificationJob {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
+				return;
 			}
 	}
 

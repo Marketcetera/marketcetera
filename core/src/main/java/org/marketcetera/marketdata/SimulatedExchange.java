@@ -1562,38 +1562,34 @@ public class SimulatedExchange
             // dividends may be issued for equities only
             List<DividendEvent> tempDividends = new ArrayList<DividendEvent>();
             if(inInstrument instanceof Equity) {
-                // decide what, if any, dividends should be issued
-                if(random.nextBoolean()) {
-                    // as luck would have it, there be dividends
-                    // there is always a current (most recent) dividend
-                    long timestamp = System.currentTimeMillis();
-                    long oneDay = 1000 * 60 * 60 * 24;
-                    long oneQuarter = oneDay * 90; // approximate, not really important
-                    DividendEventBuilder builder = DividendEventBuilder.dividend().withEquity((Equity)inInstrument);
-                    tempDividends.add(builder.withAmount(randomDecimal(10).add(PENNY))
-                                             .withCurrency("USD") //$NON-NLS-1$
-                                             .withDeclareDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
-                                                                                     DateUtils.DAYS))
-                                             .withExecutionDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
-                                                                                       DateUtils.DAYS))
-                                             .withFrequency(DividendFrequency.QUARTERLY)
-                                             .withPaymentDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
-                                                                                     DateUtils.DAYS))
-                                             .withRecordDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
-                                                                                    DateUtils.DAYS))
-                                             .withStatus(DividendStatus.OFFICIAL)
-                                             .withType(DividendType.CURRENT).create());
-                    // that establishes the current dividend
-                    // now create, say, 3 more UNOFFICIAL future dividends
-                    for(long quarterCounter=1;quarterCounter<=3;quarterCounter++) {
-                        tempDividends.add(builder.withDeclareDate(null)
-                                                 .withPaymentDate(null)
-                                                 .withRecordDate(null)
-                                                 .withExecutionDate(DateUtils.dateToString(new Date(timestamp + oneQuarter * quarterCounter),
-                                                                                           DateUtils.DAYS))
-                                                 .withStatus(DividendStatus.UNOFFICIAL)
-                                                 .withType(DividendType.FUTURE).create());
-                    }
+                // there is always a current (most recent) dividend
+                long timestamp = System.currentTimeMillis();
+                long oneDay = 1000 * 60 * 60 * 24;
+                long oneQuarter = oneDay * 90; // approximate, not really important
+                DividendEventBuilder builder = DividendEventBuilder.dividend().withEquity((Equity)inInstrument);
+                tempDividends.add(builder.withAmount(randomDecimal(10).add(PENNY))
+                                  .withCurrency("USD") //$NON-NLS-1$
+                                  .withDeclareDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                                                          DateUtils.DAYS))
+                                                                          .withExecutionDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                                                                                                    DateUtils.DAYS))
+                                                                                                                    .withFrequency(DividendFrequency.QUARTERLY)
+                                                                                                                    .withPaymentDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                                                                                                                                            DateUtils.DAYS))
+                                                                                                                                                            .withRecordDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                                                                                                                                                                                   DateUtils.DAYS))
+                                                                                                                                                                                                   .withStatus(DividendStatus.OFFICIAL)
+                                                                                                                                                                                                   .withType(DividendType.CURRENT).create());
+                // that establishes the current dividend
+                // now create, say, 3 more UNOFFICIAL future dividends
+                for(long quarterCounter=1;quarterCounter<=3;quarterCounter++) {
+                    tempDividends.add(builder.withDeclareDate(null)
+                                      .withPaymentDate(null)
+                                      .withRecordDate(null)
+                                      .withExecutionDate(DateUtils.dateToString(new Date(timestamp + oneQuarter * quarterCounter),
+                                                                                DateUtils.DAYS))
+                                                                                .withStatus(DividendStatus.UNOFFICIAL)
+                                                                                .withType(DividendType.FUTURE).create());
                 }
             }
             dividends = ImmutableList.copyOf(tempDividends);

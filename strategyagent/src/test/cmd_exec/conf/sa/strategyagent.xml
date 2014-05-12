@@ -75,6 +75,44 @@
     <property name="authenticator" ref="saAuthenticator"/>
     <property name="sessionManager" ref="saSessionManager"/>
     <property name="serviceProvider" ref="saWebServicesProvider"/>
+    <property name="contextClasses">
+      <bean class="org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider"/>
+    </property>
+  </bean>
+  <!--  SA RPC Service -->
+  <bean id="rpcService" class="org.marketcetera.util.rpc.RpcServer">
+    <property name="contextClassProvider">
+      <bean class="org.marketcetera.core.ContextClassAggregator">
+        <property name="contextClassProviders">
+          <list>
+            <bean class="org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider"/>
+            <bean class="org.marketcetera.saclient.rpc.SAClientContextClassProvider"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="hostname" value="${metc.sa.ws.host}"/>
+    <property name="port" value ="${metc.sa.rpc.port}"/>
+    <property name="authenticator" ref="saAuthenticator"/>
+    <property name="sessionManager" ref="saSessionManager"/>
+    <property name="serviceSpecs">
+      <list>
+        <!-- Market Data RPC Service -->
+        <bean id="mdataRpcService" class="org.marketcetera.marketdata.core.rpc.MarketDataRpcService">
+            <property name="serviceAdapter" ref="marketdataWebService"/>
+        </bean>
+        <!-- SA Client RPC Service -->
+        <bean id="saclientRpcService" class="org.marketcetera.saclient.rpc.SAClientRpcService">
+            <property name="serviceAdapter" ref="saWebServicesProvider"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  <!-- The market data manager instance -->
+  <bean id="marketDataManager" class="org.marketcetera.marketdata.core.manager.impl.MarketDataManagerImpl"/>
+  <!-- market data web service -->
+  <bean id="marketdataWebService" class="org.marketcetera.marketdata.core.webservice.impl.MarketDataServiceImpl" init-method="start" destroy-method="stop" depends-on="saWebServicesServer">
+    <constructor-arg ref="saSessionManager"/>
   </bean>
   <!-- The module manager instance -->
   <bean id="moduleManager" class="org.marketcetera.module.ModuleManager"
@@ -89,6 +127,4 @@
   <bean id="wsServerPort" class="java.lang.Integer">
     <constructor-arg value="${metc.sa.ws.port}"/>
   </bean>
-  <!-- neo market data manager -->
-  <bean id="marketDataManager" class="org.marketcetera.marketdata.neo.manager.impl.MarketDataManagerImpl"/>
 </beans>

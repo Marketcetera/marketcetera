@@ -16,7 +16,7 @@ import org.marketcetera.client.MockServer;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.modules.remote.receiver.ClientLoginModule;
 import org.marketcetera.saclient.ConnectionException;
-import org.marketcetera.saclient.SAClientFactory;
+import org.marketcetera.saclient.SAClientFactoryImpl;
 import org.marketcetera.saclient.SAClientParameters;
 import org.marketcetera.util.ws.stateless.Node;
 
@@ -108,11 +108,11 @@ public class StrategyAgentRemotingConfigTest
             protected void run()
                     throws Exception
             {
-                SAClientFactory.getInstance().create(new SAClientParameters(DEFAULT_CREDENTIAL,
+                SAClientFactoryImpl.getInstance().create(new SAClientParameters(DEFAULT_CREDENTIAL,
                                                                             DEFAULT_CREDENTIAL.toCharArray(),
                                                                             RECEIVER_URL,
                                                                             WS_HOST,
-                                                                            WS_PORT));
+                                                                            WS_PORT)).start();
             }
         };
     }
@@ -141,11 +141,11 @@ public class StrategyAgentRemotingConfigTest
             protected void run()
                     throws Exception
             {
-                SAClientFactory.getInstance().create(new SAClientParameters(DEFAULT_CREDENTIAL,
+                SAClientFactoryImpl.getInstance().create(new SAClientParameters(DEFAULT_CREDENTIAL,
                                                                             DEFAULT_CREDENTIAL.toCharArray(),
                                                                             RECEIVER_URL,
                                                                             WS_HOST,
-                                                                            WS_PORT));
+                                                                            WS_PORT)).start();
             }
         };
     }

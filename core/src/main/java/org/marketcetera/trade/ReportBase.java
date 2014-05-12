@@ -3,9 +3,6 @@ package org.marketcetera.trade;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
-
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -85,7 +82,12 @@ public interface ReportBase extends Serializable {
      * @return the originator of this message.
      */
     Originator getOriginator();
-
+    /**
+     * The hierarchy of the report.
+     *
+     * @return a <code>Hierarchy</code> value
+     */
+    Hierarchy getHierarchy();
     /**
      * The ID of the actor user of this message.
      *
@@ -104,7 +106,7 @@ public interface ReportBase extends Serializable {
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.4.0
      */
     public static enum ReportComparator
             implements Comparator<ReportBase>

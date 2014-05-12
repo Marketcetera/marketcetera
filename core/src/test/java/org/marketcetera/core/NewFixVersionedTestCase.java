@@ -19,7 +19,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @RunWith(Parameterized.class)
 public abstract class NewFixVersionedTestCase

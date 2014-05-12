@@ -2,7 +2,7 @@
 <feature
       id="org.marketcetera.photon.feature"
       label="%featureName"
-      version="2.4.0"
+      version="2.4.1"
       provider-name="%providerName"
       plugin="org.marketcetera.photon">
 
@@ -852,6 +852,13 @@
 
    <plugin
          id="org.marketcetera.modules.mdata.yahoo"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.marketcetera.modules.mdata.core"
          download-size="0"
          install-size="0"
          version="0.0.0"

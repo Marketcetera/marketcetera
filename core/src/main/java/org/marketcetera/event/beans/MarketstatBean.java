@@ -3,9 +3,11 @@ package org.marketcetera.event.beans;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.bind.annotation.*;
 
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.Messages;
 import org.marketcetera.event.util.EventServices;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
@@ -20,6 +22,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @NotThreadSafe
+@XmlRootElement(name="stat")
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 public final class MarketstatBean
         extends EventBean
@@ -370,10 +374,10 @@ public final class MarketstatBean
     {
         super.validate();
         if(instrument == null) {
-            EventServices.error(VALIDATION_NULL_INSTRUMENT);
+            EventServices.error(Messages.VALIDATION_NULL_INSTRUMENT);
         }
         if(eventType == null) {
-            EventServices.error(VALIDATION_NULL_META_TYPE);
+            EventServices.error(Messages.VALIDATION_NULL_META_TYPE);
         }
     }
     /* (non-Javadoc)
@@ -600,70 +604,87 @@ public final class MarketstatBean
     /**
      * the open price for the current or most recent session
      */
+    @XmlAttribute
     private BigDecimal openPrice;
     /**
      * the high price for the current or most recent session
      */
+    @XmlAttribute
     private BigDecimal highPrice;
     /**
      * the low price for the current or most recent session
      */
+    @XmlAttribute
     private BigDecimal lowPrice;
     /**
      * the close price for the current or most recent session
      */
+    @XmlAttribute
     private BigDecimal closePrice;
     /**
      * the close price from the previous session
      */
+    @XmlAttribute
     private BigDecimal previousClosePrice;
     /**
      * the cumulative volume for the current or most recent session
      */
+    @XmlAttribute
     private BigDecimal volume;
     /**
      * the cumulative value for the current or most recent session
      */
+    @XmlAttribute
     private BigDecimal value;
     /**
      * the market close date - format is dependent on the market data provider
      */
+    @XmlAttribute
     private String closeDate;
     /**
      * the market previous close date - format is dependent on the market data provider
      */
+    @XmlAttribute
     private String previousCloseDate;
     /**
      * the time of the high trade for the current or most recent session - format is dependent on the market data provider 
      */
+    @XmlAttribute
     private String tradeHighTime;
     /**
      * the time of the low trade for the current or most recent session - format is dependent on the market data provider 
      */
+    @XmlAttribute
     private String tradeLowTime;
     /**
      * the exchange for which the open price was reported 
      */
+    @XmlAttribute
     private String openExchange;
     /**
      * the exchange for which the high price was reported 
      */
+    @XmlAttribute
     private String highExchange;
     /**
      * the exchange for which the low price was reported 
      */
+    @XmlAttribute
     private String lowExchange;
     /**
      * the exchange for which the close price was reported 
      */
+    @XmlAttribute
     private String closeExchange;
     /**
      * the instrument
      */
+    @XmlElement
     private Instrument instrument;
     /**
      * the event meta-type
      */
+    @XmlAttribute
     private EventType eventType = EventType.UNKNOWN;
     private static final long serialVersionUID = 1L;
 }

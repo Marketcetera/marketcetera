@@ -23,10 +23,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * <!-- end-user-doc -->
  * @see org.marketcetera.photon.model.marketdata.MDPackage
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public class MDAdapterFactory extends AdapterFactoryImpl {
+public class MDAdapterFactory
+        extends AdapterFactoryImpl
+{
     /**
      * The cached model package.
      * <!-- begin-user-doc -->
@@ -41,7 +43,8 @@ public class MDAdapterFactory extends AdapterFactoryImpl {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDAdapterFactory() {
+    public MDAdapterFactory()
+    {
         if (modelPackage == null) {
             modelPackage = MDPackage.eINSTANCE;
         }
@@ -56,7 +59,8 @@ public class MDAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     @Override
-    public boolean isFactoryForType(Object object) {
+    public boolean isFactoryForType(Object object)
+    {
         if (object == modelPackage) {
             return true;
         }
@@ -74,37 +78,44 @@ public class MDAdapterFactory extends AdapterFactoryImpl {
      */
     protected MDSwitch<Adapter> modelSwitch = new MDSwitch<Adapter>() {
         @Override
-        public Adapter caseMDItem(MDItem object) {
+        public Adapter caseMDItem(MDItem object)
+        {
             return createMDItemAdapter();
         }
 
         @Override
-        public Adapter caseMDLatestTick(MDLatestTick object) {
+        public Adapter caseMDLatestTick(MDLatestTick object)
+        {
             return createMDLatestTickAdapter();
         }
 
         @Override
-        public Adapter caseMDTopOfBook(MDTopOfBook object) {
+        public Adapter caseMDTopOfBook(MDTopOfBook object)
+        {
             return createMDTopOfBookAdapter();
         }
 
         @Override
-        public Adapter caseMDMarketstat(MDMarketstat object) {
+        public Adapter caseMDMarketstat(MDMarketstat object)
+        {
             return createMDMarketstatAdapter();
         }
 
         @Override
-        public Adapter caseMDDepthOfBook(MDDepthOfBook object) {
+        public Adapter caseMDDepthOfBook(MDDepthOfBook object)
+        {
             return createMDDepthOfBookAdapter();
         }
 
         @Override
-        public Adapter caseMDQuote(MDQuote object) {
+        public Adapter caseMDQuote(MDQuote object)
+        {
             return createMDQuoteAdapter();
         }
 
         @Override
-        public Adapter defaultCase(EObject object) {
+        public Adapter defaultCase(EObject object)
+        {
             return createEObjectAdapter();
         }
     };
@@ -118,7 +129,8 @@ public class MDAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     @Override
-    public Adapter createAdapter(Notifier target) {
+    public Adapter createAdapter(Notifier target)
+    {
         return modelSwitch.doSwitch((EObject) target);
     }
 
@@ -132,7 +144,8 @@ public class MDAdapterFactory extends AdapterFactoryImpl {
      * @see org.marketcetera.photon.model.marketdata.MDItem
      * @generated
      */
-    public Adapter createMDItemAdapter() {
+    public Adapter createMDItemAdapter()
+    {
         return null;
     }
 
@@ -146,7 +159,8 @@ public class MDAdapterFactory extends AdapterFactoryImpl {
      * @see org.marketcetera.photon.model.marketdata.MDLatestTick
      * @generated
      */
-    public Adapter createMDLatestTickAdapter() {
+    public Adapter createMDLatestTickAdapter()
+    {
         return null;
     }
 
@@ -160,7 +174,8 @@ public class MDAdapterFactory extends AdapterFactoryImpl {
      * @see org.marketcetera.photon.model.marketdata.MDTopOfBook
      * @generated
      */
-    public Adapter createMDTopOfBookAdapter() {
+    public Adapter createMDTopOfBookAdapter()
+    {
         return null;
     }
 
@@ -174,7 +189,8 @@ public class MDAdapterFactory extends AdapterFactoryImpl {
      * @see org.marketcetera.photon.model.marketdata.MDMarketstat
      * @generated
      */
-    public Adapter createMDMarketstatAdapter() {
+    public Adapter createMDMarketstatAdapter()
+    {
         return null;
     }
 
@@ -188,7 +204,8 @@ public class MDAdapterFactory extends AdapterFactoryImpl {
      * @see org.marketcetera.photon.model.marketdata.MDDepthOfBook
      * @generated
      */
-    public Adapter createMDDepthOfBookAdapter() {
+    public Adapter createMDDepthOfBookAdapter()
+    {
         return null;
     }
 
@@ -202,7 +219,8 @@ public class MDAdapterFactory extends AdapterFactoryImpl {
      * @see org.marketcetera.photon.model.marketdata.MDQuote
      * @generated
      */
-    public Adapter createMDQuoteAdapter() {
+    public Adapter createMDQuoteAdapter()
+    {
         return null;
     }
 
@@ -214,7 +232,8 @@ public class MDAdapterFactory extends AdapterFactoryImpl {
      * @return the new adapter.
      * @generated
      */
-    public Adapter createEObjectAdapter() {
+    public Adapter createEObjectAdapter()
+    {
         return null;
     }
 

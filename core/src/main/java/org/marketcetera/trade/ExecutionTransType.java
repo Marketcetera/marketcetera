@@ -13,10 +13,10 @@ import quickfix.field.ExecTransType;
  * Specific execution report status.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ExecutionTransType.java 16613 2013-07-03 19:28:31Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ExecutionTransType.java 16613 2013-07-03 19:28:31Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public enum ExecutionTransType {
     /**
      * Sentinel value for Execution Transaction Type that the system is not currently

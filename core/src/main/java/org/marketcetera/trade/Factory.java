@@ -195,13 +195,31 @@ public abstract class Factory {
      * @throws MessageCreationException if there were errors wrapping
      * the supplied FIX Message.
      */
-    public abstract ExecutionReport createExecutionReport
-        (Message inMessage,
-         BrokerID inBrokerID,
-         Originator inOriginator,
-         UserID inActorID,
-         UserID inViewerID)
-        throws MessageCreationException;
+    public abstract ExecutionReport createExecutionReport(Message inMessage,
+                                                          BrokerID inBrokerID,
+                                                          Originator inOriginator,
+                                                          UserID inActorID,
+                                                          UserID inViewerID)
+            throws MessageCreationException;
+    /**
+     * Creates an execution report with the given values.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
+     * @param inOriginator an <code>Originator</code> value
+     * @param inHierarchy a <code>Hierarchy</code> value
+     * @param inActorID a <code>UserID</code> value
+     * @param inViewerID a <code>UserID</code> value
+     * @return an <code>ExecutionReport</code> value
+     * @throws MessageCreationException if an error occurs creating the report
+     */
+    public abstract ExecutionReport createExecutionReport(Message inMessage,
+                                                          BrokerID inBrokerID,
+                                                          Originator inOriginator,
+                                                          Hierarchy inHierarchy,
+                                                          UserID inActorID,
+                                                          UserID inViewerID)
+            throws MessageCreationException;
     /**
      * Creates an order cancel reject message based on the supplied
      * order cancel reject FIX Message.
@@ -226,38 +244,63 @@ public abstract class Factory {
      * @throws MessageCreationException if there were errors wrapping the
      * supplied FIX Message.
      */
-    public abstract OrderCancelReject createOrderCancelReject
-        (Message inMessage,
-         BrokerID inBrokerID,
-         Originator inOriginator,
-         UserID inActorID,
-         UserID inViewerID)
-        throws MessageCreationException;
-
+    public abstract OrderCancelReject createOrderCancelReject(Message inMessage,
+                                                              BrokerID inBrokerID,
+                                                              Originator inOriginator,
+                                                              UserID inActorID,
+                                                              UserID inViewerID)
+            throws MessageCreationException;
     /**
-     * Creates an ORS response that wraps a generic FIX message which
-     * cannot be wrapped by any other FIX Agnostic wrapper.
+     * Creates an order cancel reject with the given values.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
+     * @param inOriginator an <code>Originator</code> value
+     * @param inHierarchy a <code>Hierarchy</code> value
+     * @param inActorID a <code>UserID</code> value
+     * @param inViewerID a <code>UserID</code> value
+     * @return an <code>OrderCancelReject</code> value
+     * @throws MessageCreationException if an error occurs creating the reject
+     */
+    public abstract OrderCancelReject createOrderCancelReject(Message inMessage,
+                                                              BrokerID inBrokerID,
+                                                              Originator inOriginator,
+                                                              Hierarchy inHierarchy,
+                                                              UserID inActorID,
+                                                              UserID inViewerID)
+            throws MessageCreationException;
+    /**
+     * Creates an ORS response that wraps a generic FIX message which cannot be wrapped by any other FIX Agnostic wrapper.
      *
      * @param inMessage the FIX message. Cannot be null.
-     *
-     * @param inBrokerID the ID of the broker from which this message
-     * was received.
-     *
+     * @param inBrokerID the ID of the broker from which this message was received.
      * @param inOriginator the originator of this message. Cannot be null.
-     *
+     * @param inHierarchy a <code>Hierarchy</code> value 
      * @param inActorID the ID of the actor user of this message.
-     *
      * @param inViewerID the ID of the viewer user of this message.
-     *
      * @return the FIX Response message wrapping the supplied FIX Message.
      */
-    public abstract FIXResponse createFIXResponse
-        (Message inMessage,
-         BrokerID inBrokerID,
-         Originator inOriginator,
-         UserID inActorID,
-         UserID inViewerID);
-
+    public abstract FIXResponse createFIXResponse(Message inMessage,
+                                                  BrokerID inBrokerID,
+                                                  Originator inOriginator,
+                                                  Hierarchy inHierarchy,
+                                                  UserID inActorID,
+                                                  UserID inViewerID);
+    /**
+     * Creates an ORS response that wraps a generic FIX message which cannot be wrapped by any other FIX Agnostic wrapper.
+     *
+     * @param inMessage the FIX message. Cannot be null.
+     * @param inBrokerID the ID of the broker from which this message was received.
+     * @param inOriginator the originator of this message. Cannot be null.
+     * @param inActorID the ID of the actor user of this message.
+     * @param inViewerID the ID of the viewer user of this message.
+     * @return the FIX Response message wrapping the supplied FIX Message.
+     */
+    public abstract FIXResponse createFIXResponse(Message inMessage,
+                                                  BrokerID inBrokerID,
+                                                  Originator inOriginator,
+                                                  UserID inActorID,
+                                                  UserID inViewerID);
     /**
      * Initializes the orderID factory that should be used to assign
      * OrderIDs to all the orders created by this instance.

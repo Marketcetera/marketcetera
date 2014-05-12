@@ -40,6 +40,7 @@ public abstract class InstrumentValidationHandler<I extends Instrument>
      * The factory that provides the handler instance for the specified
      * instrument.
      */
+    @SuppressWarnings("rawtypes")
     public static final StaticInstrumentFunctionSelector<InstrumentValidationHandler> SELECTOR =
             new StaticInstrumentFunctionSelector<InstrumentValidationHandler>(InstrumentValidationHandler.class);
 }

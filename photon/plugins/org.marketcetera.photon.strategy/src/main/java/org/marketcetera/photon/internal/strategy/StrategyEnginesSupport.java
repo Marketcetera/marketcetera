@@ -10,7 +10,6 @@ import org.marketcetera.photon.commons.emf.EMFFilePersistence;
 import org.marketcetera.photon.commons.emf.IEMFPersistence;
 import org.marketcetera.photon.strategy.StrategyUI;
 import org.marketcetera.photon.strategy.engine.IStrategyEngines;
-import org.marketcetera.photon.strategy.engine.embedded.EmbeddedEngine;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
 import org.marketcetera.photon.strategy.engine.model.sa.StrategyAgentEngine;
 import org.marketcetera.photon.strategy.engine.sa.ui.StrategyAgentEnginesSupport;
@@ -74,13 +73,8 @@ class StrategyEnginesSupport extends StrategyAgentEnginesSupport {
     }
 
     @Override
-    protected void initList(List<StrategyEngine> engines) {
-        /*
-         * Put the static embedded engine at the top of the list.
-         */
-        StrategyEngine mEngine = EmbeddedEngine.createEngine(getGuiExecutor(),
-                true);
-        engines.add(mEngine);
+    protected void initList(List<StrategyEngine> engines)
+    {
         super.initList(engines);
     }
 }

@@ -741,6 +741,15 @@ public final class ModuleManager
         mMBeanServer = inMBeanServer;
     }
     /**
+     * Get the classLoader value.
+     *
+     * @return a <code>ClassLoader</code> value
+     */
+    public ClassLoader getClassLoader()
+    {
+        return mClassLoader;
+    }
+    /**
      * Creates a module instance. An attempt to create a module instance
      * for a provider that only supports singleton instances will fail.
      * All singleton instances are created when ModuleManager is
