@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.marketcetera.photon.module;singleton:=true
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
-Bundle-Version: 2.4.0-SNAPSHOT
+Bundle-Version: 2.4.1-SNAPSHOT
 Bundle-Activator: org.marketcetera.photon.internal.module.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.marketcetera.core;visibility:=reexport,

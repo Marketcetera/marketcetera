@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.marketcetera.core.tests
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Name: Marketcetera Core Tests
-Bundle-Version: 2.4.0-SNAPSHOT
+Bundle-Version: 2.4.1-SNAPSHOT
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.marketcetera.util-test;visibility:=reexport,
  org.marketcetera.core

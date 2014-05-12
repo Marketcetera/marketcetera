@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.marketcetera.modules.strategy;singleton:=true
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Name: Strategy Module
-Bundle-Version: 2.4.0-SNAPSHOT
+Bundle-Version: 2.4.1-SNAPSHOT-SNAPSHOT
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.marketcetera.core,
  org.marketcetera.core.tests;resolution:=optional,
