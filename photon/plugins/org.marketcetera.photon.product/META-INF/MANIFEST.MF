@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %bundleName
 Bundle-Vendor: %bundleVendor
 Bundle-SymbolicName: org.marketcetera.photon.product;singleton:=true
-Bundle-Version: 2.4.1-SNAPSHOT
+Bundle-Version: 2.4.1
 Require-Bundle: org.eclipse.debug.core,
  org.marketcetera.core,
  org.marketcetera.photon,

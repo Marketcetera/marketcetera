@@ -167,8 +167,8 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="org.marketcetera.photon.product.application"
-            description="Marketcetera Photon 2.4.1-SNAPSHOT (Plugin)"
-            name="Photon 2.4.1-SNAPSHOT">
+            description="Marketcetera Photon 2.4.1 (Plugin)"
+            name="Photon 2.4.1">
          <property
                name="preferenceCustomization"
                value="plugin_customization.ini"/>
@@ -186,7 +186,7 @@
                value="225,75,170,20"/>
          <property
                name="appName"
-               value="Photon 2.4.1-SNAPSHOT">
+               value="Photon 2.4.1">
          </property>
          <property
                name="aboutImage"
@@ -194,7 +194,7 @@
          </property>
          <property
                name="aboutText"
-               value="Marketcetera Photon&#x0A;&#x0A;Version: 2.4.1-SNAPSHOT&#x0A;Build: metc.build.number&#x0A;&#x0A;(c) Copyright Marketcetera Inc 2006-2014.  All rights reserved.&#x0A;Visit http://www.marketcetera.org">
+               value="Marketcetera Photon&#x0A;&#x0A;Version: 2.4.1&#x0A;Build: metc.build.number&#x0A;&#x0A;(c) Copyright Marketcetera Inc 2006-2014.  All rights reserved.&#x0A;Visit http://www.marketcetera.org">
          </property>
       </product>
    </extension>
