@@ -14,7 +14,7 @@
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>public-parent</artifactId>
-  <version>2.4.1</version>
+  <version>3.0.0</version>
   <packaging>pom</packaging>
   <name>Marketcetera Public Sources Parent POM</name>
   <description>The root of Marketcetera public sources.</description>
@@ -41,7 +41,6 @@
     <mvn.cxf.version>2.7.10</mvn.cxf.version>
     <mvn.querydsl.version>3.3.1</mvn.querydsl.version>
     <mvn.springdatajpa.version>1.5.0.RELEASE</mvn.springdatajpa.version>
-    <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>4.2.8.Final</mvn.hibernate.version>
   </properties>
   <!-- Marketcetera uses the following versions of some common libraries:
@@ -54,97 +53,97 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>client</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>migration</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>orderloader</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategyagent</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-csv</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-bogus</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-core</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-marketcetera</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-yahoo</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-csv</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>misc</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategy</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-esper</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>remote-receiver</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>remote-emitter</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>saclient</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
       </dependency>
       <!-- Compile: QuickFIX/J -->
       <dependency>
@@ -619,27 +618,27 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util-test</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>client</artifactId>
-        <version>2.4.1</version>
+        <version>3.0.0</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
@@ -947,17 +946,6 @@
               <windowtitle>Marketcetera Platform ${project.version} API</windowtitle>
               <overview>tools/javadoc/overview.html</overview>
               <links>
-                <link>http://commons.apache.org/cli/api-release/</link>
-                <link>http://commons.apache.org/collections/api-release/</link>
-                <link>http://commons.apache.org/io/api-release/</link>
-                <link>http://commons.apache.org/lang/api-release/</link>
-                <link>http://commons.apache.org/vfs/apidocs/</link>
-                <link>http://java.sun.com/javaee/${mvn.javaee.version}/docs/api/</link>
-                <link>http://java.sun.com/javase/${mvn.javase.version}/docs/api/</link>
-                <link>http://logging.apache.org/log4j/1.2/apidocs/</link>
-                <link>http://publicobject.com/glazedlists/glazedlists-1.7.0/api/</link>
-                <link>http://static.springframework.org/spring/docs/2.5.2/api/</link>
-                <link>http://www.quickfixj.org/quickfixj/javadoc/1.5.1</link>
               </links>
             </configuration>
           </plugin>
@@ -971,45 +959,13 @@
     <module>fork</module>
     <module>modules</module>
     <module>orderloader</module>
-    <!-- Build strategy agent before photon. -->
     <module>saclient</module>
     <module>strategyagent</module>
-    <module>photon</module>
     <module>util</module>
     <module>util-test</module>
     <module>tools</module>
   </modules>
   <repositories>
-    <!--
-        -  The central repository used to be included here due to a bug
-        -  in Maven 2.0.9. Without this inclusion, Maven used to find
-        -  commons-i18n in the central repo (versions 0.4 and 0.5) and in
-        -  the internal repo (20yymmdd). Since we need 20yymmdd, Maven
-        -  downloaded the pom from the internal repo, but then tried to
-        -  fetch the jar from the central repo, where it does not exist.
-        -  Thus Maven failed to resolve the commons-i18n artifact. The
-        -  workaround was to search central ahead of internal. This odd
-        -  behaviour stopped at some point, prob. due to the order of
-        -  artifact resolution, and then another problem came up where
-        -  esper would have its pom located in the central repo, but then
-        -  its jar would be downloaded from the internal repo (where an
-        -  an older version of esper resided, but not the sought-after
-        -  jar). So builds failed again. That was when the central repo
-        -  was removed from here, and builds worked fine again (and the
-        -  commons-i18n issue did not resurface). This comment was kept in
-        -  place because Maven 2.0.10 and 2.1.0 failed to resolve esper
-        -  correctly when the central repo was placed here, indicating this
-        -  is a still-outstanding Maven issue that might require a future
-        -  workaround.
-        -
-        -  <repository>
-        -    <id>central</id>
-        -    <url>http://repo1.maven.org/maven2</url>
-        -    <snapshots>
-        -      <enabled>false</enabled>
-        -    </snapshots>
-        -  </repository>
-    -->
     <repository>
       <id>com.springsource.repository.bundles.release</id>
       <name>EBR Spring Release Repository</name>
@@ -1059,8 +1015,8 @@
     </pluginRepository>
   </pluginRepositories>
   <scm>
-    <url>http://source.marketcetera.org/root/trunk</url>
-    <connection>scm:svn:http://source.marketcetera.org/root/trunk</connection>
-    <developerConnection>scm:svn:http://source.marketcetera.org/root/trunk</developerConnection>
+    <url>http://source.marketcetera.org/root/branches/3.0.0</url>
+    <connection>scm:svn:http://source.marketcetera.org/root/branches/3.0.0</connection>
+    <developerConnection>scm:svn:http://source.marketcetera.org/root/branches/3.0.0</developerConnection>
   </scm>
 </project>
