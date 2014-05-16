@@ -1,19 +1,51 @@
 package org.marketcetera.marketdata.bogus;
 
-import static org.marketcetera.marketdata.AssetClass.*;
-import static org.marketcetera.marketdata.Capability.*;
+import static org.marketcetera.marketdata.AssetClass.CONVERTIBLE_BOND;
+import static org.marketcetera.marketdata.AssetClass.CURRENCY;
+import static org.marketcetera.marketdata.AssetClass.EQUITY;
+import static org.marketcetera.marketdata.AssetClass.FUTURE;
+import static org.marketcetera.marketdata.AssetClass.OPTION;
+import static org.marketcetera.marketdata.Capability.DIVIDEND;
+import static org.marketcetera.marketdata.Capability.EVENT_BOUNDARY;
+import static org.marketcetera.marketdata.Capability.LATEST_TICK;
+import static org.marketcetera.marketdata.Capability.LEVEL_2;
+import static org.marketcetera.marketdata.Capability.MARKET_STAT;
+import static org.marketcetera.marketdata.Capability.OPEN_BOOK;
+import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.Capability.TOTAL_VIEW;
 import static org.marketcetera.marketdata.bogus.Messages.UNSUPPORTED_OPTION_SPECIFICATION;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
-import org.marketcetera.marketdata.*;
+import org.marketcetera.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.marketdata.AssetClass;
+import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.ExchangeRequest;
+import org.marketcetera.marketdata.ExchangeRequestBuilder;
+import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.marketdata.MarketDataFeed;
+import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.SimulatedExchange;
 import org.marketcetera.options.OptionUtils;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -226,7 +258,7 @@ public class BogusFeed
     /**
      * capabilities for BogusFeed - note that these are not dynamic as Bogus requires no provisioning
      */
-    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,MARKET_STAT,DIVIDEND));
+    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,MARKET_STAT,DIVIDEND,EVENT_BOUNDARY));
     /**
      * supported asset classes
      */
@@ -246,7 +278,7 @@ public class BogusFeed
     /**
      * arbitrarily chosen number of internal exchanges to aggregate
      */
-    private static final int EXCHANGE_COUNT = 3;
+    private static final int EXCHANGE_COUNT = 1;
     /**
      * Corresponds to a single market data request submitted to {@link BogusFeed}.
      *

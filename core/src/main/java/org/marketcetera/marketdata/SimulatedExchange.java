@@ -1,9 +1,28 @@
 package org.marketcetera.marketdata;
 
-import static org.marketcetera.marketdata.Messages.*;
+import static org.marketcetera.marketdata.Messages.DIVIDEND_REQUEST_MISSING_INSTRUMENT;
+import static org.marketcetera.marketdata.Messages.SIMULATED_EXCHANGE_CODE_MISMATCH;
+import static org.marketcetera.marketdata.Messages.SIMULATED_EXCHANGE_OUT_OF_EVENTS;
+import static org.marketcetera.marketdata.Messages.SIMULATED_EXCHANGE_SKIPPED_EVENT;
+import static org.marketcetera.marketdata.Messages.SIMULATED_EXCHANGE_TICK_ERROR;
+import static org.marketcetera.marketdata.Messages.STARTING_RANDOM_EXCHANGE;
+import static org.marketcetera.marketdata.Messages.STARTING_SCRIPTED_EXCHANGE;
+import static org.marketcetera.marketdata.Messages.STOPPING_SIMULATED_EXCHANGE;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -17,19 +36,40 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
-import org.marketcetera.event.*;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.DividendFrequency;
+import org.marketcetera.event.DividendStatus;
+import org.marketcetera.event.DividendType;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventType;
+import org.marketcetera.event.HasEventType;
+import org.marketcetera.event.HasInstrument;
+import org.marketcetera.event.HasUnderlyingInstrument;
+import org.marketcetera.event.MarketDataEvent;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.DividendEventBuilder;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.event.util.PriceAndSizeComparator;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.DeliveryType;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.StandardType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 
@@ -260,7 +300,8 @@ public class SimulatedExchange
                 // ready to return the data
                 Instrument requestInstrument = book.getInstrument();
                 MarketstatEventBuilder builder = MarketstatEventBuilder.marketstat(requestInstrument);
-                builder.withOpenPrice(openPrice)
+                builder.withEventType(EventType.UPDATE_PART)
+                       .withOpenPrice(openPrice)
                        .withHighPrice(highPrice)
                        .withLowPrice(lowPrice)
                        .withClosePrice(closePrice)
@@ -813,7 +854,7 @@ public class SimulatedExchange
                 // process the event
                 book.process(event);
                 // settle the book as a result of this change
-                List<MarketDataEvent> eventsToPublish = settleBook(book);
+                Deque<MarketDataEvent> eventsToPublish = Lists.newLinkedList(settleBook(book));
                 // note that the events from processing the event and settling the book are all published in one
                 //  batch.  this has functional implications because it means that several interim top-of-book states
                 //  may be compressed into one.  this is the most correct behavior because an un-settled book
@@ -832,14 +873,18 @@ public class SimulatedExchange
     /**
      * Publishes the given events to interested subscribers.
      *
-     * @param inEventsToPublish a <code>List&lt;? extends Event&gt;</code> value
+     * @param inEventsToPublish a <code>Deque&lt;? extends Event&gt;</code> value
      */
-    private void publishEvents(List<? extends Event> inEventsToPublish)
+    private void publishEvents(Deque<? extends Event> inEventsToPublish)
     {
         SLF4JLoggerProxy.debug(SimulatedExchange.class,
                                "{} publishing events: {}", //$NON-NLS-1$
                                this,
                                inEventsToPublish);
+        Event lastEvent = inEventsToPublish.getLast();
+        if(lastEvent instanceof HasEventType) {
+            ((HasEventType)lastEvent).setEventType(EventType.UPDATE_FINAL);
+        }
         for(Event event : inEventsToPublish) {
             publisher.publish(event);
         }
@@ -889,7 +934,7 @@ public class SimulatedExchange
         // adjust the order book base value
         inBook.adjustPrice();
         // settle the book (generates additional activity which needs to be published)
-        List<Event> eventsToPublish = new ArrayList<Event>();
+        Deque<Event> eventsToPublish = Lists.newLinkedList();
         eventsToPublish.addAll(settleBook(inBook));
         // produce statistics
         eventsToPublish.addAll(getStatistics(ExchangeRequestBuilder.newRequest().withInstrument(inBook.getBook().getInstrument())
@@ -1066,7 +1111,8 @@ public class SimulatedExchange
                                                tradeSize.toPlainString(),
                                                tradePrice.toPlainString());
                         // create the new trade
-                        TradeEventBuilder<TradeEvent> tradeBuilder = TradeEventBuilder.tradeEvent(bid.getInstrument()).withExchange(bid.getExchange())
+                        TradeEventBuilder<TradeEvent> tradeBuilder = TradeEventBuilder.tradeEvent(bid.getInstrument()).withEventType(EventType.UPDATE_PART)
+                                                                                                                      .withExchange(bid.getExchange())
                                                                                                                       .withPrice(tradePrice)
                                                                                                                       .withSize(tradeSize)
                                                                                                                       .withTradeDate(DateUtils.dateToString(new Date(tradeTime)));
@@ -1088,14 +1134,18 @@ public class SimulatedExchange
                             bidCorrection = QuoteEventBuilder.change(bid,
                                                                      new Date(tradeTime),
                                                                      bidSize.subtract(tradeSize));
+                            bidCorrection.setEventType(EventType.UPDATE_PART);
                             askCorrection = QuoteEventBuilder.delete(ask); 
+                            askCorrection.setEventType(EventType.UPDATE_PART); 
                         } else {
                             // trade is equal to the bid, this is a full fill
                             bidCorrection = QuoteEventBuilder.delete(bid);
+                            bidCorrection.setEventType(EventType.UPDATE_PART);
                             askCorrection = tradeSize.equals(askSize) ? QuoteEventBuilder.delete(ask) :
                                                                         QuoteEventBuilder.change(ask,
                                                                                                  new Date(tradeTime),
                                                                                                  askSize.subtract(tradeSize));
+                            askCorrection.setEventType(EventType.UPDATE_PART); 
                         }
                         // adjust the remainder we need to fill
                         bidSize = bidSize.subtract(tradeSize);
@@ -1380,17 +1430,19 @@ public class SimulatedExchange
          * <p>If the event is not relevant to this book, this method does nothing.
          * 
          * @param inEvent an <code>Event</code> value
-         * @return a <code>List&lt;Event&gt;</code> value containing the events
+         * @return a <code>Deque&lt;Event&gt;</code> value containing the events
          *  produced by the changes
          */
-        private List<Event> process(Event inEvent)
+        private Deque<Event> process(Event inEvent)
         {
-            List<Event> newEvents = new ArrayList<Event>();
+            Deque<Event> newEvents = Lists.newLinkedList();
             if(inEvent instanceof QuoteEvent) {
                 QuoteEvent displacedEvent = book.process((QuoteEvent)inEvent);
                 newEvents.add(inEvent);
                 if(displacedEvent != null) {
-                    newEvents.add(QuoteEventBuilder.delete(displacedEvent));
+                    QuoteEvent deleteQuote = QuoteEventBuilder.delete(displacedEvent);
+                    deleteQuote.setEventType(EventType.UPDATE_PART);
+                    newEvents.add(deleteQuote);
                 }
             }
             publishEvents(newEvents);
@@ -1421,13 +1473,15 @@ public class SimulatedExchange
             Instrument marketInstrument = getBook().getInstrument();
             // create an ask event builder
             QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.askEvent(marketInstrument);
-            askBuilder.withExchange(getCode())
+            askBuilder.withEventType(EventType.UPDATE_PART)
+                      .withExchange(getCode())
                       .withPrice(getValue().add(PENNY))
                       .withSize(randomInteger(10000))
                       .withQuoteDate(DateUtils.dateToString(timestamp));
             // and a bid event builder
             QuoteEventBuilder<BidEvent> bidBuilder = QuoteEventBuilder.bidEvent(marketInstrument);
-            bidBuilder.withExchange(getCode())
+            bidBuilder.withEventType(EventType.UPDATE_PART)
+                      .withExchange(getCode())
                       .withPrice(getValue().subtract(PENNY))
                       .withSize(randomInteger(10000))
                       .withQuoteDate(DateUtils.dateToString(timestamp));
@@ -1568,28 +1622,30 @@ public class SimulatedExchange
                 long oneQuarter = oneDay * 90; // approximate, not really important
                 DividendEventBuilder builder = DividendEventBuilder.dividend().withEquity((Equity)inInstrument);
                 tempDividends.add(builder.withAmount(randomDecimal(10).add(PENNY))
+                                  .withEventType(EventType.UPDATE_PART)
                                   .withCurrency("USD") //$NON-NLS-1$
                                   .withDeclareDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
                                                                           DateUtils.DAYS))
-                                                                          .withExecutionDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
-                                                                                                                    DateUtils.DAYS))
-                                                                                                                    .withFrequency(DividendFrequency.QUARTERLY)
-                                                                                                                    .withPaymentDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
-                                                                                                                                                            DateUtils.DAYS))
-                                                                                                                                                            .withRecordDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
-                                                                                                                                                                                                   DateUtils.DAYS))
-                                                                                                                                                                                                   .withStatus(DividendStatus.OFFICIAL)
-                                                                                                                                                                                                   .withType(DividendType.CURRENT).create());
+                                  .withExecutionDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                                                            DateUtils.DAYS))
+                                  .withFrequency(DividendFrequency.QUARTERLY)
+                                  .withPaymentDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                                                          DateUtils.DAYS))
+                                  .withRecordDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                                                         DateUtils.DAYS))
+                                  .withStatus(DividendStatus.OFFICIAL)
+                                  .withType(DividendType.CURRENT).create());
                 // that establishes the current dividend
                 // now create, say, 3 more UNOFFICIAL future dividends
                 for(long quarterCounter=1;quarterCounter<=3;quarterCounter++) {
                     tempDividends.add(builder.withDeclareDate(null)
+                                      .withEventType(EventType.UPDATE_PART)
                                       .withPaymentDate(null)
                                       .withRecordDate(null)
                                       .withExecutionDate(DateUtils.dateToString(new Date(timestamp + oneQuarter * quarterCounter),
                                                                                 DateUtils.DAYS))
-                                                                                .withStatus(DividendStatus.UNOFFICIAL)
-                                                                                .withType(DividendType.FUTURE).create());
+                                      .withStatus(DividendStatus.UNOFFICIAL)
+                                      .withType(DividendType.FUTURE).create());
                 }
             }
             dividends = ImmutableList.copyOf(tempDividends);
@@ -1936,7 +1992,9 @@ public class SimulatedExchange
                                            "Last ({}) needs to be removed, publish as a delete", //$NON-NLS-1$
                                            inLastTop);
                     // yes, there used to be a top quote, but it should go away now
-                    originalSubscriber.publishTo(QuoteEventBuilder.delete(inLastTop));
+                    QuoteEvent delete = QuoteEventBuilder.delete(inLastTop);
+                    delete.setEventType(EventType.UPDATE_PART);
+                    originalSubscriber.publishTo(delete);
                 } else {
                     // there didn't used to be a top quote, so don't do anything
                     SLF4JLoggerProxy.debug(SimulatedExchange.class,
@@ -1949,7 +2007,9 @@ public class SimulatedExchange
                                            "Last is null, publish {}", //$NON-NLS-1$
                                            inCurrentTop);
                     // there didn't used to be a top quote, just add the new one
-                    originalSubscriber.publishTo(QuoteEventBuilder.add(inCurrentTop));
+                    QuoteEvent add = QuoteEventBuilder.add(inCurrentTop);
+                    add.setEventType(EventType.UPDATE_PART);
+                    originalSubscriber.publishTo(add);
                 } else {
                     // there used to be a top quote, check to see if it's different than the current one
                     // btw, we know that current quote and last known quote are both non-null
@@ -1957,7 +2017,9 @@ public class SimulatedExchange
                                                                inCurrentTop) != 0) {
                         SLF4JLoggerProxy.debug(SimulatedExchange.class,
                                                "Non-null current is different from non-null last: publish"); //$NON-NLS-1$
-                        originalSubscriber.publishTo(QuoteEventBuilder.add(inCurrentTop));
+                        QuoteEvent add = QuoteEventBuilder.add(inCurrentTop);
+                        add.setEventType(EventType.UPDATE_PART);
+                        originalSubscriber.publishTo(add);
                     } else {
                         // the current and previous tops are identical, so don't do anything
                         SLF4JLoggerProxy.debug(SimulatedExchange.class,
