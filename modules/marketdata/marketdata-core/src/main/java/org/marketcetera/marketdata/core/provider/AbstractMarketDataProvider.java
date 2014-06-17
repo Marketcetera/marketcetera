@@ -1,6 +1,13 @@
 package org.marketcetera.marketdata.core.provider;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -41,7 +48,6 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.Lifecycle;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 /* $License$ */
@@ -662,8 +668,8 @@ public abstract class AbstractMarketDataProvider
                                                  marketdataCache);
                         }
                         // we now have the market data cache object to use - give it the incoming events
-                        Deque<Event> outgoingEvents = Lists.newLinkedList(marketdataCache.update(notification.content,
-                                                                                                 events));
+                        Collection<Event> outgoingEvents = marketdataCache.update(notification.content,
+                                                                                  events);
                         // find subscribers to this instrument
                         requests.clear();
                         Lock requestLock = marketdataLock.readLock();
@@ -673,29 +679,6 @@ public abstract class AbstractMarketDataProvider
                             requests.addAll(requestsByInstrument.get(eventInstrument));
                         } finally {
                             requestLock.unlock();
-                        }
-                        boolean isSnapshot = false;
-                        // determine if we're dealing with a snapshot or update
-                        for(Event outgoingEvent : outgoingEvents) {
-                            if(outgoingEvent instanceof HasEventType) {
-                                HasEventType hasEventType = (HasEventType)outgoingEvent;
-                                if(hasEventType.getEventType() == EventType.SNAPSHOT_FINAL || hasEventType.getEventType() == EventType.SNAPSHOT_PART) {
-                                    isSnapshot = true;
-                                    break;
-                                }
-                            }
-                        }
-                        // now, set the appropriate flag
-                        HasEventType lastEvent = null;
-                        for(Event outgoingEvent : outgoingEvents) {
-                            if(outgoingEvent instanceof HasEventType) {
-                                HasEventType hasEventType = (HasEventType)outgoingEvent;
-                                lastEvent = hasEventType;
-                                hasEventType.setEventType(isSnapshot?EventType.SNAPSHOT_PART:EventType.UPDATE_PART);
-                            }
-                        }
-                        if(lastEvent != null) {
-                            lastEvent.setEventType(isSnapshot?EventType.SNAPSHOT_FINAL:EventType.UPDATE_FINAL);
                         }
                         SLF4JLoggerProxy.trace("events.publishing",
                                                "Publishing {} to {}",

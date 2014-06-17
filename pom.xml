@@ -795,7 +795,7 @@
           <configuration>
             <disableXmlReport>false</disableXmlReport>
             <forkMode>always</forkMode>
-            <argLine>${mvn.test.options}</argLine>
+            <argLine>-Xmx1024m -Xms128m -XX:MaxPermSize=512m</argLine>
           </configuration>
         </plugin>
         <!-- mvn compile -->

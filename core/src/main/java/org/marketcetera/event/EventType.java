@@ -49,4 +49,22 @@ public enum EventType
         return equals(SNAPSHOT_FINAL) ||
                equals(UPDATE_FINAL);
     }
+    /**
+     * Indicates if this event is part of a update or not.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isUpdate()
+    {
+        return equals(UPDATE_PART) || equals(UPDATE_FINAL);
+    }
+    /**
+     * Indicates if this event is part of a snapshot or not.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isSnapshot()
+    {
+        return equals(SNAPSHOT_PART) || equals(SNAPSHOT_FINAL);
+    }
 }

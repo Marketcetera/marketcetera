@@ -90,7 +90,7 @@ public class CombinedRequest
                              ++count);
         }
         totalEventCount += 1;
-        if(totalEventCount >= 50) {
+        if(totalEventCount >= 15) {
             setProperty("finished",
                         "true");
         }

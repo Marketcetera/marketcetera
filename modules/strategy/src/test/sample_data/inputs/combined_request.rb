@@ -35,7 +35,7 @@ class CombinedRequest < Strategy
           collection[symbol] = 1
       end
       @totalEventCount += 1
-      if(@totalEventCount >= 50)
+      if(@totalEventCount >= 15)
           set_property "finished", "true"
       end
   end

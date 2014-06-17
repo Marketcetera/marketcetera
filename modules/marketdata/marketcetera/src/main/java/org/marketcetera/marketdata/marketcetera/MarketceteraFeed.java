@@ -6,10 +6,8 @@ import static org.marketcetera.marketdata.AssetClass.FUTURE;
 import static org.marketcetera.marketdata.AssetClass.OPTION;
 
 import java.io.File;
-import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -17,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.TimeUnit;
@@ -411,28 +410,23 @@ public class MarketceteraFeed
             dataReceived(handle,
                          refresh);
         }
-	}
-	private MarketceteraFeed(String inProviderName) 
-	    throws URISyntaxException, CoreException
-	{
-	    super(FeedType.UNKNOWN,
-	          inProviderName);
-        try {
-            idFactory = new InMemoryIDFactory(System.currentTimeMillis(),
-                                              String.format("-%s-", //$NON-NLS-1$
-                                                            InetAddress.getLocalHost().toString()));
-        } catch (UnknownHostException e) {
-            throw new IllegalArgumentException(e);
-        }
-	}
-	/**
-	 * used in a message that does not contain a symbol
-	 */
+    }
+    private MarketceteraFeed(String inProviderName) 
+            throws URISyntaxException, CoreException
+    {
+        super(FeedType.UNKNOWN,
+              inProviderName);
+        idFactory = new InMemoryIDFactory(System.currentTimeMillis(),
+                                          UUID.randomUUID().toString());
+    }
+    /**
+     * used in a message that does not contain a symbol
+     */
     private static final String UNKNOWN_SYMBOL = "unknown"; //$NON-NLS-1$
-	/**
-	 * singleton instance of the marketcetera feed
-	 */
-	private static MarketceteraFeed sInstance;
+    /**
+     * singleton instance of the marketcetera feed
+     */
+    private static MarketceteraFeed sInstance;
     /**
      * Gets an instance of <code>MarketceteraFeed</code>.
      * 
