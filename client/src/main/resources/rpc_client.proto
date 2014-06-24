@@ -218,6 +218,8 @@ enum Hierarchy {
 }
 
 message AddReportResponse {
+    required bool status = 1;
+    optional string message = 2;
 }
 
 message DeleteReportRequest {

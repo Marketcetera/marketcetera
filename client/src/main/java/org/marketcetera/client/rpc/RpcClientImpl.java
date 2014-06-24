@@ -9,12 +9,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
@@ -24,11 +19,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.client.Client;
-import org.marketcetera.client.ClientImpl;
-import org.marketcetera.client.ClientParameters;
-import org.marketcetera.client.ClientVersion;
-import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.*;
 import org.marketcetera.client.Messages;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
@@ -50,19 +41,8 @@ import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
-import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.ExecutionReportImpl;
-import org.marketcetera.trade.FIXMessageWrapper;
-import org.marketcetera.trade.Future;
-import org.marketcetera.trade.Hierarchy;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.ReportBaseImpl;
-import org.marketcetera.trade.UserID;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -311,6 +291,9 @@ public class RpcClientImpl
             SLF4JLoggerProxy.debug(this,
                                    "AddReport response: {}",
                                    response);
+            if(!response.getStatus()) {
+                throw new RuntimeException(response.getMessage());
+            }
         } catch (JAXBException | ServiceException e) {
             throw new ConnectionException(e,
                                           Messages.ERROR_REMOTE_EXECUTION);

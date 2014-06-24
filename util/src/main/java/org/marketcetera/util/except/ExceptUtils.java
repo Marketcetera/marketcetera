@@ -3,8 +3,14 @@ package org.marketcetera.util.except;
 import java.io.InterruptedIOException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileLockInterruptionException;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import javax.naming.InterruptedNamingException;
+
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -361,7 +367,25 @@ public final class ExceptUtils
         }
         return areEqual(t.getCause(),to.getCause());
     }
-
+    /**
+     * Gets the root cause message.
+     *
+     * @param inException a <code>Throwable</code> value
+     * @return a <code>String</code> value or <code>null</code>
+     */
+    public static String getRootCauseMessage(Throwable inException)
+    {
+        @SuppressWarnings("unchecked")
+        Deque<Throwable> causes = new LinkedList<>(ExceptionUtils.getThrowableList(inException));
+        Iterator<Throwable> causeIterator = causes.descendingIterator();
+        while(causeIterator.hasNext()) {
+            Throwable cause = causeIterator.next();
+            if(cause.getMessage() != null) {
+                return cause.getMessage();
+            }
+        }
+        return ExceptionUtils.getRootCauseMessage(inException);
+    }
 
     // CONSTRUCTORS.
 

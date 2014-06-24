@@ -26059,6 +26059,31 @@ public final class RpcClient {
 
   public interface AddReportResponseOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
+
+    // required bool status = 1;
+    /**
+     * <code>required bool status = 1;</code>
+     */
+    boolean hasStatus();
+    /**
+     * <code>required bool status = 1;</code>
+     */
+    boolean getStatus();
+
+    // optional string message = 2;
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
   }
   /**
    * Protobuf type {@code AddReportResponse}
@@ -26093,6 +26118,7 @@ public final class RpcClient {
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       initFields();
+      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -26108,6 +26134,16 @@ public final class RpcClient {
                                      extensionRegistry, tag)) {
                 done = true;
               }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              status_ = input.readBool();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              message_ = input.readBytes();
               break;
             }
           }
@@ -26149,13 +26185,79 @@ public final class RpcClient {
       return PARSER;
     }
 
+    private int bitField0_;
+    // required bool status = 1;
+    public static final int STATUS_FIELD_NUMBER = 1;
+    private boolean status_;
+    /**
+     * <code>required bool status = 1;</code>
+     */
+    public boolean hasStatus() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required bool status = 1;</code>
+     */
+    public boolean getStatus() {
+      return status_;
+    }
+
+    // optional string message = 2;
+    public static final int MESSAGE_FIELD_NUMBER = 2;
+    private java.lang.Object message_;
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public boolean hasMessage() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          message_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private void initFields() {
+      status_ = false;
+      message_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
+      if (!hasStatus()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -26163,6 +26265,12 @@ public final class RpcClient {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBool(1, status_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getMessageBytes());
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -26172,6 +26280,14 @@ public final class RpcClient {
       if (size != -1) return size;
 
       size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(1, status_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getMessageBytes());
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
@@ -26288,6 +26404,10 @@ public final class RpcClient {
 
       public Builder clear() {
         super.clear();
+        status_ = false;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        message_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -26314,6 +26434,17 @@ public final class RpcClient {
 
       public org.marketcetera.client.rpc.RpcClient.AddReportResponse buildPartial() {
         org.marketcetera.client.rpc.RpcClient.AddReportResponse result = new org.marketcetera.client.rpc.RpcClient.AddReportResponse(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.status_ = status_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.message_ = message_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -26329,11 +26460,23 @@ public final class RpcClient {
 
       public Builder mergeFrom(org.marketcetera.client.rpc.RpcClient.AddReportResponse other) {
         if (other == org.marketcetera.client.rpc.RpcClient.AddReportResponse.getDefaultInstance()) return this;
+        if (other.hasStatus()) {
+          setStatus(other.getStatus());
+        }
+        if (other.hasMessage()) {
+          bitField0_ |= 0x00000002;
+          message_ = other.message_;
+          onChanged();
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
+        if (!hasStatus()) {
+          
+          return false;
+        }
         return true;
       }
 
@@ -26352,6 +26495,114 @@ public final class RpcClient {
             mergeFrom(parsedMessage);
           }
         }
+        return this;
+      }
+      private int bitField0_;
+
+      // required bool status = 1;
+      private boolean status_ ;
+      /**
+       * <code>required bool status = 1;</code>
+       */
+      public boolean hasStatus() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required bool status = 1;</code>
+       */
+      public boolean getStatus() {
+        return status_;
+      }
+      /**
+       * <code>required bool status = 1;</code>
+       */
+      public Builder setStatus(boolean value) {
+        bitField0_ |= 0x00000001;
+        status_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required bool status = 1;</code>
+       */
+      public Builder clearStatus() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        status_ = false;
+        onChanged();
+        return this;
+      }
+
+      // optional string message = 2;
+      private java.lang.Object message_ = "";
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder clearMessage() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        message_ = value;
+        onChanged();
         return this;
       }
 
@@ -28975,38 +29226,39 @@ public final class RpcClient {
       "\023SetUserDataResponse\"g\n\020AddReportRequest" +
       "\022\021\n\tsessionId\030\001 \002(\t\022\020\n\010brokerId\030\002 \002(\t\022\017\n" +
       "\007message\030\003 \002(\t\022\035\n\thierarchy\030\004 \002(\0162\n.Hier",
-      "archy\"\023\n\021AddReportResponse\"9\n\023DeleteRepo" +
-      "rtRequest\022\021\n\tsessionId\030\001 \002(\t\022\017\n\007message\030" +
-      "\002 \002(\t\"\026\n\024DeleteReportResponse*B\n\016Instrum" +
-      "entType\022\n\n\006EQUITY\020\000\022\n\n\006OPTION\020\001\022\n\n\006FUTUR" +
-      "E\020\002\022\014\n\010CURRENCY\020\003*,\n\tHierarchy\022\n\n\006Parent" +
-      "\020\000\022\t\n\005Child\020\001\022\010\n\004Flat\020\0022\330\007\n\020RpcClientSer" +
-      "vice\022&\n\005login\022\r.LoginRequest\032\016.LoginResp" +
-      "onse\022)\n\006logout\022\016.LogoutRequest\032\017.LogoutR" +
-      "esponse\022;\n\016getNextOrderID\022\023.NextOrderIdR" +
-      "equest\032\024.NextOrderIdResponse\022A\n\020getBroke",
-      "rsStatus\022\025.BrokersStatusRequest\032\026.Broker" +
-      "sStatusResponse\0228\n\rgetOpenOrders\022\022.OpenO" +
-      "rdersRequest\032\023.OpenOrdersResponse\022>\n\017get" +
-      "ReportsSince\022\024.ReportsSinceRequest\032\025.Rep" +
-      "ortsSinceResponse\0223\n\014getPositions\022\020.Posi" +
-      "tionRequest\032\021.PositionResponse\0222\n\theartb" +
-      "eat\022\021.HeartbeatRequest\032\022.HeartbeatRespon" +
-      "se\0222\n\013getUserInfo\022\020.UserInfoRequest\032\021.Us" +
-      "erInfoResponse\0228\n\rgetUnderlying\022\022.Underl" +
-      "yingRequest\032\023.UnderlyingResponse\022;\n\016getO",
-      "ptionRoots\022\023.OptionRootsRequest\032\024.Option" +
-      "RootsResponse\022>\n\rresolveSymbol\022\025.Resolve" +
-      "SymbolRequest\032\026.ResolveSymbolResponse\022>\n" +
-      "\021getRootOrderIdFor\022\023.RootOrderIdRequest\032" +
-      "\024.RootOrderIdResponse\0228\n\013getUserData\022\023.G" +
-      "etUserDataRequest\032\024.GetUserDataResponse\022" +
-      "8\n\013setUserData\022\023.SetUserDataRequest\032\024.Se" +
-      "tUserDataResponse\0222\n\taddReport\022\021.AddRepo" +
-      "rtRequest\032\022.AddReportResponse\022;\n\014deleteR" +
-      "eport\022\024.DeleteReportRequest\032\025.DeleteRepo",
-      "rtResponseB+\n\033org.marketcetera.client.rp" +
-      "cB\tRpcClient\210\001\001"
+      "archy\"4\n\021AddReportResponse\022\016\n\006status\030\001 \002" +
+      "(\010\022\017\n\007message\030\002 \001(\t\"9\n\023DeleteReportReque" +
+      "st\022\021\n\tsessionId\030\001 \002(\t\022\017\n\007message\030\002 \002(\t\"\026" +
+      "\n\024DeleteReportResponse*B\n\016InstrumentType" +
+      "\022\n\n\006EQUITY\020\000\022\n\n\006OPTION\020\001\022\n\n\006FUTURE\020\002\022\014\n\010" +
+      "CURRENCY\020\003*,\n\tHierarchy\022\n\n\006Parent\020\000\022\t\n\005C" +
+      "hild\020\001\022\010\n\004Flat\020\0022\330\007\n\020RpcClientService\022&\n" +
+      "\005login\022\r.LoginRequest\032\016.LoginResponse\022)\n" +
+      "\006logout\022\016.LogoutRequest\032\017.LogoutResponse" +
+      "\022;\n\016getNextOrderID\022\023.NextOrderIdRequest\032",
+      "\024.NextOrderIdResponse\022A\n\020getBrokersStatu" +
+      "s\022\025.BrokersStatusRequest\032\026.BrokersStatus" +
+      "Response\0228\n\rgetOpenOrders\022\022.OpenOrdersRe" +
+      "quest\032\023.OpenOrdersResponse\022>\n\017getReports" +
+      "Since\022\024.ReportsSinceRequest\032\025.ReportsSin" +
+      "ceResponse\0223\n\014getPositions\022\020.PositionReq" +
+      "uest\032\021.PositionResponse\0222\n\theartbeat\022\021.H" +
+      "eartbeatRequest\032\022.HeartbeatResponse\0222\n\013g" +
+      "etUserInfo\022\020.UserInfoRequest\032\021.UserInfoR" +
+      "esponse\0228\n\rgetUnderlying\022\022.UnderlyingReq",
+      "uest\032\023.UnderlyingResponse\022;\n\016getOptionRo" +
+      "ots\022\023.OptionRootsRequest\032\024.OptionRootsRe" +
+      "sponse\022>\n\rresolveSymbol\022\025.ResolveSymbolR" +
+      "equest\032\026.ResolveSymbolResponse\022>\n\021getRoo" +
+      "tOrderIdFor\022\023.RootOrderIdRequest\032\024.RootO" +
+      "rderIdResponse\0228\n\013getUserData\022\023.GetUserD" +
+      "ataRequest\032\024.GetUserDataResponse\0228\n\013setU" +
+      "serData\022\023.SetUserDataRequest\032\024.SetUserDa" +
+      "taResponse\0222\n\taddReport\022\021.AddReportReque" +
+      "st\032\022.AddReportResponse\022;\n\014deleteReport\022\024",
+      ".DeleteReportRequest\032\025.DeleteReportRespo" +
+      "nseB+\n\033org.marketcetera.client.rpcB\tRpcC" +
+      "lient\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -29264,7 +29516,7 @@ public final class RpcClient {
           internal_static_AddReportResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_AddReportResponse_descriptor,
-              new java.lang.String[] { });
+              new java.lang.String[] { "Status", "Message", });
           internal_static_DeleteReportRequest_descriptor =
             getDescriptor().getMessageTypes().get(42);
           internal_static_DeleteReportRequest_fieldAccessorTable = new

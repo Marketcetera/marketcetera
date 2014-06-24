@@ -2,11 +2,7 @@ package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport;
 
 import static org.marketcetera.photon.Messages.ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR;
 
-import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -14,31 +10,16 @@ import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
-import org.marketcetera.client.ClientInitException;
+import org.eclipse.swt.widgets.*;
 import org.marketcetera.client.ClientManager;
-import org.marketcetera.client.ConnectionException;
 import org.marketcetera.photon.Messages;
-import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.BrokerIDField;
-import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.CustomFixField;
-import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.CustomNoneFixField;
-import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.ExecutionReportContainer;
-import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.ExecutionReportField;
-import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.ExecutionReportFixFields;
-import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.ExecutionReportNoneFixField;
+import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.*;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.providers.ExecutionReportFieldContentProvider;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.providers.ExecutionReportFieldLabelProvider;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.Hierarchy;
+import org.marketcetera.util.except.ExceptUtils;
 
 import quickfix.Message;
 
@@ -392,18 +373,14 @@ public class AddExecutionReportDialog extends ReportDialog
             ClientManager.getInstance().addReport(new FIXMessageWrapper(executionReport),
                                                   new org.marketcetera.trade.BrokerID(BrokerID),
                                                   Hierarchy.Flat);
-        } catch (ConnectionException e) 
-		{
-			MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK);
-			messageBox.setText(ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR.getText());
-			messageBox.setMessage(org.apache.commons.lang.exception.ExceptionUtils.getRootCauseMessage(e));
-			messageBox.open();
-			return;
-		} 
-		catch (ClientInitException e) 
-		{
-			PhotonPlugin.LOGGER.error("Client Init", e);
-		}			
+        } catch (RuntimeException e) {
+            MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(),
+                                                   SWT.OK);
+            messageBox.setText(ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR.getText());
+            messageBox.setMessage(ExceptUtils.getRootCauseMessage(e));
+            messageBox.open();
+            return;
+        } 
 		super.okPressed();
 	}
 	

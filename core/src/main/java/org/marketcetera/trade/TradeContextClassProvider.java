@@ -34,5 +34,5 @@ public class TradeContextClassProvider
     /**
      * classes value
      */
-    private static final Class<?>[] CLASSES = new Class<?>[] { Instrument.class,ReportBaseImpl.class };
+    private static final Class<?>[] CLASSES = new Class<?>[] { Instrument.class,ReportBaseImpl.class,FIXMessageWrapper.class };
 }
