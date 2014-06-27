@@ -40,7 +40,8 @@ public class MarketdataCacheElement
     {
         Validate.notNull(inInstrument);
         instrument = inInstrument;
-        marketstatCache = new MarketstatEventCache(inInstrument);
+        marketstatCache = new MarketstatEventCache(inInstrument,
+                                                   true);
         trade = null;
         imbalance = null;
     }
@@ -208,7 +209,8 @@ public class MarketdataCacheElement
     {
         OrderBook book = orderbooks.get(inContent);
         if(book == null) {
-            book = new OrderBook(instrument);
+            book = new OrderBook(instrument,
+                                 true);
             orderbooks.put(inContent,
                            book);
         }

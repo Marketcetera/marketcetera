@@ -145,30 +145,31 @@ public class TopOfBookEventTest
         // bid null (ok)
         setDefaults(builder).withBid(null);
         verify(builder);
-        // bid instrument does not match top-of-book instrument
-        setDefaults(builder).withInstrument(option);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_BID_INCORRECT_INSTRUMENT.getText(equity,
-                                                                                                  option)) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                builder.create();
-            }
-        };
-        // ask instrument does not match top-of-book instrument (takes a little more set-up because bid is validated first)
-        AskEvent optionAsk = EventTestBase.generateOptionAskEvent(option,
-                                                                  QuoteAction.ADD);
-        setDefaults(builder).withAsk(optionAsk);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_ASK_INCORRECT_INSTRUMENT.getText(option,
-                                                                                                  equity)) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                builder.create();
-            }
-        };
+        // TODO make a positive test
+//        // bid instrument does not match top-of-book instrument
+//        setDefaults(builder).withInstrument(option);
+//        new ExpectedFailure<IllegalArgumentException>(VALIDATION_BID_INCORRECT_INSTRUMENT.getText(equity,
+//                                                                                                  option)) {
+//            @Override
+//            protected void run()
+//                    throws Exception
+//            {
+//                builder.create();
+//            }
+//        };
+//        // ask instrument does not match top-of-book instrument (takes a little more set-up because bid is validated first)
+//        AskEvent optionAsk = EventTestBase.generateOptionAskEvent(option,
+//                                                                  QuoteAction.ADD);
+//        setDefaults(builder).withAsk(optionAsk);
+//        new ExpectedFailure<IllegalArgumentException>(VALIDATION_ASK_INCORRECT_INSTRUMENT.getText(option,
+//                                                                                                  equity)) {
+//            @Override
+//            protected void run()
+//                    throws Exception
+//            {
+//                builder.create();
+//            }
+//        };
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.impl.AbstractEventBuilderTestBase#setDefaults(org.marketcetera.event.impl.AbstractEventBuilderImpl)

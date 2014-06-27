@@ -86,10 +86,6 @@ public interface Messages
                                                                                 "validation_null_quote_action"); //$NON-NLS-1$
     static final I18NMessage0P VALIDATION_NULL_LOG_LEVEL = new I18NMessage0P(LOGGER,
                                                                              "validation_null_log_level"); //$NON-NLS-1$
-    static final I18NMessage2P VALIDATION_BID_INCORRECT_INSTRUMENT = new I18NMessage2P(LOGGER,
-                                                                                       "validation_bid_incorrect_instrument"); //$NON-NLS-1$
-    static final I18NMessage2P VALIDATION_ASK_INCORRECT_INSTRUMENT = new I18NMessage2P(LOGGER,
-                                                                                       "validation_ask_incorrect_instrument"); //$NON-NLS-1$
     static final I18NMessage1P VALIDATION_LIST_CONTAINS_NULL = new I18NMessage1P(LOGGER,
                                                                                  "validation_list_contains_null"); //$NON-NLS-1$
     static final I18NMessage2P VALIDATION_LIST_INCORRECT_INSTRUMENT = new I18NMessage2P(LOGGER,

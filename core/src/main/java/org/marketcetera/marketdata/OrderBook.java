@@ -1,9 +1,23 @@
 package org.marketcetera.marketdata;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.SystemUtils;
-import org.marketcetera.event.*;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DepthOfBookEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.impl.DepthOfBookEventBuilder;
 import org.marketcetera.event.impl.TopOfBookEventBuilder;
 import org.marketcetera.event.util.BookPriceComparator;
@@ -38,7 +52,6 @@ import com.google.common.collect.Lists;
  */
 @ClassVersion("$Id$")
 public class OrderBook
-    implements Messages
 {
     /**
      * indicates the order book has no maximum depth
@@ -49,7 +62,7 @@ public class OrderBook
      */
     public final static int DEFAULT_DEPTH = 10;
     /**
-     * Create a new OrderBook instance a reasonable maximum depth.
+     * Create a new OrderBook instance with unlimited maximum depth.
      *
      * <p>The resulting <code>OrderBook</code> will have an
      * unlimited maximum depth.
@@ -62,6 +75,19 @@ public class OrderBook
              UNLIMITED_DEPTH);
     }
     /**
+     * Create a new OrderBook instance with unlimited maximum depth.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inLenient a <code>boolean</code> value
+     */
+    public OrderBook(Instrument inInstrument,
+                     boolean inLenient)
+    {
+        this(inInstrument,
+             UNLIMITED_DEPTH,
+             inLenient);
+    }
+    /**
      * Checks the given depth to see if it is a valid maximum book depth.
      *
      * @param inMaximumDepth an <code>int</code> value
@@ -70,7 +96,7 @@ public class OrderBook
     {
         if(inMaximumDepth != UNLIMITED_DEPTH &&
            inMaximumDepth <= 0) {
-            throw new IllegalArgumentException(ORDER_BOOK_DEPTH_MUST_BE_POSITIVE.getText());
+            throw new IllegalArgumentException(Messages.ORDER_BOOK_DEPTH_MUST_BE_POSITIVE.getText());
         }
     }
     /**
@@ -340,6 +366,22 @@ public class OrderBook
     OrderBook(Instrument inInstrument,
               int inMaxDepth)
     {
+        this(inInstrument,
+             inMaxDepth,
+             false);
+    }
+    /**
+     * Create a new OrderBook instance.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inMaxDepth an <code>int</code> instance  
+     * @param inLenient a <code>boolean</code> value
+     * @throws IllegalArgumentException if the given depth is invalid
+     */
+    OrderBook(Instrument inInstrument,
+              int inMaxDepth,
+              boolean inLenient)
+    {
         if(inInstrument == null) {
             throw new NullPointerException();
         }
@@ -348,6 +390,7 @@ public class OrderBook
         mAskBook = new BookCollection<AskEvent>(inMaxDepth);
         mBidBook = new BookCollection<BidEvent>(inMaxDepth);
         mMaxDepth = inMaxDepth;
+        lenient = inLenient;
     }
     /**
      * Returns a string padded on the right with the given character to the given size.
@@ -375,9 +418,9 @@ public class OrderBook
      */
     private void checkEvent(QuoteEvent inEvent)
     {
-        if(!inEvent.getInstrument().equals(getInstrument())) {
-            throw new IllegalArgumentException(INSTRUMENT_DOES_NOT_MATCH_ORDER_BOOK_INSTRUMENT.getText(inEvent.getInstrument(),
-                                                                                                       getInstrument()));
+        if(!lenient && !inEvent.getInstrument().equals(getInstrument())) {
+            throw new IllegalArgumentException(Messages.INSTRUMENT_DOES_NOT_MATCH_ORDER_BOOK_INSTRUMENT.getText(inEvent.getInstrument(),
+                                                                                                                getInstrument()));
         }
     }
     /**
@@ -563,4 +606,8 @@ public class OrderBook
      * the maximum depth of the order book 
      */
     private final int mMaxDepth;
+    /**
+     * indicates if the order book is lenient or not with respect to event validation
+     */
+    private final boolean lenient;
 }

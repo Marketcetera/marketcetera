@@ -16,7 +16,6 @@ import org.marketcetera.event.beans.HasEventBean;
 import org.marketcetera.event.util.EventServices;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -187,7 +186,6 @@ public class TopOfBookEventImpl
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
-     * @throws IllegalArgumentException if an entry in the list is for a different instrument than the one given
      */
     TopOfBookEventImpl(EventBean inEvent,
                        Instrument inInstrument,
@@ -203,18 +201,6 @@ public class TopOfBookEventImpl
         instrument = inInstrument;
         bid = inBid;
         ask = inAsk;
-        if(bid != null &&
-           !bid.getInstrument().equals(instrument)) {
-            EventServices.error(new I18NBoundMessage2P(VALIDATION_BID_INCORRECT_INSTRUMENT,
-                                                       bid.getInstrument(),
-                                                       instrument));
-        }
-        if(ask != null &&
-           !ask.getInstrument().equals(instrument)) {
-            EventServices.error(new I18NBoundMessage2P(VALIDATION_ASK_INCORRECT_INSTRUMENT,
-                                                       ask.getInstrument(),
-                                                       instrument));
-        }
     }
     /**
      * Returns the exchange of the given event or null. 

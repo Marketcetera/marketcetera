@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.Lifecycle;
 
@@ -93,10 +92,6 @@ public abstract class QueueProcessor<Clazz>
             while(keepAlive.get()) {
                 try {
                     Clazz dataObject = queue.take();
-                    SLF4JLoggerProxy.trace(this,
-                                           "Queue processor {} processing {}",
-                                           threadDescriptor,
-                                           dataObject);
                     processData(dataObject);
                 } catch (InterruptedException e) {
                     throw e;

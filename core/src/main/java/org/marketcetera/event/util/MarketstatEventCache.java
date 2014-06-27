@@ -38,11 +38,32 @@ public class MarketstatEventCache
      */
     public MarketstatEventCache(Instrument inInstrument)
     {
+        this(inInstrument,
+             false);
+    }
+    /**
+     * Create a new MarketstatEventCache instance.
+     * 
+     * <p>This class will organize {@link MarketstatEvent events} for
+     * a given {@link Instrument}, guaranteeing a view with the composite
+     * of all the received non-null attributes with a bias towards the most
+     * recently received value.  The timestamp, id, and source on the returned event
+     * will reflect the most recently received update.
+     * 
+     * <p>Passing lenient=true will disable instrument checks.
+     * 
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inLenient a <code>boolean</code> value
+     */
+    public MarketstatEventCache(Instrument inInstrument,
+                                boolean inLenient)
+    {
         if(inInstrument == null) {
             throw new NullPointerException();
         }
         builder = MarketstatEventBuilder.marketstat(inInstrument);
         instrument = inInstrument;
+        lenient = inLenient;
     }
     /**
      * Adds the given {@link MarketstatEvent event} to the cache.
@@ -57,7 +78,7 @@ public class MarketstatEventCache
      */
     public synchronized MarketstatEvent cache(MarketstatEvent inEvent)
     {
-        if(!inEvent.getInstrument().equals(instrument)) {
+        if(!lenient && !inEvent.getInstrument().equals(instrument)) {
             throw new IllegalArgumentException();
         }
         receivedData = true;
@@ -162,4 +183,8 @@ public class MarketstatEventCache
      * indicates if the cache has received any data so far
      */
     private boolean receivedData = false;
+    /**
+     * indicates if instrument checks should be performed
+     */
+    private final boolean lenient;
 }
