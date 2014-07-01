@@ -1,0 +1,51 @@
+<?eclipse.ant.import?>
+<project>
+	<target description="Create new Eclipse target platform" name="init-rcp-target">
+		<available file="${ECLIPSE_HOME}" property="ECLIPSE_HOME.present"/>
+		<antcall target="copy-rcp-target"/>
+		<property name="GLAZEDLISTS_PLUGIN" value="net.java.dev.glazedlists_1.7.0.jar"/>
+		<property name="CORE_PLUGIN" value="org.marketcetera.core_0.4.2.jar"/>
+		<property name="ACTIVEMQ_PLUGIN" value="org.apache.activemq_4.0.0.jar"/>
+		<property name="QUICKFIXJ_PLUGIN" value="org.quickfixj_1.3.1.jar"/>
+		<property name="LOG4J_PLUGIN" value="org.apache.log4j_1.2.9.jar"/>
+		<property name="CSV_PLUGIN" value="org.skife.kasparov.csv_1.0.0.jar"/>
+		<property name="I18N_PLUGIN" value="org.apache.commons.i18n_0.0.20080812.jar"/>
+
+		<get src="http://repo.marketcetera.org/eclipse/build/${GLAZEDLISTS_PLUGIN}" dest="${ECLIPSE_HOME}/plugins/${GLAZEDLISTS_PLUGIN}" usetimestamp="true"/>
+		<get src="http://repo.marketcetera.org/eclipse/build/${CORE_PLUGIN}" dest="${ECLIPSE_HOME}/plugins/${CORE_PLUGIN}" usetimestamp="true"/>
+		<get src="http://repo.marketcetera.org/eclipse/build/${ACTIVEMQ_PLUGIN}" dest="${ECLIPSE_HOME}/plugins/${ACTIVEMQ_PLUGIN}" usetimestamp="true"/>
+		<get src="http://repo.marketcetera.org/eclipse/build/${QUICKFIXJ_PLUGIN}" dest="${ECLIPSE_HOME}/plugins/${QUICKFIXJ_PLUGIN}" usetimestamp="true"/>
+		<get src="http://repo.marketcetera.org/eclipse/build/${LOG4J_PLUGIN}" dest="${ECLIPSE_HOME}/plugins/${LOG4J_PLUGIN}" usetimestamp="true"/>
+		<get src="http://repo.marketcetera.org/eclipse/build/${CSV_PLUGIN}" dest="${ECLIPSE_HOME}/plugins/${CSV_PLUGIN}" usetimestamp="true"/>
+		<get src="http://repo.marketcetera.org/eclipse/build/${I18N_PLUGIN}" dest="${ECLIPSE_HOME}/plugins/${I18N_PLUGIN}" usetimestamp="true"/>
+	</target>
+
+	<target description="Internal task to copy rcp target files" name="copy-rcp-target" unless="ECLIPSE_HOME.present">
+		<copy todir="${ECLIPSE_HOME}">
+			<fileset dir="${CLEAN_ECLIPSE_HOME}" includes="**/*"/>
+		</copy>
+	</target>
+
+	<target name="javadoc" description="Generate Javadoc documentation">
+		<javadoc destdir="target/javadoc" classpathref="Plug-in Dependencies.libraryclasspath">
+			<packageset dir="src/main/java"></packageset>
+			<link href="http://java.sun.com/javaee/5/docs/api/"/>
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
+			<link href="http://repo.marketcetera.org/javadoc/0.4.2/platform/"/>
+			<link href="http://kasparov.skife.org/csv/api/"/>
+			<link href="http://publicobject.com/glazedlists/glazedlists-1.7.0/api/"/>
+			<link href="http://www.quickfixj.org/quickfixj/javadoc/"/>
+			<link href="http://help.eclipse.org/help31/nftopic/org.eclipse.platform.doc.isv/reference/api/"/>
+		</javadoc>
+	</target>
+	<property name="PHOTON_VERSION" value="0.4.2"/>
+	<property name="PHOTON_ZIP_BASE_NAME" value="photon-${PHOTON_VERSION}"/>
+	<target name="zip-exported-build">
+		  <zip destfile="${EXPORTS_DIR}/${PHOTON_ZIP_BASE_NAME}-linux-gtk-x86.zip" basedir="${EXPORTS_DIR}/linux.gtk.x86" includes="photon/**" />
+		  <zip destfile="${EXPORTS_DIR}/${PHOTON_ZIP_BASE_NAME}-linux-motif-x86.zip" basedir="${EXPORTS_DIR}/linux.motif.x86" includes="photon/**" />
+		  <!-- <zip destfile="${EXPORTS_DIR}/${PHOTON_ZIP_BASE_NAME}-macosx-carbon-x86.zip" basedir="${EXPORTS_DIR}/macosx.carbon.x86" includes="photon/**" />
+		  <zip destfile="${EXPORTS_DIR}/${PHOTON_ZIP_BASE_NAME}-macosx-carbon-ppc.zip" basedir="${EXPORTS_DIR}/macosx.carbon.ppc" includes="photon/**" /> -->
+		  <zip destfile="${EXPORTS_DIR}/${PHOTON_ZIP_BASE_NAME}-win32-win32-x86.zip" basedir="${EXPORTS_DIR}/win32.win32.x86" includes="photon/**" />
+	</target>
+</project>
+
