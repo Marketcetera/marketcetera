@@ -1,16 +1,46 @@
 package org.marketcetera.marketdata.csv;
 
-import static org.marketcetera.marketdata.csv.Messages.*;
+import static org.marketcetera.marketdata.csv.Messages.CANNOT_GUESS_BIG_DECIMAL;
+import static org.marketcetera.marketdata.csv.Messages.CANNOT_GUESS_DATE;
+import static org.marketcetera.marketdata.csv.Messages.CANNOT_INTERPRET_DIVIDEND_FREQUENCY;
+import static org.marketcetera.marketdata.csv.Messages.CANNOT_INTERPRET_DIVIDEND_STATUS;
+import static org.marketcetera.marketdata.csv.Messages.CANNOT_INTERPRET_DIVIDEND_TYPE;
+import static org.marketcetera.marketdata.csv.Messages.EMPTY_LINE;
+import static org.marketcetera.marketdata.csv.Messages.INVALID_CFI_CODE;
+import static org.marketcetera.marketdata.csv.Messages.LINE_MISSING_REQUIRED_FIELDS;
+import static org.marketcetera.marketdata.csv.Messages.NOT_OSI_COMPLIANT;
+import static org.marketcetera.marketdata.csv.Messages.UNABLE_TO_CONSTRUCT_DIVIDEND;
+import static org.marketcetera.marketdata.csv.Messages.UNABLE_TO_CONSTRUCT_MARKETSTAT;
+import static org.marketcetera.marketdata.csv.Messages.UNABLE_TO_CONSTRUCT_QUOTE;
+import static org.marketcetera.marketdata.csv.Messages.UNABLE_TO_CONSTRUCT_TRADE;
+import static org.marketcetera.marketdata.csv.Messages.UNKNOWN_BASIC_EVENT_TYPE;
+import static org.marketcetera.marketdata.csv.Messages.UNKNOWN_SYMBOL_FORMAT;
+import static org.marketcetera.marketdata.csv.Messages.UNSUPPORTED_CFI_CODE;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.event.*;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.DividendFrequency;
+import org.marketcetera.event.DividendStatus;
+import org.marketcetera.event.DividendType;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.DividendEventBuilder;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
@@ -22,6 +52,7 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.client.ClientManager;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 
 /* $License$ */
@@ -763,6 +794,10 @@ public class BasicCSVFeedEventTranslator
                                     2);
         if(symbol == null) {
             return null;
+        }
+        Instrument instrument = ClientManager.getInstance().resolveSymbol(symbol);
+        if(instrument != null) {
+            return instrument;
         }
         if(symbol.contains(":")) { //$NON-NLS-1$
             // assume the symbol contains a CFI (ISO10962) code

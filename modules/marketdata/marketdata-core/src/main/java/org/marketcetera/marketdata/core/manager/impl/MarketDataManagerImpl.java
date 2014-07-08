@@ -614,8 +614,11 @@ public class MarketDataManagerImpl
                     Pair<?,?> pairData = (Pair<?,?>)inData;
                     Object secondMember = pairData.getSecondMember();
                     if(secondMember instanceof Event) {
-                        Pair<MarketDataRequestAtom,Event> toProcess = Pair.create(atom,(Event)secondMember);
-                        processor.add(toProcess);
+                        Event event = (Event)secondMember;
+                        if(atom.getContent().isRelevantTo(event.getClass())) {
+                            Pair<MarketDataRequestAtom,Event> toProcess = Pair.create(atom,event);
+                            processor.add(toProcess);
+                        }
                         return;
                     }
                 }

@@ -21,6 +21,10 @@
       <artifactId>core</artifactId>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>client</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.marketcetera.fork</groupId>
       <artifactId>commons-csv</artifactId>
     </dependency>

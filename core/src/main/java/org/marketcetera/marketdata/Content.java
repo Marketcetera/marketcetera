@@ -94,11 +94,11 @@ public enum Content
             case BBO10 :
                 return QuoteEvent.class.isAssignableFrom(inEventClass);
             case LATEST_TICK :
-                return (inEventClass.equals(TradeEvent.class));
+                return TradeEvent.class.isAssignableFrom(inEventClass);
             case DIVIDEND :
-                return inEventClass.equals(DividendEvent.class);
+                return DividendEvent.class.isAssignableFrom(inEventClass);
             case IMBALANCE :
-                return inEventClass.equals(ImbalanceEvent.class);
+                return ImbalanceEvent.class.isAssignableFrom(inEventClass);
             default :
                 throw new UnsupportedOperationException();
         }
