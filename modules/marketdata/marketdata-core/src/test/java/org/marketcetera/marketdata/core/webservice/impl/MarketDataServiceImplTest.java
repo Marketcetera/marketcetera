@@ -163,6 +163,13 @@ public class MarketDataServiceImplTest
                             }
                         }
                     }
+                    SLF4JLoggerProxy.debug(this,
+                                           "trade: {} bid: {} ask: {} stat: {} dividend: {}",
+                                           trade,
+                                           bid,
+                                           ask,
+                                           stat,
+                                           dividend);
                     return trade.get() && bid.get() && ask.get() && stat.get() && dividend.get();
                 }
             });

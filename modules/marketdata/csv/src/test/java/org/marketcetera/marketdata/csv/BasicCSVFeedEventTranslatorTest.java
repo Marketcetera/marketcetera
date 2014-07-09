@@ -4,7 +4,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.marketcetera.marketdata.csv.Messages.*;
+import static org.marketcetera.marketdata.csv.Messages.CANNOT_GUESS_BIG_DECIMAL;
+import static org.marketcetera.marketdata.csv.Messages.CANNOT_GUESS_DATE;
+import static org.marketcetera.marketdata.csv.Messages.CANNOT_INTERPRET_DIVIDEND_FREQUENCY;
+import static org.marketcetera.marketdata.csv.Messages.CANNOT_INTERPRET_DIVIDEND_STATUS;
+import static org.marketcetera.marketdata.csv.Messages.CANNOT_INTERPRET_DIVIDEND_TYPE;
+import static org.marketcetera.marketdata.csv.Messages.EMPTY_LINE;
+import static org.marketcetera.marketdata.csv.Messages.INVALID_CFI_CODE;
+import static org.marketcetera.marketdata.csv.Messages.LINE_MISSING_REQUIRED_FIELDS;
+import static org.marketcetera.marketdata.csv.Messages.NOT_OSI_COMPLIANT;
+import static org.marketcetera.marketdata.csv.Messages.UNABLE_TO_CONSTRUCT_DIVIDEND;
+import static org.marketcetera.marketdata.csv.Messages.UNABLE_TO_CONSTRUCT_MARKETSTAT;
+import static org.marketcetera.marketdata.csv.Messages.UNABLE_TO_CONSTRUCT_QUOTE;
+import static org.marketcetera.marketdata.csv.Messages.UNABLE_TO_CONSTRUCT_TRADE;
+import static org.marketcetera.marketdata.csv.Messages.UNKNOWN_BASIC_EVENT_TYPE;
+import static org.marketcetera.marketdata.csv.Messages.UNKNOWN_SYMBOL_FORMAT;
+import static org.marketcetera.marketdata.csv.Messages.UNSUPPORTED_CFI_CODE;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -12,16 +27,30 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.marketcetera.client.ClientManager;
+import org.marketcetera.client.MockClient.MockClientFactory;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.event.*;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.DividendFrequency;
+import org.marketcetera.event.DividendStatus;
+import org.marketcetera.event.DividendType;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.options.OptionUtils;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 
 /* $License$ */
 
@@ -34,6 +63,18 @@ import org.marketcetera.trade.*;
  */
 public class BasicCSVFeedEventTranslatorTest
 {
+    /**
+     * Runs once before all tests.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @BeforeClass
+    public static void once()
+            throws Exception
+    {
+        ClientManager.setClientFactory(new MockClientFactory());
+        ClientManager.init(null);
+    }
     /**
      * Tests the ability of the translator to parse <code>BigDecimal</code> values.
      *

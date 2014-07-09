@@ -86,7 +86,7 @@ public enum Content
             case OPEN_BOOK :
                 return QuoteEvent.class.isAssignableFrom(inEventClass);
             case MARKET_STAT :
-                return (inEventClass.equals(MarketstatEvent.class));
+                return MarketstatEvent.class.isAssignableFrom(inEventClass);
             case TOTAL_VIEW :
                 return QuoteEvent.class.isAssignableFrom(inEventClass);
             case LEVEL_2 :

@@ -369,7 +369,7 @@ public class MockClient
     public Instrument resolveSymbol(String inSymbol)
             throws ConnectionException
     {
-        throw new UnsupportedOperationException(); // TODO
+        return null;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReportImpl)
