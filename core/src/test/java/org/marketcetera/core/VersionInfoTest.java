@@ -108,7 +108,7 @@ public class VersionInfoTest
         VersionInfo version1 = new VersionInfo("2.4.0");
         VersionInfo version2 = new VersionInfo("2.4.0");
         VersionInfo version3 = new VersionInfo("2.5.0");
-        VersionInfo version4 = new VersionInfo("2.4.1");
+        VersionInfo version4 = new VersionInfo("2.4.2");
         EqualityAssert.assertEquality(version1,
                                       version2,
                                       version3,
