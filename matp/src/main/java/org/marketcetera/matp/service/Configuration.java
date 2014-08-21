@@ -33,6 +33,6 @@ public class Configuration
     {
         appName = inAppName;
     }
-    @Value("${app.name}")
+    @Value("${spring.application.name}")
     private String appName;
 }
