@@ -203,6 +203,30 @@ public class TradeEventTest
         verify(builder);
     }
     /**
+     * 
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withTradeCondition()
+            throws Exception
+    {
+        TradeEventBuilder<TradeEvent> builder = setDefaults(getBuilder());
+        String tradeCondition = null;
+        builder.withTradeCondition(tradeCondition);
+        assertEquals(tradeCondition,
+                     builder.getMarketData().getTradeCondition());
+        tradeCondition = "";
+        builder.withTradeCondition(tradeCondition);
+        assertEquals(tradeCondition,
+                     builder.getMarketData().getTradeCondition());
+        tradeCondition = "EFG";
+        builder.withTradeCondition(tradeCondition);
+        assertEquals(tradeCondition,
+                     builder.getMarketData().getTradeCondition());
+        verify(builder);
+    }
+    /**
      * Tests {@link TradeEventBuilder#withEventType(org.marketcetera.event.EventType)}.
      *
      * @throws Exception if an unexpected error occurs
@@ -559,6 +583,8 @@ public class TradeEventTest
                      event.getSize());
         assertEquals(inBuilder.getMarketData().getSource(),
                      event.getSource());
+        assertEquals(inBuilder.getMarketData().getTradeCondition(),
+                     event.getTradeCondition());
         assertEquals(inBuilder.getMarketData().getEventType(),
                      event.getEventType());
         assertFalse(event.getEventType() == EventType.SNAPSHOT_FINAL);

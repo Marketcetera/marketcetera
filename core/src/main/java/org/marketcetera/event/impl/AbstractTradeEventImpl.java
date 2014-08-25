@@ -166,6 +166,14 @@ public abstract class AbstractTradeEventImpl
         return marketData.getInstrumentAsString();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.TradeEvent#getTradeCondition()
+     */
+    @Override
+    public String getTradeCondition()
+    {
+        return marketData.getTradeCondition();
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override

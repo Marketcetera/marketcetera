@@ -95,6 +95,9 @@ public class ApplicationContainer
             application.setArguments(args);
             application.start();
         } catch(Exception e) {
+            if(exitCode == 0) {
+                exitCode = -1;
+            }
             e.printStackTrace();
             try {
                 Messages.APP_STOP_ERROR.error(ApplicationContainer.class,

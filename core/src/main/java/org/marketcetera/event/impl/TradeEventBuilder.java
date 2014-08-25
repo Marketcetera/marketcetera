@@ -215,12 +215,23 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     /**
      * Sets the provider value to use with the new event.
      *
-     * @param inProvider an <code>Object</code> value or <code>null</code>
+     * @param inProvider a <code>String</code> value or <code>null</code>
      * @return a <code>TradeEventBuilder</code> value
      */
     public TradeEventBuilder<E> withProvider(String inProvider)
     {
         marketData.setProvider(inProvider);
+        return this;
+    }
+    /**
+     * Sets the trade condition value to use with the new event.
+     *
+     * @param inTradeCondition a <code>String</code> value or <code>null</code>
+     * @return a <code>TradeEventBuilder</code> value
+     */
+    public TradeEventBuilder<E> withTradeCondition(String inTradeCondition)
+    {
+        marketData.setTradeCondition(inTradeCondition);
         return this;
     }
     /**

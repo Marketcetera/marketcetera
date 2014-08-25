@@ -27,4 +27,10 @@ public interface TradeEvent
      * @return a <code>String</code> value
      */
     public String getTradeDate();
+    /**
+     * Gets the trade condition codes, if any.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getTradeCondition();
 }

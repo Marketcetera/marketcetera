@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.event.Messages;
@@ -164,6 +166,24 @@ public class MarketDataBean
         exchange = inExchange;
     }
     /**
+     * Get the tradeCondition value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getTradeCondition()
+    {
+        return tradeCondition;
+    }
+    /**
+     * Sets the tradeCondition value.
+     *
+     * @param inTradeCondition a <code>String</code> value
+     */
+    public void setTradeCondition(String inTradeCondition)
+    {
+        tradeCondition = inTradeCondition;
+    }
+    /**
      * Performs validation of the attributes.
      *
      * <p>Subclasses should override this method to validate
@@ -208,15 +228,7 @@ public class MarketDataBean
     @Override
     public int hashCode()
     {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((exchange == null) ? 0 : exchange.hashCode());
-        result = prime * result + ((exchangeTimestamp == null) ? 0 : exchangeTimestamp.hashCode());
-        result = prime * result + ((instrument == null) ? 0 : instrument.hashCode());
-        result = prime * result + ((price == null) ? 0 : price.hashCode());
-        result = prime * result + ((size == null) ? 0 : size.hashCode());
-        result = prime * result + ((eventType == null) ? 0 : eventType.hashCode());
-        return result;
+        return new HashCodeBuilder().append(exchange).append(exchangeTimestamp).append(instrument).append(price).append(size).append(eventType).append(tradeCondition).toHashCode();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -234,49 +246,8 @@ public class MarketDataBean
             return false;
         }
         MarketDataBean other = (MarketDataBean) obj;
-        if (exchange == null) {
-            if (other.exchange != null) {
-                return false;
-            }
-        } else if (!exchange.equals(other.exchange)) {
-            return false;
-        }
-        if (exchangeTimestamp == null) {
-            if (other.exchangeTimestamp != null) {
-                return false;
-            }
-        } else if (!exchangeTimestamp.equals(other.exchangeTimestamp)) {
-            return false;
-        }
-        if (instrument == null) {
-            if (other.instrument != null) {
-                return false;
-            }
-        } else if (!instrument.equals(other.instrument)) {
-            return false;
-        }
-        if (price == null) {
-            if (other.price != null) {
-                return false;
-            }
-        } else if (!price.equals(other.price)) {
-            return false;
-        }
-        if (size == null) {
-            if (other.size != null) {
-                return false;
-            }
-        } else if (!size.equals(other.size)) {
-            return false;
-        }
-        if (eventType == null) {
-            if (other.eventType != null) {
-                return false;
-            }
-        } else if (!eventType.equals(other.eventType)) {
-            return false;
-        }
-        return true;
+        return new EqualsBuilder().append(exchange,other.exchange).append(exchangeTimestamp,other.exchangeTimestamp).append(instrument,other.instrument)
+                .append(price,other.price).append(size,other.size).append(eventType,other.eventType).append(tradeCondition,other.tradeCondition).isEquals();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -284,13 +255,14 @@ public class MarketDataBean
     @Override
     public String toString()
     {
-        return String.format("MarketData: %s at %s of %s on %s at %s %s [%s with source %s at %s]", //$NON-NLS-1$
+        return String.format("MarketData: %s at %s of %s on %s at %s %s %s [%s with source %s at %s]", //$NON-NLS-1$
                              size,
                              price,
                              instrument,
                              exchange,
                              exchangeTimestamp,
                              eventType,
+                             tradeCondition,
                              getMessageId(),
                              getSource(),
                              getTimestamp());
@@ -312,6 +284,7 @@ public class MarketDataBean
         inRecipient.setInstrument(inDonor.getInstrument());
         inRecipient.setPrice(inDonor.getPrice());
         inRecipient.setSize(inDonor.getSize());
+        inRecipient.setTradeCondition(inDonor.getTradeCondition());
     }
     /**
      * the market data price
@@ -339,9 +312,14 @@ public class MarketDataBean
     @XmlElement
     private Instrument instrument;
     /**
+     * market data trade condition
+     */
+    @XmlAttribute
+    private String tradeCondition;
+    /**
      * the event meta-type
      */
     @XmlAttribute
     private EventType eventType = EventType.UNKNOWN;
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1486216063784594404L;
 }
