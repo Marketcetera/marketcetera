@@ -42,7 +42,7 @@ public interface MarketDataProviderMBean
      *
      * @return a <code>String</code> value
      */
-    public String getProviderStatus();
+    public String getProviderStatusValue();
     /**
      * Starts the provider.
      */

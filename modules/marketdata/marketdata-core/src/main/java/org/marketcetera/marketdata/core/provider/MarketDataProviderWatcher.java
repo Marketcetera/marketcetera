@@ -196,7 +196,7 @@ public class MarketDataProviderWatcher
                 }
                 if(!useModule) {
                     providerBean = getProviderBean();
-                    ProviderStatus providerStatus = ProviderStatus.valueOf(providerBean.getProviderStatus());
+                    ProviderStatus providerStatus = ProviderStatus.valueOf(providerBean.getProviderStatusValue());
                     status = providerStatus;
                     isRunning = providerStatus.isRunning();
                 }

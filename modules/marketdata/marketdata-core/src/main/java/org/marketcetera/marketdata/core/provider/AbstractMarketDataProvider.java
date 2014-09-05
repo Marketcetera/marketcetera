@@ -304,9 +304,17 @@ public abstract class AbstractMarketDataProvider
      * @see org.marketcetera.marketdata.MarketDataProvider#getFeedStatus()
      */
     @Override
-    public String getProviderStatus()
+    public ProviderStatus getProviderStatus()
     {
-        return status.name();
+        return status;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.MarketDataProviderMBean#getProviderStatusValue()
+     */
+    @Override
+    public String getProviderStatusValue()
+    {
+        return getProviderStatus().name();
     }
     /**
      * Sets the providerRegistry value.

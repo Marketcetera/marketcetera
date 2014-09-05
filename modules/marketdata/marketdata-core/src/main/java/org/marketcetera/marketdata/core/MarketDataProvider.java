@@ -61,4 +61,10 @@ public interface MarketDataProvider
      * @return a <code>FeedType</code> value
      */
     public FeedType getFeedType();
+    /**
+     * Gets the status of the provider.
+     *
+     * @return a <code>ProviderStatus</code> value
+     */
+    public ProviderStatus getProviderStatus();
 }

@@ -14,13 +14,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.marketdata.*;
+import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.core.Messages;
 import org.marketcetera.marketdata.core.ProviderStatus;
 import org.marketcetera.marketdata.core.manager.MarketDataProviderNotAvailable;
 import org.marketcetera.marketdata.core.manager.MarketDataRequestFailed;
 import org.marketcetera.marketdata.core.provider.AbstractMarketDataProvider;
-import org.marketcetera.marketdata.core.provider.MarketDataProviderStartFailed;
 import org.marketcetera.marketdata.core.request.MarketDataRequestAtom;
 import org.marketcetera.marketdata.core.request.MarketDataRequestToken;
 import org.marketcetera.module.ExpectedFailure;
@@ -86,14 +88,7 @@ public class AbstractMarketDataProviderTest
         // pathological cases
         NullPointerException exception = new NullPointerException("this exception is expected");
         provider.setExceptionOnStart(exception);
-        new ExpectedFailure<MarketDataProviderStartFailed>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                provider.start();
-            }
-        };
+        provider.start();
         assertFalse(provider.isRunning());
         assertEquals(ProviderStatus.ERROR,
                      provider.getProviderStatus());
