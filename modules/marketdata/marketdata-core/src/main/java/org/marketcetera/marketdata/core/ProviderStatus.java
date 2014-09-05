@@ -30,4 +30,13 @@ public enum ProviderStatus
      * Status of the feed is unknown
      */
     UNKNOWN;
+    /**
+     * Indicates if the provider is available or not.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isRunning()
+    {
+        return equals(AVAILABLE);
+    }
 }

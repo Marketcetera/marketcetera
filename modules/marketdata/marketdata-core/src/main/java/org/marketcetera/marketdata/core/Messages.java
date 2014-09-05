@@ -42,4 +42,9 @@ public interface Messages
     static final I18NMessage1P MARKETDATA_REQUEST_INTERRUPTED = new I18NMessage1P(LOGGER,"marketdata_request_interrupted"); //$NON-NLS-1$
     static final I18NMessage0P MARKETDATA_NEXUS_CONNECTION_LOST = new I18NMessage0P(LOGGER,"marketdata_nexus_connection_lost"); //$NON-NLS-1$
     static final I18NMessage1P MARKETDATA_ERROR_MESSAGE = new I18NMessage1P(LOGGER,"marketdata_error_message"); //$NON-NLS-1$
+    static final I18NMessage0P MBEAN_SERVER_REQUIRED = new I18NMessage0P(LOGGER,"mbean_server_required"); //$NON-NLS-1$
+    static final I18NMessage0P MODULE_NAME_REQUIRED = new I18NMessage0P(LOGGER,"module_name_required"); //$NON-NLS-1$
+    static final I18NMessage2P BAD_FEED_STATUS = new I18NMessage2P(LOGGER,"bad_feed_status"); //$NON-NLS-1$
+    static final I18NMessage2P CANNOT_RECONNECT_FEED = new I18NMessage2P(LOGGER,"cannot_reconnect_feed"); //$NON-NLS-1$
+    static final I18NMessage1P CANNOT_DETERMINE_FEED_STATUS = new I18NMessage1P(LOGGER,"cannot_determine_feed_status"); //$NON-NLS-1$
 }

@@ -114,8 +114,9 @@ public abstract class AbstractMarketDataProvider
             running.set(true);
             setFeedStatus(ProviderStatus.AVAILABLE);
         } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e);
             setFeedStatus(ProviderStatus.ERROR);
-            throw new MarketDataProviderStartFailed(e);
         }
     }
     /* (non-Javadoc)
@@ -303,9 +304,9 @@ public abstract class AbstractMarketDataProvider
      * @see org.marketcetera.marketdata.MarketDataProvider#getFeedStatus()
      */
     @Override
-    public ProviderStatus getProviderStatus()
+    public String getProviderStatus()
     {
-        return status;
+        return status.name();
     }
     /**
      * Sets the providerRegistry value.

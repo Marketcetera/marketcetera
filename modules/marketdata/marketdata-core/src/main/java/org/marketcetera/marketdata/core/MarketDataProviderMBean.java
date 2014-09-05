@@ -40,7 +40,15 @@ public interface MarketDataProviderMBean
     /**
      * Gets the status of the provider.
      *
-     * @return a <code>ProviderStatus</code> value
+     * @return a <code>String</code> value
      */
-    public ProviderStatus getProviderStatus();
+    public String getProviderStatus();
+    /**
+     * Starts the provider.
+     */
+    public void start();
+    /**
+     * Stops the provider.
+     */
+    public void stop();
 }
