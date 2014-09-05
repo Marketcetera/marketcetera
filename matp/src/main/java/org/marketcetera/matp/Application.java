@@ -2,7 +2,6 @@ package org.marketcetera.matp;
 
 import java.util.Locale;
 
-import org.marketcetera.core.log.SLF4JLoggerProxy;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -28,6 +27,23 @@ public class Application
     {
         SpringApplication.run(Application.class,
                               inArgs);
+    }
+    /**
+     * Create a new Application instance.
+     */
+    public Application()
+    {
+        instance = this;
+    }
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    public static Application getInstance()
+    {
+        return instance;
     }
     /**
      * 
@@ -71,9 +87,16 @@ public class Application
             throws BeansException
     {
         applicationContext = inApplicationContext;
-        String hello = applicationContext.getMessage("notification.hello", new Object[] { "colin" }, Locale.US);
-        SLF4JLoggerProxy.info(this,"Hello: {}",
-                              hello);
+    }
+    /**
+     * Get the applicationContext value.
+     *
+     * @return an <code>ApplicationContext</code> value
+     */
+    public ApplicationContext getApplicationContext()
+    {
+        return applicationContext;
     }
     private ApplicationContext applicationContext;
+    private static Application instance;
 }
