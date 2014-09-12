@@ -29,15 +29,13 @@ public class CloseableLock
     }
     /**
      * Locks the wrapped lock.
-     *
-     * @throws RuntimeException if the lock request was interrupted
      */
     public void lock()
     {
         try {
             lock.lockInterruptibly();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (InterruptedException ignored) {
+            // ignore this exception, it almost certainly occurs on shutdown or manual interruption and it's annoying
         }
     }
     /**
@@ -53,7 +51,9 @@ public class CloseableLock
     @Override
     public void close()
     {
-        lock.unlock();
+        try {
+            lock.unlock();
+        } catch (IllegalMonitorStateException ignored) {} 
     }
     /**
      * Create a new CloseableLock instance.

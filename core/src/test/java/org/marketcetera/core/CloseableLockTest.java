@@ -145,24 +145,17 @@ public class CloseableLockTest
         assertTrue(isLocked.get());
         // now, try a write lock (in yet another thread), which should not be possible until we unlock the thread held in the other lock
         final AtomicBoolean otherLockSucceeded = new AtomicBoolean(false);
-        final AtomicBoolean interrupted = new AtomicBoolean(false);
         Runnable otherLocked = new Runnable() {
             @Override
             public void run()
             {
-                try {
-                    try(CloseableLock testLock = CloseableLock.create(myLock.writeLock())) {
-                        testLock.lock();
-                        SLF4JLoggerProxy.debug(CloseableLockTest.this,
-                                               "Successfully locked other lock");
-                        otherLockSucceeded.set(true);
-                        synchronized(otherLockSucceeded) {
-                            otherLockSucceeded.notifyAll();
-                        }
-                    }
-                } catch (RuntimeException e) {
-                    if(e.getCause() instanceof InterruptedException) {
-                        interrupted.set(true);
+                try(CloseableLock testLock = CloseableLock.create(myLock.writeLock())) {
+                    testLock.lock();
+                    SLF4JLoggerProxy.debug(CloseableLockTest.this,
+                                           "Successfully locked other lock");
+                    otherLockSucceeded.set(true);
+                    synchronized(otherLockSucceeded) {
+                        otherLockSucceeded.notifyAll();
                     }
                 }
             }
@@ -175,9 +168,7 @@ public class CloseableLockTest
         // interrupt the other thread
         otherLocker.interrupt();
         otherLocker.join();
-        assertTrue(interrupted.get());
         // restart the other locker
-        interrupted.set(false);
         otherLocker = new Thread(otherLocked);
         otherLocker.start();
         Thread.sleep(1000);
