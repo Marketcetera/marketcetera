@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="sa"
+    nsURI="http://www.marketcetera.org/photon/strategy/engine/strategyagent/1.0" nsPrefix="strategyagent">
+  <eClassifiers xsi:type="ecore:EClass" name="StrategyAgentEngine" eSuperTypes="../../org.marketcetera.photon.strategy.engine/model/strategy-engine-core.ecore#//StrategyEngine">
+    <eOperations name="connect" eExceptions="ecore:EDataType ../../org.marketcetera.photon.strategy.engine/model/strategy-engine-core.ecore#//Exception"/>
+    <eOperations name="disconnect" eExceptions="ecore:EDataType ../../org.marketcetera.photon.strategy.engine/model/strategy-engine-core.ecore#//Exception"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="jmsUrl" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="webServiceHostname" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="webServicePort" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
+  </eClassifiers>
+</ecore:EPackage>

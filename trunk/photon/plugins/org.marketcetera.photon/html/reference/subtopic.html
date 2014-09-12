@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>Sub Topic</title>
+</head>
+
+<body>
+<div id="content">
+<h1>Command Reference</h1>
+The following commands are supported in the Command Entry Area at the bottom of the application window.
+<dl>
+	<dt>New Order</dt>
+	<dd><pre class="commandsyntax">{ B | S | SS | SSE} <em class="replaceable">quantity</em> <em class="replaceable">symbol</em> <em class="replaceable">price</em> [<em class="replaceable">timeInForce</em> [<em class="replaceable">account</em>]]
+	</pre></dd>
+	<dd>This command starts with one of "B" (buy), "S" (sell), "SS" (sell short), "SSE" (sell short exempt). That
+	is followed by a quantity which must be an integer.  After the quantity comes a symbol.  A symbol can consist
+	of any string of non-whitespace characters. Next comes the price, which can be either numeric or integer format.
+	Finally two optional components, the time in force and the account.  Time in force can be one of "DAY" (day),
+	"GTC" (good 'til cancel), "FOK" (fill or kill), "CLO" (at the close), "OPG" (at the opening), "IOC" (immediate 
+	or cancel). The account can be any string of non-whitespace characters.  Note that if you have an account, you
+	must also have a time in force.</dd>
+	<dt>Cancel order</dt>
+	<dd><pre class="commandsyntax">C {<em class="replaceable">clordid</em>}+
+	</pre></dd>
+	<dd>This command starts with a "C" followed by a list of ClOrdId (client order id) values separated by whitespace.
+	All of the orders with the specified order id's will be cancelled.</dd>
+	<dt>Cancel Replace</dt>
+	<dd><pre class="commandsyntax">CXR <em class="replaceable">clordid</em> { P <em class="replaceable">price</em> | Q <em class="replaceable">quantity</em> }
+	</pre></dd>
+	<dd>This command starts with "CXR", followed by the ClOrdId (client order id) of the order to be replaced.  To 
+	adjust the price of the order, use "P" followed by an integer or decimal price.  To adjust the quantity
+	use "Q" followed by an integer representation of the new quantity.
+</dl>
+</div>
+</body>
+</html>

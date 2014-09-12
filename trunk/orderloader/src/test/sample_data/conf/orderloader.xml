@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  - OrderLoader base configuration file.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 0.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - DO NOT CHANGE THIS FILE. Place your settings in
+  - 'orderloader_user.properties'.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+  <import resource="properties.xml"/>
+  <context:component-scan base-package="org.marketcetera.core"/>
+  <bean id="clientURL" class="java.lang.String">
+    <constructor-arg value="${metc.client.url}"/>
+  </bean>
+  <bean id="clientWSHost" class="java.lang.String">
+    <constructor-arg value="${metc.client.ws.host}"/>
+  </bean>
+  <bean id="clientIDPrefix" class="java.lang.String">
+    <constructor-arg value="${metc.client.idprefix}"/>
+  </bean>
+  <bean id="clientWSPort" class="java.lang.Integer">
+    <constructor-arg value="${metc.client.ws.port}"/>
+  </bean>
+</beans>
