@@ -163,7 +163,7 @@
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
           </exclusion>
-	  <!-- exclude jaxb-impl because it's included with Java 7 -->
+          <!-- exclude jaxb-impl because it's included with Java 7 -->
           <exclusion>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
@@ -248,6 +248,11 @@
         </exclusions>
       </dependency>
       <!-- Compile: Other -->
+      <dependency>
+        <groupId>com.hazelcast</groupId>
+        <artifactId>hazelcast</artifactId>
+        <version>3.3</version>
+      </dependency> 
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
@@ -440,16 +445,16 @@
         <version>3.2.2</version>
       </dependency>
       <dependency>
-	<groupId>io.netty</groupId>
-	<artifactId>netty</artifactId>
-	<version>3.8.1.Final</version>
-	<scope>runtime</scope>
+        <groupId>io.netty</groupId>
+        <artifactId>netty</artifactId>
+        <version>3.8.1.Final</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
-	<groupId>com.jcraft</groupId>
-	<artifactId>jzlib</artifactId>
-	<version>1.1.2</version>
-	<scope>runtime</scope>
+        <groupId>com.jcraft</groupId>
+        <artifactId>jzlib</artifactId>
+        <version>1.1.2</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>com.mysema.querydsl</groupId>
@@ -478,6 +483,12 @@
         <version>${mvn.querydsl.version}</version>
       </dependency>
       <!-- Runtime. -->
+      <dependency>
+        <groupId>com.hazelcast</groupId>
+        <artifactId>hazelcast-hibernate4</artifactId>
+        <version>3.3</version>
+        <scope>runtime</scope>
+      </dependency> 
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-pool</artifactId>
@@ -549,11 +560,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
           </exclusion>
-	  <!-- exclude jaxb-impl because it's included with Java 7 -->
-	  <exclusion>
-	    <groupId>com.sun.xml.bind</groupId>
-	    <artifactId>jaxb-impl</artifactId>
-	  </exclusion>
+          <!-- exclude jaxb-impl because it's included with Java 7 -->
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -847,23 +858,23 @@
       </plugin>
       <!-- Adds the build number to each JAR -->
       <plugin>
-	<groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
-	<artifactId>svn-revision-number-maven-plugin</artifactId>
-	<version>1.13</version>
-	<executions>
-	  <execution>
+        <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
+        <artifactId>svn-revision-number-maven-plugin</artifactId>
+        <version>1.13</version>
+        <executions>
+          <execution>
             <goals>
-	      <goal>revision</goal>
+              <goal>revision</goal>
             </goals>
-	  </execution>
-	</executions>
-	<configuration>
-	  <entries>
+          </execution>
+        </executions>
+        <configuration>
+          <entries>
             <entry>
-	      <prefix>svn</prefix>
+              <prefix>svn</prefix>
             </entry>
-	  </entries>
-	</configuration>
+          </entries>
+        </configuration>
         <dependencies>
           <dependency>
             <groupId>org.tmatesoft.svnkit</groupId>
@@ -892,18 +903,18 @@
     </extensions>
     <resources>
       <resource>
-	<directory>src/main/resources</directory>
-	<filtering>true</filtering>
-	<includes>
-	  <include>**/metc_version.properties</include>
-	</includes>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/metc_version.properties</include>
+        </includes>
       </resource>
       <resource>
-	<directory>src/main/resources</directory>
-	<filtering>false</filtering>
-	<excludes>
-	  <exclude>**/metc_version.properties</exclude>
-	</excludes>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/metc_version.properties</exclude>
+        </excludes>
       </resource>
     </resources>
   </build>
