@@ -1,5 +1,8 @@
 package org.marketcetera.client;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang.Validate;
 import org.marketcetera.util.misc.ClassVersion;
 
 
@@ -16,6 +19,53 @@ import org.marketcetera.util.misc.ClassVersion;
 public final class ClientManager
 {
     /**
+     * Validates and starts the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        Validate.isTrue(parameters != null || client != null);
+        if(!isInitialized()) {
+            init(parameters);
+        }
+    }
+    /**
+     * Get the parameters value.
+     *
+     * @return a <code>ClientParameters</code> value
+     */
+    public ClientParameters getParameters()
+    {
+        return parameters;
+    }
+    /**
+     * Sets the parameters value.
+     *
+     * @param inParameters a <code>ClientParameters</code> value
+     */
+    public void setParameters(ClientParameters inParameters)
+    {
+        parameters = inParameters;
+    }
+    /**
+     * Get the Client value.
+     *
+     * @return a <code>Client</code> value
+     */
+    public Client getClient()
+    {
+        return client;
+    }
+    /**
+     * Sets the Client value.
+     *
+     * @param inClient a <code>Client</code> value
+     */
+    public void setClient(Client inClient)
+    {
+        client = inClient;
+    }
+    /**
      * Initializes the connection to the server. The handle to communicate
      * with the server can be obtained via {@link #getInstance()}.
      *
@@ -29,7 +79,7 @@ public final class ClientManager
             throws ConnectionException, ClientInitException
     {
         if(!isInitialized()) {
-            mClient = mClientFactory.getClient(inParameter);
+            client = mClientFactory.getClient(inParameter);
         } else {
             throw new ClientInitException(Messages.CLIENT_ALREADY_INITIALIZED);
         }
@@ -58,7 +108,7 @@ public final class ClientManager
      */
     public static Client getInstance() throws ClientInitException {
         if (isInitialized()) {
-            return mClient;
+            return client;
         } else {
             throw new ClientInitException(Messages.CLIENT_NOT_INITIALIZED);
         }
@@ -70,7 +120,7 @@ public final class ClientManager
      * @return if the client is initialized.
      */
     public static boolean isInitialized() {
-        return mClient != null;
+        return client != null;
     }
 
     /**
@@ -79,13 +129,7 @@ public final class ClientManager
      * This method is not meant to be used by clients. 
      */
     synchronized static void reset() {
-        mClient = null;
-    }
-
-    /**
-     * Do not allow any instances to be created.
-     */
-    private ClientManager() {
+        client = null;
     }
     /**
      * the <code>ClientFactory</code> to use to create the <code>Client</code> object 
@@ -102,5 +146,9 @@ public final class ClientManager
     /**
      * the <code>Client</code> object
      */
-    private volatile static Client mClient;
+    private volatile static Client client;
+    /**
+     * 
+     */
+    private ClientParameters parameters;
 }
