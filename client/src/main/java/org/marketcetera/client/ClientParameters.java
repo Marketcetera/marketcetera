@@ -174,6 +174,10 @@ public class ClientParameters
              DEFAULT_HEARTBEAT_INTERVAL);
     }
     /**
+     * Create a new ClientParameters instance.
+     */
+    public ClientParameters() {}
+    /**
      * Creates an instance.
      *
      * @param inUsername the user name.
