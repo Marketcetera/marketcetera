@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -17,16 +18,32 @@ import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
 
-import quickfix.*;
-import quickfix.field.*;
+import quickfix.DecimalField;
+import quickfix.Field;
+import quickfix.IntField;
+import quickfix.Message;
+import quickfix.StringField;
+import quickfix.field.CFICode;
+import quickfix.field.MaturityDate;
+import quickfix.field.MaturityDay;
+import quickfix.field.MaturityMonthYear;
+import quickfix.field.PutOrCall;
 import quickfix.field.SecurityType;
+import quickfix.field.StrikePrice;
+import quickfix.field.Symbol;
 
 /* $License$ */
+
 /**
  * Tests {@link InstrumentFromMessage} and its subclasses.
  *
@@ -34,7 +51,6 @@ import quickfix.field.SecurityType;
  * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id$")
 public class InstrumentFromMessageTest {
     
     @BeforeClass
@@ -164,7 +180,52 @@ public class InstrumentFromMessageTest {
             }
         }
     }
-    
+    /**
+     * Tests futures and options with an invalid day value.
+     * 
+     * <p>This tests MATP-804.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void invalidDay()
+            throws Exception
+    {
+        Field<?> secType = new SecurityType(SecurityType.FUTURE);
+        Field<?> symbol = new Symbol("METC");
+        Field<?> expiry = new MaturityMonthYear("201411");
+        Field<?> day = new MaturityDay("31"); // this value is intentionally bogus
+        Message m = FIX_VERSION.getMessageFactory().newBasicOrder();
+        setFields(m,
+                  secType,
+                  symbol,
+                  expiry,
+                  day);
+        Future future = (Future)InstrumentFromMessage.SELECTOR.forValue(m).extract(m);
+        assertNotNull(future);
+        assertEquals("201411",
+                     future.getExpiryAsString());
+        assertEquals(-1,
+                     future.getExpirationDay());
+        // test again with an option
+        Field<?> optType = new PutOrCall(PutOrCall.CALL);
+        Field<?> strikePrice = new StrikePrice(BigDecimal.TEN);
+        secType = new SecurityType(SecurityType.OPTION);
+        m = FIX_VERSION.getMessageFactory().newBasicOrder();
+        setFields(m,
+                  secType,
+                  symbol,
+                  optType,
+                  strikePrice,
+                  expiry,
+                  day);
+        Option option = (Option)InstrumentFromMessage.SELECTOR.forValue(m).extract(m);
+        assertNotNull(option);
+        assertEquals("201411",
+                     option.getExpiry());
+        assertEquals("20141122",
+                     option.getAugmentedExpiry());
+    }
     @Test
     public void future()
             throws Exception

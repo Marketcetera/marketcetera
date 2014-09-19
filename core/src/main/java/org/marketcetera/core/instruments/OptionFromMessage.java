@@ -1,14 +1,28 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.OptionType;
-import org.marketcetera.trade.Option;
-import quickfix.Message;
-import quickfix.FieldNotFound;
-import quickfix.field.*;
+import static org.marketcetera.core.time.TimeFactoryImpl.DAY;
+import static org.marketcetera.core.time.TimeFactoryImpl.MONTH;
+import static org.marketcetera.core.time.TimeFactoryImpl.YEAR;
 
 import java.math.BigDecimal;
+import java.util.regex.Pattern;
+
+import org.joda.time.IllegalFieldValueException;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.util.misc.ClassVersion;
+
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.field.CFICode;
+import quickfix.field.MaturityDate;
+import quickfix.field.MaturityDay;
+import quickfix.field.MaturityMonthYear;
+import quickfix.field.SecurityType;
+import quickfix.field.StrikePrice;
 
 /* $License$ */
 /**
@@ -110,13 +124,29 @@ public class OptionFromMessage extends InstrumentFromMessage {
             try {
                 String value = inMessage.getString(MaturityMonthYear.FIELD);
                 if (value != null) {
-                    //FIX version 4.2 uses MaturityDay to specify the option's
-                    //expiry day once OSI goes into effect.
-                    if (value.length() == 6 && inMessage.isSetField(MaturityDay.FIELD)) {
+                    //FIX version 4.2 uses MaturityDay to specify the option's expiry day once OSI goes into effect.
+                    if(value.length() == 6 && inMessage.isSetField(MaturityDay.FIELD)) {
                         try {
                             String day = inMessage.getString(MaturityDay.FIELD);
-                            if (day != null) {
-                                return value + day;
+                            if(day != null) {
+                                // we have Maturity Day, use that if we can. if it's invalid, don't use it.
+                                String valueWithDay = new StringBuilder().append(value).append(day).toString();
+                                // check to see if we've got a numeric expiry or something like 201411w2 instead
+                                if(YYYYMMDD.matcher(valueWithDay).matches()) {
+                                    try {
+                                        // test this value, if it works, use it. if it doesn't, skip it and just return the value w/o the day
+                                        EXPIRY_WITH_DAY.parseDateTime(valueWithDay);
+                                        return valueWithDay;
+                                    } catch (IllegalFieldValueException e) {
+                                        Messages.INVALID_MATURITY_DAY.warn(OptionFromMessage.class,
+                                                                           e.getMessage(),
+                                                                           value);
+                                        inMessage.removeField(MaturityDay.FIELD);
+                                        return value;
+                                    }
+                                } else {
+                                    return valueWithDay;
+                                }
                             }
                         } catch (FieldNotFound ignore) {
                         }
@@ -135,4 +165,12 @@ public class OptionFromMessage extends InstrumentFromMessage {
         }
         return null;
     }
+    /**
+     * looks for expiries that exactly match the pattern YYYYMMDD - does not validate them as dates!
+     */
+    private static final Pattern YYYYMMDD = Pattern.compile("^[0-9]{8}$"); //$NON-NLS-1$
+    /**
+     * validates experies of the pattern YYYYMMDD as valid dates
+     */
+    private static final DateTimeFormatter EXPIRY_WITH_DAY = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).toFormatter();
 }

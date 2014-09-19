@@ -1,10 +1,10 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -41,4 +41,5 @@ public interface Messages {
     static final I18NMessage1P FOREX_NOT_SUPPORTED_FOR_FIX_VERSION =
             new I18NMessage1P(LOGGER, "forex_not_supported_for_fix_version");   //$NON-NLS-1$
     static final I18NMessage1P CONVERTIBLE_BONDS_NOT_SUPPORTED_FOR_FIX_VERSION = new I18NMessage1P(LOGGER,"convertible_bonds_not_supported_for_fix_version");   //$NON-NLS-1$
+    static final I18NMessage2P INVALID_MATURITY_DAY = new I18NMessage2P(LOGGER,"invalid_maturity_day");   //$NON-NLS-1$
 }
