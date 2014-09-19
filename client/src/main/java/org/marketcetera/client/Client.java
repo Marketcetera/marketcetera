@@ -51,7 +51,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public interface Client {
+public interface Client
+        extends ReportPublisher,BrokerStatusPublisher
+{
     /**
      * Sends the supplied order to the server.
      *
@@ -306,62 +308,6 @@ public interface Client {
      */
     public Collection<String> getOptionRoots(String inUnderlying)
             throws ConnectionException;
-
-    /**
-     * Adds a report listener. The report listener receives all the reports
-     * sent out by the server.
-     * <p>
-     * If the same listener is added more than once, it will receive
-     * notifications as many times as it's been added.
-     * <p>
-     * The listeners are notified in the reverse order of their addition. 
-     *
-     * @param inListener The listener instance that should be supplied
-     * the reports.
-     */
-    public void addReportListener(ReportListener inListener);
-
-    /**
-     * Removes a report listener that was previously added via
-     * {@link #addReportListener(ReportListener)}. If the listener
-     * was added more than once, only its most recently added occurrence
-     * will be removed. 
-     *
-     * @param inListener The listener instance that should no longer
-     * be receiving the reports.
-     */
-    public void removeReportListener(ReportListener inListener);
-
-    /**
-     * Adds a broker status listener, which receives all the
-     * broker status changes sent out by the server.
-     *
-     * <p>If the same listener is added more than once, it will receive
-     * notifications as many times as it has been added.</p>
-     *
-     * <p>The listeners are notified in the reverse order of their
-     * addition.</p>
-     *
-     * @param listener The listener which should be supplied the
-     * broker status changes.
-     */
-    public void addBrokerStatusListener
-        (BrokerStatusListener listener);
-
-    /**
-     * Removes a broker status listener that was previously added
-     * via {@link
-     * #addBrokerStatusListener(BrokerStatusListener)}.
-     *
-     * <p>If the listener was added more than once, only its most
-     * recently added instance will be removed.</p>
-     *
-     * @param listener The listener which should stop receiving
-     * broker status changes.
-     */
-    public void removeBrokerStatusListener
-        (BrokerStatusListener listener);
-
     /**
      * Adds a server connection status listener, which receives all
      * the server connection status changes.
