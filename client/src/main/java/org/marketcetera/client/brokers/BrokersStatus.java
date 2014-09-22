@@ -1,5 +1,6 @@
 package org.marketcetera.client.brokers;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$")
 public class BrokersStatus
+        implements Serializable
 {
     /**
      * Creates a new collective status representation, given the status of the brokers.
@@ -66,4 +68,5 @@ public class BrokersStatus
      * brokers value
      */
     private final List<BrokerStatus> brokers;
+    private static final long serialVersionUID = -5848029285343673726L;
 }

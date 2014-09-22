@@ -50,8 +50,8 @@ public class SessionManager<T>
     private NodeId mServerId;
     private final long mSessionLife;
     private final SessionFactory<T> mSessionFactory;
-    private final HashMap<SessionId,SessionHolder<T>> mMap=
-        new HashMap<SessionId,SessionHolder<T>>();
+    private final Object sessionMapLock = new Object();
+    private final HashMap<SessionId,SessionHolder<T>> mMap = new HashMap<SessionId,SessionHolder<T>>();
 
     /**
      * The reaper.
@@ -101,7 +101,7 @@ public class SessionManager<T>
         {
             while (true) {
                 long cutoff=System.currentTimeMillis()-getLifespan();
-                synchronized (getMap()) {
+                synchronized (sessionMapLock) {
                     for (Iterator<Map.Entry<SessionId,SessionHolder<T>>> i=
                              getMap().entrySet().iterator();i.hasNext();) {
                         Map.Entry<SessionId,SessionHolder<T>> entry=i.next();
@@ -240,7 +240,7 @@ public class SessionManager<T>
      * @return The map.
      */
 
-    private HashMap<SessionId,SessionHolder<T>> getMap()
+    protected Map<SessionId,SessionHolder<T>> getMap()
     {
         return mMap;
     }
@@ -256,7 +256,7 @@ public class SessionManager<T>
     public void put(SessionId id,
                     SessionHolder<T> holder)
     {
-        synchronized (getMap()) {
+        synchronized(sessionMapLock) {
             holder.markAccess();
             if(getSessionFactory()!=null) {
                 holder.setSession(getSessionFactory().createSession(holder.getCreationContext(),
@@ -267,7 +267,6 @@ public class SessionManager<T>
                          holder);
         }
     }
-
     /**
      * Returns the holder that the receiver associates with the given
      * session ID. This access renews the session's expiration
@@ -282,7 +281,7 @@ public class SessionManager<T>
     public SessionHolder<T> get
         (SessionId id)
     {
-        synchronized (getMap()) {
+        synchronized (sessionMapLock) {
             SessionHolder<T> holder=getMap().get(id);
             if (holder==null) {
                 return null;
@@ -303,7 +302,7 @@ public class SessionManager<T>
     public void remove
         (SessionId id)
     {
-        synchronized (getMap()) {
+        synchronized (sessionMapLock) {
             SessionHolder<T> holder=getMap().remove(id);
             if ((holder!=null) && (getSessionFactory()!=null)) {
                 getSessionFactory().removedSession(holder.getSession());

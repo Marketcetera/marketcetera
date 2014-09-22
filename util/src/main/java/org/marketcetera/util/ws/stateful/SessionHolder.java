@@ -21,7 +21,6 @@ import org.marketcetera.util.ws.stateless.StatelessClientContext;
 @ClassVersion("$Id$")
 public class SessionHolder<T>
 {
-
     // INSTANCE DATA.
 
     private final String mUser;
