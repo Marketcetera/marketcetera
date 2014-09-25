@@ -469,9 +469,15 @@ public class RpcClientImpl
             RpcClient.BrokersStatus rpcBrokersStatus = brokersStatusResponse.getBrokersStatus();
             List<BrokerStatus> brokers = Lists.newArrayList();
             for(RpcClient.BrokerStatus rpcBrokerStatus : rpcBrokersStatus.getBrokersList()) {
+                Map<String,String> settings = new HashMap<>();
+                for(RpcClient.SessionSetting settingEntry : rpcBrokerStatus.getSettingsList()) {
+                    settings.put(settingEntry.getKey(),
+                                 settingEntry.getValue());
+                }
                 BrokerStatus brokerStatus = new BrokerStatus(rpcBrokerStatus.getName(),
                                                              new BrokerID(rpcBrokerStatus.getBrokerId()),
-                                                             rpcBrokerStatus.getLoggedOn());
+                                                             rpcBrokerStatus.getLoggedOn(),
+                                                             settings);
                 brokers.add(brokerStatus);
             }
             BrokersStatus brokersStatus = new BrokersStatus(brokers);

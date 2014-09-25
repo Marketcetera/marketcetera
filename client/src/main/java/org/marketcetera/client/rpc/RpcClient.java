@@ -6417,6 +6417,31 @@ public final class RpcClient {
      */
     org.marketcetera.client.rpc.RpcClient.BrokerAlgoSpecOrBuilder getBrokerAlgosOrBuilder(
         int index);
+
+    // repeated .SessionSetting settings = 5;
+    /**
+     * <code>repeated .SessionSetting settings = 5;</code>
+     */
+    java.util.List<org.marketcetera.client.rpc.RpcClient.SessionSetting> 
+        getSettingsList();
+    /**
+     * <code>repeated .SessionSetting settings = 5;</code>
+     */
+    org.marketcetera.client.rpc.RpcClient.SessionSetting getSettings(int index);
+    /**
+     * <code>repeated .SessionSetting settings = 5;</code>
+     */
+    int getSettingsCount();
+    /**
+     * <code>repeated .SessionSetting settings = 5;</code>
+     */
+    java.util.List<? extends org.marketcetera.client.rpc.RpcClient.SessionSettingOrBuilder> 
+        getSettingsOrBuilderList();
+    /**
+     * <code>repeated .SessionSetting settings = 5;</code>
+     */
+    org.marketcetera.client.rpc.RpcClient.SessionSettingOrBuilder getSettingsOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code BrokerStatus}
@@ -6492,6 +6517,14 @@ public final class RpcClient {
               brokerAlgos_.add(input.readMessage(org.marketcetera.client.rpc.RpcClient.BrokerAlgoSpec.PARSER, extensionRegistry));
               break;
             }
+            case 42: {
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                settings_ = new java.util.ArrayList<org.marketcetera.client.rpc.RpcClient.SessionSetting>();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              settings_.add(input.readMessage(org.marketcetera.client.rpc.RpcClient.SessionSetting.PARSER, extensionRegistry));
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -6502,6 +6535,9 @@ public final class RpcClient {
       } finally {
         if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
           brokerAlgos_ = java.util.Collections.unmodifiableList(brokerAlgos_);
+        }
+        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+          settings_ = java.util.Collections.unmodifiableList(settings_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -6673,11 +6709,48 @@ public final class RpcClient {
       return brokerAlgos_.get(index);
     }
 
+    // repeated .SessionSetting settings = 5;
+    public static final int SETTINGS_FIELD_NUMBER = 5;
+    private java.util.List<org.marketcetera.client.rpc.RpcClient.SessionSetting> settings_;
+    /**
+     * <code>repeated .SessionSetting settings = 5;</code>
+     */
+    public java.util.List<org.marketcetera.client.rpc.RpcClient.SessionSetting> getSettingsList() {
+      return settings_;
+    }
+    /**
+     * <code>repeated .SessionSetting settings = 5;</code>
+     */
+    public java.util.List<? extends org.marketcetera.client.rpc.RpcClient.SessionSettingOrBuilder> 
+        getSettingsOrBuilderList() {
+      return settings_;
+    }
+    /**
+     * <code>repeated .SessionSetting settings = 5;</code>
+     */
+    public int getSettingsCount() {
+      return settings_.size();
+    }
+    /**
+     * <code>repeated .SessionSetting settings = 5;</code>
+     */
+    public org.marketcetera.client.rpc.RpcClient.SessionSetting getSettings(int index) {
+      return settings_.get(index);
+    }
+    /**
+     * <code>repeated .SessionSetting settings = 5;</code>
+     */
+    public org.marketcetera.client.rpc.RpcClient.SessionSettingOrBuilder getSettingsOrBuilder(
+        int index) {
+      return settings_.get(index);
+    }
+
     private void initFields() {
       name_ = "";
       brokerId_ = "";
       loggedOn_ = false;
       brokerAlgos_ = java.util.Collections.emptyList();
+      settings_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -6702,6 +6775,12 @@ public final class RpcClient {
           return false;
         }
       }
+      for (int i = 0; i < getSettingsCount(); i++) {
+        if (!getSettings(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -6720,6 +6799,9 @@ public final class RpcClient {
       }
       for (int i = 0; i < brokerAlgos_.size(); i++) {
         output.writeMessage(4, brokerAlgos_.get(i));
+      }
+      for (int i = 0; i < settings_.size(); i++) {
+        output.writeMessage(5, settings_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -6745,6 +6827,10 @@ public final class RpcClient {
       for (int i = 0; i < brokerAlgos_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, brokerAlgos_.get(i));
+      }
+      for (int i = 0; i < settings_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, settings_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -6855,6 +6941,7 @@ public final class RpcClient {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getBrokerAlgosFieldBuilder();
+          getSettingsFieldBuilder();
         }
       }
       private static Builder create() {
@@ -6874,6 +6961,12 @@ public final class RpcClient {
           bitField0_ = (bitField0_ & ~0x00000008);
         } else {
           brokerAlgosBuilder_.clear();
+        }
+        if (settingsBuilder_ == null) {
+          settings_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        } else {
+          settingsBuilder_.clear();
         }
         return this;
       }
@@ -6923,6 +7016,15 @@ public final class RpcClient {
           result.brokerAlgos_ = brokerAlgos_;
         } else {
           result.brokerAlgos_ = brokerAlgosBuilder_.build();
+        }
+        if (settingsBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+            settings_ = java.util.Collections.unmodifiableList(settings_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.settings_ = settings_;
+        } else {
+          result.settings_ = settingsBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -6979,6 +7081,32 @@ public final class RpcClient {
             }
           }
         }
+        if (settingsBuilder_ == null) {
+          if (!other.settings_.isEmpty()) {
+            if (settings_.isEmpty()) {
+              settings_ = other.settings_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+            } else {
+              ensureSettingsIsMutable();
+              settings_.addAll(other.settings_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.settings_.isEmpty()) {
+            if (settingsBuilder_.isEmpty()) {
+              settingsBuilder_.dispose();
+              settingsBuilder_ = null;
+              settings_ = other.settings_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+              settingsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getSettingsFieldBuilder() : null;
+            } else {
+              settingsBuilder_.addAllMessages(other.settings_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -6998,6 +7126,12 @@ public final class RpcClient {
         }
         for (int i = 0; i < getBrokerAlgosCount(); i++) {
           if (!getBrokerAlgos(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getSettingsCount(); i++) {
+          if (!getSettings(i).isInitialized()) {
             
             return false;
           }
@@ -7445,6 +7579,246 @@ public final class RpcClient {
         return brokerAlgosBuilder_;
       }
 
+      // repeated .SessionSetting settings = 5;
+      private java.util.List<org.marketcetera.client.rpc.RpcClient.SessionSetting> settings_ =
+        java.util.Collections.emptyList();
+      private void ensureSettingsIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          settings_ = new java.util.ArrayList<org.marketcetera.client.rpc.RpcClient.SessionSetting>(settings_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.marketcetera.client.rpc.RpcClient.SessionSetting, org.marketcetera.client.rpc.RpcClient.SessionSetting.Builder, org.marketcetera.client.rpc.RpcClient.SessionSettingOrBuilder> settingsBuilder_;
+
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public java.util.List<org.marketcetera.client.rpc.RpcClient.SessionSetting> getSettingsList() {
+        if (settingsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(settings_);
+        } else {
+          return settingsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public int getSettingsCount() {
+        if (settingsBuilder_ == null) {
+          return settings_.size();
+        } else {
+          return settingsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public org.marketcetera.client.rpc.RpcClient.SessionSetting getSettings(int index) {
+        if (settingsBuilder_ == null) {
+          return settings_.get(index);
+        } else {
+          return settingsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public Builder setSettings(
+          int index, org.marketcetera.client.rpc.RpcClient.SessionSetting value) {
+        if (settingsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureSettingsIsMutable();
+          settings_.set(index, value);
+          onChanged();
+        } else {
+          settingsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public Builder setSettings(
+          int index, org.marketcetera.client.rpc.RpcClient.SessionSetting.Builder builderForValue) {
+        if (settingsBuilder_ == null) {
+          ensureSettingsIsMutable();
+          settings_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          settingsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public Builder addSettings(org.marketcetera.client.rpc.RpcClient.SessionSetting value) {
+        if (settingsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureSettingsIsMutable();
+          settings_.add(value);
+          onChanged();
+        } else {
+          settingsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public Builder addSettings(
+          int index, org.marketcetera.client.rpc.RpcClient.SessionSetting value) {
+        if (settingsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureSettingsIsMutable();
+          settings_.add(index, value);
+          onChanged();
+        } else {
+          settingsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public Builder addSettings(
+          org.marketcetera.client.rpc.RpcClient.SessionSetting.Builder builderForValue) {
+        if (settingsBuilder_ == null) {
+          ensureSettingsIsMutable();
+          settings_.add(builderForValue.build());
+          onChanged();
+        } else {
+          settingsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public Builder addSettings(
+          int index, org.marketcetera.client.rpc.RpcClient.SessionSetting.Builder builderForValue) {
+        if (settingsBuilder_ == null) {
+          ensureSettingsIsMutable();
+          settings_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          settingsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public Builder addAllSettings(
+          java.lang.Iterable<? extends org.marketcetera.client.rpc.RpcClient.SessionSetting> values) {
+        if (settingsBuilder_ == null) {
+          ensureSettingsIsMutable();
+          super.addAll(values, settings_);
+          onChanged();
+        } else {
+          settingsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public Builder clearSettings() {
+        if (settingsBuilder_ == null) {
+          settings_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+          onChanged();
+        } else {
+          settingsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public Builder removeSettings(int index) {
+        if (settingsBuilder_ == null) {
+          ensureSettingsIsMutable();
+          settings_.remove(index);
+          onChanged();
+        } else {
+          settingsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public org.marketcetera.client.rpc.RpcClient.SessionSetting.Builder getSettingsBuilder(
+          int index) {
+        return getSettingsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public org.marketcetera.client.rpc.RpcClient.SessionSettingOrBuilder getSettingsOrBuilder(
+          int index) {
+        if (settingsBuilder_ == null) {
+          return settings_.get(index);  } else {
+          return settingsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public java.util.List<? extends org.marketcetera.client.rpc.RpcClient.SessionSettingOrBuilder> 
+           getSettingsOrBuilderList() {
+        if (settingsBuilder_ != null) {
+          return settingsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(settings_);
+        }
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public org.marketcetera.client.rpc.RpcClient.SessionSetting.Builder addSettingsBuilder() {
+        return getSettingsFieldBuilder().addBuilder(
+            org.marketcetera.client.rpc.RpcClient.SessionSetting.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public org.marketcetera.client.rpc.RpcClient.SessionSetting.Builder addSettingsBuilder(
+          int index) {
+        return getSettingsFieldBuilder().addBuilder(
+            index, org.marketcetera.client.rpc.RpcClient.SessionSetting.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .SessionSetting settings = 5;</code>
+       */
+      public java.util.List<org.marketcetera.client.rpc.RpcClient.SessionSetting.Builder> 
+           getSettingsBuilderList() {
+        return getSettingsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.marketcetera.client.rpc.RpcClient.SessionSetting, org.marketcetera.client.rpc.RpcClient.SessionSetting.Builder, org.marketcetera.client.rpc.RpcClient.SessionSettingOrBuilder> 
+          getSettingsFieldBuilder() {
+        if (settingsBuilder_ == null) {
+          settingsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.marketcetera.client.rpc.RpcClient.SessionSetting, org.marketcetera.client.rpc.RpcClient.SessionSetting.Builder, org.marketcetera.client.rpc.RpcClient.SessionSettingOrBuilder>(
+                  settings_,
+                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  getParentForChildren(),
+                  isClean());
+          settings_ = null;
+        }
+        return settingsBuilder_;
+      }
+
       // @@protoc_insertion_point(builder_scope:BrokerStatus)
     }
 
@@ -7454,6 +7828,649 @@ public final class RpcClient {
     }
 
     // @@protoc_insertion_point(class_scope:BrokerStatus)
+  }
+
+  public interface SessionSettingOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required string key = 1;
+    /**
+     * <code>required string key = 1;</code>
+     */
+    boolean hasKey();
+    /**
+     * <code>required string key = 1;</code>
+     */
+    java.lang.String getKey();
+    /**
+     * <code>required string key = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getKeyBytes();
+
+    // required string value = 2;
+    /**
+     * <code>required string value = 2;</code>
+     */
+    boolean hasValue();
+    /**
+     * <code>required string value = 2;</code>
+     */
+    java.lang.String getValue();
+    /**
+     * <code>required string value = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getValueBytes();
+  }
+  /**
+   * Protobuf type {@code SessionSetting}
+   */
+  public static final class SessionSetting extends
+      com.google.protobuf.GeneratedMessage
+      implements SessionSettingOrBuilder {
+    // Use SessionSetting.newBuilder() to construct.
+    private SessionSetting(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private SessionSetting(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final SessionSetting defaultInstance;
+    public static SessionSetting getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public SessionSetting getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SessionSetting(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              key_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              value_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.client.rpc.RpcClient.internal_static_SessionSetting_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.client.rpc.RpcClient.internal_static_SessionSetting_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.client.rpc.RpcClient.SessionSetting.class, org.marketcetera.client.rpc.RpcClient.SessionSetting.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<SessionSetting> PARSER =
+        new com.google.protobuf.AbstractParser<SessionSetting>() {
+      public SessionSetting parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new SessionSetting(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SessionSetting> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string key = 1;
+    public static final int KEY_FIELD_NUMBER = 1;
+    private java.lang.Object key_;
+    /**
+     * <code>required string key = 1;</code>
+     */
+    public boolean hasKey() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string key = 1;</code>
+     */
+    public java.lang.String getKey() {
+      java.lang.Object ref = key_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          key_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string key = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getKeyBytes() {
+      java.lang.Object ref = key_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        key_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string value = 2;
+    public static final int VALUE_FIELD_NUMBER = 2;
+    private java.lang.Object value_;
+    /**
+     * <code>required string value = 2;</code>
+     */
+    public boolean hasValue() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string value = 2;</code>
+     */
+    public java.lang.String getValue() {
+      java.lang.Object ref = value_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          value_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string value = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getValueBytes() {
+      java.lang.Object ref = value_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        value_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private void initFields() {
+      key_ = "";
+      value_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasKey()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasValue()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getKeyBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getValueBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getKeyBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getValueBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.client.rpc.RpcClient.SessionSetting parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.client.rpc.RpcClient.SessionSetting parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.client.rpc.RpcClient.SessionSetting parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.client.rpc.RpcClient.SessionSetting parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.client.rpc.RpcClient.SessionSetting parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.client.rpc.RpcClient.SessionSetting parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.client.rpc.RpcClient.SessionSetting parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.client.rpc.RpcClient.SessionSetting parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.client.rpc.RpcClient.SessionSetting parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.client.rpc.RpcClient.SessionSetting parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.client.rpc.RpcClient.SessionSetting prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code SessionSetting}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.marketcetera.client.rpc.RpcClient.SessionSettingOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.client.rpc.RpcClient.internal_static_SessionSetting_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.client.rpc.RpcClient.internal_static_SessionSetting_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.client.rpc.RpcClient.SessionSetting.class, org.marketcetera.client.rpc.RpcClient.SessionSetting.Builder.class);
+      }
+
+      // Construct using org.marketcetera.client.rpc.RpcClient.SessionSetting.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        key_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        value_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.client.rpc.RpcClient.internal_static_SessionSetting_descriptor;
+      }
+
+      public org.marketcetera.client.rpc.RpcClient.SessionSetting getDefaultInstanceForType() {
+        return org.marketcetera.client.rpc.RpcClient.SessionSetting.getDefaultInstance();
+      }
+
+      public org.marketcetera.client.rpc.RpcClient.SessionSetting build() {
+        org.marketcetera.client.rpc.RpcClient.SessionSetting result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.client.rpc.RpcClient.SessionSetting buildPartial() {
+        org.marketcetera.client.rpc.RpcClient.SessionSetting result = new org.marketcetera.client.rpc.RpcClient.SessionSetting(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.key_ = key_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.value_ = value_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.client.rpc.RpcClient.SessionSetting) {
+          return mergeFrom((org.marketcetera.client.rpc.RpcClient.SessionSetting)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.client.rpc.RpcClient.SessionSetting other) {
+        if (other == org.marketcetera.client.rpc.RpcClient.SessionSetting.getDefaultInstance()) return this;
+        if (other.hasKey()) {
+          bitField0_ |= 0x00000001;
+          key_ = other.key_;
+          onChanged();
+        }
+        if (other.hasValue()) {
+          bitField0_ |= 0x00000002;
+          value_ = other.value_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasKey()) {
+          
+          return false;
+        }
+        if (!hasValue()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.client.rpc.RpcClient.SessionSetting parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.client.rpc.RpcClient.SessionSetting) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string key = 1;
+      private java.lang.Object key_ = "";
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public boolean hasKey() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public java.lang.String getKey() {
+        java.lang.Object ref = key_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          key_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getKeyBytes() {
+        java.lang.Object ref = key_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          key_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public Builder setKey(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        key_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public Builder clearKey() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        key_ = getDefaultInstance().getKey();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public Builder setKeyBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        key_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required string value = 2;
+      private java.lang.Object value_ = "";
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public boolean hasValue() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public java.lang.String getValue() {
+        java.lang.Object ref = value_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          value_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getValueBytes() {
+        java.lang.Object ref = value_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          value_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public Builder setValue(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public Builder clearValue() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        value_ = getDefaultInstance().getValue();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public Builder setValueBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:SessionSetting)
+    }
+
+    static {
+      defaultInstance = new SessionSetting(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:SessionSetting)
   }
 
   public interface BrokerAlgoSpecOrBuilder
@@ -28993,6 +30010,11 @@ public final class RpcClient {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_BrokerStatus_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_SessionSetting_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_SessionSetting_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_BrokerAlgoSpec_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -29179,86 +30201,88 @@ public final class RpcClient {
       "BrokersStatusRequest\022\021\n\tsessionId\030\001 \002(\t\"" +
       ">\n\025BrokersStatusResponse\022%\n\rbrokersStatu" +
       "s\030\001 \002(\0132\016.BrokersStatus\"/\n\rBrokersStatus" +
-      "\022\036\n\007brokers\030\001 \003(\0132\r.BrokerStatus\"f\n\014Brok" +
-      "erStatus\022\014\n\004name\030\001 \002(\t\022\020\n\010brokerId\030\002 \002(\t" +
-      "\022\020\n\010loggedOn\030\003 \002(\010\022$\n\013brokerAlgos\030\004 \003(\0132" +
-      "\017.BrokerAlgoSpec\"H\n\016BrokerAlgoSpec\022\014\n\004na" +
-      "me\030\001 \002(\t\022(\n\014algoTagSpecs\030\002 \003(\0132\022.BrokerA" +
-      "lgoTagSpec\"y\n\021BrokerAlgoTagSpec\022\013\n\003tag\030\001" +
-      " \002(\005\022\r\n\005label\030\002 \002(\t\022\023\n\013description\030\003 \001(\t",
-      "\022\021\n\tmandatory\030\004 \002(\010\022\017\n\007pattern\030\005 \001(\t\022\017\n\007" +
-      "options\030\006 \001(\t\"&\n\021OpenOrdersRequest\022\021\n\tse" +
-      "ssionId\030\001 \002(\t\"2\n\022OpenOrdersResponse\022\034\n\007r" +
-      "eports\030\001 \002(\0132\013.ReportList\"8\n\023ReportsSinc" +
-      "eRequest\022\021\n\tsessionId\030\001 \002(\t\022\016\n\006origin\030\002 " +
-      "\002(\003\"4\n\024ReportsSinceResponse\022\034\n\007reports\030\001" +
-      " \002(\0132\013.ReportList\"\035\n\nReportList\022\017\n\007repor" +
-      "ts\030\001 \003(\t\"\220\001\n\017PositionRequest\022\021\n\tsessionI" +
-      "d\030\001 \002(\t\022\'\n\016instrumentType\030\002 \001(\0162\017.Instru" +
-      "mentType\022\037\n\ninstrument\030\003 \001(\0132\013.Instrumen",
-      "t\022\022\n\006origin\030\004 \002(\003:\002-1\022\014\n\004root\030\005 \003(\t\">\n\020P" +
-      "ositionResponse\022\032\n\004keys\030\001 \003(\0132\014.Position" +
-      "Key\022\016\n\006values\030\002 \003(\t\"\036\n\020HeartbeatRequest\022" +
-      "\n\n\002id\030\001 \002(\003\"\037\n\021HeartbeatResponse\022\n\n\002id\030\001" +
-      " \002(\003\"=\n\010Position\022\037\n\ninstrument\030\001 \002(\0132\013.I" +
-      "nstrument\022\020\n\010position\030\002 \002(\t\"Q\n\013PositionK" +
-      "ey\022\037\n\ninstrument\030\001 \002(\0132\013.Instrument\022\017\n\007a" +
-      "ccount\030\002 \001(\t\022\020\n\010traderId\030\003 \001(\t\"\035\n\nInstru" +
-      "ment\022\017\n\007payload\030\001 \002(\t\"0\n\017UserInfoRequest" +
-      "\022\021\n\tsessionId\030\001 \002(\t\022\n\n\002id\030\002 \002(\003\"/\n\020UserI",
-      "nfoResponse\022\033\n\010userInfo\030\001 \002(\0132\t.UserInfo" +
-      "\"Y\n\010UserInfo\022\014\n\004name\030\001 \002(\t\022\n\n\002id\030\002 \002(\003\022\016" +
-      "\n\006active\030\003 \002(\010\022\021\n\tsuperuser\030\004 \002(\010\022\020\n\010use" +
-      "rdata\030\005 \001(\t\"6\n\021UnderlyingRequest\022\021\n\tsess" +
-      "ionId\030\001 \002(\t\022\016\n\006symbol\030\002 \002(\t\"$\n\022Underlyin" +
-      "gResponse\022\016\n\006symbol\030\001 \001(\t\"7\n\022OptionRoots" +
-      "Request\022\021\n\tsessionId\030\001 \002(\t\022\016\n\006symbol\030\002 \002" +
-      "(\t\"%\n\023OptionRootsResponse\022\016\n\006symbol\030\001 \003(" +
-      "\t\"9\n\024ResolveSymbolRequest\022\021\n\tsessionId\030\001" +
-      " \002(\t\022\016\n\006symbol\030\002 \002(\t\"8\n\025ResolveSymbolRes",
-      "ponse\022\037\n\ninstrument\030\001 \001(\0132\013.Instrument\"8" +
-      "\n\022RootOrderIdRequest\022\021\n\tsessionId\030\001 \002(\t\022" +
-      "\017\n\007orderId\030\002 \002(\t\"&\n\023RootOrderIdResponse\022" +
-      "\017\n\007orderId\030\001 \001(\t\"\'\n\022GetUserDataRequest\022\021" +
-      "\n\tsessionId\030\001 \002(\t\"\'\n\023GetUserDataResponse" +
-      "\022\020\n\010userData\030\001 \001(\t\"9\n\022SetUserDataRequest" +
-      "\022\021\n\tsessionId\030\001 \002(\t\022\020\n\010userData\030\002 \001(\t\"\025\n" +
-      "\023SetUserDataResponse\"g\n\020AddReportRequest" +
-      "\022\021\n\tsessionId\030\001 \002(\t\022\020\n\010brokerId\030\002 \002(\t\022\017\n" +
-      "\007message\030\003 \002(\t\022\035\n\thierarchy\030\004 \002(\0162\n.Hier",
-      "archy\"4\n\021AddReportResponse\022\016\n\006status\030\001 \002" +
-      "(\010\022\017\n\007message\030\002 \001(\t\"9\n\023DeleteReportReque" +
-      "st\022\021\n\tsessionId\030\001 \002(\t\022\017\n\007message\030\002 \002(\t\"\026" +
-      "\n\024DeleteReportResponse*B\n\016InstrumentType" +
-      "\022\n\n\006EQUITY\020\000\022\n\n\006OPTION\020\001\022\n\n\006FUTURE\020\002\022\014\n\010" +
-      "CURRENCY\020\003*,\n\tHierarchy\022\n\n\006Parent\020\000\022\t\n\005C" +
-      "hild\020\001\022\010\n\004Flat\020\0022\330\007\n\020RpcClientService\022&\n" +
-      "\005login\022\r.LoginRequest\032\016.LoginResponse\022)\n" +
-      "\006logout\022\016.LogoutRequest\032\017.LogoutResponse" +
-      "\022;\n\016getNextOrderID\022\023.NextOrderIdRequest\032",
-      "\024.NextOrderIdResponse\022A\n\020getBrokersStatu" +
-      "s\022\025.BrokersStatusRequest\032\026.BrokersStatus" +
-      "Response\0228\n\rgetOpenOrders\022\022.OpenOrdersRe" +
-      "quest\032\023.OpenOrdersResponse\022>\n\017getReports" +
-      "Since\022\024.ReportsSinceRequest\032\025.ReportsSin" +
-      "ceResponse\0223\n\014getPositions\022\020.PositionReq" +
-      "uest\032\021.PositionResponse\0222\n\theartbeat\022\021.H" +
-      "eartbeatRequest\032\022.HeartbeatResponse\0222\n\013g" +
-      "etUserInfo\022\020.UserInfoRequest\032\021.UserInfoR" +
-      "esponse\0228\n\rgetUnderlying\022\022.UnderlyingReq",
-      "uest\032\023.UnderlyingResponse\022;\n\016getOptionRo" +
-      "ots\022\023.OptionRootsRequest\032\024.OptionRootsRe" +
-      "sponse\022>\n\rresolveSymbol\022\025.ResolveSymbolR" +
-      "equest\032\026.ResolveSymbolResponse\022>\n\021getRoo" +
-      "tOrderIdFor\022\023.RootOrderIdRequest\032\024.RootO" +
-      "rderIdResponse\0228\n\013getUserData\022\023.GetUserD" +
-      "ataRequest\032\024.GetUserDataResponse\0228\n\013setU" +
-      "serData\022\023.SetUserDataRequest\032\024.SetUserDa" +
-      "taResponse\0222\n\taddReport\022\021.AddReportReque" +
-      "st\032\022.AddReportResponse\022;\n\014deleteReport\022\024",
-      ".DeleteReportRequest\032\025.DeleteReportRespo" +
-      "nseB+\n\033org.marketcetera.client.rpcB\tRpcC" +
-      "lient\210\001\001"
+      "\022\036\n\007brokers\030\001 \003(\0132\r.BrokerStatus\"\211\001\n\014Bro" +
+      "kerStatus\022\014\n\004name\030\001 \002(\t\022\020\n\010brokerId\030\002 \002(" +
+      "\t\022\020\n\010loggedOn\030\003 \002(\010\022$\n\013brokerAlgos\030\004 \003(\013" +
+      "2\017.BrokerAlgoSpec\022!\n\010settings\030\005 \003(\0132\017.Se" +
+      "ssionSetting\",\n\016SessionSetting\022\013\n\003key\030\001 " +
+      "\002(\t\022\r\n\005value\030\002 \002(\t\"H\n\016BrokerAlgoSpec\022\014\n\004" +
+      "name\030\001 \002(\t\022(\n\014algoTagSpecs\030\002 \003(\0132\022.Broke",
+      "rAlgoTagSpec\"y\n\021BrokerAlgoTagSpec\022\013\n\003tag" +
+      "\030\001 \002(\005\022\r\n\005label\030\002 \002(\t\022\023\n\013description\030\003 \001" +
+      "(\t\022\021\n\tmandatory\030\004 \002(\010\022\017\n\007pattern\030\005 \001(\t\022\017" +
+      "\n\007options\030\006 \001(\t\"&\n\021OpenOrdersRequest\022\021\n\t" +
+      "sessionId\030\001 \002(\t\"2\n\022OpenOrdersResponse\022\034\n" +
+      "\007reports\030\001 \002(\0132\013.ReportList\"8\n\023ReportsSi" +
+      "nceRequest\022\021\n\tsessionId\030\001 \002(\t\022\016\n\006origin\030" +
+      "\002 \002(\003\"4\n\024ReportsSinceResponse\022\034\n\007reports" +
+      "\030\001 \002(\0132\013.ReportList\"\035\n\nReportList\022\017\n\007rep" +
+      "orts\030\001 \003(\t\"\220\001\n\017PositionRequest\022\021\n\tsessio",
+      "nId\030\001 \002(\t\022\'\n\016instrumentType\030\002 \001(\0162\017.Inst" +
+      "rumentType\022\037\n\ninstrument\030\003 \001(\0132\013.Instrum" +
+      "ent\022\022\n\006origin\030\004 \002(\003:\002-1\022\014\n\004root\030\005 \003(\t\">\n" +
+      "\020PositionResponse\022\032\n\004keys\030\001 \003(\0132\014.Positi" +
+      "onKey\022\016\n\006values\030\002 \003(\t\"\036\n\020HeartbeatReques" +
+      "t\022\n\n\002id\030\001 \002(\003\"\037\n\021HeartbeatResponse\022\n\n\002id" +
+      "\030\001 \002(\003\"=\n\010Position\022\037\n\ninstrument\030\001 \002(\0132\013" +
+      ".Instrument\022\020\n\010position\030\002 \002(\t\"Q\n\013Positio" +
+      "nKey\022\037\n\ninstrument\030\001 \002(\0132\013.Instrument\022\017\n" +
+      "\007account\030\002 \001(\t\022\020\n\010traderId\030\003 \001(\t\"\035\n\nInst",
+      "rument\022\017\n\007payload\030\001 \002(\t\"0\n\017UserInfoReque" +
+      "st\022\021\n\tsessionId\030\001 \002(\t\022\n\n\002id\030\002 \002(\003\"/\n\020Use" +
+      "rInfoResponse\022\033\n\010userInfo\030\001 \002(\0132\t.UserIn" +
+      "fo\"Y\n\010UserInfo\022\014\n\004name\030\001 \002(\t\022\n\n\002id\030\002 \002(\003" +
+      "\022\016\n\006active\030\003 \002(\010\022\021\n\tsuperuser\030\004 \002(\010\022\020\n\010u" +
+      "serdata\030\005 \001(\t\"6\n\021UnderlyingRequest\022\021\n\tse" +
+      "ssionId\030\001 \002(\t\022\016\n\006symbol\030\002 \002(\t\"$\n\022Underly" +
+      "ingResponse\022\016\n\006symbol\030\001 \001(\t\"7\n\022OptionRoo" +
+      "tsRequest\022\021\n\tsessionId\030\001 \002(\t\022\016\n\006symbol\030\002" +
+      " \002(\t\"%\n\023OptionRootsResponse\022\016\n\006symbol\030\001 ",
+      "\003(\t\"9\n\024ResolveSymbolRequest\022\021\n\tsessionId" +
+      "\030\001 \002(\t\022\016\n\006symbol\030\002 \002(\t\"8\n\025ResolveSymbolR" +
+      "esponse\022\037\n\ninstrument\030\001 \001(\0132\013.Instrument" +
+      "\"8\n\022RootOrderIdRequest\022\021\n\tsessionId\030\001 \002(" +
+      "\t\022\017\n\007orderId\030\002 \002(\t\"&\n\023RootOrderIdRespons" +
+      "e\022\017\n\007orderId\030\001 \001(\t\"\'\n\022GetUserDataRequest" +
+      "\022\021\n\tsessionId\030\001 \002(\t\"\'\n\023GetUserDataRespon" +
+      "se\022\020\n\010userData\030\001 \001(\t\"9\n\022SetUserDataReque" +
+      "st\022\021\n\tsessionId\030\001 \002(\t\022\020\n\010userData\030\002 \001(\t\"" +
+      "\025\n\023SetUserDataResponse\"g\n\020AddReportReque",
+      "st\022\021\n\tsessionId\030\001 \002(\t\022\020\n\010brokerId\030\002 \002(\t\022" +
+      "\017\n\007message\030\003 \002(\t\022\035\n\thierarchy\030\004 \002(\0162\n.Hi" +
+      "erarchy\"4\n\021AddReportResponse\022\016\n\006status\030\001" +
+      " \002(\010\022\017\n\007message\030\002 \001(\t\"9\n\023DeleteReportReq" +
+      "uest\022\021\n\tsessionId\030\001 \002(\t\022\017\n\007message\030\002 \002(\t" +
+      "\"\026\n\024DeleteReportResponse*B\n\016InstrumentTy" +
+      "pe\022\n\n\006EQUITY\020\000\022\n\n\006OPTION\020\001\022\n\n\006FUTURE\020\002\022\014" +
+      "\n\010CURRENCY\020\003*,\n\tHierarchy\022\n\n\006Parent\020\000\022\t\n" +
+      "\005Child\020\001\022\010\n\004Flat\020\0022\330\007\n\020RpcClientService\022" +
+      "&\n\005login\022\r.LoginRequest\032\016.LoginResponse\022",
+      ")\n\006logout\022\016.LogoutRequest\032\017.LogoutRespon" +
+      "se\022;\n\016getNextOrderID\022\023.NextOrderIdReques" +
+      "t\032\024.NextOrderIdResponse\022A\n\020getBrokersSta" +
+      "tus\022\025.BrokersStatusRequest\032\026.BrokersStat" +
+      "usResponse\0228\n\rgetOpenOrders\022\022.OpenOrders" +
+      "Request\032\023.OpenOrdersResponse\022>\n\017getRepor" +
+      "tsSince\022\024.ReportsSinceRequest\032\025.ReportsS" +
+      "inceResponse\0223\n\014getPositions\022\020.PositionR" +
+      "equest\032\021.PositionResponse\0222\n\theartbeat\022\021" +
+      ".HeartbeatRequest\032\022.HeartbeatResponse\0222\n",
+      "\013getUserInfo\022\020.UserInfoRequest\032\021.UserInf" +
+      "oResponse\0228\n\rgetUnderlying\022\022.UnderlyingR" +
+      "equest\032\023.UnderlyingResponse\022;\n\016getOption" +
+      "Roots\022\023.OptionRootsRequest\032\024.OptionRoots" +
+      "Response\022>\n\rresolveSymbol\022\025.ResolveSymbo" +
+      "lRequest\032\026.ResolveSymbolResponse\022>\n\021getR" +
+      "ootOrderIdFor\022\023.RootOrderIdRequest\032\024.Roo" +
+      "tOrderIdResponse\0228\n\013getUserData\022\023.GetUse" +
+      "rDataRequest\032\024.GetUserDataResponse\0228\n\013se" +
+      "tUserData\022\023.SetUserDataRequest\032\024.SetUser",
+      "DataResponse\0222\n\taddReport\022\021.AddReportReq" +
+      "uest\032\022.AddReportResponse\022;\n\014deleteReport" +
+      "\022\024.DeleteReportRequest\032\025.DeleteReportRes" +
+      "ponseB+\n\033org.marketcetera.client.rpcB\tRp" +
+      "cClient\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -29330,201 +30354,207 @@ public final class RpcClient {
           internal_static_BrokerStatus_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_BrokerStatus_descriptor,
-              new java.lang.String[] { "Name", "BrokerId", "LoggedOn", "BrokerAlgos", });
-          internal_static_BrokerAlgoSpec_descriptor =
+              new java.lang.String[] { "Name", "BrokerId", "LoggedOn", "BrokerAlgos", "Settings", });
+          internal_static_SessionSetting_descriptor =
             getDescriptor().getMessageTypes().get(11);
+          internal_static_SessionSetting_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_SessionSetting_descriptor,
+              new java.lang.String[] { "Key", "Value", });
+          internal_static_BrokerAlgoSpec_descriptor =
+            getDescriptor().getMessageTypes().get(12);
           internal_static_BrokerAlgoSpec_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_BrokerAlgoSpec_descriptor,
               new java.lang.String[] { "Name", "AlgoTagSpecs", });
           internal_static_BrokerAlgoTagSpec_descriptor =
-            getDescriptor().getMessageTypes().get(12);
+            getDescriptor().getMessageTypes().get(13);
           internal_static_BrokerAlgoTagSpec_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_BrokerAlgoTagSpec_descriptor,
               new java.lang.String[] { "Tag", "Label", "Description", "Mandatory", "Pattern", "Options", });
           internal_static_OpenOrdersRequest_descriptor =
-            getDescriptor().getMessageTypes().get(13);
+            getDescriptor().getMessageTypes().get(14);
           internal_static_OpenOrdersRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_OpenOrdersRequest_descriptor,
               new java.lang.String[] { "SessionId", });
           internal_static_OpenOrdersResponse_descriptor =
-            getDescriptor().getMessageTypes().get(14);
+            getDescriptor().getMessageTypes().get(15);
           internal_static_OpenOrdersResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_OpenOrdersResponse_descriptor,
               new java.lang.String[] { "Reports", });
           internal_static_ReportsSinceRequest_descriptor =
-            getDescriptor().getMessageTypes().get(15);
+            getDescriptor().getMessageTypes().get(16);
           internal_static_ReportsSinceRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReportsSinceRequest_descriptor,
               new java.lang.String[] { "SessionId", "Origin", });
           internal_static_ReportsSinceResponse_descriptor =
-            getDescriptor().getMessageTypes().get(16);
+            getDescriptor().getMessageTypes().get(17);
           internal_static_ReportsSinceResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReportsSinceResponse_descriptor,
               new java.lang.String[] { "Reports", });
           internal_static_ReportList_descriptor =
-            getDescriptor().getMessageTypes().get(17);
+            getDescriptor().getMessageTypes().get(18);
           internal_static_ReportList_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReportList_descriptor,
               new java.lang.String[] { "Reports", });
           internal_static_PositionRequest_descriptor =
-            getDescriptor().getMessageTypes().get(18);
+            getDescriptor().getMessageTypes().get(19);
           internal_static_PositionRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_PositionRequest_descriptor,
               new java.lang.String[] { "SessionId", "InstrumentType", "Instrument", "Origin", "Root", });
           internal_static_PositionResponse_descriptor =
-            getDescriptor().getMessageTypes().get(19);
+            getDescriptor().getMessageTypes().get(20);
           internal_static_PositionResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_PositionResponse_descriptor,
               new java.lang.String[] { "Keys", "Values", });
           internal_static_HeartbeatRequest_descriptor =
-            getDescriptor().getMessageTypes().get(20);
+            getDescriptor().getMessageTypes().get(21);
           internal_static_HeartbeatRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_HeartbeatRequest_descriptor,
               new java.lang.String[] { "Id", });
           internal_static_HeartbeatResponse_descriptor =
-            getDescriptor().getMessageTypes().get(21);
+            getDescriptor().getMessageTypes().get(22);
           internal_static_HeartbeatResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_HeartbeatResponse_descriptor,
               new java.lang.String[] { "Id", });
           internal_static_Position_descriptor =
-            getDescriptor().getMessageTypes().get(22);
+            getDescriptor().getMessageTypes().get(23);
           internal_static_Position_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Position_descriptor,
               new java.lang.String[] { "Instrument", "Position", });
           internal_static_PositionKey_descriptor =
-            getDescriptor().getMessageTypes().get(23);
+            getDescriptor().getMessageTypes().get(24);
           internal_static_PositionKey_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_PositionKey_descriptor,
               new java.lang.String[] { "Instrument", "Account", "TraderId", });
           internal_static_Instrument_descriptor =
-            getDescriptor().getMessageTypes().get(24);
+            getDescriptor().getMessageTypes().get(25);
           internal_static_Instrument_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Instrument_descriptor,
               new java.lang.String[] { "Payload", });
           internal_static_UserInfoRequest_descriptor =
-            getDescriptor().getMessageTypes().get(25);
+            getDescriptor().getMessageTypes().get(26);
           internal_static_UserInfoRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_UserInfoRequest_descriptor,
               new java.lang.String[] { "SessionId", "Id", });
           internal_static_UserInfoResponse_descriptor =
-            getDescriptor().getMessageTypes().get(26);
+            getDescriptor().getMessageTypes().get(27);
           internal_static_UserInfoResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_UserInfoResponse_descriptor,
               new java.lang.String[] { "UserInfo", });
           internal_static_UserInfo_descriptor =
-            getDescriptor().getMessageTypes().get(27);
+            getDescriptor().getMessageTypes().get(28);
           internal_static_UserInfo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_UserInfo_descriptor,
               new java.lang.String[] { "Name", "Id", "Active", "Superuser", "Userdata", });
           internal_static_UnderlyingRequest_descriptor =
-            getDescriptor().getMessageTypes().get(28);
+            getDescriptor().getMessageTypes().get(29);
           internal_static_UnderlyingRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_UnderlyingRequest_descriptor,
               new java.lang.String[] { "SessionId", "Symbol", });
           internal_static_UnderlyingResponse_descriptor =
-            getDescriptor().getMessageTypes().get(29);
+            getDescriptor().getMessageTypes().get(30);
           internal_static_UnderlyingResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_UnderlyingResponse_descriptor,
               new java.lang.String[] { "Symbol", });
           internal_static_OptionRootsRequest_descriptor =
-            getDescriptor().getMessageTypes().get(30);
+            getDescriptor().getMessageTypes().get(31);
           internal_static_OptionRootsRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_OptionRootsRequest_descriptor,
               new java.lang.String[] { "SessionId", "Symbol", });
           internal_static_OptionRootsResponse_descriptor =
-            getDescriptor().getMessageTypes().get(31);
+            getDescriptor().getMessageTypes().get(32);
           internal_static_OptionRootsResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_OptionRootsResponse_descriptor,
               new java.lang.String[] { "Symbol", });
           internal_static_ResolveSymbolRequest_descriptor =
-            getDescriptor().getMessageTypes().get(32);
+            getDescriptor().getMessageTypes().get(33);
           internal_static_ResolveSymbolRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ResolveSymbolRequest_descriptor,
               new java.lang.String[] { "SessionId", "Symbol", });
           internal_static_ResolveSymbolResponse_descriptor =
-            getDescriptor().getMessageTypes().get(33);
+            getDescriptor().getMessageTypes().get(34);
           internal_static_ResolveSymbolResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ResolveSymbolResponse_descriptor,
               new java.lang.String[] { "Instrument", });
           internal_static_RootOrderIdRequest_descriptor =
-            getDescriptor().getMessageTypes().get(34);
+            getDescriptor().getMessageTypes().get(35);
           internal_static_RootOrderIdRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_RootOrderIdRequest_descriptor,
               new java.lang.String[] { "SessionId", "OrderId", });
           internal_static_RootOrderIdResponse_descriptor =
-            getDescriptor().getMessageTypes().get(35);
+            getDescriptor().getMessageTypes().get(36);
           internal_static_RootOrderIdResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_RootOrderIdResponse_descriptor,
               new java.lang.String[] { "OrderId", });
           internal_static_GetUserDataRequest_descriptor =
-            getDescriptor().getMessageTypes().get(36);
+            getDescriptor().getMessageTypes().get(37);
           internal_static_GetUserDataRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_GetUserDataRequest_descriptor,
               new java.lang.String[] { "SessionId", });
           internal_static_GetUserDataResponse_descriptor =
-            getDescriptor().getMessageTypes().get(37);
+            getDescriptor().getMessageTypes().get(38);
           internal_static_GetUserDataResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_GetUserDataResponse_descriptor,
               new java.lang.String[] { "UserData", });
           internal_static_SetUserDataRequest_descriptor =
-            getDescriptor().getMessageTypes().get(38);
+            getDescriptor().getMessageTypes().get(39);
           internal_static_SetUserDataRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SetUserDataRequest_descriptor,
               new java.lang.String[] { "SessionId", "UserData", });
           internal_static_SetUserDataResponse_descriptor =
-            getDescriptor().getMessageTypes().get(39);
+            getDescriptor().getMessageTypes().get(40);
           internal_static_SetUserDataResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SetUserDataResponse_descriptor,
               new java.lang.String[] { });
           internal_static_AddReportRequest_descriptor =
-            getDescriptor().getMessageTypes().get(40);
+            getDescriptor().getMessageTypes().get(41);
           internal_static_AddReportRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_AddReportRequest_descriptor,
               new java.lang.String[] { "SessionId", "BrokerId", "Message", "Hierarchy", });
           internal_static_AddReportResponse_descriptor =
-            getDescriptor().getMessageTypes().get(41);
+            getDescriptor().getMessageTypes().get(42);
           internal_static_AddReportResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_AddReportResponse_descriptor,
               new java.lang.String[] { "Status", "Message", });
           internal_static_DeleteReportRequest_descriptor =
-            getDescriptor().getMessageTypes().get(42);
+            getDescriptor().getMessageTypes().get(43);
           internal_static_DeleteReportRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_DeleteReportRequest_descriptor,
               new java.lang.String[] { "SessionId", "Message", });
           internal_static_DeleteReportResponse_descriptor =
-            getDescriptor().getMessageTypes().get(43);
+            getDescriptor().getMessageTypes().get(44);
           internal_static_DeleteReportResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_DeleteReportResponse_descriptor,
