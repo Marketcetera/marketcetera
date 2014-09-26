@@ -78,16 +78,18 @@ public class MarketDataRpcService<SessionClazz>
         RpcMarketdata.LoginResponse.Builder responseBuilder = RpcMarketdata.LoginResponse.newBuilder();
         try {
             SessionId sessionId = serverServices.login(new RpcCredentials(inRequest.getUsername(),
-                                                                       inRequest.getPassword(),
-                                                                       inRequest.getAppId(),
-                                                                       inRequest.getClientId(),
-                                                                       inRequest.getVersionId(),
-                                                                       new Locale(inRequest.getLocale().getLanguage(),
-                                                                                  inRequest.getLocale().getCountry(),
-                                                                                  inRequest.getLocale().getVariant())));
+                                                                          inRequest.getPassword(),
+                                                                          inRequest.getAppId(),
+                                                                          inRequest.getClientId(),
+                                                                          inRequest.getVersionId(),
+                                                                          new Locale(inRequest.getLocale().getLanguage(),
+                                                                                     inRequest.getLocale().getCountry(),
+                                                                                     inRequest.getLocale().getVariant())));
             return responseBuilder.setSessionId(sessionId.getValue()).build();
         } catch (Exception e) {
-            return responseBuilder.setFailed(true).setMessage(e.getMessage()==null?"":e.getMessage()==null?"":e.getMessage()==null?"":e.getMessage()).build();
+            SLF4JLoggerProxy.warn(this,
+                                  e);
+            return responseBuilder.setFailed(true).setSessionId("null").setMessage(e.getMessage()==null?"":e.getMessage()==null?"":e.getMessage()==null?"":e.getMessage()).build(); //$NON-NLS-1$
         }
     }
     /* (non-Javadoc)
