@@ -56,6 +56,12 @@ message BrokerStatus {
     required string brokerId = 2;
     required bool loggedOn = 3;
     repeated BrokerAlgoSpec brokerAlgos = 4;
+    repeated SessionSetting settings = 5;
+}
+
+message SessionSetting {
+    required string key = 1;
+    required string value = 2;
 }
 
 message BrokerAlgoSpec {
