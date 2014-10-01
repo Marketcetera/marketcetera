@@ -1,3 +1,0 @@
-#Names of module factory implementations
-org.marketcetera.strategy.StrategyTestBase$MockRecorderModule$Factory
-org.marketcetera.strategy.StrategyTestBase$StrategyDataEmissionModule$Factory
