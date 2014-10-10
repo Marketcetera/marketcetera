@@ -58,7 +58,7 @@ public class DeleteReportActionDelegate
                 MessageBox messageBox = new MessageBox(Display.getDefault().getActiveShell(),SWT.YES | SWT.NO); 
                 messageBox.setText(Messages.DEL_EXECUTION_REPORT_MXBOX_TITLE_WARNING.getText());
                 messageBox.setMessage(Messages.DEL_EXECUTION_REPORT_MXBOX_MESSAGE.getText());
-                if(messageBox.open() == SWT.YES){       
+                if(messageBox.open() == SWT.YES) {
                     ClientManager.getInstance().deleteReport(((ExecutionReportImpl)report));
                 }
             } catch (Exception anyException) {

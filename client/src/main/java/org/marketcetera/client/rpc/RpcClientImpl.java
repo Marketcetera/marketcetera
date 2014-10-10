@@ -313,8 +313,7 @@ public class RpcClientImpl
                 marshaller.marshal(inReport,
                                          output);
             }
-            RpcClient.DeleteReportRequest request = RpcClient.DeleteReportRequest.newBuilder()
-                    .setMessage(output.toString()).build();
+            RpcClient.DeleteReportRequest request = RpcClient.DeleteReportRequest.newBuilder().setSessionId(sessionId.getValue()).setMessage(output.toString()).build();
             SLF4JLoggerProxy.debug(this,
                                    "DeleteReport request: {}",
                                    request);
