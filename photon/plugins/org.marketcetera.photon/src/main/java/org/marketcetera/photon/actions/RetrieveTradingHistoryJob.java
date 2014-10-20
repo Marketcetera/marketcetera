@@ -134,12 +134,6 @@ public class RetrieveTradingHistoryJob
             if(e instanceof NoMarketDataProvidersAvailable) {
                 return Status.CANCEL_STATUS;
             }
-            if(e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            } else {
-                // The callable above doesn't throw checked exceptions
-                throw new RuntimeException(e);
-            }
         }
         return Status.OK_STATUS;
     }
