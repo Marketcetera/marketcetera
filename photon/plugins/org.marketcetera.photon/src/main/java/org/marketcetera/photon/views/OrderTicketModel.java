@@ -300,8 +300,21 @@ public abstract class OrderTicketModel {
         OrderSingle order = Factory.getInstance().createOrderSingle();
         order.setTimeInForce(org.marketcetera.trade.TimeInForce.Day);
         if (currentOrder != null) {
-            // save broker selection
+            order.setAccount(currentOrder.getAccount());
+            order.setBrokerAlgo(currentOrder.getBrokerAlgo());
             order.setBrokerID(currentOrder.getBrokerID());
+            order.setCustomFields(currentOrder.getCustomFields());
+            order.setDisplayQuantity(currentOrder.getDisplayQuantity());
+            order.setInstrument(currentOrder.getInstrument());
+            order.setOrderCapacity(currentOrder.getOrderCapacity());
+            // do not set order id
+            order.setOrderType(currentOrder.getOrderType());
+            order.setPositionEffect(currentOrder.getPositionEffect());
+            order.setPrice(currentOrder.getPrice());
+            // do not set quantity - this is to require the user to make one conscious change on the new ticket
+            order.setSide(currentOrder.getSide());
+            order.setText(currentOrder.getText());
+            order.setTimeInForce(currentOrder.getTimeInForce());
         }
         return order;
     }
@@ -319,10 +332,9 @@ public abstract class OrderTicketModel {
         return mCustomFieldsList;
     }
     /**
-     * 
+     * Gets the algo tags list value.
      *
-     *
-     * @return
+     * @return a <code>WritableList</code> value
      */
     public final WritableList getAlgoTagsList()
     {
