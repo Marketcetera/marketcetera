@@ -1,7 +1,14 @@
 package org.marketcetera.marketdata.core.manager.impl;
 
 import java.lang.management.ManagementFactory;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -15,28 +22,46 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.marketcetera.marketdata.core.Messages;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.QueueProcessor;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.HasInstrument;
-import org.marketcetera.marketdata.*;
+import org.marketcetera.marketdata.AbstractMarketDataModule;
+import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
+import org.marketcetera.marketdata.MarketDataFeed;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.core.MarketDataProvider;
 import org.marketcetera.marketdata.core.MarketDataProviderMBean;
+import org.marketcetera.marketdata.core.Messages;
 import org.marketcetera.marketdata.core.ProviderStatus;
-import org.marketcetera.marketdata.core.manager.*;
+import org.marketcetera.marketdata.core.manager.MarketDataException;
+import org.marketcetera.marketdata.core.manager.MarketDataManager;
+import org.marketcetera.marketdata.core.manager.MarketDataProviderNotAvailable;
+import org.marketcetera.marketdata.core.manager.MarketDataProviderRegistry;
+import org.marketcetera.marketdata.core.manager.MarketDataRequestFailed;
+import org.marketcetera.marketdata.core.manager.MarketDataRequestTimedOut;
+import org.marketcetera.marketdata.core.manager.NoMarketDataProvidersAvailable;
 import org.marketcetera.marketdata.core.module.MarketDataCoreModuleFactory;
 import org.marketcetera.marketdata.core.module.ReceiverModule;
 import org.marketcetera.marketdata.core.module.ReceiverModuleFactory;
 import org.marketcetera.marketdata.core.provider.AbstractMarketDataProvider;
 import org.marketcetera.marketdata.core.request.MarketDataRequestAtom;
 import org.marketcetera.marketdata.core.request.MarketDataRequestToken;
-import org.marketcetera.module.*;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataFlowNotFoundException;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ModuleInfo;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleNotFoundException;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -124,9 +149,13 @@ public class MarketDataManagerImpl
         Collection<MarketDataProvider> successfulProviders = new ArrayList<MarketDataProvider>();
         MarketDataRequestToken token = new Token(inSubscriber,
                                                  inRequest);
-        if(inRequest.getProvider() != null) {
+        String providerName = StringUtils.trimToNull(inRequest.getProvider());
+        if(MarketDataCoreModuleFactory.IDENTIFIER.equals(providerName)) {
+            providerName = null;
+        }
+        if(providerName != null) {
             // a specific provider was requested - use that provider only
-            MarketDataProvider provider = getMarketDataProviderForName(inRequest.getProvider());
+            MarketDataProvider provider = getMarketDataProviderForName(providerName);
             if(provider == null) {
                 throw new MarketDataProviderNotAvailable();
             }
@@ -322,21 +351,31 @@ public class MarketDataManagerImpl
         providersByPriority.add(inProvider);
     }
     /**
-     * Populates the provider list with provider proxys that are implemented as old school modules.
+     * Populates the provider list with provider proxies that are implemented as old school modules.
      */
     private void populateProviderList()
     {
+        ModuleManager moduleManager = ModuleManager.getInstance();
         synchronized(activeProvidersByName) {
             if(ModuleManager.getInstance() != null) {
-                List<ModuleURN> providerUrns = ModuleManager.getInstance().getProviders();
+                List<ModuleURN> providerUrns = moduleManager.getProviders();
                 for(ModuleURN providerUrn : providerUrns) {
                     String providerName = providerUrn.providerName();
-                    if(providerUrn.providerType().equals(MDATA) && !providerName.equals(MarketDataCoreModuleFactory.IDENTIFIER) && !activeProvidersByName.containsKey(providerName)) {
-                        List<ModuleURN> instanceUrns = ModuleManager.getInstance().getModuleInstances(providerUrn);
+                    if(providerUrn.providerType().equals(MDATA) && !providerName.equals(MarketDataCoreModuleFactory.IDENTIFIER)) {
+                        List<ModuleURN> instanceUrns = moduleManager.getModuleInstances(providerUrn);
                         if(!instanceUrns.isEmpty()) {
                             ModuleURN instanceUrn = instanceUrns.get(0);
-                            ModuleInfo info = ModuleManager.getInstance().getModuleInfo(instanceUrn);
-                            if(info.getState() == ModuleState.STARTED) {
+                            ModuleInfo info = moduleManager.getModuleInfo(instanceUrn);
+                            if(info.getState().isStarted()) {
+                                try {
+                                    ModuleURN proxyModuleUrn = getModuleProviderInstanceUrn(providerName);
+                                    ModuleInfo proxyModuleInfo = moduleManager.getModuleInfo(proxyModuleUrn);
+                                    if(proxyModuleInfo.getState().isStarted()) {
+                                        continue;
+                                    }
+                                    moduleManager.start(proxyModuleUrn);
+                                    continue;
+                                } catch (ModuleNotFoundException ignored) {}
                                 ModuleProvider provider = new ModuleProvider(providerName,
                                                                              AbstractMarketDataModule.getFeedForProviderName(providerName));
                                 SLF4JLoggerProxy.debug(this,
@@ -349,6 +388,17 @@ public class MarketDataManagerImpl
                 }
             }
         }
+    }
+    /**
+     * Generates the ModuleURN for a proxy module.
+     *
+     * @param inProviderName a <code>String</code> value
+     * @return a <code>ModuleURN</code> value
+     */
+    private static ModuleURN getModuleProviderInstanceUrn(String inProviderName)
+    {
+        return new ModuleURN(ReceiverModuleFactory.PROVIDER_URN,
+                             "MDMPROXY_" + inProviderName);
     }
     /**
      * Identifies a particular market data request.
@@ -477,7 +527,6 @@ public class MarketDataManagerImpl
             providerName = inProviderName;
             description = providerName + " proxy";
             feed = inFeed;
-            moduleManager = ModuleManager.getInstance();
             processor = new Processor();
             // TODO register a feed status listener to detect starts and stops and update status
             start();
@@ -513,10 +562,10 @@ public class MarketDataManagerImpl
         protected void doStart()
         {
             processor.start();
-            String receiverInstanceName = "MDMPROXY_" + providerName;
-            moduleManager.createModule(ReceiverModuleFactory.PROVIDER_URN,
-                                       receiverInstanceName);
-            receiver = ReceiverModule.getModuleForInstanceName(receiverInstanceName);
+            ModuleURN receiverInstanceUrn = getModuleProviderInstanceUrn(providerName);
+            ModuleManager.getInstance().createModule(ReceiverModuleFactory.PROVIDER_URN,
+                                                     receiverInstanceUrn.instanceName());
+            receiver = ReceiverModule.getModuleForInstanceName(receiverInstanceUrn.instanceName());
         }
         /* (non-Javadoc)
          * @see org.marketcetera.marketdata.core.provider.AbstractMarketDataProvider#doStop()
@@ -527,8 +576,8 @@ public class MarketDataManagerImpl
             processor.stop();
             if(receiver != null) {
                 try {
-                    moduleManager.stop(receiver.getURN());
-                    moduleManager.deleteModule(receiver.getURN());
+                    ModuleManager.getInstance().stop(receiver.getURN());
+                    ModuleManager.getInstance().deleteModule(receiver.getURN());
                 } catch (RuntimeException ignored) {
                 } finally {
                     removeProvider(this);
@@ -631,8 +680,8 @@ public class MarketDataManagerImpl
             {
                 receiver.unsubscribe(this);
                 try {
-                    moduleManager.getDataFlowInfo(flow);
-                    moduleManager.cancel(flow);
+                    ModuleManager.getInstance().getDataFlowInfo(flow);
+                    ModuleManager.getInstance().cancel(flow);
                 } catch (DataFlowNotFoundException ignored) {}
             }
             /**
@@ -646,6 +695,7 @@ public class MarketDataManagerImpl
             {
                 atom = inAtom;
                 receiver.subscribe(this);
+                ModuleManager moduleManager = ModuleManager.getInstance();
                 flow = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(feed.getURN(),generateRequestFromAtom(inAtom,inCompleteRequest)),new DataRequest(receiver.getURN()) });
             }
             /**
@@ -747,10 +797,6 @@ public class MarketDataManagerImpl
          * receiver module for this proxied provider
          */
         private ReceiverModule receiver;
-        /**
-         * module manager object used to create data flows
-         */
-        private final ModuleManager moduleManager;
         /**
          * provider name
          */
