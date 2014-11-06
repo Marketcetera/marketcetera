@@ -71,19 +71,34 @@ public class TimeFactoryImpl
     public static final DateTimeFormatter INTL_DATE = new DateTimeFormatterBuilder().append(MONTH).append(SLASH).append(DAY).append(SLASH).append(YEAR).toFormatter();
     public static final DateTimeFormatter MILLISECOND = new DateTimeFormatterBuilder().appendMillisOfSecond(3).toFormatter();
     /**
-     * full seconds: YYYYMMDD-HH:MM:SS
+     * full seconds: YYYYMMDD-HH:MM:SS in UTC
      */
     public static final DateTimeFormatter FULL_SECONDS = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(DASH)
             .append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).toFormatter().withZone(ZONE);
     /**
-     * wallclock seconds: HH:MM:SS
+     * full seconds: YYYYMMDD-HH:MM:SS.sss in UTC
+     */
+    public static final DateTimeFormatter FULL_MILLISECONDS = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(DASH)
+            .append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).append(PERIOD).append(MILLISECOND).toFormatter().withZone(ZONE);
+    /**
+     * full seconds: YYYYMMDD-HH:MM:SS.sss in local time zone
+     */
+    public static final DateTimeFormatter FULL_MILLISECONDS_LOCAL = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(DASH)
+            .append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).append(PERIOD).append(MILLISECOND).toFormatter();
+    /**
+     * wallclock seconds: HH:MM:SS in UTC
      */
     public static final DateTimeFormatter WALLCLOCK_SECONDS = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).toFormatter().withZone(ZONE);
     /**
-     * wallclock milliseconds: HH:MM:SS.sss
+     * wallclock milliseconds: HH:MM:SS.sss in UTC
      */
     public static final DateTimeFormatter WALLCLOCK_MILLISECONDS = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE)
             .append(COLON).append(SECOND).append(PERIOD).append(MILLISECOND).toFormatter().withZone(ZONE);
+    /**
+     * wallclock milliseconds: HH:MM:SS.sss in local time zone
+     */
+    public static final DateTimeFormatter WALLCLOCK_MILLISECONDS_LOCAL = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE)
+            .append(COLON).append(SECOND).append(PERIOD).append(MILLISECOND).toFormatter();
     /**
      * wallclock minutes: HH:MM
      */
