@@ -1,7 +1,9 @@
 package org.marketcetera.quickfix;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 import org.marketcetera.core.NumericStringSortable;
-import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.core.time.TimeFactoryImpl;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
@@ -69,40 +71,57 @@ public class FIXValueExtractor {
 		}
 		return map;
 	}
-
-	public static Object fieldValueFromMap(FieldMap map, int fieldID, DataDictionary dict, boolean humanReadable) {
-		Object value = null;
-		if (map != null){
-			try {
-				FieldType fieldType = dict.getFieldTypeEnum(fieldID);
-				if (fieldType == null){
-					value = map.getString(fieldID);
-				} else if (humanReadable && dict.hasFieldValue(fieldID)){
-                    value = map.getString(fieldID);
+    /**
+     * Extracts a field value from the given value map.
+     *
+     * @param inFieldMap a <code>FieldMap</code> value
+     * @param inFieldId an <code>int</code> value
+     * @param inDataDictionary a <code>DataDictionary</code> value
+     * @param inHumanReadable a <code>boolean</code>value
+     * @return an <code>Object</code> value
+     */
+    public static Object fieldValueFromMap(FieldMap inFieldMap,
+                                           int inFieldId,
+                                           DataDictionary inDataDictionary,
+                                           boolean inHumanReadable)
+    {
+        Object value = null;
+        if (inFieldMap != null) {
+            try {
+                FieldType fieldType = inDataDictionary.getFieldTypeEnum(inFieldId);
+                if(fieldType == null){
+                    value = inFieldMap.getString(inFieldId);
+                } else if (inHumanReadable && inDataDictionary.hasFieldValue(inFieldId)) {
+                    value = inFieldMap.getString(inFieldId);
                     try {
-                        value = FIXDataDictionary.getHumanFieldValue(dict, fieldID, map.getString(fieldID));
-                    } catch (Exception ex){
+                        value = FIXDataDictionary.getHumanFieldValue(inDataDictionary,
+                                                                     inFieldId,
+                                                                     inFieldMap.getString(inFieldId));
+                    } catch (Exception ignored) {
                         // do nothing, use the string value
                     }
-                } else if (fieldType.equals(FieldType.UtcTimeOnly)) {
-					value = map.getUtcTimeOnly(fieldID); //i18n_time
-				} else if (fieldType.equals(FieldType.UtcTimeStamp)){
-					value = map.getUtcTimeStamp(fieldID); //i18n_datetime
-				} else if (fieldType.equals(FieldType.UtcDateOnly)
-						||fieldType.equals(FieldType.UtcDate)){
-					value = map.getUtcDateOnly(fieldID); //i18n_date
-				} else if (Number.class.isAssignableFrom(fieldType.getJavaType())){
-					value = map.getDecimal(fieldID);
-				} else if (fieldID == ClOrdID.FIELD) {
-					value = new NumericStringSortable(map.getString(fieldID));
-				} else {
-					value = map.getString(fieldID);
-				}
-			} catch (FieldNotFound e) {
-			}
-		}
-		return value;
-	}
+                } else if(fieldType.equals(FieldType.UtcTimeOnly)) {
+                    value = inFieldMap.getUtcTimeOnly(inFieldId); //i18n_time
+                } else if(fieldType.equals(FieldType.UtcTimeStamp)){
+                    DateTime actualValue = new DateTime(inFieldMap.getUtcTimeStamp(inFieldId));
+                    if(actualValue.isAfter(LocalTime.MIDNIGHT.toDateTimeToday())) {
+                        value = TimeFactoryImpl.WALLCLOCK_MILLISECONDS_LOCAL.print(actualValue);
+                    } else {
+                        value = TimeFactoryImpl.FULL_MILLISECONDS_LOCAL.print(actualValue);
+                    }
+                } else if(fieldType.equals(FieldType.UtcDateOnly) ||fieldType.equals(FieldType.UtcDate)){
+                    value = inFieldMap.getUtcDateOnly(inFieldId); //i18n_date
+                } else if(Number.class.isAssignableFrom(fieldType.getJavaType())){
+                    value = inFieldMap.getDecimal(inFieldId);
+                } else if (inFieldId == ClOrdID.FIELD) {
+                    value = new NumericStringSortable(inFieldMap.getString(inFieldId));
+                } else {
+                    value = inFieldMap.getString(inFieldId);
+                }
+            } catch (FieldNotFound ignored) {}
+        }
+        return value;
+    }
 
 
 	private FieldMap extractMap(FieldMap mapParam, Integer fieldID) {

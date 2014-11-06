@@ -41,8 +41,7 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 	private static final int INVALID_FIELD_ID = -1;
 
 	// todo: This constant is duplicated from EnumTableFormat.
-	private static final DateFormat TIME_FORMAT = new SimpleDateFormat(
-			"HH:mm:ss"); //$NON-NLS-1$
+	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS"); //$NON-NLS-1$
 
 	// todo: This constant is duplicated from EnumTableFormat.
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
