@@ -87,7 +87,10 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>com.hazelcast</groupId>
+      <artifactId>hazelcast</artifactId>
+    </dependency> 
     <!-- Testing. -->
     <dependency>
       <groupId>${project.groupId}</groupId>

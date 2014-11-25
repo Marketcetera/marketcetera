@@ -9,6 +9,8 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.Lifecycle;
 
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
+
 /* $License$ */
 
 /**
@@ -105,7 +107,7 @@ public abstract class QueueProcessor<Clazz>
                                                      threadDescriptor);
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | HazelcastInstanceNotActiveException e) {
             interrupted.set(true);
             Messages.INTERRUPTED.info(this,
                                       threadDescriptor);
