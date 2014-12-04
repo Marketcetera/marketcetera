@@ -116,7 +116,6 @@ public class StatelessRemoteCallTestBase
                 (events.next(),Level.DEBUG,call.getClass().getName(),
                  "Remote call ended with failure; context: "+contextStr,
                  TEST_LOCATION);
-            events.next();
         }
         assertFalse(events.hasNext());
         getAppender().clear();

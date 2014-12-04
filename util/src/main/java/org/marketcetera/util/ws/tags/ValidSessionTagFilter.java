@@ -19,7 +19,7 @@ import org.marketcetera.util.ws.stateful.SessionManager;
 
 @ClassVersion("$Id$")
 public class ValidSessionTagFilter<T>
-    implements TagFilter
+        implements TagFilter
 {
 
     // INSTANCE DATA.
@@ -56,26 +56,23 @@ public class ValidSessionTagFilter<T>
     {
         return mSessionManager;
     }
-
-
-    // TagFilter.
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.util.ws.tags.TagFilter#assertMatch(org.marketcetera.util.ws.tags.Tag)
+     */
     @Override
-    public void assertMatch
-        (Tag tag)
-        throws I18NException
+    public void assertMatch(Tag inTag)
+            throws I18NException
     {
-        if (getSessionManager()==null) {
+        if(getSessionManager() == null) {
             return;
         }
-        if (tag==null) {
-            throw new I18NException(Messages.SESSION_REQUIRED);
+        if(inTag == null) {
+            throw new SessionRequiredException(Messages.SESSION_REQUIRED);
         }
-        if ((tag instanceof SessionId) &&
-            (getSessionManager().get((SessionId)tag)!=null)) {
+        if((inTag instanceof SessionId) && (getSessionManager().get((SessionId)inTag)!=null)) {
             return;
         }
-        throw new I18NException
-            (new I18NBoundMessage1P(Messages.SESSION_EXPIRED,tag));
+        throw new SessionExpiredException(new I18NBoundMessage1P(Messages.SESSION_EXPIRED,
+                                                                 inTag));
     }
 }
