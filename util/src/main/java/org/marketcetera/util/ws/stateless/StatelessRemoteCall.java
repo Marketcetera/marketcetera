@@ -189,7 +189,7 @@ public class StatelessRemoteCall
         (StatelessClientContext context,
          Throwable t)
     {
-        Messages.CALL_FAILURE.debug(this,t,context);
+        Messages.CALL_FAILURE.debug(this,context);
         return new RemoteException(t);
     }
 }
