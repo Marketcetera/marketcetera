@@ -93,7 +93,24 @@ public class Client
 
 
     // INSTANCE METHODS.
-
+    /**
+     * Get the username value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getUsername()
+    {
+        return username;
+    }
+    /**
+     * Sets the username value.
+     *
+     * @param inUsername a <code>String</code> value
+     */
+    private void setUsername(String inUsername)
+    {
+        username = inUsername;
+    }
     /**
      * Sets the receiver's session ID to the given one.
      *
@@ -105,7 +122,6 @@ public class Client
     {
         mSessionId=sessionId;
     }
- 
     /**
      * Returns the receiver's session ID.
      *
@@ -144,17 +160,16 @@ public class Client
      * complete the login operation.
      */
 
-    public void login
-        (String user,
-         char[] password)
-        throws I18NException,
-               RemoteException
+    public void login(String user,
+                      char[] password)
+        throws I18NException,RemoteException
     {
         if (getSessionId()!=null) {
             throw new I18NException(Messages.ALREADY_LOGGED_IN);
         }
         AuthService i=getService(AuthService.class);
         setSessionId(i.login(super.getContext(),user,password));
+        setUsername(user);
     }
 
     /**
@@ -181,6 +196,11 @@ public class Client
         ClientContext context=new ClientContext();
         fillContext(context);
         context.setSessionId(getSessionId());
+        context.setUsername(username);
         return context;
     }
+    /**
+     * username value
+     */
+    private String username;
 }
