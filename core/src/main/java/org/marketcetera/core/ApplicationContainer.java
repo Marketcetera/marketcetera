@@ -9,6 +9,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.Lifecycle;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -25,7 +28,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 @ClassVersion("$Id$")
 public class ApplicationContainer
         extends ApplicationBase
-        implements ApplicationInfoProvider, Lifecycle
+        implements ApplicationInfoProvider, Lifecycle, ApplicationContextAware
 {
     /* (non-Javadoc)
      * @see org.marketcetera.core.ApplicationInfoProvider#getAppDir()
@@ -211,6 +214,15 @@ public class ApplicationContainer
         running.set(true);
     }
     /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext inContext)
+            throws BeansException
+    {
+        parentContext = inContext;
+    }
+    /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#stop()
      */
     @Override
@@ -259,7 +271,7 @@ public class ApplicationContainer
     protected ConfigurableApplicationContext generateContext()
     {
         return new FileSystemXmlApplicationContext(new String[] { "file:"+CONF_DIR+contextFilename }, //$NON-NLS-1$
-                                                   null);
+                                                   parentContext);
     }
     /**
      * indicates if the app is running or not
@@ -293,4 +305,8 @@ public class ApplicationContainer
      * exit code to return on exit
      */
     protected static int exitCode = 0;
+    /**
+     * 
+     */
+    private ApplicationContext parentContext;
 }
