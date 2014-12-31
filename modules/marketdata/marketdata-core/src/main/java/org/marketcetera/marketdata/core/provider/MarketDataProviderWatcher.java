@@ -30,7 +30,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release%
  */
-@ClassVersion("$Id: AbstractMarketDataProvider.java 16913 2014-06-17 17:13:00Z colin $")
+@ClassVersion("$Id$")
 public class MarketDataProviderWatcher
 {
     /**
@@ -163,8 +163,8 @@ public class MarketDataProviderWatcher
      * Schedulable watcher task that checks the status of the module to monitor and tries to restart it if necessary.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: MarketDataProviderWatcher.java 83882 2014-08-01 22:31:54Z colin $
-     * @since $Release$
+     * @version $Id$
+     * @since 2.4.2
      */
     private class Watcher
             implements Runnable
