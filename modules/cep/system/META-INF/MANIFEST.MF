@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.marketcetera.modules.cep.system;singleton:=true
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Name: Marketcetera CEP System Library
-Bundle-Version: 2.4.2
+Bundle-Version: 2.4.3
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.marketcetera.core,
  org.marketcetera.core.tests;resolution:=optional

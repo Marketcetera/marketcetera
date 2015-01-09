@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>remote</artifactId>
-    <version>2.4.2</version>
+    <version>2.4.3</version>
   </parent>
   <artifactId>remote-emitter</artifactId>
   <packaging>jar</packaging>
