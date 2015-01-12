@@ -9,7 +9,6 @@ import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.ApplicationWorkbenchAdvisor;
 import org.marketcetera.photon.ApplicationWorkbenchWindowAdvisor;
-import org.marketcetera.photon.strategy.StrategyUI;
 
 /* $License$ */
 
@@ -40,7 +39,6 @@ public final class Application implements IApplication {
                                     configurer) {
                                 @Override
                                 public void postWindowOpen() {
-                                    StrategyUI.initializeStrategyEngines();
                                     super.postWindowOpen();
                                 }
                             };
