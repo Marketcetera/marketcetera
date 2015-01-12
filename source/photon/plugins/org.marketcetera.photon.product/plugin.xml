@@ -134,8 +134,6 @@
          </view>
          <perspectiveShortcut
                id="org.marketcetera.photon.EquityPerspective"/>
-         <perspectiveShortcut
-               id="org.marketcetera.photon.OptionPerspective"/>
       </perspectiveExtension>
       <perspectiveExtension targetID="org.marketcetera.photon.EquityPerspective">
          <perspectiveShortcut
@@ -154,10 +152,6 @@
                relative="org.marketcetera.photon.views.MarketDataView"
                visible="false">
          </view>
-      </perspectiveExtension>
-      <perspectiveExtension targetID="org.marketcetera.photon.OptionPerspective">
-         <perspectiveShortcut
-               id="org.marketcetera.photon.StrategyPerspective"/>
       </perspectiveExtension>
    </extension>
    <extension
