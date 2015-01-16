@@ -3,6 +3,12 @@ package org.marketcetera.core;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Properties;
@@ -59,6 +65,31 @@ public class Util
         }
         reader.close();
         return result.toString();
+    }
+    /**
+     * Deep copies the given object.
+     *
+     * @param inOriginalObject a <code>Clazz</code> value
+     * @return a <code>Clazz</code> value
+     * @throws IOException 
+     * @throws ClassNotFoundException 
+     */
+    @SuppressWarnings("unchecked")
+    public static <Clazz extends Serializable> Clazz deepCopy(Clazz inOriginalObject)
+            throws IOException, ClassNotFoundException
+    {
+        Clazz objectToReturn = null;
+        // Write the object out to a byte array
+        FastByteArrayOutputStream fbos = new FastByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(fbos);
+        out.writeObject(inOriginalObject);
+        out.flush();
+        out.close();
+        // Retrieve an input stream from the byte array and read
+        // a copy of the object back in. 
+        ObjectInputStream in = new ObjectInputStream(fbos.getInputStream());
+        objectToReturn = (Clazz)in.readObject();
+        return objectToReturn;
     }
     /**
      * the character used to prevent a delimiter or separator from being interpreted literally
@@ -310,7 +341,6 @@ public class Util
         }
         return id.getValue().substring(index);
     }
-
     /**
      * Returns an AppId, given the app name and version.
      *
@@ -323,12 +353,222 @@ public class Util
     {
         return new AppId(inName + APP_ID_VERSION_SEPARATOR + inVersion);
     }
-
+    /**
+     * Provides an optimized <code>InputStream</code> implementation.
+     *
+     * @author Phillip Isenhour
+     * @version $Id$
+     * @since $Release$
+     */
+    public static class FastByteArrayInputStream
+            extends InputStream
+    {
+        /**
+         * Create a new FastByteArrayInputStream instance.
+         *
+         * @param inBuffer a <code>byte[]</code> value
+         * @param inCount an <code>int</code> value
+         */
+        public FastByteArrayInputStream(byte[] inBuffer,
+                                        int inCount)
+        {
+            this.buf = inBuffer;
+            this.count = inCount;
+        }
+        /* (non-Javadoc)
+         * @see java.io.InputStream#read()
+         */
+        @Override
+        public int read()
+                throws IOException
+        {
+            return (pos < count) ? (buf[pos++] & 0xff) : -1;
+        }
+        /* (non-Javadoc)
+         * @see java.io.InputStream#read(byte[], int, int)
+         */
+        @Override
+        public int read(byte[] inBuffer,
+                        int inOffset,
+                        int inLen)
+                throws IOException
+        {
+            if(pos >= count) {
+                return -1;
+            }
+            if((pos + inLen) > count) {
+                inLen = (count - pos);
+            }
+            System.arraycopy(buf,
+                             pos,
+                             inBuffer,
+                             inOffset,
+                             inLen);
+            pos += inLen;
+            return inLen;
+        }
+        /* (non-Javadoc)
+         * @see java.io.InputStream#skip(long)
+         */
+        @Override
+        public long skip(long inSkip)
+                throws IOException
+        {
+            if((pos + inSkip) > count) {
+                inSkip = count - pos;
+            }
+            if(inSkip < 0) {
+                return 0;
+            }
+            pos += inSkip;
+            return inSkip;
+        }
+        /* (non-Javadoc)
+         * @see java.io.InputStream#available()
+         */
+        @Override
+        public int available()
+                throws IOException
+        {
+            return count - pos;
+        }
+        /**
+         * Our byte buffer
+         */
+        private byte[] buf = null;
+        /**
+         * Number of bytes that we can read from the buffer
+         */
+        private int count = 0;
+        /**
+         * Number of bytes that have been read from the buffer
+         */
+        private int pos = 0;
+    }
+    /**
+     * Provides an optimized <code>OutputStream</code> implementation.
+     *
+     * @author Phillip Isenhour
+     * @version $Id$
+     * @since $Release$
+     */
+    public static class FastByteArrayOutputStream
+            extends OutputStream
+    {
+        /**
+         * Create a new FastByteArrayOutputStream instance.
+         *
+         * @param inInitSize an <code>int</code> value
+         */
+        public FastByteArrayOutputStream(int inInitSize)
+        {
+            size = 0;
+            buf = new byte[inInitSize];
+        }
+        /**
+         * Create a new FastByteArrayOutputStream instance with an initial capacity size of 5k.
+         */
+        public FastByteArrayOutputStream()
+        {
+            this(5 * 1024);
+        }
+        /**
+         * Gets the current size.
+         *
+         * @return an <code>int</code> value
+         */
+        public int getSize()
+        {
+            return size;
+        }
+        /**
+         * Returns the byte array containing the written data.
+         *
+         *<p>Note that this array will almost always be larger than the amount of data actually written.
+         *
+         * @return a <code>byte[]</code> value
+         */
+        public byte[] getByteArray()
+        {
+            return buf;
+        }
+        /* (non-Javadoc)
+         * @see java.io.OutputStream#write(int)
+         */
+        @Override
+        public void write(int inByte)
+                throws IOException
+        {
+            verifyBufferSize(size + 1);
+            buf[size++] = (byte)inByte;
+        }
+        /* (non-Javadoc)
+         * @see java.io.OutputStream#write(byte[])
+         */
+        @Override
+        public void write(byte[] inBytes)
+                throws IOException
+        {
+            verifyBufferSize(size + inBytes.length);
+            System.arraycopy(inBytes, 0, buf, size, inBytes.length);
+            size += inBytes.length;
+        }
+        /* (non-Javadoc)
+         * @see java.io.OutputStream#write(byte[], int, int)
+         */
+        @Override
+        public void write(byte[] inBytes,
+                          int inOffset,
+                          int inLength)
+                throws IOException
+        {
+            verifyBufferSize(size + inLength);
+            System.arraycopy(inBytes, inOffset, buf, size, inLength);
+            size += inLength;
+        }
+        /**
+         * Resets the object.
+         */
+        public void reset()
+        {
+            size = 0;
+        }
+        /**
+         * Returns an InputStream for reading back the written data
+         *
+         * @return an <code>InputStream</code> value
+         */
+        public InputStream getInputStream()
+        {
+            return new FastByteArrayInputStream(buf, size);
+        }
+        /**
+         * Ensures that we have a large enough buffer for the given size.
+         *
+         * @param inSize an <code>int</code> value
+         */
+        private void verifyBufferSize(int inSize)
+        {
+            if (inSize > buf.length) {
+                byte[] old = buf;
+                buf = new byte[Math.max(inSize, 2 * buf.length )];
+                System.arraycopy(old, 0, buf, 0, old.length);
+                old = null;
+            }
+        }
+        /**
+         * buffer value
+         */
+        private byte[] buf = null;
+        /**
+         * size value
+         */
+        private int size = 0;
+    }
     /**
      * The the version separator used to separate Application Name and Version
      * number in application IDs.
      */
-
     private static final String APP_ID_VERSION_SEPARATOR="/"; //$NON-NLS-1$
     /**
      * counter used to guarantee unique tokens
