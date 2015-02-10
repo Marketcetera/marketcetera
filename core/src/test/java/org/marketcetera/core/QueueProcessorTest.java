@@ -22,7 +22,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * Tests {@link QueueProcessor}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: QueueProcessorTest.java 84178 2014-10-22 02:16:23Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class QueueProcessorTest
