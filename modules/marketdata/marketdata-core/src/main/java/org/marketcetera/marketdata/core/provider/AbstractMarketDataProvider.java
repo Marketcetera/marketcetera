@@ -218,7 +218,7 @@ public abstract class AbstractMarketDataProvider
                     Capability requiredCapability = necessaryCapabilities.get(atom.getContent());
                     if(requiredCapability == null) {
                         org.marketcetera.marketdata.core.Messages.UNKNOWN_MARKETDATA_CONTENT.error(this,
-                                                                  atom.getContent());
+                                                                                                   atom.getContent());
                         throw new UnsupportedOperationException(org.marketcetera.marketdata.core.Messages.UNKNOWN_MARKETDATA_CONTENT.getText(atom.getContent()));
                     }
                     Set<Capability> capabilities = getCapabilities();
@@ -892,6 +892,7 @@ public abstract class AbstractMarketDataProvider
     static
     {
         Map<Content,Capability> capabilities = new HashMap<Content,Capability>();
+        capabilities.put(Content.BBO10,Capability.BBO10);
         capabilities.put(Content.DIVIDEND,Capability.DIVIDEND);
         capabilities.put(Content.LATEST_TICK,Capability.LATEST_TICK);
         capabilities.put(Content.LEVEL_2,Capability.LEVEL_2);
