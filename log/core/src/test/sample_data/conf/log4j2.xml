@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="error">
+      <AppenderRef ref="STDOUT"/>
+    </Root>
+    <logger name="com.marketcetera" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="com.mchange" level="error">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="netmessage" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.apache.activemq.broker.jmx.ManagementContext" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.apache.activemq.transport" level="error">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.apache.jsp" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.hibernate" level="error">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.hibernate.cache" level="error">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.hibernate.jdbc" level="error">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.hibernate.pretty" level="error">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.hibernate.SQL" level="error">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.hibernate.tool.hbm2dll" level="error">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.hibernate.transaction" level="error">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.hibernate.type" level="error">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.marketcetera" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.marketcetera.core.instruments" level="debug">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.marketcetera.core.resourcepool" level="debug">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.marketcetera.persist" level="error">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.marketcetera.trade.utils" level="debug">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.springframework.jms.listener" level="warn">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="quickfixj.event" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="quickfixj.msg.incoming" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="quickfixj.msg.outgoing" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+  </Loggers>
+</Configuration>

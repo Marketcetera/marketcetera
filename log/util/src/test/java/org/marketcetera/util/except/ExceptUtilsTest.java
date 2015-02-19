@@ -1,18 +1,24 @@
 package org.marketcetera.util.except;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.InterruptedIOException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileLockInterruptionException;
 import java.rmi.activation.ActivationException;
 import java.rmi.activation.UnknownObjectException;
+
 import javax.naming.InterruptedNamingException;
+
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-
-import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -27,9 +33,6 @@ public class ExceptUtilsTest
 {
     private static final String TEST_CATEGORY=
         ExceptUtils.class.getName();
-    private static final String TEST_LOCATION=
-        TEST_CATEGORY;
-
 
     private static void interruptHelper
         (Exception ex,
@@ -47,12 +50,9 @@ public class ExceptUtilsTest
                      (ex,TEST_CATEGORY,new I18NBoundMessage1P
                       (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
         assertEquals(interrupted,Thread.interrupted());
-        assertSingleEvent(Level.WARN,TEST_CATEGORY,MID_MSG_EN,TEST_LOCATION);
 
         assertEquals(interrupted,ExceptUtils.swallow(ex));
         assertEquals(interrupted,Thread.interrupted());
-        assertSingleEvent(Level.WARN,TEST_CATEGORY,
-                          "Caught throwable was not propagated",TEST_LOCATION);
     }
 
     private static void wrapHelper
@@ -125,7 +125,6 @@ public class ExceptUtilsTest
     @Before
     public void setupExceptUtilsTest()
     {
-        setLevel(TEST_CATEGORY,Level.WARN);
     }
 
 

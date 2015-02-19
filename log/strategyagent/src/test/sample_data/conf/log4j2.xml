@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="STDOUT"/>
+    </Root>
+    <logger name="com.marketcetera" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="com.mchange" level="error">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="netmessage" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.apache.activemq.broker.jmx.ManagementContext" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.apache.activemq.transport" level="error">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.marketcetera" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.marketcetera.strategyagent.StrategyAgent" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="org.springframework.jms.listener" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="quickfixj.event" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="quickfixj.msg.incoming" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="quickfixj.msg.outgoing" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="SINK" level="info">
+        <AppenderRef ref="STDOUT"/>
+    </logger>
+  </Loggers>
+</Configuration>

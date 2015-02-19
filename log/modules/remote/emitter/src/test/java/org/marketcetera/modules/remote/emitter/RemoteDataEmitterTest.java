@@ -19,7 +19,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import javax.jms.JMSException;
 import javax.security.auth.login.LoginException;
 
-import org.apache.log4j.Level;
 import org.junit.Test;
 import org.marketcetera.client.ClientTest;
 import org.marketcetera.core.Pair;
@@ -38,7 +37,6 @@ import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.TypesTestBase;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.test.LogTestAssist;
 import org.springframework.beans.factory.BeanCreationException;
 
 /* $License$ */
@@ -260,7 +258,6 @@ public class RemoteDataEmitterTest extends RemoteEmitterTestBase {
      */
     @Test
     public void connectionStatusNotify() throws Exception {
-        mAssist.resetAppender();
         //Init manager to create the receiver.
         initManager();
         //Now connect to it
@@ -486,6 +483,4 @@ public class RemoteDataEmitterTest extends RemoteEmitterTestBase {
                 new LinkedBlockingQueue<Pair<Boolean, Boolean>>();
     }
 
-    private final LogTestAssist mAssist = new LogTestAssist(
-            RemoteDataEmitter.class.getName(), Level.WARN);
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.marketcetera.util.ws.wrappers.SerWrapper;
 
@@ -20,6 +21,7 @@ import org.marketcetera.util.ws.wrappers.SerWrapper;
 
 /* $License$ */
 
+@SuppressWarnings("rawtypes")
 public class SerWrapperHolder
     extends GenericHolder<SerWrapper>
 {

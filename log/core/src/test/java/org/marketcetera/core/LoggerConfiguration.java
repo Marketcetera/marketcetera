@@ -1,10 +1,10 @@
 package org.marketcetera.core;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.apache.log4j.PropertyConfigurator;
-
 import java.io.File;
+
+import org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -23,13 +23,12 @@ public class LoggerConfiguration {
                     "logger configuration file {} not found", //$NON-NLS-1$
                     LOGGER_CONFIG.getAbsolutePath());
         }
-        PropertyConfigurator.configureAndWatch
-            (LOGGER_CONFIG.getAbsolutePath(), 10 * 1000l); //10 seconds
+        System.setProperty(XmlConfigurationFactory.CONFIGURATION_FILE_PROPERTY,
+                           LOGGER_CONFIG.getAbsolutePath());
     }
 
-    public static final File TEST_ROOT = new File("src" + //$NON-NLS-1$
-            File.separator + "test"); //$NON-NLS-1$
-    public static final File TEST_SAMPLE_DATA = new File(TEST_ROOT, "sample_data"); //$NON-NLS-1$
-    public static final File TEST_CONF = new File(TEST_SAMPLE_DATA, "conf"); //$NON-NLS-1$
-    public static final File LOGGER_CONFIG = new File(TEST_CONF, "log4j.properties"); //$NON-NLS-1$
+    public static final File TEST_ROOT = new File("src" + File.separator + "test");
+    public static final File TEST_SAMPLE_DATA = new File(TEST_ROOT, "sample_data");
+    public static final File TEST_CONF = new File(TEST_SAMPLE_DATA, "conf");
+    public static final File LOGGER_CONFIG = new File(TEST_CONF, "log4j2.xml");
 }

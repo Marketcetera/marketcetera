@@ -21,6 +21,7 @@ import static org.marketcetera.util.test.EqualityAssert.*;
 public class RootElementWrapperTest
     extends TestCaseBase
 {
+    @SuppressWarnings("unused")
     private static class MyInteger
         extends BaseWrapper<Integer>
     {
@@ -30,7 +31,6 @@ public class RootElementWrapperTest
             super(value);
         }
 
-        @SuppressWarnings("unused")
         private MyInteger() {}
 
         public void setInt

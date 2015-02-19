@@ -1,9 +1,12 @@
 package org.marketcetera.util.l10n;
 
-import java.util.Iterator;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.marketcetera.util.test.CollectionAssert.assertArrayPermutation;
+
 import java.util.Locale;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.ActiveLocale;
@@ -14,9 +17,6 @@ import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
-import static org.marketcetera.util.test.CollectionAssert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -104,23 +104,12 @@ public class ContainerClassInfoTest
     {
         ActiveLocale.setProcessLocale(Locale.ROOT);
         ContainerClassInfo info=new ContainerClassInfo(NonstandardFields.class);
-        String category=info.getClass().getName();
-        setLevel(category,Level.INFO);
         assertEquals(NonstandardFields.class,info.getContainer());
         assertEquals(NonstandardFields.PROVIDER,info.getProvider());
         assertArrayPermutation
             (new I18NMessageInfo[] {
                 new I18NMessageInfo("m0.msg",0,NonstandardFields.M0_MSG)
             },info.getMessageInfo().toArray(I18NMessageInfo.EMPTY_ARRAY));
-        Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
-        assertEvent
-            (events.next(),Level.INFO,category,
-             "Non-static field 'M1_MSG' is ignored",category);
-        assertEvent
-            (events.next(),Level.INFO,category,
-             "Null field 'M2_MSG' is ignored",category);
-        assertFalse(events.hasNext());
-        getAppender().clear();
     }
 
     @Test
