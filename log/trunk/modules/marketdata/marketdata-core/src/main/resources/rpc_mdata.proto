@@ -1,0 +1,189 @@
+// protoc -I=src/main/resources --java_out=src/main/java src/main/resources/rpc_mdata.proto
+option java_generic_services = true;
+
+option java_package = "org.marketcetera.marketdata.core.rpc";
+option java_outer_classname = "RpcMarketdata";
+
+message LoginRequest {
+    required string appId = 1;
+    required string clientId = 2;
+    required Locale locale = 3;
+    required string versionId = 4;
+    required string username = 5;
+    required string password = 6;
+}
+
+message Locale {
+    required string country = 1;
+    required string language = 2;
+    optional string variant = 3;
+}
+
+message LoginResponse {
+    required string sessionId = 1;
+    optional bool failed = 2;
+    optional string message = 3;
+}
+
+message LogoutRequest {
+    required string sessionId = 1;
+}
+
+message LogoutResponse {
+    optional bool failed = 1;
+    optional string message = 2;
+}
+
+message HeartbeatRequest {
+    required int64 id = 1;
+}
+
+message HeartbeatResponse {
+    required int64 id = 1;
+    optional bool failed = 2;
+    optional string message = 3;
+}
+
+enum InstrumentType {
+    EQUITY = 0;
+    OPTION = 1;
+    FUTURE = 2;
+    CURRENCY = 3;
+}
+
+message Instrument {
+    required string payload = 1;
+}
+
+message MarketDataRequest {
+    required string sessionId = 1;
+    required string request = 2;
+    optional bool streamEvents = 3;
+}
+
+message MarketDataResponse {
+    required int64 id = 1;
+    optional bool failed = 2;
+    optional string message = 3;
+}
+
+message LastUpdateRequest {
+    required string sessionId = 1;
+    required int64 id = 2;
+}
+
+message LastUpdateResponse {
+    required int64 timestamp = 1;
+    optional bool failed = 2;
+    optional string message = 3;
+}
+
+message CancelRequest {
+    required string sessionId = 1;
+    required int64 id = 2;
+}
+
+message CancelResponse {
+    optional string message = 1;
+    optional bool failed = 2;
+}
+
+message Event {
+    required string payload = 1;
+}
+
+message EventsRequest {
+    required string sessionId = 1;
+    required int64 id = 2;
+}
+
+message EventsResponse {
+    required int64 id = 1;
+    repeated string payload = 2;
+    optional string message = 3;
+    optional bool failed = 4;
+}
+
+message AllEventsRequest {
+    required string sessionId = 1;
+    repeated int64 id = 2;
+}
+
+message AllEventsResponse {
+    repeated EventsResponse events = 1;
+    optional string message = 2;
+    optional bool failed = 3;
+}
+
+message SnapshotRequest {
+    required string sessionId = 1;
+    required Instrument instrument = 2;
+    required ContentAndCapability content = 3;
+    optional string provider = 4;
+}
+
+message SnapshotResponse {
+    repeated string payload = 1;
+    optional string message = 2;
+    optional bool failed = 3;
+}
+
+message SnapshotPageRequest {
+    required string sessionId = 1;
+    required Instrument instrument = 2;
+    required ContentAndCapability content = 3;
+    optional string provider = 4;
+    required PageRequest page = 5;
+}
+
+message SnapshotPageResponse {
+    repeated string payload = 1;
+    optional string message = 2;
+    optional bool failed = 3;
+}
+
+enum ContentAndCapability {
+    TOP_OF_BOOK = 0;
+    OPEN_BOOK = 1;
+    MARKET_STAT = 2;
+    TOTAL_VIEW = 3;
+    LEVEL_2 = 4;
+    LATEST_TICK = 5;
+    BBO10 = 6;
+    NBBO = 7;
+    DIVIDEND = 8;
+    AGGREGATED_DEPTH = 9;
+    UNAGGREGATED_DEPTH = 10;
+    IMBALANCE = 11;
+    UNKNOWN = 12;
+    EVENT_BOUNDARY = 13;
+}
+
+message PageRequest {
+    required int32 page = 1;
+    required int32 size = 2;
+}
+
+message AvailableCapabilityRequest {
+    required string sessionId = 1;
+}
+
+message AvailableCapabilityResponse {
+    repeated ContentAndCapability capability = 1;
+    optional string message = 2;
+    optional bool failed = 3;
+}
+
+service RpcMarketDataService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc request(MarketDataRequest) returns (MarketDataResponse);
+    rpc getLastUpdate(LastUpdateRequest) returns (LastUpdateResponse);
+    rpc cancel(CancelRequest) returns (CancelResponse);
+    rpc getEvents(EventsRequest) returns (EventsResponse);
+    rpc getAllEvents(AllEventsRequest) returns (AllEventsResponse);
+    rpc getSnapshot(SnapshotRequest) returns (SnapshotResponse);
+    rpc getSnapshotPage(SnapshotPageRequest) returns (SnapshotPageResponse);
+    rpc getAvailableCapability(AvailableCapabilityRequest) returns (AvailableCapabilityResponse);
+}
