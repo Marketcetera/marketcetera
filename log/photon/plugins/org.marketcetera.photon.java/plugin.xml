@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+  <extension point="org.eclipse.core.contenttype.contentTypes">
+	<!-- declares a content type for Java Source files -->
+	<content-type id="org.marketcetera.photon.java.javaSource" name="%javaSourceName" 
+		base-type="org.eclipse.core.runtime.text"
+		priority="high"				
+		file-extensions="java"/>
+  </extension>
+   <extension
+         id="JavaDocumentSetupParticipant"
+         name="%javaDocumentSetupParticipant"
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            contentTypeId="org.marketcetera.photon.java.javaSource"
+            class="org.marketcetera.photon.java.internal.JavaDocumentSetupParticipant">
+      </participant>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.marketcetera.photon.java.internal.JavaEditor"
+            default="true"
+            id="org.marketcetera.photon.java.javaEditor"
+            name="%javaEditorName"
+            icon="$nl$/icons/full/obj16/jcu_obj.gif">
+            <contentTypeBinding
+               contentTypeId="org.marketcetera.photon.java.javaSource"
+            />
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.marketcetera.photon.java.internal.JavaUIPreferenceInitializer">
+      </initializer>
+   </extension>
+	
+</plugin>

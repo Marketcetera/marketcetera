@@ -1,0 +1,2 @@
+#Names of module factory implementations
+org.marketcetera.modules.cep.esper.CEPEsperFactory
