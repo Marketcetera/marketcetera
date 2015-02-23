@@ -6,13 +6,16 @@ import static org.marketcetera.marketdata.Content.LEVEL_2;
 import static org.marketcetera.marketdata.Content.OPEN_BOOK;
 import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 
@@ -58,14 +61,6 @@ public abstract class MarketDataMessageTranslatorTestBase<ResponseType>
      * the translator to use for these tests
      */
     protected DataRequestTranslator<ResponseType> translator;
-    /**
-     * Run once before all tests. 
-     */
-    @BeforeClass
-    public static void once()
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Sets up data before each test.
      */
