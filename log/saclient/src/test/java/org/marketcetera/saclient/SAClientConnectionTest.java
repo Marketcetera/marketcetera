@@ -8,8 +8,11 @@ import static org.junit.Assert.assertThat;
 import java.util.Arrays;
 
 import org.hamcrest.Matchers;
-import org.junit.*;
-import org.marketcetera.core.LoggerConfiguration;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
 import org.marketcetera.module.ExpectedFailure;
@@ -453,7 +456,6 @@ public class SAClientConnectionTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        LoggerConfiguration.logSetup();
         MockStrategyAgent.startServerAndClient();
     }
 

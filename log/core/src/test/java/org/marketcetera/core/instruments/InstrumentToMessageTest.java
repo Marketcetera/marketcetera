@@ -17,19 +17,30 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
-import quickfix.field.*;
+import quickfix.field.CFICode;
+import quickfix.field.MaturityDate;
+import quickfix.field.MaturityDay;
+import quickfix.field.MaturityMonthYear;
+import quickfix.field.MsgType;
+import quickfix.field.PutOrCall;
 import quickfix.field.SecurityType;
+import quickfix.field.StrikePrice;
+import quickfix.field.Symbol;
 
 /* $License$ */
 /**
@@ -53,7 +64,6 @@ public class InstrumentToMessageTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        LoggerConfiguration.logSetup();
         //Initialize all fix dictionaries.
         for (FIXVersion version : FIXVersion.values()) {
             FIXDataDictionaryManager.initialize(version,

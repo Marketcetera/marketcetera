@@ -1,18 +1,35 @@
 package org.marketcetera.algo;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.Validator;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Factory;
@@ -40,7 +57,6 @@ public class BrokerAlgoTest
     public static void once()
             throws Exception
     {
-        LoggerConfiguration.logSetup();
         context = JAXBContext.newInstance(BrokerAlgoTagSpec.class,BrokerAlgoTag.class,BrokerAlgo.class,BrokerAlgoSpec.class);
         marshaller = context.createMarshaller();
         unmarshaller = context.createUnmarshaller();

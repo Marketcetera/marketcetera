@@ -9,7 +9,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -25,17 +24,6 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  */
 public class CloseableLockTest
 {
-    /**
-     * Runs once before all tests.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @BeforeClass
-    public static void once()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Tests {@link CloseableLock#create(java.util.concurrent.locks.Lock)}.
      *

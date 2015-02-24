@@ -1,20 +1,29 @@
 package org.marketcetera.module;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.lang.management.ManagementFactory;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.management.Descriptor;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.MBeanOperationInfo;
+import javax.management.MBeanParameterInfo;
+import javax.management.MBeanServer;
+import javax.management.openmbean.SimpleType;
+
+import org.marketcetera.core.Pair;
 import org.marketcetera.marketdata.MockMarketDataFeedModuleFactory;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.test.CollectionAssert;
-import org.marketcetera.core.Pair;
-import org.marketcetera.core.LoggerConfiguration;
-import static org.junit.Assert.*;
-import org.junit.BeforeClass;
-
-import javax.management.*;
-import javax.management.openmbean.SimpleType;
-import java.util.List;
-import java.util.HashSet;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.lang.management.ManagementFactory;
 
 /* $License$ */
 /**
@@ -25,13 +34,6 @@ import java.lang.management.ManagementFactory;
 @ClassVersion("$Id$")
 public class ModuleTestBase {
 
-    /**
-     * Setup logging for unit tests.
-     */
-    @BeforeClass
-    public static void logSetup() {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Verifies all the providers that are expected to be available
      * in the unit testing environment.

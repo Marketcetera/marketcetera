@@ -10,10 +10,8 @@ import javax.management.JMX;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.module.BlockingSinkDataListener;
@@ -41,13 +39,6 @@ public class ExternalTimeTest extends ModuleTestBase {
     protected static Factory sFactory;
 
     private static ModuleURN TEST_URN = new ModuleURN(CEPEsperFactory.PROVIDER_URN, "toli");
-
-    @BeforeClass
-    public static void logSetup() {
-        LoggerConfiguration.logSetup();
-    }
-
-
     @Before
     public void before() throws Exception {
         sSink = new BlockingSinkDataListener();

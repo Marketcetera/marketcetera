@@ -1,14 +1,13 @@
 package org.marketcetera.saclient;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.client.ClientManager;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+import org.marketcetera.client.ClientManager;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -20,12 +19,6 @@ import static org.junit.Assert.assertTrue;
  */
 @ClassVersion("$Id$")
 public class SAClientFactoryTest {
-
-    @BeforeClass
-    public static void logSetup() {
-        LoggerConfiguration.logSetup();
-    }
-
     /**
      * Verifies the singleton instance.
      */

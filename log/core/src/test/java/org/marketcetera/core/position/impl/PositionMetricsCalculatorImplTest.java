@@ -2,9 +2,7 @@ package org.marketcetera.core.position.impl;
 
 import java.math.BigDecimal;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 
 /* $License$ */
 
@@ -18,12 +16,6 @@ import org.marketcetera.core.LoggerConfiguration;
 public class PositionMetricsCalculatorImplTest {
 
     private static final int NUM_ITERATIONS = 1000;
-
-    @BeforeClass
-    public static void setup() throws Exception {
-        LoggerConfiguration.logSetup();
-    }
-
     @Test
     public void stressTest() {
         new PositionMetricsCalculatorTestTemplate(NUM_ITERATIONS) {

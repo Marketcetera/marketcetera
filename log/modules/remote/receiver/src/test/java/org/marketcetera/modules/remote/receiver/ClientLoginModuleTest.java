@@ -27,7 +27,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.client.ClientInitException;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NMessage0P;
@@ -143,7 +142,6 @@ public class ClientLoginModuleTest extends TestCaseBase {
 
     @BeforeClass
     public static void setup() throws Exception {
-        LoggerConfiguration.logSetup();
         //Set up our configuration.
         JaasConfiguration.setup();
         //Override login helper to help with unit testing

@@ -8,10 +8,8 @@ import java.util.Arrays;
 
 import javax.jms.ConnectionFactory;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.client.config.SpringConfig;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.trade.Order;
 
 /* $License$ */
@@ -25,17 +23,6 @@ import org.marketcetera.trade.Order;
  */
 public class ClientOrderModifierTest
 {
-    /**
-     * Run once before all unit tests.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @BeforeClass
-    public static void once()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Tests adding and retrieving {@link OrderModifier} objects to {@link SpringConfig} objects.
      *

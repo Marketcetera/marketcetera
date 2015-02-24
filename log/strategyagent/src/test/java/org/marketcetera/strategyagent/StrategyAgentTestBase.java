@@ -12,7 +12,6 @@ import javax.management.MBeanServer;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
@@ -42,7 +41,6 @@ public class StrategyAgentTestBase
     @BeforeClass
     public static void setupConfDirProperty()
     {
-        LoggerConfiguration.logSetup();
         initParams();
     }
     /**

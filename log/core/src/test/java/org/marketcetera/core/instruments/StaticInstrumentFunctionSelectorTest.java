@@ -7,11 +7,16 @@ import static org.junit.Assert.assertThat;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.ConvertibleBond;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.SecurityType;
 
 /* $License$ */
 /**
@@ -25,12 +30,6 @@ import org.marketcetera.trade.*;
  * @since 2.0.0
  */
 public class StaticInstrumentFunctionSelectorTest {
-
-    @BeforeClass
-    public static void logSetup() {
-        LoggerConfiguration.logSetup();
-    }
-
     @Test
     @SuppressWarnings("rawtypes")
     public void forInstrument() throws Exception {

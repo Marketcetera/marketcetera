@@ -39,7 +39,6 @@ import org.junit.Test;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.client.users.UserInfo;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
 import org.marketcetera.core.notifications.ServerStatusListener;
@@ -106,7 +105,6 @@ public class ClientTest
     private static final int NUM_REPEAT = 5;
     @BeforeClass
     public static void setup() throws Exception {
-    	LoggerConfiguration.logSetup();
         FIXDataDictionaryManager.initialize(FIXVersion.FIX42,
                 FIXVersion.FIX42.getDataDictionaryURL());
         initServer();

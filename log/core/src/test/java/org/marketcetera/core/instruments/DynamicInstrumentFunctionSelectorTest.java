@@ -9,11 +9,15 @@ import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.ConvertibleBond;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.Message;
@@ -37,7 +41,6 @@ public class DynamicInstrumentFunctionSelectorTest {
 
     @BeforeClass
     public static void logSetup() throws Exception {
-        LoggerConfiguration.logSetup();
         FIXDataDictionaryManager.initialize(FIXVersion.FIX42,
                 FIXVersion.FIX42.getDataDictionaryURL());
     }

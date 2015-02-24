@@ -1,16 +1,18 @@
 package org.marketcetera.metrics;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.core.LoggerConfiguration;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.hamcrest.Matchers;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.allOf;
-
-import java.util.Map;
-import java.util.HashMap;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -24,7 +26,6 @@ import java.util.HashMap;
 public class ConfiguratorTest {
     @BeforeClass
     public static void setup() {
-        LoggerConfiguration.logSetup();
         Configurator.clearReportedValues();
     }
 

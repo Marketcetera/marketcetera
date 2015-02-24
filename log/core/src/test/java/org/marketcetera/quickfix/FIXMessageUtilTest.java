@@ -17,7 +17,6 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
 
@@ -81,7 +80,6 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     }
 
     public static Test suite() {
-        LoggerConfiguration.logSetup();
 /*
         MarketceteraTestSuite suite = new MarketceteraTestSuite();
         suite.addTest(new FIXMessageUtilTest("testFillFieldsFromExistingMessage", FIXVersion.FIX40));

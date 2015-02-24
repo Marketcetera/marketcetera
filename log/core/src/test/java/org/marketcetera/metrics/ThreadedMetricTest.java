@@ -1,24 +1,36 @@
 package org.marketcetera.metrics;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import javax.management.JMX;
+import javax.management.MBeanServer;
+
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.misc.NamedThreadFactory;
 import org.marketcetera.util.test.RegExAssert;
-import org.marketcetera.core.LoggerConfiguration;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.After;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import org.hamcrest.Matchers;
-
-import javax.management.MBeanServer;
-import javax.management.JMX;
-import java.util.concurrent.*;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ArrayList;
-import java.io.*;
-import java.lang.management.ManagementFactory;
 
 /* $License$ */
 /**
@@ -33,7 +45,6 @@ public class ThreadedMetricTest {
 
     @BeforeClass
     public static void logSetup() {
-        LoggerConfiguration.logSetup();
         ThreadedMetric.setEnabled(true);
     }
 

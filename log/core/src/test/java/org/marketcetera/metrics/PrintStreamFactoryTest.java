@@ -1,18 +1,14 @@
 package org.marketcetera.metrics;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.module.ExpectedFailure;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import java.io.PrintStream;
-import java.io.FileNotFoundException;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.PrintStream;
+
+import org.junit.Test;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -25,11 +21,6 @@ import java.io.IOException;
  */
 @ClassVersion("$Id$")
 public class PrintStreamFactoryTest {
-    @BeforeClass
-    public static void setup() {
-        LoggerConfiguration.logSetup();
-    }
-
     /**
      * Tests the {@link StdErrFactory}
      *

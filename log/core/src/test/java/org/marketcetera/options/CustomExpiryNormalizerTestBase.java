@@ -9,7 +9,6 @@ import java.util.Enumeration;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.util.file.CopyCharsUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -27,7 +26,6 @@ import org.marketcetera.util.misc.ClassVersion;
 public abstract class CustomExpiryNormalizerTestBase {
     @BeforeClass
     public static void setupLog() {
-        LoggerConfiguration.logSetup();
         OptionUtils.resetNormalizerLoaded();
     }
 

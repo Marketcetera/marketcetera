@@ -8,9 +8,7 @@ import java.util.concurrent.Callable;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
@@ -20,7 +18,18 @@ import org.marketcetera.marketdata.core.module.MarketDataCoreModule;
 import org.marketcetera.marketdata.core.module.MarketDataCoreModuleFactory;
 import org.marketcetera.marketdata.core.module.ReceiverModule;
 import org.marketcetera.marketdata.core.module.ReceiverModuleFactory;
-import org.marketcetera.module.*;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.IllegalRequestParameterValue;
+import org.marketcetera.module.Messages;
+import org.marketcetera.module.ModuleException;
+import org.marketcetera.module.ModuleInfo;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleStateException;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Lists;
@@ -36,17 +45,6 @@ import com.google.common.collect.Lists;
  */
 public class MarketDataCoreModuleTest
 {
-    /**
-     * Runs once before all tests.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @BeforeClass
-    public static void beforeClass()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Runs before each test.
      *

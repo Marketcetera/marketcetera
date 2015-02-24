@@ -4,16 +4,16 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.marketcetera.orderloader.Messages.ERROR_NO_ORDERS;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
+
 import org.apache.commons.lang.SystemUtils;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Factory;
@@ -34,10 +34,6 @@ import org.marketcetera.util.unicode.SignatureCharset;
  */
 @ClassVersion("$Id$")
 public class OrderParserTest {
-    @BeforeClass
-    public static void setupLogger() {
-        LoggerConfiguration.logSetup();
-    }
     @Test
     public void nullRowProcessor() throws Exception {
         new ExpectedFailure<NullPointerException>(){

@@ -10,9 +10,7 @@ import java.math.BigDecimal;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
@@ -20,7 +18,12 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataModuleTestBase;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
-import org.marketcetera.module.*;
+import org.marketcetera.module.ConfigurationProviderTest;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ModuleFactory;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.SinkDataListener;
 
 /**
  * Subclass from the main Market data test and verify that basic module functionality works
@@ -31,12 +34,6 @@ public class CSVFeedModuleTest
         extends MarketDataModuleTestBase
 {
     private static final String DATA_DIR = "src/test/sample_data/";
-
-    @BeforeClass
-    public static void beforeClass() {
-        LoggerConfiguration.logSetup();
-    }
-
     @Override
     protected void populateConfigurationProvider(ConfigurationProviderTest.MockConfigurationProvider inProvider)
     {

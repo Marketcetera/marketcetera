@@ -92,6 +92,11 @@
       <artifactId>log4j-core</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <!-- runtime -->
     <dependency>
       <groupId>com.lmax</groupId>
@@ -204,6 +209,26 @@
           </execution>
         </executions>
       </plugin>
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <version>3.1</version>
+  <executions>
+    <execution>
+      <id>log4j-plugin-processor</id>
+      <goals>
+        <goal>compile</goal>
+      </goals>
+      <phase>process-classes</phase>
+      <configuration>
+        <proc>only</proc>
+        <annotationProcessors>
+          <annotationProcessor>org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor</annotationProcessor>
+        </annotationProcessors>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
     </plugins>
   </build>
 </project>

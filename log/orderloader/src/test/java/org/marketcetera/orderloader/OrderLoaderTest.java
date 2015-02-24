@@ -1,19 +1,18 @@
 package org.marketcetera.orderloader;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.file.CopyCharsUtils;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.orderloader.fix.FIXProcessorTest;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.BeforeClass;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.util.Set;
 import java.util.EnumSet;
+import java.util.Set;
+
+import org.junit.Test;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.orderloader.fix.FIXProcessorTest;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.util.file.CopyCharsUtils;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -25,10 +24,6 @@ import java.util.EnumSet;
  */
 @ClassVersion("$Id$")
 public class OrderLoaderTest {
-    @BeforeClass
-    public static void setupLogger() {
-        LoggerConfiguration.logSetup();
-    }
     @Test
     public void nullArguments() throws Exception {
         //null order processor

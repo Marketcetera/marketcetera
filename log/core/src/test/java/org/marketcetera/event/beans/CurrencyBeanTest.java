@@ -3,12 +3,13 @@ package org.marketcetera.event.beans;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.DeliveryType;
 
 /* $License$ */
 
@@ -18,17 +19,6 @@ import org.marketcetera.trade.*;
  */
 public class CurrencyBeanTest
 {
-    /**
-     * Run once before all tests.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @BeforeClass
-    public static void once()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Tests {@link CurrencyBean#copy(CurrencyBean)}.
      *
