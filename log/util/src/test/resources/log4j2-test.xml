@@ -6,9 +6,9 @@
     </Console>
   </Appenders>
   <Loggers>
-    <Logger name="org.apache.log4j.xml" level="info"/>
-    <Root level="debug">
+    <Root level="warn">
       <AppenderRef ref="STDOUT"/>
     </Root>
+    <logger name="org.marketcetera" level="info"/>
   </Loggers>
 </Configuration>

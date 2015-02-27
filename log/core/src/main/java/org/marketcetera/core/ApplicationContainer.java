@@ -6,7 +6,9 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -75,11 +77,6 @@ public class ApplicationContainer
      */
     public static void main(String[] args)
     {
-        // configure logger
-        System.setProperty(XmlConfigurationFactory.CONFIGURATION_FILE_PROPERTY,
-                           ApplicationBase.CONF_DIR+"log4j2.xml");
-        System.setProperty("Log4jContextSelector",
-                           "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector");
         // log application start
         Messages.APP_COPYRIGHT.info(ApplicationContainer.class);
         Messages.APP_VERSION_BUILD.info(ApplicationContainer.class,
@@ -120,6 +117,9 @@ public class ApplicationContainer
             public void run() {
                 application.stop();
                 Messages.APP_STOP.info(ApplicationContainer.class);
+                if(LogManager.getContext() instanceof LoggerContext) {
+                    Configurator.shutdown((LoggerContext)LogManager.getContext());
+                }
             }
         });
         try {

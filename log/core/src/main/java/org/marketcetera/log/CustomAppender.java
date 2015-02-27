@@ -22,7 +22,7 @@ import org.marketcetera.log.CustomAppender.CustomAppenderManager;
 /* $License$ */
 
 /**
- *
+ * Provides a custom logging appender that can be used to redirect logging input to a specified output stream.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -34,14 +34,35 @@ public class CustomAppender
         extends AbstractOutputStreamAppender<CustomAppenderManager>
 {
     /**
+     * Creates a <code>CustomAppender</code> value.
+     *
+     * @param inName a <code>String</code> value
+     * @param inLayout a <code>Layout&lt;?&gt;</code> value
+     * @param inFilter a <code>Filter</code> value
+     * @return a <code>CustomAppender</code> value
+     */
+    @PluginFactory
+    public static CustomAppender createAppender(@PluginAttribute("name")String inName,
+                                                @PluginElement("Layout")Layout<?> inLayout,
+                                                @PluginElement("Filters")Filter inFilter)
+    {
+        if(inLayout == null) {
+            inLayout = PatternLayout.createDefaultLayout();
+        }
+        CustomAppenderManager manager = CustomAppenderManager.getInstance(inName,
+                                                                          inLayout);
+        return new CustomAppender(inName,
+                                  inLayout,
+                                  inFilter,
+                                  manager);
+    }
+    /**
      * Create a new CustomAppender instance.
      *
-     * @param inName
-     * @param inLayout
-     * @param inFilter
-     * @param inIgnoreExceptions
-     * @param inImmediateFlush
-     * @param inManager
+     * @param inName a <code>String</code> value
+     * @param inLayout a <code>Layout&lt;? extends Serializable&gt;</code>value
+     * @param inFilter a <code>Filter</code> value
+     * @param inManager a <code>CustomAppenderManager</code> value
      */
     protected CustomAppender(String inName,
                              Layout<? extends Serializable> inLayout,
@@ -55,30 +76,39 @@ public class CustomAppender
               false,
               inManager);
     }
-    @PluginFactory
-    public static CustomAppender createAppender(@PluginAttribute("name")String name,
-                                                @PluginElement("Layout")Layout<?> layout,
-                                                @PluginElement("Filters")Filter filter)
-    {
-        if(layout == null) {
-            layout = PatternLayout.createDefaultLayout();
-        }
-        CustomAppenderManager manager = CustomAppenderManager.getInstance(name,
-                                                                          layout);
-        return new CustomAppender(name,
-                                  layout,
-                                  filter,
-                                  manager);
-    }
+    /**
+     * Manages the <code>CustomAppender</code> resources.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
     public static class CustomAppenderManager
             extends OutputStreamManager
     {
         /**
+         * Registers the given <code>OutputStream</code> for the given stream name.
+         *
+         * @param inStreamName a <code>String</code> value
+         * @param inStream an <code>OutputStream</code> value
+         */
+        public static void registerStream(String inStreamName,
+                                          OutputStream inStream)
+        {
+            RedirectingOutputStream registeredStream = registeredStreams.get(inStreamName);
+            if(registeredStream == null) {
+                registeredStream = new RedirectingOutputStream();
+                registeredStreams.put(inStreamName,
+                                      registeredStream);
+            }
+            registeredStream.setDestination(inStream);
+        }
+        /**
          * Create a new CustomAppenderManager instance.
          *
-         * @param inOutputStream
-         * @param inStreamName
-         * @param inLayout
+         * @param inOutputStream an <code>OutputStream</code> value
+         * @param inStreamName a <code>String</code> value
+         * @param inLayout a <code>Layout&lt;?&gt;</code>value
          */
         private CustomAppenderManager(OutputStream inOutputStream,
                                       String inStreamName,
@@ -88,6 +118,13 @@ public class CustomAppender
                   inStreamName,
                   inLayout);
         }
+        /**
+         * Gets the <code>CustomAppenderManager</code> instance for the given stream name and layout.
+         *
+         * @param inStreamName a <code>String</code> value
+         * @param inLayout a <code>Layout&lt;?&gt;</code>value
+         * @return a <code>CustomAppenderManager</code> value
+         */
         private static CustomAppenderManager getInstance(String inStreamName,
                                                          Layout<?> inLayout)
         {
@@ -108,20 +145,22 @@ public class CustomAppender
                           instance);
             return instance;
         }
-        public static void registerStream(String inStreamName,
-                                          OutputStream inStream)
-        {
-            RedirectingOutputStream registeredStream = registeredStreams.get(inStreamName);
-            if(registeredStream == null) {
-                registeredStream = new RedirectingOutputStream();
-                registeredStreams.put(inStreamName,
-                                      registeredStream);
-            }
-            registeredStream.setDestination(inStream);
-        }
+        /**
+         * tracks manager instances by stream name
+         */
         private static final Map<String,CustomAppenderManager> instances = new HashMap<>();
+        /**
+         * tracks stream redirectors by stream name
+         */
         private static final Map<String,RedirectingOutputStream> registeredStreams = new HashMap<>();
     }
+    /**
+     * Accepts stream output, redirecting it to another stream if applicable.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
     private static class RedirectingOutputStream
             extends OutputStream
     {
@@ -136,10 +175,18 @@ public class CustomAppender
                 destination.write(inB);
             }
         }
+        /**
+         * Sets the destination output stream.
+         * 
+         * @param inOutputStream an <code>OutputStream</code> value
+         */
         private void setDestination(OutputStream inOutputStream)
         {
             destination = inOutputStream;
         }
+        /**
+         * destination stream, may be <code>null</code>
+         */
         private OutputStream destination;
     }
     private static final long serialVersionUID = -1612799097293634437L;

@@ -2,9 +2,6 @@ package org.marketcetera.modules.remote.receiver;
 
 import java.util.EnumSet;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.LogEventLevel;
 import org.marketcetera.module.DataFlowID;
@@ -185,11 +182,8 @@ public class ReceiverModule extends Module
     @Override
     public void setLogLevel(LogEventLevel inLevel) {
         if(inLevel == null) {
-            throw new IllegalArgumentException(
-                    Messages.NULL_LEVEL_VALUE.getText(
-                            EnumSet.allOf(LogEventLevel.class)));
+            throw new IllegalArgumentException(Messages.NULL_LEVEL_VALUE.getText(EnumSet.allOf(LogEventLevel.class)));
         }
-        getLogger().setLevel(Level.toLevel(inLevel.name(), null));
         mLogLevel = inLevel;
     }
 
@@ -205,16 +199,6 @@ public class ReceiverModule extends Module
                     Messages.ILLEGAL_STATE_SET_SKIP_JAAS.getText());
         }
         mSkipJAASConfiguration = inSkipJAASConfiguration;
-    }
-
-    /**
-     * Gets the log4j logger that corresponds to the system user messages
-     * logger category.
-     *
-     * @return the system user messages logger.
-     */
-    private Logger getLogger() {
-        return LogManager.getLogger(org.marketcetera.core.Messages.USER_MSG_CATEGORY);
     }
     /**
      * Verifies if the module is not started.

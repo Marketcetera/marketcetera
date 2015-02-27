@@ -6,54 +6,9 @@
     </Console>
   </Appenders>
   <Loggers>
-    <Root level="error">
+    <Root level="warn">
       <AppenderRef ref="STDOUT"/>
     </Root>
-    <logger name="com.marketcetera" level="info">
-    </logger>
-    <logger name="com.mchange" level="error">
-    </logger>
-    <logger name="netmessage" level="info">
-    </logger>
-    <logger name="org.apache.activemq.broker.jmx.ManagementContext" level="info">
-    </logger>
-    <logger name="org.apache.activemq.transport" level="error">
-    </logger>
-    <logger name="org.apache.jsp" level="info">
-    </logger>
-    <logger name="org.hibernate" level="error">
-    </logger>
-    <logger name="org.hibernate.cache" level="error">
-    </logger>
-    <logger name="org.hibernate.jdbc" level="error">
-    </logger>
-    <logger name="org.hibernate.pretty" level="error">
-    </logger>
-    <logger name="org.hibernate.SQL" level="error">
-    </logger>
-    <logger name="org.hibernate.tool.hbm2dll" level="error">
-    </logger>
-    <logger name="org.hibernate.transaction" level="error">
-    </logger>
-    <logger name="org.hibernate.type" level="error">
-    </logger>
-    <logger name="org.marketcetera" level="info">
-    </logger>
-    <logger name="org.marketcetera.core.instruments" level="debug">
-    </logger>
-    <logger name="org.marketcetera.core.resourcepool" level="debug">
-    </logger>
-    <logger name="org.marketcetera.persist" level="error">
-    </logger>
-    <logger name="org.marketcetera.trade.utils" level="debug">
-    </logger>
-    <logger name="org.springframework.jms.listener" level="warn">
-    </logger>
-    <logger name="quickfixj.event" level="info">
-    </logger>
-    <logger name="quickfixj.msg.incoming" level="info">
-    </logger>
-    <logger name="quickfixj.msg.outgoing" level="info">
-    </logger>
+    <logger name="org.marketcetera" level="info"/>
   </Loggers>
 </Configuration>

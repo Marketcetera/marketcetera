@@ -1,7 +1,6 @@
 package org.marketcetera.modules.remote.receiver;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -16,8 +15,6 @@ import java.util.LinkedList;
 import javax.management.JMX;
 import javax.security.auth.login.Configuration;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -290,6 +287,7 @@ public class ReceiverTest extends ModuleTestBase {
         final ReceiverModuleMXBean bean = JMX.newMXBeanProxy(getMBeanServer(),
                 ReceiverFactory.INSTANCE_URN.toObjectName(),
                 ReceiverModuleMXBean.class);
+        System.out.println("Checking...");
         assertLogLevel(bean, LogEventLevel.DEBUG);
     }
 
@@ -392,12 +390,10 @@ public class ReceiverTest extends ModuleTestBase {
      * @param inLogLevel the expected log level.
      */
     private void assertLogLevel(ReceiverModuleMXBean inMBean,
-                                LogEventLevel inLogLevel) {
-        assertEquals(inLogLevel,  inMBean.getLogLevel());
-        Level level = LogManager.getLogger(
-                org.marketcetera.core.Messages.USER_MSG_CATEGORY).getLevel();
-        assertNotNull(level);
-        assertEquals(inLogLevel.toString(), level.toString());
+                                LogEventLevel inLogLevel)
+    {
+        assertEquals(inLogLevel, 
+                     inMBean.getLogLevel());
     }
 
     /**

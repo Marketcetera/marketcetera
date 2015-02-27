@@ -80,7 +80,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
         new NotificationConsoleController().openConsole();
         // activate the main console
         photonConsole.activate();
-        NewPhotonConsoleAppender consoleLoggerAppender = new NewPhotonConsoleAppender(photonConsole);
+        PhotonConsoleAppender consoleLoggerAppender = new PhotonConsoleAppender(photonConsole);
         consoleLoggerAppender.start();
         PhotonPlugin.getMainConsoleLogger().info(ApplicationWorkbenchWindowAdvisor_ApplicationInitializing.getText(new Date()));
         PhotonPlugin.getDefault().ensureDefaultProject(ProgressManager.getInstance().getDefaultMonitor());

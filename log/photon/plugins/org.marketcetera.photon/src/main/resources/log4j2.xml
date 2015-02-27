@@ -20,22 +20,20 @@
       <PatternLayout pattern="%d{ABSOLUTE} %5p [%t] %c{3} (%F:%L) - %m%n"/>
       <ExactThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
     </CustomAppender>
-    <!-- RandomAccessFile name="File" fileName="${sys:java.io.tmpdir}/photon.log" immediateFlush="false" append="true">
-      <PatternLayout>
-        <Pattern>%d{DATE} %5p [%t] %c{3} (%F:%L) - %m%n</Pattern>
-      </PatternLayout>
-    </RandomAccessFile-->
-    <RandomAccessFile name="Notifications" fileName="${sys:java.io.tmpdir}/photon-notifications.log" immediateFlush="false" append="true">
-      <PatternLayout>
-        <Pattern>%d{DATE} %5p [%t] %c{3} (%F:%L) - %m%n</Pattern>
-      </PatternLayout>
-    </RandomAccessFile>
-    <RollingRandomAccessFile name="File" fileName="${sys:java.io.tmpdir}/photon.log" filePattern="${sys:java.io.tmpdir}/photon-%i.log.gz" append="true">
+    <RollingRandomAccessFile name="Notifications" fileName="${sys:java.io.tmpdir}/photon-notifications.log" filePattern="${sys:java.io.tmpdir}/photon-notifications-%i.log.gz" append="true">
       <PatternLayout>
         <Pattern>&lt;%d&gt;%n%m%n</Pattern>
       </PatternLayout>
       <Policies>
-        <SizeBasedTriggeringPolicy size="1 MB"/>
+        <SizeBasedTriggeringPolicy size="10 MB"/>
+      </Policies>
+    </RollingRandomAccessFile>
+    <RollingRandomAccessFile name="File" fileName="${sys:java.io.tmpdir}/photon.log" filePattern="${sys:java.io.tmpdir}/photon-%i.log.gz" append="true">
+      <PatternLayout>
+        <Pattern>%d{DATE} %5p [%t] %c{3} (%F:%L) - %m%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10 MB"/>
       </Policies>
     </RollingRandomAccessFile>
    </Appenders>
