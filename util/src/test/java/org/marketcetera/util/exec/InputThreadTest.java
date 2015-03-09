@@ -23,7 +23,7 @@ public class InputThreadTest
     extends TestCaseBase
 {
     private static final int SLEEP_DURATION=
-        1000;
+        10000;
 
 
     private static final class GenerousInputStream
