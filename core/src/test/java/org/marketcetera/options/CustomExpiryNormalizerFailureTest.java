@@ -1,10 +1,10 @@
 package org.marketcetera.options;
 
-import org.marketcetera.util.misc.ClassVersion;
 import static org.junit.Assert.assertEquals;
-import org.apache.log4j.Level;
 
 import java.net.URL;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -23,9 +23,6 @@ public class CustomExpiryNormalizerFailureTest extends CustomExpiryNormalizerTes
         //verify that the default normalization happens
         assertEquals("20091121", OptionUtils.normalizeEquityOptionExpiry("200911"));
         //verify that we failed to load the custom expiry normalizer.
-        sLogAssist.assertLastEvent(Level.WARN, OptionUtils.class.getName(),
-                Messages.LOG_ERROR_LOADING_OPTION_EXPIRY_NORMALIZER.getText(),
-                null);
     }
 
     @Override

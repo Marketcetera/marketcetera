@@ -1,22 +1,50 @@
 package org.marketcetera.modules.async;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.module.*;
-import org.marketcetera.core.LoggerConfiguration;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.marketcetera.modules.async.SimpleAsyncProcessorFactory.PROVIDER_URN;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.hamcrest.Matchers;
 
-import javax.management.*;
-import java.util.*;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.math.BigDecimal;
+
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.marketcetera.module.BlockingSinkDataListener;
+import org.marketcetera.module.CopierModule;
+import org.marketcetera.module.CopierModuleFactory;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataFlowInfo;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.IllegalRequestParameterValue;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleTestBase;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.SinkDataListener;
+import org.marketcetera.module.SinkModuleFactory;
+import org.marketcetera.util.misc.ClassVersion;
 
 
 /* $License$ */
@@ -29,12 +57,6 @@ import java.math.BigDecimal;
  */
 @ClassVersion("$Id$")
 public class AsyncModuleTest extends ModuleTestBase {
-
-    @BeforeClass
-    public static void logSetup() {
-        LoggerConfiguration.logSetup();
-    }
-
     /**
      * Verifies the provider and module infos.
      *

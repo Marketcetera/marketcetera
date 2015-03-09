@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{ABSOLUTE} %5p [%t] %c{3} (%F:%L) - %m%n"/>
+    </Console>
+    <CustomAppender name="PhotonConsoleDebug">
+      <PatternLayout pattern="%d{ABSOLUTE} %5p [%t] %c{3} (%F:%L) - %m%n"/>
+      <ExactThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+    </CustomAppender>
+    <CustomAppender name="PhotonConsoleInfo">
+      <PatternLayout pattern="%d{ABSOLUTE} %5p [%t] %c{3} (%F:%L) - %m%n"/>
+      <ExactThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+    </CustomAppender>
+    <CustomAppender name="PhotonConsoleWarn">
+      <PatternLayout pattern="%d{ABSOLUTE} %5p [%t] %c{3} (%F:%L) - %m%n"/>
+      <ExactThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+    </CustomAppender>
+    <CustomAppender name="PhotonConsoleError">
+      <PatternLayout pattern="%d{ABSOLUTE} %5p [%t] %c{3} (%F:%L) - %m%n"/>
+      <ExactThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+    </CustomAppender>
+    <RollingRandomAccessFile name="Notifications" fileName="${sys:java.io.tmpdir}/photon-notifications.log" filePattern="${sys:java.io.tmpdir}/photon-notifications-%i.log.gz" append="true">
+      <PatternLayout>
+        <Pattern>&lt;%d&gt;%n%m%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10 MB"/>
+      </Policies>
+    </RollingRandomAccessFile>
+    <RollingRandomAccessFile name="File" fileName="${sys:java.io.tmpdir}/photon.log" filePattern="${sys:java.io.tmpdir}/photon-%i.log.gz" append="true">
+      <PatternLayout>
+        <Pattern>%d{DATE} %5p [%t] %c{3} (%F:%L) - %m%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10 MB"/>
+      </Policies>
+    </RollingRandomAccessFile>
+   </Appenders>
+  <Loggers>
+    <Root level="warn">
+      <AppenderRef ref="File"/>
+      <AppenderRef ref="PhotonConsoleDebug"/>
+      <AppenderRef ref="PhotonConsoleInfo"/>
+      <AppenderRef ref="PhotonConsoleWarn"/>
+      <AppenderRef ref="PhotonConsoleError"/>
+    </Root>
+    <logger name="com.marketcetera" level="info">
+    </logger>
+    <logger name="org.marketcetera" level="info">
+    </logger>
+    <logger name="notifications.log" level="all">
+      <AppenderRef ref="Notifications"/>
+    </logger>
+  </Loggers>
+</Configuration>

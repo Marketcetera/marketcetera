@@ -1,16 +1,32 @@
 package org.marketcetera.marketdata;
 
 import static java.math.BigDecimal.TEN;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.event.*;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DepthOfBookEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.MarketDataEvent;
+import org.marketcetera.event.QuantityTuple;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TopOfBookEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
@@ -46,17 +62,6 @@ public class OrderBookTest
      * collection used to track expected values for asks
      */
     private final QuantityTupleList<AskEvent> asks = new QuantityTupleList<AskEvent>();
-    /**
-     * Run once before all tests.
-     *
-     * @throws Exception if an error occurs
-     */
-    @BeforeClass
-    public static void once()
-        throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Run before each test.
      *

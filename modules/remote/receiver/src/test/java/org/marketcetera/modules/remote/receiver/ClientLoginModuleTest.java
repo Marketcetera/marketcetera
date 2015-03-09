@@ -1,27 +1,38 @@
 package org.marketcetera.modules.remote.receiver;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Arrays;
-import javax.security.auth.callback.*;
+
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.AccountNotFoundException;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
+
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.client.ClientInitException;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.misc.RandomStrings;
 import org.marketcetera.util.test.TestCaseBase;
+
 import com.sun.security.auth.UserPrincipal;
 
 /* $License$ */
@@ -41,7 +52,6 @@ public class ClientLoginModuleTest extends TestCaseBase {
      */
     @Test
     public void loginTest() throws Exception {
-        setLevel(ClientLoginModule.class.getName(), Level.INFO);
         //test failure conditions
         attemptLogin(null, getTestPassword(),
                 AccountNotFoundException.class,
@@ -53,53 +63,32 @@ public class ClientLoginModuleTest extends TestCaseBase {
         attemptLogin(u, getTestPassword(),
                 FailedLoginException.class,
                 Messages.USER_LOGIN_FAIL.getText(u));
-        assertLastEvent(Level.WARN, ClientLoginModule.class.getName(),
-                Messages.USER_LOGIN_ERROR_LOG.getText(u),
-                ClientLoginModule.class.getName());
 
         attemptLogin(getTestUsername(), null,
                 FailedLoginException.class,
                 Messages.USER_LOGIN_FAIL.getText(getTestUsername()));
-        assertLastEvent(Level.WARN, ClientLoginModule.class.getName(),
-                Messages.USER_LOGIN_ERROR_LOG.getText(getTestUsername()),
-                ClientLoginModule.class.getName());
 
         attemptLogin(getTestUsername(), "".toCharArray(),
                 FailedLoginException.class,
                 Messages.USER_LOGIN_FAIL.getText(getTestUsername()));
-        assertLastEvent(Level.WARN, ClientLoginModule.class.getName(),
-                Messages.USER_LOGIN_ERROR_LOG.getText(getTestUsername()),
-                ClientLoginModule.class.getName());
 
         attemptLogin(getTestUsername(), randomString().toCharArray(),
                 FailedLoginException.class,
                 Messages.USER_LOGIN_FAIL.getText(getTestUsername()));
-        assertLastEvent(Level.WARN, ClientLoginModule.class.getName(),
-                Messages.USER_LOGIN_ERROR_LOG.getText(getTestUsername()),
-                ClientLoginModule.class.getName());
         //test failure due to client error
         I18NMessage0P fail = new I18NMessage0P(Messages.LOGGER, "testMessage");
         sMockHelper.setFail(fail);
         attemptLogin(getTestUsername(), getTestPassword(),
                 FailedLoginException.class,
                 Messages.USER_LOGIN_ERROR.getText());
-        assertLastEvent(Level.WARN, ClientLoginModule.class.getName(),
-                Messages.USER_LOGIN_ERROR_LOG.getText(getTestUsername()),
-                ClientLoginModule.class.getName());
 
         //test successful login
         sMockHelper.setFail(null);
         attemptLogin(getTestUsername(), getTestPassword(), null, null);
-        assertLastEvent(Level.INFO, ClientLoginModule.class.getName(),
-                Messages.USER_LOGIN_LOG.getText(getTestUsername()),
-                ClientLoginModule.class.getName());
 
         // test logout removes the principal from the subject
         loginContext.logout();
         assertTrue(loginContext.getSubject().getPrincipals().isEmpty());
-        assertLastEvent(Level.INFO, ClientLoginModule.class.getName(),
-                Messages.USER_LOGOUT_LOG.getText(getTestUsername()),
-                ClientLoginModule.class.getName());
     }
 
     /**
@@ -153,7 +142,6 @@ public class ClientLoginModuleTest extends TestCaseBase {
 
     @BeforeClass
     public static void setup() throws Exception {
-        LoggerConfiguration.logSetup();
         //Set up our configuration.
         JaasConfiguration.setup();
         //Override login helper to help with unit testing

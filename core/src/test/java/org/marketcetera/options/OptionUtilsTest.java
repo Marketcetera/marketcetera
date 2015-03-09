@@ -10,9 +10,6 @@ import static org.marketcetera.trade.OptionType.Unknown;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import org.junit.Test;

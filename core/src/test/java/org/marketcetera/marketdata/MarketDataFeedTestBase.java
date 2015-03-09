@@ -6,8 +6,6 @@ import java.util.concurrent.Callable;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.event.MockEventTranslator;
@@ -24,11 +22,6 @@ public class MarketDataFeedTestBase
     protected MarketDataRequest dataRequest;
     protected MockMarketDataFeedCredentials mCredentials;
     
-    @BeforeClass
-    public static void doOnce() 
-    {
-        LoggerConfiguration.logSetup();
-    }
     @Before
     public void beforeEachTime()
             throws Exception

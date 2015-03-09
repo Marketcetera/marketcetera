@@ -1,22 +1,51 @@
 package org.marketcetera.strategy;
 
-import static org.junit.Assert.*;
-import static org.marketcetera.strategy.Messages.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.marketcetera.strategy.Messages.BROKER_STATUS_PROCESS_FAILED;
+import static org.marketcetera.strategy.Messages.INVALID_CANCEL;
+import static org.marketcetera.strategy.Messages.INVALID_DATA;
+import static org.marketcetera.strategy.Messages.INVALID_ORDER;
+import static org.marketcetera.strategy.Messages.INVALID_ORDERID;
+import static org.marketcetera.strategy.Messages.INVALID_REPLACEMENT_ORDER;
+import static org.marketcetera.strategy.Messages.ORDER_VALIDATION_FAILED;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.marketcetera.client.*;
+import org.marketcetera.client.BrokerStatusListener;
+import org.marketcetera.client.Client;
+import org.marketcetera.client.ClientInitException;
+import org.marketcetera.client.ClientManager;
+import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.OrderValidationException;
+import org.marketcetera.client.Validations;
 import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.event.*;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
@@ -24,8 +53,22 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategy.StrategyTestBase.MockClient;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.Suggestion;
 import org.marketcetera.trade.utils.OrderHistoryManagerTest;
 import org.marketcetera.util.test.CollectionAssert;
 
@@ -51,7 +94,6 @@ public class AbstractRunningStrategyTest
     public static void once()
             throws Exception
     {
-        LoggerConfiguration.logSetup();
         try {
             ClientManager.setClientFactory(new MockClient.MockClientFactory());
             ClientManager.init(null);

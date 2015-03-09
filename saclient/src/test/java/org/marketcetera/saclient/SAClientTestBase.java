@@ -6,8 +6,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
@@ -22,11 +20,6 @@ import org.marketcetera.util.ws.ContextClassProvider;
  */
 @ClassVersion("$Id$")
 public class SAClientTestBase {
-    
-    @BeforeClass
-    public static void setup() throws Exception {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Run before each test.
      *

@@ -18,10 +18,13 @@ import org.junit.Test;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.MockClient;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.utils.OrderHistoryManagerTest;
 
 /* $License$ */
@@ -44,7 +47,6 @@ public class LiveOrderHistoryManagerTest
     public static void once()
             throws Exception
     {
-        LoggerConfiguration.logSetup();
         ClientManager.setClientFactory(new MockClient.MockClientFactory());
         ClientManager.init(null);
         client = (MockClient)ClientManager.getInstance();

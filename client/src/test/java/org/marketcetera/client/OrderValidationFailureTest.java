@@ -1,19 +1,39 @@
 package org.marketcetera.client;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.ws.stateless.Node;
-import org.marketcetera.trade.*;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.core.LoggerConfiguration;
-import static org.marketcetera.client.Messages.*;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
-import org.junit.Test;
+import static org.marketcetera.client.Messages.NO_ORDER_SUPPLIED;
+import static org.marketcetera.client.Messages.NO_SUGGEST_SUPPLIED;
+import static org.marketcetera.client.Messages.VALIDATION_ORDERID;
+import static org.marketcetera.client.Messages.VALIDATION_ORDER_INSTRUMENT;
+import static org.marketcetera.client.Messages.VALIDATION_ORDER_QUANTITY;
+import static org.marketcetera.client.Messages.VALIDATION_ORDER_SIDE;
+import static org.marketcetera.client.Messages.VALIDATION_ORDER_TYPE;
+import static org.marketcetera.client.Messages.VALIDATION_ORIG_ORDERID;
+import static org.marketcetera.client.Messages.VALIDATION_SUGGEST_IDENTIFIER;
+import static org.marketcetera.client.Messages.VALIDATION_SUGGEST_ORDER;
+import static org.marketcetera.client.Messages.VALIDATION_SUGGEST_SCORE;
 
 import java.math.BigDecimal;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderSingleSuggestion;
+import org.marketcetera.trade.SecurityType;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.stateless.Node;
 
 /* $License$ */
 /**
@@ -187,7 +207,6 @@ public class OrderValidationFailureTest {
     }
     @BeforeClass
     public static void setup() throws Exception {
-        LoggerConfiguration.logSetup();
         sServer = new MockServer();
         String u = "u";
         ClientManager.init(new ClientParameters(u, u.toCharArray(),

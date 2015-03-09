@@ -1,35 +1,42 @@
 package org.marketcetera.client;
 
-import org.marketcetera.client.jms.JmsManager;
-import org.marketcetera.util.ws.stateless.ServiceInterface;
-import org.marketcetera.util.ws.stateful.Server;
-import org.marketcetera.util.ws.stateful.SessionManager;
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.core.FIXVersionTestSuite;
-import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
-import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Originator;
-import org.marketcetera.trade.MessageCreationException;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.listener.SimpleMessageListenerContainer;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import quickfix.Message;
-import quickfix.FieldNotFound;
-import quickfix.InvalidMessage;
-import quickfix.field.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.jms.ConnectionFactory;
 import javax.xml.bind.JAXBException;
 
-import java.util.*;
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import org.marketcetera.client.jms.JmsManager;
+import org.marketcetera.core.FIXVersionTestSuite;
+import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
+import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.Originator;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.stateful.Server;
+import org.marketcetera.util.ws.stateful.SessionManager;
+import org.marketcetera.util.ws.stateless.ServiceInterface;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.SimpleMessageListenerContainer;
+
+import quickfix.FieldNotFound;
+import quickfix.InvalidMessage;
+import quickfix.Message;
+import quickfix.field.ClOrdID;
+import quickfix.field.MsgSeqNum;
+import quickfix.field.OrdStatus;
+import quickfix.field.SendingTime;
 
 /* $License$ */
 /**
@@ -46,7 +53,6 @@ import java.io.IOException;
 public class MockServer {
     public static void main(String[] args)
         throws InterruptedException, FIXFieldConverterNotAvailable {
-        LoggerConfiguration.logSetup();
         FIXVersionTestSuite.initializeFIXDataDictionaryManager(
                 FIXVersionTestSuite.ALL_FIX_VERSIONS);
         MockServer ms = new MockServer();

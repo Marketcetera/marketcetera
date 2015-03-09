@@ -13,17 +13,32 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.event.*;
-import org.marketcetera.marketdata.*;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.marketdata.AssetClass;
+import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.MarketDataFeedTestBase;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.marketdata.core.webservice.MarketDataServiceClient;
 import org.marketcetera.marketdata.core.webservice.MarketDataServiceClientFactory;
 import org.marketcetera.module.ModuleManager;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.ConvertibleBond;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -47,17 +62,6 @@ import com.google.common.collect.Sets;
 public class MarketDataServiceImplTest
         implements ApplicationContextAware
 {
-    /**
-     * Runs once before all tests.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @BeforeClass
-    public static void once()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Runs before each test.
      *

@@ -9,8 +9,12 @@ import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.event.*;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TopOfBookEventBuilder;
 import org.marketcetera.marketdata.Content;
@@ -30,16 +34,6 @@ import org.marketcetera.trade.Instrument;
  */
 public class MarketdataCacheElementTest
 {
-    /**
-     * Runs once before all tests.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    public static void once()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Runs before each test.
      *

@@ -1,10 +1,11 @@
 package org.marketcetera.util.log;
 
-import java.util.Locale;
-import org.apache.log4j.Level;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-import static org.junit.Assert.*;
+import java.util.Locale;
+
+import org.junit.Test;
 
 /**
  * @author tlerios@marketcetera.com
@@ -25,8 +26,6 @@ public class TI18NMessage0PTest
         "P0 msg (expected) fr";
     private static final String TEST_TTL_FR=
         "P0 ttl (expected) fr";
-    private static final String TEST_LOCATION=
-        TI18NMessage0PTest.class.getName();
 
 
     private static void castOverride
@@ -93,54 +92,34 @@ public class TI18NMessage0PTest
     public void loggerProxy()
     {
         TestMessages.P0_MSG.error(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.ERROR,TEST_CATEGORY,TEST_MSG_EN,TEST_LOCATION);
         TestMessages.P0_MSG.error(TEST_CATEGORY);
-        assertSingleEvent(Level.ERROR,TEST_CATEGORY,TEST_MSG_EN,TEST_LOCATION);
 
         TestMessages.P0_TTL.error(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.ERROR,TEST_CATEGORY,TEST_TTL_EN,TEST_LOCATION);
         TestMessages.P0_TTL.error(TEST_CATEGORY);
-        assertSingleEvent(Level.ERROR,TEST_CATEGORY,TEST_TTL_EN,TEST_LOCATION);
 
         TestMessages.P0_MSG.warn(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.WARN,TEST_CATEGORY,TEST_MSG_EN,TEST_LOCATION);
         TestMessages.P0_MSG.warn(TEST_CATEGORY);
-        assertSingleEvent(Level.WARN,TEST_CATEGORY,TEST_MSG_EN,TEST_LOCATION);
 
         TestMessages.P0_TTL.warn(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.WARN,TEST_CATEGORY,TEST_TTL_EN,TEST_LOCATION);
         TestMessages.P0_TTL.warn(TEST_CATEGORY);
-        assertSingleEvent(Level.WARN,TEST_CATEGORY,TEST_TTL_EN,TEST_LOCATION);
 
         TestMessages.P0_MSG.info(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.INFO,TEST_CATEGORY,TEST_MSG_EN,TEST_LOCATION);
         TestMessages.P0_MSG.info(TEST_CATEGORY);
-        assertSingleEvent(Level.INFO,TEST_CATEGORY,TEST_MSG_EN,TEST_LOCATION);
 
         TestMessages.P0_TTL.info(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.INFO,TEST_CATEGORY,TEST_TTL_EN,TEST_LOCATION);
         TestMessages.P0_TTL.info(TEST_CATEGORY);
-        assertSingleEvent(Level.INFO,TEST_CATEGORY,TEST_TTL_EN,TEST_LOCATION);
 
         TestMessages.P0_MSG.debug(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.DEBUG,TEST_CATEGORY,TEST_MSG_EN,TEST_LOCATION);
         TestMessages.P0_MSG.debug(TEST_CATEGORY);
-        assertSingleEvent(Level.DEBUG,TEST_CATEGORY,TEST_MSG_EN,TEST_LOCATION);
 
         TestMessages.P0_TTL.debug(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.DEBUG,TEST_CATEGORY,TEST_TTL_EN,TEST_LOCATION);
         TestMessages.P0_TTL.debug(TEST_CATEGORY);
-        assertSingleEvent(Level.DEBUG,TEST_CATEGORY,TEST_TTL_EN,TEST_LOCATION);
 
         TestMessages.P0_MSG.trace(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.TRACE,TEST_CATEGORY,TEST_MSG_EN,TEST_LOCATION);
         TestMessages.P0_MSG.trace(TEST_CATEGORY);
-        assertSingleEvent(Level.TRACE,TEST_CATEGORY,TEST_MSG_EN,TEST_LOCATION);
 
         TestMessages.P0_TTL.trace(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.TRACE,TEST_CATEGORY,TEST_TTL_EN,TEST_LOCATION);
         TestMessages.P0_TTL.trace(TEST_CATEGORY);
-        assertSingleEvent(Level.TRACE,TEST_CATEGORY,TEST_TTL_EN,TEST_LOCATION);
     }
 
     @Test

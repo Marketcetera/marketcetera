@@ -19,9 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.ExpectedFailure;
@@ -48,17 +46,6 @@ import org.marketcetera.util.ws.stateful.SessionManager;
  */
 public class RpcSAClientImplTest
 {
-    /**
-     * Runs once before all tests.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @BeforeClass
-    public static void once()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Runs before each test.
      *

@@ -1,35 +1,44 @@
 package org.marketcetera.modules.csv;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.module.*;
-import org.marketcetera.core.LoggerConfiguration;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.regex.Pattern;
-import java.net.URL;
-import java.net.MalformedURLException;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataFlowInfo;
+import org.marketcetera.module.DataFlowStep;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.IllegalRequestParameterValue;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleTestBase;
+import org.marketcetera.module.SinkDataListener;
+import org.marketcetera.module.SinkModuleFactory;
+import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
+
 /**
  * Tests the {@link CSVEmitter} module.
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class EmitterTest extends ModuleTestBase {
-
-    @BeforeClass
-    public static void logSetup() {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Verifies failures when incorrect request parameters are provided.
      *

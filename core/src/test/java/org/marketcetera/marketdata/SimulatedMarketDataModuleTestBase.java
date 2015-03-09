@@ -2,7 +2,6 @@ package org.marketcetera.marketdata;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.marketcetera.module.ModuleTestBase;
 
 /* $License$ */
 
@@ -19,7 +18,6 @@ public abstract class SimulatedMarketDataModuleTestBase
     @BeforeClass
     public static void setupOnce()
     {
-        ModuleTestBase.logSetup();
         System.setProperty(AbstractMarketDataFeed.MARKETDATA_SIMULATION_KEY,
                            "true");
     }

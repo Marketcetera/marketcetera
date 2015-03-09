@@ -43,6 +43,8 @@
     <mvn.springdatajpa.version>1.5.0.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>4.2.8.Final</mvn.hibernate.version>
+    <mvn.slf4j.version>1.7.10</mvn.slf4j.version>
+    <mvn.log4j.version>2.1</mvn.log4j.version>
     <mvn.test.options>-Xmx1024m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
   </properties>
   <!-- Marketcetera uses the following versions of some common libraries:
@@ -131,6 +133,12 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-esper</artifactId>
         <version>2.4.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -276,7 +284,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.6</version>
+        <version>${mvn.slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -369,15 +377,7 @@
       <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper</artifactId>
-        <version>4.11.0</version>
-        <!-- esper requires cglib-nodep 2.2 which conflicts in principle with cglib 3.0 -->
-        <!-- for now, both are packaged with the SA and Photon :-o -->
-        <!--exclusions>
-            <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            </exclusion>
-            </exclusions-->
+        <version>5.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
@@ -423,6 +423,12 @@
         <groupId>org.ow2.sirocco</groupId>
         <artifactId>sirocco-text-table-formatter</artifactId>
         <version>1.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>jparsec</groupId>
@@ -442,7 +448,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>2.5.0</version>
+        <version>2.6.1</version>
       </dependency>
       <dependency>
         <groupId>com.googlecode.protobuf-rpc-pro</groupId>
@@ -529,16 +535,36 @@
         <version>${mvn.spring.version}</version>
         <scope>runtime</scope>
       </dependency>
+      <!-- Binding for Log4J -->
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>1.7.6</version>
+	<groupId>org.apache.logging.log4j</groupId>
+	<artifactId>log4j-slf4j-impl</artifactId>
+	<version>${mvn.log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <!-- Log4j API and Core implementation required for binding -->
+      <dependency>
+	<groupId>org.apache.logging.log4j</groupId>
+	<artifactId>log4j-1.2-api</artifactId>
+	<version>${mvn.log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>1.2.17</version>
+	<groupId>org.apache.logging.log4j</groupId>
+	<artifactId>log4j-api</artifactId>
+	<version>${mvn.log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+	<groupId>org.apache.logging.log4j</groupId>
+	<artifactId>log4j-core</artifactId>
+	<version>${mvn.log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+	<groupId>com.lmax</groupId>
+	<artifactId>disruptor</artifactId>
+	<version>3.3.0</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>

@@ -1,16 +1,23 @@
 package org.marketcetera.orderloader;
 
-import static org.junit.Assert.*;
-import static org.marketcetera.orderloader.Messages.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.marketcetera.orderloader.Messages.ERROR_MISSING_FILE;
+import static org.marketcetera.orderloader.Messages.ERROR_TOO_MANY_ARGUMENTS;
+import static org.marketcetera.orderloader.Messages.LINE_SUMMARY;
+import static org.marketcetera.orderloader.Messages.LOG_APP_COPYRIGHT;
+import static org.marketcetera.orderloader.Messages.ORDER_SUMMARY;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.client.ClientParameters;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.util.file.CopyCharsUtils;
 
 /* $License$ */
@@ -24,17 +31,6 @@ import org.marketcetera.util.file.CopyCharsUtils;
  */
 public class MainTest
 {
-    /**
-     * Runs once before all tests.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @BeforeClass
-    public static void setupLogger()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Tests running the loader if the input file is missing
      *

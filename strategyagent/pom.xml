@@ -38,8 +38,8 @@
     </dependency>
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
       <scope>compile</scope>
     </dependency>
     <!-- Runtime. -->
@@ -53,8 +53,16 @@
       <artifactId>cxf-rt-transports-http-jetty</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.lmax</groupId>
+      <artifactId>disruptor</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.mina</groupId>
@@ -141,6 +149,14 @@
                   <key>org.marketcetera.appDir</key>
                   <value>src/test/cmd_exec</value>
                 </systemProperty>
+                <systemProperty>
+                  <key>log4j.configurationFile</key>
+                  <value>src/test/cmd_exec/conf/log4j2.xml</value>
+                </systemProperty>
+                <systemProperty>
+                  <key>Log4jContextSelector</key>
+                  <value>org.apache.logging.log4j.core.async.AsyncLoggerContextSelector</value>
+                </systemProperty>
               </systemProperties>
               <mainClass>org.marketcetera.core.ApplicationContainer</mainClass>
               <arguments>
@@ -167,6 +183,8 @@
               <executable>${java.home}/bin/java</executable>
               <arguments>
                 <argument>-Dorg.marketcetera.appDir=.</argument>
+                <argument>-Dlog4j.configurationFile=${project.basedir}/src/test/cmd_exec/conf/log4j2.xml</argument>
+                <argument>-DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector</argument>
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>org.marketcetera.core.ApplicationContainer</argument>

@@ -307,10 +307,11 @@ public class StrategyAgent
             moduleManager.addSinkListener(new SinkDataListener() {
                 public void receivedData(DataFlowID inFlowID, Object inData) {
                     final boolean isNullData = inData == null;
-                    Messages.LOG_SINK_DATA.info(SINK_DATA, inFlowID,
-                            isNullData ? 0: 1,
-                            isNullData ? null: inData.getClass().getName(),
-                            inData);
+                    Messages.LOG_SINK_DATA.info(SINK_DATA,
+                                                inFlowID,
+                                                isNullData ? 0: 1,
+                                                isNullData ? null: inData.getClass().getName(),
+                                                inData);
                 }
             });
             mManagerBean = JMX.newMXBeanProxy(ManagementFactory.getPlatformMBeanServer(),

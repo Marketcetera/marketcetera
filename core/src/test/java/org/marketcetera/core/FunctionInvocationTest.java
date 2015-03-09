@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.marketcetera.core.FunctionInvocation;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Lists;
@@ -23,16 +22,6 @@ import com.google.common.collect.Lists;
  */
 public class FunctionInvocationTest
 {
-    /**
-     * Runs once before all tests.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    public static void once()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Test {@link FunctionInvocation#parse(String)}.
      *

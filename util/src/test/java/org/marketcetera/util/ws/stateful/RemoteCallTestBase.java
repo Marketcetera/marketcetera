@@ -1,7 +1,11 @@
 package org.marketcetera.util.ws.stateful;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
 import java.util.Locale;
-import org.apache.log4j.Level;
+
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
@@ -13,8 +17,6 @@ import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.util.ws.tags.ValidSessionTagFilter;
 import org.marketcetera.util.ws.tags.VersionId;
 import org.marketcetera.util.ws.wrappers.RemoteException;
-
-import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -84,7 +86,6 @@ public class RemoteCallTestBase
          T value)
         throws Exception
     {
-        setLevel(caller.getClass().getName(),Level.DEBUG);
         assertEquals(value,caller.execute(context));
         checkEvents(context,caller,true);
     }
@@ -94,7 +95,6 @@ public class RemoteCallTestBase
          RemoteCaller<?,?> caller,
          Class<?> exceptionClass)
     {
-        setLevel(caller.getClass().getName(),Level.DEBUG);
         setRunnerData(null);
         try {
             caller.execute(context);
@@ -118,7 +118,6 @@ public class RemoteCallTestBase
          Object value)
         throws Exception
     {
-        setLevel(runner.getClass().getName(),Level.DEBUG);
         setRunnerData(null);
         runner.execute(context);
         assertEquals(value,sSetByRunner);
@@ -130,7 +129,6 @@ public class RemoteCallTestBase
          RemoteRunner<?> runner,
          Class<?> exceptionClass)
     {
-        setLevel(runner.getClass().getName(),Level.DEBUG);
         setRunnerData(null);
         try {
             runner.execute(context);

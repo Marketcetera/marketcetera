@@ -1,13 +1,18 @@
 package org.marketcetera.modules.cep.esper;
 
-import org.junit.After;
 import static org.junit.Assert.assertEquals;
+
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.module.*;
+import org.marketcetera.module.BlockingSinkDataListener;
+import org.marketcetera.module.CopierModuleFactory;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleTestBase;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.trade.Factory;
 
 /**
@@ -24,13 +29,6 @@ public class SelfRepostingEventsTest extends ModuleTestBase {
     protected static Factory sFactory;
 
     private static ModuleURN TEST_URN = new ModuleURN(CEPEsperFactory.PROVIDER_URN, "toli");
-
-    @BeforeClass
-    public static void logSetup() {
-        LoggerConfiguration.logSetup();
-    }
-
-
     @Before
     public void before() throws Exception {
         sSink = new BlockingSinkDataListener();

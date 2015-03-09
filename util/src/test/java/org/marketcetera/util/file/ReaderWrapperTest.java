@@ -1,17 +1,22 @@
 package org.marketcetera.util.file;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.marketcetera.util.test.UnicodeData.COMBO;
+import static org.marketcetera.util.test.UnicodeData.COMBO_UTF8;
+
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.Reader;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 import org.marketcetera.util.unicode.DecodingStrategy;
 import org.marketcetera.util.unicode.Signature;
-
-import static org.junit.Assert.*;
-import static org.marketcetera.util.test.UnicodeData.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -80,7 +85,7 @@ public class ReaderWrapperTest
     public void nonexistentFileReader()
         throws Exception
     {
-        new ReaderWrapper(TEST_NONEXISTENT_FILE);
+        try(ReaderWrapper wrapper = new ReaderWrapper(TEST_NONEXISTENT_FILE)) {}
     }
 
 

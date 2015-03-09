@@ -1,5 +1,18 @@
 package org.marketcetera.util.ws.types;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.marketcetera.util.test.UnicodeData.COMBO;
+import static org.marketcetera.util.test.UnicodeData.GOATS_LNB;
+import static org.marketcetera.util.test.UnicodeData.GOODBYE_JA;
+import static org.marketcetera.util.test.UnicodeData.G_CLEF_MSC;
+import static org.marketcetera.util.test.UnicodeData.HELLO_EN;
+import static org.marketcetera.util.test.UnicodeData.HELLO_GR;
+import static org.marketcetera.util.test.UnicodeData.HOUSE_AR;
+import static org.marketcetera.util.test.UnicodeData.LANGUAGE_NO;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -16,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
@@ -28,9 +42,6 @@ import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.util.ws.wrappers.SerWrapper;
 
-import static org.junit.Assert.*;
-import static org.marketcetera.util.test.UnicodeData.*;
-
 /**
  * @author tlerios@marketcetera.com
  * @since 1.0.0
@@ -39,6 +50,7 @@ import static org.marketcetera.util.test.UnicodeData.*;
 
 /* $License$ */
 
+@SuppressWarnings("rawtypes")
 public class TypeTest
     extends TestCaseBase
 {
@@ -186,18 +198,10 @@ public class TypeTest
         TEST_HSET_CHAR;
     private static final HashMap<Character,Character> TEST_HMAP_CHAR=
         toHashMap(TEST_LST_CHAR);
-    private static final MapWrapper<Character,Character>
-        TEST_WHMAP_CHAR=
-        new MapWrapper<Character,Character>(TEST_HMAP_CHAR);
     private static final TreeMap<Character,Character> TEST_TMAP_CHAR=
         toTreeMap(TEST_LST_CHAR);
-    private static final MapWrapper<Character,Character>
-        TEST_WTMAP_CHAR=
-        new MapWrapper<Character,Character>(TEST_TMAP_CHAR);
     private static final Map<Character,Character> TEST_MAP_CHAR=
         TEST_HMAP_CHAR;
-    private static final MapWrapper<Character,Character> TEST_WMAP_CHAR=
-        new MapWrapper<Character,Character>(TEST_MAP_CHAR);
     private static final CharacterHolder TEST_HLD_CHAR=
         new CharacterHolder
         (TEST_P_CHAR,TEST_O_CHAR,
@@ -633,48 +637,6 @@ public class TypeTest
          TEST_COL_EO,TEST_LST_EO,TEST_LLST_EO,
          TEST_SET_EO,TEST_HSET_EO,TEST_TSET_EO,
          TEST_MAP_EO,TEST_HMAP_EO,TEST_TMAP_EO);
-
-    // Date.
-
-    private static final Date TEST_DT=
-        new Date(1);
-    private static final Date[] TEST_ARR_DT=new Date[]
-        {new Date(1),
-         new Date(2)};
-    private static final List<Date> TEST_LST_DT=
-        Arrays.asList(TEST_ARR_DT);
-    private static final Collection<Date> TEST_COL_DT=
-        TEST_LST_DT;
-    private static final LinkedList<Date> TEST_LLST_DT=
-        toLinkedList(TEST_LST_DT);
-    private static final HashSet<Date> TEST_HSET_DT=
-        toHashSet(TEST_LST_DT);
-    private static final TreeSet<Date> TEST_TSET_DT=
-        toTreeSet(TEST_LST_DT);
-    private static final Set<Date> TEST_SET_DT=
-        TEST_HSET_DT;
-    private static final HashMap<Date,Date> TEST_HMAP_DT=
-        toHashMap(TEST_LST_DT);
-    private static final MapWrapper<Date,Date>
-        TEST_WHMAP_DT=
-        new MapWrapper<Date,Date>(TEST_HMAP_DT);
-    private static final TreeMap<Date,Date> TEST_TMAP_DT=
-        toTreeMap(TEST_LST_DT);
-    private static final MapWrapper<Date,Date>
-        TEST_WTMAP_DT=
-        new MapWrapper<Date,Date>(TEST_TMAP_DT);
-    private static final Map<Date,Date> TEST_MAP_DT=
-        TEST_HMAP_DT;
-    private static final MapWrapper<Date,Date>
-        TEST_WMAP_DT=
-        new MapWrapper<Date,Date>(TEST_MAP_DT);
-    private static final DateHolder TEST_HLD_DT=
-        new DateHolder
-        (TEST_DT,
-         TEST_ARR_DT,
-         TEST_COL_DT,TEST_LST_DT,TEST_LLST_DT,
-         TEST_SET_DT,TEST_HSET_DT,TEST_TSET_DT,
-         TEST_MAP_DT,TEST_HMAP_DT,TEST_TMAP_DT);
 
     // Wrapped date.
 

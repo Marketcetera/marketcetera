@@ -1,15 +1,15 @@
 package org.marketcetera.util.exec;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Locale;
-import org.apache.log4j.Level;
+
 import org.junit.Test;
 import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -22,12 +22,8 @@ import static org.junit.Assert.*;
 public class InputThreadTest
     extends TestCaseBase
 {
-    private static final String TEST_CATEGORY=
-        InputThread.class.getName();
     private static final int SLEEP_DURATION=
         1000;
-    private static final String TEST_LOCATION=
-        TEST_CATEGORY;
 
 
     private static final class GenerousInputStream
@@ -114,9 +110,6 @@ public class InputThreadTest
         Thread.sleep(SLEEP_DURATION/2);
         child.interrupt();
         Thread.sleep(SLEEP_DURATION/2);
-        assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,
-             "Cannot copy output of command 'command'",TEST_LOCATION);
         assertEquals(1,in.getClosures());
         assertEquals((closeOut?1:0),out.getClosures());
     }
@@ -127,7 +120,6 @@ public class InputThreadTest
         throws Exception
     {
         ActiveLocale.setProcessLocale(Locale.ROOT);
-        setLevel(TEST_CATEGORY,Level.ERROR);
         single(true);
         single(false);
     }
