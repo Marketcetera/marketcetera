@@ -1,18 +1,15 @@
 package org.marketcetera.util.file;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Locale;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -25,13 +22,6 @@ import static org.junit.Assert.*;
 public class CloseableRegistryTest
     extends TestCaseBase
 {
-    private static final String TEST_CATEGORY=
-        CloseableRegistry.class.getName();
-    private static final String TEST_LOCATION=
-        ExceptUtils.class.getName();
-    private static final String TEST_MESSAGE=
-        "Closing failed";
-
 
     private static final class OrderedCloseable
         implements Closeable
@@ -74,7 +64,6 @@ public class CloseableRegistryTest
     {
         OrderedCloseable.resetStaticSequence();
         ActiveLocale.setProcessLocale(Locale.ROOT);
-        setLevel(TEST_CATEGORY,Level.WARN);
     }
 
 
@@ -104,11 +93,5 @@ public class CloseableRegistryTest
         r.close();
         assertEquals(1,t2.getSequence());
         assertEquals(2,t1.getSequence());
-        Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
-        assertEvent(events.next(),Level.WARN,TEST_CATEGORY,TEST_MESSAGE,
-                    TEST_LOCATION);
-        assertEvent(events.next(),Level.WARN,TEST_CATEGORY,TEST_MESSAGE,
-                    TEST_LOCATION);
-        assertFalse(events.hasNext());
     }
 }

@@ -1,11 +1,16 @@
 package org.marketcetera.util.file;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * @author tlerios@marketcetera.com
@@ -87,7 +92,7 @@ public class OutputStreamWrapperTest
     public void nonexistentFile()
         throws Exception
     {
-        new OutputStreamWrapper(TEST_NONEXISTENT_FILE);
+        try(OutputStreamWrapper wrapper = new OutputStreamWrapper(TEST_NONEXISTENT_FILE)) {}
     }
 
 

@@ -1,14 +1,13 @@
 package org.marketcetera.client;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateless.Node;
-import org.marketcetera.util.test.RegExAssert;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.trade.*;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.test.RegExAssert;
+import org.marketcetera.util.ws.stateless.Node;
 
 /* $License$ */
 /**
@@ -23,7 +22,6 @@ import org.junit.Test;
 public class FactoryIntegrationTest {
     @BeforeClass
     public static void setup() throws Exception {
-        LoggerConfiguration.logSetup();
         initServer();
     }
 

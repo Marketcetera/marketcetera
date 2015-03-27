@@ -1,9 +1,21 @@
 package org.marketcetera.marketdata;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -12,19 +24,41 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.event.*;
+import org.marketcetera.event.AggregateEvent;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.BookEntryTuple;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.DividendFrequency;
+import org.marketcetera.event.DividendStatus;
+import org.marketcetera.event.DividendType;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.FutureEvent;
+import org.marketcetera.event.HasInstrument;
+import org.marketcetera.event.MarketDataEvent;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.OptionMarketstatEvent;
+import org.marketcetera.event.QuantityTuple;
+import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.SimulatedExchange.Token;
 import org.marketcetera.marketdata.SimulatedExchange.TopOfBook;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.test.CollectionAssert;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -85,17 +119,6 @@ public class SimulatedExchangeTest
     private AskEvent askCCY;
     
     private static final AtomicLong counter = new AtomicLong(0);
-    /**
-     * Executed once before all tests.
-     *
-     * @throws Exception if an error occurs
-     */
-    @BeforeClass
-    public static void once()
-        throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Executed before each test.
      *

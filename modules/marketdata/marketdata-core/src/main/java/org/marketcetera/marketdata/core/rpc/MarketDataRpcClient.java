@@ -70,6 +70,7 @@ import com.googlecode.protobuf.pro.duplex.RpcClientChannel;
 import com.googlecode.protobuf.pro.duplex.client.DuplexTcpClientPipelineFactory;
 import com.googlecode.protobuf.pro.duplex.execute.RpcServerCallExecutor;
 import com.googlecode.protobuf.pro.duplex.execute.ThreadPoolCallExecutor;
+import com.googlecode.protobuf.pro.duplex.logging.CategoryPerServiceLogger;
 
 /* $License$ */
 
@@ -551,6 +552,10 @@ public class MarketDataRpcClient
                              1048576);
             bootstrap.option(ChannelOption.SO_RCVBUF,
                              1048576);
+            CategoryPerServiceLogger logger = new CategoryPerServiceLogger();
+            logger.setLogRequestProto(false);
+            logger.setLogResponseProto(false);
+            clientFactory.setRpcLogger(logger);
             channel = clientFactory.peerWith(server,
                                              bootstrap);
             clientService = RpcMarketDataService.newBlockingStub(channel);

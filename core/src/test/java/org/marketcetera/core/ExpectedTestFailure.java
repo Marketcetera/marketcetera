@@ -1,6 +1,6 @@
 package org.marketcetera.core;
 
-import junit.framework.Assert;
+import static org.junit.Assert.fail;
 
 /**
  * A wrapper around a piece of code that we expect to fail and throw an exception.
@@ -48,7 +48,7 @@ public abstract class ExpectedTestFailure
             validateError(error);
             return error;
         }
-        Assert.fail("Expected an error but no exception was thrown"); //$NON-NLS-1$
+        fail("Expected an error but no exception was thrown"); //$NON-NLS-1$
         return null;
     }
 
@@ -66,15 +66,13 @@ public abstract class ExpectedTestFailure
     {
         if ((mThrowable!=null) &&
             (!mThrowable.isAssignableFrom(inError.getClass()))) {
-            Assert.fail("Thrown throwable was of the wrong class: "+ //$NON-NLS-1$
-                        inError.getClass()+": "+inError); //$NON-NLS-1$
+            fail("Thrown throwable was of the wrong class: "+ inError.getClass()+": "+inError);
         }
         if ((mContains!=null) &&
             (((inError.getMessage()==null) ||
              (inError.getMessage().indexOf(mContains)==-1))) &&
             (inError.toString().indexOf(mContains) == -1)) {
-            Assert.fail("Thrown throwable contained incorrect message: "+ //$NON-NLS-1$
-                        inError.getMessage()+": "+inError); //$NON-NLS-1$
+            fail("Thrown throwable contained incorrect message: "+ inError.getMessage()+": "+inError);
         }
     }
 }

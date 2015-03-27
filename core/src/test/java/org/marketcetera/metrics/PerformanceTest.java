@@ -1,13 +1,11 @@
 package org.marketcetera.metrics;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.LoggerConfiguration;
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.BeforeClass;
-
 import java.util.concurrent.Callable;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -50,11 +48,6 @@ import java.util.concurrent.Callable;
  */
 @ClassVersion("$Id$")
 public class PerformanceTest {
-    
-    @BeforeClass
-    public static void setup() throws Exception {
-        LoggerConfiguration.logSetup();
-    }
     @Before
     public void clear() {
         ThreadedMetric.clear();

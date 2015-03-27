@@ -4,7 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -14,7 +19,6 @@ import java.util.jar.JarOutputStream;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.Pair;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.util.except.I18NException;
@@ -40,7 +44,6 @@ public class JarClassLoaderTest
      */
     @BeforeClass
     public static void cleanup() throws Exception {
-        LoggerConfiguration.logSetup();
         cleanDir(JAR_DIR);
         cleanDir(CONF_DIR);
     }

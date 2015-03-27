@@ -1,7 +1,6 @@
 package org.marketcetera.modules.remote.receiver;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -16,8 +15,6 @@ import java.util.LinkedList;
 import javax.management.JMX;
 import javax.security.auth.login.Configuration;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +31,6 @@ import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleTestBase;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.test.LogTestAssist;
 
 /* $License$ */
 /**
@@ -74,9 +70,6 @@ public class ReceiverTest extends ModuleTestBase {
         verifyDataFlow();
         //But we cannot connect to the server
         verifyNoConnectToReceiver();
-        //And that the log included the message on URL not being configured.
-        mLogAssist.assertSomeEvent(Level.INFO, null,
-                Messages.NO_URL_SPECIFIED_LOG.getText(), null);
     }
 
     /**
@@ -100,10 +93,6 @@ public class ReceiverTest extends ModuleTestBase {
         info();
         //And that we can connect to the server.
         verifyConnectToReceiver();
-        //And that the log included the message on module being fully configured
-        mLogAssist.assertSomeEvent(Level.INFO,  null,
-                Messages.RECIEVER_REMOTING_CONFIGURED.getText(DEFAULT_URL),
-                null);
     }
 
     /**
@@ -298,6 +287,7 @@ public class ReceiverTest extends ModuleTestBase {
         final ReceiverModuleMXBean bean = JMX.newMXBeanProxy(getMBeanServer(),
                 ReceiverFactory.INSTANCE_URN.toObjectName(),
                 ReceiverModuleMXBean.class);
+        System.out.println("Checking...");
         assertLogLevel(bean, LogEventLevel.DEBUG);
     }
 
@@ -312,7 +302,6 @@ public class ReceiverTest extends ModuleTestBase {
             mManager.stop();
             mManager = null;
         }
-        mLogAssist.resetAppender();
     }
 
     /**
@@ -401,12 +390,10 @@ public class ReceiverTest extends ModuleTestBase {
      * @param inLogLevel the expected log level.
      */
     private void assertLogLevel(ReceiverModuleMXBean inMBean,
-                                LogEventLevel inLogLevel) {
-        assertEquals(inLogLevel,  inMBean.getLogLevel());
-        Level level = LogManager.getLogger(
-                org.marketcetera.core.Messages.USER_MSG_CATEGORY).getLevel();
-        assertNotNull(level);
-        assertEquals(inLogLevel.toString(), level.toString());
+                                LogEventLevel inLogLevel)
+    {
+        assertEquals(inLogLevel, 
+                     inMBean.getLogLevel());
     }
 
     /**
@@ -448,7 +435,6 @@ public class ReceiverTest extends ModuleTestBase {
     }
 
     private ModuleManager mManager;
-    private final LogTestAssist mLogAssist = new LogTestAssist(ReceiverModule.class.getName(),Level.INFO);
     /**
      * The default URL value to run the receiver's embedded broker on.
      */

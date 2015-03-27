@@ -18,12 +18,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class ApplicationBase implements Clock {
-
-    public static final String LOGGER_CONF_FILE = "log4j.properties"; //$NON-NLS-1$
-    public static final int LOGGER_WATCH_DELAY = 20*1000;
-
+@ClassVersion("$Id$")
+public class ApplicationBase
+        implements Clock
+{
     public static final String APP_DIR_PROP="org.marketcetera.appDir"; //$NON-NLS-1$
     public static final String APP_DIR;
     public static final String CONF_DIR;

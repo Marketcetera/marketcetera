@@ -1,24 +1,23 @@
 package org.marketcetera.util.log;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.marketcetera.util.test.EqualityAssert.assertEquality;
+import static org.marketcetera.util.test.SerializableAssert.assertSerializable;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Properties;
+
 import org.apache.commons.lang.SerializationException;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
-import static org.marketcetera.util.test.EqualityAssert.*;
-import static org.marketcetera.util.test.SerializableAssert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -31,10 +30,6 @@ import static org.marketcetera.util.test.SerializableAssert.*;
 public class I18NMessageProviderTest
     extends TestCaseBase
 {
-    private static final String TEST_CATEGORY=
-        I18NMessageProvider.class.getName();
-    private static final String TEST_LOCATION=
-        TEST_CATEGORY;
     private static final String TEST_MEM_PROVIDER=
         "classloader_prv";
 
@@ -43,7 +38,6 @@ public class I18NMessageProviderTest
     public void setupI18NMessageProviderTest()
     {
         ActiveLocale.setProcessLocale(Locale.ROOT);
-        setLevel(TEST_CATEGORY,Level.ERROR);
     }
 
 
@@ -159,27 +153,11 @@ public class I18NMessageProviderTest
     public void nonexistentMappingFile()
     {
         I18NMessageProvider provider=new I18NMessageProvider("nonexistent_prv");
-        Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
-        assertEvent
-            (events.next(),Level.ERROR,TEST_CATEGORY,
-             "Message file missing: provider 'nonexistent_prv'; base name "+
-             "'nonexistent_prv"+I18NMessageProvider.MESSAGE_FILE_EXTENSION+"'",
-             TEST_LOCATION);
-        assertEvent
-            (events.next(),Level.ERROR,TEST_CATEGORY,
-             "Abnormal exception: stack trace",TEST_LOCATION);
-        assertFalse(events.hasNext());
-        getAppender().clear();
 
         assertEquals
             ("provider 'nonexistent_prv'; id 'nonexistent_msg'; entry 'msg'; "+
              "parameters ()",
              provider.getText(TestMessages.NONEXISTENT));
-        assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,
-             "Message not found: "+
-             "provider 'nonexistent_prv'; id 'nonexistent_msg'; entry 'msg'; "+
-             "parameters ()",TEST_LOCATION);
     }
 
     @Test
@@ -189,23 +167,12 @@ public class I18NMessageProviderTest
             ("provider 'util_log_test'; id 'nonexistent_msg'; entry 'msg'; "+
              "parameters ('a')",
              TestMessages.PROVIDER.getText(TestMessages.NONEXISTENT,"a"));
-        assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,
-             "Message not found: provider 'util_log_test'; "+
-             "id 'nonexistent_msg'; "+
-             "entry 'msg'; parameters ('a')",TEST_LOCATION);
 
         ActiveLocale.setProcessLocale(Locale.FRENCH);
         assertEquals
             ("provider 'util_log_test'; id 'nonexistent_msg'; entry 'msg'; "+
              "parameters ('a')",
              TestMessages.PROVIDER.getText(TestMessages.NONEXISTENT,"a"));
-        assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,
-             "Message n'a pas \u00E9t\u00E9 trouv\u00E9e: fournisseur "+
-             "'util_log_test'; "+
-             "identit\u00E9 'nonexistent_msg'; entr\u00E9e 'msg'; "+
-             "param\u00E8tres ('a')",TEST_LOCATION);
     }
     
     @Test
@@ -215,17 +182,6 @@ public class I18NMessageProviderTest
         // Verify that the resource is not available.
 
         I18NMessageProvider provider=new I18NMessageProvider(TEST_MEM_PROVIDER);
-        Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
-        assertEvent
-            (events.next(),Level.ERROR,TEST_CATEGORY,
-             "Message file missing: provider '"+TEST_MEM_PROVIDER+
-             "'; base name '"+TEST_MEM_PROVIDER+
-             I18NMessageProvider.MESSAGE_FILE_EXTENSION+"'",TEST_LOCATION);
-        assertEvent
-            (events.next(),Level.ERROR,TEST_CATEGORY,
-             "Abnormal exception: stack trace",TEST_LOCATION);
-        assertFalse(events.hasNext());
-        getAppender().clear();
 
         // Create a provider with a custom classloader.
 
@@ -252,7 +208,6 @@ public class I18NMessageProviderTest
                 return super.getResourceAsStream(name);
             }
         });
-        assertNoEvents();
         
         // Messages can now be translated.
 

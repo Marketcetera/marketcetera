@@ -299,10 +299,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(enum_scope:ContentAndCapability)
   }
 
-  public interface LoginRequestOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface LoginRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:LoginRequest)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string appId = 1;
     /**
      * <code>required string appId = 1;</code>
      */
@@ -317,7 +317,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getAppIdBytes();
 
-    // required string clientId = 2;
     /**
      * <code>required string clientId = 2;</code>
      */
@@ -332,7 +331,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getClientIdBytes();
 
-    // required .Locale locale = 3;
     /**
      * <code>required .Locale locale = 3;</code>
      */
@@ -346,7 +344,6 @@ public final class RpcMarketdata {
      */
     org.marketcetera.marketdata.core.rpc.RpcMarketdata.LocaleOrBuilder getLocaleOrBuilder();
 
-    // required string versionId = 4;
     /**
      * <code>required string versionId = 4;</code>
      */
@@ -361,7 +358,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getVersionIdBytes();
 
-    // required string username = 5;
     /**
      * <code>required string username = 5;</code>
      */
@@ -376,7 +372,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getUsernameBytes();
 
-    // required string password = 6;
     /**
      * <code>required string password = 6;</code>
      */
@@ -395,8 +390,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code LoginRequest}
    */
   public static final class LoginRequest extends
-      com.google.protobuf.GeneratedMessage
-      implements LoginRequestOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:LoginRequest)
+      LoginRequestOrBuilder {
     // Use LoginRequest.newBuilder() to construct.
     private LoginRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -443,13 +439,15 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              appId_ = input.readBytes();
+              appId_ = bs;
               break;
             }
             case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000002;
-              clientId_ = input.readBytes();
+              clientId_ = bs;
               break;
             }
             case 26: {
@@ -466,18 +464,21 @@ public final class RpcMarketdata {
               break;
             }
             case 34: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000008;
-              versionId_ = input.readBytes();
+              versionId_ = bs;
               break;
             }
             case 42: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000010;
-              username_ = input.readBytes();
+              username_ = bs;
               break;
             }
             case 50: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000020;
-              password_ = input.readBytes();
+              password_ = bs;
               break;
             }
           }
@@ -520,7 +521,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string appId = 1;
     public static final int APPID_FIELD_NUMBER = 1;
     private java.lang.Object appId_;
     /**
@@ -563,7 +563,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // required string clientId = 2;
     public static final int CLIENTID_FIELD_NUMBER = 2;
     private java.lang.Object clientId_;
     /**
@@ -606,7 +605,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // required .Locale locale = 3;
     public static final int LOCALE_FIELD_NUMBER = 3;
     private org.marketcetera.marketdata.core.rpc.RpcMarketdata.Locale locale_;
     /**
@@ -628,7 +626,6 @@ public final class RpcMarketdata {
       return locale_;
     }
 
-    // required string versionId = 4;
     public static final int VERSIONID_FIELD_NUMBER = 4;
     private java.lang.Object versionId_;
     /**
@@ -671,7 +668,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // required string username = 5;
     public static final int USERNAME_FIELD_NUMBER = 5;
     private java.lang.Object username_;
     /**
@@ -714,7 +710,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // required string password = 6;
     public static final int PASSWORD_FIELD_NUMBER = 6;
     private java.lang.Object password_;
     /**
@@ -768,7 +763,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasAppId()) {
         memoizedIsInitialized = 0;
@@ -938,8 +934,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code LoginRequest}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.LoginRequestOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:LoginRequest)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.LoginRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_LoginRequest_descriptor;
@@ -1144,7 +1141,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string appId = 1;
       private java.lang.Object appId_ = "";
       /**
        * <code>required string appId = 1;</code>
@@ -1158,9 +1154,12 @@ public final class RpcMarketdata {
       public java.lang.String getAppId() {
         java.lang.Object ref = appId_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          appId_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            appId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -1218,7 +1217,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required string clientId = 2;
       private java.lang.Object clientId_ = "";
       /**
        * <code>required string clientId = 2;</code>
@@ -1232,9 +1230,12 @@ public final class RpcMarketdata {
       public java.lang.String getClientId() {
         java.lang.Object ref = clientId_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          clientId_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            clientId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -1292,7 +1293,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required .Locale locale = 3;
       private org.marketcetera.marketdata.core.rpc.RpcMarketdata.Locale locale_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.Locale.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           org.marketcetera.marketdata.core.rpc.RpcMarketdata.Locale, org.marketcetera.marketdata.core.rpc.RpcMarketdata.Locale.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.LocaleOrBuilder> localeBuilder_;
@@ -1401,7 +1401,7 @@ public final class RpcMarketdata {
         if (localeBuilder_ == null) {
           localeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
               org.marketcetera.marketdata.core.rpc.RpcMarketdata.Locale, org.marketcetera.marketdata.core.rpc.RpcMarketdata.Locale.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.LocaleOrBuilder>(
-                  locale_,
+                  getLocale(),
                   getParentForChildren(),
                   isClean());
           locale_ = null;
@@ -1409,7 +1409,6 @@ public final class RpcMarketdata {
         return localeBuilder_;
       }
 
-      // required string versionId = 4;
       private java.lang.Object versionId_ = "";
       /**
        * <code>required string versionId = 4;</code>
@@ -1423,9 +1422,12 @@ public final class RpcMarketdata {
       public java.lang.String getVersionId() {
         java.lang.Object ref = versionId_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          versionId_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            versionId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -1483,7 +1485,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required string username = 5;
       private java.lang.Object username_ = "";
       /**
        * <code>required string username = 5;</code>
@@ -1497,9 +1498,12 @@ public final class RpcMarketdata {
       public java.lang.String getUsername() {
         java.lang.Object ref = username_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          username_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            username_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -1557,7 +1561,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required string password = 6;
       private java.lang.Object password_ = "";
       /**
        * <code>required string password = 6;</code>
@@ -1571,9 +1574,12 @@ public final class RpcMarketdata {
       public java.lang.String getPassword() {
         java.lang.Object ref = password_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          password_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            password_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -1642,10 +1648,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:LoginRequest)
   }
 
-  public interface LocaleOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface LocaleOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:Locale)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string country = 1;
     /**
      * <code>required string country = 1;</code>
      */
@@ -1660,7 +1666,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getCountryBytes();
 
-    // required string language = 2;
     /**
      * <code>required string language = 2;</code>
      */
@@ -1675,7 +1680,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getLanguageBytes();
 
-    // optional string variant = 3;
     /**
      * <code>optional string variant = 3;</code>
      */
@@ -1694,8 +1698,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code Locale}
    */
   public static final class Locale extends
-      com.google.protobuf.GeneratedMessage
-      implements LocaleOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:Locale)
+      LocaleOrBuilder {
     // Use Locale.newBuilder() to construct.
     private Locale(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -1742,18 +1747,21 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              country_ = input.readBytes();
+              country_ = bs;
               break;
             }
             case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000002;
-              language_ = input.readBytes();
+              language_ = bs;
               break;
             }
             case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000004;
-              variant_ = input.readBytes();
+              variant_ = bs;
               break;
             }
           }
@@ -1796,7 +1804,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string country = 1;
     public static final int COUNTRY_FIELD_NUMBER = 1;
     private java.lang.Object country_;
     /**
@@ -1839,7 +1846,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // required string language = 2;
     public static final int LANGUAGE_FIELD_NUMBER = 2;
     private java.lang.Object language_;
     /**
@@ -1882,7 +1888,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // optional string variant = 3;
     public static final int VARIANT_FIELD_NUMBER = 3;
     private java.lang.Object variant_;
     /**
@@ -1933,7 +1938,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasCountry()) {
         memoizedIsInitialized = 0;
@@ -2062,8 +2068,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code Locale}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.LocaleOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:Locale)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.LocaleOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_Locale_descriptor;
@@ -2208,7 +2215,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string country = 1;
       private java.lang.Object country_ = "";
       /**
        * <code>required string country = 1;</code>
@@ -2222,9 +2228,12 @@ public final class RpcMarketdata {
       public java.lang.String getCountry() {
         java.lang.Object ref = country_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          country_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            country_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -2282,7 +2291,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required string language = 2;
       private java.lang.Object language_ = "";
       /**
        * <code>required string language = 2;</code>
@@ -2296,9 +2304,12 @@ public final class RpcMarketdata {
       public java.lang.String getLanguage() {
         java.lang.Object ref = language_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          language_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            language_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -2356,7 +2367,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional string variant = 3;
       private java.lang.Object variant_ = "";
       /**
        * <code>optional string variant = 3;</code>
@@ -2370,9 +2380,12 @@ public final class RpcMarketdata {
       public java.lang.String getVariant() {
         java.lang.Object ref = variant_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          variant_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            variant_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -2441,10 +2454,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:Locale)
   }
 
-  public interface LoginResponseOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface LoginResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:LoginResponse)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string sessionId = 1;
     /**
      * <code>required string sessionId = 1;</code>
      */
@@ -2459,7 +2472,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getSessionIdBytes();
 
-    // optional bool failed = 2;
     /**
      * <code>optional bool failed = 2;</code>
      */
@@ -2469,7 +2481,6 @@ public final class RpcMarketdata {
      */
     boolean getFailed();
 
-    // optional string message = 3;
     /**
      * <code>optional string message = 3;</code>
      */
@@ -2488,8 +2499,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code LoginResponse}
    */
   public static final class LoginResponse extends
-      com.google.protobuf.GeneratedMessage
-      implements LoginResponseOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:LoginResponse)
+      LoginResponseOrBuilder {
     // Use LoginResponse.newBuilder() to construct.
     private LoginResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -2536,8 +2548,9 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              sessionId_ = input.readBytes();
+              sessionId_ = bs;
               break;
             }
             case 16: {
@@ -2546,8 +2559,9 @@ public final class RpcMarketdata {
               break;
             }
             case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000004;
-              message_ = input.readBytes();
+              message_ = bs;
               break;
             }
           }
@@ -2590,7 +2604,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string sessionId = 1;
     public static final int SESSIONID_FIELD_NUMBER = 1;
     private java.lang.Object sessionId_;
     /**
@@ -2633,7 +2646,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // optional bool failed = 2;
     public static final int FAILED_FIELD_NUMBER = 2;
     private boolean failed_;
     /**
@@ -2649,7 +2661,6 @@ public final class RpcMarketdata {
       return failed_;
     }
 
-    // optional string message = 3;
     public static final int MESSAGE_FIELD_NUMBER = 3;
     private java.lang.Object message_;
     /**
@@ -2700,7 +2711,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasSessionId()) {
         memoizedIsInitialized = 0;
@@ -2825,8 +2837,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code LoginResponse}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.LoginResponseOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:LoginResponse)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.LoginResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_LoginResponse_descriptor;
@@ -2965,7 +2978,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string sessionId = 1;
       private java.lang.Object sessionId_ = "";
       /**
        * <code>required string sessionId = 1;</code>
@@ -2979,9 +2991,12 @@ public final class RpcMarketdata {
       public java.lang.String getSessionId() {
         java.lang.Object ref = sessionId_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          sessionId_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            sessionId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -3039,7 +3054,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional bool failed = 2;
       private boolean failed_ ;
       /**
        * <code>optional bool failed = 2;</code>
@@ -3072,7 +3086,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional string message = 3;
       private java.lang.Object message_ = "";
       /**
        * <code>optional string message = 3;</code>
@@ -3086,9 +3099,12 @@ public final class RpcMarketdata {
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          message_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            message_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -3157,10 +3173,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:LoginResponse)
   }
 
-  public interface LogoutRequestOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface LogoutRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:LogoutRequest)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string sessionId = 1;
     /**
      * <code>required string sessionId = 1;</code>
      */
@@ -3179,8 +3195,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code LogoutRequest}
    */
   public static final class LogoutRequest extends
-      com.google.protobuf.GeneratedMessage
-      implements LogoutRequestOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:LogoutRequest)
+      LogoutRequestOrBuilder {
     // Use LogoutRequest.newBuilder() to construct.
     private LogoutRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -3227,8 +3244,9 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              sessionId_ = input.readBytes();
+              sessionId_ = bs;
               break;
             }
           }
@@ -3271,7 +3289,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string sessionId = 1;
     public static final int SESSIONID_FIELD_NUMBER = 1;
     private java.lang.Object sessionId_;
     /**
@@ -3320,7 +3337,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasSessionId()) {
         memoizedIsInitialized = 0;
@@ -3431,8 +3449,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code LogoutRequest}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutRequestOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:LogoutRequest)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_LogoutRequest_descriptor;
@@ -3551,7 +3570,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string sessionId = 1;
       private java.lang.Object sessionId_ = "";
       /**
        * <code>required string sessionId = 1;</code>
@@ -3565,9 +3583,12 @@ public final class RpcMarketdata {
       public java.lang.String getSessionId() {
         java.lang.Object ref = sessionId_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          sessionId_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            sessionId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -3636,10 +3657,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:LogoutRequest)
   }
 
-  public interface LogoutResponseOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface LogoutResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:LogoutResponse)
+      com.google.protobuf.MessageOrBuilder {
 
-    // optional bool failed = 1;
     /**
      * <code>optional bool failed = 1;</code>
      */
@@ -3649,7 +3670,6 @@ public final class RpcMarketdata {
      */
     boolean getFailed();
 
-    // optional string message = 2;
     /**
      * <code>optional string message = 2;</code>
      */
@@ -3668,8 +3688,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code LogoutResponse}
    */
   public static final class LogoutResponse extends
-      com.google.protobuf.GeneratedMessage
-      implements LogoutResponseOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:LogoutResponse)
+      LogoutResponseOrBuilder {
     // Use LogoutResponse.newBuilder() to construct.
     private LogoutResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -3721,8 +3742,9 @@ public final class RpcMarketdata {
               break;
             }
             case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000002;
-              message_ = input.readBytes();
+              message_ = bs;
               break;
             }
           }
@@ -3765,7 +3787,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // optional bool failed = 1;
     public static final int FAILED_FIELD_NUMBER = 1;
     private boolean failed_;
     /**
@@ -3781,7 +3802,6 @@ public final class RpcMarketdata {
       return failed_;
     }
 
-    // optional string message = 2;
     public static final int MESSAGE_FIELD_NUMBER = 2;
     private java.lang.Object message_;
     /**
@@ -3831,7 +3851,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       memoizedIsInitialized = 1;
       return true;
@@ -3945,8 +3966,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code LogoutResponse}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutResponseOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:LogoutResponse)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_LogoutResponse_descriptor;
@@ -4070,7 +4092,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // optional bool failed = 1;
       private boolean failed_ ;
       /**
        * <code>optional bool failed = 1;</code>
@@ -4103,7 +4124,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional string message = 2;
       private java.lang.Object message_ = "";
       /**
        * <code>optional string message = 2;</code>
@@ -4117,9 +4137,12 @@ public final class RpcMarketdata {
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          message_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            message_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -4188,10 +4211,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:LogoutResponse)
   }
 
-  public interface HeartbeatRequestOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface HeartbeatRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:HeartbeatRequest)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required int64 id = 1;
     /**
      * <code>required int64 id = 1;</code>
      */
@@ -4205,8 +4228,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code HeartbeatRequest}
    */
   public static final class HeartbeatRequest extends
-      com.google.protobuf.GeneratedMessage
-      implements HeartbeatRequestOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:HeartbeatRequest)
+      HeartbeatRequestOrBuilder {
     // Use HeartbeatRequest.newBuilder() to construct.
     private HeartbeatRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -4297,7 +4321,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required int64 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
     private long id_;
     /**
@@ -4319,7 +4342,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasId()) {
         memoizedIsInitialized = 0;
@@ -4430,8 +4454,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code HeartbeatRequest}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.HeartbeatRequestOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:HeartbeatRequest)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.HeartbeatRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_HeartbeatRequest_descriptor;
@@ -4548,7 +4573,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required int64 id = 1;
       private long id_ ;
       /**
        * <code>required int64 id = 1;</code>
@@ -4592,10 +4616,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:HeartbeatRequest)
   }
 
-  public interface HeartbeatResponseOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface HeartbeatResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:HeartbeatResponse)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required int64 id = 1;
     /**
      * <code>required int64 id = 1;</code>
      */
@@ -4605,7 +4629,6 @@ public final class RpcMarketdata {
      */
     long getId();
 
-    // optional bool failed = 2;
     /**
      * <code>optional bool failed = 2;</code>
      */
@@ -4615,7 +4638,6 @@ public final class RpcMarketdata {
      */
     boolean getFailed();
 
-    // optional string message = 3;
     /**
      * <code>optional string message = 3;</code>
      */
@@ -4634,8 +4656,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code HeartbeatResponse}
    */
   public static final class HeartbeatResponse extends
-      com.google.protobuf.GeneratedMessage
-      implements HeartbeatResponseOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:HeartbeatResponse)
+      HeartbeatResponseOrBuilder {
     // Use HeartbeatResponse.newBuilder() to construct.
     private HeartbeatResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -4692,8 +4715,9 @@ public final class RpcMarketdata {
               break;
             }
             case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000004;
-              message_ = input.readBytes();
+              message_ = bs;
               break;
             }
           }
@@ -4736,7 +4760,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required int64 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
     private long id_;
     /**
@@ -4752,7 +4775,6 @@ public final class RpcMarketdata {
       return id_;
     }
 
-    // optional bool failed = 2;
     public static final int FAILED_FIELD_NUMBER = 2;
     private boolean failed_;
     /**
@@ -4768,7 +4790,6 @@ public final class RpcMarketdata {
       return failed_;
     }
 
-    // optional string message = 3;
     public static final int MESSAGE_FIELD_NUMBER = 3;
     private java.lang.Object message_;
     /**
@@ -4819,7 +4840,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasId()) {
         memoizedIsInitialized = 0;
@@ -4944,8 +4966,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code HeartbeatResponse}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.HeartbeatResponseOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:HeartbeatResponse)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.HeartbeatResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_HeartbeatResponse_descriptor;
@@ -5082,7 +5105,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required int64 id = 1;
       private long id_ ;
       /**
        * <code>required int64 id = 1;</code>
@@ -5115,7 +5137,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional bool failed = 2;
       private boolean failed_ ;
       /**
        * <code>optional bool failed = 2;</code>
@@ -5148,7 +5169,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional string message = 3;
       private java.lang.Object message_ = "";
       /**
        * <code>optional string message = 3;</code>
@@ -5162,9 +5182,12 @@ public final class RpcMarketdata {
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          message_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            message_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -5233,10 +5256,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:HeartbeatResponse)
   }
 
-  public interface InstrumentOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface InstrumentOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:Instrument)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string payload = 1;
     /**
      * <code>required string payload = 1;</code>
      */
@@ -5255,8 +5278,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code Instrument}
    */
   public static final class Instrument extends
-      com.google.protobuf.GeneratedMessage
-      implements InstrumentOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:Instrument)
+      InstrumentOrBuilder {
     // Use Instrument.newBuilder() to construct.
     private Instrument(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -5303,8 +5327,9 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              payload_ = input.readBytes();
+              payload_ = bs;
               break;
             }
           }
@@ -5347,7 +5372,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string payload = 1;
     public static final int PAYLOAD_FIELD_NUMBER = 1;
     private java.lang.Object payload_;
     /**
@@ -5396,7 +5420,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasPayload()) {
         memoizedIsInitialized = 0;
@@ -5507,8 +5532,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code Instrument}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:Instrument)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_Instrument_descriptor;
@@ -5627,7 +5653,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string payload = 1;
       private java.lang.Object payload_ = "";
       /**
        * <code>required string payload = 1;</code>
@@ -5641,9 +5666,12 @@ public final class RpcMarketdata {
       public java.lang.String getPayload() {
         java.lang.Object ref = payload_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          payload_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            payload_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -5712,10 +5740,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:Instrument)
   }
 
-  public interface MarketDataRequestOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface MarketDataRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:MarketDataRequest)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string sessionId = 1;
     /**
      * <code>required string sessionId = 1;</code>
      */
@@ -5730,7 +5758,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getSessionIdBytes();
 
-    // required string request = 2;
     /**
      * <code>required string request = 2;</code>
      */
@@ -5745,7 +5772,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getRequestBytes();
 
-    // optional bool streamEvents = 3;
     /**
      * <code>optional bool streamEvents = 3;</code>
      */
@@ -5759,8 +5785,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code MarketDataRequest}
    */
   public static final class MarketDataRequest extends
-      com.google.protobuf.GeneratedMessage
-      implements MarketDataRequestOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:MarketDataRequest)
+      MarketDataRequestOrBuilder {
     // Use MarketDataRequest.newBuilder() to construct.
     private MarketDataRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -5807,13 +5834,15 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              sessionId_ = input.readBytes();
+              sessionId_ = bs;
               break;
             }
             case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000002;
-              request_ = input.readBytes();
+              request_ = bs;
               break;
             }
             case 24: {
@@ -5861,7 +5890,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string sessionId = 1;
     public static final int SESSIONID_FIELD_NUMBER = 1;
     private java.lang.Object sessionId_;
     /**
@@ -5904,7 +5932,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // required string request = 2;
     public static final int REQUEST_FIELD_NUMBER = 2;
     private java.lang.Object request_;
     /**
@@ -5947,7 +5974,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // optional bool streamEvents = 3;
     public static final int STREAMEVENTS_FIELD_NUMBER = 3;
     private boolean streamEvents_;
     /**
@@ -5971,7 +5997,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasSessionId()) {
         memoizedIsInitialized = 0;
@@ -6100,8 +6127,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code MarketDataRequest}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.MarketDataRequestOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:MarketDataRequest)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.MarketDataRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_MarketDataRequest_descriptor;
@@ -6244,7 +6272,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string sessionId = 1;
       private java.lang.Object sessionId_ = "";
       /**
        * <code>required string sessionId = 1;</code>
@@ -6258,9 +6285,12 @@ public final class RpcMarketdata {
       public java.lang.String getSessionId() {
         java.lang.Object ref = sessionId_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          sessionId_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            sessionId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -6318,7 +6348,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required string request = 2;
       private java.lang.Object request_ = "";
       /**
        * <code>required string request = 2;</code>
@@ -6332,9 +6361,12 @@ public final class RpcMarketdata {
       public java.lang.String getRequest() {
         java.lang.Object ref = request_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          request_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            request_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -6392,7 +6424,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional bool streamEvents = 3;
       private boolean streamEvents_ ;
       /**
        * <code>optional bool streamEvents = 3;</code>
@@ -6436,10 +6467,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:MarketDataRequest)
   }
 
-  public interface MarketDataResponseOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface MarketDataResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:MarketDataResponse)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required int64 id = 1;
     /**
      * <code>required int64 id = 1;</code>
      */
@@ -6449,7 +6480,6 @@ public final class RpcMarketdata {
      */
     long getId();
 
-    // optional bool failed = 2;
     /**
      * <code>optional bool failed = 2;</code>
      */
@@ -6459,7 +6489,6 @@ public final class RpcMarketdata {
      */
     boolean getFailed();
 
-    // optional string message = 3;
     /**
      * <code>optional string message = 3;</code>
      */
@@ -6478,8 +6507,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code MarketDataResponse}
    */
   public static final class MarketDataResponse extends
-      com.google.protobuf.GeneratedMessage
-      implements MarketDataResponseOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:MarketDataResponse)
+      MarketDataResponseOrBuilder {
     // Use MarketDataResponse.newBuilder() to construct.
     private MarketDataResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -6536,8 +6566,9 @@ public final class RpcMarketdata {
               break;
             }
             case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000004;
-              message_ = input.readBytes();
+              message_ = bs;
               break;
             }
           }
@@ -6580,7 +6611,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required int64 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
     private long id_;
     /**
@@ -6596,7 +6626,6 @@ public final class RpcMarketdata {
       return id_;
     }
 
-    // optional bool failed = 2;
     public static final int FAILED_FIELD_NUMBER = 2;
     private boolean failed_;
     /**
@@ -6612,7 +6641,6 @@ public final class RpcMarketdata {
       return failed_;
     }
 
-    // optional string message = 3;
     public static final int MESSAGE_FIELD_NUMBER = 3;
     private java.lang.Object message_;
     /**
@@ -6663,7 +6691,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasId()) {
         memoizedIsInitialized = 0;
@@ -6788,8 +6817,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code MarketDataResponse}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.MarketDataResponseOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:MarketDataResponse)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.MarketDataResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_MarketDataResponse_descriptor;
@@ -6926,7 +6956,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required int64 id = 1;
       private long id_ ;
       /**
        * <code>required int64 id = 1;</code>
@@ -6959,7 +6988,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional bool failed = 2;
       private boolean failed_ ;
       /**
        * <code>optional bool failed = 2;</code>
@@ -6992,7 +7020,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional string message = 3;
       private java.lang.Object message_ = "";
       /**
        * <code>optional string message = 3;</code>
@@ -7006,9 +7033,12 @@ public final class RpcMarketdata {
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          message_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            message_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -7077,10 +7107,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:MarketDataResponse)
   }
 
-  public interface LastUpdateRequestOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface LastUpdateRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:LastUpdateRequest)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string sessionId = 1;
     /**
      * <code>required string sessionId = 1;</code>
      */
@@ -7095,7 +7125,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getSessionIdBytes();
 
-    // required int64 id = 2;
     /**
      * <code>required int64 id = 2;</code>
      */
@@ -7109,8 +7138,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code LastUpdateRequest}
    */
   public static final class LastUpdateRequest extends
-      com.google.protobuf.GeneratedMessage
-      implements LastUpdateRequestOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:LastUpdateRequest)
+      LastUpdateRequestOrBuilder {
     // Use LastUpdateRequest.newBuilder() to construct.
     private LastUpdateRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -7157,8 +7187,9 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              sessionId_ = input.readBytes();
+              sessionId_ = bs;
               break;
             }
             case 16: {
@@ -7206,7 +7237,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string sessionId = 1;
     public static final int SESSIONID_FIELD_NUMBER = 1;
     private java.lang.Object sessionId_;
     /**
@@ -7249,7 +7279,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // required int64 id = 2;
     public static final int ID_FIELD_NUMBER = 2;
     private long id_;
     /**
@@ -7272,7 +7301,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasSessionId()) {
         memoizedIsInitialized = 0;
@@ -7394,8 +7424,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code LastUpdateRequest}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.LastUpdateRequestOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:LastUpdateRequest)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.LastUpdateRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_LastUpdateRequest_descriptor;
@@ -7527,7 +7558,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string sessionId = 1;
       private java.lang.Object sessionId_ = "";
       /**
        * <code>required string sessionId = 1;</code>
@@ -7541,9 +7571,12 @@ public final class RpcMarketdata {
       public java.lang.String getSessionId() {
         java.lang.Object ref = sessionId_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          sessionId_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            sessionId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -7601,7 +7634,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required int64 id = 2;
       private long id_ ;
       /**
        * <code>required int64 id = 2;</code>
@@ -7645,10 +7677,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:LastUpdateRequest)
   }
 
-  public interface LastUpdateResponseOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface LastUpdateResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:LastUpdateResponse)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required int64 timestamp = 1;
     /**
      * <code>required int64 timestamp = 1;</code>
      */
@@ -7658,7 +7690,6 @@ public final class RpcMarketdata {
      */
     long getTimestamp();
 
-    // optional bool failed = 2;
     /**
      * <code>optional bool failed = 2;</code>
      */
@@ -7668,7 +7699,6 @@ public final class RpcMarketdata {
      */
     boolean getFailed();
 
-    // optional string message = 3;
     /**
      * <code>optional string message = 3;</code>
      */
@@ -7687,8 +7717,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code LastUpdateResponse}
    */
   public static final class LastUpdateResponse extends
-      com.google.protobuf.GeneratedMessage
-      implements LastUpdateResponseOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:LastUpdateResponse)
+      LastUpdateResponseOrBuilder {
     // Use LastUpdateResponse.newBuilder() to construct.
     private LastUpdateResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -7745,8 +7776,9 @@ public final class RpcMarketdata {
               break;
             }
             case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000004;
-              message_ = input.readBytes();
+              message_ = bs;
               break;
             }
           }
@@ -7789,7 +7821,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required int64 timestamp = 1;
     public static final int TIMESTAMP_FIELD_NUMBER = 1;
     private long timestamp_;
     /**
@@ -7805,7 +7836,6 @@ public final class RpcMarketdata {
       return timestamp_;
     }
 
-    // optional bool failed = 2;
     public static final int FAILED_FIELD_NUMBER = 2;
     private boolean failed_;
     /**
@@ -7821,7 +7851,6 @@ public final class RpcMarketdata {
       return failed_;
     }
 
-    // optional string message = 3;
     public static final int MESSAGE_FIELD_NUMBER = 3;
     private java.lang.Object message_;
     /**
@@ -7872,7 +7901,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasTimestamp()) {
         memoizedIsInitialized = 0;
@@ -7997,8 +8027,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code LastUpdateResponse}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.LastUpdateResponseOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:LastUpdateResponse)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.LastUpdateResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_LastUpdateResponse_descriptor;
@@ -8135,7 +8166,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required int64 timestamp = 1;
       private long timestamp_ ;
       /**
        * <code>required int64 timestamp = 1;</code>
@@ -8168,7 +8198,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional bool failed = 2;
       private boolean failed_ ;
       /**
        * <code>optional bool failed = 2;</code>
@@ -8201,7 +8230,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional string message = 3;
       private java.lang.Object message_ = "";
       /**
        * <code>optional string message = 3;</code>
@@ -8215,9 +8243,12 @@ public final class RpcMarketdata {
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          message_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            message_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -8286,10 +8317,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:LastUpdateResponse)
   }
 
-  public interface CancelRequestOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface CancelRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:CancelRequest)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string sessionId = 1;
     /**
      * <code>required string sessionId = 1;</code>
      */
@@ -8304,7 +8335,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getSessionIdBytes();
 
-    // required int64 id = 2;
     /**
      * <code>required int64 id = 2;</code>
      */
@@ -8318,8 +8348,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code CancelRequest}
    */
   public static final class CancelRequest extends
-      com.google.protobuf.GeneratedMessage
-      implements CancelRequestOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:CancelRequest)
+      CancelRequestOrBuilder {
     // Use CancelRequest.newBuilder() to construct.
     private CancelRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -8366,8 +8397,9 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              sessionId_ = input.readBytes();
+              sessionId_ = bs;
               break;
             }
             case 16: {
@@ -8415,7 +8447,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string sessionId = 1;
     public static final int SESSIONID_FIELD_NUMBER = 1;
     private java.lang.Object sessionId_;
     /**
@@ -8458,7 +8489,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // required int64 id = 2;
     public static final int ID_FIELD_NUMBER = 2;
     private long id_;
     /**
@@ -8481,7 +8511,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasSessionId()) {
         memoizedIsInitialized = 0;
@@ -8603,8 +8634,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code CancelRequest}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelRequestOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:CancelRequest)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_CancelRequest_descriptor;
@@ -8736,7 +8768,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string sessionId = 1;
       private java.lang.Object sessionId_ = "";
       /**
        * <code>required string sessionId = 1;</code>
@@ -8750,9 +8781,12 @@ public final class RpcMarketdata {
       public java.lang.String getSessionId() {
         java.lang.Object ref = sessionId_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          sessionId_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            sessionId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -8810,7 +8844,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required int64 id = 2;
       private long id_ ;
       /**
        * <code>required int64 id = 2;</code>
@@ -8854,10 +8887,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:CancelRequest)
   }
 
-  public interface CancelResponseOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface CancelResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:CancelResponse)
+      com.google.protobuf.MessageOrBuilder {
 
-    // optional string message = 1;
     /**
      * <code>optional string message = 1;</code>
      */
@@ -8872,7 +8905,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getMessageBytes();
 
-    // optional bool failed = 2;
     /**
      * <code>optional bool failed = 2;</code>
      */
@@ -8886,8 +8918,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code CancelResponse}
    */
   public static final class CancelResponse extends
-      com.google.protobuf.GeneratedMessage
-      implements CancelResponseOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:CancelResponse)
+      CancelResponseOrBuilder {
     // Use CancelResponse.newBuilder() to construct.
     private CancelResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -8934,8 +8967,9 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              message_ = input.readBytes();
+              message_ = bs;
               break;
             }
             case 16: {
@@ -8983,7 +9017,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // optional string message = 1;
     public static final int MESSAGE_FIELD_NUMBER = 1;
     private java.lang.Object message_;
     /**
@@ -9026,7 +9059,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // optional bool failed = 2;
     public static final int FAILED_FIELD_NUMBER = 2;
     private boolean failed_;
     /**
@@ -9049,7 +9081,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       memoizedIsInitialized = 1;
       return true;
@@ -9163,8 +9196,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code CancelResponse}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelResponseOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:CancelResponse)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_CancelResponse_descriptor;
@@ -9288,7 +9322,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // optional string message = 1;
       private java.lang.Object message_ = "";
       /**
        * <code>optional string message = 1;</code>
@@ -9302,9 +9335,12 @@ public final class RpcMarketdata {
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          message_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            message_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -9362,7 +9398,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional bool failed = 2;
       private boolean failed_ ;
       /**
        * <code>optional bool failed = 2;</code>
@@ -9406,10 +9441,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:CancelResponse)
   }
 
-  public interface EventOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface EventOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:Event)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string payload = 1;
     /**
      * <code>required string payload = 1;</code>
      */
@@ -9428,8 +9463,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code Event}
    */
   public static final class Event extends
-      com.google.protobuf.GeneratedMessage
-      implements EventOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:Event)
+      EventOrBuilder {
     // Use Event.newBuilder() to construct.
     private Event(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -9476,8 +9512,9 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              payload_ = input.readBytes();
+              payload_ = bs;
               break;
             }
           }
@@ -9520,7 +9557,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string payload = 1;
     public static final int PAYLOAD_FIELD_NUMBER = 1;
     private java.lang.Object payload_;
     /**
@@ -9569,7 +9605,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasPayload()) {
         memoizedIsInitialized = 0;
@@ -9680,8 +9717,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code Event}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:Event)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_Event_descriptor;
@@ -9800,7 +9838,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string payload = 1;
       private java.lang.Object payload_ = "";
       /**
        * <code>required string payload = 1;</code>
@@ -9814,9 +9851,12 @@ public final class RpcMarketdata {
       public java.lang.String getPayload() {
         java.lang.Object ref = payload_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          payload_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            payload_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -9885,10 +9925,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:Event)
   }
 
-  public interface EventsRequestOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface EventsRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:EventsRequest)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string sessionId = 1;
     /**
      * <code>required string sessionId = 1;</code>
      */
@@ -9903,7 +9943,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getSessionIdBytes();
 
-    // required int64 id = 2;
     /**
      * <code>required int64 id = 2;</code>
      */
@@ -9917,8 +9956,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code EventsRequest}
    */
   public static final class EventsRequest extends
-      com.google.protobuf.GeneratedMessage
-      implements EventsRequestOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:EventsRequest)
+      EventsRequestOrBuilder {
     // Use EventsRequest.newBuilder() to construct.
     private EventsRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -9965,8 +10005,9 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              sessionId_ = input.readBytes();
+              sessionId_ = bs;
               break;
             }
             case 16: {
@@ -10014,7 +10055,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string sessionId = 1;
     public static final int SESSIONID_FIELD_NUMBER = 1;
     private java.lang.Object sessionId_;
     /**
@@ -10057,7 +10097,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // required int64 id = 2;
     public static final int ID_FIELD_NUMBER = 2;
     private long id_;
     /**
@@ -10080,7 +10119,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasSessionId()) {
         memoizedIsInitialized = 0;
@@ -10202,8 +10242,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code EventsRequest}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsRequestOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:EventsRequest)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_EventsRequest_descriptor;
@@ -10335,7 +10376,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string sessionId = 1;
       private java.lang.Object sessionId_ = "";
       /**
        * <code>required string sessionId = 1;</code>
@@ -10349,9 +10389,12 @@ public final class RpcMarketdata {
       public java.lang.String getSessionId() {
         java.lang.Object ref = sessionId_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          sessionId_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            sessionId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -10409,7 +10452,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required int64 id = 2;
       private long id_ ;
       /**
        * <code>required int64 id = 2;</code>
@@ -10453,10 +10495,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:EventsRequest)
   }
 
-  public interface EventsResponseOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface EventsResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:EventsResponse)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required int64 id = 1;
     /**
      * <code>required int64 id = 1;</code>
      */
@@ -10466,12 +10508,11 @@ public final class RpcMarketdata {
      */
     long getId();
 
-    // repeated string payload = 2;
     /**
      * <code>repeated string payload = 2;</code>
      */
-    java.util.List<java.lang.String>
-    getPayloadList();
+    com.google.protobuf.ProtocolStringList
+        getPayloadList();
     /**
      * <code>repeated string payload = 2;</code>
      */
@@ -10486,7 +10527,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getPayloadBytes(int index);
 
-    // optional string message = 3;
     /**
      * <code>optional string message = 3;</code>
      */
@@ -10501,7 +10541,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getMessageBytes();
 
-    // optional bool failed = 4;
     /**
      * <code>optional bool failed = 4;</code>
      */
@@ -10515,8 +10554,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code EventsResponse}
    */
   public static final class EventsResponse extends
-      com.google.protobuf.GeneratedMessage
-      implements EventsResponseOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:EventsResponse)
+      EventsResponseOrBuilder {
     // Use EventsResponse.newBuilder() to construct.
     private EventsResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -10568,16 +10608,18 @@ public final class RpcMarketdata {
               break;
             }
             case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
                 payload_ = new com.google.protobuf.LazyStringArrayList();
                 mutable_bitField0_ |= 0x00000002;
               }
-              payload_.add(input.readBytes());
+              payload_.add(bs);
               break;
             }
             case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000002;
-              message_ = input.readBytes();
+              message_ = bs;
               break;
             }
             case 32: {
@@ -10594,7 +10636,7 @@ public final class RpcMarketdata {
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-          payload_ = new com.google.protobuf.UnmodifiableLazyStringList(payload_);
+          payload_ = payload_.getUnmodifiableView();
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -10628,7 +10670,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required int64 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
     private long id_;
     /**
@@ -10644,13 +10685,12 @@ public final class RpcMarketdata {
       return id_;
     }
 
-    // repeated string payload = 2;
     public static final int PAYLOAD_FIELD_NUMBER = 2;
     private com.google.protobuf.LazyStringList payload_;
     /**
      * <code>repeated string payload = 2;</code>
      */
-    public java.util.List<java.lang.String>
+    public com.google.protobuf.ProtocolStringList
         getPayloadList() {
       return payload_;
     }
@@ -10674,7 +10714,6 @@ public final class RpcMarketdata {
       return payload_.getByteString(index);
     }
 
-    // optional string message = 3;
     public static final int MESSAGE_FIELD_NUMBER = 3;
     private java.lang.Object message_;
     /**
@@ -10717,7 +10756,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // optional bool failed = 4;
     public static final int FAILED_FIELD_NUMBER = 4;
     private boolean failed_;
     /**
@@ -10742,7 +10780,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasId()) {
         memoizedIsInitialized = 0;
@@ -10879,8 +10918,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code EventsResponse}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponseOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:EventsResponse)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_EventsResponse_descriptor;
@@ -10954,8 +10994,7 @@ public final class RpcMarketdata {
         }
         result.id_ = id_;
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          payload_ = new com.google.protobuf.UnmodifiableLazyStringList(
-              payload_);
+          payload_ = payload_.getUnmodifiableView();
           bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.payload_ = payload_;
@@ -11035,7 +11074,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required int64 id = 1;
       private long id_ ;
       /**
        * <code>required int64 id = 1;</code>
@@ -11068,7 +11106,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // repeated string payload = 2;
       private com.google.protobuf.LazyStringList payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensurePayloadIsMutable() {
         if (!((bitField0_ & 0x00000002) == 0x00000002)) {
@@ -11079,9 +11116,9 @@ public final class RpcMarketdata {
       /**
        * <code>repeated string payload = 2;</code>
        */
-      public java.util.List<java.lang.String>
+      public com.google.protobuf.ProtocolStringList
           getPayloadList() {
-        return java.util.Collections.unmodifiableList(payload_);
+        return payload_.getUnmodifiableView();
       }
       /**
        * <code>repeated string payload = 2;</code>
@@ -11134,7 +11171,8 @@ public final class RpcMarketdata {
       public Builder addAllPayload(
           java.lang.Iterable<java.lang.String> values) {
         ensurePayloadIsMutable();
-        super.addAll(values, payload_);
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, payload_);
         onChanged();
         return this;
       }
@@ -11161,7 +11199,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional string message = 3;
       private java.lang.Object message_ = "";
       /**
        * <code>optional string message = 3;</code>
@@ -11175,9 +11212,12 @@ public final class RpcMarketdata {
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          message_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            message_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -11235,7 +11275,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional bool failed = 4;
       private boolean failed_ ;
       /**
        * <code>optional bool failed = 4;</code>
@@ -11279,10 +11318,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:EventsResponse)
   }
 
-  public interface AllEventsRequestOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface AllEventsRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:AllEventsRequest)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string sessionId = 1;
     /**
      * <code>required string sessionId = 1;</code>
      */
@@ -11297,7 +11336,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getSessionIdBytes();
 
-    // repeated int64 id = 2;
     /**
      * <code>repeated int64 id = 2;</code>
      */
@@ -11315,8 +11353,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code AllEventsRequest}
    */
   public static final class AllEventsRequest extends
-      com.google.protobuf.GeneratedMessage
-      implements AllEventsRequestOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:AllEventsRequest)
+      AllEventsRequestOrBuilder {
     // Use AllEventsRequest.newBuilder() to construct.
     private AllEventsRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -11363,8 +11402,9 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              sessionId_ = input.readBytes();
+              sessionId_ = bs;
               break;
             }
             case 16: {
@@ -11431,7 +11471,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string sessionId = 1;
     public static final int SESSIONID_FIELD_NUMBER = 1;
     private java.lang.Object sessionId_;
     /**
@@ -11474,7 +11513,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // repeated int64 id = 2;
     public static final int ID_FIELD_NUMBER = 2;
     private java.util.List<java.lang.Long> id_;
     /**
@@ -11504,7 +11542,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasSessionId()) {
         memoizedIsInitialized = 0;
@@ -11627,8 +11666,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code AllEventsRequest}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequestOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:AllEventsRequest)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AllEventsRequest_descriptor;
@@ -11764,7 +11804,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string sessionId = 1;
       private java.lang.Object sessionId_ = "";
       /**
        * <code>required string sessionId = 1;</code>
@@ -11778,9 +11817,12 @@ public final class RpcMarketdata {
       public java.lang.String getSessionId() {
         java.lang.Object ref = sessionId_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          sessionId_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            sessionId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -11838,7 +11880,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // repeated int64 id = 2;
       private java.util.List<java.lang.Long> id_ = java.util.Collections.emptyList();
       private void ensureIdIsMutable() {
         if (!((bitField0_ & 0x00000002) == 0x00000002)) {
@@ -11890,7 +11931,8 @@ public final class RpcMarketdata {
       public Builder addAllId(
           java.lang.Iterable<? extends java.lang.Long> values) {
         ensureIdIsMutable();
-        super.addAll(values, id_);
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, id_);
         onChanged();
         return this;
       }
@@ -11915,10 +11957,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:AllEventsRequest)
   }
 
-  public interface AllEventsResponseOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface AllEventsResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:AllEventsResponse)
+      com.google.protobuf.MessageOrBuilder {
 
-    // repeated .EventsResponse events = 1;
     /**
      * <code>repeated .EventsResponse events = 1;</code>
      */
@@ -11943,7 +11985,6 @@ public final class RpcMarketdata {
     org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponseOrBuilder getEventsOrBuilder(
         int index);
 
-    // optional string message = 2;
     /**
      * <code>optional string message = 2;</code>
      */
@@ -11958,7 +11999,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getMessageBytes();
 
-    // optional bool failed = 3;
     /**
      * <code>optional bool failed = 3;</code>
      */
@@ -11972,8 +12012,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code AllEventsResponse}
    */
   public static final class AllEventsResponse extends
-      com.google.protobuf.GeneratedMessage
-      implements AllEventsResponseOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:AllEventsResponse)
+      AllEventsResponseOrBuilder {
     // Use AllEventsResponse.newBuilder() to construct.
     private AllEventsResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -12028,8 +12069,9 @@ public final class RpcMarketdata {
               break;
             }
             case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              message_ = input.readBytes();
+              message_ = bs;
               break;
             }
             case 24: {
@@ -12080,7 +12122,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // repeated .EventsResponse events = 1;
     public static final int EVENTS_FIELD_NUMBER = 1;
     private java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse> events_;
     /**
@@ -12116,7 +12157,6 @@ public final class RpcMarketdata {
       return events_.get(index);
     }
 
-    // optional string message = 2;
     public static final int MESSAGE_FIELD_NUMBER = 2;
     private java.lang.Object message_;
     /**
@@ -12159,7 +12199,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // optional bool failed = 3;
     public static final int FAILED_FIELD_NUMBER = 3;
     private boolean failed_;
     /**
@@ -12183,7 +12222,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       for (int i = 0; i < getEventsCount(); i++) {
         if (!getEvents(i).isInitialized()) {
@@ -12310,8 +12350,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code AllEventsResponse}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponseOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:AllEventsResponse)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AllEventsResponse_descriptor;
@@ -12483,7 +12524,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // repeated .EventsResponse events = 1;
       private java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse> events_ =
         java.util.Collections.emptyList();
       private void ensureEventsIsMutable() {
@@ -12625,7 +12665,8 @@ public final class RpcMarketdata {
           java.lang.Iterable<? extends org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse> values) {
         if (eventsBuilder_ == null) {
           ensureEventsIsMutable();
-          super.addAll(values, events_);
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, events_);
           onChanged();
         } else {
           eventsBuilder_.addAllMessages(values);
@@ -12723,7 +12764,6 @@ public final class RpcMarketdata {
         return eventsBuilder_;
       }
 
-      // optional string message = 2;
       private java.lang.Object message_ = "";
       /**
        * <code>optional string message = 2;</code>
@@ -12737,9 +12777,12 @@ public final class RpcMarketdata {
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          message_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            message_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -12797,7 +12840,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional bool failed = 3;
       private boolean failed_ ;
       /**
        * <code>optional bool failed = 3;</code>
@@ -12841,10 +12883,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:AllEventsResponse)
   }
 
-  public interface SnapshotRequestOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface SnapshotRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:SnapshotRequest)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string sessionId = 1;
     /**
      * <code>required string sessionId = 1;</code>
      */
@@ -12859,7 +12901,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getSessionIdBytes();
 
-    // required .Instrument instrument = 2;
     /**
      * <code>required .Instrument instrument = 2;</code>
      */
@@ -12873,7 +12914,6 @@ public final class RpcMarketdata {
      */
     org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder getInstrumentOrBuilder();
 
-    // required .ContentAndCapability content = 3;
     /**
      * <code>required .ContentAndCapability content = 3;</code>
      */
@@ -12883,7 +12923,6 @@ public final class RpcMarketdata {
      */
     org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getContent();
 
-    // optional string provider = 4;
     /**
      * <code>optional string provider = 4;</code>
      */
@@ -12902,8 +12941,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code SnapshotRequest}
    */
   public static final class SnapshotRequest extends
-      com.google.protobuf.GeneratedMessage
-      implements SnapshotRequestOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:SnapshotRequest)
+      SnapshotRequestOrBuilder {
     // Use SnapshotRequest.newBuilder() to construct.
     private SnapshotRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -12950,8 +12990,9 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              sessionId_ = input.readBytes();
+              sessionId_ = bs;
               break;
             }
             case 18: {
@@ -12979,8 +13020,9 @@ public final class RpcMarketdata {
               break;
             }
             case 34: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000008;
-              provider_ = input.readBytes();
+              provider_ = bs;
               break;
             }
           }
@@ -13023,7 +13065,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string sessionId = 1;
     public static final int SESSIONID_FIELD_NUMBER = 1;
     private java.lang.Object sessionId_;
     /**
@@ -13066,7 +13107,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // required .Instrument instrument = 2;
     public static final int INSTRUMENT_FIELD_NUMBER = 2;
     private org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument instrument_;
     /**
@@ -13088,7 +13128,6 @@ public final class RpcMarketdata {
       return instrument_;
     }
 
-    // required .ContentAndCapability content = 3;
     public static final int CONTENT_FIELD_NUMBER = 3;
     private org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability content_;
     /**
@@ -13104,7 +13143,6 @@ public final class RpcMarketdata {
       return content_;
     }
 
-    // optional string provider = 4;
     public static final int PROVIDER_FIELD_NUMBER = 4;
     private java.lang.Object provider_;
     /**
@@ -13156,7 +13194,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasSessionId()) {
         memoizedIsInitialized = 0;
@@ -13300,8 +13339,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code SnapshotRequest}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequestOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:SnapshotRequest)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotRequest_descriptor;
@@ -13470,7 +13510,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string sessionId = 1;
       private java.lang.Object sessionId_ = "";
       /**
        * <code>required string sessionId = 1;</code>
@@ -13484,9 +13523,12 @@ public final class RpcMarketdata {
       public java.lang.String getSessionId() {
         java.lang.Object ref = sessionId_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          sessionId_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            sessionId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -13544,7 +13586,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required .Instrument instrument = 2;
       private org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument instrument_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument, org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder> instrumentBuilder_;
@@ -13653,7 +13694,7 @@ public final class RpcMarketdata {
         if (instrumentBuilder_ == null) {
           instrumentBuilder_ = new com.google.protobuf.SingleFieldBuilder<
               org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument, org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder>(
-                  instrument_,
+                  getInstrument(),
                   getParentForChildren(),
                   isClean());
           instrument_ = null;
@@ -13661,7 +13702,6 @@ public final class RpcMarketdata {
         return instrumentBuilder_;
       }
 
-      // required .ContentAndCapability content = 3;
       private org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
       /**
        * <code>required .ContentAndCapability content = 3;</code>
@@ -13697,7 +13737,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional string provider = 4;
       private java.lang.Object provider_ = "";
       /**
        * <code>optional string provider = 4;</code>
@@ -13711,9 +13750,12 @@ public final class RpcMarketdata {
       public java.lang.String getProvider() {
         java.lang.Object ref = provider_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          provider_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            provider_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -13782,15 +13824,15 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:SnapshotRequest)
   }
 
-  public interface SnapshotResponseOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface SnapshotResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:SnapshotResponse)
+      com.google.protobuf.MessageOrBuilder {
 
-    // repeated string payload = 1;
     /**
      * <code>repeated string payload = 1;</code>
      */
-    java.util.List<java.lang.String>
-    getPayloadList();
+    com.google.protobuf.ProtocolStringList
+        getPayloadList();
     /**
      * <code>repeated string payload = 1;</code>
      */
@@ -13805,7 +13847,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getPayloadBytes(int index);
 
-    // optional string message = 2;
     /**
      * <code>optional string message = 2;</code>
      */
@@ -13820,7 +13861,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getMessageBytes();
 
-    // optional bool failed = 3;
     /**
      * <code>optional bool failed = 3;</code>
      */
@@ -13834,8 +13874,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code SnapshotResponse}
    */
   public static final class SnapshotResponse extends
-      com.google.protobuf.GeneratedMessage
-      implements SnapshotResponseOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:SnapshotResponse)
+      SnapshotResponseOrBuilder {
     // Use SnapshotResponse.newBuilder() to construct.
     private SnapshotResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -13882,16 +13923,18 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
                 payload_ = new com.google.protobuf.LazyStringArrayList();
                 mutable_bitField0_ |= 0x00000001;
               }
-              payload_.add(input.readBytes());
+              payload_.add(bs);
               break;
             }
             case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              message_ = input.readBytes();
+              message_ = bs;
               break;
             }
             case 24: {
@@ -13908,7 +13951,7 @@ public final class RpcMarketdata {
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-          payload_ = new com.google.protobuf.UnmodifiableLazyStringList(payload_);
+          payload_ = payload_.getUnmodifiableView();
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -13942,13 +13985,12 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // repeated string payload = 1;
     public static final int PAYLOAD_FIELD_NUMBER = 1;
     private com.google.protobuf.LazyStringList payload_;
     /**
      * <code>repeated string payload = 1;</code>
      */
-    public java.util.List<java.lang.String>
+    public com.google.protobuf.ProtocolStringList
         getPayloadList() {
       return payload_;
     }
@@ -13972,7 +14014,6 @@ public final class RpcMarketdata {
       return payload_.getByteString(index);
     }
 
-    // optional string message = 2;
     public static final int MESSAGE_FIELD_NUMBER = 2;
     private java.lang.Object message_;
     /**
@@ -14015,7 +14056,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // optional bool failed = 3;
     public static final int FAILED_FIELD_NUMBER = 3;
     private boolean failed_;
     /**
@@ -14039,7 +14079,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       memoizedIsInitialized = 1;
       return true;
@@ -14165,8 +14206,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code SnapshotResponse}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponseOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:SnapshotResponse)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotResponse_descriptor;
@@ -14234,8 +14276,7 @@ public final class RpcMarketdata {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
-          payload_ = new com.google.protobuf.UnmodifiableLazyStringList(
-              payload_);
+          payload_ = payload_.getUnmodifiableView();
           bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.payload_ = payload_;
@@ -14308,7 +14349,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // repeated string payload = 1;
       private com.google.protobuf.LazyStringList payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensurePayloadIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -14319,9 +14359,9 @@ public final class RpcMarketdata {
       /**
        * <code>repeated string payload = 1;</code>
        */
-      public java.util.List<java.lang.String>
+      public com.google.protobuf.ProtocolStringList
           getPayloadList() {
-        return java.util.Collections.unmodifiableList(payload_);
+        return payload_.getUnmodifiableView();
       }
       /**
        * <code>repeated string payload = 1;</code>
@@ -14374,7 +14414,8 @@ public final class RpcMarketdata {
       public Builder addAllPayload(
           java.lang.Iterable<java.lang.String> values) {
         ensurePayloadIsMutable();
-        super.addAll(values, payload_);
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, payload_);
         onChanged();
         return this;
       }
@@ -14401,7 +14442,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional string message = 2;
       private java.lang.Object message_ = "";
       /**
        * <code>optional string message = 2;</code>
@@ -14415,9 +14455,12 @@ public final class RpcMarketdata {
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          message_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            message_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -14475,7 +14518,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional bool failed = 3;
       private boolean failed_ ;
       /**
        * <code>optional bool failed = 3;</code>
@@ -14519,10 +14561,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:SnapshotResponse)
   }
 
-  public interface SnapshotPageRequestOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface SnapshotPageRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:SnapshotPageRequest)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string sessionId = 1;
     /**
      * <code>required string sessionId = 1;</code>
      */
@@ -14537,7 +14579,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getSessionIdBytes();
 
-    // required .Instrument instrument = 2;
     /**
      * <code>required .Instrument instrument = 2;</code>
      */
@@ -14551,7 +14592,6 @@ public final class RpcMarketdata {
      */
     org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder getInstrumentOrBuilder();
 
-    // required .ContentAndCapability content = 3;
     /**
      * <code>required .ContentAndCapability content = 3;</code>
      */
@@ -14561,7 +14601,6 @@ public final class RpcMarketdata {
      */
     org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getContent();
 
-    // optional string provider = 4;
     /**
      * <code>optional string provider = 4;</code>
      */
@@ -14576,7 +14615,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getProviderBytes();
 
-    // required .PageRequest page = 5;
     /**
      * <code>required .PageRequest page = 5;</code>
      */
@@ -14594,8 +14632,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code SnapshotPageRequest}
    */
   public static final class SnapshotPageRequest extends
-      com.google.protobuf.GeneratedMessage
-      implements SnapshotPageRequestOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:SnapshotPageRequest)
+      SnapshotPageRequestOrBuilder {
     // Use SnapshotPageRequest.newBuilder() to construct.
     private SnapshotPageRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -14642,8 +14681,9 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              sessionId_ = input.readBytes();
+              sessionId_ = bs;
               break;
             }
             case 18: {
@@ -14671,8 +14711,9 @@ public final class RpcMarketdata {
               break;
             }
             case 34: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000008;
-              provider_ = input.readBytes();
+              provider_ = bs;
               break;
             }
             case 42: {
@@ -14728,7 +14769,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string sessionId = 1;
     public static final int SESSIONID_FIELD_NUMBER = 1;
     private java.lang.Object sessionId_;
     /**
@@ -14771,7 +14811,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // required .Instrument instrument = 2;
     public static final int INSTRUMENT_FIELD_NUMBER = 2;
     private org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument instrument_;
     /**
@@ -14793,7 +14832,6 @@ public final class RpcMarketdata {
       return instrument_;
     }
 
-    // required .ContentAndCapability content = 3;
     public static final int CONTENT_FIELD_NUMBER = 3;
     private org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability content_;
     /**
@@ -14809,7 +14847,6 @@ public final class RpcMarketdata {
       return content_;
     }
 
-    // optional string provider = 4;
     public static final int PROVIDER_FIELD_NUMBER = 4;
     private java.lang.Object provider_;
     /**
@@ -14852,7 +14889,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // required .PageRequest page = 5;
     public static final int PAGE_FIELD_NUMBER = 5;
     private org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest page_;
     /**
@@ -14884,7 +14920,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasSessionId()) {
         memoizedIsInitialized = 0;
@@ -15043,8 +15080,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code SnapshotPageRequest}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequestOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:SnapshotPageRequest)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotPageRequest_descriptor;
@@ -15239,7 +15277,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string sessionId = 1;
       private java.lang.Object sessionId_ = "";
       /**
        * <code>required string sessionId = 1;</code>
@@ -15253,9 +15290,12 @@ public final class RpcMarketdata {
       public java.lang.String getSessionId() {
         java.lang.Object ref = sessionId_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          sessionId_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            sessionId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -15313,7 +15353,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required .Instrument instrument = 2;
       private org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument instrument_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument, org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder> instrumentBuilder_;
@@ -15422,7 +15461,7 @@ public final class RpcMarketdata {
         if (instrumentBuilder_ == null) {
           instrumentBuilder_ = new com.google.protobuf.SingleFieldBuilder<
               org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument, org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder>(
-                  instrument_,
+                  getInstrument(),
                   getParentForChildren(),
                   isClean());
           instrument_ = null;
@@ -15430,7 +15469,6 @@ public final class RpcMarketdata {
         return instrumentBuilder_;
       }
 
-      // required .ContentAndCapability content = 3;
       private org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
       /**
        * <code>required .ContentAndCapability content = 3;</code>
@@ -15466,7 +15504,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional string provider = 4;
       private java.lang.Object provider_ = "";
       /**
        * <code>optional string provider = 4;</code>
@@ -15480,9 +15517,12 @@ public final class RpcMarketdata {
       public java.lang.String getProvider() {
         java.lang.Object ref = provider_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          provider_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            provider_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -15540,7 +15580,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required .PageRequest page = 5;
       private org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest page_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder> pageBuilder_;
@@ -15649,7 +15688,7 @@ public final class RpcMarketdata {
         if (pageBuilder_ == null) {
           pageBuilder_ = new com.google.protobuf.SingleFieldBuilder<
               org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder>(
-                  page_,
+                  getPage(),
                   getParentForChildren(),
                   isClean());
           page_ = null;
@@ -15668,15 +15707,15 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:SnapshotPageRequest)
   }
 
-  public interface SnapshotPageResponseOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface SnapshotPageResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:SnapshotPageResponse)
+      com.google.protobuf.MessageOrBuilder {
 
-    // repeated string payload = 1;
     /**
      * <code>repeated string payload = 1;</code>
      */
-    java.util.List<java.lang.String>
-    getPayloadList();
+    com.google.protobuf.ProtocolStringList
+        getPayloadList();
     /**
      * <code>repeated string payload = 1;</code>
      */
@@ -15691,7 +15730,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getPayloadBytes(int index);
 
-    // optional string message = 2;
     /**
      * <code>optional string message = 2;</code>
      */
@@ -15706,7 +15744,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getMessageBytes();
 
-    // optional bool failed = 3;
     /**
      * <code>optional bool failed = 3;</code>
      */
@@ -15720,8 +15757,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code SnapshotPageResponse}
    */
   public static final class SnapshotPageResponse extends
-      com.google.protobuf.GeneratedMessage
-      implements SnapshotPageResponseOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:SnapshotPageResponse)
+      SnapshotPageResponseOrBuilder {
     // Use SnapshotPageResponse.newBuilder() to construct.
     private SnapshotPageResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -15768,16 +15806,18 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
                 payload_ = new com.google.protobuf.LazyStringArrayList();
                 mutable_bitField0_ |= 0x00000001;
               }
-              payload_.add(input.readBytes());
+              payload_.add(bs);
               break;
             }
             case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              message_ = input.readBytes();
+              message_ = bs;
               break;
             }
             case 24: {
@@ -15794,7 +15834,7 @@ public final class RpcMarketdata {
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-          payload_ = new com.google.protobuf.UnmodifiableLazyStringList(payload_);
+          payload_ = payload_.getUnmodifiableView();
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -15828,13 +15868,12 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // repeated string payload = 1;
     public static final int PAYLOAD_FIELD_NUMBER = 1;
     private com.google.protobuf.LazyStringList payload_;
     /**
      * <code>repeated string payload = 1;</code>
      */
-    public java.util.List<java.lang.String>
+    public com.google.protobuf.ProtocolStringList
         getPayloadList() {
       return payload_;
     }
@@ -15858,7 +15897,6 @@ public final class RpcMarketdata {
       return payload_.getByteString(index);
     }
 
-    // optional string message = 2;
     public static final int MESSAGE_FIELD_NUMBER = 2;
     private java.lang.Object message_;
     /**
@@ -15901,7 +15939,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // optional bool failed = 3;
     public static final int FAILED_FIELD_NUMBER = 3;
     private boolean failed_;
     /**
@@ -15925,7 +15962,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       memoizedIsInitialized = 1;
       return true;
@@ -16051,8 +16089,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code SnapshotPageResponse}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponseOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:SnapshotPageResponse)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotPageResponse_descriptor;
@@ -16120,8 +16159,7 @@ public final class RpcMarketdata {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
-          payload_ = new com.google.protobuf.UnmodifiableLazyStringList(
-              payload_);
+          payload_ = payload_.getUnmodifiableView();
           bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.payload_ = payload_;
@@ -16194,7 +16232,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // repeated string payload = 1;
       private com.google.protobuf.LazyStringList payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensurePayloadIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -16205,9 +16242,9 @@ public final class RpcMarketdata {
       /**
        * <code>repeated string payload = 1;</code>
        */
-      public java.util.List<java.lang.String>
+      public com.google.protobuf.ProtocolStringList
           getPayloadList() {
-        return java.util.Collections.unmodifiableList(payload_);
+        return payload_.getUnmodifiableView();
       }
       /**
        * <code>repeated string payload = 1;</code>
@@ -16260,7 +16297,8 @@ public final class RpcMarketdata {
       public Builder addAllPayload(
           java.lang.Iterable<java.lang.String> values) {
         ensurePayloadIsMutable();
-        super.addAll(values, payload_);
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, payload_);
         onChanged();
         return this;
       }
@@ -16287,7 +16325,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional string message = 2;
       private java.lang.Object message_ = "";
       /**
        * <code>optional string message = 2;</code>
@@ -16301,9 +16338,12 @@ public final class RpcMarketdata {
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          message_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            message_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -16361,7 +16401,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional bool failed = 3;
       private boolean failed_ ;
       /**
        * <code>optional bool failed = 3;</code>
@@ -16405,10 +16444,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:SnapshotPageResponse)
   }
 
-  public interface PageRequestOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface PageRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:PageRequest)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required int32 page = 1;
     /**
      * <code>required int32 page = 1;</code>
      */
@@ -16418,7 +16457,6 @@ public final class RpcMarketdata {
      */
     int getPage();
 
-    // required int32 size = 2;
     /**
      * <code>required int32 size = 2;</code>
      */
@@ -16432,8 +16470,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code PageRequest}
    */
   public static final class PageRequest extends
-      com.google.protobuf.GeneratedMessage
-      implements PageRequestOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:PageRequest)
+      PageRequestOrBuilder {
     // Use PageRequest.newBuilder() to construct.
     private PageRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -16529,7 +16568,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required int32 page = 1;
     public static final int PAGE_FIELD_NUMBER = 1;
     private int page_;
     /**
@@ -16545,7 +16583,6 @@ public final class RpcMarketdata {
       return page_;
     }
 
-    // required int32 size = 2;
     public static final int SIZE_FIELD_NUMBER = 2;
     private int size_;
     /**
@@ -16568,7 +16605,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasPage()) {
         memoizedIsInitialized = 0;
@@ -16690,8 +16728,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code PageRequest}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:PageRequest)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_PageRequest_descriptor;
@@ -16821,7 +16860,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required int32 page = 1;
       private int page_ ;
       /**
        * <code>required int32 page = 1;</code>
@@ -16854,7 +16892,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required int32 size = 2;
       private int size_ ;
       /**
        * <code>required int32 size = 2;</code>
@@ -16898,10 +16935,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:PageRequest)
   }
 
-  public interface AvailableCapabilityRequestOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface AvailableCapabilityRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:AvailableCapabilityRequest)
+      com.google.protobuf.MessageOrBuilder {
 
-    // required string sessionId = 1;
     /**
      * <code>required string sessionId = 1;</code>
      */
@@ -16920,8 +16957,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code AvailableCapabilityRequest}
    */
   public static final class AvailableCapabilityRequest extends
-      com.google.protobuf.GeneratedMessage
-      implements AvailableCapabilityRequestOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:AvailableCapabilityRequest)
+      AvailableCapabilityRequestOrBuilder {
     // Use AvailableCapabilityRequest.newBuilder() to construct.
     private AvailableCapabilityRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -16968,8 +17006,9 @@ public final class RpcMarketdata {
               break;
             }
             case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              sessionId_ = input.readBytes();
+              sessionId_ = bs;
               break;
             }
           }
@@ -17012,7 +17051,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required string sessionId = 1;
     public static final int SESSIONID_FIELD_NUMBER = 1;
     private java.lang.Object sessionId_;
     /**
@@ -17061,7 +17099,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       if (!hasSessionId()) {
         memoizedIsInitialized = 0;
@@ -17172,8 +17211,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code AvailableCapabilityRequest}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequestOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:AvailableCapabilityRequest)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AvailableCapabilityRequest_descriptor;
@@ -17292,7 +17332,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required string sessionId = 1;
       private java.lang.Object sessionId_ = "";
       /**
        * <code>required string sessionId = 1;</code>
@@ -17306,9 +17345,12 @@ public final class RpcMarketdata {
       public java.lang.String getSessionId() {
         java.lang.Object ref = sessionId_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          sessionId_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            sessionId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -17377,10 +17419,10 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:AvailableCapabilityRequest)
   }
 
-  public interface AvailableCapabilityResponseOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface AvailableCapabilityResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:AvailableCapabilityResponse)
+      com.google.protobuf.MessageOrBuilder {
 
-    // repeated .ContentAndCapability capability = 1;
     /**
      * <code>repeated .ContentAndCapability capability = 1;</code>
      */
@@ -17394,7 +17436,6 @@ public final class RpcMarketdata {
      */
     org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getCapability(int index);
 
-    // optional string message = 2;
     /**
      * <code>optional string message = 2;</code>
      */
@@ -17409,7 +17450,6 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getMessageBytes();
 
-    // optional bool failed = 3;
     /**
      * <code>optional bool failed = 3;</code>
      */
@@ -17423,8 +17463,9 @@ public final class RpcMarketdata {
    * Protobuf type {@code AvailableCapabilityResponse}
    */
   public static final class AvailableCapabilityResponse extends
-      com.google.protobuf.GeneratedMessage
-      implements AvailableCapabilityResponseOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:AvailableCapabilityResponse)
+      AvailableCapabilityResponseOrBuilder {
     // Use AvailableCapabilityResponse.newBuilder() to construct.
     private AvailableCapabilityResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -17475,7 +17516,7 @@ public final class RpcMarketdata {
               org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability value = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.valueOf(rawValue);
               if (value == null) {
                 unknownFields.mergeVarintField(1, rawValue);
-              } else {
+                } else {
                 if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
                   capability_ = new java.util.ArrayList<org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability>();
                   mutable_bitField0_ |= 0x00000001;
@@ -17492,7 +17533,7 @@ public final class RpcMarketdata {
                 org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability value = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.valueOf(rawValue);
                 if (value == null) {
                   unknownFields.mergeVarintField(1, rawValue);
-                } else {
+                  } else {
                   if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
                     capability_ = new java.util.ArrayList<org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability>();
                     mutable_bitField0_ |= 0x00000001;
@@ -17504,8 +17545,9 @@ public final class RpcMarketdata {
               break;
             }
             case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              message_ = input.readBytes();
+              message_ = bs;
               break;
             }
             case 24: {
@@ -17556,7 +17598,6 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // repeated .ContentAndCapability capability = 1;
     public static final int CAPABILITY_FIELD_NUMBER = 1;
     private java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability> capability_;
     /**
@@ -17578,7 +17619,6 @@ public final class RpcMarketdata {
       return capability_.get(index);
     }
 
-    // optional string message = 2;
     public static final int MESSAGE_FIELD_NUMBER = 2;
     private java.lang.Object message_;
     /**
@@ -17621,7 +17661,6 @@ public final class RpcMarketdata {
       }
     }
 
-    // optional bool failed = 3;
     public static final int FAILED_FIELD_NUMBER = 3;
     private boolean failed_;
     /**
@@ -17645,7 +17684,8 @@ public final class RpcMarketdata {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       memoizedIsInitialized = 1;
       return true;
@@ -17771,8 +17811,9 @@ public final class RpcMarketdata {
      * Protobuf type {@code AvailableCapabilityResponse}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponseOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:AvailableCapabilityResponse)
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AvailableCapabilityResponse_descriptor;
@@ -17913,7 +17954,6 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // repeated .ContentAndCapability capability = 1;
       private java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability> capability_ =
         java.util.Collections.emptyList();
       private void ensureCapabilityIsMutable() {
@@ -17971,7 +18011,8 @@ public final class RpcMarketdata {
       public Builder addAllCapability(
           java.lang.Iterable<? extends org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability> values) {
         ensureCapabilityIsMutable();
-        super.addAll(values, capability_);
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, capability_);
         onChanged();
         return this;
       }
@@ -17985,7 +18026,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional string message = 2;
       private java.lang.Object message_ = "";
       /**
        * <code>optional string message = 2;</code>
@@ -17999,9 +18039,12 @@ public final class RpcMarketdata {
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          message_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            message_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -18059,7 +18102,6 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // optional bool failed = 3;
       private boolean failed_ ;
       /**
        * <code>optional bool failed = 3;</code>
@@ -19045,132 +19087,132 @@ public final class RpcMarketdata {
     // @@protoc_insertion_point(class_scope:RpcMarketDataService)
   }
 
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_LoginRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_LoginRequest_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Locale_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Locale_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_LoginResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_LoginResponse_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_LogoutRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_LogoutRequest_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_LogoutResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_LogoutResponse_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_HeartbeatRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_HeartbeatRequest_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_HeartbeatResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_HeartbeatResponse_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Instrument_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Instrument_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_MarketDataRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_MarketDataRequest_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_MarketDataResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_MarketDataResponse_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_LastUpdateRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_LastUpdateRequest_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_LastUpdateResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_LastUpdateResponse_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_CancelRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_CancelRequest_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_CancelResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_CancelResponse_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Event_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Event_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_EventsRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_EventsRequest_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_EventsResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_EventsResponse_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_AllEventsRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_AllEventsRequest_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_AllEventsResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_AllEventsResponse_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_SnapshotRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_SnapshotRequest_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_SnapshotResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_SnapshotResponse_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_SnapshotPageRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_SnapshotPageRequest_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_SnapshotPageResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_SnapshotPageResponse_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_PageRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_PageRequest_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_AvailableCapabilityRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_AvailableCapabilityRequest_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_AvailableCapabilityResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -19256,173 +19298,173 @@ public final class RpcMarketdata {
       "pcB\rRpcMarketdata\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-      new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
-        public com.google.protobuf.ExtensionRegistry assignDescriptors(
-            com.google.protobuf.Descriptors.FileDescriptor root) {
-          descriptor = root;
-          internal_static_LoginRequest_descriptor =
-            getDescriptor().getMessageTypes().get(0);
-          internal_static_LoginRequest_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_LoginRequest_descriptor,
-              new java.lang.String[] { "AppId", "ClientId", "Locale", "VersionId", "Username", "Password", });
-          internal_static_Locale_descriptor =
-            getDescriptor().getMessageTypes().get(1);
-          internal_static_Locale_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_Locale_descriptor,
-              new java.lang.String[] { "Country", "Language", "Variant", });
-          internal_static_LoginResponse_descriptor =
-            getDescriptor().getMessageTypes().get(2);
-          internal_static_LoginResponse_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_LoginResponse_descriptor,
-              new java.lang.String[] { "SessionId", "Failed", "Message", });
-          internal_static_LogoutRequest_descriptor =
-            getDescriptor().getMessageTypes().get(3);
-          internal_static_LogoutRequest_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_LogoutRequest_descriptor,
-              new java.lang.String[] { "SessionId", });
-          internal_static_LogoutResponse_descriptor =
-            getDescriptor().getMessageTypes().get(4);
-          internal_static_LogoutResponse_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_LogoutResponse_descriptor,
-              new java.lang.String[] { "Failed", "Message", });
-          internal_static_HeartbeatRequest_descriptor =
-            getDescriptor().getMessageTypes().get(5);
-          internal_static_HeartbeatRequest_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_HeartbeatRequest_descriptor,
-              new java.lang.String[] { "Id", });
-          internal_static_HeartbeatResponse_descriptor =
-            getDescriptor().getMessageTypes().get(6);
-          internal_static_HeartbeatResponse_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_HeartbeatResponse_descriptor,
-              new java.lang.String[] { "Id", "Failed", "Message", });
-          internal_static_Instrument_descriptor =
-            getDescriptor().getMessageTypes().get(7);
-          internal_static_Instrument_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_Instrument_descriptor,
-              new java.lang.String[] { "Payload", });
-          internal_static_MarketDataRequest_descriptor =
-            getDescriptor().getMessageTypes().get(8);
-          internal_static_MarketDataRequest_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_MarketDataRequest_descriptor,
-              new java.lang.String[] { "SessionId", "Request", "StreamEvents", });
-          internal_static_MarketDataResponse_descriptor =
-            getDescriptor().getMessageTypes().get(9);
-          internal_static_MarketDataResponse_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_MarketDataResponse_descriptor,
-              new java.lang.String[] { "Id", "Failed", "Message", });
-          internal_static_LastUpdateRequest_descriptor =
-            getDescriptor().getMessageTypes().get(10);
-          internal_static_LastUpdateRequest_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_LastUpdateRequest_descriptor,
-              new java.lang.String[] { "SessionId", "Id", });
-          internal_static_LastUpdateResponse_descriptor =
-            getDescriptor().getMessageTypes().get(11);
-          internal_static_LastUpdateResponse_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_LastUpdateResponse_descriptor,
-              new java.lang.String[] { "Timestamp", "Failed", "Message", });
-          internal_static_CancelRequest_descriptor =
-            getDescriptor().getMessageTypes().get(12);
-          internal_static_CancelRequest_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_CancelRequest_descriptor,
-              new java.lang.String[] { "SessionId", "Id", });
-          internal_static_CancelResponse_descriptor =
-            getDescriptor().getMessageTypes().get(13);
-          internal_static_CancelResponse_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_CancelResponse_descriptor,
-              new java.lang.String[] { "Message", "Failed", });
-          internal_static_Event_descriptor =
-            getDescriptor().getMessageTypes().get(14);
-          internal_static_Event_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_Event_descriptor,
-              new java.lang.String[] { "Payload", });
-          internal_static_EventsRequest_descriptor =
-            getDescriptor().getMessageTypes().get(15);
-          internal_static_EventsRequest_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_EventsRequest_descriptor,
-              new java.lang.String[] { "SessionId", "Id", });
-          internal_static_EventsResponse_descriptor =
-            getDescriptor().getMessageTypes().get(16);
-          internal_static_EventsResponse_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_EventsResponse_descriptor,
-              new java.lang.String[] { "Id", "Payload", "Message", "Failed", });
-          internal_static_AllEventsRequest_descriptor =
-            getDescriptor().getMessageTypes().get(17);
-          internal_static_AllEventsRequest_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_AllEventsRequest_descriptor,
-              new java.lang.String[] { "SessionId", "Id", });
-          internal_static_AllEventsResponse_descriptor =
-            getDescriptor().getMessageTypes().get(18);
-          internal_static_AllEventsResponse_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_AllEventsResponse_descriptor,
-              new java.lang.String[] { "Events", "Message", "Failed", });
-          internal_static_SnapshotRequest_descriptor =
-            getDescriptor().getMessageTypes().get(19);
-          internal_static_SnapshotRequest_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_SnapshotRequest_descriptor,
-              new java.lang.String[] { "SessionId", "Instrument", "Content", "Provider", });
-          internal_static_SnapshotResponse_descriptor =
-            getDescriptor().getMessageTypes().get(20);
-          internal_static_SnapshotResponse_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_SnapshotResponse_descriptor,
-              new java.lang.String[] { "Payload", "Message", "Failed", });
-          internal_static_SnapshotPageRequest_descriptor =
-            getDescriptor().getMessageTypes().get(21);
-          internal_static_SnapshotPageRequest_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_SnapshotPageRequest_descriptor,
-              new java.lang.String[] { "SessionId", "Instrument", "Content", "Provider", "Page", });
-          internal_static_SnapshotPageResponse_descriptor =
-            getDescriptor().getMessageTypes().get(22);
-          internal_static_SnapshotPageResponse_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_SnapshotPageResponse_descriptor,
-              new java.lang.String[] { "Payload", "Message", "Failed", });
-          internal_static_PageRequest_descriptor =
-            getDescriptor().getMessageTypes().get(23);
-          internal_static_PageRequest_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_PageRequest_descriptor,
-              new java.lang.String[] { "Page", "Size", });
-          internal_static_AvailableCapabilityRequest_descriptor =
-            getDescriptor().getMessageTypes().get(24);
-          internal_static_AvailableCapabilityRequest_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_AvailableCapabilityRequest_descriptor,
-              new java.lang.String[] { "SessionId", });
-          internal_static_AvailableCapabilityResponse_descriptor =
-            getDescriptor().getMessageTypes().get(25);
-          internal_static_AvailableCapabilityResponse_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_AvailableCapabilityResponse_descriptor,
-              new java.lang.String[] { "Capability", "Message", "Failed", });
-          return null;
-        }
-      };
+        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
+          public com.google.protobuf.ExtensionRegistry assignDescriptors(
+              com.google.protobuf.Descriptors.FileDescriptor root) {
+            descriptor = root;
+            return null;
+          }
+        };
     com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
+    internal_static_LoginRequest_descriptor =
+      getDescriptor().getMessageTypes().get(0);
+    internal_static_LoginRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_LoginRequest_descriptor,
+        new java.lang.String[] { "AppId", "ClientId", "Locale", "VersionId", "Username", "Password", });
+    internal_static_Locale_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_Locale_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_Locale_descriptor,
+        new java.lang.String[] { "Country", "Language", "Variant", });
+    internal_static_LoginResponse_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_LoginResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_LoginResponse_descriptor,
+        new java.lang.String[] { "SessionId", "Failed", "Message", });
+    internal_static_LogoutRequest_descriptor =
+      getDescriptor().getMessageTypes().get(3);
+    internal_static_LogoutRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_LogoutRequest_descriptor,
+        new java.lang.String[] { "SessionId", });
+    internal_static_LogoutResponse_descriptor =
+      getDescriptor().getMessageTypes().get(4);
+    internal_static_LogoutResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_LogoutResponse_descriptor,
+        new java.lang.String[] { "Failed", "Message", });
+    internal_static_HeartbeatRequest_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_HeartbeatRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_HeartbeatRequest_descriptor,
+        new java.lang.String[] { "Id", });
+    internal_static_HeartbeatResponse_descriptor =
+      getDescriptor().getMessageTypes().get(6);
+    internal_static_HeartbeatResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_HeartbeatResponse_descriptor,
+        new java.lang.String[] { "Id", "Failed", "Message", });
+    internal_static_Instrument_descriptor =
+      getDescriptor().getMessageTypes().get(7);
+    internal_static_Instrument_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_Instrument_descriptor,
+        new java.lang.String[] { "Payload", });
+    internal_static_MarketDataRequest_descriptor =
+      getDescriptor().getMessageTypes().get(8);
+    internal_static_MarketDataRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_MarketDataRequest_descriptor,
+        new java.lang.String[] { "SessionId", "Request", "StreamEvents", });
+    internal_static_MarketDataResponse_descriptor =
+      getDescriptor().getMessageTypes().get(9);
+    internal_static_MarketDataResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_MarketDataResponse_descriptor,
+        new java.lang.String[] { "Id", "Failed", "Message", });
+    internal_static_LastUpdateRequest_descriptor =
+      getDescriptor().getMessageTypes().get(10);
+    internal_static_LastUpdateRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_LastUpdateRequest_descriptor,
+        new java.lang.String[] { "SessionId", "Id", });
+    internal_static_LastUpdateResponse_descriptor =
+      getDescriptor().getMessageTypes().get(11);
+    internal_static_LastUpdateResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_LastUpdateResponse_descriptor,
+        new java.lang.String[] { "Timestamp", "Failed", "Message", });
+    internal_static_CancelRequest_descriptor =
+      getDescriptor().getMessageTypes().get(12);
+    internal_static_CancelRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_CancelRequest_descriptor,
+        new java.lang.String[] { "SessionId", "Id", });
+    internal_static_CancelResponse_descriptor =
+      getDescriptor().getMessageTypes().get(13);
+    internal_static_CancelResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_CancelResponse_descriptor,
+        new java.lang.String[] { "Message", "Failed", });
+    internal_static_Event_descriptor =
+      getDescriptor().getMessageTypes().get(14);
+    internal_static_Event_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_Event_descriptor,
+        new java.lang.String[] { "Payload", });
+    internal_static_EventsRequest_descriptor =
+      getDescriptor().getMessageTypes().get(15);
+    internal_static_EventsRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_EventsRequest_descriptor,
+        new java.lang.String[] { "SessionId", "Id", });
+    internal_static_EventsResponse_descriptor =
+      getDescriptor().getMessageTypes().get(16);
+    internal_static_EventsResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_EventsResponse_descriptor,
+        new java.lang.String[] { "Id", "Payload", "Message", "Failed", });
+    internal_static_AllEventsRequest_descriptor =
+      getDescriptor().getMessageTypes().get(17);
+    internal_static_AllEventsRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_AllEventsRequest_descriptor,
+        new java.lang.String[] { "SessionId", "Id", });
+    internal_static_AllEventsResponse_descriptor =
+      getDescriptor().getMessageTypes().get(18);
+    internal_static_AllEventsResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_AllEventsResponse_descriptor,
+        new java.lang.String[] { "Events", "Message", "Failed", });
+    internal_static_SnapshotRequest_descriptor =
+      getDescriptor().getMessageTypes().get(19);
+    internal_static_SnapshotRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_SnapshotRequest_descriptor,
+        new java.lang.String[] { "SessionId", "Instrument", "Content", "Provider", });
+    internal_static_SnapshotResponse_descriptor =
+      getDescriptor().getMessageTypes().get(20);
+    internal_static_SnapshotResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_SnapshotResponse_descriptor,
+        new java.lang.String[] { "Payload", "Message", "Failed", });
+    internal_static_SnapshotPageRequest_descriptor =
+      getDescriptor().getMessageTypes().get(21);
+    internal_static_SnapshotPageRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_SnapshotPageRequest_descriptor,
+        new java.lang.String[] { "SessionId", "Instrument", "Content", "Provider", "Page", });
+    internal_static_SnapshotPageResponse_descriptor =
+      getDescriptor().getMessageTypes().get(22);
+    internal_static_SnapshotPageResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_SnapshotPageResponse_descriptor,
+        new java.lang.String[] { "Payload", "Message", "Failed", });
+    internal_static_PageRequest_descriptor =
+      getDescriptor().getMessageTypes().get(23);
+    internal_static_PageRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_PageRequest_descriptor,
+        new java.lang.String[] { "Page", "Size", });
+    internal_static_AvailableCapabilityRequest_descriptor =
+      getDescriptor().getMessageTypes().get(24);
+    internal_static_AvailableCapabilityRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_AvailableCapabilityRequest_descriptor,
+        new java.lang.String[] { "SessionId", });
+    internal_static_AvailableCapabilityResponse_descriptor =
+      getDescriptor().getMessageTypes().get(25);
+    internal_static_AvailableCapabilityResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_AvailableCapabilityResponse_descriptor,
+        new java.lang.String[] { "Capability", "Message", "Failed", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

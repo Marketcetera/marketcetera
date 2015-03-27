@@ -1,22 +1,52 @@
 package org.marketcetera.orderloader.system;
 
-import org.marketcetera.util.misc.ClassVersion;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.marketcetera.orderloader.system.InstrumentFromRow.FIELD_SECURITY_TYPE;
+import static org.marketcetera.orderloader.system.InstrumentFromRow.FIELD_SYMBOL;
+import static org.marketcetera.orderloader.system.OptionFromRow.FIELD_EXPIRY;
+import static org.marketcetera.orderloader.system.OptionFromRow.FIELD_OPTION_TYPE;
+import static org.marketcetera.orderloader.system.OptionFromRow.FIELD_STRIKE_PRICE;
+import static org.marketcetera.orderloader.system.SystemProcessor.FIELD_ACCOUNT;
+import static org.marketcetera.orderloader.system.SystemProcessor.FIELD_ORDER_CAPACITY;
+import static org.marketcetera.orderloader.system.SystemProcessor.FIELD_ORDER_TYPE;
+import static org.marketcetera.orderloader.system.SystemProcessor.FIELD_POSITION_EFFECT;
+import static org.marketcetera.orderloader.system.SystemProcessor.FIELD_PRICE;
+import static org.marketcetera.orderloader.system.SystemProcessor.FIELD_QUANTITY;
+import static org.marketcetera.orderloader.system.SystemProcessor.FIELD_SIDE;
+import static org.marketcetera.orderloader.system.SystemProcessor.FIELD_TIME_IN_FORCE;
+
+import java.math.BigDecimal;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.Test;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.orderloader.FailedOrderInfo;
+import org.marketcetera.orderloader.Messages;
+import org.marketcetera.orderloader.MockOrderProcessor;
+import org.marketcetera.orderloader.OrderParserTest;
+import org.marketcetera.orderloader.OrderParsingException;
+import org.marketcetera.orderloader.RowProcessor;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.Order;
+import org.marketcetera.trade.OrderCapacity;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.PositionEffect;
+import org.marketcetera.trade.SecurityType;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
+import org.marketcetera.trade.TypesTestBase;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.orderloader.*;
-import org.marketcetera.orderloader.Messages;
-import static org.marketcetera.orderloader.system.SystemProcessor.*;
-import static org.marketcetera.orderloader.system.InstrumentFromRow.*;
-import static org.marketcetera.orderloader.system.OptionFromRow.*;
-import org.marketcetera.trade.*;
-import org.marketcetera.module.ExpectedFailure;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.math.BigDecimal;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -28,10 +58,6 @@ import java.math.BigDecimal;
  */
 @ClassVersion("$Id$")
 public class SystemProcessorTest {
-    @BeforeClass
-    public static void setupLogger() {
-        LoggerConfiguration.logSetup();
-    }
     @Test
     public void constructor() throws Exception {
         //Order Processor cannot be null

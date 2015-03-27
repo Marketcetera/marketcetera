@@ -1,17 +1,19 @@
 package org.marketcetera.core;
 
-import junit.framework.Assert;
-import junit.framework.Test;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
-import java.util.HashMap;
+
+import junit.framework.Test;
+
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
+import org.marketcetera.quickfix.FIXVersion;
 
 /**
  * Extends the {@link MarketceteraTestSuite} to run the unit test
@@ -80,7 +82,7 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
                     addTestWithVersion(constructor, name, inVersions);
                 }
             } catch (Exception ex) {
-                Assert.fail("Creation of test suite LOGIN_FAILED: " + ex.getMessage()); //$NON-NLS-1$
+                fail("Creation of test suite LOGIN_FAILED: " + ex.getMessage()); //$NON-NLS-1$
             }
         }
     }

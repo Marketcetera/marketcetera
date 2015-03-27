@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
+
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.stateless.StatelessRemoteCaller;
 import org.marketcetera.util.ws.stateless.StatelessRemoteRunner;
@@ -26,6 +27,7 @@ import org.marketcetera.util.ws.wrappers.SerWrapper;
 
 /* $License$ */
 
+@SuppressWarnings("rawtypes")
 public class ServiceImpl
     extends StatelessServiceBaseImpl
     implements Service

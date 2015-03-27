@@ -12,7 +12,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -27,17 +26,6 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  */
 public class QueueProcessorTest
 {
-    /**
-     * Runs once before all tests.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @BeforeClass
-    public static void once()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Runs before each test.
      *

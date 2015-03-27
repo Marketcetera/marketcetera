@@ -5,12 +5,15 @@ import static org.marketcetera.client.instruments.OptionValidationHandler.valida
 
 import java.math.BigDecimal;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.client.OrderValidationException;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -24,11 +27,6 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class InstrumentValidationHandlerTest {
-    @BeforeClass
-    public static void logSetup() {
-        LoggerConfiguration.logSetup();
-    }
-
     @Test
     public void equity() throws Exception {
         Equity equity = new Equity("WIU");

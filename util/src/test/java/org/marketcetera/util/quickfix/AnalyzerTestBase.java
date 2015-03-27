@@ -1,12 +1,13 @@
 package org.marketcetera.util.quickfix;
 
 import java.util.Locale;
+
 import org.apache.commons.lang.SystemUtils;
-import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.test.TestCaseBase;
+
 import quickfix.DataDictionary;
 
 /**
@@ -56,7 +57,5 @@ public class AnalyzerTestBase
     public void setupAnalyzerTestBase()
     {
         ActiveLocale.setProcessLocale(Locale.ROOT);
-        setLevel(TEST_MESSAGE_CATEGORY,Level.ERROR);
-        setLevel(TEST_FIELD_CATEGORY,Level.ERROR);
     }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration shutdownHook="disable" monitorInterval="30">
+  <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d %-5p [%t] %C (%F:%L) - %m%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="warn" includeLocation="true">
+      <AppenderRef ref="STDOUT"/>
+    </Root>
+    <logger name="SINK" level="info"/>
+    <logger name="RpcMarketDataService" level="warn"/>
+    <logger name="RpcSAClientService" level="warn"/>
+  </Loggers>
+</Configuration>

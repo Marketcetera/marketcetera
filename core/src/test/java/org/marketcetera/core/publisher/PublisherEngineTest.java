@@ -1,19 +1,18 @@
 package org.marketcetera.core.publisher;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.BeforeClass;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
-import org.marketcetera.core.LoggerConfiguration;
 
-import java.util.Random;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Semaphore;
+
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Tests {@link PublisherEngine}.
@@ -25,13 +24,6 @@ import java.util.concurrent.Semaphore;
 public class PublisherEngineTest
 {
     private MockPublisher mPublisher;
-
-    @BeforeClass
-    public static void logSetup()
-    {
-        LoggerConfiguration.logSetup();
-    }
-    
    @Before
     public void setUp()
             throws Exception

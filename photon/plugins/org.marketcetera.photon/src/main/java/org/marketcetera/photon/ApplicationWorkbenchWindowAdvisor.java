@@ -3,7 +3,6 @@ package org.marketcetera.photon;
 import java.io.PrintStream;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -20,7 +19,6 @@ import org.eclipse.ui.internal.layout.ITrimManager;
 import org.eclipse.ui.internal.layout.IWindowTrim;
 import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.photon.actions.ReconnectServerJob;
 import org.marketcetera.photon.module.ui.ModuleUI;
 import org.marketcetera.photon.notification.NotificationConsoleController;
@@ -68,40 +66,29 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 		PhotonPlugin.getDefault().initOrderTickets();
 	}
 
-	@Override
-	public void postWindowOpen() {
-		PhotonConsole photonConsole =
-				new PhotonConsole(Messages.MainConsole_Name.getText(),
-						PhotonPlugin.MAIN_CONSOLE_LOGGER_NAME);
-		System.setOut(new PrintStream(photonConsole.getInfoMessageStream(), true));
-		System.setErr(new PrintStream(photonConsole.getErrorMessageStream(), true));
-
-		ConsolePlugin.getDefault().getConsoleManager()
-				.addConsoles(new IConsole[] { photonConsole });
-		ModuleUI.installSinkConsole();
-		new NotificationConsoleController().openConsole();
-
-		// activate the main console
-		photonConsole.activate();
-
-		// TODO: should remove the console appender during UI shutdown, see EG-711
-		PhotonPlugin.getMainConsoleLogger().addAppender(new PhotonConsoleAppender(photonConsole));
-		Logger.getLogger(org.marketcetera.core.Messages.USER_MSG_CATEGORY).addAppender(
-				new PhotonConsoleAppender(photonConsole));
-		Logger.getLogger(AbstractMarketDataFeed.DATAFEED_STATUS_MESSAGES).addAppender(
-				new PhotonConsoleAppender(photonConsole));
-
-		PhotonPlugin.getMainConsoleLogger().info(
-				ApplicationWorkbenchWindowAdvisor_ApplicationInitializing.getText(new Date()));
-
-		PhotonPlugin.getDefault().ensureDefaultProject(
-				ProgressManager.getInstance().getDefaultMonitor());
-        
-		// The login dialog interferes with testing, this check is to ensure tests are not being run
-		if (PlatformUI.getTestableObject().getTestHarness() == null) {
-		    startClient();
-		}
-		initStatusLine();
+    @Override
+    public void postWindowOpen()
+    {
+        PhotonConsole photonConsole = new PhotonConsole(Messages.MainConsole_Name.getText(),
+                                                        PhotonPlugin.MAIN_CONSOLE_LOGGER_NAME);
+        System.setOut(new PrintStream(photonConsole.getInfoMessageStream(),
+                                      true));
+        System.setErr(new PrintStream(photonConsole.getErrorMessageStream(),
+                                      true));
+        ConsolePlugin.getDefault().getConsoleManager().addConsoles(new IConsole[] { photonConsole });
+        ModuleUI.installSinkConsole();
+        new NotificationConsoleController().openConsole();
+        // activate the main console
+        photonConsole.activate();
+        PhotonConsoleAppender consoleLoggerAppender = new PhotonConsoleAppender(photonConsole);
+        consoleLoggerAppender.start();
+        PhotonPlugin.getMainConsoleLogger().info(ApplicationWorkbenchWindowAdvisor_ApplicationInitializing.getText(new Date()));
+        PhotonPlugin.getDefault().ensureDefaultProject(ProgressManager.getInstance().getDefaultMonitor());
+        // The login dialog interferes with testing, this check is to ensure tests are not being run
+        if (PlatformUI.getTestableObject().getTestHarness() == null) {
+            startClient();
+        }
+        initStatusLine();
 	}
 
 	/**

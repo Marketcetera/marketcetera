@@ -66,7 +66,6 @@ import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.BigDecimalUtils;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.AskEvent;
@@ -1586,7 +1585,6 @@ public class StrategyTestBase
     public static void once()
             throws Exception
     {
-        LoggerConfiguration.logSetup();
         try {
             ClientManager.setClientFactory(new MockClient.MockClientFactory());
             ClientManager.init(null);

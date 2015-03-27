@@ -1,17 +1,18 @@
 package org.marketcetera.util.file;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
+import static org.marketcetera.util.test.CollectionAssert.assertArrayPermutation;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Vector;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
-import static org.marketcetera.util.test.CollectionAssert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -78,7 +79,7 @@ public class SmartLinksDirectoryWalkerTest
             return mMaxDepth;
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("rawtypes")
         @Override
         protected boolean handleDirectory
             (File directory,
@@ -90,7 +91,7 @@ public class SmartLinksDirectoryWalkerTest
                     !".svn".equals(directory.getName()));
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         @Override
         protected void handleDirectoryStart
             (File directory,
@@ -106,7 +107,7 @@ public class SmartLinksDirectoryWalkerTest
             }
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         @Override
         protected void handleFile
             (File file,

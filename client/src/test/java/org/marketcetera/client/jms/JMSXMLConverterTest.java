@@ -1,22 +1,38 @@
 package org.marketcetera.client.jms;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.ws.tags.SessionId;
-import org.marketcetera.trade.*;
-import org.marketcetera.client.ClientTest;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.client.brokers.BrokerStatus;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
-import java.util.Map;
-import java.util.HashMap;
-import java.math.BigDecimal;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.client.ClientTest;
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.FIXResponse;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.TypesTestBase;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.tags.SessionId;
 
 /* $License$ */
 /**
@@ -31,7 +47,6 @@ public class JMSXMLConverterTest {
     @BeforeClass
     public static void setup() throws Exception {
         sConverter = new JMSXMLMessageConverter();
-        LoggerConfiguration.logSetup();
     }
     @Test
     public void verifyOrderSingle() throws Exception {

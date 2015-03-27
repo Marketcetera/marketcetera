@@ -1,20 +1,35 @@
 package org.marketcetera.orderloader.system;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.trade.*;
-import org.marketcetera.orderloader.OrderParsingException;
-import org.marketcetera.orderloader.Messages;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.core.LoggerConfiguration;
-import org.junit.Test;
-import org.junit.BeforeClass;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.util.*;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.Test;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.orderloader.Messages;
+import org.marketcetera.orderloader.OrderParsingException;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.OrderCapacity;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.PositionEffect;
+import org.marketcetera.trade.SecurityType;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -26,10 +41,6 @@ import java.math.BigDecimal;
  */
 @ClassVersion("$Id$")
 public class FieldProcessorTest {
-    @BeforeClass
-    public static void logSetup() {
-        LoggerConfiguration.logSetup();
-    }
     @Test
     public void account() throws Exception {
         AccountProcessor proc = new AccountProcessor(1);

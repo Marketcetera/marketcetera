@@ -3,12 +3,17 @@ package org.marketcetera.event.beans;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.DeliveryType;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
+import org.marketcetera.trade.FutureType;
+import org.marketcetera.trade.FutureUnderlyingAssetType;
+import org.marketcetera.trade.StandardType;
 
 /* $License$ */
 
@@ -21,17 +26,6 @@ import org.marketcetera.trade.*;
  */
 public class FutureBeanTest
 {
-    /**
-     * Run once before all tests.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @BeforeClass
-    public static void once()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Tests {@link FutureBean#copy(FutureBean)}.
      *

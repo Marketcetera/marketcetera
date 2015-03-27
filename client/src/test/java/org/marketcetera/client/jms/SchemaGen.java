@@ -1,16 +1,16 @@
 package org.marketcetera.client.jms;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.LoggerConfiguration;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
+
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -30,7 +30,6 @@ public class SchemaGen {
      * @param args the command line arguments.
      */
     public static void main(String[] args) {
-        LoggerConfiguration.logSetup();
         try {
             JMSXMLMessageConverter j = new JMSXMLMessageConverter();
             j.getContext().generateSchema(new SchemaOutputResolver() {

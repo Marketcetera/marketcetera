@@ -1,13 +1,15 @@
 package org.marketcetera.client;
 
+import javax.management.JMX;
+
+import org.junit.Test;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.ModuleCreationException;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleTestBase;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateless.Node;
-import org.marketcetera.module.*;
-import org.marketcetera.core.LoggerConfiguration;
-import org.junit.Test;
-import org.junit.BeforeClass;
-
-import javax.management.JMX;
 
 /* $License$ */
 /**
@@ -19,10 +21,6 @@ import javax.management.JMX;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class ModuleFailuresTest extends ModuleTestBase {
-    @BeforeClass
-    public static void setup() {
-        LoggerConfiguration.logSetup();
-    }
     @Test
     public void createModuleFailures() throws Exception {
         MockConfigurationProvider provider = new MockConfigurationProvider();

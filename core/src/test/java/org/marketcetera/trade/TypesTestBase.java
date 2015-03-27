@@ -1,27 +1,31 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.quickfix.*;
-import org.marketcetera.event.HasFIXMessage;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.fail;
-import org.junit.BeforeClass;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import quickfix.field.HandlInst;
-import quickfix.field.TransactTime;
-import quickfix.field.MsgType;
+import org.junit.BeforeClass;
+import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
+
+import quickfix.FieldNotFound;
+import quickfix.Message;
 import quickfix.field.ClOrdID;
-import quickfix.*;
+import quickfix.field.HandlInst;
+import quickfix.field.MsgType;
+import quickfix.field.TransactTime;
 
 /* $License$ */
 /**
@@ -40,7 +44,6 @@ public class TypesTestBase {
      */
     @BeforeClass
     public static void before() throws Exception {
-        LoggerConfiguration.logSetup();
         FIXDataDictionaryManager.initialize(FIXVersion.FIX_SYSTEM,
                 FIXVersion.FIX_SYSTEM.getDataDictionaryURL());
     }

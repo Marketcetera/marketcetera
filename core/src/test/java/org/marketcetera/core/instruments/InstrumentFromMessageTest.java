@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
@@ -55,7 +54,6 @@ public class InstrumentFromMessageTest {
     
     @BeforeClass
     public static void logSetup() throws Exception {
-        LoggerConfiguration.logSetup();
         FIXDataDictionaryManager.initialize(FIX_VERSION,
                 FIX_VERSION.getDataDictionaryURL());
     }

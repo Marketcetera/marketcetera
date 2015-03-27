@@ -1,20 +1,21 @@
 package org.marketcetera.module;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.test.UnicodeData;
-import org.marketcetera.core.LoggerConfiguration;
-import org.junit.Test;
-import org.junit.BeforeClass;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.net.URL;
-import java.math.BigInteger;
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.List;
+import java.math.BigInteger;
+import java.net.URL;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+
+import org.junit.Test;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.test.UnicodeData;
 
 /* $License$ */
 /**
@@ -24,10 +25,6 @@ import java.util.Properties;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class StringToTypeConvertTest {
-    @BeforeClass
-    public static void initLogger() {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Tests the {@link StringToTypeConverter#isSupported(String)} and
      *  {@link StringToTypeConverter#isSupported(Class)} API. 
@@ -228,7 +225,7 @@ public class StringToTypeConvertTest {
      *
      * @throws Exception if there were unexpected errors.
      */
-    private static void verifyConvertFail(final Class inType,
+    private static void verifyConvertFail(final Class<?> inType,
                                           final String inValue)
             throws Exception {
         new ExpectedFailure<IllegalArgumentException>(
@@ -254,7 +251,7 @@ public class StringToTypeConvertTest {
      * @param inValue the string value.
      * @param inExpected the expected value.
      */
-    private static void verifyConversion(Class inType,
+    private static void verifyConversion(Class<?> inType,
                                          String inValue,
                                          Object inExpected) {
         assertEquals(inExpected, StringToTypeConverter.convert(
@@ -268,7 +265,7 @@ public class StringToTypeConvertTest {
      *
      * @param inType if the specified java type is supported
      */
-    private static void assertSupported(Class inType) {
+    private static void assertSupported(Class<?> inType) {
         assertTrue(StringToTypeConverter.isSupported(inType));
         assertTrue(StringToTypeConverter.isSupported(inType.getName()));
     }
@@ -277,7 +274,7 @@ public class StringToTypeConvertTest {
      *
      * @param inType if the specified java type is not supported
      */
-    private static void assertNotSupported(Class inType) {
+    private static void assertNotSupported(Class<?> inType) {
         assertFalse(StringToTypeConverter.isSupported(inType));
         assertFalse(StringToTypeConverter.isSupported(inType.getName()));
     }

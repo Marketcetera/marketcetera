@@ -10,9 +10,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
@@ -38,17 +36,6 @@ import org.marketcetera.module.ExpectedFailure;
  */
 public class AbstractMarketDataProviderTest
 {
-    /**
-     * Run once before all tests.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @BeforeClass
-    public static void once()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Run before each test.
      *

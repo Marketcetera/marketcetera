@@ -7,7 +7,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
+
 import javax.jws.WebService;
+
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.stateless.StatelessServiceBase;
 import org.marketcetera.util.ws.wrappers.CompSerWrapper;
@@ -26,6 +28,7 @@ import org.marketcetera.util.ws.wrappers.SerWrapper;
 /* $License$ */
 
 @WebService
+@SuppressWarnings("rawtypes")
 public interface Service
     extends StatelessServiceBase
 {

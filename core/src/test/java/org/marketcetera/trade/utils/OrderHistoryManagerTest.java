@@ -1,28 +1,66 @@
 package org.marketcetera.trade.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.CollectionAssert;
 
 import quickfix.Message;
-import quickfix.field.*;
+import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.CxlRejResponseTo;
+import quickfix.field.ExecID;
+import quickfix.field.ExecType;
+import quickfix.field.LastPx;
+import quickfix.field.LastQty;
+import quickfix.field.LeavesQty;
+import quickfix.field.MsgSeqNum;
+import quickfix.field.MsgType;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
+import quickfix.field.OrderQty;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Price;
+import quickfix.field.SenderCompID;
+import quickfix.field.SendingTime;
 import quickfix.field.Side;
+import quickfix.field.Symbol;
+import quickfix.field.TargetCompID;
+import quickfix.field.TransactTime;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
@@ -47,7 +85,6 @@ public class OrderHistoryManagerTest
     public static void once()
             throws Exception
     {
-        LoggerConfiguration.logSetup();
         factory = Factory.getInstance();
         FIXDataDictionary dataDictionary = FIXDataDictionaryManager.getFIXDataDictionary(fixVersion);
         if(dataDictionary == null) {

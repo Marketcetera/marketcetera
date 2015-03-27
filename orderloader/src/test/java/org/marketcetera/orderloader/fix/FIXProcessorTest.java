@@ -1,30 +1,49 @@
 package org.marketcetera.orderloader.fix;
 
-import org.marketcetera.util.unicode.SignatureCharset;
-import static org.marketcetera.orderloader.Messages.*;
-import org.marketcetera.orderloader.*;
-import org.marketcetera.trade.Order;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.FIXOrder;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.core.LoggerConfiguration;
-import org.junit.Test;
-import org.junit.BeforeClass;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import quickfix.field.*;
-import quickfix.Message;
-import quickfix.Field;
+import static org.marketcetera.orderloader.Messages.PARSING_FIELD_NOT_IN_DICT;
+import static org.marketcetera.orderloader.Messages.PARSING_PRICE_POSITIVE;
+import static org.marketcetera.orderloader.Messages.PARSING_PRICE_VALID_NUM;
+import static org.marketcetera.orderloader.Messages.PARSING_QTY_INT;
+import static org.marketcetera.orderloader.Messages.PARSING_QTY_POS_INT;
 
-import java.util.List;
-import java.util.Vector;
-import java.util.Arrays;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+
+import org.junit.Test;
+import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.orderloader.FailedOrderInfo;
+import org.marketcetera.orderloader.MockOrderProcessor;
+import org.marketcetera.orderloader.OrderParser;
+import org.marketcetera.orderloader.OrderParsingException;
+import org.marketcetera.orderloader.RowProcessor;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.Order;
+import org.marketcetera.util.unicode.SignatureCharset;
+
+import quickfix.Field;
+import quickfix.Message;
+import quickfix.field.Account;
+import quickfix.field.HandlInst;
+import quickfix.field.MsgType;
+import quickfix.field.OrdType;
+import quickfix.field.OrderQty;
+import quickfix.field.Price;
+import quickfix.field.SenderSubID;
+import quickfix.field.Side;
+import quickfix.field.Signature;
+import quickfix.field.SignatureLength;
+import quickfix.field.Symbol;
+import quickfix.field.TimeInForce;
 
 /* $License$ */
 /**
@@ -36,10 +55,6 @@ import java.io.InputStream;
  * @since 1.0.0
  */
 public class FIXProcessorTest {
-    @BeforeClass
-    public static void setupLogger() {
-        LoggerConfiguration.logSetup();
-    }
     @Test
     public void getSide()
     {

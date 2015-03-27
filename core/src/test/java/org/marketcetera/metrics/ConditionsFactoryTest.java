@@ -1,18 +1,16 @@
 package org.marketcetera.metrics;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.misc.NamedThreadFactory;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.module.ExpectedFailure;
-import org.junit.Test;
-import org.junit.BeforeClass;
 import static org.junit.Assert.assertEquals;
 
-import java.util.concurrent.Callable;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
+import org.junit.Test;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -24,12 +22,6 @@ import java.util.HashMap;
  */
 @ClassVersion("$Id$")
 public class ConditionsFactoryTest {
-    
-    @BeforeClass
-    public static void setup() {
-        LoggerConfiguration.logSetup();
-    }
-
     /**
      * Tests expected failures.
      * @throws Exception if there were errors.
@@ -79,7 +71,7 @@ public class ConditionsFactoryTest {
             final int interval = j;
             final Callable<Boolean> condition = ConditionsFactory.
                     createSamplingCondition(interval, "sample");
-            List<ExceptionThread> threads = new LinkedList<ExceptionThread>();
+            List<ExceptionThread<?>> threads = new LinkedList<>();
             for(int i = 0; i < 20; i++) {
                 //Create a new thread instead of using a thread pool as
                 //thread reuse may lead to test failures.
@@ -101,11 +93,11 @@ public class ConditionsFactoryTest {
                 threads.add(thread);
             }
             //Start all the threads
-            for(ExceptionThread thread: threads) {
+            for(ExceptionThread<?> thread: threads) {
                 thread.start();
             }
             //Wait for all threads to end.
-            for(ExceptionThread thread: threads) {
+            for(ExceptionThread<?> thread: threads) {
                 assertEquals(maxIterations, thread.get());
             }
         }
