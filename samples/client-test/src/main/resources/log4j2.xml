@@ -6,11 +6,9 @@
     </Console>
   </Appenders>
   <Loggers>
-    <Root level="info" includeLocation="true">
+    <Root level="warn" includeLocation="true">
       <AppenderRef ref="STDOUT"/>
     </Root>
-    <logger name="SINK" level="info"/>
-    <logger name="RpcMarketDataService" level="warn"/>
-    <logger name="RpcSAClientService" level="warn"/>
+    <logger name="org.marketcetera.clienttest" level="info"/>
   </Loggers>
 </Configuration>

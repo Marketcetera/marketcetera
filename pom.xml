@@ -1021,6 +1021,7 @@
     <module>orderloader</module>
     <!-- Build strategy agent before photon. -->
     <module>saclient</module>
+    <module>samples</module>
     <module>strategyagent</module>
     <module>photon</module>
     <module>util</module>
