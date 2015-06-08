@@ -7,6 +7,7 @@ import static org.marketcetera.core.time.TimeFactoryImpl.YEAR;
 import java.math.BigDecimal;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.IllegalFieldValueException;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -127,8 +128,11 @@ public class OptionFromMessage extends InstrumentFromMessage {
                     //FIX version 4.2 uses MaturityDay to specify the option's expiry day once OSI goes into effect.
                     if(value.length() == 6 && inMessage.isSetField(MaturityDay.FIELD)) {
                         try {
-                            String day = inMessage.getString(MaturityDay.FIELD);
+                            String day = StringUtils.trimToNull(inMessage.getString(MaturityDay.FIELD));
                             if(day != null) {
+                                if(day.length() == 1) {
+                                    day = new StringBuilder().append('0').append(day).toString();
+                                }
                                 // we have Maturity Day, use that if we can. if it's invalid, don't use it.
                                 String valueWithDay = new StringBuilder().append(value).append(day).toString();
                                 // check to see if we've got a numeric expiry or something like 201411w2 instead

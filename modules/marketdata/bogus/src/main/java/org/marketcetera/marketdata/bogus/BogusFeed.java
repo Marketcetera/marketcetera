@@ -13,6 +13,7 @@ import static org.marketcetera.marketdata.Capability.MARKET_STAT;
 import static org.marketcetera.marketdata.Capability.OPEN_BOOK;
 import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.Capability.TOTAL_VIEW;
+import static org.marketcetera.marketdata.Capability.BBO10;
 import static org.marketcetera.marketdata.bogus.Messages.UNSUPPORTED_OPTION_SPECIFICATION;
 
 import java.util.ArrayList;
@@ -258,7 +259,7 @@ public class BogusFeed
     /**
      * capabilities for BogusFeed - note that these are not dynamic as Bogus requires no provisioning
      */
-    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,MARKET_STAT,DIVIDEND,EVENT_BOUNDARY));
+    private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,MARKET_STAT,DIVIDEND,EVENT_BOUNDARY,BBO10));
     /**
      * supported asset classes
      */
@@ -446,6 +447,11 @@ public class BogusFeed
                                 break;
                             case TOTAL_VIEW :
                                 // TOTAL_VIEW is depth-of-book from the specified exchange
+                                doDepthOfBook(exchangeRequest,
+                                              marketDataRequest.getExchange());
+                                break;
+                            case BBO10 :
+                                // BBO10 is depth-of-book from the specified exchange
                                 doDepthOfBook(exchangeRequest,
                                               marketDataRequest.getExchange());
                                 break;

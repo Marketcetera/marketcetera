@@ -5,7 +5,6 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -544,6 +543,9 @@ public class RpcClientImpl
     {
         RpcClient.HeartbeatRequest request = RpcClient.HeartbeatRequest.newBuilder().setId(System.nanoTime()).build();
         try {
+            if(clientService == null) {
+                throw new IllegalStateException();
+            }
             clientService.heartbeat(controller,
                                     request);
             return;
@@ -559,6 +561,10 @@ public class RpcClientImpl
     {
         return sessionId;
     }
+    private boolean initialized = false;
+    private DuplexTcpClientPipelineFactory clientFactory;
+    private PeerInfo server;
+    private Bootstrap bootstrap;
     /* (non-Javadoc)
      * @see org.marketcetera.client.ClientImpl#connectWebServices()
      */
@@ -570,30 +576,33 @@ public class RpcClientImpl
                                "Connecting to RPC server at {}:{}",
                                mParameters.getHostname(),
                                mParameters.getPort());
-        PeerInfo server = new PeerInfo(mParameters.getHostname(),
-                                       mParameters.getPort());
-        DuplexTcpClientPipelineFactory clientFactory = new DuplexTcpClientPipelineFactory();
-        executor = new ThreadPoolCallExecutor(1,
-                                              10);
-        clientFactory.setRpcServerCallExecutor(executor);
-        clientFactory.setConnectResponseTimeoutMillis(10000);
-        clientFactory.setCompression(true);
-        Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(new NioEventLoopGroup());
-        bootstrap.handler(clientFactory);
-        bootstrap.channel(NioSocketChannel.class);
-        bootstrap.option(ChannelOption.TCP_NODELAY,
-                         true);
-        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
-                         10000);
-        bootstrap.option(ChannelOption.SO_SNDBUF,
-                         1048576);
-        bootstrap.option(ChannelOption.SO_RCVBUF,
-                         1048576);
-        CategoryPerServiceLogger logger = new CategoryPerServiceLogger();
-        logger.setLogRequestProto(false);
-        logger.setLogResponseProto(false);
-        clientFactory.setRpcLogger(logger);
+        if(!initialized) {
+            server = new PeerInfo(mParameters.getHostname(),
+                                  mParameters.getPort());
+            clientFactory = new DuplexTcpClientPipelineFactory();
+            executor = new ThreadPoolCallExecutor(1,
+                                                  10);
+            clientFactory.setRpcServerCallExecutor(executor);
+            clientFactory.setConnectResponseTimeoutMillis(10000);
+            clientFactory.setCompression(true);
+            bootstrap = new Bootstrap();
+            bootstrap.group(new NioEventLoopGroup());
+            bootstrap.handler(clientFactory);
+            bootstrap.channel(NioSocketChannel.class);
+            bootstrap.option(ChannelOption.TCP_NODELAY,
+                             true);
+            bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
+                             10000);
+            bootstrap.option(ChannelOption.SO_SNDBUF,
+                             1048576);
+            bootstrap.option(ChannelOption.SO_RCVBUF,
+                             1048576);
+            CategoryPerServiceLogger logger = new CategoryPerServiceLogger();
+            logger.setLogRequestProto(false);
+            logger.setLogResponseProto(false);
+            clientFactory.setRpcLogger(logger);
+            initialized = true;
+        }
         try {
             channel = clientFactory.peerWith(server,
                                              bootstrap);
@@ -613,10 +622,14 @@ public class RpcClientImpl
             LoginResponse loginResponse = clientService.login(controller,
                                                               loginRequest);
             sessionId = new SessionId(loginResponse.getSessionId());
-        } catch (IOException | ServiceException e) {
+        } catch (Exception e) {
+            try {
+                stopRpcServices();
+            } catch (Exception ignored) {}
             throw new RemoteException(e);
         }
     }
+    
     /* (non-Javadoc)
      * @see org.marketcetera.client.ClientImpl#reconnectWebServices()
      */
@@ -684,18 +697,17 @@ public class RpcClientImpl
                 clientService.logout(controller,
                                      LogoutRequest.newBuilder().setSessionId(sessionId.getValue()).build());
             } catch (Exception ignored) {}
-            if(executor != null) {
-                try {
-                    executor.shutdownNow();
-                } catch (Exception ignored) {}
-            }
             if(channel != null) {
                 try {
                     channel.close();
                 } catch (Exception ignored) {}
             }
+            if(controller != null) {
+                try {
+                    controller.reset();
+                } catch (Exception ignored) {}
+            }
         } finally {
-            executor = null;
             controller = null;
             clientService = null;
             channel = null;

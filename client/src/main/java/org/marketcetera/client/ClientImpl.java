@@ -986,10 +986,22 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
         if(mToServer != null) {
             return;
         }
+        if(mTradeMessageListener != null && mTradeMessageListener.isRunning()) {
+            try {
+                mTradeMessageListener.stop();
+                mTradeMessageListener = null;
+            } catch (Exception ignored) {}
+        }
         mTradeMessageListener = mJmsMgr.getIncomingJmsFactory().registerHandlerTMX(new TradeMessageReceiver(),
                                                                                    JmsUtils.getReplyTopicName(getSessionId()),
                                                                                    true);
         mTradeMessageListener.start();
+        if(mBrokerStatusListener != null && mBrokerStatusListener.isRunning()) {
+            try {
+                mBrokerStatusListener.stop();
+                mBrokerStatusListener = null;
+            } catch (Exception ignored) {}
+        }
         mBrokerStatusListener = mJmsMgr.getIncomingJmsFactory().registerHandlerBSX(new BrokerStatusReceiver(),
                                                                                    Service.BROKER_STATUS_TOPIC,
                                                                                    true);

@@ -2,6 +2,7 @@ package org.marketcetera.marketdata.bogus;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.marketcetera.marketdata.Capability.BBO10;
 import static org.marketcetera.marketdata.Capability.DIVIDEND;
 import static org.marketcetera.marketdata.Capability.EVENT_BOUNDARY;
 import static org.marketcetera.marketdata.Capability.LATEST_TICK;
@@ -157,7 +158,7 @@ public class BogusFeedModuleTest
     @Override
     protected Capability[] getExpectedCapabilities()
     {
-        return new Capability[] { TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,MARKET_STAT,DIVIDEND,EVENT_BOUNDARY };
+        return new Capability[] { TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,MARKET_STAT,DIVIDEND,EVENT_BOUNDARY,BBO10 };
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataModuleTestBase#getUnexpectedCapability()
