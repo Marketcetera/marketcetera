@@ -126,6 +126,33 @@ public class InstrumentFromMessageTest {
         assertEquals(new ConvertibleBond("US013817AT86"),
                      InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
+    /**
+     * Tests an option with the expiry digit set to one digit.
+     *
+     * @throws Exception if an unexpected error occurs.
+     */
+    @Test
+    public void optionWithOneDigitDay()
+            throws Exception
+    {
+        Message m = FIX_VERSION.getMessageFactory().newBasicOrder();
+        m.setString(Symbol.FIELD,
+                    "NFLX  150306C00325000");
+        m.setString(SecurityType.FIELD,
+                    SecurityType.OPTION);
+        m.setInt(PutOrCall.FIELD,
+                 PutOrCall.CALL);
+        m.setDecimal(StrikePrice.FIELD,
+                     BigDecimal.TEN);
+        m.setString(MaturityMonthYear.FIELD,
+                    "201503");
+        m.setInt(MaturityDay.FIELD,
+                 6);
+        Instrument instrument = InstrumentFromMessage.SELECTOR.forValue(m).extract(m);
+        Option option = (Option) instrument;
+        assertEquals("20150306",
+                     option.getExpiry());
+    }
     @Test
     public void option() throws Exception {
         String expectedSymbol = "PQR";
