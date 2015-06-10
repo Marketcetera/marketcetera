@@ -61,6 +61,8 @@ public class TimeFactoryImpl
     public static final DateTimeFormatter MONTH = new DateTimeFormatterBuilder().appendMonthOfYear(2).toFormatter();
     public static final DateTimeFormatter DAY = new DateTimeFormatterBuilder().appendDayOfMonth(2).toFormatter();
     public static final DateTimeFormatter DASH = new DateTimeFormatterBuilder().appendLiteral('-').toFormatter();
+    public static final DateTimeFormatter SPACE = new DateTimeFormatterBuilder().appendLiteral(' ').toFormatter();
+    public static final DateTimeFormatter COMMA = new DateTimeFormatterBuilder().appendLiteral(',').toFormatter();
     public static final DateTimeFormatter COLON = new DateTimeFormatterBuilder().appendLiteral(':').toFormatter();
     public static final DateTimeFormatter PERIOD = new DateTimeFormatterBuilder().appendLiteral('.').toFormatter();
     public static final DateTimeFormatter SLASH = new DateTimeFormatterBuilder().appendLiteral('/').toFormatter();
