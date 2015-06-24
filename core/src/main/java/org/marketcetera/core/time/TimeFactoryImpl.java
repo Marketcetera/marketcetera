@@ -62,6 +62,8 @@ public class TimeFactoryImpl
     public static final DateTimeFormatter DAY = new DateTimeFormatterBuilder().appendDayOfMonth(2).toFormatter();
     public static final DateTimeFormatter DASH = new DateTimeFormatterBuilder().appendLiteral('-').toFormatter();
     public static final DateTimeFormatter SPACE = new DateTimeFormatterBuilder().appendLiteral(' ').toFormatter();
+    public static final DateTimeFormatter T = new DateTimeFormatterBuilder().appendLiteral('T').toFormatter();
+    public static final DateTimeFormatter Z = new DateTimeFormatterBuilder().appendLiteral('Z').toFormatter();
     public static final DateTimeFormatter COMMA = new DateTimeFormatterBuilder().appendLiteral(',').toFormatter();
     public static final DateTimeFormatter COLON = new DateTimeFormatterBuilder().appendLiteral(':').toFormatter();
     public static final DateTimeFormatter PERIOD = new DateTimeFormatterBuilder().appendLiteral('.').toFormatter();
@@ -72,6 +74,10 @@ public class TimeFactoryImpl
     public static final DateTimeFormatter US_DATE = new DateTimeFormatterBuilder().append(DAY).append(SLASH).append(MONTH).append(SLASH).append(YEAR).toFormatter();
     public static final DateTimeFormatter INTL_DATE = new DateTimeFormatterBuilder().append(MONTH).append(SLASH).append(DAY).append(SLASH).append(YEAR).toFormatter();
     public static final DateTimeFormatter MILLISECOND = new DateTimeFormatterBuilder().appendMillisOfSecond(3).toFormatter();
+    /**
+     * ISO9601 with millis
+     */
+    public static final DateTimeFormatter FULL_MILLISECONDS_CONDENSED = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(T).append(HOUR).append(MINUTE).append(SECOND).append(MILLISECOND).append(Z).toFormatter().withZone(ZONE);
     /**
      * full seconds: YYYYMMDD-HH:MM:SS in UTC
      */
@@ -105,5 +111,5 @@ public class TimeFactoryImpl
      * wallclock minutes: HH:MM
      */
     public static final DateTimeFormatter WALLCLOCK_MINUTES = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE).toFormatter().withZone(ZONE);
-    private static final DateTimeFormatter[] FORMATTERS = new DateTimeFormatter[] { FULL_SECONDS,WALLCLOCK_SECONDS,WALLCLOCK_MINUTES,US_DATE,INTL_DATE };
+    private static final DateTimeFormatter[] FORMATTERS = new DateTimeFormatter[] { FULL_SECONDS,WALLCLOCK_SECONDS,WALLCLOCK_MINUTES,US_DATE,INTL_DATE,FULL_MILLISECONDS_CONDENSED };
 }
