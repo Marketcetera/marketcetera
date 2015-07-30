@@ -549,6 +549,8 @@ public class RpcClientImpl
             clientService.heartbeat(controller,
                                     request);
             return;
+        } catch (IllegalStateException e) {
+            throw e;
         } catch (Exception e) {
             throw new RemoteException(e);
         }
