@@ -8,8 +8,10 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 
 /* $License$ */
@@ -27,7 +29,7 @@ public class MultiInstanceApplicationContainer
     {
         arguments = inArguments;
         String rawValue = StringUtils.trimToNull(System.getProperty("metc.total.instances"));
-        if(rawValue == null) {
+        if(rawValue != null) {
             try {
                 totalInstances = Integer.parseInt(rawValue);
             } catch (Exception ignored) {}
@@ -41,13 +43,29 @@ public class MultiInstanceApplicationContainer
         for(String argument : arguments) {
             System.out.println(argument);
         }
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run()
+            {
+                // TODO add shutdown message
+                SLF4JLoggerProxy.info(MultiInstanceApplicationContainer.class,
+                                      "Shutting down now");
+                try {
+                    killProcesses();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        });
         try {
+            prepareInstanceDir();
             for(int i=1;i<=totalInstances;i++) {
                 launchProcess(i);
             }
-            long start = System.currentTimeMillis();
-            while(System.currentTimeMillis()<start+5000) {
-                System.out.println(processInstances + " live instance(s)");
+            while(true) {
+                // TODO monitor processes, sleepy time
+                // TODO restart one if it dies?
                 Thread.sleep(500);
             }
         } catch (IOException | InterruptedException e) {
@@ -63,6 +81,24 @@ public class MultiInstanceApplicationContainer
     public static int getTotalInstances()
     {
         return totalInstances;
+    }
+    /**
+     * @throws InterruptedException 
+     * 
+     *
+     *
+     */
+    private static void killProcesses()
+            throws InterruptedException
+    {
+        for(Process process : processInstances.values()) {
+            try {
+                process.destroy();
+            } catch (Exception ignored) {}
+        }
+        for(Process process : processInstances.values()) {
+            process.waitFor();
+        }
     }
     private static String getJavaPath()
     {
@@ -114,6 +150,32 @@ public class MultiInstanceApplicationContainer
     {
         return System.getProperty("metc.mx");
     }
+    private static File getInstanceDir()
+    {
+        String appDir = getAppDir();
+        String instanceDir = System.getProperty("org.marketcetera.instanceDir");
+        File instanceDirFile = new File(appDir,
+                                        instanceDir);
+        return instanceDirFile;
+    }
+    private static void prepareInstanceDir()
+            throws IOException
+    {
+        File instanceDir = getInstanceDir();
+        System.out.println("Deleting instance dir");
+        FileUtils.deleteDirectory(instanceDir);
+        System.out.println("Done deleting instance dir");
+        FileUtils.forceMkdir(instanceDir);
+    }
+    private static void writeInstanceVariable(String inName,
+                                              String inValue,
+                                              File inFile)
+            throws IOException
+    {
+        FileUtils.write(inFile,
+                        inName+"="+inValue+System.lineSeparator(),
+                        true);
+    }
     private static void launchProcess(int inInstanceNumber)
             throws IOException
     {
@@ -121,13 +183,47 @@ public class MultiInstanceApplicationContainer
         String classpath = getClasspath();
         String appDir = getAppDir();
         String log4jConfigFile = getLog4jConfigFile();
+        File instanceDir = new File(getInstanceDir(),
+                                    "instance"+inInstanceNumber);
+        File instanceConfDir = new File(instanceDir,
+                                       File.separator+"conf");
+        FileUtils.copyDirectory(new File(appDir+File.separator+"conf"),instanceConfDir);
+        File instancePropertiesFile = new File(instanceConfDir,
+                                               File.separator + "instance.properties");
+        // write out instance props file
+        writeInstanceVariable("metc.rpc.port",
+                              String.valueOf(9000+inInstanceNumber-1),
+                              instancePropertiesFile);
+        writeInstanceVariable("metc.ws.port",
+                              String.valueOf(9100+inInstanceNumber-1),
+                              instancePropertiesFile);
+        writeInstanceVariable("metc.sa.rpc.port",
+                              String.valueOf(9200+inInstanceNumber-1),
+                              instancePropertiesFile);
+        writeInstanceVariable("metc.sa.ws.port",
+                              String.valueOf(9300+inInstanceNumber-1),
+                              instancePropertiesFile);
+        writeInstanceVariable("metc.cluster.port",
+                              String.valueOf(9400+inInstanceNumber-1),
+                              instancePropertiesFile);
+        writeInstanceVariable("metc.stomp.port",
+                              String.valueOf(9500+inInstanceNumber-1),
+                              instancePropertiesFile);
+        writeInstanceVariable("metc.jms.port",
+                              String.valueOf(9600+inInstanceNumber-1),
+                              instancePropertiesFile);
+        writeInstanceVariable("metc.sa.jms.port",
+                              String.valueOf(9700+inInstanceNumber-1),
+                              instancePropertiesFile);
+        // TODO figure out how to build the instance env from the current env, this will qllow adding new params and such w/o code changes
+        // TODO build instance dir with configs
         ProcessBuilder pb = new ProcessBuilder(javaPath,
                                                "-Xms"+getMinRam(),
                                                "-Xmx"+getMaxRam(),
                                                "-XX:MaxPermSize=1024m", // TODO this won't be needed for Java8
                                                "-cp",
                                                classpath,
-                                               "-Dorg.marketcetera.appDir="+appDir,
+                                               "-Dorg.marketcetera.appDir="+instanceDir,
                                                "-Dlog4j.configurationFile="+log4jConfigFile,
                                                "-Dmetc.instance="+String.valueOf(inInstanceNumber),
                                                "org.marketcetera.core.ApplicationContainer");
@@ -140,6 +236,7 @@ public class MultiInstanceApplicationContainer
 //        env.put("VAR2", env.get("VAR1") + "suffix");
 //        pb.directory(new File("myDir"));
         // TODO fails to start?
+        // TODO write log to correct directory
         File log = new File("log"+inInstanceNumber);
         pb.redirectErrorStream(true);
         pb.redirectOutput(Redirect.appendTo(log));
