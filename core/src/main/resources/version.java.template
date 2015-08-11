@@ -1,0 +1,10 @@
+package org.marketcetera.core;
+
+public final class Version
+{
+    public static final String build_number="@buildnumber@";
+    public static final String build_time="@buildtime@";
+    public static final String pomversion="@pomversion@";
+    public static final String build_repository="@buildrepository@";
+    public static final String build_path="@buildpath@";
+}
