@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -36,13 +37,13 @@ public class MultiInstanceApplicationContainer
         }
         Validate.isTrue(totalInstances >= 1,
                         "Invalid instance count: " + totalInstances);
-        for(Map.Entry<Object,Object> property : System.getProperties().entrySet()) {
-            System.out.println(property.getKey() + " " + property.getValue());
-        }
-        System.out.println("\n\nArguments:\n\n");
-        for(String argument : arguments) {
-            System.out.println(argument);
-        }
+//        for(Map.Entry<Object,Object> property : System.getProperties().entrySet()) {
+//            System.out.println(property.getKey() + " " + property.getValue());
+//        }
+//        System.out.println("\n\nArguments:\n\n");
+//        for(String argument : arguments) {
+//            System.out.println(argument);
+//        }
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run()
@@ -59,6 +60,7 @@ public class MultiInstanceApplicationContainer
             }
         });
         try {
+            prepareHostId();
             prepareInstanceDir();
             for(int i=1;i<=totalInstances;i++) {
                 launchProcess(i);
@@ -158,13 +160,32 @@ public class MultiInstanceApplicationContainer
                                         instanceDir);
         return instanceDirFile;
     }
+    private static String prepareHostId()
+            throws IOException
+    {
+        // TODO write out uniquely identifying host id file if one does not exist
+        // TODO lock? maybe delay a little on start for this reason
+        File instanceDir = getInstanceDir();
+        File hostFile = new File(instanceDir,
+                                 "host.txt");
+        String id = null;
+        if(hostFile.exists()) {
+            // this host has already been identified, return existing id
+            id = StringUtils.trimToNull(FileUtils.readFileToString(hostFile,
+                                                                   "UTF-8"));
+        }
+        if(id == null) {
+            id = UUID.randomUUID().toString();
+            FileUtils.write(hostFile,
+                            id);
+        }
+        return id;
+    }
     private static void prepareInstanceDir()
             throws IOException
     {
         File instanceDir = getInstanceDir();
-        System.out.println("Deleting instance dir");
         FileUtils.deleteDirectory(instanceDir);
-        System.out.println("Done deleting instance dir");
         FileUtils.forceMkdir(instanceDir);
     }
     private static void writeInstanceVariable(String inName,
@@ -176,13 +197,22 @@ public class MultiInstanceApplicationContainer
                         inName+"="+inValue+System.lineSeparator(),
                         true);
     }
-    private static void launchProcess(int inInstanceNumber)
-            throws IOException
+    private static void buildClusterMemberList()
     {
+        // TODO right now, we're coasting on multicast, but we need to identify the tcpip member list (host:port,host:port)
+    }
+    private static void launchProcess(int inInstanceNumber)
+            throws IOException, InterruptedException
+    {
+        SLF4JLoggerProxy.info(MultiInstanceApplicationContainer.class,
+                              "Launching instance {} of {}",
+                              inInstanceNumber,
+                              totalInstances);
         String javaPath = getJavaPath();
         String classpath = getClasspath();
         String appDir = getAppDir();
         String log4jConfigFile = getLog4jConfigFile();
+        String hostId = prepareHostId();
         File instanceDir = new File(getInstanceDir(),
                                     "instance"+inInstanceNumber);
         File instanceConfDir = new File(instanceDir,
@@ -215,6 +245,9 @@ public class MultiInstanceApplicationContainer
         writeInstanceVariable("metc.sa.jms.port",
                               String.valueOf(9700+inInstanceNumber-1),
                               instancePropertiesFile);
+        writeInstanceVariable("metc.cluster.tcpip.members",
+                              String.valueOf(9700+inInstanceNumber-1),
+                              instancePropertiesFile);
         // TODO figure out how to build the instance env from the current env, this will qllow adding new params and such w/o code changes
         // TODO build instance dir with configs
         ProcessBuilder pb = new ProcessBuilder(javaPath,
@@ -226,11 +259,13 @@ public class MultiInstanceApplicationContainer
                                                "-Dorg.marketcetera.appDir="+instanceDir,
                                                "-Dlog4j.configurationFile="+log4jConfigFile,
                                                "-Dmetc.instance="+String.valueOf(inInstanceNumber),
+                                               "-Dmetc.max.instances="+String.valueOf(getTotalInstances()),
+                                               "-Dmetc.host="+hostId,
                                                "org.marketcetera.core.ApplicationContainer");
         // TODO async thing for log4j
         // TODO cleanly transfer purt near everything to this env. this is to avoid having to make code changes to change how the instance is invoked.
-        Map<String,String> env = pb.environment();
-        System.out.println("Env: " + env);
+//        Map<String,String> env = pb.environment();
+//        System.out.println("Env: " + env);
 //        env.put("VAR1", "myValue");
 //        env.remove("OTHERVAR");
 //        env.put("VAR2", env.get("VAR1") + "suffix");
@@ -240,7 +275,7 @@ public class MultiInstanceApplicationContainer
         File log = new File("log"+inInstanceNumber);
         pb.redirectErrorStream(true);
         pb.redirectOutput(Redirect.appendTo(log));
-        System.out.println("Starting instance " + inInstanceNumber + " " + pb.toString());
+//        System.out.println("Starting instance " + inInstanceNumber + " " + pb.toString());
         Process p = pb.start();
         assert pb.redirectInput() == Redirect.PIPE;
         assert pb.redirectOutput().file() == log;
@@ -255,6 +290,7 @@ java -Xms384m -Xmx4096m -XX:MaxPermSize=1024m -Xloggc:dare_gc.out -server -Dorg.
  -cp "${THE_CLASSPATH}"\
  org.marketcetera.core.ApplicationContainer $* &
  */
+        Thread.sleep(1000);
     }
     private static Map<Integer,Process> processInstances = new HashMap<>();
     /**
