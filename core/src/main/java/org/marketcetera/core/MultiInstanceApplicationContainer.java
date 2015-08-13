@@ -245,11 +245,16 @@ public class MultiInstanceApplicationContainer
         writeInstanceVariable("metc.sa.jms.port",
                               String.valueOf(9700+inInstanceNumber-1),
                               instancePropertiesFile);
-        writeInstanceVariable("metc.cluster.tcpip.members",
-                              String.valueOf(9700+inInstanceNumber-1),
+        writeInstanceVariable("metc.acceptor.qf.port",
+                              String.valueOf(9800+inInstanceNumber-1),
                               instancePropertiesFile);
+        // TODO this is not right
+//        writeInstanceVariable("metc.cluster.tcpip.members",
+//                              String.valueOf(9700+inInstanceNumber-1),
+//                              instancePropertiesFile);
         // TODO figure out how to build the instance env from the current env, this will qllow adding new params and such w/o code changes
-        // TODO build instance dir with configs
+        // TODO go through this process env and add everything that begins with "metc.instance" to the new process (without "metc.instance"). this will allow
+        //  an arbitrary set of things to be passed to the new instances
         ProcessBuilder pb = new ProcessBuilder(javaPath,
                                                "-Xms"+getMinRam(),
                                                "-Xmx"+getMaxRam(),
