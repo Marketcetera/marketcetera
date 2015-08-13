@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -37,13 +39,6 @@ public class MultiInstanceApplicationContainer
         }
         Validate.isTrue(totalInstances >= 1,
                         "Invalid instance count: " + totalInstances);
-//        for(Map.Entry<Object,Object> property : System.getProperties().entrySet()) {
-//            System.out.println(property.getKey() + " " + property.getValue());
-//        }
-//        System.out.println("\n\nArguments:\n\n");
-//        for(String argument : arguments) {
-//            System.out.println(argument);
-//        }
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run()
@@ -144,13 +139,13 @@ public class MultiInstanceApplicationContainer
     {
         return System.getProperty("log4j.configurationFile");
     }
-    private static String getMinRam()
+    private static String getLogDir()
     {
-        return System.getProperty("metc.ms");
+        return System.getProperty("metc.logdir");
     }
-    private static String getMaxRam()
+    private static String getLogName()
     {
-        return System.getProperty("metc.mx");
+        return System.getProperty("metc.logname");
     }
     private static File getInstanceDir()
     {
@@ -197,9 +192,27 @@ public class MultiInstanceApplicationContainer
                         inName+"="+inValue+System.lineSeparator(),
                         true);
     }
-    private static void buildClusterMemberList()
+    private static String buildClusterMemberList()
     {
-        // TODO right now, we're coasting on multicast, but we need to identify the tcpip member list (host:port,host:port)
+        StringBuilder memberlist = new StringBuilder();
+        String rawMemberList = StringUtils.trimToNull(System.getProperty("metc.cluster.tcpip.members"));
+        if(rawMemberList != null) {
+            String[] members = rawMemberList.split(",");
+            String rawClusterPort = System.getProperty("metc.port.metc.cluster.port");
+            if(rawClusterPort == null) {
+                rawClusterPort = "9400";
+            }
+            int clusterPort = Integer.parseInt(rawClusterPort);
+            for(String member : members) {
+                for(int index=0;index<totalInstances;index++) {
+                    if(memberlist.length() != 0) {
+                        memberlist.append(',');
+                    }
+                    memberlist.append(member).append(':').append(clusterPort+index);
+                }
+            }
+        }
+        return memberlist.toString();
     }
     private static void launchProcess(int inInstanceNumber)
             throws IOException, InterruptedException
@@ -208,11 +221,7 @@ public class MultiInstanceApplicationContainer
                               "Launching instance {} of {}",
                               inInstanceNumber,
                               totalInstances);
-        String javaPath = getJavaPath();
-        String classpath = getClasspath();
         String appDir = getAppDir();
-        String log4jConfigFile = getLog4jConfigFile();
-        String hostId = prepareHostId();
         File instanceDir = new File(getInstanceDir(),
                                     "instance"+inInstanceNumber);
         File instanceConfDir = new File(instanceDir,
@@ -221,81 +230,69 @@ public class MultiInstanceApplicationContainer
         File instancePropertiesFile = new File(instanceConfDir,
                                                File.separator + "instance.properties");
         // write out instance props file
-        writeInstanceVariable("metc.rpc.port",
-                              String.valueOf(9000+inInstanceNumber-1),
+        for(Map.Entry<Object,Object> entry : System.getProperties().entrySet()) {
+            String key = String.valueOf(entry.getKey());
+            if(key.startsWith("metc.port.")) {
+                String value = String.valueOf(entry.getValue());
+                key = key.substring("metc.port.".length());
+                writeInstanceVariable(key,
+                                      String.valueOf(Integer.parseInt(value)+inInstanceNumber-1),
+                                      instancePropertiesFile);
+            }
+        }
+        writeInstanceVariable("metc.cluster.tcpip.members",
+                              buildClusterMemberList(),
                               instancePropertiesFile);
-        writeInstanceVariable("metc.ws.port",
-                              String.valueOf(9100+inInstanceNumber-1),
-                              instancePropertiesFile);
-        writeInstanceVariable("metc.sa.rpc.port",
-                              String.valueOf(9200+inInstanceNumber-1),
-                              instancePropertiesFile);
-        writeInstanceVariable("metc.sa.ws.port",
-                              String.valueOf(9300+inInstanceNumber-1),
-                              instancePropertiesFile);
-        writeInstanceVariable("metc.cluster.port",
-                              String.valueOf(9400+inInstanceNumber-1),
-                              instancePropertiesFile);
-        writeInstanceVariable("metc.stomp.port",
-                              String.valueOf(9500+inInstanceNumber-1),
-                              instancePropertiesFile);
-        writeInstanceVariable("metc.jms.port",
-                              String.valueOf(9600+inInstanceNumber-1),
-                              instancePropertiesFile);
-        writeInstanceVariable("metc.sa.jms.port",
-                              String.valueOf(9700+inInstanceNumber-1),
-                              instancePropertiesFile);
-        writeInstanceVariable("metc.acceptor.qf.port",
-                              String.valueOf(9800+inInstanceNumber-1),
-                              instancePropertiesFile);
-        // TODO this is not right
-//        writeInstanceVariable("metc.cluster.tcpip.members",
-//                              String.valueOf(9700+inInstanceNumber-1),
-//                              instancePropertiesFile);
-        // TODO figure out how to build the instance env from the current env, this will qllow adding new params and such w/o code changes
-        // TODO go through this process env and add everything that begins with "metc.instance" to the new process (without "metc.instance"). this will allow
-        //  an arbitrary set of things to be passed to the new instances
-        ProcessBuilder pb = new ProcessBuilder(javaPath,
-                                               "-Xms"+getMinRam(),
-                                               "-Xmx"+getMaxRam(),
-                                               "-XX:MaxPermSize=1024m", // TODO this won't be needed for Java8
-                                               "-cp",
-                                               classpath,
-                                               "-Dorg.marketcetera.appDir="+instanceDir,
-                                               "-Dlog4j.configurationFile="+log4jConfigFile,
-                                               "-Dmetc.instance="+String.valueOf(inInstanceNumber),
-                                               "-Dmetc.max.instances="+String.valueOf(getTotalInstances()),
-                                               "-Dmetc.host="+hostId,
-                                               "org.marketcetera.core.ApplicationContainer");
-        // TODO async thing for log4j
-        // TODO cleanly transfer purt near everything to this env. this is to avoid having to make code changes to change how the instance is invoked.
-//        Map<String,String> env = pb.environment();
-//        System.out.println("Env: " + env);
-//        env.put("VAR1", "myValue");
-//        env.remove("OTHERVAR");
-//        env.put("VAR2", env.get("VAR1") + "suffix");
-//        pb.directory(new File("myDir"));
+        String[] arguments = builderProcessArgumentList(inInstanceNumber,
+                                                        instanceDir.getAbsolutePath());
+        ProcessBuilder pb = new ProcessBuilder(arguments);
         // TODO fails to start?
-        // TODO write log to correct directory
-        File log = new File("log"+inInstanceNumber);
+        File log = new File(getLogDir(),
+                            getLogName()+inInstanceNumber+".log");
         pb.redirectErrorStream(true);
         pb.redirectOutput(Redirect.appendTo(log));
-//        System.out.println("Starting instance " + inInstanceNumber + " " + pb.toString());
         Process p = pb.start();
         assert pb.redirectInput() == Redirect.PIPE;
         assert pb.redirectOutput().file() == log;
         assert p.getInputStream().read() == -1;
         processInstances.put(inInstanceNumber,
                              p);
-/*
-java -Xms384m -Xmx4096m -XX:MaxPermSize=1024m -Xloggc:dare_gc.out -server -Dorg.marketcetera.appDir=${METC_HOME}/${APPLICATION_DIR}\
- -XX:+UseParallelGC -XX:+AggressiveOpts -XX:+UseFastAccessorMethods\
- -Dlog4j.configurationFile=${METC_HOME}/${APPLICATION_DIR}/conf/log4j2.xml\
- -DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector\
- -cp "${THE_CLASSPATH}"\
- org.marketcetera.core.ApplicationContainer $* &
- */
         Thread.sleep(1000);
+    }
+    /**
+     *
+     *
+     * @param inInstanceDir 
+     * @return
+     * @throws IOException 
+     */
+    private static String[] builderProcessArgumentList(int inInstanceNumber,
+                                                       String inInstanceDirName)
+            throws IOException
+    {
+        List<String> arguments = new ArrayList<>();
+        arguments.add(getJavaPath());
+        arguments.add("-classpath");
+        arguments.add(getClasspath());
+        for(Map.Entry<Object,Object> entry : System.getProperties().entrySet()) {
+            String key = String.valueOf(entry.getKey());
+            if(key.startsWith("metc.instance.")) {
+                String value = String.valueOf(entry.getValue());
+                key = key.substring("metc.instance.".length());
+                if(key.startsWith("X")) {
+                    arguments.add("-X" + key.substring(1) + value);
+                } else {
+                    arguments.add("-D" + key + "=" + value);
+                }
+            }
+        }
+        arguments.add("-Dmetc.instance=" + inInstanceNumber);
+        arguments.add("-Dmetc.max.instances="+String.valueOf(getTotalInstances()));
+        arguments.add("-Dmetc.host="+prepareHostId());
+        arguments.add("-D"+ApplicationBase.APP_DIR_PROP+"="+inInstanceDirName);
+        arguments.add("-Dlog4j.configurationFile=" + getLog4jConfigFile());
+        arguments.add(ApplicationContainer.class.getCanonicalName());
+        return arguments.toArray(new String[arguments.size()]);
     }
     private static Map<Integer,Process> processInstances = new HashMap<>();
     /**
