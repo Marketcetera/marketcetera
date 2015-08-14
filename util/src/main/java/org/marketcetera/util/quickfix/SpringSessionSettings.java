@@ -74,7 +74,6 @@ public class SpringSessionSettings
     private SessionSettings mQSettings;
     private LogFactory mQLogFactory;
     private MessageStoreFactory mQMessageStoreFactory;
-    private int instanceNumber;
 
 
     // INSTANCE METHODS.
@@ -172,24 +171,6 @@ public class SpringSessionSettings
     {
         ensureProcessed();
         return mQMessageStoreFactory;
-    }
-    /**
-     * Get the instanceNumber value.
-     *
-     * @return an <code>int</code> value
-     */
-    public int getInstance()
-    {
-        return instanceNumber;
-    }
-    /**
-     * Sets the instanceNumber value.
-     *
-     * @param an <code>int</code> value
-     */
-    public void setInstance(int inInstanceNumber)
-    {
-        instanceNumber = inInstanceNumber;
     }
 
     // LazyBean.
