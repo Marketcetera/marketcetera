@@ -6,6 +6,7 @@ import java.lang.ProcessBuilder.Redirect;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-
 
 /* $License$ */
 
@@ -217,10 +217,6 @@ public class MultiInstanceApplicationContainer
     private static void launchProcess(int inInstanceNumber)
             throws IOException, InterruptedException
     {
-        SLF4JLoggerProxy.info(MultiInstanceApplicationContainer.class,
-                              "Launching instance {} of {}",
-                              inInstanceNumber,
-                              totalInstances);
         String appDir = getAppDir();
         File instanceDir = new File(getInstanceDir(),
                                     "instance"+inInstanceNumber);
@@ -245,6 +241,15 @@ public class MultiInstanceApplicationContainer
                               instancePropertiesFile);
         String[] arguments = builderProcessArgumentList(inInstanceNumber,
                                                         instanceDir.getAbsolutePath());
+        SLF4JLoggerProxy.info(STARTUP_CATEGORY,
+                              "Launching instance {} of {}",
+                              inInstanceNumber,
+                              totalInstances);
+        SLF4JLoggerProxy.info(MultiInstanceApplicationContainer.class,
+                              "Launching instance {} of {} with {}",
+                              inInstanceNumber,
+                              totalInstances,
+                              Arrays.toString(arguments));
         ProcessBuilder pb = new ProcessBuilder(arguments);
         // TODO fails to start?
         File log = new File(getLogDir(),
@@ -294,6 +299,9 @@ public class MultiInstanceApplicationContainer
         arguments.add(ApplicationContainer.class.getCanonicalName());
         return arguments.toArray(new String[arguments.size()]);
     }
+    /**
+     * 
+     */
     private static Map<Integer,Process> processInstances = new HashMap<>();
     /**
      * 
@@ -303,4 +311,8 @@ public class MultiInstanceApplicationContainer
      * arguments passed to the cmd line
      */
     private static String[] arguments;
+    /**
+     * 
+     */
+    public static final String STARTUP_CATEGORY = "metc.startup";
 }
