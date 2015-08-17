@@ -20,7 +20,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 /* $License$ */
 
 /**
- *
+ * Launches multiple {@link ApplicationContainer} instances.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -28,6 +28,11 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  */
 public class MultiInstanceApplicationContainer
 {
+    /**
+     * Main application routine.
+     *
+     * @param inArguments a <code>String[]</code> value
+     */
     public static void main(String[] inArguments)
     {
         arguments = inArguments;
@@ -80,10 +85,9 @@ public class MultiInstanceApplicationContainer
         return totalInstances;
     }
     /**
-     * @throws InterruptedException 
-     * 
+     * Kills all launched processes.
      *
-     *
+     * @throws InterruptedException if the method is interrupted while waiting for the processes to end
      */
     private static void killProcesses()
             throws InterruptedException
@@ -97,6 +101,11 @@ public class MultiInstanceApplicationContainer
             process.waitFor();
         }
     }
+    /**
+     * Gets the Java executable path to use.
+     *
+     * @return a <code>String</code> value
+     */
     private static String getJavaPath()
     {
         String javaHome = StringUtils.trimToNull(System.getProperty("java.home"));
@@ -117,6 +126,11 @@ public class MultiInstanceApplicationContainer
                         javaPath + " must exist and be executable");
         return javaPath.toString();
     }
+    /**
+     * Gets the Java classpath to use.
+     *
+     * @return a <code>String</code> value
+     */
     private static String getClasspath()
     {
         StringBuilder classpath = new StringBuilder();
@@ -133,7 +147,7 @@ public class MultiInstanceApplicationContainer
     }
     private static String getAppDir()
     {
-        return System.getProperty("org.marketcetera.appDir");
+        return System.getProperty(ApplicationBase.APP_DIR_PROP);
     }
     private static String getLog4jConfigFile()
     {
@@ -155,11 +169,17 @@ public class MultiInstanceApplicationContainer
                                         instanceDir);
         return instanceDirFile;
     }
+    /**
+     * Prepares and retrieves the host id for this host.
+     * 
+     * <p>Caller must guarantee that two instances do not call this method at the same time.
+     *
+     * @return a <code>String</code> value
+     * @throws IOException if an error occurs creating or retrieving the host id
+     */
     private static String prepareHostId()
             throws IOException
     {
-        // TODO write out uniquely identifying host id file if one does not exist
-        // TODO lock? maybe delay a little on start for this reason
         File instanceDir = getInstanceDir();
         File hostFile = new File(instanceDir,
                                  "host.txt");
@@ -188,6 +208,11 @@ public class MultiInstanceApplicationContainer
                                               File inFile)
             throws IOException
     {
+        SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                               "Writing {}={} to {}",
+                               inName,
+                               inValue,
+                               inFile);
         FileUtils.write(inFile,
                         inName+"="+inValue+System.lineSeparator(),
                         true);
@@ -214,6 +239,13 @@ public class MultiInstanceApplicationContainer
         }
         return memberlist.toString();
     }
+    /**
+     * Launches the process with the given instance number.
+     *
+     * @param inInstanceNumber an <code>int</code> value
+     * @throws IOException if an error occurs launching the process
+     * @throws InterruptedException if the method is interrupted
+     */
     private static void launchProcess(int inInstanceNumber)
             throws IOException, InterruptedException
     {
@@ -281,12 +313,31 @@ public class MultiInstanceApplicationContainer
         arguments.add(getClasspath());
         for(Map.Entry<Object,Object> entry : System.getProperties().entrySet()) {
             String key = String.valueOf(entry.getKey());
+            if(key.startsWith("metc.instanceport.")) {
+                String value = String.valueOf(entry.getValue());
+                key = key.substring("metc.instanceport.".length());
+                value = String.valueOf(Integer.parseInt(value) + inInstanceNumber -1);
+                SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                                       "Adding -D{}={}",
+                                       key,
+                                       value);
+                arguments.add("-D" + key + "=" + value);
+            }
             if(key.startsWith("metc.instance.")) {
                 String value = String.valueOf(entry.getValue());
                 key = key.substring("metc.instance.".length());
                 if(key.startsWith("X")) {
-                    arguments.add("-X" + key.substring(1) + value);
+                    key = key.substring(1);
+                    SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                                           "Adding -X{}={}",
+                                           key,
+                                           value);
+                    arguments.add("-X" + key + value);
                 } else {
+                    SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                                           "Adding -D{}={}",
+                                           key,
+                                           value);
                     arguments.add("-D" + key + "=" + value);
                 }
             }
@@ -310,6 +361,7 @@ public class MultiInstanceApplicationContainer
     /**
      * arguments passed to the cmd line
      */
+    @SuppressWarnings("unused")
     private static String[] arguments;
     /**
      * 
