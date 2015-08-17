@@ -110,6 +110,11 @@
       <artifactId>log4j-api</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-c3p0</artifactId>
+      <scope>compile</scope>
+     </dependency>       
     <!-- runtime -->
     <dependency>
       <groupId>com.lmax</groupId>
