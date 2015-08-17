@@ -221,9 +221,6 @@ public class SystemMonitor
      */
     private void summary()
     {
-        System.out.println("freeMemory: " + Runtime.getRuntime().freeMemory());
-        System.out.println("maxMemory: " + Runtime.getRuntime().maxMemory());
-        System.out.println("totalMemory: " + Runtime.getRuntime().totalMemory());
         SLF4JLoggerProxy.info(this,
                               "{} {} {} {} processors {} max heap RAM",
                               osMBean.getName(),
