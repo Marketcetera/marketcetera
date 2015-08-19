@@ -313,32 +313,42 @@ public class MultiInstanceApplicationContainer
         arguments.add(getClasspath());
         for(Map.Entry<Object,Object> entry : System.getProperties().entrySet()) {
             String key = String.valueOf(entry.getKey());
+            String value = entry.getValue() == null ? null : StringUtils.trimToNull((String)entry.getValue());
+            StringBuilder statement = new StringBuilder();
             if(key.startsWith("metc.instanceport.")) {
-                String value = String.valueOf(entry.getValue());
                 key = key.substring("metc.instanceport.".length());
-                value = String.valueOf(Integer.parseInt(value) + inInstanceNumber -1);
+                statement.append("-D").append(key);
+                if(value != null) {
+                    value = String.valueOf(Integer.parseInt(value) + inInstanceNumber -1);
+                    statement.append('=').append(value);
+                }
                 SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
-                                       "Adding -D{}={}",
-                                       key,
-                                       value);
-                arguments.add("-D" + key + "=" + value);
+                                       "Adding {}",
+                                       statement);
+                arguments.add(statement.toString());
+                continue;
             }
             if(key.startsWith("metc.instance.")) {
-                String value = String.valueOf(entry.getValue());
                 key = key.substring("metc.instance.".length());
                 if(key.startsWith("X")) {
                     key = key.substring(1);
+                    statement.append("-X").append(key);
+                    if(value != null) {
+                        statement.append('=').append(value);
+                    }
                     SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
-                                           "Adding -X{}={}",
-                                           key,
-                                           value);
-                    arguments.add("-X" + key + value);
+                                           "Adding {}",
+                                           statement);
+                    arguments.add(statement.toString());
                 } else {
+                    statement.append("-D").append(key);
+                    if(value != null) {
+                        statement.append('=').append(value);
+                    }
                     SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
-                                           "Adding -D{}={}",
-                                           key,
-                                           value);
-                    arguments.add("-D" + key + "=" + value);
+                                           "Adding {}",
+                                           statement);
+                    arguments.add(statement.toString());
                 }
             }
         }
