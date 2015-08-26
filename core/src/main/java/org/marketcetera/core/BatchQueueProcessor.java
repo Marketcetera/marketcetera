@@ -48,6 +48,8 @@ public abstract class BatchQueueProcessor<Clazz>
             super.getQueue().drainTo(objectQueue);
         }
         synchronized(objectQueue) {
+            // use size-1 because the parent has already incremented the marker
+            processQueueMetric.mark(objectQueue.size()-1);
             processData(objectQueue);
             objectQueue.clear();
         }
@@ -60,7 +62,7 @@ public abstract class BatchQueueProcessor<Clazz>
     protected void add(Clazz inData)
     {
         synchronized(queueLock) {
-            super.getQueue().add(inData);
+            super.add(inData);
         }
     }
     /**
@@ -71,7 +73,7 @@ public abstract class BatchQueueProcessor<Clazz>
     protected void addAll(Collection<Clazz> inData)
     {
         synchronized(queueLock) {
-            super.getQueue().addAll(inData);
+            super.addAll(inData);
         }
     }
     /* (non-Javadoc)

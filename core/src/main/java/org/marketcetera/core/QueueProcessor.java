@@ -1,13 +1,24 @@
 package org.marketcetera.core;
 
+import static com.codahale.metrics.MetricRegistry.name;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.marketcetera.metrics.MetricService;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.Lifecycle;
+
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 
 /* $License$ */
 
@@ -48,6 +59,33 @@ public abstract class QueueProcessor<Clazz>
                                           threadDescriptor);
             throw new RuntimeException(e);
         }
+        String metricName = name(getClass(),
+                                 threadDescriptor,
+                                 "sizeHistogram");
+        queueSizeMetric = metrics.histogram(metricName);
+        metricNames.add(metricName);
+        metricName = name(getClass(),
+                          threadDescriptor,
+                          "sizeGauge");
+        metrics.register(metricName,
+                         new Gauge<Integer>() {
+            @Override
+            public Integer getValue()
+            {
+                return queue.size();
+            }
+        });
+        metricNames.add(metricName);
+        metricName = name(getClass().getName(),
+                          threadDescriptor,
+                          "addMeter");
+        addToQueueMetric =  metrics.meter(metricName);
+        metricNames.add(metricName);
+        metricName = MetricRegistry.name(getClass().getName(),
+                                         threadDescriptor,
+                                         "processMeter");
+        processQueueMetric =  metrics.meter(metricName);
+        metricNames.add(metricName);
         keepAlive.set(true);
         thread = new Thread(this,
                             threadDescriptor);
@@ -77,6 +115,11 @@ public abstract class QueueProcessor<Clazz>
                 thread.join();
             } catch (InterruptedException ignored) {}
         }
+        for(String metricName : metricNames) {
+            try {
+                metrics.remove(metricName);
+            } catch (Exception ignored) {}
+        }
     }
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()
@@ -91,7 +134,9 @@ public abstract class QueueProcessor<Clazz>
                                   threadDescriptor);
             while(keepAlive.get()) {
                 try {
+                    queueSizeMetric.update(queue.size());
                     Clazz dataObject = queue.take();
+                    processQueueMetric.mark();
                     processData(dataObject);
                 } catch (InterruptedException e) {
                     throw e;
@@ -123,7 +168,38 @@ public abstract class QueueProcessor<Clazz>
         }
     }
     /**
+     * Gets the queue size.
+     *
+     * @return an <code>int</code> value
+     */
+    protected int getQueueSize()
+    {
+        return queue.size();
+    }
+    /**
+     * Adds the given object to the processing queue.
+     *
+     * @param inData a <code>Clazz</code> value
+     */
+    protected void add(Clazz inData)
+    {
+        addToQueueMetric.mark();
+        queue.add(inData);
+    }
+    /**
+     * Adds all the given objects to the processing queue.
+     *
+     * @param inData a <code>Collection&lt;Clazz&gt;</code> value
+     */
+    protected void addAll(Collection<Clazz> inData)
+    {
+        addToQueueMetric.mark(inData.size());
+        queue.addAll(inData);
+    }
+    /**
      * Gets the queue to process.
+     * 
+     * <p>This method should not be used to add elements to the queue, use {@link #add} instead.
      *
      * @return a <code>BlockingQueue&lt;Clazz&gt;</code> value
      */
@@ -208,6 +284,7 @@ public abstract class QueueProcessor<Clazz>
         }
         queue = new LinkedBlockingDeque<Clazz>();
         threadDescriptor = inThreadDescriptor;
+        metrics = MetricService.getInstance().getMetrics();
     }
     /**
      * last exception thrown during data processing or <code>null</code>
@@ -237,4 +314,24 @@ public abstract class QueueProcessor<Clazz>
      * describes the thread
      */
     private final String threadDescriptor;
+    /**
+     * meter for measuring the processing rate of the queue
+     */
+    protected Meter processQueueMetric;
+    /**
+     * meter for measuring the addition rate to the queue
+     */
+    private Meter addToQueueMetric;
+    /**
+     * histogram for measuring the queue size over time
+     */
+    private Histogram queueSizeMetric;
+    /**
+     * main metrics object
+     */
+    private final MetricRegistry metrics;
+    /**
+     * holds the names of the metrics used
+     */
+    private final Set<String> metricNames = new HashSet<>();
 }

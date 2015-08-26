@@ -772,9 +772,10 @@ public class MarketDataManagerImpl
              *
              * @param inData a <code>Pair&lt;MarketDataRequestAtom,Event&gt;</code> value
              */
-            private void add(Pair<MarketDataRequestAtom,Event> inData)
+            @Override
+            protected void add(Pair<MarketDataRequestAtom,Event> inData)
             {
-                getQueue().add(inData);
+                super.add(inData);
             }
             /**
              * symbols that have already been mapped

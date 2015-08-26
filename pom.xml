@@ -257,6 +257,11 @@
       </dependency>
       <!-- Compile: Other -->
       <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>3.1.2</version>
+      </dependency>
+      <dependency>
         <groupId>com.hazelcast</groupId>
         <artifactId>hazelcast</artifactId>
         <version>3.3</version>
