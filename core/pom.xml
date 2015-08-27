@@ -115,6 +115,10 @@
       <artifactId>hibernate-c3p0</artifactId>
       <scope>compile</scope>
      </dependency>       
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+    </dependency>
     <!-- runtime -->
     <dependency>
       <groupId>com.lmax</groupId>
