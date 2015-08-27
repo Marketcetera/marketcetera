@@ -49,7 +49,9 @@ public abstract class BatchQueueProcessor<Clazz>
         }
         synchronized(objectQueue) {
             // use size-1 because the parent has already incremented the marker
-            processQueueMetric.mark(objectQueue.size()-1);
+            int size = objectQueue.size()-1;
+            processQueueMetric.mark(size);
+            queueCounterMetric.dec(size);
             processData(objectQueue);
             objectQueue.clear();
         }
