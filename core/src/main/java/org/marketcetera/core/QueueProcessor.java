@@ -15,7 +15,7 @@ import org.marketcetera.metrics.MetricService;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.Lifecycle;
 
-import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
@@ -66,15 +66,8 @@ public abstract class QueueProcessor<Clazz>
         metricNames.add(metricName);
         metricName = name(getClass(),
                           threadDescriptor,
-                          "sizeGauge");
-        metrics.register(metricName,
-                         new Gauge<Integer>() {
-            @Override
-            public Integer getValue()
-            {
-                return queue.size();
-            }
-        });
+                          "queueCounter");
+        queueCounterMetric = metrics.counter(metricName);
         metricNames.add(metricName);
         metricName = name(getClass().getName(),
                           threadDescriptor,
@@ -134,8 +127,9 @@ public abstract class QueueProcessor<Clazz>
                                   threadDescriptor);
             while(keepAlive.get()) {
                 try {
-                    queueSizeMetric.update(queue.size());
                     Clazz dataObject = queue.take();
+                    queueCounterMetric.dec();
+                    queueSizeMetric.update(queueCounterMetric.getCount());
                     processQueueMetric.mark();
                     processData(dataObject);
                 } catch (InterruptedException e) {
@@ -168,15 +162,6 @@ public abstract class QueueProcessor<Clazz>
         }
     }
     /**
-     * Gets the queue size.
-     *
-     * @return an <code>int</code> value
-     */
-    protected int getQueueSize()
-    {
-        return queue.size();
-    }
-    /**
      * Adds the given object to the processing queue.
      *
      * @param inData a <code>Clazz</code> value
@@ -184,6 +169,7 @@ public abstract class QueueProcessor<Clazz>
     protected void add(Clazz inData)
     {
         addToQueueMetric.mark();
+        queueCounterMetric.inc();
         queue.add(inData);
     }
     /**
@@ -193,7 +179,9 @@ public abstract class QueueProcessor<Clazz>
      */
     protected void addAll(Collection<Clazz> inData)
     {
-        addToQueueMetric.mark(inData.size());
+        int size = inData.size();
+        addToQueueMetric.mark(size);
+        queueCounterMetric.inc(size);
         queue.addAll(inData);
     }
     /**
@@ -322,6 +310,10 @@ public abstract class QueueProcessor<Clazz>
      * meter for measuring the addition rate to the queue
      */
     private Meter addToQueueMetric;
+    /**
+     * counter for tracking the size of the queue
+     */
+    protected Counter queueCounterMetric;
     /**
      * histogram for measuring the queue size over time
      */
