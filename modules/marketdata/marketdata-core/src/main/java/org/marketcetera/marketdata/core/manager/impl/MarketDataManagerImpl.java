@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -765,7 +766,7 @@ public class MarketDataManagerImpl
              */
             private Processor()
             {
-                super(providerName+"ProxyProcessor");
+                super(providerName+"ProxyProcessor-"+proxyCounter.incrementAndGet());
             }
             /**
              * Adds data to the processing queue to be processed.
@@ -915,4 +916,8 @@ public class MarketDataManagerImpl
      * provider name for market data provider modules
      */
     private static final String MDATA = "mdata";
+    /**
+     * used to generate unique proxy processor identifiers
+     */
+    private static final AtomicInteger proxyCounter = new AtomicInteger(0);
 }
