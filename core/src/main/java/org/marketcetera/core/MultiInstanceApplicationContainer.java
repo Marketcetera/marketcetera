@@ -364,6 +364,7 @@ public class MultiInstanceApplicationContainer
                               totalInstances,
                               Arrays.toString(arguments));
         // write execution to a start script
+        // TODO windows version
         File executable = new File(instanceDir+File.separator+"bin",
                                    "dare.sh");
         for(String entry : arguments) {
@@ -372,10 +373,9 @@ public class MultiInstanceApplicationContainer
                             entry+" \\"+System.lineSeparator(),
                             true);
         }
-        ProcessBuilder pb = new ProcessBuilder(arguments);
-        // TODO fails to start?
         File log = new File(getLogDir(),
                             getLogName()+inInstanceNumber+".log");
+        ProcessBuilder pb = new ProcessBuilder(arguments);
         pb.redirectErrorStream(true);
         pb.redirectOutput(Redirect.appendTo(log));
         Process p = pb.start();
@@ -400,6 +400,7 @@ public class MultiInstanceApplicationContainer
     {
         List<String> arguments = new ArrayList<>();
         arguments.add(getJavaPath());
+        arguments.add(DASH_D+"metc.instance=" + inInstanceNumber);
         arguments.add("-classpath");
         arguments.add(getClasspath());
         for(Map.Entry<Object,Object> entry : System.getProperties().entrySet()) {
@@ -443,7 +444,6 @@ public class MultiInstanceApplicationContainer
                 }
             }
         }
-        arguments.add(DASH_D+"metc.instance=" + inInstanceNumber);
         arguments.add(DASH_D+"metc.max.instances="+String.valueOf(totalInstances));
         arguments.add(DASH_D+PARAM_METC_HOST+"="+prepareHostId());
         arguments.add(DASH_D+ApplicationBase.APP_DIR_PROP+"="+inInstanceDirName);
@@ -468,75 +468,75 @@ public class MultiInstanceApplicationContainer
      */
     public static final String PARAM_METC_INSTANCES = "metc.total.instances";
     /**
-     * 
+     * java home parameter
      */
     public static final String PARAM_JAVA_HOME = "java.home";
     /**
-     * 
+     * used to indicate X params
      */
     public static final String DASH_X = "-X";
     /**
-     * 
+     * used to indicate D params
      */
     public static final String DASH_D = "-D";
     /**
-     * 
+     * config file name
      */
     public static final String CONF_DIR_NAME = "conf";
     /**
-     * 
+     * instance directory name
      */
     public static final String INSTANCE_DIR_NAME = "instance";
     /**
-     * 
+     * instance properties file name
      */
     public static final String INSTANCE_PROPERTIES_FILE = "instance.properties";
     /**
-     * 
+     * name of the host id file
      */
     public static final String HOST_ID_NAME = ".metc_host.txt";
     /**
-     * 
+     * path separator constant name
      */
     public static final String PATH_SEPARATOR = "path.separator";
     /**
-     * 
+     * log4j configuration file param name
      */
     public static final String PARAM_LOG4J_CONFIGURATION_FILE = "log4j.configurationFile";
     /**
-     * 
+     * metc-specific log dir name
      */
     public static final String PARAM_METC_LOG_DIR = "metc.logdir";
     /**
-     * 
+     * metc-specific log name param name
      */
     public static final String PARAM_METC_LOG_NAME = "metc.logname";
     /**
-     * 
+     * metc-specific instance dir param name
      */
     public static final String PARAM_INSTANCE_DIR = "org.marketcetera.instanceDir";
     /**
-     * 
+     * metc-specific cluster members param name
      */
     public static final String PARAM_METC_CLUSTER_TCPIP_MEMBERS = "metc.cluster.tcpip.members";
     /**
-     * 
+     * metc-specific cluster port param name
      */
     public static final String PARAM_METC_CLUSTER_PORT = "metc.port.metc.cluster.port";
     /**
-     * 
+     * metc-specific port prefix param name
      */
     public static final String PARAM_METC_PORT = "metc.port.";
     /**
-     * 
+     * metc-specific instance param name
      */
     public static final String PARAM_METC_INSTANCE = "metc.instance.";
     /**
-     * 
+     * metc-specific instance/port param name
      */
     public static final String PARAM_METC_INSTANCEPORT = "metc.instanceport.";
     /**
-     * 
+     * metc-specific host param name
      */
     public static final String PARAM_METC_HOST = "metc.host";
 }
