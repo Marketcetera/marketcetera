@@ -14,6 +14,8 @@ import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.misc.ClassVersion;
 
+import quickfix.SessionFactory;
+
 /* $License$ */
 
 /**
@@ -162,6 +164,46 @@ public class BrokerStatus
     {
         return settings;
     }
+    /**
+     * Gets the host name value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getHost()
+    {
+        if(settings != null) {
+            String connectionType = settings.get(SessionFactory.SETTING_CONNECTION_TYPE);
+            switch(connectionType) {
+                case SessionFactory.ACCEPTOR_CONNECTION_TYPE:
+                    return settings.get(socketAcceptHostKey);
+                case SessionFactory.INITIATOR_CONNECTION_TYPE:
+                    return settings.get(socketConnectHostKey);
+                default:
+                    break;
+            }
+        }
+        return NO_HOST;
+    }
+    /**
+     * Gets the host port value.
+     *
+     * @return an <code>int</code> value
+     */
+    public int getPort()
+    {
+        if(settings != null) {
+            String connectionType = settings.get(SessionFactory.SETTING_CONNECTION_TYPE);
+            switch(connectionType) {
+                case SessionFactory.ACCEPTOR_CONNECTION_TYPE:
+                    return Integer.parseInt(settings.get(socketAcceptPortKey));
+                case SessionFactory.INITIATOR_CONNECTION_TYPE:
+                    return Integer.parseInt(settings.get(socketConnectPortKey));
+                default:
+                    break;
+            }
+        }
+        return -1;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -197,6 +239,10 @@ public class BrokerStatus
                              getLoggedOn());
     }
     /**
+     * value which indicates no host
+     */
+    public static final String NO_HOST = "none"; //$NON-NLS-1$
+    /**
      * name value
      */
     private final String name;
@@ -216,5 +262,21 @@ public class BrokerStatus
      * broker settings value
      */
     private final Map<String,String> settings;
+    /**
+     * QJF initiator host key
+     */
+    private static final String socketConnectHostKey = "SocketConnectHost"; //$NON-NLS-1$
+    /**
+     * QJF initiator port key
+     */
+    private static final String socketConnectPortKey = "SocketConnectPort"; //$NON-NLS-1$
+    /**
+     * QJF acceptor host key
+     */
+    private static final String socketAcceptHostKey = "SocketAcceptHost"; //$NON-NLS-1$
+    /**
+     * QJF acceptor port key
+     */
+    private static final String socketAcceptPortKey = "SocketAcceptPort"; //$NON-NLS-1$
     private static final long serialVersionUID = -4170685026349637823L;
 }

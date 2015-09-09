@@ -308,7 +308,7 @@ public class ApplicationContainer
      */
     protected static int exitCode = 0;
     /**
-     * 
+     * parent application context value
      */
     private ApplicationContext parentContext;
 }
