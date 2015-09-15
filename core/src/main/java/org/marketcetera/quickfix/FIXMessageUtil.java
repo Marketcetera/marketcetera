@@ -54,7 +54,7 @@ import quickfix.field.UserRequestID;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXMessageUtil {
-
+    public static final String FIX_RESTORE_LOGGER_NAME = "metc.restore";
     private static final String LOGGER_NAME = FIXMessageUtil.class.getName();
     private static final int MAX_FIX_FIELDS = 2000;     // What we think the ID of the last fix field is
     public static final Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)"); //$NON-NLS-1$
