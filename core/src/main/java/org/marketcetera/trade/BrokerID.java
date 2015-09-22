@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlValue;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -22,7 +23,9 @@ import org.marketcetera.util.misc.ClassVersion;
 @Embeddable
 @XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$")
-public class BrokerID implements Serializable {
+public class BrokerID
+        implements Serializable, Comparable<BrokerID>
+{
 
     /**
      * Returns the text value of the ID.
@@ -63,7 +66,14 @@ public class BrokerID implements Serializable {
         }
         mValue = inValue;
     }
-
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(BrokerID inO)
+    {
+        return new CompareToBuilder().append(mValue,inO.mValue).toComparison();
+    }
     /**
      * Creates a new ID. This empty constructor is intended for use
      * by JAXB.

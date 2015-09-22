@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.algo.BrokerAlgoSpec;
@@ -29,7 +30,7 @@ import quickfix.SessionFactory;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$")
 public class BrokerStatus
-        implements Serializable
+        implements Serializable, Comparable<BrokerStatus>
 {
     /**
      * Create a new BrokerStatus instance.
@@ -237,6 +238,14 @@ public class BrokerStatus
                              String.valueOf(getName()),
                              String.valueOf(getId()),
                              getLoggedOn());
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(BrokerStatus inO)
+    {
+        return new CompareToBuilder().append(brokerId,inO.brokerId).toComparison();
     }
     /**
      * value which indicates no host
