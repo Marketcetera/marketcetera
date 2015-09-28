@@ -9,14 +9,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+
+import com.jezhumble.javasysmon.JavaSysMon;
+import com.jezhumble.javasysmon.OsProcess;
+import com.jezhumble.javasysmon.ProcessVisitor;
 
 /* $License$ */
 
@@ -365,11 +371,13 @@ public class MultiInstanceApplicationContainer
                               Arrays.toString(arguments));
         // write execution to a start script
         // TODO windows version
-        File executable = new File(instanceDir+File.separator+"bin",
-                                   "dare.sh");
+        File startScript = new File(instanceDir+File.separator+"bin",
+                                    "start_dare.sh");
+        File stopScript = new File(instanceDir+File.separator+"bin",
+                                   "stop_dare.sh");
         for(String entry : arguments) {
             // TODO is this line different for windows?
-            FileUtils.write(executable,
+            FileUtils.write(startScript,
                             entry+" \\"+System.lineSeparator(),
                             true);
         }
@@ -378,14 +386,55 @@ public class MultiInstanceApplicationContainer
         ProcessBuilder pb = new ProcessBuilder(arguments);
         pb.redirectErrorStream(true);
         pb.redirectOutput(Redirect.appendTo(log));
-        Process p = pb.start();
-        assert pb.redirectInput() == Redirect.PIPE;
-        assert pb.redirectOutput().file() == log;
-        assert p.getInputStream().read() == -1;
-        processInstances.put(inInstanceNumber,
-                             p);
+        int pid = spawnInstance(pb,
+                                inInstanceNumber);
+        FileUtils.write(stopScript,
+                        "kill " + pid + System.lineSeparator());
         // sleep for 1s to generate separation between the instances to help clearly identify the order of instances on the host
         Thread.sleep(1000);
+    }
+    /**
+     * Spawns the instance described by the given arguments.
+     *
+     * @param inProcBuilder a <code>ProcessBuilder</code> value
+     * @param inInstanceNumber an <code>int</code> value
+     * @return an <code>int</code> value containing the spawned PID
+     * @throws IOException if the instance could not be spawned
+     */
+    private static int spawnInstance(ProcessBuilder inProcBuilder,
+                                     int inInstanceNumber)
+            throws IOException
+    {
+        synchronized (spawnProcessMutex) {
+            JavaSysMon monitor = new JavaSysMon();
+            DirectChildProcessVisitor beforeVisitor = new DirectChildProcessVisitor(monitor);
+            monitor.visitProcessTree(monitor.currentPid(),
+                                     beforeVisitor);
+            Set<Integer> alreadySpawnedProcesses = beforeVisitor.getPids();
+            Process p = inProcBuilder.start();
+            processInstances.put(inInstanceNumber,
+                                 p);
+            DirectChildProcessVisitor afterVisitor = new DirectChildProcessVisitor(monitor);
+            monitor.visitProcessTree(monitor.currentPid(),
+                                     afterVisitor);
+            Set<Integer> newProcesses = afterVisitor.getPids();
+            newProcesses.removeAll(alreadySpawnedProcesses);
+            if(newProcesses.isEmpty()){
+                SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                                       "There is no new instance PID");
+            } else if(newProcesses.size() > 1){
+                SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                                       "There are multiple new instance PIDs: {}",
+                                       newProcesses);
+            } else {
+                int newPid = newProcesses.iterator().next();
+                SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                                       "New PID: {}",
+                                       newPid);
+                return newPid;
+            }
+            return -1;
+        }
     }
     /**
      * Builds the process argument list.
@@ -450,6 +499,56 @@ public class MultiInstanceApplicationContainer
         arguments.add(DASH_D+PARAM_LOG4J_CONFIGURATION_FILE+"="+getLog4jConfigFile());
         arguments.add(ApplicationContainer.class.getCanonicalName());
         return arguments.toArray(new String[arguments.size()]);
+    }
+    /**
+     * Visits running processes.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class DirectChildProcessVisitor
+            implements ProcessVisitor
+    {
+        /* (non-Javadoc)
+         * @see com.jezhumble.javasysmon.ProcessVisitor#visit(com.jezhumble.javasysmon.OsProcess, int)
+         */
+        @Override
+        public boolean visit(OsProcess inOsProcess,
+                             int inChildIndex)
+        {
+            int currentPid = parent.currentPid();
+            if(inOsProcess.processInfo().getParentPid() == currentPid) {
+                newPids.add(inOsProcess.processInfo().getPid());
+            }
+            return false;
+        }
+        /**
+         * Gets the new pids discovered for this parent.
+         *
+         * @return a <code>Set&lt;Integer&gt;</code> value
+         */
+        private Set<Integer> getPids()
+        {
+            return newPids;
+        }
+        /**
+         * Create a new DirectChildProcessVisitor instance.
+         *
+         * @param inParent a <code>JavaSysMon</code> value
+         */
+        private DirectChildProcessVisitor(JavaSysMon inParent)
+        {
+            parent = inParent;
+        }
+        /**
+         * current process (parent of vistor processes)
+         */
+        private final JavaSysMon parent;
+        /**
+         * query result, holds process ids identified
+         */
+        private Set<Integer> newPids = new HashSet<Integer>();
     }
     /**
      * tracks child instance processes
@@ -539,4 +638,8 @@ public class MultiInstanceApplicationContainer
      * metc-specific host param name
      */
     public static final String PARAM_METC_HOST = "metc.host";
+    /**
+     * guards access to process-specific stats
+     */
+    private static final Object spawnProcessMutex = new Object();
 }
