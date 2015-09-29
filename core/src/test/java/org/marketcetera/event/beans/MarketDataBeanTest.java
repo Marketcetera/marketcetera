@@ -92,6 +92,14 @@ public class MarketDataBeanTest
         assertNull(bean2.getPrice());
         assertNull(bean1.getSize());
         assertNull(bean2.getSize());
+        assertEquals(0,
+                     bean1.getProcessedTimestamp());
+        assertEquals(0,
+                     bean2.getProcessedTimestamp());
+        assertEquals(0,
+                     bean1.getReceivedTimestamp());
+        assertEquals(0,
+                     bean2.getReceivedTimestamp());
         assertEquals(EventType.UNKNOWN,
                      bean1.getEventType());
         assertEquals(EventType.UNKNOWN,
@@ -147,6 +155,23 @@ public class MarketDataBeanTest
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
+        bean3.setEventType(bean1.getEventType());
+        // processed timestamp
+        assertEquals(0,
+                     bean1.getProcessedTimestamp());
+        bean3.setProcessedTimestamp(System.currentTimeMillis());
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
+        bean3.setProcessedTimestamp(bean1.getProcessedTimestamp());
+        // received timestamp
+        assertEquals(0,
+                     bean1.getReceivedTimestamp());
+        bean3.setReceivedTimestamp(System.currentTimeMillis());
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
+        bean3.setReceivedTimestamp(bean1.getReceivedTimestamp());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.beans.AbstractEventBeanTestBase#doAdditionalValidationTest(org.marketcetera.event.beans.EventBean)
@@ -254,6 +279,8 @@ public class MarketDataBeanTest
         verifyMarketDataBean(inBean,
                              null,
                              null,
+                             0,
+                             0,
                              null,
                              null,
                              null,
@@ -262,6 +289,8 @@ public class MarketDataBeanTest
         verifyMarketDataBean(newBean,
                              null,
                              null,
+                             0,
+                             0,
                              null,
                              null,
                              null,
@@ -272,15 +301,20 @@ public class MarketDataBeanTest
         BigDecimal price = BigDecimal.ONE;
         BigDecimal size = BigDecimal.TEN;
         EventType metaType = EventType.UPDATE_FINAL;
+        long timestamp = System.currentTimeMillis();
         inBean.setExchange(exchange);
         inBean.setExchangeTimestamp(exchangeTimestamp);
         inBean.setInstrument(instrument);
         inBean.setPrice(price);
         inBean.setSize(size);
         inBean.setEventType(metaType);
+        inBean.setProcessedTimestamp(timestamp);
+        inBean.setReceivedTimestamp(timestamp-1);
         verifyMarketDataBean(inBean,
                              exchange,
                              exchangeTimestamp,
+                             timestamp,
+                             timestamp-1,
                              instrument,
                              price,
                              size,
@@ -289,6 +323,8 @@ public class MarketDataBeanTest
         verifyMarketDataBean(newBean,
                              exchange,
                              exchangeTimestamp,
+                             timestamp,
+                             timestamp-1,
                              instrument,
                              price,
                              size,
@@ -300,6 +336,8 @@ public class MarketDataBeanTest
      * @param inBean a <code>MarketDataBean</code> value
      * @param inExpectedExchange a <code>String</code> value
      * @param inExpectedExchangeTimestamp a <code>String</code> value
+     * @param inExpectedProcessedTimestamp a <code>long</code> value
+     * @param inExpectedReceivedTimestamp a <code>long</code> value
      * @param inExpectedInstrument an <code>Instrument</code> value
      * @param inExpectedPrice a <code>BigDecimal</code> value
      * @param inExpectedSize a <code>BigDecimal</code> value
@@ -309,6 +347,8 @@ public class MarketDataBeanTest
     static void verifyMarketDataBean(MarketDataBean inBean,
                                      String inExpectedExchange,
                                      String inExpectedExchangeTimestamp,
+                                     long inExpectedProcessedTimestamp,
+                                     long inExpectedReceivedTimestamp,
                                      Instrument inExpectedInstrument,
                                      BigDecimal inExpectedPrice,
                                      BigDecimal inExpectedSize,
@@ -319,6 +359,10 @@ public class MarketDataBeanTest
                      inBean.getExchange());
         assertEquals(inExpectedExchangeTimestamp,
                      inBean.getExchangeTimestamp());
+        assertEquals(inExpectedProcessedTimestamp,
+                     inBean.getProcessedTimestamp());
+        assertEquals(inExpectedReceivedTimestamp,
+                     inBean.getReceivedTimestamp());
         assertEquals(inExpectedInstrument,
                      inBean.getInstrument());
         assertEquals(inExpectedPrice,

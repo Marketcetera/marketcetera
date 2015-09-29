@@ -1,10 +1,10 @@
 package org.marketcetera.event.impl;
 
+import static org.marketcetera.event.Messages.VALIDATION_BOND_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_CURRENCY_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
-import static org.marketcetera.event.Messages.VALIDATION_BOND_REQUIRED;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -13,9 +13,22 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.beans.*;
+import org.marketcetera.event.beans.ConvertibleBondBean;
+import org.marketcetera.event.beans.CurrencyBean;
+import org.marketcetera.event.beans.FutureBean;
+import org.marketcetera.event.beans.OptionBean;
+import org.marketcetera.event.beans.TradeBean;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.ConvertibleBond;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.DeliveryType;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureType;
+import org.marketcetera.trade.FutureUnderlyingAssetType;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.StandardType;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -82,8 +95,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
             @Override
             public TradeEvent create()
             {
-                if(getMarketData().getInstrument() instanceof Equity) {
-                    return new EquityTradeEventImpl(getMarketData());
+                if(getTradeData().getInstrument() instanceof Equity) {
+                    return new EquityTradeEventImpl(getTradeData());
                 }
                 throw new IllegalArgumentException(VALIDATION_EQUITY_REQUIRED.getText());
             }
@@ -101,8 +114,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
             @Override
             public TradeEvent create()
             {
-                if(getMarketData().getInstrument() instanceof Option) {
-                    return new OptionTradeEventImpl(getMarketData(),
+                if(getTradeData().getInstrument() instanceof Option) {
+                    return new OptionTradeEventImpl(getTradeData(),
                                                     getOption());
                 }
                 throw new IllegalArgumentException(VALIDATION_OPTION_REQUIRED.getText());
@@ -124,8 +137,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
             @Override
             public TradeEvent create()
             {
-                if(getMarketData().getInstrument() instanceof Future) {
-                    return new FutureTradeEventImpl(getMarketData(),
+                if(getTradeData().getInstrument() instanceof Future) {
+                    return new FutureTradeEventImpl(getTradeData(),
                                                     getFuture());
                 }
                 throw new IllegalArgumentException(VALIDATION_FUTURE_REQUIRED.getText());
@@ -147,8 +160,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
             @Override
             public TradeEvent create()
             {
-                if(getMarketData().getInstrument() instanceof Currency) {
-                    return new CurrencyTradeEventImpl(getMarketData(),
+                if(getTradeData().getInstrument() instanceof Currency) {
+                    return new CurrencyTradeEventImpl(getTradeData(),
                                                     getCurrency());
                 }
                 throw new IllegalArgumentException(VALIDATION_CURRENCY_REQUIRED.getText());
@@ -171,8 +184,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
             @Override
             public TradeEvent create()
             {
-                if(getMarketData().getInstrument() instanceof ConvertibleBond) {
-                    return new ConvertibleBondTradeEventImpl(getMarketData(),
+                if(getTradeData().getInstrument() instanceof ConvertibleBond) {
+                    return new ConvertibleBondTradeEventImpl(getTradeData(),
                                                              getConvertibleBond());
                 }
                 throw new IllegalArgumentException(VALIDATION_BOND_REQUIRED.getText());
@@ -187,7 +200,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      */
     public TradeEventBuilder<E> withMessageId(long inMessageId)
     {
-        marketData.setMessageId(inMessageId);
+        tradeData.setMessageId(inMessageId);
         return this;
     }
     /**
@@ -198,7 +211,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      */
     public TradeEventBuilder<E> withTimestamp(Date inTimestamp)
     {
-        marketData.setTimestamp(inTimestamp);
+        tradeData.setTimestamp(inTimestamp);
         return this;
     }
     /**
@@ -209,7 +222,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      */
     public TradeEventBuilder<E> withSource(Object inSource)
     {
-        marketData.setSource(inSource);
+        tradeData.setSource(inSource);
         return this;
     }
     /**
@@ -220,7 +233,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      */
     public TradeEventBuilder<E> withProvider(String inProvider)
     {
-        marketData.setProvider(inProvider);
+        tradeData.setProvider(inProvider);
         return this;
     }
     /**
@@ -231,7 +244,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      */
     public TradeEventBuilder<E> withTradeCondition(String inTradeCondition)
     {
-        marketData.setTradeCondition(inTradeCondition);
+        tradeData.setTradeCondition(inTradeCondition);
         return this;
     }
     /**
@@ -242,7 +255,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      */
     public TradeEventBuilder<E> withInstrument(Instrument inInstrument)
     {
-        marketData.setInstrument(inInstrument);
+        tradeData.setInstrument(inInstrument);
         if(inInstrument instanceof Option) {
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument instanceof Future) {
@@ -268,7 +281,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      */
     public TradeEventBuilder<E> withPrice(BigDecimal inPrice)
     {
-        marketData.setPrice(inPrice);
+        tradeData.setPrice(inPrice);
         return this;
     }
     /**
@@ -279,7 +292,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      */
     public TradeEventBuilder<E> withSize(BigDecimal inSize)
     {
-        marketData.setSize(inSize);
+        tradeData.setSize(inSize);
         return this;
     }
     /**
@@ -290,7 +303,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      */
     public TradeEventBuilder<E> withExchange(String inExchange)
     {
-        marketData.setExchange(inExchange);
+        tradeData.setExchange(inExchange);
         return this;
     }
     /**
@@ -301,7 +314,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      */
     public TradeEventBuilder<E> withTradeDate(String inTradeDate)
     {
-        marketData.setExchangeTimestamp(inTradeDate);
+        tradeData.setExchangeTimestamp(inTradeDate);
         return this;
     }
     /**
@@ -412,7 +425,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      */
     public final TradeEventBuilder<E> withEventType(EventType inEventType)
     {
-        marketData.setEventType(inEventType);
+        tradeData.setEventType(inEventType);
         return this;
     }
     /**
@@ -676,20 +689,20 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public String toString()
     {
-        return String.format("TradeEventBuilder [marketData=%s, option=%s, future=%s, convertibleBond=%s]", //$NON-NLS-1$
-                             marketData,
+        return String.format("TradeEventBuilder [tradeData=%s, option=%s, future=%s, convertibleBond=%s]", //$NON-NLS-1$
+                             tradeData,
                              option,
                              future,
                              convertibleBond);
     }
     /**
-     * Get the marketData value.
+     * Get the tradeData value.
      *
-     * @return a <code>MarketDataBean</code> value
+     * @return a <code>TradeBean</code> value
      */
-    protected final MarketDataBean getMarketData()
+    protected final TradeBean getTradeData()
     {
-        return marketData;
+        return tradeData;
     }
     /**
      * Get the option value.
@@ -728,9 +741,9 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         return convertibleBond;
     }
     /**
-     * the market data attributes 
+     * the trade data attributes 
      */
-    private final MarketDataBean marketData = new MarketDataBean();
+    private final TradeBean tradeData = new TradeBean();
     /**
      * the option attributes
      */

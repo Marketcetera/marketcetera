@@ -10,7 +10,7 @@ import org.marketcetera.event.EventType;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.event.beans.HasEventBean;
-import org.marketcetera.event.beans.MarketDataBean;
+import org.marketcetera.event.beans.TradeBean;
 import org.marketcetera.event.util.EventServices;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
@@ -35,7 +35,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public EventBean getEventBean()
     {
-        return marketData;
+        return tradeData;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TradeEvent#getExchange()
@@ -43,7 +43,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public final String getExchange()
     {
-        return marketData.getExchange();
+        return tradeData.getExchange();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TradeEvent#getPrice()
@@ -51,7 +51,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public final BigDecimal getPrice()
     {
-        return marketData.getPrice();
+        return tradeData.getPrice();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TradeEvent#getSize()
@@ -59,7 +59,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public final BigDecimal getSize()
     {
-        return marketData.getSize();
+        return tradeData.getSize();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TradeEvent#getExchangeTimestamp()
@@ -67,7 +67,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public final String getExchangeTimestamp()
     {
-        return marketData.getExchangeTimestamp();
+        return tradeData.getExchangeTimestamp();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TradeEvent#getTradeDate()
@@ -83,7 +83,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public final long getMessageId()
     {
-        return marketData.getMessageId();
+        return tradeData.getMessageId();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketData.Event#getSource()
@@ -91,7 +91,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public final Object getSource()
     {
-        return marketData.getSource();
+        return tradeData.getSource();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getMetaType()
@@ -99,7 +99,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public EventType getEventType()
     {
-        return marketData.getEventType();
+        return tradeData.getEventType();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.MarketDataEvent#setEventType(org.marketcetera.event.EventType)
@@ -107,7 +107,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public void setEventType(EventType inEventType)
     {
-        marketData.setEventType(inEventType);
+        tradeData.setEventType(inEventType);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketData.Event#getTimestamp()
@@ -115,7 +115,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public final Date getTimestamp()
     {
-        return marketData.getTimestamp();
+        return tradeData.getTimestamp();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketData.Event#setSource(java.lang.Object)
@@ -123,7 +123,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public final void setSource(Object inSource)
     {
-        marketData.setSource(inSource);
+        tradeData.setSource(inSource);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getProvider()
@@ -131,7 +131,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public String getProvider()
     {
-        return marketData.getProvider();
+        return tradeData.getProvider();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#setProvider(java.lang.String)
@@ -139,7 +139,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public void setProvider(String inProvider)
     {
-        marketData.setProvider(inProvider);
+        tradeData.setProvider(inProvider);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketData.TimestampCarrier#getTimeMillis()
@@ -147,7 +147,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public final long getTimeMillis()
     {
-        return marketData.getTimeMillis();
+        return tradeData.getTimeMillis();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.HasInstrument#getInstrument()
@@ -155,7 +155,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public Instrument getInstrument()
     {
-        return marketData.getInstrument();
+        return tradeData.getInstrument();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.HasInstrument#getInstrumentAsString()
@@ -163,7 +163,7 @@ public abstract class AbstractTradeEventImpl
     @Override
     public String getInstrumentAsString()
     {
-        return marketData.getInstrumentAsString();
+        return tradeData.getInstrumentAsString();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TradeEvent#getTradeCondition()
@@ -171,7 +171,39 @@ public abstract class AbstractTradeEventImpl
     @Override
     public String getTradeCondition()
     {
-        return marketData.getTradeCondition();
+        return tradeData.getTradeCondition();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#getProcessedTimestamp()
+     */
+    @Override
+    public long getProcessedTimestamp()
+    {
+        return tradeData.getProcessedTimestamp();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#setProcessedTimestamp(long)
+     */
+    @Override
+    public void setProcessedTimestamp(long inTimestamp)
+    {
+        tradeData.setProcessedTimestamp(inTimestamp);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#getReceivedTimestamp()
+     */
+    @Override
+    public long getReceivedTimestamp()
+    {
+        return tradeData.getReceivedTimestamp();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#setReceivedTimestamp(long)
+     */
+    @Override
+    public void setReceivedTimestamp(long inTimestamp)
+    {
+        tradeData.setReceivedTimestamp(inTimestamp);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -204,7 +236,7 @@ public abstract class AbstractTradeEventImpl
    /**
      * Create a new TradeEventImpl instance.
      *
-     * @param inMarketData a <code>MarketDataBean</code> value
+     * @param inTrade a <code>TradeBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
@@ -213,11 +245,11 @@ public abstract class AbstractTradeEventImpl
      * @throws IllegalArgumentException if <code>Exchange</code> is <code>null</code> or empty
      * @throws IllegalArgumentException if <code>ExchangeTimestamp</code> is <code>null</code> or empty
      */
-    protected AbstractTradeEventImpl(MarketDataBean inMarketData)
+    protected AbstractTradeEventImpl(TradeBean inTrade)
     {
-        marketData = MarketDataBean.copy(inMarketData);
-        marketData.setDefaults();
-        marketData.validate();
+        tradeData = TradeBean.copy(inTrade);
+        tradeData.setDefaults();
+        tradeData.validate();
     }
     /**
      * Create a new AbstractTradeEventImpl instance.
@@ -226,7 +258,7 @@ public abstract class AbstractTradeEventImpl
      */
     protected AbstractTradeEventImpl()
     {
-        marketData = new MarketDataBean();
+        tradeData = new TradeBean();
     }
     /**
      * Gets a description of the type of event.
@@ -235,9 +267,9 @@ public abstract class AbstractTradeEventImpl
      */
     protected abstract String getDescription();
     /**
-     * market data attributes
+     * trade attributes
      */
     @XmlElement
-    private final MarketDataBean marketData;
-    private static final long serialVersionUID = 1L;
+    private final TradeBean tradeData;
+    private static final long serialVersionUID = 3370407814561159396L;
 }

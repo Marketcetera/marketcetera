@@ -881,6 +881,9 @@ public class SimulatedExchange
                                "{} publishing events: {}", //$NON-NLS-1$
                                this,
                                inEventsToPublish);
+        if(inEventsToPublish.isEmpty()) {
+            return;
+        }
         Event lastEvent = inEventsToPublish.getLast();
         if(lastEvent instanceof HasEventType) {
             ((HasEventType)lastEvent).setEventType(EventType.UPDATE_FINAL);

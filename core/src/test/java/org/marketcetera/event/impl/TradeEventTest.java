@@ -142,15 +142,15 @@ public class TradeEventTest
         String exchange = null;
         builder.withExchange(exchange);
         assertEquals(exchange,
-                     builder.getMarketData().getExchange());
+                     builder.getTradeData().getExchange());
         exchange = "";
         builder.withExchange(exchange);
         assertEquals(exchange,
-                     builder.getMarketData().getExchange());
+                     builder.getTradeData().getExchange());
         exchange = "exchange";
         builder.withExchange(exchange);
         assertEquals(exchange,
-                     builder.getMarketData().getExchange());
+                     builder.getTradeData().getExchange());
         verify(builder);
     }
     /**
@@ -215,15 +215,15 @@ public class TradeEventTest
         String tradeCondition = null;
         builder.withTradeCondition(tradeCondition);
         assertEquals(tradeCondition,
-                     builder.getMarketData().getTradeCondition());
+                     builder.getTradeData().getTradeCondition());
         tradeCondition = "";
         builder.withTradeCondition(tradeCondition);
         assertEquals(tradeCondition,
-                     builder.getMarketData().getTradeCondition());
+                     builder.getTradeData().getTradeCondition());
         tradeCondition = "EFG";
         builder.withTradeCondition(tradeCondition);
         assertEquals(tradeCondition,
-                     builder.getMarketData().getTradeCondition());
+                     builder.getTradeData().getTradeCondition());
         verify(builder);
     }
     /**
@@ -239,15 +239,15 @@ public class TradeEventTest
         EventType type = null;
         builder.withEventType(type);
         assertEquals(type,
-                     builder.getMarketData().getEventType());
+                     builder.getTradeData().getEventType());
         type = EventType.UNKNOWN;
         builder.withEventType(type);
         assertEquals(type,
-                     builder.getMarketData().getEventType());
+                     builder.getTradeData().getEventType());
         type = EventType.SNAPSHOT_PART;
         builder.withEventType(type);
         assertEquals(type,
-                     builder.getMarketData().getEventType());
+                     builder.getTradeData().getEventType());
         verify(builder);
     }
     /**
@@ -284,25 +284,25 @@ public class TradeEventTest
         instrument = null;
         builder.withInstrument(instrument);
         assertEquals(instrument,
-                     builder.getMarketData().getInstrument());
+                     builder.getTradeData().getInstrument());
         assertEquals(instrument,
-                     builder.getMarketData().getInstrumentAsString());
+                     builder.getTradeData().getInstrumentAsString());
         assertEquals(instrument,
                      builder.getOption().getInstrument());
         instrument = equity;
         builder.withInstrument(instrument);
         assertEquals(instrument,
-                     builder.getMarketData().getInstrument());
+                     builder.getTradeData().getInstrument());
         assertEquals(instrument.getSymbol(),
-                     builder.getMarketData().getInstrumentAsString());
+                     builder.getTradeData().getInstrumentAsString());
         assertFalse(instrument.equals(builder.getOption().getInstrument()));
         instrument = option;
         builder = setDefaults(getBuilder());
         builder.withInstrument(instrument);
         assertEquals(instrument,
-                     builder.getMarketData().getInstrument());
+                     builder.getTradeData().getInstrument());
         assertEquals(instrument.getSymbol(),
-                     builder.getMarketData().getInstrumentAsString());
+                     builder.getTradeData().getInstrumentAsString());
         assertEquals(instrument,
                      builder.getOption().getInstrument());
         verify(builder);
@@ -310,9 +310,9 @@ public class TradeEventTest
         builder = setDefaults(getBuilder());
         builder.withInstrument(instrument);
         assertEquals(instrument,
-                     builder.getMarketData().getInstrument());
+                     builder.getTradeData().getInstrument());
         assertEquals(instrument.getSymbol(),
-                     builder.getMarketData().getInstrumentAsString());
+                     builder.getTradeData().getInstrumentAsString());
         verify(builder);
     }
     /**
@@ -328,13 +328,13 @@ public class TradeEventTest
         setDefaults(builder);
         builder.withMessageId(Long.MIN_VALUE);
         assertEquals(Long.MIN_VALUE,
-                     builder.getMarketData().getMessageId());
+                     builder.getTradeData().getMessageId());
         builder.withMessageId(-1);
         assertEquals(-1,
-                     builder.getMarketData().getMessageId());
+                     builder.getTradeData().getMessageId());
         builder.withMessageId(Long.MAX_VALUE);
         assertEquals(Long.MAX_VALUE,
-                     builder.getMarketData().getMessageId());
+                     builder.getTradeData().getMessageId());
         verify(builder);
     }
     /**
@@ -370,19 +370,19 @@ public class TradeEventTest
         TradeEventBuilder<TradeEvent> builder = setDefaults(getBuilder());
         BigDecimal price = null;
         builder.withPrice(price);
-        assertNull(builder.getMarketData().getPrice());
+        assertNull(builder.getTradeData().getPrice());
         price = new BigDecimal(-10);
         builder.withPrice(price);
         assertEquals(price,
-                     builder.getMarketData().getPrice());
+                     builder.getTradeData().getPrice());
         price = BigDecimal.ZERO;
         builder.withPrice(price);
         assertEquals(price,
-                     builder.getMarketData().getPrice());
+                     builder.getTradeData().getPrice());
         price = BigDecimal.TEN;
         builder.withPrice(price);
         assertEquals(price,
-                     builder.getMarketData().getPrice());
+                     builder.getTradeData().getPrice());
         verify(builder);
     }
     /**
@@ -398,19 +398,19 @@ public class TradeEventTest
         String date = null;
         builder.withTradeDate(date);
         assertEquals(date,
-                     builder.getMarketData().getExchangeTimestamp());
+                     builder.getTradeData().getExchangeTimestamp());
         date = "";
         builder.withTradeDate(date);
         assertEquals(date,
-                     builder.getMarketData().getExchangeTimestamp());
+                     builder.getTradeData().getExchangeTimestamp());
         date = "not-a-date";
         builder.withTradeDate(date);
         assertEquals(date,
-                     builder.getMarketData().getExchangeTimestamp());
+                     builder.getTradeData().getExchangeTimestamp());
         date = DateUtils.dateToString(new Date());
         builder.withTradeDate(date);
         assertEquals(date,
-                     builder.getMarketData().getExchangeTimestamp());
+                     builder.getTradeData().getExchangeTimestamp());
         verify(builder);
     }
     /**
@@ -425,19 +425,19 @@ public class TradeEventTest
         TradeEventBuilder<TradeEvent> builder = setDefaults(getBuilder());
         BigDecimal size = null;
         builder.withSize(size);
-        assertNull(builder.getMarketData().getSize());
+        assertNull(builder.getTradeData().getSize());
         size = new BigDecimal(-10);
         builder.withSize(size);
         assertEquals(size,
-                     builder.getMarketData().getSize());
+                     builder.getTradeData().getSize());
         size = BigDecimal.ZERO;
         builder.withSize(size);
         assertEquals(size,
-                     builder.getMarketData().getSize());
+                     builder.getTradeData().getSize());
         size = BigDecimal.TEN;
         builder.withSize(size);
         assertEquals(size,
-                     builder.getMarketData().getSize());
+                     builder.getTradeData().getSize());
         verify(builder);
     }
     /**
@@ -454,11 +454,11 @@ public class TradeEventTest
         // null source
         builder.withSource(null);
         assertEquals(null,
-                     builder.getMarketData().getSource());
+                     builder.getTradeData().getSource());
         // non-null source
         builder.withSource(this);
         assertEquals(this,
-                     builder.getMarketData().getSource());
+                     builder.getTradeData().getSource());
         verify(builder);
     }
     /**
@@ -475,12 +475,12 @@ public class TradeEventTest
         // null timestamp
         builder.withTimestamp(null);
         assertEquals(null,
-                     builder.getMarketData().getTimestamp());
+                     builder.getTradeData().getTimestamp());
         // regular timestamp
         Date timestamp = new Date();
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
-                     builder.getMarketData().getTimestamp());
+                     builder.getTradeData().getTimestamp());
         // make a weird timestamp
         timestamp = new Date(-1);
         builder.withTimestamp(timestamp);
@@ -558,48 +558,48 @@ public class TradeEventTest
         TradeEvent event = inBuilder.create();
         assertNotNull(event);
         assertNotNull(event.toString());
-        assertEquals(inBuilder.getMarketData().getExchange(),
+        assertEquals(inBuilder.getTradeData().getExchange(),
                      event.getExchange());
-        assertEquals(inBuilder.getMarketData().getExchangeTimestamp(),
+        assertEquals(inBuilder.getTradeData().getExchangeTimestamp(),
                      event.getExchangeTimestamp());
-        assertEquals(inBuilder.getMarketData().getExchangeTimestamp(),
+        assertEquals(inBuilder.getTradeData().getExchangeTimestamp(),
                      event.getTradeDate());
-        assertEquals(inBuilder.getMarketData().getInstrument(),
+        assertEquals(inBuilder.getTradeData().getInstrument(),
                      event.getInstrument());
         // check the instrumentAsString method
-        assertEquals(inBuilder.getMarketData().getInstrumentAsString(),
+        assertEquals(inBuilder.getTradeData().getInstrumentAsString(),
                      event.getInstrumentAsString());
         // there is a special case for messageId - if equal to Long.MIN_VALUE
         //  then it will be some value >= 0
-        if(inBuilder.getMarketData().getMessageId() == Long.MIN_VALUE) {
+        if(inBuilder.getTradeData().getMessageId() == Long.MIN_VALUE) {
             assertTrue(event.getMessageId() >= 0);
         } else {
-            assertEquals(inBuilder.getMarketData().getMessageId(),
+            assertEquals(inBuilder.getTradeData().getMessageId(),
                          event.getMessageId());
         }
-        assertEquals(inBuilder.getMarketData().getPrice(),
+        assertEquals(inBuilder.getTradeData().getPrice(),
                      event.getPrice());
-        assertEquals(inBuilder.getMarketData().getSize(),
+        assertEquals(inBuilder.getTradeData().getSize(),
                      event.getSize());
-        assertEquals(inBuilder.getMarketData().getSource(),
+        assertEquals(inBuilder.getTradeData().getSource(),
                      event.getSource());
-        assertEquals(inBuilder.getMarketData().getTradeCondition(),
+        assertEquals(inBuilder.getTradeData().getTradeCondition(),
                      event.getTradeCondition());
-        assertEquals(inBuilder.getMarketData().getEventType(),
+        assertEquals(inBuilder.getTradeData().getEventType(),
                      event.getEventType());
         assertFalse(event.getEventType() == EventType.SNAPSHOT_FINAL);
         event.setEventType(EventType.SNAPSHOT_FINAL);
         assertEquals(EventType.SNAPSHOT_FINAL,
                      event.getEventType());
         // there's a special case for timestamp, too
-        if(inBuilder.getMarketData().getTimestamp() == null) {
+        if(inBuilder.getTradeData().getTimestamp() == null) {
             assertNotNull(event.getTimestamp());
             assertEquals(event.getTimestamp().getTime(),
                          event.getTimeMillis());
         } else {
-            assertEquals(inBuilder.getMarketData().getTimestamp(),
+            assertEquals(inBuilder.getTradeData().getTimestamp(),
                          event.getTimestamp());
-            assertEquals(inBuilder.getMarketData().getTimeMillis(),
+            assertEquals(inBuilder.getTradeData().getTimeMillis(),
                          event.getTimeMillis());
         }
         if(event instanceof OptionEvent) {
