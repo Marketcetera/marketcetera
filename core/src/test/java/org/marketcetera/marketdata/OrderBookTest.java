@@ -533,8 +533,6 @@ public class OrderBookTest
                 lastAggregate = lastAggregate.add(new BigDecimal(complete));
             }
         }
-        System.out.println("First: " + firstAggregate.divide(new BigDecimal(100)));
-        System.out.println("Last: " + lastAggregate.divide(new BigDecimal(100)));
     }
     /**
      * Verifies that the given {@link OrderBook} contains the given expected values.

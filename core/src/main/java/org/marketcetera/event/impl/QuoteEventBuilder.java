@@ -613,6 +613,28 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         return this;
     }
     /**
+     * Sets the processed timestamp value to use with the new event.
+     *
+     * @param inTimestamp a <code>long</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public QuoteEventBuilder<E> withProcessedTimestamp(long inTimestamp)
+    {
+        quote.setProcessedTimestamp(inTimestamp);
+        return this;
+    }
+    /**
+     * Sets the received timestamp value to use with the new event.
+     *
+     * @param inTimestamp a <code>long</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public QuoteEventBuilder<E> withReceivedTimestamp(long inTimestamp)
+    {
+        quote.setReceivedTimestamp(inTimestamp);
+        return this;
+    }
+    /**
      * Sets the source value to use with the new event.
      *
      * @param inSource an <code>Object</code> value or <code>null</code>

@@ -74,6 +74,8 @@ public final class QuoteBean
         quote.setInstrument(inQuoteEvent.getInstrument());
         quote.setExchange(inQuoteEvent.getExchange());
         quote.setPrice(inQuoteEvent.getPrice());
+        quote.setProcessedTimestamp(inQuoteEvent.getProcessedTimestamp());
+        quote.setReceivedTimestamp(inQuoteEvent.getReceivedTimestamp());
         quote.setSize(inSize);
         quote.setExchangeTimestamp(inQuoteEvent.getExchangeTimestamp());
         quote.setAction(inQuoteAction);

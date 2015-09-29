@@ -208,7 +208,8 @@ public class MultiInstanceApplicationContainer
      */
     private static String getLog4jConfigFile()
     {
-        return getAndValidateSystemProperty(PARAM_LOG4J_CONFIGURATION_FILE);
+        File log4jConfigFile = new File(getAndValidateSystemProperty(PARAM_LOG4J_CONFIGURATION_FILE));
+        return log4jConfigFile.getAbsolutePath();
     }
     /**
      * Gets the output log directory.
@@ -217,7 +218,8 @@ public class MultiInstanceApplicationContainer
      */
     private static String getLogDir()
     {
-        return getAndValidateSystemProperty(PARAM_METC_LOG_DIR);
+        File logDir = new File(getAndValidateSystemProperty(PARAM_METC_LOG_DIR));
+        return logDir.getAbsolutePath();
     }
     /**
      * Gets the stdout/stderr base log file name.
@@ -358,7 +360,7 @@ public class MultiInstanceApplicationContainer
                               buildClusterMemberList(),
                               instancePropertiesFile);
         String[] arguments = buildProcessArgumentList(inInstanceNumber,
-                                                        instanceDir.getAbsolutePath());
+                                                      instanceDir.getAbsolutePath());
         // TODO message
         SLF4JLoggerProxy.info(STARTUP_CATEGORY,
                               "Launching instance {} of {}",

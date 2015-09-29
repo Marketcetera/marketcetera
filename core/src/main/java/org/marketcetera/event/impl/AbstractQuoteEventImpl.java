@@ -176,6 +176,38 @@ public abstract class AbstractQuoteEventImpl
         quote.setEventType(inEventType);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#getProcessedTimestamp()
+     */
+    @Override
+    public long getProcessedTimestamp()
+    {
+        return quote.getProcessedTimestamp();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#setProcessedTimestamp(long)
+     */
+    @Override
+    public void setProcessedTimestamp(long inTimestamp)
+    {
+        quote.setProcessedTimestamp(inTimestamp);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#getReceivedTimestamp()
+     */
+    @Override
+    public long getReceivedTimestamp()
+    {
+        return quote.getReceivedTimestamp();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#setReceivedTimestamp(long)
+     */
+    @Override
+    public void setReceivedTimestamp(long inTimestamp)
+    {
+        quote.setReceivedTimestamp(inTimestamp);
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override
