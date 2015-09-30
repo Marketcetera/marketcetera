@@ -1,6 +1,11 @@
 package org.marketcetera.marketdata.core.provider;
 
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +37,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class MarketDataProviderWatcher
+        implements MarketDataStatusProvider
 {
     /**
      * Validates and starts the object.
@@ -98,6 +104,43 @@ public class MarketDataProviderWatcher
     public void setMonitoringInterval(long inMonitoringInterval)
     {
         monitoringInterval = inMonitoringInterval;
+    }
+    /**
+     * Get the marketDataStatusListeners value.
+     *
+     * @return a <code>List&lt;MarketDataStatusListener&gt;</code> value
+     */
+    public List<MarketDataStatusListener> getMarketDataStatusListeners()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(marketDataStatusListeners));
+    }
+    /**
+     * Sets the marketDataStatusListeners value.
+     *
+     * @param a <code>List&lt;MarketDataStatusListener&gt;</code> value
+     */
+    public void setMarketDataStatusListeners(List<MarketDataStatusListener> inMarketDataStatusListeners)
+    {
+        marketDataStatusListeners.clear();
+        if(inMarketDataStatusListeners != null) {
+            marketDataStatusListeners.addAll(inMarketDataStatusListeners);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.provider.MarketDataStatusProvider#addMarketDataStatusListener(org.marketcetera.marketdata.core.provider.MarketDataStatusListener)
+     */
+    @Override
+    public void addMarketDataStatusListener(MarketDataStatusListener inMarketDataStatusListener)
+    {
+        marketDataStatusListeners.add(inMarketDataStatusListener);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.provider.MarketDataStatusProvider#removeMarketDataStatusListener(org.marketcetera.marketdata.core.provider.MarketDataStatusListener)
+     */
+    @Override
+    public void removeMarketDataStatusListener(MarketDataStatusListener inMarketDataStatusListener)
+    {
+        marketDataStatusListeners.remove(inMarketDataStatusListener);
     }
     /**
      * Gets the admin bean for the given session.
@@ -169,6 +212,7 @@ public class MarketDataProviderWatcher
     private class Watcher
             implements Runnable
     {
+        private boolean lastStatus = false;
         /* (non-Javadoc)
          * @see java.lang.Runnable#run()
          */
@@ -223,6 +267,18 @@ public class MarketDataProviderWatcher
                                                             monitoringInterval);
                     }
                 }
+                if(lastStatus != isRunning) {
+                    MarketDataProviderStatus newStatus = new MarketDataProviderStatus(moduleName,
+                                                                                      isRunning);
+                    for(MarketDataStatusListener listener : marketDataStatusListeners) {
+                        try {
+                            listener.receiveMarketDataProviderStatus(newStatus);
+                        } catch (Exception e) {
+                            // TODO warn
+                        }
+                    }
+                    lastStatus = isRunning;
+                }
             } catch (Exception e) {
                 Messages.CANNOT_DETERMINE_FEED_STATUS.warn(MarketDataProviderWatcher.this,
                                                            e,
@@ -250,4 +306,8 @@ public class MarketDataProviderWatcher
      * interval at which to monitor
      */
     private long monitoringInterval = 30000;
+    /**
+     * holds status listeners
+     */
+    private final Queue<MarketDataStatusListener> marketDataStatusListeners = new ConcurrentLinkedQueue<>();
 }
