@@ -37,6 +37,15 @@ public class CSVQuantum
                               inReplayRate);
     }
     /**
+     * Get the receivedTimestamp value.
+     *
+     * @return a <code>long</code> value
+     */
+    public long getReceivedTimestamp()
+    {
+        return receivedTimestamp;
+    }
+    /**
      * Get the line value.
      * 
      * <p>This method retrieves the discrete elements of a single line of a market data file
@@ -88,6 +97,10 @@ public class CSVQuantum
         request = inRequest;
         replayRate = inReplayRate;
     }
+    /**
+     * indicates when this data was "received" from the provider
+     */
+    private final long receivedTimestamp = System.currentTimeMillis();
     /**
      * a single line from the file
      */

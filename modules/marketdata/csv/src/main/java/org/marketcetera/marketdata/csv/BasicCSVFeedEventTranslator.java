@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.lang.StringUtils;
+import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -52,7 +53,6 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.client.ClientManager;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 
 /* $License$ */
@@ -380,7 +380,8 @@ public class BasicCSVFeedEventTranslator
                    .withExchange(guessExchange(inData))
                    .withPrice(guessPrice(inData))
                    .withSize(guessSize(inData))
-                   .withTimestamp(guessEventTimestamp(inData));
+                   .withTimestamp(guessEventTimestamp(inData))
+                   .withReceivedTimestamp(inData.getReceivedTimestamp());
             if(instrument instanceof Option) {
                 Option option = (Option)instrument;
                 builder.withExpirationType(guessExpirationType(inData,
@@ -419,6 +420,7 @@ public class BasicCSVFeedEventTranslator
                  .withPrice(guessPrice(inData))               // required
                  .withQuoteDate(guessQuoteDate(inData))       // required
                  .withSize(guessSize(inData))                 // required
+                 .withReceivedTimestamp(inData.getReceivedTimestamp())
                  .withTimestamp(guessEventTimestamp(inData)); // required
         // that should do it for your basic stuff, now, if necessary, add the option-specific works
         if(inInstrument instanceof Option) {
