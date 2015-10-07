@@ -377,12 +377,34 @@ public class MultiInstanceApplicationContainer
                                     "start_dare.sh");
         File stopScript = new File(instanceDir+File.separator+"bin",
                                    "stop_dare.sh");
+        File darePid = new File(instanceDir+File.separator+"bin",
+                                "dare.pid");
+        // add "go to instance dir" to start script
+        FileUtils.write(startScript,
+                        "cd " + instanceDir.getAbsolutePath()+System.lineSeparator());
+        int lineCount = arguments.length;
+        int lineNumber = 1;
         for(String entry : arguments) {
             // TODO is this line different for windows?
-            FileUtils.write(startScript,
-                            entry+" \\"+System.lineSeparator(),
-                            true);
+            if(lineNumber++ == lineCount) {
+                FileUtils.write(startScript,
+                                entry+" &"+System.lineSeparator(),
+                                true);
+            } else {
+                FileUtils.write(startScript,
+                                entry+" \\"+System.lineSeparator(),
+                                true);
+            }
         }
+        FileUtils.write(startScript,
+                        "retval=$?"+System.lineSeparator(),
+                        true);
+        FileUtils.write(startScript,
+                        "pid=$!"+System.lineSeparator(),
+                        true);
+        FileUtils.write(startScript,
+                        "[ ${retval} -eq 0 ] && [ ${pid} -eq ${pid} ] && echo ${pid} > " + instanceDir.getAbsolutePath()+File.separator+"bin"+File.separator+"dare.pid"+System.lineSeparator(),
+                        true);
         File log = new File(getLogDir(),
                             getLogName()+inInstanceNumber+".log");
         ProcessBuilder pb = new ProcessBuilder(arguments);
@@ -390,8 +412,28 @@ public class MultiInstanceApplicationContainer
         pb.redirectOutput(Redirect.appendTo(log));
         int pid = spawnInstance(pb,
                                 inInstanceNumber);
+        FileUtils.write(darePid,
+                        pid + System.lineSeparator());
         FileUtils.write(stopScript,
-                        "kill " + pid + System.lineSeparator());
+                        "cd " + instanceDir.getAbsolutePath()+File.separator+"bin"+System.lineSeparator());
+        FileUtils.write(stopScript,
+                        "if [ -f dare.pid ]" + System.lineSeparator(),
+                        true);
+        FileUtils.write(stopScript,
+                        "then" + System.lineSeparator(),
+                        true);
+        FileUtils.write(stopScript,
+                        "    kill `cat dare.pid`" + System.lineSeparator(),
+                        true);
+        FileUtils.write(stopScript,
+                        "else" + System.lineSeparator(),
+                        true);
+        FileUtils.write(stopScript,
+                        "    kill `ps -ef | grep metc.instance="+ inInstanceNumber +" | grep java | awk '{print $2}'`"+System.lineSeparator(),
+                        true);
+        FileUtils.write(stopScript,
+                        "fi" + System.lineSeparator(),
+                        true);
         // sleep for 1s to generate separation between the instances to help clearly identify the order of instances on the host
         Thread.sleep(1000);
     }
