@@ -254,14 +254,21 @@ public class MultiInstanceApplicationContainer
     private static String prepareHostId()
             throws IOException
     {
-        File instanceDir = getInstanceDir();
-        File hostFile = new File(instanceDir,
+        File hostFile = new File(getAppDir(),
                                  HOST_ID_NAME);
         String id = null;
         if(hostFile.exists()) {
             // this host has already been identified, return existing id
             id = StringUtils.trimToNull(FileUtils.readFileToString(hostFile,
                                                                    StandardCharsets.UTF_8));
+            SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                                   "Host file: {} exists, existing id is {}",
+                                   hostFile.getAbsolutePath(),
+                                   id);
+        } else {
+            SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                                   "Host file: {} does not exist",
+                                   hostFile.getAbsolutePath());
         }
         if(id == null) {
             id = UUID.randomUUID().toString();

@@ -111,8 +111,7 @@ public class BrokerStatus
     /**
      * Create a new BrokerStatus instance.
      */
-    @SuppressWarnings("unused")
-    private BrokerStatus()
+    protected BrokerStatus()
     {
         name = null;
         brokerId = null;
