@@ -542,6 +542,16 @@ public class MultiInstanceApplicationContainer
                                            statement);
                     arguments.add(statement.toString());
                 }
+            } else if(key.startsWith(PARAM_METC_SYSTEM)) {
+                key = key.substring(PARAM_METC_SYSTEM.length());
+                statement.append('-').append(key);
+                if(value != null) {
+                    statement.append('=').append(value);
+                }
+                SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                                       "Adding {}",
+                                       statement);
+                arguments.add(statement.toString());
             }
         }
         arguments.add(DASH_D+"metc.max.instances="+String.valueOf(totalInstances));
@@ -689,6 +699,10 @@ public class MultiInstanceApplicationContainer
      * metc-specific host param name
      */
     public static final String PARAM_METC_HOST = "metc.host";
+    /**
+     * metc-specific system param
+     */
+    public static final String PARAM_METC_SYSTEM = "metc.system.";
     /**
      * guards access to process-specific stats
      */
