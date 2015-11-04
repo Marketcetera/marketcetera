@@ -82,13 +82,15 @@ public class MultiInstanceApplicationContainer
     private static void killProcesses()
             throws InterruptedException
     {
-        for(Process process : processInstances.values()) {
-            try {
-                process.destroy();
-            } catch (Exception ignored) {}
-        }
-        for(Process process : processInstances.values()) {
-            process.waitFor();
+        synchronized(spawnProcessMutex) {
+            for(Process process : processInstances.values()) {
+                try {
+                    process.destroy();
+                } catch (Exception ignored) {}
+            }
+            for(Process process : processInstances.values()) {
+                process.waitFor();
+            }
         }
     }
     /**
@@ -334,6 +336,22 @@ public class MultiInstanceApplicationContainer
         return memberlist.toString();
     }
     /**
+     * Gets the amount of time to wait in ms between starting instances.
+     *
+     * @return a <code>long</code> value
+     */
+    private static long getInstanceStartDelay()
+    {
+        long result = defaultInstanceStartDelay;
+        String rawValue = getSystemProperty(PARAM_METC_INSTANCE_START_DELAY);
+        if(rawValue != null) {
+            try {
+                result = Long.parseLong(rawValue);
+            } catch (Exception ignored) {}
+        }
+        return result;
+    }
+    /**
      * Launches the process with the given instance number.
      *
      * @param inInstanceNumber an <code>int</code> value
@@ -441,8 +459,8 @@ public class MultiInstanceApplicationContainer
         FileUtils.write(stopScript,
                         "fi" + System.lineSeparator(),
                         true);
-        // sleep for 1s to generate separation between the instances to help clearly identify the order of instances on the host
-        Thread.sleep(1000);
+        // sleep to generate separation between the instances to help clearly identify the order of instances on the host
+        Thread.sleep(getInstanceStartDelay());
     }
     /**
      * Spawns the instance described by the given arguments.
@@ -704,7 +722,15 @@ public class MultiInstanceApplicationContainer
      */
     public static final String PARAM_METC_SYSTEM = "metc.system.";
     /**
+     * metc-specific instance start delay param
+     */
+    public static final String PARAM_METC_INSTANCE_START_DELAY = "metc.start.delay";
+    /**
      * guards access to process-specific stats
      */
     private static final Object spawnProcessMutex = new Object();
+    /**
+     * default delay between start of each instance
+     */
+    private static final long defaultInstanceStartDelay = 1000;
 }
