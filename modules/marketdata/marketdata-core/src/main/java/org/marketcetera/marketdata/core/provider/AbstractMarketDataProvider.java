@@ -29,6 +29,7 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.HasEventType;
+import org.marketcetera.event.HasTimestamps;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -693,6 +694,7 @@ public abstract class AbstractMarketDataProvider
                                                "Publishing {} to {}",
                                                outgoingEvents,
                                                requests);
+                        long processedTimestamp = System.currentTimeMillis();
                         for(MarketDataRequestToken requestToken : requests) {
                             // for each subscriber, determine if the request contents justifies the update
                             if(requestToken.getRequest().getContent().contains(notification.content)) {
@@ -700,6 +702,9 @@ public abstract class AbstractMarketDataProvider
                                 //  we don't want a misbehaving subscriber to break the market data mechanism
                                 try {
                                     for(Event outgoingEvent : outgoingEvents) {
+                                        if(outgoingEvent instanceof HasTimestamps) {
+                                            ((HasTimestamps)outgoingEvent).setProcessedTimestamp(processedTimestamp);
+                                        }
                                         outgoingEvent.setSource(requestToken.getId());
                                         outgoingEvent.setProvider(getProviderName());
                                         ISubscriber subscriber = requestToken.getSubscriber();

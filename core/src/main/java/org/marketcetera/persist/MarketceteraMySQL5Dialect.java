@@ -9,10 +9,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides a customized MySQL5 dialect to work around some Hibernate 4 bugs.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketceteraMySQL5Dialect.java 83882 2014-08-01 22:31:54Z colin $
+ * @version $Id$
  * @since 1.3.1
  */
-@ClassVersion("$Id: MarketceteraMySQL5Dialect.java 83882 2014-08-01 22:31:54Z colin $")
+@ClassVersion("$Id$")
 public class MarketceteraMySQL5Dialect
         extends MySQL5Dialect
 {

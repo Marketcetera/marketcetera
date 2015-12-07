@@ -11,7 +11,13 @@ import static org.marketcetera.marketdata.csv.Messages.REQUEST_FAILED;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,7 +26,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.marketdata.*;
+import org.marketcetera.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.marketdata.AssetClass;
+import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -320,8 +331,7 @@ public class CSVFeed
                         Messages.END_OF_DATA_REACHED.debug(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
                                                            count,
                                                            System.currentTimeMillis() - start);
-                        if(credentials.getReplayEvents() &&
-                           isRunning.get()) {
+                        if(credentials.getReplayEvents() && isRunning.get()) {
                             count = 0;
                             parser = null;
                             continue;

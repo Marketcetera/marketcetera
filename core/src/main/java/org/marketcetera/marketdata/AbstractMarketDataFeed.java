@@ -1,7 +1,16 @@
 package org.marketcetera.marketdata;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
@@ -12,6 +21,7 @@ import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTranslator;
+import org.marketcetera.event.HasTimestamps;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.metrics.ConditionsFactory;
 import org.marketcetera.metrics.ThreadedMetric;
@@ -533,9 +543,13 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                     }
                     ThreadedMetric.event("mdata-translated");  //$NON-NLS-1$
                     // now publish the complete list of events in the proper order
+                    long processedTimestamp = System.currentTimeMillis();
                     for(Event event : actualEvents) {
                         event.setSource(token);
                         event.setProvider(getProviderName());
+                        if(event instanceof HasTimestamps) {
+                            ((HasTimestamps)event).setProcessedTimestamp(processedTimestamp);
+                        }
                         token.publish(event);
                     }
                 } catch (Exception e) {

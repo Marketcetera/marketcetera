@@ -12,7 +12,7 @@ import org.apache.commons.lang.Validate;
  * Provides common behavior for an invocable data source service provider.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractInvocableDataSourceServiceProvider.java 84382 2015-01-20 19:43:06Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public abstract class AbstractInvocableDataSourceServiceProvider
@@ -94,7 +94,7 @@ public abstract class AbstractInvocableDataSourceServiceProvider
      * Describes a database call to be made with appropriate resources.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: AbstractInvocableDataSourceServiceProvider.java 84382 2015-01-20 19:43:06Z colin $
+     * @version $Id$
      * @since $Release$
      */
     protected interface ConnectionCallable<ReturnClazz>

@@ -215,6 +215,28 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         return this;
     }
     /**
+     * Sets the processed timestamp value to use with the new event.
+     *
+     * @param inTimestamp a <code>long</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public TradeEventBuilder<E> withProcessedTimestamp(long inTimestamp)
+    {
+        tradeData.setProcessedTimestamp(inTimestamp);
+        return this;
+    }
+    /**
+     * Sets the received timestamp value to use with the new event.
+     *
+     * @param inTimestamp a <code>long</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public TradeEventBuilder<E> withReceivedTimestamp(long inTimestamp)
+    {
+        tradeData.setReceivedTimestamp(inTimestamp);
+        return this;
+    }
+    /**
      * Sets the source value to use with the new event.
      *
      * @param inSource an <code>Object</code> value or <code>null</code>

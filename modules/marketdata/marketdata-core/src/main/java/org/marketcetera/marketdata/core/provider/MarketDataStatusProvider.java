@@ -23,4 +23,10 @@ public interface MarketDataStatusProvider
      * @param inMarketDataStatusListener a <code>MarketDataStatusListener</code> value
      */
     public void removeMarketDataStatusListener(MarketDataStatusListener inMarketDataStatusListener);
+    /**
+     * Indicates if the provider is currently running.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isRunning();
 }
