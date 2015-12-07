@@ -45,7 +45,7 @@ my($ignoreFile)=$tmpDir.'/ignoreFile';
 my(@patternsEmacs)=('*~','#*#');
 my(@patternsEclipse)=('.classpath','.project','.settings');
 my(@patternsIntelliJ)=('*.ipr','*.iws','*.iml');
-my(@patternsMaven)=('target');
+my(@patternsMaven)=('target','target-eclipse');
 my(@patternsPython)=('*$py.class');
 
 my(@patternsMavenTop)=(
@@ -71,19 +71,21 @@ my(@patternsAll)=(
 my(%patternsCustom)=(
 	'public'
 	  => ['profiles.xml'],
-	'public/source/photon/plugins/com.swtworkbench.community.xswt'
+	'public/photon/plugins/com.swtworkbench.community.xswt'
 	  => ['bin'],
-	'public/source/photon/plugins/org.marketcetera.photon.commons.ui'
+	'public/photon/plugins/org.marketcetera.photon.commons.ui'
 	  => ['bin'],
-	'public/source/photon/plugins/org.marketcetera.photon.commons.ui.tests'
+	'public/photon/plugins/org.marketcetera.photon.commons.ui.tests'
 	  => ['bin'],
-	'public/source/photon/features/org.marketcetera.photon.feature'
+	'public/photon/features/org.marketcetera.photon.feature'
 	  => ['plugin_customization.ini'],
-	'public/source/photon/plugins/org.marketcetera.core.tests'
-	  => ['core-2.4.3-tests.jar'],
-	'public/source/strategyagent/src/test/sample_data/modules/jars'
+	'public/photon/plugins/org.marketcetera.core.tests'
+	  => ['core-*-tests.jar'],
+	'public/photon/maven/rcptarget'
+	  => ['photon-target'],
+	'public/strategyagent/src/test/sample_data/modules/jars'
 	  => ['*.jar'],
-	'public/source/strategyagent/src/test/sample_data/modules/conf'
+	'public/strategyagent/src/test/sample_data/modules/conf'
 	  => ['*.properties'],
 );
 
@@ -100,7 +102,7 @@ sub run($)
 
 sub walk ()
 {
-	if (-d && (/^\.svn$/io || /^target$/io)) {
+	if (-d && (/^\.svn$/io || /^target$/io || /^target-eclipse$/io)) {
 		warn 'Ignoring subversion/target: '.$File::Find::name."\n";
 		$File::Find::prune=1;
 		return;
@@ -120,10 +122,10 @@ sub walk ()
 	}
 
 	if (-d) {
-		if (!(-e $_.'/.svn')) {
-			warn 'Ignoring non-subversion directory: '.$File::Find::name."\n";
-			return;
-		}
+#		if (!(-e $_.'/.svn')) {
+#			warn 'Ignoring non-subversion directory: '.$File::Find::name."\n";
+#			return;
+#		}
 		my(@patterns)=();
 		my($key);
 		foreach $key (keys(%patternsCustom)) {
@@ -132,7 +134,7 @@ sub walk ()
 				last;
 			}
 		}
-		if (($absName=~m#/source/photon/#) && (-e $_.'/META-INF')) {
+		if (($absName=~m#/photon/#) && (-e $_.'/META-INF')) {
 			@patterns=(@patterns,@patternsPhotonTop);
 		} elsif (-e $_.'/pom.xml') {
 			@patterns=(@patterns,@patternsMavenTop);

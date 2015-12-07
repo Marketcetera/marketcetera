@@ -11,7 +11,7 @@ import org.apache.commons.lang.Validate;
  * Provides common datasource provider behavior.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractDataSourceServiceProvider.java 84161 2014-10-18 00:39:01Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public abstract class AbstractDataSourceServiceProvider
