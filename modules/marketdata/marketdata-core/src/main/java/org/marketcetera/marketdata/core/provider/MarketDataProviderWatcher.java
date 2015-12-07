@@ -45,6 +45,7 @@ public class MarketDataProviderWatcher
     @PostConstruct
     public void start()
     {
+        lastStatus = false;
         mbeanServer = ManagementFactory.getPlatformMBeanServer();
         Validate.notNull(mbeanServer,
                          Messages.MBEAN_SERVER_REQUIRED.getText());
@@ -142,6 +143,14 @@ public class MarketDataProviderWatcher
     {
         marketDataStatusListeners.remove(inMarketDataStatusListener);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.provider.MarketDataStatusProvider#isRunning()
+     */
+    @Override
+    public boolean isRunning()
+    {
+        return lastStatus;
+    }
     /**
      * Gets the admin bean for the given session.
      *
@@ -212,7 +221,6 @@ public class MarketDataProviderWatcher
     private class Watcher
             implements Runnable
     {
-        private boolean lastStatus = false;
         /* (non-Javadoc)
          * @see java.lang.Runnable#run()
          */
@@ -290,6 +298,10 @@ public class MarketDataProviderWatcher
          */
         private boolean useModule = true;
     }
+    /**
+     * indicates the last know status for the provider
+     */
+    private volatile boolean lastStatus = false;
     /**
      * service used to schedule watcher tasks
      */
