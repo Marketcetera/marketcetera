@@ -849,11 +849,15 @@
         <!-- mvn test -->
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.4.3</version>
+          <version>2.19</version>
           <configuration>
             <disableXmlReport>false</disableXmlReport>
-            <forkMode>always</forkMode>
+	    <forkCount>2.5C</forkCount>
+	    <reuseForks>false</reuseForks>
             <argLine>${mvn.test.options}</argLine>
+            <systemPropertyVariables>
+              <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
+            </systemPropertyVariables>
           </configuration>
         </plugin>
         <!-- mvn compile -->
