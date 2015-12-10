@@ -15,12 +15,11 @@ import org.marketcetera.metrics.MetricService;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.Lifecycle;
 
-import com.hazelcast.core.HazelcastInstanceNotActiveException;
-
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
 
 /* $License$ */
 
@@ -185,6 +184,15 @@ public abstract class QueueProcessor<Clazz>
         addToQueueMetric.mark(size);
         queueCounterMetric.inc(size);
         queue.addAll(inData);
+    }
+    /**
+     * Gets the queue size.
+     *
+     * @return an <code>int</code> value
+     */
+    protected int size()
+    {
+        return new Long(queueCounterMetric.getCount()).intValue();
     }
     /**
      * Gets the queue to process.
