@@ -46,6 +46,7 @@
     <mvn.slf4j.version>1.7.10</mvn.slf4j.version>
     <mvn.log4j.version>2.1</mvn.log4j.version>
     <mvn.test.options>-Xmx1024m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
   </properties>
   <!-- Marketcetera uses the following versions of some common libraries:
        jaxb:  2.2.6 (provided by Java7, not CXF)
@@ -257,9 +258,19 @@
       </dependency>
       <!-- Compile: Other -->
       <dependency>
+        <groupId>com.outr.javasysmon</groupId>
+        <artifactId>javasysmon_2.10</artifactId>
+        <version>0.3.4</version>
+      </dependency>
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>3.1.2</version>
+      </dependency>
+      <dependency>
         <groupId>com.hazelcast</groupId>
         <artifactId>hazelcast</artifactId>
-        <version>3.3</version>
+        <version>3.5.3</version>
       </dependency> 
       <dependency>
         <groupId>com.hazelcast</groupId>
@@ -808,10 +819,15 @@
           <version>2.0</version>
         </plugin>
         <!-- mvn eclipse:* -->
-        <plugin>
-          <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.9</version>
-        </plugin>
+	<plugin>
+	  <artifactId>maven-eclipse-plugin</artifactId>
+	  <version>2.10</version>
+	  <configuration>
+	    <buildOutputDirectory>target-eclipse/classes</buildOutputDirectory>
+	    <downloadSources>true</downloadSources>
+	    <downloadJavadocs>true</downloadJavadocs>
+	  </configuration>
+	</plugin>
         <!-- mvn clean -->
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
@@ -845,11 +861,15 @@
         <!-- mvn test -->
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.4.3</version>
+          <version>2.19</version>
           <configuration>
             <disableXmlReport>false</disableXmlReport>
-            <forkMode>always</forkMode>
+	    <forkCount>2.5C</forkCount>
+	    <reuseForks>false</reuseForks>
             <argLine>${mvn.test.options}</argLine>
+            <systemPropertyVariables>
+              <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
+            </systemPropertyVariables>
           </configuration>
         </plugin>
         <!-- mvn compile -->

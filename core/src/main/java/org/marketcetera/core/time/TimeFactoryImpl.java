@@ -111,5 +111,5 @@ public class TimeFactoryImpl
      * wallclock minutes: HH:MM
      */
     public static final DateTimeFormatter WALLCLOCK_MINUTES = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE).toFormatter().withZone(ZONE);
-    private static final DateTimeFormatter[] FORMATTERS = new DateTimeFormatter[] { FULL_SECONDS,WALLCLOCK_SECONDS,WALLCLOCK_MINUTES,US_DATE,INTL_DATE,FULL_MILLISECONDS_CONDENSED };
+    private static final DateTimeFormatter[] FORMATTERS = new DateTimeFormatter[] { FULL_SECONDS,WALLCLOCK_SECONDS,WALLCLOCK_MINUTES,WALLCLOCK_MILLISECONDS,US_DATE,INTL_DATE,FULL_MILLISECONDS_CONDENSED };
 }

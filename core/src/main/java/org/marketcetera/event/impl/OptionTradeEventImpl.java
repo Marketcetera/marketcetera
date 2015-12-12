@@ -10,8 +10,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.OptionEvent;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.beans.MarketDataBean;
 import org.marketcetera.event.beans.OptionBean;
+import org.marketcetera.event.beans.TradeBean;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
@@ -85,7 +85,7 @@ public class OptionTradeEventImpl
     /**
      * Create a new OptionTradeEventImpl instance.
      *
-     * @param inMarketData a <code>MarketDataBean</code> value
+     * @param inTradeData a <code>TradeBean</code> value
      * @param inOption an <code>OptionBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
@@ -98,10 +98,10 @@ public class OptionTradeEventImpl
      * @throws IllegalArgumentException if <code>UnderlyingInstrument</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>ExpirationType</code> is <code>null</code>
      */
-    OptionTradeEventImpl(MarketDataBean inMarketData,
+    OptionTradeEventImpl(TradeBean inTradeData,
                          OptionBean inOption)
     {
-        super(inMarketData);
+        super(inTradeData);
         option = OptionBean.copy(inOption);
         option.validate();
     }

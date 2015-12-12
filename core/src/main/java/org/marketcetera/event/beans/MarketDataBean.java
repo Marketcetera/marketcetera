@@ -112,6 +112,42 @@ public class MarketDataBean
         exchangeTimestamp = inExchangeTimestamp;
     }
     /**
+     * Get the receivedTimestamp value.
+     *
+     * @return a <code>long</code> value
+     */
+    public long getReceivedTimestamp()
+    {
+        return receivedTimestamp;
+    }
+    /**
+     * Sets the receivedTimestamp value.
+     *
+     * @param a <code>long</code> value
+     */
+    public void setReceivedTimestamp(long inReceivedTimestamp)
+    {
+        receivedTimestamp = inReceivedTimestamp;
+    }
+    /**
+     * Get the processedTimestamp value.
+     *
+     * @return a <code>long</code> value
+     */
+    public long getProcessedTimestamp()
+    {
+        return processedTimestamp;
+    }
+    /**
+     * Sets the processedTimestamp value.
+     *
+     * @param a <code>long</code> value
+     */
+    public void setProcessedTimestamp(long inProcessedTimestamp)
+    {
+        processedTimestamp = inProcessedTimestamp;
+    }
+    /**
      * Get the price value.
      *
      * @return a <code>BigDecimal</code> value
@@ -166,24 +202,6 @@ public class MarketDataBean
         exchange = inExchange;
     }
     /**
-     * Get the tradeCondition value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getTradeCondition()
-    {
-        return tradeCondition;
-    }
-    /**
-     * Sets the tradeCondition value.
-     *
-     * @param inTradeCondition a <code>String</code> value
-     */
-    public void setTradeCondition(String inTradeCondition)
-    {
-        tradeCondition = inTradeCondition;
-    }
-    /**
      * Performs validation of the attributes.
      *
      * <p>Subclasses should override this method to validate
@@ -228,7 +246,7 @@ public class MarketDataBean
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder().append(exchange).append(exchangeTimestamp).append(instrument).append(price).append(size).append(eventType).append(tradeCondition).toHashCode();
+        return new HashCodeBuilder().append(exchange).append(exchangeTimestamp).append(receivedTimestamp).append(processedTimestamp).append(instrument).append(price).append(size).append(eventType).toHashCode();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -246,8 +264,9 @@ public class MarketDataBean
             return false;
         }
         MarketDataBean other = (MarketDataBean) obj;
-        return new EqualsBuilder().append(exchange,other.exchange).append(exchangeTimestamp,other.exchangeTimestamp).append(instrument,other.instrument)
-                .append(price,other.price).append(size,other.size).append(eventType,other.eventType).append(tradeCondition,other.tradeCondition).isEquals();
+        return new EqualsBuilder().append(exchange,other.exchange).append(exchangeTimestamp,other.exchangeTimestamp).append(receivedTimestamp,other.receivedTimestamp)
+                .append(processedTimestamp,other.processedTimestamp).append(instrument,other.instrument)
+                .append(price,other.price).append(size,other.size).append(eventType,other.eventType).isEquals();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -255,14 +274,13 @@ public class MarketDataBean
     @Override
     public String toString()
     {
-        return String.format("MarketData: %s at %s of %s on %s at %s %s %s [%s with source %s at %s]", //$NON-NLS-1$
+        return String.format("MarketData: %s at %s of %s on %s at %s %s [%s with source %s at %s]", //$NON-NLS-1$
                              size,
                              price,
                              instrument,
                              exchange,
                              exchangeTimestamp,
                              eventType,
-                             tradeCondition,
                              getMessageId(),
                              getSource(),
                              getTimestamp());
@@ -283,8 +301,9 @@ public class MarketDataBean
         inRecipient.setExchangeTimestamp(inDonor.getExchangeTimestamp());
         inRecipient.setInstrument(inDonor.getInstrument());
         inRecipient.setPrice(inDonor.getPrice());
+        inRecipient.setProcessedTimestamp(inDonor.getProcessedTimestamp());
+        inRecipient.setReceivedTimestamp(inDonor.getReceivedTimestamp());
         inRecipient.setSize(inDonor.getSize());
-        inRecipient.setTradeCondition(inDonor.getTradeCondition());
     }
     /**
      * the market data price
@@ -307,19 +326,24 @@ public class MarketDataBean
     @XmlAttribute
     private String exchangeTimestamp;
     /**
+     * the timestamp when the raw data was received from the market data provider; occurs within the market data adapter
+     */
+    @XmlAttribute
+    private long receivedTimestamp;
+    /**
+     * the timestamp when the raw data was converted to Marketcetera form; occurs within the market data adapter
+     */
+    @XmlAttribute
+    private long processedTimestamp;
+    /**
      * the market data instrument
      */
     @XmlElement
     private Instrument instrument;
     /**
-     * market data trade condition
-     */
-    @XmlAttribute
-    private String tradeCondition;
-    /**
      * the event meta-type
      */
     @XmlAttribute
     private EventType eventType = EventType.UNKNOWN;
-    private static final long serialVersionUID = 1486216063784594404L;
+    private static final long serialVersionUID = 6038224517095552833L;
 }

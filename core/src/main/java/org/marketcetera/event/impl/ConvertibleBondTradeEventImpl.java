@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.marketcetera.event.ConvertibleBondEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.beans.ConvertibleBondBean;
-import org.marketcetera.event.beans.MarketDataBean;
+import org.marketcetera.event.beans.TradeBean;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
@@ -259,7 +259,7 @@ public class ConvertibleBondTradeEventImpl
     /**
      * Create a new ConvertibleBondTradeEventImpl instance.
      *
-     * @param inMarketData a <code>MarketDataBean</code> value
+     * @param inTradeData a <code>TradeBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
@@ -268,10 +268,10 @@ public class ConvertibleBondTradeEventImpl
      * @throws IllegalArgumentException if <code>Exchange</code> is <code>null</code> or empty
      * @throws IllegalArgumentException if <code>ExchangeTimestamp</code> is <code>null</code> or empty
      */
-    ConvertibleBondTradeEventImpl(MarketDataBean inMarketData,
-                                      ConvertibleBondBean inConvertibleBond)
+    ConvertibleBondTradeEventImpl(TradeBean inTradeData,
+                                  ConvertibleBondBean inConvertibleBond)
     {
-        super(inMarketData);
+        super(inTradeData);
         convertibleBond = inConvertibleBond;
         convertibleBond.validate();
     }

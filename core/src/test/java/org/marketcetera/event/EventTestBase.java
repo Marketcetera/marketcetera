@@ -47,6 +47,22 @@ public class EventTestBase
      * Generates an <code>AskEvent</code> for the given instrument.
      *
      * @param inInstrument an <code>Instrument</code> value
+     * @param inQuoteDate a <code>String</code> value
+     * @return an <code>AskEvent</code> value
+     */
+    public static AskEvent generateAskEvent(Instrument inInstrument,
+                                            String inQuoteDate)
+    {
+        return QuoteEventBuilder.askEvent(inInstrument)
+                .withExchange(generateExchange())
+                .withPrice(generateDecimalValue())
+                .withSize(generateDecimalValue())
+                .withQuoteDate(inQuoteDate).create();
+    }
+    /**
+     * Generates an <code>AskEvent</code> for the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
      * @param inAskPrice a <code>BigDecimal</code> value
      * @return an <code>AskEvent</code> value
      */
@@ -69,6 +85,22 @@ public class EventTestBase
     {
         return generateBidEvent(inInstrument,
                                 generateDecimalValue());
+    }
+    /**
+     * Generates a <code>BidEvent</code> for the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inQuoteDate a <code>String</code> value
+     * @return a <code>BidEvent</code> value
+     */
+    public static BidEvent generateBidEvent(Instrument inInstrument,
+                                            String inQuoteDate)
+    {
+        return QuoteEventBuilder.bidEvent(inInstrument)
+                .withExchange(generateExchange())
+                .withPrice(generateDecimalValue())
+                .withSize(generateDecimalValue())
+                .withQuoteDate(inQuoteDate).create();
     }
     /**
      * Generates a <code>BidEvent</code> for the given instrument.

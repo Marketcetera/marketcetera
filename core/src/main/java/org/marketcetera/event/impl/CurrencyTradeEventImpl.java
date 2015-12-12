@@ -9,8 +9,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.marketcetera.event.CurrencyEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.beans.CurrencyBean;
-import org.marketcetera.event.beans.MarketDataBean;
-import org.marketcetera.trade.*;
+import org.marketcetera.event.beans.TradeBean;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.DeliveryType;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -51,11 +52,13 @@ public class CurrencyTradeEventImpl
     /**
      * Create a new CurrencyTradeEventImpl instance.
      *
+     * @param inTradeData a <code>TradeBean</code> value
+     * @param inCurrency a <code>CurrencyBean</code> value
      */
-    CurrencyTradeEventImpl(MarketDataBean inMarketData,
-                         CurrencyBean inCurrency)
+    CurrencyTradeEventImpl(TradeBean inTradeData,
+                           CurrencyBean inCurrency)
     {
-        super(inMarketData);
+        super(inTradeData);
         currency = inCurrency;
         currency.validate();
     }

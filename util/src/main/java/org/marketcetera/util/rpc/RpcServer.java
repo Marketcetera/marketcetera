@@ -84,7 +84,7 @@ public class RpcServer<SessionClazz>
         Validate.notEmpty(serviceSpecs);
         Messages.SERVER_STARTING.info(this,
                                       hostname,
-                                      port);
+                                      String.valueOf(port));
         if(isRunning()) {
             stop();
         }

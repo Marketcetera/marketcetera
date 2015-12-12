@@ -132,4 +132,14 @@ public abstract class LazyBean
      */
 
     protected abstract void process();
+    /**
+     * Processes or re-processes the receiver, regardless of whether it has been processed before or not.
+     */
+    public void forceProcess()
+    {
+        synchronized(this) {
+            setProcessed(false);
+            ensureProcessed();
+        }
+    }
 }

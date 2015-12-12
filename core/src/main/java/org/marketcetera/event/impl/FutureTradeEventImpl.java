@@ -9,8 +9,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.marketcetera.event.FutureEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.beans.FutureBean;
-import org.marketcetera.event.beans.MarketDataBean;
-import org.marketcetera.trade.*;
+import org.marketcetera.event.beans.TradeBean;
+import org.marketcetera.trade.DeliveryType;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureType;
+import org.marketcetera.trade.FutureUnderlyingAssetType;
+import org.marketcetera.trade.StandardType;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -89,7 +93,7 @@ public class FutureTradeEventImpl
     /**
      * Create a new FutureTradeEventImpl instance.
      *
-     * @param inMarketData a <code>MarketDataBean</code> value
+     * @param inTradeData a <code>TradeBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
@@ -98,10 +102,10 @@ public class FutureTradeEventImpl
      * @throws IllegalArgumentException if <code>Exchange</code> is <code>null</code> or empty
      * @throws IllegalArgumentException if <code>ExchangeTimestamp</code> is <code>null</code> or empty
      */
-    FutureTradeEventImpl(MarketDataBean inMarketData,
+    FutureTradeEventImpl(TradeBean inTradeData,
                          FutureBean inFuture)
     {
-        super(inMarketData);
+        super(inTradeData);
         future = inFuture;
         future.validate();
     }

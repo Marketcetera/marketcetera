@@ -23,6 +23,11 @@
 
   <name>Core</name>
 
+  <properties>
+    <version.template.file>src/main/resources/version.java.template</version.template.file>
+    <version.file>src/main/java/org/marketcetera/core/Version.java</version.file>
+  </properties>
+
   <dependencies>
 
     <!-- Compile. -->
@@ -105,6 +110,19 @@
       <artifactId>log4j-api</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-c3p0</artifactId>
+      <scope>compile</scope>
+     </dependency>       
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.outr.javasysmon</groupId>
+      <artifactId>javasysmon_2.10</artifactId>
+    </dependency>
     <!-- runtime -->
     <dependency>
       <groupId>com.lmax</groupId>
@@ -138,6 +156,45 @@
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>maven-replacer-plugin</artifactId>
+        <version>1.4.0</version>
+        <executions>                
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <file>${version.template.file}</file>
+          <outputFile>${version.file}</outputFile>
+          <replacements>
+            <replacement>
+              <token>@buildnumber@</token>
+              <value>${svn.revision}</value>
+            </replacement>
+            <replacement>
+              <token>@buildrepository@</token>
+              <value>${svn.repository}</value>
+            </replacement>
+            <replacement>
+              <token>@buildpath@</token>
+              <value>${svn.path}</value>
+            </replacement>
+            <replacement>
+              <token>@buildtime@</token>
+              <value>${maven.build.timestamp}</value>
+            </replacement>
+            <replacement>
+              <token>@pomversion@</token>
+              <value>${project.version}</value>
+            </replacement>
+          </replacements>                        
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>com.mysema.maven</groupId>
         <artifactId>apt-maven-plugin</artifactId>

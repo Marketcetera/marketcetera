@@ -58,12 +58,16 @@ public class QuoteBeanTest
     {
         Instrument equity = new Equity("METC");
         Date timestamp = new Date();
+        long receivedTimestamp = timestamp.getTime()+1;
+        long processedTimestamp = receivedTimestamp+1;
         BigDecimal size = BigDecimal.ONE;
         QuoteAction action = QuoteAction.CHANGE;
         final QuoteEventBuilder<AskEvent> equityAskBuilder = QuoteEventBuilder.askEvent(equity);
         equityAskBuilder.withExchange("exchange")
                         .withPrice(BigDecimal.ONE)
                         .withSize(BigDecimal.TEN)
+                        .withProcessedTimestamp(processedTimestamp)
+                        .withReceivedTimestamp(receivedTimestamp)
                         .withQuoteDate(DateUtils.dateToString(new Date()));
         // signature 1
         new ExpectedFailure<NullPointerException>(){
@@ -144,6 +148,8 @@ public class QuoteBeanTest
                             ask.getSource(),
                             ask.getExchange(),
                             ask.getExchangeTimestamp(),
+                            processedTimestamp,
+                            receivedTimestamp,
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
@@ -158,6 +164,8 @@ public class QuoteBeanTest
                             ask.getSource(),
                             ask.getExchange(),
                             ask.getExchangeTimestamp(),
+                            processedTimestamp,
+                            receivedTimestamp,
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
@@ -175,6 +183,8 @@ public class QuoteBeanTest
                             ask.getSource(),
                             ask.getExchange(),
                             ask.getExchangeTimestamp(),
+                            processedTimestamp,
+                            receivedTimestamp,
                             ask.getInstrument(),
                             ask.getPrice(),
                             size,
@@ -193,6 +203,8 @@ public class QuoteBeanTest
                             ask.getSource(),
                             ask.getExchange(),
                             ask.getExchangeTimestamp(),
+                            processedTimestamp,
+                            receivedTimestamp,
                             ask.getInstrument(),
                             ask.getPrice(),
                             size,
@@ -209,6 +221,8 @@ public class QuoteBeanTest
                             ask.getSource(),
                             ask.getExchange(),
                             ask.getExchangeTimestamp(),
+                            processedTimestamp,
+                            receivedTimestamp,
                             ask.getInstrument(),
                             ask.getPrice(),
                             size,
@@ -313,6 +327,8 @@ public class QuoteBeanTest
                             ask.getSource(),
                             ask.getExchange(),
                             ask.getExchangeTimestamp(),
+                            processedTimestamp,
+                            receivedTimestamp,
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
@@ -326,6 +342,8 @@ public class QuoteBeanTest
                             ask.getSource(),
                             ask.getExchange(),
                             ask.getExchangeTimestamp(),
+                            processedTimestamp,
+                            receivedTimestamp,
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
@@ -341,6 +359,8 @@ public class QuoteBeanTest
                             ask.getSource(),
                             ask.getExchange(),
                             ask.getExchangeTimestamp(),
+                            processedTimestamp,
+                            receivedTimestamp,
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
@@ -354,6 +374,8 @@ public class QuoteBeanTest
                             ask.getSource(),
                             ask.getExchange(),
                             ask.getExchangeTimestamp(),
+                            processedTimestamp,
+                            receivedTimestamp,
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
@@ -368,6 +390,40 @@ public class QuoteBeanTest
                             ask.getSource(),
                             ask.getExchange(),
                             ask.getExchangeTimestamp(),
+                            processedTimestamp,
+                            receivedTimestamp,
+                            ask.getInstrument(),
+                            ask.getPrice(),
+                            ask.getSize(),
+                            action,
+                            ask.getEventType());
+        // processed timestamp
+        equityAskBuilder.withProcessedTimestamp(processedTimestamp+2);
+        verifyQuoteBeanFull(QuoteBean.getQuoteBeanFromEvent(ask,
+                                                            action),
+                            ask.getMessageId(),
+                            ask.getTimestamp(),
+                            ask.getSource(),
+                            ask.getExchange(),
+                            ask.getExchangeTimestamp(),
+                            processedTimestamp,
+                            receivedTimestamp,
+                            ask.getInstrument(),
+                            ask.getPrice(),
+                            ask.getSize(),
+                            action,
+                            ask.getEventType());
+        // received timestamp
+        equityAskBuilder.withReceivedTimestamp(receivedTimestamp+2);
+        verifyQuoteBeanFull(QuoteBean.getQuoteBeanFromEvent(ask,
+                                                            action),
+                            ask.getMessageId(),
+                            ask.getTimestamp(),
+                            ask.getSource(),
+                            ask.getExchange(),
+                            ask.getExchangeTimestamp(),
+                            processedTimestamp,
+                            receivedTimestamp,
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
@@ -398,6 +454,8 @@ public class QuoteBeanTest
                             bid.getSource(),
                             bid.getExchange(),
                             bid.getExchangeTimestamp(),
+                            0,
+                            0,
                             bid.getInstrument(),
                             bid.getPrice(),
                             bid.getSize(),
@@ -452,11 +510,10 @@ public class QuoteBeanTest
      * @see org.marketcetera.event.beans.MarketDataBeanTest#constructBean()
      */
     @Override
-    protected MarketDataBean constructBean()
+    protected QuoteBean constructBean()
     {
         return new QuoteBean();
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.event.beans.MarketDataBeanTest#doAdditionalValidationTest(org.marketcetera.event.beans.MarketDataBean)
      */
@@ -543,10 +600,14 @@ public class QuoteBeanTest
      * @param inExpectedSource an <code>Object</code> value
      * @param inExpectedExchange a <code>String</code> value
      * @param inExpectedExchangeTimestamp a <code>String</code> value
+     * @param inExpectedProcessedTimestamp a <code>long</code> value
+     * @param inExpectedReceivedTimestamp a <code>long</code> value
      * @param inExpectedInstrument an <code>Instrument</code> value
      * @param inExpectedPrice a <code>BigDecimal</code> value
      * @param inExpectedSize a <code>BigDecimal</code> value
      * @param inExpectedAction a <code>QuoteAction</code> value
+     * @param inExpectedTradeCondition a <code>String</code> value
+     * @param inExpectedMetaType an <code>EventType</code> value
      * @throws Exception if an unexpected error occurs
      */
     static void verifyQuoteBeanFull(QuoteBean inBean,
@@ -555,6 +616,8 @@ public class QuoteBeanTest
                                     Object inExpectedSource,
                                     String inExpectedExchange,
                                     String inExpectedExchangeTimestamp,
+                                    long inExpectedProcessedTimestamp,
+                                    long inExpectedReceivedTimestamp,
                                     Instrument inExpectedInstrument,
                                     BigDecimal inExpectedPrice,
                                     BigDecimal inExpectedSize,
@@ -567,6 +630,8 @@ public class QuoteBeanTest
         verifyMarketDataBean(inBean,
                              inExpectedExchange,
                              inExpectedExchangeTimestamp,
+                             inExpectedProcessedTimestamp,
+                             inExpectedReceivedTimestamp,
                              inExpectedInstrument,
                              inExpectedPrice,
                              inExpectedSize,

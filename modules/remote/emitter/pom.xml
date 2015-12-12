@@ -82,7 +82,19 @@
 
   <build>
     <plugins>
-
+      <!-- override configuration to fork 1 at a time -->
+      <plugin>
+	<artifactId>maven-surefire-plugin</artifactId>
+	<configuration>
+	  <disableXmlReport>false</disableXmlReport>
+	  <forkCount>1</forkCount>
+	  <reuseForks>false</reuseForks>
+	  <argLine>${mvn.test.options}</argLine>
+	  <systemPropertyVariables>
+	    <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
+	  </systemPropertyVariables>
+	</configuration>
+      </plugin>
       <!-- Configure Eclipse IDE metadata. -->
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>

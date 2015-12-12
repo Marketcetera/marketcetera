@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.EquityEvent;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.beans.MarketDataBean;
+import org.marketcetera.event.beans.TradeBean;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -39,7 +39,7 @@ public class EquityTradeEventImpl
     /**
      * Create a new EquityTradeEventImpl instance.
      *
-     * @param inMarketData a <code>MarketDataBean</code> value
+     * @param inTradeData a <code>TradeBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
@@ -48,9 +48,9 @@ public class EquityTradeEventImpl
      * @throws IllegalArgumentException if <code>Exchange</code> is <code>null</code> or empty
      * @throws IllegalArgumentException if <code>ExchangeTimestamp</code> is <code>null</code> or empty
      */
-    EquityTradeEventImpl(MarketDataBean inMarketData)
+    EquityTradeEventImpl(TradeBean inTradeData)
     {
-        super(inMarketData);
+        super(inTradeData);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.impl.AbstractQuoteEventImpl#getDescription()
