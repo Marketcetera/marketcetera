@@ -84,6 +84,25 @@ public class TestFeed
         }
     }
     /**
+     * Sends the given events to the requester with the given handle only.
+     *
+     * @param inEvents a <code>List&lt;Event&gt;</code> value
+     * @param inHandle a <code>String</code> value
+     */
+    public void sendEvents(List<Event> inEvents,
+                           String inHandle)
+    {
+        long timestamp = System.currentTimeMillis();
+        for(Event event : inEvents) {
+            if(event instanceof HasTimestamps) {
+                HasTimestamps timestampEvent = (HasTimestamps)event;
+                timestampEvent.setReceivedTimestamp(timestamp);
+            }
+            dataReceived(inHandle,
+                         event);
+        }
+    }
+    /**
      * Get the requestsByToken value.
      *
      * @return a <code>Map&lt;String,MarketDataRequest&gt;</code> value

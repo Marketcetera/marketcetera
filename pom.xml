@@ -751,6 +751,22 @@
     <!-- **** PLUGIN MANAGEMENT SECTION **** -->
     <pluginManagement>
       <plugins>
+	<plugin>
+	  <groupId>org.codehaus.mojo</groupId>
+	  <artifactId>properties-maven-plugin</artifactId>
+	  <version>1.0.0</version>
+	  <executions>
+	    <execution>
+	      <phase>generate-test-resources</phase>
+	      <goals>
+		<goal>write-project-properties</goal>
+	      </goals>
+	      <configuration>
+		<outputFile>${project.build.directory}/local.properties</outputFile>
+	      </configuration>
+	    </execution>
+	  </executions>
+	</plugin>
         <!-- jar generation. -->
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
