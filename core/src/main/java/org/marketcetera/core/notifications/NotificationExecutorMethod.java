@@ -1,19 +1,15 @@
 package org.marketcetera.core.notifications;
 
-import org.marketcetera.core.notifications.INotification;
-import org.marketcetera.core.publisher.IPublisher;
-
 /* $License$ */
 
 /**
- * Transmits notifications to the user.
+ *
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: NotificationExecutor.java 85003 2015-11-13 15:57:55Z colin $
+ * @version $Id$
  * @since $Release$
  */
-public interface NotificationExecutor
-        extends IPublisher
+public interface NotificationExecutorMethod
 {
     /**
      * Executes the given notification.
