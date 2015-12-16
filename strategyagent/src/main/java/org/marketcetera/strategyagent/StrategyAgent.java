@@ -17,10 +17,16 @@ import javax.management.ObjectName;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.ApplicationVersion;
+import org.marketcetera.core.notifications.INotification;
+import org.marketcetera.core.notifications.NotificationExecutor;
 import org.marketcetera.core.publisher.IPublisher;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
-import org.marketcetera.module.*;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.ModuleException;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleManagerMXBean;
+import org.marketcetera.module.SinkDataListener;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.unicode.UnicodeFileReader;
@@ -29,6 +35,7 @@ import org.marketcetera.util.ws.stateful.Server;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.Lifecycle;
@@ -533,4 +540,17 @@ public class StrategyAgent
      * application context
      */
     private ApplicationContext applicationContext;
+    /**
+     *
+     *
+     * @param inNotification
+     */
+    public void notify(INotification inNotification)
+    {
+        if(notificationExecutor != null) {
+            notificationExecutor.notify(inNotification);
+        }
+    }
+    @Autowired(required=false)
+    private NotificationExecutor notificationExecutor;
 }
