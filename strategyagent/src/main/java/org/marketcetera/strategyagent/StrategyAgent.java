@@ -164,6 +164,17 @@ public class StrategyAgent
         authenticator = inAuthenticator;
     }
     /**
+     * Sends the given notification if possible.
+     *
+     * @param inNotification an <code>INotification</code> value
+     */
+    public void notify(INotification inNotification)
+    {
+        if(notificationExecutor != null) {
+            notificationExecutor.notify(inNotification);
+        }
+    }
+    /**
      * Stops the strategy agent.
      */
     public void stop()
@@ -541,16 +552,8 @@ public class StrategyAgent
      */
     private ApplicationContext applicationContext;
     /**
-     *
-     *
-     * @param inNotification
+     * notification service, may be <code>null</code>
      */
-    public void notify(INotification inNotification)
-    {
-        if(notificationExecutor != null) {
-            notificationExecutor.notify(inNotification);
-        }
-    }
     @Autowired(required=false)
     private NotificationExecutor notificationExecutor;
 }
