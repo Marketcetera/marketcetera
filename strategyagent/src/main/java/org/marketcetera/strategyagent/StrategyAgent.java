@@ -15,9 +15,11 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang.Validate;
+import org.joda.time.DateTime;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.notifications.INotification;
+import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.notifications.NotificationExecutor;
 import org.marketcetera.core.publisher.IPublisher;
 import org.marketcetera.core.publisher.ISubscriber;
@@ -179,6 +181,11 @@ public class StrategyAgent
      */
     public void stop()
     {
+        if(notificationExecutor != null) {
+            notificationExecutor.notify(Notification.low("Strategy Agent Stopped",
+                                                         "Stategy Agent Stopped at " + new DateTime(),
+                                                         StrategyAgent.class.getSimpleName()));
+        }
         stopRemoteService();
     }
     /* (non-Javadoc)
@@ -237,6 +244,11 @@ public class StrategyAgent
         }
         // run the commands
         executeCommands();
+        if(notificationExecutor != null) {
+            notificationExecutor.notify(Notification.low("Strategy Agent Started",
+                                                         "Stategy Agent Started at " + new DateTime(),
+                                                         StrategyAgent.class.getSimpleName()));
+        }
         running.set(true);
     }
     /**
