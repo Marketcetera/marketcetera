@@ -98,6 +98,10 @@ public class TimeFactoryImpl
      */
     public static final DateTimeFormatter WALLCLOCK_SECONDS = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).toFormatter().withZone(ZONE);
     /**
+     * wallclock seconds: HH:MM:SS in local time zone
+     */
+    public static final DateTimeFormatter WALLCLOCK_SECONDS_LOCAL = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).toFormatter();
+    /**
      * wallclock milliseconds: HH:MM:SS.sss in UTC
      */
     public static final DateTimeFormatter WALLCLOCK_MILLISECONDS = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE)
