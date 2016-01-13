@@ -1684,6 +1684,9 @@ public final class ModuleManager
             //Register the factory with the mbean server
             getMBeanServer().registerMBean(proxy, inObjectName);
         } catch (JMException e) {
+            Messages.BEAN_REGISTRATION_ERROR.warn(this,
+                                                  e,
+                                                  inObjectName);
             throw new BeanRegistrationException(e,
                     new I18NBoundMessage1P(
                             Messages.BEAN_REGISTRATION_ERROR, inObjectName));

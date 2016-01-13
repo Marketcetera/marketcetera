@@ -186,6 +186,9 @@
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
+	  <buildOutputDirectory>target/classes</buildOutputDirectory>
+	  <downloadSources>true</downloadSources>
+	  <downloadJavadocs>true</downloadJavadocs>
           <pde>true</pde>
           <manifest>null</manifest>
           <resolveDependencies>false</resolveDependencies>
