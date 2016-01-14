@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
+import org.marketcetera.event.HasTimestamps;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Capability;
@@ -346,6 +347,9 @@ public class BogusFeed
                     SLF4JLoggerProxy.debug(BogusFeed.class,
                                            "BogusFeed publishing {}", //$NON-NLS-1$
                                            inData);
+                    if(inData instanceof HasTimestamps) {
+                        ((HasTimestamps)inData).setReceivedTimestamp(System.currentTimeMillis());
+                    }
                     feed.dataReceived(getIDAsString(),
                                       inData);
                 }

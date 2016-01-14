@@ -2,8 +2,8 @@ package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
 
-
 /* $License$ */
+
 /**
  * Represents a stage within a data flow request. Instances of this class
  * should be used when creating a new data flow.
@@ -45,8 +45,44 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")  //$NON-NLS-1$
-public final class DataRequest extends DataRequestBase {
+@ClassVersion("$Id$")
+public final class DataRequest
+        extends DataRequestBase
+{
+    /**
+     * Create a new DataRequest instance.
+     *
+     * @param inRequestUrn
+     * @param inCoupling
+     * @param inExceptionHandler
+     * @param inData
+     */
+    public DataRequest(ModuleURN inRequestUrn,
+                       DataCoupling inCoupling,
+                       DataFlowExceptionHandler inExceptionHandler,
+                       Object inData)
+    {
+        super(inCoupling == null ? DataCoupling.SYNC : inCoupling,
+              inRequestUrn);
+        mData = inData;
+        exceptionHandler = inExceptionHandler;
+    }
+    /**
+     * Create a new DataRequest instance.
+     *
+     * @param inRequestUrn
+     * @param inExceptionHandler
+     * @param inData
+     */
+    public DataRequest(ModuleURN inRequestUrn,
+                       DataFlowExceptionHandler inExceptionHandler,
+                       Object inData)
+    {
+        this(inRequestUrn,
+             DataCoupling.SYNC,
+             inExceptionHandler,
+             inData);
+    }
     /**
      * Creates an instance.
      *
@@ -56,21 +92,26 @@ public final class DataRequest extends DataRequestBase {
      */
     public DataRequest(ModuleURN inRequestURN,
                        DataCoupling inCoupling,
-                       Object inData) {
-        super(inCoupling == null
-                ? DataCoupling.SYNC
-                : inCoupling, inRequestURN);
-        mData = inData;
+                       Object inData)
+    {
+        this(inRequestURN,
+             inCoupling == null ? DataCoupling.SYNC : inCoupling,
+             null,
+             inData);
     }
-
     /**
      * Creates an instance. Coupling is defaulted to {@link DataCoupling#SYNC}
      *
      * @param inRequestURN the instance URN
      * @param inData the request parameter
      */
-    public DataRequest(ModuleURN inRequestURN, Object inData) {
-        this(inRequestURN,null,inData);
+    public DataRequest(ModuleURN inRequestURN,
+                       Object inData)
+    {
+        this(inRequestURN,
+             DataCoupling.SYNC,
+             null,
+             inData);
     }
 
     /**
@@ -80,7 +121,9 @@ public final class DataRequest extends DataRequestBase {
      * @param inRequestURN the instance URN.
      */
     public DataRequest(ModuleURN inRequestURN) {
-        this(inRequestURN, null);
+        this(inRequestURN,
+             DataCoupling.SYNC,
+             null);
     }
 
     /**
@@ -92,7 +135,15 @@ public final class DataRequest extends DataRequestBase {
     public Object getData() {
         return mData;
     }
-
+    /**
+     * Get the exceptionHandler value.
+     *
+     * @return a <code>DataReceiverExceptionHandler</code> value
+     */
+    public DataFlowExceptionHandler getExceptionHandler()
+    {
+        return exceptionHandler;
+    }
     /**
      * Converts this request to a string data request instance.
      * The returned instance is similar to this instance except
@@ -115,7 +166,13 @@ public final class DataRequest extends DataRequestBase {
     {
         return toStringRequest().getData();
     }
-
+    /**
+     * optional exception handler for data reception events
+     */
+    private final DataFlowExceptionHandler exceptionHandler;
+    /**
+     * data object passed as object of data request
+     */
     private final Object mData;
-    private static final long serialVersionUID = 7808821329666070735L;
+    private static final long serialVersionUID = -7154279139293567511L;
 }

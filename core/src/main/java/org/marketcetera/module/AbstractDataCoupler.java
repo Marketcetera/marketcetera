@@ -1,11 +1,11 @@
 package org.marketcetera.module;
 
-import org.marketcetera.util.misc.ClassVersion;
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.except.I18NException;
-
-import java.util.concurrent.atomic.AtomicLong;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -31,8 +31,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")   //$NON-NLS-1$
-abstract class AbstractDataCoupler implements DataEmitterSupport {
+@ClassVersion("$Id$")
+abstract class AbstractDataCoupler
+        implements DataEmitterSupport
+{
 
     @Override
     public final void send(Object inData) {
@@ -183,6 +185,14 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
                         mFlowID, getReceiverURN());
                 cancelDataFlow(mReceiver);
             }
+            if(exceptionHandler != null) {
+                try {
+                    exceptionHandler.onException(t);
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(this,
+                                          e);
+                }
+            }
         }
     }
 
@@ -193,17 +203,20 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
      * @param inEmitter the emitter module instance
      * @param inReceiver the receiver module instance
      * @param inFlowID the data flow ID
+     * @param inExceptionHandler optional handler for exceptions
      */
     protected AbstractDataCoupler(ModuleManager inManager,
                                   Module inEmitter,
                                   Module inReceiver,
-                                  DataFlowID inFlowID) {
+                                  DataFlowID inFlowID,
+                                  DataFlowExceptionHandler inExceptionHandler)
+    {
         mManager = inManager;
         mEmitter = inEmitter;
         mReceiver = inReceiver;
         mFlowID = inFlowID;
+        exceptionHandler = inExceptionHandler;
     }
-
     /**
      * Initiates a request with the data emitter using the request parameter
      * in specified request.
@@ -290,7 +303,18 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
                     mFlowID, inRequester.getURN());
         }
     }
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("DataCoupler [").append(mFlowID).append(' ').append(mRequestID)
+                .append("] ").append(mEmitter).append('(').append(mEmitted).append(") -> ")
+                .append(mReceiver).append('(').append(mReceived).append(')');
+        return builder.toString();
+    }
     private final ModuleManager mManager;
     private final Module mEmitter;
     private final Module mReceiver;
@@ -299,6 +323,7 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
     private final AtomicLong mReceiveErrors = new AtomicLong(0);
     private final AtomicLong mEmitErrors = new AtomicLong(0);
     private final DataFlowID mFlowID;
+    private final DataFlowExceptionHandler exceptionHandler;
 
     /*
      * The following variables are kept as volatile to avoid overhead

@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")   //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface DataReceiver {
     /**
      * The module framework invokes this method to supply data to this module.
