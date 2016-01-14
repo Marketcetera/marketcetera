@@ -11,6 +11,6 @@
     </Root>
     <logger name="org.marketcetera" level="info"/>
     <logger name="com.marketcetera" level="info"/>
-    <logger name="org.marketcetera.marketdata.recorder.MarketDataRecorderModule" level="trace"/>
+    <logger name="org.marketcetera.marketdata.recorder" level="trace"/>
   </Loggers>
 </Configuration>

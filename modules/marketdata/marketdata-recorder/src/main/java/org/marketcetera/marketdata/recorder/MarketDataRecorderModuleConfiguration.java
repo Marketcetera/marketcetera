@@ -32,8 +32,12 @@ public class MarketDataRecorderModuleConfiguration
     {
         Validate.notNull(timestampGenerator,
                          Messages.TIMESTAMP_GENERATOR_REQUIRED.getText());
-        Validate.notNull(sessionReset,
-                         Messages.SESSION_RESET_REQUIRED.getText());
+        try {
+            getSessionResetTimestamp();
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException(Messages.SESSION_RESET_REQUIRED.getText(),
+                                               e);
+        }
     }
     /**
      * Get the timestampGenerator value.
@@ -60,6 +64,9 @@ public class MarketDataRecorderModuleConfiguration
      */
     public DateTime getSessionResetTimestamp()
     {
+        if(sessionReset == null) {
+            return null;
+        }
         DateTime tempValue = sessionResetFormatter.parseDateTime(sessionReset);
         DateTime sessionResetTimestamp = new DateTime().withTimeAtStartOfDay().plusMillis(tempValue.getMillisOfDay());
         return sessionResetTimestamp;

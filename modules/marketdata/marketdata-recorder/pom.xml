@@ -30,5 +30,15 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-bogus</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

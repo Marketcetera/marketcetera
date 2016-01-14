@@ -14,11 +14,18 @@ import static org.marketcetera.core.time.TimeFactoryImpl.YEAR;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
+
+import javax.annotation.concurrent.NotThreadSafe;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -62,6 +69,7 @@ import com.codahale.metrics.MetricRegistry;
  * @version $Id$
  * @since $Release$
  */
+@NotThreadSafe
 public class MarketDataRecorderModule
         extends Module
         implements DataReceiver
@@ -94,6 +102,59 @@ public class MarketDataRecorderModule
                                                                    String.valueOf(inData),
                                                                    ExceptionUtils.getRootCauseMessage(e)));
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.module.Module#preStart()
+     */
+    @Override
+    protected void preStart()
+            throws ModuleException
+    {
+        outputDirectoryFile = new File(directoryName);
+        Validate.isTrue(outputDirectoryFile.isDirectory(),
+                        Messages.NOT_A_DIRECTORY.getText(directoryName));
+        Validate.isTrue(outputDirectoryFile.canWrite(),
+                        Messages.NOT_A_DIRECTORY.getText(directoryName));
+        MarketDataRecorderModuleConfiguration config = applicationContext.getBean(MarketDataRecorderModuleConfiguration.class);
+        timestampGenerator = config.getTimestampGenerator();
+        sessionResetTimestamp = config.getSessionResetTimestamp();
+        SLF4JLoggerProxy.debug(this,
+                               "Session reset is {}", //$NON-NLS-1$
+                               sessionResetTimestamp);
+        currentOrdinal.clear();
+        snapshotsInProgress.clear();
+        MetricRegistry metrics = MetricService.getInstance().getMetrics();
+        eventCounterMetricName = name(getURN().getValue(),
+                                      "recordedEvents", //$NON-NLS-1$
+                                      "count"); //$NON-NLS-1$
+        eventCounterMetric = metrics.histogram(eventCounterMetricName);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.module.Module#preStop()
+     */
+    @Override
+    protected void preStop()
+            throws ModuleException
+    {
+        snapshotsInProgress.clear();
+        currentOrdinal.clear();
+        MetricRegistry metrics = MetricService.getInstance().getMetrics();
+        metrics.remove(eventCounterMetricName);
+    }
+    /**
+     * Create a new MarketDataRecorderModule instance.
+     *
+     * @param inDirectoryName a <code>String</code> value
+     * @param inApplicationContext an <code>ApplicationContext</code> value
+     */
+    MarketDataRecorderModule(String inDirectoryName,
+                             ApplicationContext inApplicationContext)
+    {
+        super(new ModuleURN(MarketDataRecorderModuleFactory.PROVIDER_URN,
+                            instance + counter.incrementAndGet()),
+              false);
+        directoryName = StringUtils.trimToNull(inDirectoryName);
+        applicationContext = inApplicationContext;
     }
     /**
      * Processes the given quote event.
@@ -143,32 +204,101 @@ public class MarketDataRecorderModule
      */
     private File getOutputFile(QuoteEvent inQuote)
     {
+        Validate.notNull(inQuote.getEventType(),
+                         Messages.EVENT_BOUNDARY_CAPABILITY_REQUIRED.getText());
         StringBuilder filename = new StringBuilder();
         String symbolKey = getSymbolKey(inQuote);
-        filename.append(symbolKey).append('-').append(timestampFormatter.print(getFileTimestamp())).append('-');
-        int ordinal = 1;
-        if(currentOrdinal.containsKey(symbolKey)) {
-            ordinal = currentOrdinal.get(symbolKey);
-        } else {
-            currentOrdinal.put(symbolKey,
-                               ordinal);
-        }
-        if(inQuote.getEventType().isSnapshot()) {
-            // if this is a snapshot part, bump the ordinal
-            if(!snapshotInProgress.containsKey(symbolKey)) {
-                currentOrdinal.put(symbolKey,
-                                   ++ordinal);
+        String timestampValue = timestampFormatter.print(getFileTimestamp());
+        filename.append(symbolKey).append('-').append(timestampValue).append('-');
+        File currentFile = currentFiles.get(symbolKey);
+        if(currentFile != null) {
+            if(currentFile.getName().contains(timestampValue)) {
+                // still in same session
+            } else {
+                // session has changed, start new file
+                SLF4JLoggerProxy.debug(this,
+                                       "Switching to new session {}", //$NON-NLS-1$
+                                       timestampValue);
+                currentFile = null;
             }
-            snapshotInProgress.put(symbolKey,
-                                   true);
-        } else {
-            snapshotInProgress.put(symbolKey,
-                                   false);
         }
-        filename.append(ordinal);
-        filename.append(suffix);
-        return new File(outputDirectoryFile,
-                        filename.toString());
+        if(currentFile == null) {
+            // no recording in progress at all, start a new file with a new ordinal
+            int ordinal = getNextOrdinal(filename.toString());
+            filename.append(ordinal).append(suffix);
+            currentFile = new File(outputDirectoryFile,
+                                   filename.toString());
+            if(inQuote.getEventType().isSnapshot() && !inQuote.getEventType().isComplete()) {
+                snapshotsInProgress.add(symbolKey);
+            }
+        } else {
+            // recording is in progress for this symbol, determine if we need to create a new file
+            if(snapshotsInProgress.contains(symbolKey)) {
+                if(inQuote.getEventType().isSnapshot()) {
+                    // snapshot is in progress and this event is also a snapshot
+                    if(inQuote.getEventType().isComplete()) {
+                        // snapshot is in progress and this event is a snapshot final
+                        snapshotsInProgress.remove(symbolKey);
+                    } else {
+                        // snapshot is in progress and this event is a snapshot part, nothing special to do
+                    }
+                } else {
+                    // snapshot is in progress and this event is not a snapshot
+                    snapshotsInProgress.remove(symbolKey);
+                }
+            } else {
+                // no snapshot in progress, check to see if this event starts a new snapshot
+                if(inQuote.getEventType().isSnapshot()) {
+                    // bump the ordinal
+                    int ordinal = getNextOrdinal(filename.toString());
+                    filename.append(ordinal).append(suffix);
+                    currentFile = new File(outputDirectoryFile,
+                                           filename.toString());
+                    if(!inQuote.getEventType().isComplete()) {
+                        snapshotsInProgress.add(symbolKey);
+                    }
+                } else {
+                    // nothing to do
+                }
+            }
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "Current file is {}", //$NON-NLS-1$
+                               currentFile);
+        currentFiles.put(symbolKey,
+                         currentFile);
+        return currentFile;
+    }
+    /**
+     * Gets the next ordinal to use based on the current contents of the directory.
+     *
+     * @param inPattern a <code>String</code> value
+     * @return an <code>int</code> value
+     */
+    private int getNextOrdinal(String inPattern)
+    {
+        Pattern fileNamePattern = Pattern.compile(inPattern+"[0-9]{1,}\\"+suffix); //$NON-NLS-1$
+        SLF4JLoggerProxy.debug(this,
+                               "Using filename pattern: {}", //$NON-NLS-1$
+                               fileNamePattern);
+        Collection<File> existingFiles = FileUtils.listFiles(outputDirectoryFile,
+                                                             new RegexFileFilter(fileNamePattern),
+                                                             null);
+        int ordinal = 1;
+        for(File existingFile : existingFiles) {
+            // pull out the ordinal from the filename
+            String thisFilename = existingFile.getName();
+            SLF4JLoggerProxy.debug(this,
+                                   "Considering {} as a candidate", //$NON-NLS-1$
+                                   thisFilename);
+            // pick out the ordinal that's being used
+            // select out everything between the final '-' and the suffix
+            int finalDashPos = thisFilename.lastIndexOf('-');
+            int thisOrdinal = Integer.parseInt(thisFilename.substring(finalDashPos+1,
+                                                                      thisFilename.indexOf(suffix)));
+            ordinal = Math.max(ordinal,thisOrdinal+1);
+        }
+        return ordinal;
     }
     /**
      * Determine the timestamp to use as part of the current session.
@@ -180,10 +310,14 @@ public class MarketDataRecorderModule
         // there is a "session reset" time. if we're before the session reset, we use today's date.
         //  if we're after the session reset, we use tomorrow's date.
         DateTime timestamp = new DateTime();
-        if(timestamp.isBefore(sessionResetTimestamp)) {
+        if(sessionResetTimestamp == null) {
             return timestamp;
         } else {
-            return timestamp.plusDays(1);
+            if(timestamp.isBefore(sessionResetTimestamp)) {
+                return timestamp;
+            } else {
+                return timestamp.plusDays(1);
+            }
         }
     }
     /**
@@ -199,58 +333,9 @@ public class MarketDataRecorderModule
         return symbolKey.toString();
     }
     /**
-     * Create a new MarketDataRecorderModule instance.
-     *
-     * @param inDirectoryName a <code>String</code> value
-     * @param inApplicationContext an <code>ApplicationContext</code> value
+     * caches current filenames in use for symbol keys
      */
-    MarketDataRecorderModule(String inDirectoryName,
-                             ApplicationContext inApplicationContext)
-    {
-        super(new ModuleURN(MarketDataRecorderModuleFactory.PROVIDER_URN,
-                            instance + counter.incrementAndGet()),
-              false);
-        directoryName = StringUtils.trimToNull(inDirectoryName);
-        applicationContext = inApplicationContext;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.module.Module#preStart()
-     */
-    @Override
-    protected void preStart()
-            throws ModuleException
-    {
-        outputDirectoryFile = new File(directoryName);
-        Validate.isTrue(outputDirectoryFile.isDirectory(),
-                        Messages.NOT_A_DIRECTORY.getText(directoryName));
-        Validate.isTrue(outputDirectoryFile.canWrite(),
-                        Messages.NOT_A_DIRECTORY.getText(directoryName));
-        MarketDataRecorderModuleConfiguration config = applicationContext.getBean(MarketDataRecorderModuleConfiguration.class);
-        timestampGenerator = config.getTimestampGenerator();
-        sessionResetTimestamp = config.getSessionResetTimestamp();
-        SLF4JLoggerProxy.debug(this,
-                               "Session reset is {}", //$NON-NLS-1$
-                               sessionResetTimestamp);
-        currentOrdinal.clear();
-        snapshotInProgress.clear();
-        MetricRegistry metrics = MetricService.getInstance().getMetrics();
-        eventCounterMetricName = name(getURN().getValue(),
-                                      "recordedEvents", //$NON-NLS-1$
-                                      "count"); //$NON-NLS-1$
-        eventCounterMetric = metrics.histogram(eventCounterMetricName);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.module.Module#preStop()
-     */
-    @Override
-    protected void preStop()
-            throws ModuleException
-    {
-        snapshotInProgress.clear();
-        currentOrdinal.clear();
-        MetricRegistry metrics = MetricService.getInstance().getMetrics();
-        metrics.remove(eventCounterMetricName);
-    }
+    private final Map<String,File> currentFiles = new HashMap<>();
     /**
      * an application context value
      */
@@ -258,7 +343,7 @@ public class MarketDataRecorderModule
     /**
      * indicates which data streams by key have a snapshot in progress
      */
-    private final Map<String,Boolean> snapshotInProgress = new HashMap<>();
+    private final Set<String> snapshotsInProgress = new HashSet<>();
     /**
      * indicates the current ordinal in use to identify output files
      */

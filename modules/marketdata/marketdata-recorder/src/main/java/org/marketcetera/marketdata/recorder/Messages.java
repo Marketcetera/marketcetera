@@ -32,4 +32,5 @@ public interface Messages
     static final I18NMessage0P SESSION_RESET_REQUIRED = new I18NMessage0P(LOGGER, "session_reset_required");   //$NON-NLS-1$
     static final I18NMessage3P STOPPING_DATA_FLOW = new I18NMessage3P(LOGGER,"stopping_data_flow");   //$NON-NLS-1$
     static final I18NMessage1P NOT_A_DIRECTORY = new I18NMessage1P(LOGGER,"not_a_directory");   //$NON-NLS-1$
+    static final I18NMessage0P EVENT_BOUNDARY_CAPABILITY_REQUIRED = new I18NMessage0P(LOGGER,"event_boundary_capability_required");   //$NON-NLS-1$
 }

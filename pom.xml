@@ -694,6 +694,13 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-core</artifactId>
+        <version>2.4.3</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>util-test</artifactId>
         <version>2.4.3</version>
         <scope>test</scope>
