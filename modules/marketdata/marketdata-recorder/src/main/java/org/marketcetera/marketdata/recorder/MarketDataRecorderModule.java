@@ -35,6 +35,7 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TimestampGenerator;
 import org.marketcetera.metrics.MetricService;
+import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataReceiver;
 import org.marketcetera.module.Module;
@@ -45,7 +46,6 @@ import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
@@ -71,6 +71,7 @@ import com.codahale.metrics.MetricRegistry;
  * @since $Release$
  */
 @NotThreadSafe
+@AutowiredModule
 public class MarketDataRecorderModule
         extends Module
         implements DataReceiver
@@ -104,6 +105,24 @@ public class MarketDataRecorderModule
                                                                    ExceptionUtils.getRootCauseMessage(e)));
         }
     }
+    /**
+     * Get the config value.
+     *
+     * @return a <code>MarketDataRecorderModuleConfiguration</code> value
+     */
+    public MarketDataRecorderModuleConfiguration getConfig()
+    {
+        return config;
+    }
+    /**
+     * Sets the config value.
+     *
+     * @param a <code>MarketDataRecorderModuleConfiguration</code> value
+     */
+    public void setConfig(MarketDataRecorderModuleConfiguration inConfig)
+    {
+        config = inConfig;
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStart()
      */
@@ -111,13 +130,12 @@ public class MarketDataRecorderModule
     protected void preStart()
             throws ModuleException
     {
-        System.out.println("\n\n\nCOLIN: " + config + "\n\n\n");
         outputDirectoryFile = new File(directoryName);
         Validate.isTrue(outputDirectoryFile.isDirectory(),
                         Messages.NOT_A_DIRECTORY.getText(directoryName));
         Validate.isTrue(outputDirectoryFile.canWrite(),
                         Messages.NOT_A_DIRECTORY.getText(directoryName));
-        MarketDataRecorderModuleConfiguration config = applicationContext.getBean(MarketDataRecorderModuleConfiguration.class);
+        Validate.notNull(config);
         timestampGenerator = config.getTimestampGenerator();
         sessionResetTimestamp = config.getSessionResetTimestamp();
         SLF4JLoggerProxy.debug(this,
@@ -147,16 +165,13 @@ public class MarketDataRecorderModule
      * Create a new MarketDataRecorderModule instance.
      *
      * @param inDirectoryName a <code>String</code> value
-     * @param inApplicationContext an <code>ApplicationContext</code> value
      */
-    MarketDataRecorderModule(String inDirectoryName,
-                             ApplicationContext inApplicationContext)
+    MarketDataRecorderModule(String inDirectoryName)
     {
         super(new ModuleURN(MarketDataRecorderModuleFactory.PROVIDER_URN,
                             instance + counter.incrementAndGet()),
               false);
         directoryName = StringUtils.trimToNull(inDirectoryName);
-        applicationContext = inApplicationContext;
     }
     /**
      * Processes the given quote event.
@@ -334,16 +349,15 @@ public class MarketDataRecorderModule
         symbolKey.append(inQuote.getInstrument().getFullSymbol()).append('-').append(inQuote.getExchange());
         return symbolKey.toString();
     }
+    /**
+     * provides configuration values common to all module instances
+     */
     @Autowired
     private MarketDataRecorderModuleConfiguration config;
     /**
      * caches current filenames in use for symbol keys
      */
     private final Map<String,File> currentFiles = new HashMap<>();
-    /**
-     * an application context value
-     */
-    private final ApplicationContext applicationContext;
     /**
      * indicates which data streams by key have a snapshot in progress
      */

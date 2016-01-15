@@ -1260,15 +1260,24 @@ public final class ModuleManager
             if(applicationContext == null) {
                 Messages.NO_APPLICATION_CONTEXT_MODULE.warn(this,
                                                             inModule.getURN());
+                if(inModule.getClass().isAnnotationPresent(AutowiredModule.class)) {
+                    throw new ModuleException(new I18NBoundMessage1P(Messages.MODULE_REQUIRES_AUTOWIRING,
+                                                                     inModule.getURN()));
+                }
             } else {
                 AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
                 try {
+                    beanFactory.autowireBeanProperties(inModule,
+                                                       AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE,
+                                                       true);
                     beanFactory.autowireBean(inModule);
                 } catch (RuntimeException e) {
                     Messages.CANNOT_AUTOWIRE_MODULE.warn(this,
                                                          e,
                                                          inModule.getURN());
-                    throw e;
+                    throw new ModuleException(e,
+                                              new I18NBoundMessage1P(Messages.CANNOT_AUTOWIRE_MODULE,
+                                                                     inModule.getURN()));
                 }
             }
         }

@@ -4,7 +4,6 @@ import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
-import org.springframework.context.ApplicationContext;
 
 /* $License$ */
 
@@ -42,8 +41,7 @@ public class MarketDataRecorderModuleFactory
               Messages.FILERECORDER_PROVIDER_DESCRIPTION,
               true,
               false,
-              String.class,
-              ApplicationContext.class);
+              String.class);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
@@ -52,13 +50,11 @@ public class MarketDataRecorderModuleFactory
     public Module create(Object... inParameters)
             throws ModuleCreationException
     {
-        if(inParameters == null || inParameters.length != 2) {
+        if(inParameters == null || inParameters.length != 1) {
             throw new ModuleCreationException(Messages.PARAMETER_COUNT_ERROR);
         }
         String directoryName = String.valueOf(inParameters[0]);
-        ApplicationContext applicationContext = (ApplicationContext)inParameters[1];
-        return new MarketDataRecorderModule(directoryName,
-                                            applicationContext);
+        return new MarketDataRecorderModule(directoryName);
     }
     /**
      * unique provider URN for the receiver module

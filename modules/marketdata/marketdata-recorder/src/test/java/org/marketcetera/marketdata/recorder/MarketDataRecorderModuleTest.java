@@ -800,9 +800,9 @@ public class MarketDataRecorderModuleTest
                                         String inSessionReset)
     {
         ApplicationContext applicationContext = generateApplicationContext(generateConfig(inSessionReset));
+        moduleManager.setApplicationContext(applicationContext);
         ModuleURN recorderUrn = moduleManager.createModule(MarketDataRecorderModuleFactory.PROVIDER_URN,
-                                                           inDirectoryName,
-                                                           applicationContext);
+                                                           inDirectoryName);
         moduleManager.start(recorderUrn);
         return recorderUrn;
     }
