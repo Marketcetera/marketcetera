@@ -44,6 +44,7 @@ import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.codahale.metrics.Histogram;
@@ -110,6 +111,7 @@ public class MarketDataRecorderModule
     protected void preStart()
             throws ModuleException
     {
+        System.out.println("\n\n\nCOLIN: " + config + "\n\n\n");
         outputDirectoryFile = new File(directoryName);
         Validate.isTrue(outputDirectoryFile.isDirectory(),
                         Messages.NOT_A_DIRECTORY.getText(directoryName));
@@ -332,6 +334,8 @@ public class MarketDataRecorderModule
         symbolKey.append(inQuote.getInstrument().getFullSymbol()).append('-').append(inQuote.getExchange());
         return symbolKey.toString();
     }
+    @Autowired
+    private MarketDataRecorderModuleConfiguration config;
     /**
      * caches current filenames in use for symbol keys
      */
