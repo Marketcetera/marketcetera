@@ -160,7 +160,7 @@
       <dependency>
         <groupId>quickfixj</groupId>
         <artifactId>quickfixj-all</artifactId>
-        <version>1.5.3-bd</version>
+        <version>1.6.1-bd</version>
       </dependency>
       <!-- Compile: CXF -->
       <dependency>
@@ -671,7 +671,13 @@
       <dependency>
         <groupId>org.apache.mina</groupId>
         <artifactId>mina-core</artifactId>
-        <version>1.1.7</version> <!-- 2.0.7 held up by QFJ -->
+        <version>2.0.10</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+	<groupId>org.apache.mina</groupId>
+	<artifactId>mina-filter-ssl</artifactId>
+        <version>1.1.7</version>
         <scope>runtime</scope>
       </dependency>
       <!-- Testing: local modules. -->

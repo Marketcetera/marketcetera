@@ -621,7 +621,7 @@ public class MultiInstanceApplicationContainer
             parent = inParent;
         }
         /**
-         * current process (parent of vistor processes)
+         * current process (parent of visitor processes)
          */
         private final JavaSysMon parent;
         /**
