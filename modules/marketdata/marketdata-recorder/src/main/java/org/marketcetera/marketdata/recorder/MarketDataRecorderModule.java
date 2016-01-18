@@ -35,10 +35,9 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TimestampGenerator;
 import org.marketcetera.metrics.MetricService;
+import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataReceiver;
-import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
@@ -57,7 +56,7 @@ import com.codahale.metrics.MetricRegistry;
  * <p>
  * Module Features
  * <table>
- * <tr><th>Capabilities</th><td>Data Receiver</td></tr>
+ * <tr><th>Capabilities</th><td>Data Receiver,Data Emitter</td></tr>
  * <tr><th>Stops data flows</th><td>No</td></tr>
  * <tr><th>Start Operation</th><td>Checks that the directory exists and is writable</td></tr>
  * <tr><th>Stop Operation</th><td>None</td></tr>
@@ -73,8 +72,7 @@ import com.codahale.metrics.MetricRegistry;
 @NotThreadSafe
 @AutowiredModule
 public class MarketDataRecorderModule
-        extends Module
-        implements DataReceiver
+        extends AbstractDataReemitterModule
 {
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataReceiver#receiveData(org.marketcetera.module.DataFlowID, java.lang.Object)
@@ -104,6 +102,8 @@ public class MarketDataRecorderModule
                                                                    String.valueOf(inData),
                                                                    ExceptionUtils.getRootCauseMessage(e)));
         }
+        super.receiveData(inFlowID,
+                          inData);
     }
     /**
      * Get the config value.
@@ -130,6 +130,7 @@ public class MarketDataRecorderModule
     protected void preStart()
             throws ModuleException
     {
+        super.preStart();
         outputDirectoryFile = new File(directoryName);
         Validate.isTrue(outputDirectoryFile.isDirectory(),
                         Messages.NOT_A_DIRECTORY.getText(directoryName));
@@ -160,6 +161,7 @@ public class MarketDataRecorderModule
         currentOrdinal.clear();
         MetricRegistry metrics = MetricService.getInstance().getMetrics();
         metrics.remove(eventCounterMetricName);
+        super.preStop();
     }
     /**
      * Create a new MarketDataRecorderModule instance.

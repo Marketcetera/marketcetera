@@ -1269,7 +1269,7 @@ public final class ModuleManager
                 try {
                     beanFactory.autowireBeanProperties(inModule,
                                                        AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE,
-                                                       true);
+                                                       false);
                     beanFactory.autowireBean(inModule);
                 } catch (RuntimeException e) {
                     Messages.CANNOT_AUTOWIRE_MODULE.warn(this,
