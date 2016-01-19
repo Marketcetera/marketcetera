@@ -16,7 +16,7 @@ public interface QuoteEvent
         extends MarketDataEvent
 {
     /**
-     * Gets the time the event occurred. 
+     * Get the time the event occurred. 
      *
      * <p>The format of the returned value is dependent on the
      * originating market data provider.
@@ -25,11 +25,27 @@ public interface QuoteEvent
      *
      * @return a <code>String</code> value
      */
-    public String getQuoteDate();
+    String getQuoteDate();
     /**
-     * Gets the action value indicating how this quote should be processed.
+     * Get the action value indicating how this quote should be processed.
      *
      * @return a <code>QuoteAction</code> value
      */
-    public QuoteAction getAction();
+    QuoteAction getAction();
+    /**
+     * Get the book level of the quote.
+     *
+     * <p>The level of the top-of-book is 1, the number 2 quote in the book is level 2, etc.
+     *
+     * @return an <code>int</code> value
+     */
+    int getLevel();
+    /**
+     * Get the number of quotes at this level of the book.
+     *
+     * <p>This attribute applies to aggregated quotes only. Some adapters may support it, some may not.
+     *
+     * @return an <code>int</code> value
+     */
+    int getCount();
 }

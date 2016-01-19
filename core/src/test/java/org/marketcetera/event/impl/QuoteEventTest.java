@@ -630,6 +630,54 @@ public class QuoteEventTest
         verify(builder);
     }
     /**
+     * Test {@link QuoteEventBuilder#withLevel(int)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withLevel()
+            throws Exception
+    {
+        QuoteEventBuilder<?> builder = setDefaults(getBuilder());
+        int level = Integer.MIN_VALUE;
+        builder.withLevel(level);
+        assertEquals(level,
+                     builder.getQuote().getLevel());
+        level = Integer.MAX_VALUE;
+        builder.withLevel(level);
+        assertEquals(level,
+                     builder.getQuote().getLevel());
+        level = 0;
+        builder.withLevel(level);
+        assertEquals(level,
+                     builder.getQuote().getLevel());
+        verify(builder);
+    }
+    /**
+     * Test {@link QuoteEventBuilder#withCount(int)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withCount()
+            throws Exception
+    {
+        QuoteEventBuilder<?> builder = setDefaults(getBuilder());
+        int count = Integer.MIN_VALUE;
+        builder.withCount(count);
+        assertEquals(count,
+                     builder.getQuote().getCount());
+        count = Integer.MAX_VALUE;
+        builder.withCount(count);
+        assertEquals(count,
+                     builder.getQuote().getCount());
+        count = 0;
+        builder.withCount(count);
+        assertEquals(count,
+                     builder.getQuote().getCount());
+        verify(builder);
+    }
+    /**
      * Tests {@link QuoteEventBuilder#withPrice(BigDecimal)}.
      *
      * @throws Exception if an unexpected error occurs
@@ -1086,6 +1134,10 @@ public class QuoteEventTest
                      event.getSource());
         assertEquals(inBuilder.getQuote().getEventType(),
                      event.getEventType());
+        assertEquals(inBuilder.getQuote().getLevel(),
+                     event.getLevel());
+        assertEquals(inBuilder.getQuote().getCount(),
+                     event.getCount());
         assertFalse(event.getEventType() == EventType.SNAPSHOT_FINAL);
         event.setEventType(EventType.SNAPSHOT_FINAL);
         assertEquals(EventType.SNAPSHOT_FINAL,
@@ -1159,6 +1211,8 @@ public class QuoteEventTest
         inBuilder.withTimestamp(new Date());
         inBuilder.withUnderlyingInstrument(instrument);
         inBuilder.withContractSize(3600);
+        inBuilder.withLevel(5);
+        inBuilder.withCount(7);
         return inBuilder;
     }
     /**

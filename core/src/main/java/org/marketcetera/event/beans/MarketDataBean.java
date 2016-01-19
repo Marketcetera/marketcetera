@@ -246,7 +246,7 @@ public class MarketDataBean
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder().append(exchange).append(exchangeTimestamp).append(receivedTimestamp).append(processedTimestamp).append(instrument).append(price).append(size).append(eventType).toHashCode();
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(exchange).append(exchangeTimestamp).append(receivedTimestamp).append(processedTimestamp).append(instrument).append(price).append(size).append(eventType).toHashCode();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -264,7 +264,7 @@ public class MarketDataBean
             return false;
         }
         MarketDataBean other = (MarketDataBean) obj;
-        return new EqualsBuilder().append(exchange,other.exchange).append(exchangeTimestamp,other.exchangeTimestamp).append(receivedTimestamp,other.receivedTimestamp)
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(exchange,other.exchange).append(exchangeTimestamp,other.exchangeTimestamp).append(receivedTimestamp,other.receivedTimestamp)
                 .append(processedTimestamp,other.processedTimestamp).append(instrument,other.instrument)
                 .append(price,other.price).append(size,other.size).append(eventType,other.eventType).isEquals();
     }

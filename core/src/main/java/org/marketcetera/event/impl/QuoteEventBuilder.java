@@ -1,20 +1,42 @@
 package org.marketcetera.event.impl;
 
+import static org.marketcetera.event.Messages.VALIDATION_BOND_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_CURRENCY_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
-import static org.marketcetera.event.Messages.VALIDATION_BOND_REQUIRED;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.marketcetera.event.*;
-import org.marketcetera.event.beans.*;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.ConvertibleBondEvent;
+import org.marketcetera.event.CurrencyEvent;
+import org.marketcetera.event.EquityEvent;
+import org.marketcetera.event.EventType;
+import org.marketcetera.event.FutureEvent;
+import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.beans.ConvertibleBondBean;
+import org.marketcetera.event.beans.CurrencyBean;
+import org.marketcetera.event.beans.FutureBean;
+import org.marketcetera.event.beans.OptionBean;
+import org.marketcetera.event.beans.QuoteBean;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.ConvertibleBond;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.DeliveryType;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureType;
+import org.marketcetera.trade.FutureUnderlyingAssetType;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.StandardType;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -691,6 +713,28 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     public QuoteEventBuilder<E> withPrice(BigDecimal inPrice)
     {
         quote.setPrice(inPrice);
+        return this;
+    }
+    /**
+     * Set the count value.
+     *
+     * @param inCount an <code>int</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public QuoteEventBuilder<E> withCount(int inCount)
+    {
+        quote.setCount(inCount);
+        return this;
+    }
+    /**
+     * Set the level value.
+     *
+     * @param inLevel an <code>int</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public QuoteEventBuilder<E> withLevel(int inLevel)
+    {
+        quote.setLevel(inLevel);
         return this;
     }
     /**
