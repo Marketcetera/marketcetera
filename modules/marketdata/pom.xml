@@ -19,10 +19,11 @@
   <name>Marketdata Modules</name>
 
   <modules>
-    <module>marketdata-core</module>
     <module>bogus</module>
-    <module>marketcetera</module>
     <module>csv</module>
+    <module>marketcetera</module>
+    <module>marketdata-core</module>
+    <module>marketdata-recorder</module>
     <module>yahoo</module>
   </modules>
 </project>

@@ -116,8 +116,11 @@ class DataFlow {
         mCouplers = new AbstractDataCoupler[inModules.length - 1];
         assert inModules.length == mRequests.length;
         for(int i = mCouplers.length - 1; i >= 0; i--) {
-            mCouplers[i] = mRequests[i].getCoupling().createCoupler(
-                    inManager, inModules[i], inModules[i + 1], mFlowID);
+            mCouplers[i] = mRequests[i].getCoupling().createCoupler(inManager,
+                                                                    inModules[i],
+                                                                    inModules[i + 1],
+                                                                    mFlowID,
+                                                                    mRequests[i+1].getExceptionHandler());
         }
     }
 

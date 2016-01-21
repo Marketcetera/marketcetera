@@ -123,6 +123,14 @@
       <groupId>com.outr.javasysmon</groupId>
       <artifactId>javasysmon_2.10</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+    </dependency>
     <!-- runtime -->
     <dependency>
       <groupId>com.lmax</groupId>
@@ -230,6 +238,9 @@
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
+	  <buildOutputDirectory>target/classes</buildOutputDirectory>
+	  <downloadSources>true</downloadSources>
+	  <downloadJavadocs>true</downloadJavadocs>
           <pde>true</pde>
           <manifest>null</manifest>
           <resolveDependencies>false</resolveDependencies>

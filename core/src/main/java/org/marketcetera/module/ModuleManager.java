@@ -6,14 +6,41 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceConfigurationError;
+import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.concurrent.GuardedBy;
-import javax.management.*;
+import javax.management.DynamicMBean;
+import javax.management.JMException;
+import javax.management.JMX;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
-import org.marketcetera.util.log.*;
+import org.marketcetera.core.ApplicationContextProvider;
+import org.marketcetera.core.CloseableLock;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.marketcetera.util.log.I18NBoundMessage4P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /* $License$ */
 /**
@@ -64,6 +91,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public final class ModuleManager
+        implements ApplicationContextAware
 {
     /**
      * Gets the singleton instance of <code>ModuleManager</code> if one
@@ -514,6 +542,12 @@ public final class ModuleManager
      */
     public void init() throws ModuleException {
         //Register itself with the platform MBean server
+        try(CloseableLock lock = CloseableLock.create(applicationContextLock.writeLock())) {
+            // try to find an application context if there's one floating around and we don't explicitly have one ourselves
+            if(applicationContext == null && ApplicationContextProvider.getInstance() != null) {
+                applicationContext = ApplicationContextProvider.getInstance().getApplicationContext();
+            }
+        }
         synchronized (mOperationsLock) {
             boolean failed = true;
             try {
@@ -1187,9 +1221,67 @@ public final class ModuleManager
         }
         //create the module
         module = createModule(factory, inParameters);
+        try {
+            autowireModule(module);
+        } catch (RuntimeException e) {
+            throw new ModuleCreationException(e,
+                                              new I18NBoundMessage1P(Messages.CANNOT_AUTOWIRE_MODULE,
+                                                                     module.getURN()));
+        }
         return module;
     }
-
+    /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext inApplicationContext)
+            throws BeansException
+    {
+        try(CloseableLock lock = CloseableLock.create(applicationContextLock.writeLock())) {
+            applicationContext = inApplicationContext;
+        }
+    }
+    /**
+     * Autowires the given module.
+     * 
+     * <p>Since <code>ModuleManager</code> instances can be created directly instead of from
+     * Spring config as intended, it's possible that the application context isn't present.
+     * If not, no attempt will be made to autowire the module with no penalty.
+     * 
+     * <p>If the Spring context is available, however, any failure to autowire the module
+     * will throw an exception.
+     *
+     * @param inModule a <code>Module</code> value
+     * @throws RuntimeException if the module cannot be autowired
+     */
+    private void autowireModule(Module inModule)
+    {
+        try(CloseableLock lock = CloseableLock.create(applicationContextLock.readLock())) {
+            if(applicationContext == null) {
+                Messages.NO_APPLICATION_CONTEXT_MODULE.warn(this,
+                                                            inModule.getURN());
+                if(inModule.getClass().isAnnotationPresent(AutowiredModule.class)) {
+                    throw new ModuleException(new I18NBoundMessage1P(Messages.MODULE_REQUIRES_AUTOWIRING,
+                                                                     inModule.getURN()));
+                }
+            } else {
+                AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
+                try {
+                    beanFactory.autowireBeanProperties(inModule,
+                                                       AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE,
+                                                       false);
+                    beanFactory.autowireBean(inModule);
+                } catch (RuntimeException e) {
+                    Messages.CANNOT_AUTOWIRE_MODULE.warn(this,
+                                                         e,
+                                                         inModule.getURN());
+                    throw new ModuleException(e,
+                                              new I18NBoundMessage1P(Messages.CANNOT_AUTOWIRE_MODULE,
+                                                                     inModule.getURN()));
+                }
+            }
+        }
+    }
     /**
      * Returns true if the supplied class is of primitive type
      * and the supplied parameter is of the same type as the
@@ -1684,6 +1776,9 @@ public final class ModuleManager
             //Register the factory with the mbean server
             getMBeanServer().registerMBean(proxy, inObjectName);
         } catch (JMException e) {
+            Messages.BEAN_REGISTRATION_ERROR.warn(this,
+                                                  e,
+                                                  inObjectName);
             throw new BeanRegistrationException(e,
                     new I18NBoundMessage1P(
                             Messages.BEAN_REGISTRATION_ERROR, inObjectName));
@@ -2071,4 +2166,13 @@ public final class ModuleManager
      */
     @GuardedBy("ModuleManager.class")
     private static ModuleManager instance;
+    /**
+     * guards access to {@link #applicationContext}
+     */
+    private final ReadWriteLock applicationContextLock = new ReentrantReadWriteLock();
+    /**
+     * provides access to context objects
+     */
+    @GuardedBy("applicationContextLock")
+    private ApplicationContext applicationContext;
 }
