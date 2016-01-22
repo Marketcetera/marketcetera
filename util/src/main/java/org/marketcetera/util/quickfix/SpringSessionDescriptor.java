@@ -222,7 +222,7 @@ public class SpringSessionDescriptor
     protected void process()
     {
         if (getSettings()==null) {
-            Messages.MISSING_SETTINGS.warn(this);
+            Messages.MISSING_SETTINGS.debug(this);
         }
         String beginString=getKeyValue(SessionSettings.BEGINSTRING);
         assertValueSet(SessionSettings.BEGINSTRING,beginString);

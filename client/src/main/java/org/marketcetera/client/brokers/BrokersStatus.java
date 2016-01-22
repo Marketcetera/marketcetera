@@ -3,6 +3,7 @@ package org.marketcetera.client.brokers;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -25,7 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$")
 public class BrokersStatus
-        implements Serializable
+        implements Serializable, Iterable<BrokerStatus>
 {
     /**
      * Creates a new collective status representation, given the status of the brokers.
@@ -63,6 +64,14 @@ public class BrokersStatus
         StringBuilder builder = new StringBuilder();
         builder.append("BrokersStatus [mBrokers=").append(brokers).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return builder.toString();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Iterable#iterator()
+     */
+    @Override
+    public Iterator<BrokerStatus> iterator()
+    {
+        return brokers.iterator();
     }
     /**
      * brokers value
