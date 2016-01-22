@@ -216,6 +216,14 @@ public abstract class AbstractQuoteEventImpl
         return quote.getLevel();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.QuoteEvent#setLevel(int)
+     */
+    @Override
+    public void setLevel(int inLevel)
+    {
+        quote.setLevel(inLevel);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.event.QuoteEvent#getCount()
      */
     @Override

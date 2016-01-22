@@ -1267,10 +1267,16 @@ public final class ModuleManager
             } else {
                 AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
                 try {
+                    SLF4JLoggerProxy.debug(this,
+                                           "Autowiring {}",
+                                           inModule);
                     beanFactory.autowireBeanProperties(inModule,
                                                        AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE,
                                                        false);
                     beanFactory.autowireBean(inModule);
+                    SLF4JLoggerProxy.debug(this,
+                                           "Autowiring {} complete",
+                                           inModule);
                 } catch (RuntimeException e) {
                     Messages.CANNOT_AUTOWIRE_MODULE.warn(this,
                                                          e,

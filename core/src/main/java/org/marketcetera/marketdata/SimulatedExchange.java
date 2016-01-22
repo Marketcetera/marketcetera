@@ -1480,6 +1480,7 @@ public class SimulatedExchange
                       .withExchange(getCode())
                       .withPrice(getValue().add(PENNY))
                       .withSize(randomInteger(10000))
+                      .withCount(randomInteger(10).intValueExact()+1)
                       .withQuoteDate(DateUtils.dateToString(timestamp));
             // and a bid event builder
             QuoteEventBuilder<BidEvent> bidBuilder = QuoteEventBuilder.bidEvent(marketInstrument);
@@ -1487,6 +1488,7 @@ public class SimulatedExchange
                       .withExchange(getCode())
                       .withPrice(getValue().subtract(PENNY))
                       .withSize(randomInteger(10000))
+                      .withCount(randomInteger(10).intValueExact()+1)
                       .withQuoteDate(DateUtils.dateToString(timestamp));
             if(marketInstrument instanceof Option) {
                 Instrument underlyingInstrument = getUnderlyingInstrument();

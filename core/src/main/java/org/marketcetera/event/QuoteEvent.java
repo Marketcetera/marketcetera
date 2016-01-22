@@ -41,6 +41,14 @@ public interface QuoteEvent
      */
     int getLevel();
     /**
+     * Set the book level of the quote.
+     *
+     * <p>The level of the top-of-book is 1, the number 2 quote in the book is level 2, etc.
+     * 
+     * @param inLevel an <code>int</code> value
+     */
+    void setLevel(int inLevel);
+    /**
      * Get the number of quotes at this level of the book.
      *
      * <p>This attribute applies to aggregated quotes only. Some adapters may support it, some may not.

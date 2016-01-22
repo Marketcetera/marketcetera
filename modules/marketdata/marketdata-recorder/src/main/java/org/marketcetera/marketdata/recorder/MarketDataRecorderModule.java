@@ -207,12 +207,12 @@ public class MarketDataRecorderModule
         inBuffer.append(inQuote.getInstrument().getFullSymbol()).append(',');
         inBuffer.append(inQuote.getMessageId()).append(',');
         inBuffer.append(inQuote.getEventType()).append(',');
+        inBuffer.append(inQuote.getPrice().toPlainString()).append(',');
+        inBuffer.append(inQuote.getSize().toPlainString()).append(',');
         inBuffer.append(inQuote.getExchange()).append(',');
         inBuffer.append(marketDataTimestampFormatter.print(timestampGenerator.generateTimestamp(inQuote.getExchangeTimestamp()))).append(',');
-        inBuffer.append(inQuote.getPrice().toPlainString()).append(',');
         inBuffer.append(marketDataTimestampFormatter.print(inQuote.getProcessedTimestamp())).append(',');
         inBuffer.append(marketDataTimestampFormatter.print(inQuote.getReceivedTimestamp())).append(',');
-        inBuffer.append(inQuote.getSize().toPlainString()).append(',');
         inBuffer.append(System.lineSeparator());
     }
     /**
