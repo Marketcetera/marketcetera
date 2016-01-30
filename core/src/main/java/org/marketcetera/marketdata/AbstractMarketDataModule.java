@@ -332,6 +332,15 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         feed.stop();
     }
     /**
+     * Get the feed value.
+     *
+     * @return a <code>MarketDataFeed<T,C></code> value
+     */
+    protected MarketDataFeed<T,C> getFeed()
+    {
+        return feed;
+    }
+    /**
      * Returns a credentials instance relevant to this feed.
      *
      * @return a <code>C</code> value

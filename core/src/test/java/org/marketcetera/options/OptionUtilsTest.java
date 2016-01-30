@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Option;
@@ -73,7 +74,7 @@ public class OptionUtilsTest {
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Test@Ignore
     public void testOsiOptionFromString()
             throws Exception
     {

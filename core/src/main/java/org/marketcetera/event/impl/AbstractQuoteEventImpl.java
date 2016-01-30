@@ -208,6 +208,30 @@ public abstract class AbstractQuoteEventImpl
         quote.setReceivedTimestamp(inTimestamp);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.QuoteEvent#getLevel()
+     */
+    @Override
+    public int getLevel()
+    {
+        return quote.getLevel();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.QuoteEvent#setLevel(int)
+     */
+    @Override
+    public void setLevel(int inLevel)
+    {
+        quote.setLevel(inLevel);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.QuoteEvent#getCount()
+     */
+    @Override
+    public int getCount()
+    {
+        return quote.getCount();
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override

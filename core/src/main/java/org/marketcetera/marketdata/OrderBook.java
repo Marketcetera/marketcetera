@@ -183,7 +183,7 @@ public class OrderBook
      * Processes the given event for the order book.
      *
      * @param inEvent a <code>QuoteEvent</code> value
-     * @return a <code>QuoteEvent</code> value containing the event displaced by the change or null
+     * @return a <code>QuoteEvent</code> value containing the event displaced by the change or <code>null</code>
      * @throws IllegalArgumentException if the event's symbol does not match the book's symbol
      */
     public final QuoteEvent process(QuoteEvent inEvent)
@@ -207,6 +207,11 @@ public class OrderBook
                 break;
             default:
                 throw new UnsupportedOperationException();
+        }
+        if(inEvent instanceof BidEvent) {
+            mBidBook.updateLevels();
+        } else if(inEvent instanceof AskEvent) {
+            mAskBook.updateLevels();
         }
         SLF4JLoggerProxy.debug(this,
                                "Book is now\n{}", //$NON-NLS-1$
@@ -506,6 +511,19 @@ public class OrderBook
                 // an order book will generally fill to its max depth, so pre-allocate the memory, if a max depth is set
                 mBook = new HashSet<E>(mMaxDepth);
                 mBookOrder = new LinkedList<E>();
+            }
+        }
+        /**
+         * Update/reset the levels of the book.
+         */
+        private void updateLevels()
+        {
+            if(mBookOrder == null) {
+                return;
+            }
+            int level = 1;
+            for(QuoteEvent quote : mBookOrder) {
+                quote.setLevel(level++);
             }
         }
         /**

@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.event.Messages;
 import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.QuoteEvent;
@@ -81,11 +83,12 @@ public final class QuoteBean
         quote.setAction(inQuoteAction);
         quote.setSource(inQuoteEvent.getSource());
         quote.setEventType(inQuoteEvent.getEventType());
+        quote.setLevel(inQuoteEvent.getLevel());
+        quote.setCount(inQuoteEvent.getCount());
         return quote;
     }
     /**
-     * Builds a <code>QuoteBean</code> based on the values of
-     * the given event.
+     * Builds a <code>QuoteBean</code> based on the values of the given event.
      *
      * @param inQuoteEvent a <code>QuoteEvent</code> value
      * @param inQuoteAction a <code>QuoteAction</code> value to use instead of the action from the quote
@@ -116,6 +119,42 @@ public final class QuoteBean
     public void setAction(QuoteAction inAction)
     {
         action = inAction;
+    }
+    /**
+     * Get the count value.
+     *
+     * @return an <code>int</code> value
+     */
+    public int getCount()
+    {
+        return count;
+    }
+    /**
+     * Sets the count value.
+     *
+     * @param an <code>int</code> value
+     */
+    public void setCount(int inCount)
+    {
+        count = inCount;
+    }
+    /**
+     * Get the level value.
+     *
+     * @return an <code>int</code> value
+     */
+    public int getLevel()
+    {
+        return level;
+    }
+    /**
+     * Sets the level value.
+     *
+     * @param an <code>int</code> value
+     */
+    public void setLevel(int inLevel)
+    {
+        level = inLevel;
     }
     /**
      * Performs validation of the attributes.
@@ -156,10 +195,7 @@ public final class QuoteBean
     @Override
     public int hashCode()
     {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((action == null) ? 0 : action.hashCode());
-        return result;
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(action).append(level).append(count).toHashCode();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -177,14 +213,7 @@ public final class QuoteBean
             return false;
         }
         QuoteBean other = (QuoteBean) obj;
-        if (action == null) {
-            if (other.action != null) {
-                return false;
-            }
-        } else if (!action.equals(other.action)) {
-            return false;
-        }
-        return true;
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(action,other.action).append(level,other.level).append(count,other.count).isEquals();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -192,16 +221,10 @@ public final class QuoteBean
     @Override
     public String toString()
     {
-        return String.format("Quote: [action=%s, getExchange()=%s, getExchangeTimestamp()=%s, getInstrument()=%s, getPrice()=%s, getSize()=%s [%s with source %s at %s]]", //$NON-NLS-1$
-                             action,
-                             getExchange(),
-                             getExchangeTimestamp(),
-                             getInstrument(),
-                             getPrice(),
-                             getSize(),
-                             getMessageId(),
-                             getSource(),
-                             getTimestamp());
+        StringBuilder builder = new StringBuilder();
+        builder.append("QuoteBean [").append(getMessageId()).append(' ').append(action).append(' ').append(getEventType()).append("]")
+            .append(getInstrument()).append(' ').append(getExchange()).append(' ').append(getSize()).append('@').append(getPrice());
+        return builder.toString();
     }
     /**
      * Copies all member attributes from the donor to the recipient.
@@ -215,11 +238,23 @@ public final class QuoteBean
         MarketDataBean.copyAttributes(inDonor,
                                       inRecipient);
         inRecipient.setAction(inDonor.getAction());
+        inRecipient.setCount(inDonor.getCount());
+        inRecipient.setLevel(inDonor.getLevel());
     }
     /**
      * the action of the quote
      */
-    @XmlAttribute(name="action")
+    @XmlAttribute
     private QuoteAction action;
-    private static final long serialVersionUID = 1L;
+    /**
+     * number of quotes at this level
+     */
+    @XmlAttribute
+    private int count;
+    /**
+     * level of the quote
+     */
+    @XmlAttribute
+    private int level;
+    private static final long serialVersionUID = 5047421010518073372L;
 }
