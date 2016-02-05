@@ -262,15 +262,15 @@
       </dependency>
       <!-- Compile: Other -->
       <dependency>
-	<groupId>org.apache.httpcomponents</groupId>
-	<artifactId>httpclient</artifactId>
-	<version>4.4</version>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.4</version>
       </dependency>
       <dependency>
-	<groupId>org.json</groupId>
-	<artifactId>json</artifactId>
-	<version>20140107</version>
-	<scope>compile</scope>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20140107</version>
+        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>
@@ -558,34 +558,34 @@
       </dependency>
       <!-- Binding for Log4J -->
       <dependency>
-	<groupId>org.apache.logging.log4j</groupId>
-	<artifactId>log4j-slf4j-impl</artifactId>
-	<version>${mvn.log4j.version}</version>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${mvn.log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
       <!-- Log4j API and Core implementation required for binding -->
       <dependency>
-	<groupId>org.apache.logging.log4j</groupId>
-	<artifactId>log4j-1.2-api</artifactId>
-	<version>${mvn.log4j.version}</version>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-1.2-api</artifactId>
+        <version>${mvn.log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
-	<groupId>org.apache.logging.log4j</groupId>
-	<artifactId>log4j-api</artifactId>
-	<version>${mvn.log4j.version}</version>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${mvn.log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
-	<groupId>org.apache.logging.log4j</groupId>
-	<artifactId>log4j-core</artifactId>
-	<version>${mvn.log4j.version}</version>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${mvn.log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
-	<groupId>com.lmax</groupId>
-	<artifactId>disruptor</artifactId>
-	<version>3.3.0</version>
+        <groupId>com.lmax</groupId>
+        <artifactId>disruptor</artifactId>
+        <version>3.3.0</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -628,6 +628,18 @@
         <groupId>org.apache.geronimo.specs</groupId>
         <artifactId>geronimo-jta_1.1_spec</artifactId>
         <version>1.1.1</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.javamail</groupId>
+        <artifactId>geronimo-javamail_1.4_mail</artifactId>
+        <version>1.8.3</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.javamail</groupId>
+        <artifactId>geronimo-javamail_1.4_provider</artifactId>
+        <version>1.8.3</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -774,22 +786,22 @@
     <!-- **** PLUGIN MANAGEMENT SECTION **** -->
     <pluginManagement>
       <plugins>
-	<plugin>
-	  <groupId>org.codehaus.mojo</groupId>
-	  <artifactId>properties-maven-plugin</artifactId>
-	  <version>1.0.0</version>
-	  <executions>
-	    <execution>
-	      <phase>generate-test-resources</phase>
-	      <goals>
-		<goal>write-project-properties</goal>
-	      </goals>
-	      <configuration>
-		<outputFile>${project.build.directory}/local.properties</outputFile>
-	      </configuration>
-	    </execution>
-	  </executions>
-	</plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>properties-maven-plugin</artifactId>
+          <version>1.0.0</version>
+          <executions>
+            <execution>
+              <phase>generate-test-resources</phase>
+              <goals>
+                <goal>write-project-properties</goal>
+              </goals>
+              <configuration>
+                <outputFile>${project.build.directory}/local.properties</outputFile>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
         <!-- jar generation. -->
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
@@ -846,15 +858,15 @@
           <version>2.0</version>
         </plugin>
         <!-- mvn eclipse:* -->
-	<plugin>
-	  <artifactId>maven-eclipse-plugin</artifactId>
-	  <version>2.10</version>
-	  <configuration>
-	    <buildOutputDirectory>target-eclipse/classes</buildOutputDirectory>
-	    <downloadSources>true</downloadSources>
-	    <downloadJavadocs>true</downloadJavadocs>
-	  </configuration>
-	</plugin>
+        <plugin>
+          <artifactId>maven-eclipse-plugin</artifactId>
+          <version>2.10</version>
+          <configuration>
+            <buildOutputDirectory>target-eclipse/classes</buildOutputDirectory>
+            <downloadSources>true</downloadSources>
+            <downloadJavadocs>true</downloadJavadocs>
+          </configuration>
+        </plugin>
         <!-- mvn clean -->
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
@@ -891,8 +903,8 @@
           <version>2.19.1</version>
           <configuration>
             <disableXmlReport>false</disableXmlReport>
-	    <forkCount>2.5C</forkCount>
-	    <reuseForks>false</reuseForks>
+            <forkCount>2.5C</forkCount>
+            <reuseForks>false</reuseForks>
             <argLine>${mvn.test.options}</argLine>
             <systemPropertyVariables>
               <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
