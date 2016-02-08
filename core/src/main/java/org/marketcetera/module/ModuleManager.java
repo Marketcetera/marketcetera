@@ -1221,13 +1221,6 @@ public final class ModuleManager
         }
         //create the module
         module = createModule(factory, inParameters);
-        try {
-            autowireModule(module);
-        } catch (RuntimeException e) {
-            throw new ModuleCreationException(e,
-                                              new I18NBoundMessage1P(Messages.CANNOT_AUTOWIRE_MODULE,
-                                                                     module.getURN()));
-        }
         return module;
     }
     /* (non-Javadoc)
@@ -2025,6 +2018,13 @@ public final class ModuleManager
                 //instance
                 ((DataFlowRequester)inModule).setFlowSupport(
                         new DataFlowSupportImpl(inModule,this));
+            }
+            try {
+                autowireModule(inModule);
+            } catch (RuntimeException e) {
+                throw new ModuleCreationException(e,
+                                                  new I18NBoundMessage1P(Messages.CANNOT_AUTOWIRE_MODULE,
+                                                                         inModule.getURN()));
             }
             inModule.preStart();
             startSucceeded = true;
