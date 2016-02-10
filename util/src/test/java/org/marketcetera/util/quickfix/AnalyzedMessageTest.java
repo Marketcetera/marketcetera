@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import quickfix.Message;
@@ -44,7 +45,7 @@ import quickfix.fix42.NewOrderSingle;
 public class AnalyzedMessageTest
     extends AnalyzerTestBase
 {
-    @Test
+    @Ignore@Test
     public void empty()
         throws Exception
     {
@@ -124,7 +125,7 @@ public class AnalyzedMessageTest
              TEST_FOOTER+"076",msgA.toString());
     }
 
-    @Test
+    @Ignore@Test
     public void group()
         throws Exception
     {
@@ -185,7 +186,7 @@ public class AnalyzedMessageTest
              TEST_FOOTER+"219",msgA.toString());
     }
 
-    @Test
+    @Ignore@Test
     public void nestedGroup()
         throws Exception
     {
@@ -300,7 +301,7 @@ public class AnalyzedMessageTest
         assertEquals(StringUtils.EMPTY,msgA.toString());
     }
 
-    @Test
+    @Ignore@Test
     public void badEnum()
         throws Exception
     {
@@ -322,7 +323,7 @@ public class AnalyzedMessageTest
              TEST_FOOTER+"199",msgA.toString());
     }
 
-    @Test
+    @Ignore@Test
     public void missingGroup()
         throws Exception
     {

@@ -1221,13 +1221,6 @@ public final class ModuleManager
         }
         //create the module
         module = createModule(factory, inParameters);
-        try {
-            autowireModule(module);
-        } catch (RuntimeException e) {
-            throw new ModuleCreationException(e,
-                                              new I18NBoundMessage1P(Messages.CANNOT_AUTOWIRE_MODULE,
-                                                                     module.getURN()));
-        }
         return module;
     }
     /* (non-Javadoc)
@@ -1267,10 +1260,16 @@ public final class ModuleManager
             } else {
                 AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
                 try {
+                    SLF4JLoggerProxy.debug(this,
+                                           "Autowiring {}",
+                                           inModule);
                     beanFactory.autowireBeanProperties(inModule,
                                                        AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE,
                                                        false);
                     beanFactory.autowireBean(inModule);
+                    SLF4JLoggerProxy.debug(this,
+                                           "Autowiring {} complete",
+                                           inModule);
                 } catch (RuntimeException e) {
                     Messages.CANNOT_AUTOWIRE_MODULE.warn(this,
                                                          e,
@@ -2019,6 +2018,13 @@ public final class ModuleManager
                 //instance
                 ((DataFlowRequester)inModule).setFlowSupport(
                         new DataFlowSupportImpl(inModule,this));
+            }
+            try {
+                autowireModule(inModule);
+            } catch (RuntimeException e) {
+                throw new ModuleCreationException(e,
+                                                  new I18NBoundMessage1P(Messages.CANNOT_AUTOWIRE_MODULE,
+                                                                         inModule.getURN()));
             }
             inModule.preStart();
             startSucceeded = true;
