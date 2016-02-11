@@ -23,7 +23,7 @@ public class ModulePropertiesConfiguredTest extends ClientModuleTestBase {
         CONFIG_PROVIDER.setURL(MockServer.URL);
         CONFIG_PROVIDER.setUsername(USER_NAME);
         CONFIG_PROVIDER.setPassword(USER_NAME);
-        CONFIG_PROVIDER.setHostname(Node.DEFAULT_HOST);
+        CONFIG_PROVIDER.setHostname(Node.DEFAULT_CLIENT_HOST);
         CONFIG_PROVIDER.setPort(Node.DEFAULT_PORT);
         CONFIG_PROVIDER.setIDPrefix(IDPREFIX);
         mManager.init();

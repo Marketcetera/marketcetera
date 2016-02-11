@@ -81,7 +81,7 @@ public class Node
      */
     protected Node()
     {
-        this(DEFAULT_HOST,
+        this(DEFAULT_SERVER_HOST,
              DEFAULT_PORT);
     }
     /**
@@ -131,7 +131,11 @@ public class Node
      */
     public static final int DEFAULT_PORT = 9000;
     /**
-     * The default host name for the server and to which the client connects.
+     * The default host name for the server
      */
-    public static final String DEFAULT_HOST = "0.0.0.0"; //$NON-NLS-1$
+    public static final String DEFAULT_SERVER_HOST = "0.0.0.0"; //$NON-NLS-1$
+    /**
+     * The default host name for the client
+     */
+    public static final String DEFAULT_CLIENT_HOST = "127.0.0.1"; //$NON-NLS-1$
 }

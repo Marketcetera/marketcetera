@@ -210,7 +210,7 @@ public class OrderValidationFailureTest {
         sServer = new MockServer();
         String u = "u";
         ClientManager.init(new ClientParameters(u, u.toCharArray(),
-                MockServer.URL, Node.DEFAULT_HOST, Node.DEFAULT_PORT));
+                MockServer.URL, Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT));
     }
     @AfterClass
     public static void cleanup() throws Exception {

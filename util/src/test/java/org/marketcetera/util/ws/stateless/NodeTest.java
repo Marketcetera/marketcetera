@@ -16,6 +16,6 @@ public class NodeTest
     @Test
     public void all()
     {
-        singleNode(new Node(TEST_HOST,TEST_PORT),new Node());
+        singleNodeServer(new Node(TEST_HOST,TEST_PORT),new Node());
     }
 }

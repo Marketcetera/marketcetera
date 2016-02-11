@@ -124,7 +124,7 @@ class MockStrategyAgent {
         //Initialize Mock Server and client
         sMockServer = new MockServer();
         ClientManager.init(new ClientParameters(USER_CREDS, USER_CREDS.toCharArray(),
-                MockServer.URL, Server.DEFAULT_HOST, Server.DEFAULT_PORT));
+                MockServer.URL, Server.DEFAULT_CLIENT_HOST, Server.DEFAULT_PORT));
     }
 
     /**
