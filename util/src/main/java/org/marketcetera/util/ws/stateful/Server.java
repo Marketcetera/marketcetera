@@ -83,7 +83,7 @@ public class Server<SessionClazz>
         (Authenticator authenticator,
          SessionManager<SessionClazz> sessionManager)
     {
-        this(DEFAULT_HOST,DEFAULT_PORT,authenticator,sessionManager);
+        this(DEFAULT_SERVER_HOST,DEFAULT_PORT,authenticator,sessionManager);
     }
 
     /**

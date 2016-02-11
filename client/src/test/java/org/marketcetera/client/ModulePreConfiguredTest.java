@@ -23,7 +23,7 @@ public class ModulePreConfiguredTest extends ClientModuleTestBase {
         String username = "me";
         ClientParameters parameters = new ClientParameters(username,
                 username.toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT, IDPREFIX);
+                Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT, IDPREFIX);
         ClientManager.init(parameters);
         mManager.init();
     }

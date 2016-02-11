@@ -145,7 +145,7 @@ public class ClientTest
                 Messages.CONNECT_ERROR_NO_URL){
             protected void run() throws Exception {
                 ClientManager.init(new ClientParameters("you",
-                        "why".toCharArray(), null, Node.DEFAULT_HOST,
+                        "why".toCharArray(), null, Node.DEFAULT_CLIENT_HOST,
                         Node.DEFAULT_PORT));
             }
         };
@@ -154,7 +154,7 @@ public class ClientTest
                 Messages.CONNECT_ERROR_NO_URL){
             protected void run() throws Exception {
                 ClientManager.init(new ClientParameters("you",
-                        "why".toCharArray(), "  ", Node.DEFAULT_HOST,
+                        "why".toCharArray(), "  ", Node.DEFAULT_CLIENT_HOST,
                         Node.DEFAULT_PORT));
             }
         };
@@ -164,7 +164,7 @@ public class ClientTest
             protected void run() throws Exception {
                 ClientManager.init(new ClientParameters(null,
                         "why".toCharArray(), "tcp://whatever:404",
-                        Node.DEFAULT_HOST, Node.DEFAULT_PORT));
+                        Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT));
             }
         };
         //empty user name
@@ -173,7 +173,7 @@ public class ClientTest
             protected void run() throws Exception {
                 ClientManager.init(new ClientParameters("   ",
                         "why".toCharArray(), "tcp://whatever:404",
-                        Node.DEFAULT_HOST, Node.DEFAULT_PORT));
+                        Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT));
             }
         };
         //null hostname
@@ -200,7 +200,7 @@ public class ClientTest
             protected void run() throws Exception {
                 ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
                         DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                        Node.DEFAULT_HOST, -1));
+                        Node.DEFAULT_CLIENT_HOST, -1));
             }
         };
         //invalid port number, upper bound
@@ -209,16 +209,16 @@ public class ClientTest
             protected void run() throws Exception {
                 ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
                         DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                        Node.DEFAULT_HOST, 65536));
+                        Node.DEFAULT_CLIENT_HOST, 65536));
             }
         };
         //no server at port
         final ClientParameters noServerAtPort = new ClientParameters(DEFAULT_CREDENTIAL,
                 DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT + 1);
+                Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT + 1);
         new ExpectedFailure<ConnectionException>(
                 Messages.ERROR_CONNECT_TO_SERVER, noServerAtPort.getURL(),
-                noServerAtPort.getUsername(), Node.DEFAULT_HOST,
+                noServerAtPort.getUsername(), Node.DEFAULT_CLIENT_HOST,
                 Node.DEFAULT_PORT + 1){
             protected void run() throws Exception {
                 ClientManager.init(noServerAtPort);
@@ -227,10 +227,10 @@ public class ClientTest
         //auth failure
         final ClientParameters parameters = new ClientParameters(DEFAULT_CREDENTIAL,
                 "game".toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT);
+                Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT);
         new ExpectedFailure<ConnectionException>(
                 Messages.ERROR_CONNECT_TO_SERVER, parameters.getURL(),
-                parameters.getUsername(),Node.DEFAULT_HOST, Node.DEFAULT_PORT){
+                parameters.getUsername(),Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT){
             protected void run() throws Exception {
                 ClientManager.init(parameters);
             }
@@ -238,10 +238,10 @@ public class ClientTest
         //Use the correct password but incorrect port number
         final ClientParameters wrongPort = new ClientParameters(
                 parameters.getUsername(), DEFAULT_CREDENTIAL.toCharArray(),
-                "tcp://localhost:61617", Node.DEFAULT_HOST, Node.DEFAULT_PORT);
+                "tcp://localhost:61617", Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT);
         new ExpectedFailure<ConnectionException>(
                 Messages.ERROR_CONNECT_TO_SERVER, wrongPort.getURL(),
-                wrongPort.getUsername(), Node.DEFAULT_HOST, Node.DEFAULT_PORT){
+                wrongPort.getUsername(), Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT){
             protected void run() throws Exception {
                 ClientManager.init(wrongPort);
             }
@@ -249,10 +249,10 @@ public class ClientTest
         //Make sure null & empty passwords are accepted
         final ClientParameters nullPass = new ClientParameters(
                 parameters.getUsername(), null,
-                MockServer.URL, Node.DEFAULT_HOST, Node.DEFAULT_PORT);
+                MockServer.URL, Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT);
         new ExpectedFailure<ConnectionException>(
                 Messages.ERROR_CONNECT_TO_SERVER, nullPass.getURL(),
-                nullPass.getUsername(), Node.DEFAULT_HOST, Node.DEFAULT_PORT){
+                nullPass.getUsername(), Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT){
             protected void run() throws Exception {
                 ClientManager.init(nullPass);
             }
@@ -261,7 +261,7 @@ public class ClientTest
         final ClientParameters incompatVersions = new ClientParameters(
                 MockAuthenticator.VERSION_MISMATCH_USER,
                 DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT);
+                Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT);
         new ExpectedFailure<ConnectionException>(
                       Messages.ERROR_CONNECT_INCOMPATIBLE_DIRECT,
                       ClientVersion.APP_ID,
@@ -272,10 +272,10 @@ public class ClientTest
         };
         final ClientParameters emptyPass = new ClientParameters(
                 parameters.getUsername(), "  ".toCharArray(),
-                MockServer.URL, Node.DEFAULT_HOST, Node.DEFAULT_PORT);
+                MockServer.URL, Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT);
         new ExpectedFailure<ConnectionException>(
                 Messages.ERROR_CONNECT_TO_SERVER, emptyPass.getURL(),
-                emptyPass.getUsername(), Node.DEFAULT_HOST, Node.DEFAULT_PORT){
+                emptyPass.getUsername(), Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT){
             protected void run() throws Exception {
                 ClientManager.init(emptyPass);
             }
@@ -306,7 +306,7 @@ public class ClientTest
         //reconnect with different credentials
         ClientParameters parms = new ClientParameters(otherUser,
                 otherUser.toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT);
+                Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT);
         ClientManager.getInstance().reconnect(parms);
         //verify that old credentials don't work
         assertFalse(ClientManager.getInstance().isCredentialsMatch(
@@ -1201,7 +1201,7 @@ public class ClientTest
         //Now reconnect the client using a different parameters
         ClientParameters parms = new ClientParameters("you",
                 "you".toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT);
+                Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT);
         getClient().reconnect(parms);
         assertCPEquals(parms, getClient().getParameters());
         assertFalse(oldParms.getUsername().equals(parms.getUsername()));
@@ -1331,7 +1331,7 @@ public class ClientTest
         Date currentTime = new Date();
         ClientParameters parameters = new ClientParameters(DEFAULT_CREDENTIAL,
                 DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT,
+                Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT,
                 null, heartbeatInterval);
         ClientManager.init(parameters);
         mClient = ClientManager.getInstance();

@@ -55,7 +55,7 @@ public class StatelessServer
      */
     public StatelessServer()
     {
-        this(DEFAULT_HOST,
+        this(DEFAULT_SERVER_HOST,
              DEFAULT_PORT);
     }
     /**

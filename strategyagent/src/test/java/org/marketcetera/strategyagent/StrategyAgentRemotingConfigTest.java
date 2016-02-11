@@ -46,7 +46,7 @@ public class StrategyAgentRemotingConfigTest
         ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
                                                 DEFAULT_CREDENTIAL.toCharArray(),
                                                 MockServer.URL,
-                                                Node.DEFAULT_HOST,
+                                                Node.DEFAULT_CLIENT_HOST,
                                                 Node.DEFAULT_PORT));
     }
     /**
