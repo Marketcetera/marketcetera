@@ -92,7 +92,7 @@ public class ClientServerTestBase
         assertEquals(client.getId(),context.getClientId());
         assertEquals(Locale.ROOT,context.getLocale().getRaw());
 
-        singleNode(client,empty);
+        singleNodeClient(client,empty);
     }
 
     protected static void singleClientJustId
@@ -101,14 +101,14 @@ public class ClientServerTestBase
     {
         assertEquals(TEST_APP,justId.getAppId());
 
-        singleNode(client,justId);
+        singleNodeClient(client,justId);
     }
 
     protected static void singleServer
         (StatelessServer server,
          StatelessServer empty)
     {
-        singleNode(server,empty);
+        singleNodeServer(server,empty);
 
         server.stop();
     }

@@ -1,8 +1,10 @@
 package org.marketcetera.util.ws.stateless;
 
-import org.marketcetera.util.test.TestCaseBase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
-import static org.junit.Assert.*;
+import org.marketcetera.util.test.TestCaseBase;
 
 /**
  * @author tlerios@marketcetera.com
@@ -28,18 +30,33 @@ public class NodeTestBase
     private static final class TestClass {}
 
 
-    protected static void singleNode
-        (Node node,
-         Node empty)
+    protected static void singleNodeServer(Node node,
+                                           Node empty)
     {
-        assertNotNull(Node.DEFAULT_HOST);
+        assertNotNull(Node.DEFAULT_SERVER_HOST);
         assertFalse(Node.DEFAULT_PORT==0);
 
         assertEquals(TEST_HOST,node.getHost());
         assertEquals(TEST_PORT,node.getPort());
         assertEquals(TEST_URL,node.getConnectionUrl(TestClass.class));
 
-        assertEquals(Node.DEFAULT_HOST,empty.getHost());
+        assertEquals(Node.DEFAULT_SERVER_HOST,empty.getHost());
+        assertEquals(Node.DEFAULT_PORT,empty.getPort());
+
+        assertNotNull(node.getId());
+        assertFalse(node.getId().equals(empty.getId()));
+    }
+    protected static void singleNodeClient(Node node,
+                                           Node empty)
+    {
+        assertNotNull(Node.DEFAULT_CLIENT_HOST);
+        assertFalse(Node.DEFAULT_PORT==0);
+
+        assertEquals(TEST_HOST,node.getHost());
+        assertEquals(TEST_PORT,node.getPort());
+        assertEquals(TEST_URL,node.getConnectionUrl(TestClass.class));
+
+        assertEquals(Node.DEFAULT_CLIENT_HOST,empty.getHost());
         assertEquals(Node.DEFAULT_PORT,empty.getPort());
 
         assertNotNull(node.getId());

@@ -78,7 +78,7 @@ public class FactoryIntegrationTest {
             throws ConnectionException, ClientInitException {
         ClientParameters parameters = new ClientParameters("name",
                 "name".toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT,
+                Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT,
                 inOrderIDPrefix);
         ClientManager.init(parameters);
         mClient = ClientManager.getInstance();

@@ -59,7 +59,7 @@ public class RemoteEmitterTestBase extends ModuleTestBase {
         //Initialize the client connection.
         ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
                 DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT));
+                Node.DEFAULT_CLIENT_HOST, Node.DEFAULT_PORT));
     }
 
     /**

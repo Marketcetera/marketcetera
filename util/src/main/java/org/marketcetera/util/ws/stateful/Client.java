@@ -78,7 +78,7 @@ public class Client
     public Client
         (AppId appId)
     {
-        this(DEFAULT_HOST,DEFAULT_PORT,appId);
+        this(DEFAULT_CLIENT_HOST,DEFAULT_PORT,appId);
     }
 
     /**
