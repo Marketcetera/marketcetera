@@ -17,6 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public interface OptionEventBuilder<B>
+        extends ProviderSymbolBuilder<B>
 {
     /**
      * Sets the underlyingInstrument value.
