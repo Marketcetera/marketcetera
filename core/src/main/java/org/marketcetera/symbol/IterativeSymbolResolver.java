@@ -53,6 +53,25 @@ public class IterativeSymbolResolver
         Validate.notEmpty(symbolResolvers,
                           Messages.MISSING_SYMBOL_RESOLVERS.getText());
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.symbol.SymbolResolverService#generateSymbol(org.marketcetera.trade.Instrument)
+     */
+    @Override
+    public String generateSymbol(Instrument inInstrument)
+    {
+        for(SymbolResolver resolver : symbolResolvers) {
+            try {
+                String symbol = resolver.generateSymbol(inInstrument);
+                if(symbol != null) {
+                    return symbol;
+                }
+            } catch (Exception e) {
+                Messages.SYMBOL_RESOLVER_ERROR.warn(this,
+                                                    e);
+            }
+        }
+        return null;
+    }
     /**
      * Get the symbolResolvers value.
      *
