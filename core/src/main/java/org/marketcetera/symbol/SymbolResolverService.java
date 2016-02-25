@@ -22,4 +22,11 @@ public interface SymbolResolverService
      * @return an <code>Instrument</code> or <code>null</code> if the symbol could not be resolved
      */
     public Instrument resolveSymbol(String inSymbol);
+    /**
+     *
+     *
+     * @param inInstrument
+     * @return
+     */
+    public String generateSymbol(Instrument inInstrument);
 }
