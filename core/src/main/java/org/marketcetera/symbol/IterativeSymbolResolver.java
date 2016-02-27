@@ -1,7 +1,11 @@
 package org.marketcetera.symbol;
 
 import java.util.List;
+import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
@@ -22,16 +26,30 @@ import com.google.common.collect.Lists;
 public class IterativeSymbolResolver
         implements SymbolResolverService, InitializingBean
 {
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        cachedSymbols = new LRUMap<>(cacheSize);
+    }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.symbol.SymbolResolverServices#resolveSymbol(java.lang.String)
      */
     @Override
     public Instrument resolveSymbol(String inSymbol)
     {
+        Instrument instrument = cachedSymbols.get(inSymbol);
+        if(instrument != null) {
+            return instrument;
+        }
         for(SymbolResolver resolver : symbolResolvers) {
             try {
-                Instrument instrument = resolver.resolveSymbol(inSymbol);
+                instrument = resolver.resolveSymbol(inSymbol);
                 if(instrument != null) {
+                    cachedSymbols.put(inSymbol,
+                                      instrument);
                     return instrument;
                 }
             } catch (Exception e) {
@@ -91,7 +109,33 @@ public class IterativeSymbolResolver
         symbolResolvers = inSymbolResolvers;
     }
     /**
+     * Get the cacheSize value.
+     *
+     * @return an <code>int</code> value
+     */
+    public int getCacheSize()
+    {
+        return cacheSize;
+    }
+    /**
+     * Sets the cacheSize value.
+     *
+     * @param an <code>int</code> value
+     */
+    public void setCacheSize(int inCacheSize)
+    {
+        cacheSize = inCacheSize;
+    }
+    /**
      * list of symbol resolvers
      */
     private List<SymbolResolver> symbolResolvers = Lists.newArrayList();
+    /**
+     * number of symbols to cache
+     */
+    private int cacheSize = 1000;
+    /**
+     * cache for symbols
+     */
+    private Map<String,Instrument> cachedSymbols;
 }
