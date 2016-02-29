@@ -538,7 +538,7 @@ public class SimulatedExchangeTest
         QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.optionAskEvent();
         askBuilder.withExchange(exchange.getCode())
                   .withExpirationType(ExpirationType.AMERICAN)
-                  .withQuoteDate(DateUtils.dateToString(new Date()))
+                  .withQuoteDate(new Date())
                   .withUnderlyingInstrument(metc);
         askBuilder.withInstrument(metc1Put);
         // create an ask that is more than the bid to prevent a trade occurring (keeps the top populated)
@@ -668,7 +668,7 @@ public class SimulatedExchangeTest
         // add an ask for just one instrument - make sure the bid and the ask don't match
         QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.currencyAskEvent();
         askBuilder.withExchange(exchange.getCode())
-                  .withQuoteDate(DateUtils.dateToString(new Date()))
+                  .withQuoteDate(new Date())
                   .withInstrument(testCCY)
                   .withExchange(exchange.getCode());
         askBuilder.withInstrument(bid2.getInstrument());
@@ -723,7 +723,7 @@ public class SimulatedExchangeTest
         QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.optionAskEvent();
         askBuilder.withExchange(exchange.getCode())
                   .withExpirationType(ExpirationType.AMERICAN)
-                  .withQuoteDate(DateUtils.dateToString(new Date()))
+                  .withQuoteDate(new Date())
                   .withUnderlyingInstrument(metc);
         askBuilder.withInstrument(bid2.getInstrument());
         // create an ask that is more than the bid to prevent a trade occurring (keeps the top populated)

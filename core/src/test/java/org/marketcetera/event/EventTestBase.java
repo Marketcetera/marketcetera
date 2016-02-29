@@ -47,11 +47,11 @@ public class EventTestBase
      * Generates an <code>AskEvent</code> for the given instrument.
      *
      * @param inInstrument an <code>Instrument</code> value
-     * @param inQuoteDate a <code>String</code> value
+     * @param inQuoteDate a <code>Date</code> value
      * @return an <code>AskEvent</code> value
      */
     public static AskEvent generateAskEvent(Instrument inInstrument,
-                                            String inQuoteDate)
+                                            Date inQuoteDate)
     {
         return QuoteEventBuilder.askEvent(inInstrument)
                 .withExchange(generateExchange())
@@ -90,11 +90,11 @@ public class EventTestBase
      * Generates a <code>BidEvent</code> for the given instrument.
      *
      * @param inInstrument an <code>Instrument</code> value
-     * @param inQuoteDate a <code>String</code> value
+     * @param inQuoteDate a <code>Date</code> value
      * @return a <code>BidEvent</code> value
      */
     public static BidEvent generateBidEvent(Instrument inInstrument,
-                                            String inQuoteDate)
+                                            Date inQuoteDate)
     {
         return QuoteEventBuilder.bidEvent(inInstrument)
                 .withExchange(generateExchange())
@@ -141,7 +141,7 @@ public class EventTestBase
      * @param inExchange a <code>String</code> value
      * @param inPrice a <code>BigDecimal</code> value
      * @param inSize a <code>BigDecimal</code> value
-     * @param inExchangeTimestamp a <code>String</code> value
+     * @param inExchangeTimestamp a <code>Date</code> value
      * @return an <code>AskEvent</code> value
      */
     public static AskEvent generateEquityAskEvent(long inMessageId,
@@ -150,7 +150,7 @@ public class EventTestBase
                                                   String inExchange,
                                                   BigDecimal inPrice,
                                                   BigDecimal inSize,
-                                                  String inExchangeTimestamp)
+                                                  Date inExchangeTimestamp)
     {
         return QuoteEventBuilder.equityAskEvent().withMessageId(inMessageId)
                                                  .withTimestamp(inTimestamp)
@@ -184,7 +184,7 @@ public class EventTestBase
                                       inExchange,
                                       inPrice,
                                       inSize,
-                                      DateUtils.dateToString(new Date(inTimestamp)));
+                                      new Date(inTimestamp));
     }
     /**
      * Generates an equity <code>AskEvent</code> with the given values.
@@ -200,7 +200,7 @@ public class EventTestBase
                                                  .withExchange(inExchange)
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     /**
      * Generates an equity <code>AskEvent</code> with the given values.
@@ -216,7 +216,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(inPrice)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     /**
      * Generates an equity <code>AskEvent</code> with the given values.
@@ -233,7 +233,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     /**
      * Generates an equity <code>AskEvent</code> with the given values.
@@ -251,7 +251,7 @@ public class EventTestBase
                                                  .withExchange(inExchange)
                                                  .withPrice(inPrice)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     /**
      * Generates an option <code>AskEvent</code> with the given values.
@@ -268,7 +268,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                 .withQuoteDate(new Date())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withMultiplier(BigDecimal.ZERO)
                                                  .withUnderlyingInstrument(inInstrument).create();
@@ -287,7 +287,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                 .withQuoteDate(new Date())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
@@ -307,7 +307,7 @@ public class EventTestBase
                                                  .withExchange(inExchange)
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                 .withQuoteDate(new Date())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
@@ -327,7 +327,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(inPrice)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                 .withQuoteDate(new Date())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
@@ -348,7 +348,7 @@ public class EventTestBase
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
                                                  .withContractSize(1)
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     /**
      * Generates a currency <code>BidEvent</code> with the given values.
@@ -366,7 +366,7 @@ public class EventTestBase
                                                  .withPrice(inPrice)
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     /**
      * Generates a currency <code>AskEvent</code> with the given values.
@@ -384,7 +384,7 @@ public class EventTestBase
                                                  .withPrice(generateDecimalValue())
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     /**
      * Generates a currency <code>AskEvent</code> with the given values.
@@ -402,7 +402,7 @@ public class EventTestBase
                                                  .withPrice(inPrice)
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     
     /**
@@ -421,7 +421,7 @@ public class EventTestBase
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
                                                  .withContractSize(1)
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     /**
      * Generates a future <code>BidEvent</code> with the given values.
@@ -439,7 +439,7 @@ public class EventTestBase
                                                  .withPrice(inPrice)
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     /**
      * Generates a future <code>AskEvent</code> with the given values.
@@ -457,7 +457,7 @@ public class EventTestBase
                                                  .withPrice(generateDecimalValue())
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     /**
      * Generates a future <code>AskEvent</code> with the given values.
@@ -475,7 +475,7 @@ public class EventTestBase
                                                  .withPrice(inPrice)
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     
     
@@ -488,7 +488,7 @@ public class EventTestBase
      * @param inExchange a <code>String</code> value
      * @param inPrice a <code>BigDecimal</code> value
      * @param inSize a <code>BigDecimal</code> value
-     * @param inExchangeTimestamp a <code>String</code> value
+     * @param inExchangeTimestamp a <code>Date</code> value
      * @return a <code>BidEvent</code> value
      */
     public static BidEvent generateEquityBidEvent(long inMessageId,
@@ -497,7 +497,7 @@ public class EventTestBase
                                                   String inExchange,
                                                   BigDecimal inPrice,
                                                   BigDecimal inSize,
-                                                  String inExchangeTimestamp)
+                                                  Date inExchangeTimestamp)
     {
         return QuoteEventBuilder.equityBidEvent().withMessageId(inMessageId)
                                                  .withTimestamp(inTimestamp)
@@ -531,7 +531,7 @@ public class EventTestBase
                                       inExchange,
                                       inPrice,
                                       inSize,
-                                      DateUtils.dateToString(new Date()));
+                                      new Date());
     }
     /**
      * Generates an equity <code>BidEvent</code> with the given values.
@@ -562,7 +562,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     /**
      * Generates an equity <code>BidEvent</code> with the given values.
@@ -580,7 +580,7 @@ public class EventTestBase
                                                  .withExchange(inExchange)
                                                  .withPrice(inPrice)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     /**
      * Generates an equity <code>BidEvent</code> with the given values.
@@ -596,7 +596,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(inPrice)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+                                                 .withQuoteDate(new Date()).create();
     }
     /**
      * Generates an option <code>BidEvent</code> with the given values.
@@ -613,7 +613,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                 .withQuoteDate(new Date())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withMultiplier(BigDecimal.ZERO)
                                                  .withUnderlyingInstrument(inInstrument).create();
@@ -632,7 +632,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                 .withQuoteDate(new Date())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
@@ -652,7 +652,7 @@ public class EventTestBase
                                                  .withExchange(inExchange)
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                 .withQuoteDate(new Date())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
@@ -672,7 +672,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(inPrice)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                 .withQuoteDate(new Date())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
@@ -785,7 +785,7 @@ public class EventTestBase
                                                    .withExpirationType(ExpirationType.AMERICAN)
                                                    .withMultiplier(BigDecimal.ZERO)
                                                    .withUnderlyingInstrument(inUnderlyingInstrument)
-                                                   .withTradeDate(DateUtils.dateToString(new Date())).create();
+                                                   .withTradeDate(new Date()).create();
     }
     /**
      * Generates a future <code>TradeEvent</code> with the given value.
@@ -802,7 +802,7 @@ public class EventTestBase
                                                    .withPrice(inPrice)
                                                    .withContractSize(1)
                                                    .withSize(generateDecimalValue())
-                                                   .withTradeDate(DateUtils.dateToString(new Date())).create();
+                                                   .withTradeDate(new Date()).create();
     }
     
     /**
@@ -820,7 +820,7 @@ public class EventTestBase
                                                    .withPrice(inPrice)
                                                    .withContractSize(1)
                                                    .withSize(generateDecimalValue())
-                                                   .withTradeDate(DateUtils.dateToString(new Date())).create();
+                                                   .withTradeDate(new Date()).create();
     }
     
     /**
@@ -842,7 +842,7 @@ public class EventTestBase
                                                    .withExpirationType(ExpirationType.AMERICAN)
                                                    .withMultiplier(BigDecimal.ZERO)
                                                    .withUnderlyingInstrument(inUnderlyingInstrument)
-                                                   .withTradeDate(DateUtils.dateToString(new Date())).create();
+                                                   .withTradeDate(new Date()).create();
     }
     /**
      * Generates an equity <code>TradeEvent</code> with the given values.
@@ -853,7 +853,7 @@ public class EventTestBase
      * @param inExchange a <code>String</code> value
      * @param inPrice a <code>BigDecimal</code> value
      * @param inSize a <code>BigDecimal</code> value
-     * @param inExchangeTimestamp a <code>String</code> value
+     * @param inExchangeTimestamp a <code>Date</code> value
      * @return a <code>TradeEvent</code> value
      */
     public static TradeEvent generateEquityTradeEvent(long inMessageId,
@@ -862,7 +862,7 @@ public class EventTestBase
                                                       String inExchange,
                                                       BigDecimal inPrice,
                                                       BigDecimal inSize,
-                                                      String inExchangeTimestamp)
+                                                      Date inExchangeTimestamp)
     {
         return TradeEventBuilder.equityTradeEvent().withMessageId(inMessageId)
                                                    .withTimestamp(inTimestamp)
@@ -896,7 +896,7 @@ public class EventTestBase
                                         inExchange,
                                         inPrice,
                                         inSize,
-                                        DateUtils.dateToString(new Date(inTimestamp)));
+                                        new Date(inTimestamp));
     }
     /**
      * Generates an equity <code>MarketstatEvent</code> value. 
@@ -1082,11 +1082,11 @@ public class EventTestBase
     /**
      * Generates a quote date value.
      *
-     * @return a <code>String</code> value
+     * @return a <code>Date</code> value
      */
-    public static String generateQuoteDate()
+    public static Date generateQuoteDate()
     {
-        return DateUtils.dateToString(new Date());
+        return new Date();
     }
     /**
      * Generates an exchange value.
