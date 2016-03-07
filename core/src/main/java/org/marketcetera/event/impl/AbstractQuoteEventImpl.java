@@ -257,6 +257,9 @@ public abstract class AbstractQuoteEventImpl
         StringBuffer output = new StringBuffer();
         output.append(getDescription()).append("(").append(getAction()).append("-").append(getMessageId()).append(" ").append(getEventType()).append(") for ").append(getInstrument()).append(": ").append(getPrice()).append(" ").append(getSize()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         output.append(" ").append(getInstrument()).append(" ").append(getExchange()).append(" at ").append(getExchangeTimestamp()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if(getLevel() != 0) {
+            output.append(" level").append(getLevel()).append(": ").append(getCount());
+        }
         return output.toString();
     }
     /**

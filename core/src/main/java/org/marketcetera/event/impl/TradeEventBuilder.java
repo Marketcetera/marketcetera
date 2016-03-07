@@ -345,6 +345,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * @param inUnderlyingInstrument an <code>Instrument</code> value or <code>null</code>
      * @return a <code>TradeEventBuilder</code> value
      */
+    @Override
     public TradeEventBuilder<E> withUnderlyingInstrument(Instrument inUnderlyingInstrument)
     {
         option.setUnderlyingInstrument(inUnderlyingInstrument);
@@ -356,6 +357,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * @param inExpirationType an <code>ExpirationType</code> value or <code>null</code>
      * @return a <code>TradeEventBuilder</code> value
      */
+    @Override
     public TradeEventBuilder<E> withExpirationType(ExpirationType inExpirationType)
     {
         option.setExpirationType(inExpirationType);
@@ -367,6 +369,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * @param inMultiplier a <code>BigDecimal</code> value
      * @return a <code>TradeEventBuilder&lt;E&gt;</code> value
      */
+    @Override
     public TradeEventBuilder<E> withMultiplier(BigDecimal inMultiplier)
     {
         option.setMultiplier(inMultiplier);
@@ -378,6 +381,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * @param inHasDeliverable a <code>boolean</code> value
      * @return a <code>TradeEventBuilder</code> value
      */
+    @Override
     public TradeEventBuilder<E> hasDeliverable(boolean inHasDeliverable)
     {
         option.setHasDeliverable(inHasDeliverable);
@@ -389,6 +393,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * @param inDeliveryType a <code>DeliveryType</code> value
      * @return a <code>TradeEventBuilder</code> value
      */
+    @Override
     public final TradeEventBuilder<E> withDeliveryType(DeliveryType inDeliveryType)
     {
         future.setDeliveryType(inDeliveryType);
@@ -400,6 +405,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * @param inStandardType a <code>StandardType</code> value
      * @return a <code>TradeEventBuilder</code> value
      */
+    @Override
     public final TradeEventBuilder<E> withStandardType(StandardType inStandardType)
     {
         future.setStandardType(inStandardType);
@@ -411,6 +417,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * @param inFutureType a <code>FutureType</code> value
      * @return a <code>TradeEventBuilder</code> value
      */
+    @Override
     public final TradeEventBuilder<E> withFutureType(FutureType inFutureType)
     {
         future.setType(inFutureType);
@@ -422,6 +429,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * @param inUnderlyingAssetType an <code>UnderlyingFutureAssetType</code> value
      * @return a <code>TradeEventBuilder</code> value
      */
+    @Override
     public final TradeEventBuilder<E> withUnderlyingAssetType(FutureUnderlyingAssetType inUnderlyingAssetType)
     {
         future.setUnderlyingAssetType(inUnderlyingAssetType);
@@ -433,6 +441,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * @param inProviderSymbol a <code>String</code> value
      * @return a <code>TradeEventBuilder&lt;E&gt;</code> value
      */
+    @Override
     public final TradeEventBuilder<E> withProviderSymbol(String inProviderSymbol)
     {
         option.setProviderSymbol(inProviderSymbol);

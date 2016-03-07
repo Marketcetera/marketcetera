@@ -71,7 +71,6 @@ public class CurrencyBean
     {
         instrument = inCurrency;
     }
-
     /**
      * Get the deliveryType value.
      *
@@ -90,8 +89,6 @@ public class CurrencyBean
     {
         deliveryType = inDeliveryType;
     }
-
-
     /**
      * Performs validation of the attributes.
      *

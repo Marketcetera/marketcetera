@@ -16,10 +16,17 @@ import org.marketcetera.util.misc.ClassVersion;
 public interface SymbolResolver
 {
     /**
-     * Resolves the given symbol to an instrument.
+     * Resolve the given symbol to an instrument.
      *
      * @param inSymbol a <code>String</code> value
      * @return an <code>Instrument</code> value
      */
-    public Instrument resolveSymbol(String inSymbol);
+    Instrument resolveSymbol(String inSymbol);
+    /**
+     * Generate a symbol from the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a code>String</code> value
+     */
+    String generateSymbol(Instrument inInstrument);
 }
