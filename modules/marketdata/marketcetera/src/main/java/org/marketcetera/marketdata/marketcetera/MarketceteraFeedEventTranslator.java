@@ -18,7 +18,6 @@ import org.marketcetera.event.UnsupportedEventException;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -102,7 +101,7 @@ public class MarketceteraFeedEventTranslator
                         if(requestedContent.contains(Content.TOP_OF_BOOK)) {
                             BidEvent bid = QuoteEventBuilder.equityBidEvent().withMessageId(System.nanoTime())
                                                                              .withTimestamp(new Date())
-                                                                             .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                                             .withQuoteDate(new Date())
                                                                              .withInstrument(new Equity(symbol))
                                                                              .withExchange(exchange)
                                                                              .withPrice(new BigDecimal(price))
@@ -114,7 +113,7 @@ public class MarketceteraFeedEventTranslator
                         if(requestedContent.contains(Content.TOP_OF_BOOK)) {
                             AskEvent ask = QuoteEventBuilder.equityAskEvent().withMessageId(System.nanoTime())
                                                                              .withTimestamp(new Date())
-                                                                             .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                                             .withQuoteDate(new Date())
                                                                              .withInstrument(new Equity(symbol))
                                                                              .withExchange(exchange)
                                                                              .withPrice(new BigDecimal(price))
@@ -126,7 +125,7 @@ public class MarketceteraFeedEventTranslator
                         if(requestedContent.contains(Content.LATEST_TICK)) {
                             TradeEvent trade = TradeEventBuilder.equityTradeEvent().withMessageId(System.nanoTime())
                                                                                    .withTimestamp(new Date())
-                                                                                   .withTradeDate(DateUtils.dateToString(new Date()))
+                                                                                   .withTradeDate(new Date())
                                                                                    .withInstrument(new Equity(symbol))
                                                                                    .withExchange(exchange)
                                                                                    .withPrice(new BigDecimal(price))

@@ -1,5 +1,7 @@
 package org.marketcetera.event;
 
+import java.util.Date;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -23,9 +25,9 @@ public interface QuoteEvent
      * 
      * <p>This is the same as {@link #getExchangeTimestamp()}.
      *
-     * @return a <code>String</code> value
+     * @return a <code>Date</code> value
      */
-    String getQuoteDate();
+    Date getQuoteDate();
     /**
      * Get the action value indicating how this quote should be processed.
      *

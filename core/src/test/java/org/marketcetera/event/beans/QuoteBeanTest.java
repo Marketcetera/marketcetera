@@ -13,7 +13,6 @@ import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.impl.QuoteEventBuilder;
-import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
@@ -68,7 +67,7 @@ public class QuoteBeanTest
                         .withSize(BigDecimal.TEN)
                         .withProcessedTimestamp(processedTimestamp)
                         .withReceivedTimestamp(receivedTimestamp)
-                        .withQuoteDate(DateUtils.dateToString(new Date()));
+                        .withQuoteDate(new Date());
         // signature 1
         new ExpectedFailure<NullPointerException>(){
             @Override
@@ -307,7 +306,7 @@ public class QuoteBeanTest
                 equityAskBuilder.create();
             }
         };
-        equityAskBuilder.withQuoteDate("");
+        equityAskBuilder.withQuoteDate(null);
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_EXCHANGE_TIMESTAMP.getText()){
             @Override
             protected void run()
@@ -316,7 +315,7 @@ public class QuoteBeanTest
                 equityAskBuilder.create();
             }
         };
-        equityAskBuilder.withQuoteDate(DateUtils.dateToString(new Date()));
+        equityAskBuilder.withQuoteDate(new Date());
         // now test valid cases
         // event price
         equityAskBuilder.withPrice(new BigDecimal("-10"));
@@ -381,8 +380,7 @@ public class QuoteBeanTest
                             ask.getSize(),
                             action,
                             ask.getEventType());
-        // this seems odd, but it is valid
-        equityAskBuilder.withQuoteDate("this-is-not-a-date");
+        equityAskBuilder.withQuoteDate(new Date(0));
         verifyQuoteBeanFull(QuoteBean.getQuoteBeanFromEvent(ask,
                                                             action),
                             ask.getMessageId(),
@@ -444,7 +442,7 @@ public class QuoteBeanTest
         optionBidBuilder.withAction(QuoteAction.DELETE)
                         .withExchange("exchange")
                         .withPrice(BigDecimal.ONE)
-                        .withQuoteDate(DateUtils.dateToString(new Date()))
+                        .withQuoteDate(new Date())
                         .withSize(BigDecimal.TEN);
         BidEvent bid = optionBidBuilder.create();
         verifyQuoteBeanFull(QuoteBean.getQuoteBeanFromEvent(bid,
@@ -599,7 +597,7 @@ public class QuoteBeanTest
      * @param inExpectedTimestamp a <code>Date</code> value
      * @param inExpectedSource an <code>Object</code> value
      * @param inExpectedExchange a <code>String</code> value
-     * @param inExpectedExchangeTimestamp a <code>String</code> value
+     * @param inExpectedExchangeTimestamp a <code>Date</code> value
      * @param inExpectedProcessedTimestamp a <code>long</code> value
      * @param inExpectedReceivedTimestamp a <code>long</code> value
      * @param inExpectedInstrument an <code>Instrument</code> value
@@ -615,7 +613,7 @@ public class QuoteBeanTest
                                     Date inExpectedTimestamp,
                                     Object inExpectedSource,
                                     String inExpectedExchange,
-                                    String inExpectedExchangeTimestamp,
+                                    Date inExpectedExchangeTimestamp,
                                     long inExpectedProcessedTimestamp,
                                     long inExpectedReceivedTimestamp,
                                     Instrument inExpectedInstrument,

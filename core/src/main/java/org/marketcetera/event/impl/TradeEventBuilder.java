@@ -331,10 +331,10 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     /**
      * Sets the tradeDate value.
      *
-     * @param inTradeDate a <code>String</code> value or <code>null</code>
+     * @param inTradeDate a <code>Date</code> value or <code>null</code>
      * @return a <code>TradeEventBuilder</code> value
      */
-    public TradeEventBuilder<E> withTradeDate(String inTradeDate)
+    public TradeEventBuilder<E> withTradeDate(Date inTradeDate)
     {
         tradeData.setExchangeTimestamp(inTradeDate);
         return this;

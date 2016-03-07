@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
@@ -727,7 +728,7 @@ public class MarketDataRecorderModuleTest
         return builder.withExchange(inExchange)
                       .withPrice(EventTestBase.generateDecimalValue())
                       .withSize(EventTestBase.generateDecimalValue())
-                      .withQuoteDate(String.valueOf(System.currentTimeMillis())).create();
+                      .withQuoteDate(new Date()).create();
     }
     /**
      * Verifies that no files exist in the test directory.

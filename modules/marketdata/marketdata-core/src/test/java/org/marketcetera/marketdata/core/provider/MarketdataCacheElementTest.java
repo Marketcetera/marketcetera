@@ -18,7 +18,6 @@ import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TopOfBookEventBuilder;
 import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.OrderBook;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
@@ -220,7 +219,7 @@ public class MarketdataCacheElementTest
                 .withExchange("Q")
                 .withPrice(EventTestBase.generateDecimalValue())
                 .withSize(EventTestBase.generateDecimalValue())
-                .withQuoteDate(DateUtils.dateToString(new Date()));
+                .withQuoteDate(new Date());
         return builder.create();
     }
     /**
@@ -236,7 +235,7 @@ public class MarketdataCacheElementTest
                 .withExchange("Q")
                 .withPrice(EventTestBase.generateDecimalValue())
                 .withSize(EventTestBase.generateDecimalValue())
-                .withQuoteDate(DateUtils.dateToString(new Date()));
+                .withQuoteDate(new Date());
         return builder.create();
     }
     /**

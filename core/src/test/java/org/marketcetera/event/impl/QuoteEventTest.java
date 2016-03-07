@@ -1,6 +1,10 @@
 package org.marketcetera.event.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -8,12 +12,23 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.event.*;
+import org.marketcetera.event.CurrencyEvent;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.EventType;
+import org.marketcetera.event.FutureEvent;
 import org.marketcetera.event.Messages;
-import org.marketcetera.marketdata.DateUtils;
+import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -714,19 +729,19 @@ public class QuoteEventTest
             throws Exception
     {
         QuoteEventBuilder<?> builder = setDefaults(getBuilder());
-        String date = null;
+        Date date = null;
         builder.withQuoteDate(date);
         assertEquals(date,
                      builder.getQuote().getExchangeTimestamp());
-        date = "";
+        date = null;
         builder.withQuoteDate(date);
         assertEquals(date,
                      builder.getQuote().getExchangeTimestamp());
-        date = "not-a-date";
+        date = new Date(0);
         builder.withQuoteDate(date);
         assertEquals(date,
                      builder.getQuote().getExchangeTimestamp());
-        date = DateUtils.dateToString(new Date());
+        date = new Date();
         builder.withQuoteDate(date);
         assertEquals(date,
                      builder.getQuote().getExchangeTimestamp());
@@ -939,19 +954,10 @@ public class QuoteEventTest
                 builder.create();
             }
         };
-        setDefaults(builder).withQuoteDate("");
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_EXCHANGE_TIMESTAMP.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                builder.create();
-            }
-        };
         // this value is ok
-        setDefaults(builder).withQuoteDate("not-a-date");
+        setDefaults(builder).withQuoteDate(new Date(0));
         verify(builder);
-        setDefaults(builder).withQuoteDate(DateUtils.dateToString(new Date()));
+        setDefaults(builder).withQuoteDate(new Date());
         verify(builder);
         // instrument
         setDefaults(builder).withInstrument(null);
@@ -1206,7 +1212,7 @@ public class QuoteEventTest
         inBuilder.withMessageId(idCounter.incrementAndGet());
         inBuilder.withMultiplier(BigDecimal.ZERO);
         inBuilder.withPrice(BigDecimal.ONE);
-        inBuilder.withQuoteDate(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
+        inBuilder.withQuoteDate(new Date(millis + (millisInADay * counter++)));
         inBuilder.withSize(BigDecimal.TEN);
         inBuilder.withTimestamp(new Date());
         inBuilder.withUnderlyingInstrument(instrument);
