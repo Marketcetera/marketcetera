@@ -2,7 +2,6 @@ require 'java'
 java_import org.marketcetera.strategy.ruby.Strategy
 java_import org.marketcetera.strategy.OutputType
 java_import org.marketcetera.event.impl.TradeEventBuilder
-java_import org.marketcetera.marketdata.DateUtils
 java_import org.marketcetera.trade.Equity
 java_import org.marketcetera.module.DataRequest
 java_import java.lang.Long
@@ -20,7 +19,7 @@ class SendEvent < Strategy
         tradeBuilder = TradeEventBuilder.equityTradeEvent
         tradeBuilder.withInstrument(Equity.new("METC")).withExchange("exchange")
         tradeBuilder.withPrice(BigDecimal::ONE).withSize(BigDecimal::TEN)
-        tradeBuilder.withTradeDate(DateUtils.dateToString(Date.new))
+        tradeBuilder.withTradeDate(Date.new)
         do_send_event tradeBuilder.create
         cancel_data_flow @dataFlowID
     end

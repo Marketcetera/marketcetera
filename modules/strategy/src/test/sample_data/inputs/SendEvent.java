@@ -4,7 +4,6 @@ import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.TradeEventBuilder;
-import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleURN;
@@ -48,7 +47,7 @@ public class SendEvent
                                                                .withExchange("exchange")
                                                                .withPrice(BigDecimal.ONE)
                                                                .withSize(BigDecimal.TEN)
-                                                               .withTradeDate(DateUtils.dateToString(new Date())).create();
+                                                               .withTradeDate(new Date()).create();
         doSendEvent(trade);
         cancelDataFlow(dataFlowID);
     }

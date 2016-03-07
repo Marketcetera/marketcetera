@@ -33,7 +33,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.TimestampGenerator;
 import org.marketcetera.metrics.MetricService;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
@@ -137,7 +136,6 @@ public class MarketDataRecorderModule
         Validate.isTrue(outputDirectoryFile.canWrite(),
                         Messages.NOT_A_DIRECTORY.getText(directoryName));
         Validate.notNull(config);
-        timestampGenerator = config.getTimestampGenerator();
         sessionResetTimestamp = config.getSessionResetTimestamp();
         SLF4JLoggerProxy.debug(this,
                                "Session reset is {}", //$NON-NLS-1$
@@ -210,7 +208,7 @@ public class MarketDataRecorderModule
         inBuffer.append(inQuote.getPrice().toPlainString()).append(',');
         inBuffer.append(inQuote.getSize().toPlainString()).append(',');
         inBuffer.append(inQuote.getExchange()).append(',');
-        inBuffer.append(marketDataTimestampFormatter.print(timestampGenerator.generateTimestamp(inQuote.getExchangeTimestamp()))).append(',');
+        inBuffer.append(marketDataTimestampFormatter.print(inQuote.getExchangeTimestamp().getTime())).append(',');
         inBuffer.append(marketDataTimestampFormatter.print(inQuote.getProcessedTimestamp())).append(',');
         inBuffer.append(marketDataTimestampFormatter.print(inQuote.getReceivedTimestamp())).append(',');
         inBuffer.append(System.lineSeparator());
@@ -380,10 +378,6 @@ public class MarketDataRecorderModule
      * timestamp value for the session reset of today
      */
     private DateTime sessionResetTimestamp;
-    /**
-     * generates timestamps
-     */
-    private TimestampGenerator timestampGenerator;
     /**
      * counts events
      */

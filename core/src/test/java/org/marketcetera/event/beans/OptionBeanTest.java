@@ -14,7 +14,6 @@ import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Messages;
 import org.marketcetera.event.OptionEvent;
 import org.marketcetera.event.impl.QuoteEventBuilder;
-import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
@@ -79,7 +78,7 @@ public class OptionBeanTest
                .withInstrument(option)
                .withMultiplier(multiplier)
                .withPrice(BigDecimal.ONE)
-               .withQuoteDate(DateUtils.dateToString(new Date()))
+               .withQuoteDate(new Date())
                .withSize(BigDecimal.TEN)
                .withUnderlyingInstrument(underlyingInstrument);
         BidEvent bid = builder.create();

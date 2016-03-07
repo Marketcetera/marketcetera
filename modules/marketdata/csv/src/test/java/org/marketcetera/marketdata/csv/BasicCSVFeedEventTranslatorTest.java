@@ -682,11 +682,12 @@ public class BasicCSVFeedEventTranslatorTest
         assertNull(translator.guessQuoteDate(null));
         assertNull(translator.guessQuoteDate(CSVQuantum.getQuantum(new String[] { "" },
                                                                    request, 1.0)));
-        assertEquals("this-is-not-a-date",
-                     translator.guessQuoteDate(CSVQuantum.getQuantum(new String[] { "one","two","three","this-is-not-a-date" },
+        assertEquals(new Date(2),
+                     translator.guessQuoteDate(CSVQuantum.getQuantum(new String[] { "one","two","three","2" },
                                                                      request, 1.0)));
-        String dateString = DateUtils.dateToString(new Date());
-        assertEquals(dateString,
+        long timestamp = System.currentTimeMillis();
+        String dateString = String.valueOf(timestamp);
+        assertEquals(new Date(timestamp),
                      translator.guessQuoteDate(CSVQuantum.getQuantum(new String[] { "one","two","three",dateString },
                                                                      request, 1.0)));
     }
@@ -809,11 +810,12 @@ public class BasicCSVFeedEventTranslatorTest
         assertNull(translator.guessTradeDate(null));
         assertNull(translator.guessTradeDate(CSVQuantum.getQuantum(new String[] { "" },
                                                                    request, 1.0)));
-        assertEquals("this-is-not-a-date",
-                     translator.guessTradeDate(CSVQuantum.getQuantum(new String[] { "one","two","three","this-is-not-a-date" },
+        assertEquals(new Date(1),
+                     translator.guessTradeDate(CSVQuantum.getQuantum(new String[] { "one","two","three","1" },
                                                                      request, 1.0)));
-        String dateString = DateUtils.dateToString(new Date());
-        assertEquals(dateString,
+        long timestamp = System.currentTimeMillis();
+        String dateString = String.valueOf(timestamp);
+        assertEquals(new Date(timestamp),
                      translator.guessTradeDate(CSVQuantum.getQuantum(new String[] { "one","two","three",dateString },
                                                                      request, 1.0)));
     }
@@ -1446,37 +1448,37 @@ public class BasicCSVFeedEventTranslatorTest
         };
         long askTimestamp = System.currentTimeMillis();
         long bidTimestamp = System.currentTimeMillis() + 5000;
-        AskEvent ask = translator.processAsk(CSVQuantum.getQuantum(new String[] { "ask",String.valueOf(askTimestamp),"ask-symbol","ask-date","ask-exchange","1234.56","9876.543" },
+        AskEvent ask = translator.processAsk(CSVQuantum.getQuantum(new String[] { "ask",String.valueOf(askTimestamp),"ask-symbol",String.valueOf(askTimestamp),"ask-exchange","1234.56","9876.543" },
                                                                    request, 1.0));
         assertEquals(QuoteAction.ADD,
                      ask.getAction());
         assertEquals("ask-exchange",
                      ask.getExchange());
-        assertEquals("ask-date",
+        assertEquals(new Date(askTimestamp),
                      ask.getExchangeTimestamp());
         assertEquals(new Equity("ask-symbol"),
                      ask.getInstrument());
         assertEquals(new BigDecimal("1234.56"),
                      ask.getPrice());
-        assertEquals("ask-date",
+        assertEquals(new Date(askTimestamp),
                      ask.getQuoteDate());
         assertEquals(new BigDecimal("9876.543"),
                      ask.getSize());
         assertEquals(new Date(askTimestamp),
                      ask.getTimestamp());
-        BidEvent bid = translator.processBid(CSVQuantum.getQuantum(new String[] { "bid",String.valueOf(bidTimestamp),"bid-symbol","bid-date","bid-exchange","12340.056","98760.0543" },
+        BidEvent bid = translator.processBid(CSVQuantum.getQuantum(new String[] { "bid",String.valueOf(bidTimestamp),"bid-symbol",String.valueOf(bidTimestamp),"bid-exchange","12340.056","98760.0543" },
                                                                    request, 1.0));
         assertEquals(QuoteAction.ADD,
                      bid.getAction());
         assertEquals("bid-exchange",
                      bid.getExchange());
-        assertEquals("bid-date",
+        assertEquals(new Date(bidTimestamp),
                      bid.getExchangeTimestamp());
         assertEquals(new Equity("bid-symbol"),
                      bid.getInstrument());
         assertEquals(new BigDecimal("12340.056"),
                      bid.getPrice());
-        assertEquals("bid-date",
+        assertEquals(new Date(bidTimestamp),
                      bid.getQuoteDate());
         assertEquals(new BigDecimal("98760.0543"),
                      bid.getSize());
@@ -1484,19 +1486,19 @@ public class BasicCSVFeedEventTranslatorTest
                      bid.getTimestamp());
         // repeat just one of the tests using an option instead
         bidTimestamp += 5000;
-        bid = translator.processBid(CSVQuantum.getQuantum(new String[] { "bid",String.valueOf(bidTimestamp),OptionUtils.getOsiSymbolFromOption(option),"bid-date","bid-exchange","12340.056","98760.0543" },
+        bid = translator.processBid(CSVQuantum.getQuantum(new String[] { "bid",String.valueOf(bidTimestamp),OptionUtils.getOsiSymbolFromOption(option),String.valueOf(bidTimestamp),"bid-exchange","12340.056","98760.0543" },
                                                           request, 1.0));
         assertEquals(QuoteAction.ADD,
                      bid.getAction());
         assertEquals("bid-exchange",
                      bid.getExchange());
-        assertEquals("bid-date",
+        assertEquals(new Date(bidTimestamp),
                      bid.getExchangeTimestamp());
         assertEquals(option,
                      bid.getInstrument());
         assertEquals(new BigDecimal("12340.056"),
                      bid.getPrice());
-        assertEquals("bid-date",
+        assertEquals(new Date(bidTimestamp),
                      bid.getQuoteDate());
         assertEquals(new BigDecimal("98760.0543"),
                      bid.getSize());
@@ -1531,17 +1533,17 @@ public class BasicCSVFeedEventTranslatorTest
             }
         };
         long tradeTimestamp = System.currentTimeMillis();
-        TradeEvent trade = translator.processTrade(CSVQuantum.getQuantum(new String[] { "trade",String.valueOf(tradeTimestamp),"trade-symbol","trade-date","trade-exchange","1234.56","9876.543" },
+        TradeEvent trade = translator.processTrade(CSVQuantum.getQuantum(new String[] { "trade",String.valueOf(tradeTimestamp),"trade-symbol",String.valueOf(tradeTimestamp),"trade-exchange","1234.56","9876.543" },
                                                                          request, 1.0));
         assertEquals("trade-exchange",
                      trade.getExchange());
-        assertEquals("trade-date",
+        assertEquals(new Date(tradeTimestamp),
                      trade.getExchangeTimestamp());
         assertEquals(new Equity("trade-symbol"),
                      trade.getInstrument());
         assertEquals(new BigDecimal("1234.56"),
                      trade.getPrice());
-        assertEquals("trade-date",
+        assertEquals(new Date(tradeTimestamp),
                      trade.getTradeDate());
         assertEquals(new BigDecimal("9876.543"),
                      trade.getSize());
@@ -1549,17 +1551,17 @@ public class BasicCSVFeedEventTranslatorTest
                      trade.getTimestamp());
         // repeat with an option
         tradeTimestamp += 5000;
-        trade = translator.processTrade(CSVQuantum.getQuantum(new String[] { "trade",String.valueOf(tradeTimestamp),OptionUtils.getOsiSymbolFromOption(option),"trade-date","trade-exchange","12340.056","98760.0543" },
+        trade = translator.processTrade(CSVQuantum.getQuantum(new String[] { "trade",String.valueOf(tradeTimestamp),OptionUtils.getOsiSymbolFromOption(option),String.valueOf(tradeTimestamp),"trade-exchange","12340.056","98760.0543" },
                                                               request, 1.0));
         assertEquals("trade-exchange",
                      trade.getExchange());
-        assertEquals("trade-date",
+        assertEquals(new Date(tradeTimestamp),
                      trade.getExchangeTimestamp());
         assertEquals(option,
                      trade.getInstrument());
         assertEquals(new BigDecimal("12340.056"),
                      trade.getPrice());
-        assertEquals("trade-date",
+        assertEquals(new Date(tradeTimestamp),
                      trade.getTradeDate());
         assertEquals(new BigDecimal("98760.0543"),
                      trade.getSize());
@@ -1802,7 +1804,7 @@ public class BasicCSVFeedEventTranslatorTest
         };
         // valid bid
         long timestamp = System.currentTimeMillis();
-        List<Event> events = translator.toEvent(CSVQuantum.getQuantum(new String[] { "bid",String.valueOf(timestamp),"bid-symbol","bid-date","bid-exchange","12340.056","98760.0543" },
+        List<Event> events = translator.toEvent(CSVQuantum.getQuantum(new String[] { "bid",String.valueOf(timestamp),"bid-symbol",String.valueOf(timestamp),"bid-exchange","12340.056","98760.0543" },
                                                                       request, 1.0),
                                                 "handle-1");
         assertEquals(1,
@@ -1812,13 +1814,13 @@ public class BasicCSVFeedEventTranslatorTest
                      bid.getAction());
         assertEquals("bid-exchange",
                      bid.getExchange());
-        assertEquals("bid-date",
+        assertEquals(new Date(timestamp),
                      bid.getExchangeTimestamp());
         assertEquals(new Equity("bid-symbol"),
                      bid.getInstrument());
         assertEquals(new BigDecimal("12340.056"),
                      bid.getPrice());
-        assertEquals("bid-date",
+        assertEquals(new Date(timestamp),
                      bid.getQuoteDate());
         assertEquals(new BigDecimal("98760.0543"),
                      bid.getSize());
@@ -1838,7 +1840,7 @@ public class BasicCSVFeedEventTranslatorTest
         };
         // valid ask
         timestamp = System.currentTimeMillis();
-        events = translator.toEvent(CSVQuantum.getQuantum(new String[] { "ask",String.valueOf(timestamp),"ask-symbol","ask-date","ask-exchange","12340.056","98760.0543" },
+        events = translator.toEvent(CSVQuantum.getQuantum(new String[] { "ask",String.valueOf(timestamp),"ask-symbol",String.valueOf(timestamp),"ask-exchange","12340.056","98760.0543" },
                                                           request, 1.0),
                                     "handle-1");
         assertEquals(1,
@@ -1848,13 +1850,13 @@ public class BasicCSVFeedEventTranslatorTest
                      ask.getAction());
         assertEquals("ask-exchange",
                      ask.getExchange());
-        assertEquals("ask-date",
+        assertEquals(new Date(timestamp),
                      ask.getExchangeTimestamp());
         assertEquals(new Equity("ask-symbol"),
                      ask.getInstrument());
         assertEquals(new BigDecimal("12340.056"),
                      ask.getPrice());
-        assertEquals("ask-date",
+        assertEquals(new Date(timestamp),
                      ask.getQuoteDate());
         assertEquals(new BigDecimal("98760.0543"),
                      ask.getSize());
@@ -1874,7 +1876,7 @@ public class BasicCSVFeedEventTranslatorTest
         };
         // valid trade
         timestamp = System.currentTimeMillis();
-        events = translator.toEvent(CSVQuantum.getQuantum(new String[] { "trade",String.valueOf(timestamp),"trade-symbol","trade-date","trade-exchange","12340.056","98760.0543" },
+        events = translator.toEvent(CSVQuantum.getQuantum(new String[] { "trade",String.valueOf(timestamp),"trade-symbol",String.valueOf(timestamp),"trade-exchange","12340.056","98760.0543" },
                                                           request, 1.0),
                                     "handle-1");
         assertEquals(1,
@@ -1882,13 +1884,13 @@ public class BasicCSVFeedEventTranslatorTest
         TradeEvent trade = (TradeEvent)events.get(0);
         assertEquals("trade-exchange",
                      trade.getExchange());
-        assertEquals("trade-date",
+        assertEquals(new Date(timestamp),
                      trade.getExchangeTimestamp());
         assertEquals(new Equity("trade-symbol"),
                      trade.getInstrument());
         assertEquals(new BigDecimal("12340.056"),
                      trade.getPrice());
-        assertEquals("trade-date",
+        assertEquals(new Date(timestamp),
                      trade.getTradeDate());
         assertEquals(new BigDecimal("98760.0543"),
                      trade.getSize());

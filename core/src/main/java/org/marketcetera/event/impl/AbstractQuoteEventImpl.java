@@ -58,7 +58,7 @@ public abstract class AbstractQuoteEventImpl
      * @see org.marketcetera.event.QuoteEvent#getExchangeTimestamp()
      */
     @Override
-    public String getExchangeTimestamp()
+    public Date getExchangeTimestamp()
     {
         return quote.getExchangeTimestamp();
     }
@@ -66,7 +66,7 @@ public abstract class AbstractQuoteEventImpl
      * @see org.marketcetera.event.QuoteEvent#getQuoteDate()
      */
     @Override
-    public String getQuoteDate()
+    public Date getQuoteDate()
     {
         return getExchangeTimestamp();
     }

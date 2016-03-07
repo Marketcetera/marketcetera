@@ -1,6 +1,7 @@
 package org.marketcetera.event;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -41,9 +42,9 @@ public interface MarketDataEvent
      * <p>The format of the returned value is dependent on the
      * originating market data provider.
      *
-     * @return a <code>String</code> value
+     * @return a <code>Date</code> value
      */
-    public String getExchangeTimestamp();
+    public Date getExchangeTimestamp();
     /**
      * Gets the type of the event.
      *

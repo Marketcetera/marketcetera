@@ -548,7 +548,10 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                         event.setSource(token);
                         event.setProvider(getProviderName());
                         if(event instanceof HasTimestamps) {
-                            ((HasTimestamps)event).setProcessedTimestamp(processedTimestamp);
+                            HasTimestamps hasTimestamps = (HasTimestamps)event;
+                            if(hasTimestamps.getProcessedTimestamp() != 0) {
+                                ((HasTimestamps)event).setProcessedTimestamp(processedTimestamp);
+                            }
                         }
                         token.publish(event);
                     }
