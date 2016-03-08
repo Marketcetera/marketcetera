@@ -5,7 +5,7 @@ import com.codahale.metrics.MetricRegistry;
 /* $License$ */
 
 /**
- * Provides services related to collecting and calculating metric.
+ * Provides metric services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
