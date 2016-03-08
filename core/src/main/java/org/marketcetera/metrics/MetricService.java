@@ -5,7 +5,7 @@ import com.codahale.metrics.MetricRegistry;
 /* $License$ */
 
 /**
- * Provides services related to collecting and calculating metric.
+ * Provides metric services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -21,7 +21,7 @@ public class MetricService
         metrics = new MetricRegistry();
     }
     /**
-     * Gets the metric service instance.
+     * Get the singleton instance of the metric service.
      *
      * @return a <code>MetricService</code> value
      */
@@ -30,7 +30,7 @@ public class MetricService
         return instance;
     }
     /**
-     * Gets the metrics object.
+     * Get the underlying MetricRegistry value.
      *
      * @return a <code>MetricRegistry</code> value
      */
@@ -39,11 +39,11 @@ public class MetricService
         return metrics;
     }
     /**
-     * metric service instance
+     * singleton metrics instance
      */
     private static MetricService instance = new MetricService();;
     /**
-     * metrics core instance
+     * metrics registry
      */
     private final MetricRegistry metrics;
 }

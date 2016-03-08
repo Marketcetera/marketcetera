@@ -8,7 +8,6 @@ import java.util.Date;
 
 import org.junit.Test;
 import org.marketcetera.event.EventType;
-import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
@@ -119,7 +118,7 @@ public class MarketDataBeanTest
         // test exchangeTimestamp
         // set bean3 to non-null
         assertNull(bean1.getExchangeTimestamp());
-        bean3.setExchangeTimestamp(DateUtils.dateToString(new Date()));
+        bean3.setExchangeTimestamp(new Date());
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -238,7 +237,7 @@ public class MarketDataBeanTest
                 inBean.validate();
             }
         };
-        inBean.setExchangeTimestamp("");
+        inBean.setExchangeTimestamp(null);
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_EXCHANGE_TIMESTAMP.getText()) {
             @Override
             protected void run()
@@ -247,7 +246,7 @@ public class MarketDataBeanTest
                 inBean.validate();
             }
         };
-        inBean.setExchangeTimestamp(DateUtils.dateToString(new Date()));
+        inBean.setExchangeTimestamp(new Date());
         inBean.setEventType(null);
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_META_TYPE.getText()) {
             @Override
@@ -296,7 +295,7 @@ public class MarketDataBeanTest
                              null,
                              EventType.UNKNOWN);
         String exchange = "test exchange";
-        String exchangeTimestamp = DateUtils.dateToString(new Date());
+        Date exchangeTimestamp = new Date();
         Instrument instrument = new Equity("GOOG");
         BigDecimal price = BigDecimal.ONE;
         BigDecimal size = BigDecimal.TEN;
@@ -335,7 +334,7 @@ public class MarketDataBeanTest
      *
      * @param inBean a <code>MarketDataBean</code> value
      * @param inExpectedExchange a <code>String</code> value
-     * @param inExpectedExchangeTimestamp a <code>String</code> value
+     * @param inExpectedExchangeTimestamp a <code>Date</code> value
      * @param inExpectedProcessedTimestamp a <code>long</code> value
      * @param inExpectedReceivedTimestamp a <code>long</code> value
      * @param inExpectedInstrument an <code>Instrument</code> value
@@ -346,7 +345,7 @@ public class MarketDataBeanTest
      */
     static void verifyMarketDataBean(MarketDataBean inBean,
                                      String inExpectedExchange,
-                                     String inExpectedExchangeTimestamp,
+                                     Date inExpectedExchangeTimestamp,
                                      long inExpectedProcessedTimestamp,
                                      long inExpectedReceivedTimestamp,
                                      Instrument inExpectedInstrument,

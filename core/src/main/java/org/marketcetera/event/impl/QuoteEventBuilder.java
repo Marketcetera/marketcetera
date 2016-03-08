@@ -199,7 +199,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * @param inEvent a <code>QuoteEvent</code> value
      * @param inNewPrice a <code>BigDecimal</code> value
      * @param inNewSize a <code>BigDecimal</code> value
-     * @param inNewQuoteDate a <code>String</code> value
+     * @param inNewQuoteDate a <code>Date</code> value
      * @return a <code>QuoteEvent</code> value
      * @throws UnsupportedOperationException if the given <code>QuoteEvent</code> is for
      *  an unsupported asset class
@@ -208,7 +208,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     public static <E extends QuoteEvent> E change(E inEvent,
                                                   BigDecimal inNewPrice,
                                                   BigDecimal inNewSize,
-                                                  String inNewQuoteDate)
+                                                  Date inNewQuoteDate)
     {
         QuoteBean quote = QuoteBean.getQuoteBeanFromEvent(inEvent,
                                                           QuoteAction.CHANGE);
@@ -762,10 +762,10 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     /**
      * Sets the quoteDate value.
      *
-     * @param inQuoteDate a <code>String</code> value or <code>null</code>
+     * @param inQuoteDate a <code>Date</code> value or <code>null</code>
      * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
-    public QuoteEventBuilder<E> withQuoteDate(String inQuoteDate)
+    public QuoteEventBuilder<E> withQuoteDate(Date inQuoteDate)
     {
         quote.setExchangeTimestamp(inQuoteDate);
         return this;

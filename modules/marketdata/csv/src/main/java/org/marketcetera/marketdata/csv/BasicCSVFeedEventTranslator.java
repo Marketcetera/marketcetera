@@ -649,14 +649,14 @@ public class BasicCSVFeedEventTranslator
      * <p>The trade date is assumed to be the fourth element in the line.
      *
      * @param inData a <code>CSVQuantum</code> value
-     * @return a <code>String</code> value or <code>null</code>
+     * @return a <code>Date</code> value or <code>null</code>
      * @throws CoreException if an error occurs retrieving the trade date
      */
-    protected String guessTradeDate(CSVQuantum inData)
+    protected Date guessTradeDate(CSVQuantum inData)
             throws CoreException
     {
-        return guessString(inData,
-                           3);
+        return guessDate(inData,
+                         3);
     }
     /**
      * Guesses whether the contract of the data line has deliverables. 
@@ -739,14 +739,14 @@ public class BasicCSVFeedEventTranslator
      * <p>The quote date is assumed to be the fourth element in the line.
      *
      * @param inData a <code>CSVQuantum</code> value
-     * @return a <code>String</code> value or <code>null</code>
+     * @return a <code>Date</code> value or <code>null</code>
      * @throws CoreException if an error occurs
      */
-    protected String guessQuoteDate(CSVQuantum inData)
+    protected Date guessQuoteDate(CSVQuantum inData)
             throws CoreException
     {
-        return guessString(inData,
-                           3);
+        return guessDate(inData,
+                         3);
     }
     /**
      * Guesses the price of the given data line.

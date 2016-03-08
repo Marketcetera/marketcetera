@@ -511,7 +511,7 @@ public class OrderBookTest
         QuoteEventBuilder<BidEvent> builder = QuoteEventBuilder.bidEvent(symbol);
         builder.withSize(TEN)
                .withExchange("some exchange")
-               .withQuoteDate(DateUtils.dateToString(new Date()));
+               .withQuoteDate(new Date());
         for(int i=0;i<10000;i++) {
             builder.withMessageId(i+1)
                    .withPrice(new BigDecimal(random.nextLong()));

@@ -1,19 +1,33 @@
 package org.marketcetera.marketdata.yahoo;
 
 import java.math.BigDecimal;
-
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.event.*;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTranslator;
+import org.marketcetera.event.EventType;
+import org.marketcetera.event.HasEventType;
+import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
-import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -339,7 +353,7 @@ public enum YahooFeedEventTranslator
         inBuilder.withExchange(exchange)
         		 .withAction(action)
                  .withProviderSymbol(inSymbol)
-                 .withQuoteDate(DateUtils.dateToString(date))
+                 .withQuoteDate(date)
                  .withTimestamp(date)
                  .withPrice(quoteData.getPrice())
                  .withSize(quoteData.getSize());
@@ -462,14 +476,13 @@ public enum YahooFeedEventTranslator
         }
         TradeEventBuilder<? extends TradeEvent> builder = TradeEventBuilder.tradeEvent(instrument);
         Date date = new Date();
+        // TODO build trade date properly
         builder.withExchange(exchange)
                .withPrice(price)
                .withProviderSymbol(symbol)
                .withSize(size)
                .withTimestamp(date)
-               .withTradeDate(String.format("%s %s", //$NON-NLS-1$
-                                            tradeDate,
-                                            tradeTime));
+               .withTradeDate(date);
         addFutureAttributes(builder,
                             instrument,
                             inData);

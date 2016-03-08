@@ -28,7 +28,10 @@ import org.marketcetera.event.OptionEvent;
 import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.TestMessages;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.impl.*;
+import org.marketcetera.event.impl.DividendEventBuilder;
+import org.marketcetera.event.impl.LogEventBuilder;
+import org.marketcetera.event.impl.QuoteEventBuilder;
+import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
@@ -128,7 +131,7 @@ public class OptionChainTest
                                                              .withInstrument(callOption)
                                                              .withMultiplier(BigDecimal.ZERO)
                                                              .withPrice(EventTestBase.generateDecimalValue())
-                                                             .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                             .withQuoteDate(new Date())
                                                              .withSize(EventTestBase.generateDecimalValue()).create();
         assertTrue(chain.process(callAsk));
         // create expected result
@@ -149,7 +152,7 @@ public class OptionChainTest
                                                              .withExpirationType(ExpirationType.AMERICAN)
                                                              .withInstrument(callOption)
                                                              .withPrice(EventTestBase.generateDecimalValue())
-                                                             .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                             .withQuoteDate(new Date())
                                                              .withSize(EventTestBase.generateDecimalValue()).create();
         assertTrue(chain.process(callBid));
         // update expected result
@@ -171,7 +174,7 @@ public class OptionChainTest
                                                             .withInstrument(putOption)
                                                             .withMultiplier(BigDecimal.ZERO)
                                                             .withPrice(EventTestBase.generateDecimalValue())
-                                                            .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                            .withQuoteDate(new Date())
                                                             .withSize(EventTestBase.generateDecimalValue()).create();
         assertTrue(chain.process(putAsk));
         // update expected result
@@ -197,7 +200,7 @@ public class OptionChainTest
                                                             .withExpirationType(ExpirationType.AMERICAN)
                                                             .withInstrument(putOption)
                                                             .withPrice(EventTestBase.generateDecimalValue())
-                                                            .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                            .withQuoteDate(new Date())
                                                             .withSize(EventTestBase.generateDecimalValue()).create();
         assertTrue(chain.process(putBid));
         // update expected result
@@ -222,7 +225,7 @@ public class OptionChainTest
                                                .withExpirationType(ExpirationType.AMERICAN)
                                                .withInstrument(putOption)
                                                .withPrice(EventTestBase.generateDecimalValue())
-                                               .withTradeDate(DateUtils.dateToString(new Date()))
+                                               .withTradeDate(new Date())
                                                .withSize(EventTestBase.generateDecimalValue()).create();
         assertTrue(chain.process(putTrade));
         // update expected result
@@ -252,7 +255,7 @@ public class OptionChainTest
                                                     .withExpirationType(ExpirationType.AMERICAN)
                                                     .withInstrument(newCallOption)
                                                     .withPrice(EventTestBase.generateDecimalValue())
-                                                    .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                    .withQuoteDate(new Date())
                                                     .withSize(EventTestBase.generateDecimalValue()).create();
         // process the event (creates the new pair in the chain)
         assertTrue(chain.process(callAsk));
@@ -276,7 +279,7 @@ public class OptionChainTest
                                                     .withExpirationType(ExpirationType.AMERICAN)
                                                     .withInstrument(newerCallOption)
                                                     .withPrice(EventTestBase.generateDecimalValue())
-                                                    .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                    .withQuoteDate(new Date())
                                                     .withSize(EventTestBase.generateDecimalValue()).create();
         // process the event (creates the new pair in the chain)
         assertTrue(chain.process(callBid));
@@ -287,7 +290,7 @@ public class OptionChainTest
                                                                    .withExpirationType(ExpirationType.AMERICAN)
                                                                    .withInstrument(newerCallOption)
                                                                    .withPrice(EventTestBase.generateDecimalValue())
-                                                                   .withTradeDate(DateUtils.dateToString(new Date()))
+                                                                   .withTradeDate(new Date())
                                                                    .withSize(EventTestBase.generateDecimalValue()).create();
         // process the event (creates the new pair in the chain)
         assertTrue(chain.process(callTrade));
@@ -699,7 +702,7 @@ public class OptionChainTest
                                  .withMultiplier(BigDecimal.TEN)
                                  .hasDeliverable(true)
                                  .withPrice(EventTestBase.generateDecimalValue())
-                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                 .withQuoteDate(new Date())
                                  .withSize(EventTestBase.generateDecimalValue())
                                  .withProviderSymbol(callOption.getSymbol())
                                  .withUnderlyingInstrument(equity).create();
@@ -709,7 +712,7 @@ public class OptionChainTest
                                  .withMultiplier(BigDecimal.TEN)
                                  .hasDeliverable(true)
                                  .withPrice(EventTestBase.generateDecimalValue())
-                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                 .withQuoteDate(new Date())
                                  .withSize(EventTestBase.generateDecimalValue())
                                  .withProviderSymbol(callOption.getSymbol())
                                  .withUnderlyingInstrument(equity).create();
@@ -748,7 +751,7 @@ public class OptionChainTest
                         .withMultiplier(BigDecimal.TEN)
                         .hasDeliverable(true)
                         .withPrice(EventTestBase.generateDecimalValue())
-                        .withQuoteDate(DateUtils.dateToString(new Date()))
+                        .withQuoteDate(new Date())
                         .withSize(EventTestBase.generateDecimalValue())
                         .withProviderSymbol(putOption.getSymbol())
                         .withUnderlyingInstrument(equity).create();
@@ -758,7 +761,7 @@ public class OptionChainTest
                         .withMultiplier(BigDecimal.TEN)
                         .hasDeliverable(true)
                         .withPrice(EventTestBase.generateDecimalValue())
-                        .withQuoteDate(DateUtils.dateToString(new Date()))
+                        .withQuoteDate(new Date())
                         .withSize(EventTestBase.generateDecimalValue())
                         .withProviderSymbol(putOption.getSymbol())
                         .withUnderlyingInstrument(equity).create();
@@ -837,7 +840,7 @@ public class OptionChainTest
                .withPrice(EventTestBase.generateDecimalValue())
                .withSize(EventTestBase.generateDecimalValue())
                .withUnderlyingInstrument(equity)
-               .withQuoteDate(DateUtils.dateToString(new Date()));
+               .withQuoteDate(new Date());
         assertTrue(chain.process(builder.withInstrument(o2).create()));
         assertEquals(1,
                      optionChain.size());
@@ -893,7 +896,7 @@ public class OptionChainTest
         builder.withExchange("Q")
                .withExpirationType(ExpirationType.AMERICAN)
                .withPrice(EventTestBase.generateDecimalValue())
-               .withQuoteDate(DateUtils.dateToString(new Date()))
+               .withQuoteDate(new Date())
                .withSize(EventTestBase.generateDecimalValue())
                .withUnderlyingInstrument(equity);
         OptionContractPair pair = new OptionContractPair((OptionEvent)builder.withInstrument(putOption).create());

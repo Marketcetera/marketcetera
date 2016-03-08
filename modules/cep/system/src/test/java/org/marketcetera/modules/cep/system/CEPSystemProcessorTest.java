@@ -2,16 +2,23 @@ package org.marketcetera.modules.cep.system;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+
 import java.math.BigDecimal;
 import java.util.Date;
+
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
-import org.marketcetera.marketdata.DateUtils;
-import org.marketcetera.module.*;
+import org.marketcetera.module.CopierModuleFactory;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.RequestDataException;
+import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 
@@ -80,9 +87,9 @@ public class CEPSystemProcessorTest extends CEPTestBase {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 3 events
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
-                                EventTestBase.generateEquityBidEvent(1, new Date(2), new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100"), DateUtils.dateToString(new Date())),
-                                EventTestBase.generateEquityTradeEvent(3, new Date(4), new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"), DateUtils.dateToString(new Date())),
-                                EventTestBase.generateEquityAskEvent(5, new Date(6), new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"), DateUtils.dateToString(new Date()))
+                                EventTestBase.generateEquityBidEvent(1, new Date(2), new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100"), new Date()),
+                                EventTestBase.generateEquityTradeEvent(3, new Date(4), new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"), new Date()),
+                                EventTestBase.generateEquityAskEvent(5, new Date(6), new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"), new Date())
                         }),
                         // System -> Sink: only get 1 bid event
                         new DataRequest(TEST_URN, new String[]{"select * from bob", "select * from fred"})
@@ -99,9 +106,9 @@ public class CEPSystemProcessorTest extends CEPTestBase {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 3 events
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
-                                EventTestBase.generateEquityBidEvent(1, new Date(2), new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100"), DateUtils.dateToString(new Date())),
-                                EventTestBase.generateEquityTradeEvent(3, new Date(4), new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"), DateUtils.dateToString(new Date())),
-                                EventTestBase.generateEquityAskEvent(5, new Date(6), new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"), DateUtils.dateToString(new Date()))
+                                EventTestBase.generateEquityBidEvent(1, new Date(2), new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100"), new Date()),
+                                EventTestBase.generateEquityTradeEvent(3, new Date(4), new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"), new Date()),
+                                EventTestBase.generateEquityAskEvent(5, new Date(6), new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"), new Date())
                         }),
                         // System -> Sink: only get 1 bid event
                         new DataRequest(TEST_URN, "select * from bob")

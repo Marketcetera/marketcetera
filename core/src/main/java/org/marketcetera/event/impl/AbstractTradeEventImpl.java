@@ -65,7 +65,7 @@ public abstract class AbstractTradeEventImpl
      * @see org.marketcetera.event.TradeEvent#getExchangeTimestamp()
      */
     @Override
-    public final String getExchangeTimestamp()
+    public final Date getExchangeTimestamp()
     {
         return tradeData.getExchangeTimestamp();
     }
@@ -73,7 +73,7 @@ public abstract class AbstractTradeEventImpl
      * @see org.marketcetera.event.TradeEvent#getTradeDate()
      */
     @Override
-    public String getTradeDate()
+    public Date getTradeDate()
     {
         return getExchangeTimestamp();
     }

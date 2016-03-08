@@ -1118,7 +1118,7 @@ public class SimulatedExchange
                                                                                                                       .withExchange(bid.getExchange())
                                                                                                                       .withPrice(tradePrice)
                                                                                                                       .withSize(tradeSize)
-                                                                                                                      .withTradeDate(DateUtils.dateToString(new Date(tradeTime)));
+                                                                                                                      .withTradeDate(new Date(tradeTime));
                         if(bid.getInstrument() instanceof Option) {
                             tradeBuilder.withExpirationType(getExpirationType((Option)bid.getInstrument()));
                             tradeBuilder.withUnderlyingInstrument(inBook.getUnderlyingInstrument());
@@ -1481,7 +1481,7 @@ public class SimulatedExchange
                       .withPrice(getValue().add(PENNY))
                       .withSize(randomInteger(10000))
                       .withCount(randomInteger(10).intValueExact()+1)
-                      .withQuoteDate(DateUtils.dateToString(timestamp));
+                      .withQuoteDate(timestamp);
             // and a bid event builder
             QuoteEventBuilder<BidEvent> bidBuilder = QuoteEventBuilder.bidEvent(marketInstrument);
             bidBuilder.withEventType(EventType.UPDATE_PART)
@@ -1489,7 +1489,7 @@ public class SimulatedExchange
                       .withPrice(getValue().subtract(PENNY))
                       .withSize(randomInteger(10000))
                       .withCount(randomInteger(10).intValueExact()+1)
-                      .withQuoteDate(DateUtils.dateToString(timestamp));
+                      .withQuoteDate(timestamp);
             if(marketInstrument instanceof Option) {
                 Instrument underlyingInstrument = getUnderlyingInstrument();
                 assert(underlyingInstrument != null);

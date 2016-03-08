@@ -1,6 +1,7 @@
 package org.marketcetera.event.beans;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -96,18 +97,18 @@ public class MarketDataBean
     /**
      * Get the exchangeTimestamp value.
      *
-     * @return a <code>String</code> value
+     * @return a <code>Date</code> value
      */
-    public final String getExchangeTimestamp()
+    public final Date getExchangeTimestamp()
     {
         return exchangeTimestamp;
     }
     /**
      * Sets the exchangeTimestamp value.
      *
-     * @param inExchangeTimestamp a <code>String</code> value
+     * @param inExchangeTimestamp a <code>Date</code> value
      */
-    public final void setExchangeTimestamp(String inExchangeTimestamp)
+    public final void setExchangeTimestamp(Date inExchangeTimestamp)
     {
         exchangeTimestamp = inExchangeTimestamp;
     }
@@ -232,8 +233,7 @@ public class MarketDataBean
            exchange.isEmpty()) {
             EventServices.error(Messages.VALIDATION_NULL_EXCHANGE);
         }
-        if(exchangeTimestamp == null ||
-           exchangeTimestamp.isEmpty()) {
+        if(exchangeTimestamp == null) {
             EventServices.error(Messages.VALIDATION_NULL_EXCHANGE_TIMESTAMP);
         }
         if(eventType == null) {
@@ -324,7 +324,7 @@ public class MarketDataBean
      * the market data exchange timestamp (format is dependent on the market data provider)
      */
     @XmlAttribute
-    private String exchangeTimestamp;
+    private Date exchangeTimestamp;
     /**
      * the timestamp when the raw data was received from the market data provider; occurs within the market data adapter
      */

@@ -36,11 +36,4 @@ public interface OptionEvent
      * @return a <code>boolean</code> value
      */
     public boolean hasDeliverable();
-    /**
-     * Returns the original provider symbol of the option, if available. 
-     *
-     * @return a <code>String</code> value or <code>null</code> if the option event
-     *  did not have a provider symbol
-     */
-    public String getProviderSymbol();
 }

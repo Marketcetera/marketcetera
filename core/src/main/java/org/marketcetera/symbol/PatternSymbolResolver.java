@@ -6,6 +6,7 @@ import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -41,5 +42,24 @@ public class PatternSymbolResolver
             return new Currency(inSymbol);
         }
         return new Equity(inSymbol);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.symbol.SymbolResolver#generateSymbol(org.marketcetera.trade.Instrument)
+     */
+    @Override
+    public String generateSymbol(Instrument inInstrument)
+    {
+        if(inInstrument instanceof Future) {
+            Future future = (Future)inInstrument;
+            return future.getFullSymbol();
+        } else if(inInstrument instanceof Option) {
+            Option option = (Option)inInstrument;
+            return OptionUtils.getOsiSymbolFromOption(option);
+        } else if(inInstrument instanceof Currency) {
+            Currency currency = (Currency)inInstrument;
+            return currency.getLeftCCY() + "/" + currency.getRightCCY();
+        } else {
+            return inInstrument.getSymbol();
+        }
     }
 }

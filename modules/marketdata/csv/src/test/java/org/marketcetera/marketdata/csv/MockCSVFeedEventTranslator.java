@@ -14,7 +14,6 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.trade.Equity;
 
 /* $License$ */
@@ -54,7 +53,7 @@ public class MockCSVFeedEventTranslator
                        .withTimestamp(new Date(timeMillis))
                        .withPrice(price)
                        .withSize(size)
-                       .withTradeDate(DateUtils.dateToString(new Date()));
+                       .withTradeDate(new Date());
                 events.add(builder.create());
             }
         } else if(type.equals("BID")) {
@@ -65,7 +64,7 @@ public class MockCSVFeedEventTranslator
                        .withTimestamp(new Date(timeMillis))
                        .withPrice(price)
                        .withSize(size)
-                       .withQuoteDate(DateUtils.dateToString(new Date()));
+                       .withQuoteDate(new Date());
                 events.add(builder.create());
             }
         } else if(type.equals("ASK")) {
@@ -76,7 +75,7 @@ public class MockCSVFeedEventTranslator
                        .withTimestamp(new Date(timeMillis))
                        .withPrice(price)
                        .withSize(size)
-                       .withQuoteDate(DateUtils.dateToString(new Date()));
+                       .withQuoteDate(new Date());
                 events.add(builder.create());
             }
         } else {

@@ -22,11 +22,7 @@ public class LocalTimezoneTimestampGenerator
     @Override
     public DateTime generateTimestamp(TradeEvent inTrade)
     {
-        try {
-            return generateTimestampFrom(Long.parseLong(inTrade.getTradeDate()));
-        } catch (Exception e) {
-            return timeFactory.create(inTrade.getTradeDate());
-        }
+        return new DateTime(inTrade.getTradeDate().getTime());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TimestampGenerator#generateTimestamp(org.marketcetera.event.QuoteEvent)
@@ -34,7 +30,7 @@ public class LocalTimezoneTimestampGenerator
     @Override
     public DateTime generateTimestamp(QuoteEvent inQuote)
     {
-        return generateTimestampFrom(Long.parseLong(inQuote.getQuoteDate()));
+        return new DateTime(inQuote.getQuoteDate().getTime());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TimestampGenerator#generateTimestamp(java.lang.String)

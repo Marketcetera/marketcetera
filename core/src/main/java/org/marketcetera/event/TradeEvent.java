@@ -1,5 +1,7 @@
 package org.marketcetera.event;
 
+import java.util.Date;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -24,9 +26,9 @@ public interface TradeEvent
      * 
      * <p>This is the same as {@link #getExchangeTimestamp()}.
      *
-     * @return a <code>String</code> value
+     * @return a <code>Date</code> value
      */
-    public String getTradeDate();
+    public Date getTradeDate();
     /**
      * Gets the trade condition codes, if any.
      *
