@@ -163,9 +163,9 @@
       </dependency>
       <!-- Compile: QuickFIX/J -->
       <dependency>
-        <groupId>quickfixj</groupId>
+        <groupId>org.quickfixj</groupId>
         <artifactId>quickfixj-all</artifactId>
-        <version>1.6.1-bd</version>
+        <version>1.6.2-bd-SNAPSHOT</version>
       </dependency>
       <!-- Compile: CXF -->
       <dependency>
