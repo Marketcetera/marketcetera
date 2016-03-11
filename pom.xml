@@ -1183,7 +1183,7 @@
       <id>internal</id>
       <url>http://repo.marketcetera.org/maven</url>
       <snapshots>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
