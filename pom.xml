@@ -43,6 +43,7 @@
     <mvn.springdatajpa.version>1.5.0.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>4.2.8.Final</mvn.hibernate.version>
+    <mvn.hazelcast.version>3.6.2</mvn.hazelcast.version>
     <mvn.slf4j.version>1.7.10</mvn.slf4j.version>
     <mvn.log4j.version>2.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
@@ -286,12 +287,12 @@
       <dependency>
         <groupId>com.hazelcast</groupId>
         <artifactId>hazelcast</artifactId>
-        <version>3.5.3</version>
+        <version>${mvn.hazelcast.version}</version>
       </dependency> 
       <dependency>
         <groupId>com.hazelcast</groupId>
         <artifactId>hazelcast-spring</artifactId>
-        <version>3.3</version>
+        <version>${mvn.hazelcast.version}</version>
       </dependency> 
       <dependency>
         <groupId>org.ow2.asm</groupId>
@@ -529,7 +530,7 @@
       <dependency>
         <groupId>com.hazelcast</groupId>
         <artifactId>hazelcast-hibernate4</artifactId>
-        <version>3.3</version>
+        <version>${mvn.hazelcast.version}</version>
         <scope>runtime</scope>
       </dependency> 
       <dependency>
