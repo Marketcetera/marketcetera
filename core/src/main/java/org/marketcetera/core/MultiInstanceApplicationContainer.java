@@ -368,6 +368,10 @@ public class MultiInstanceApplicationContainer
                                        File.separator+CONF_DIR_NAME);
         FileUtils.copyDirectory(new File(appDir+File.separator+CONF_DIR_NAME),
                                 instanceConfDir);
+        File instanceModulesDir = new File(instanceDir,
+                                           File.separator+MODULES_DIR_NAME);
+         FileUtils.copyDirectory(new File(appDir+File.separator+MODULES_DIR_NAME),
+                                 instanceModulesDir);
         File instancePropertiesFile = new File(instanceConfDir,
                                                File.separator + INSTANCE_PROPERTIES_FILE);
         // write out instance props file
@@ -662,6 +666,10 @@ public class MultiInstanceApplicationContainer
      * config file name
      */
     public static final String CONF_DIR_NAME = "conf";
+    /**
+     * modules file name
+     */
+    public static final String MODULES_DIR_NAME = "modules";
     /**
      * instance directory name
      */

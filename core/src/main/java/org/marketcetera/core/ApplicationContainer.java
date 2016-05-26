@@ -91,18 +91,6 @@ public class ApplicationContainer
         if(rawValue != null) {
             contextFilename = rawValue;
         }
-        rawValue = StringUtils.trimToNull(System.getProperty(START_RETRY_COUNT_PROP));
-        if(rawValue != null) {
-            try {
-                retryCount = Integer.parseInt(rawValue);
-            } catch (Exception ignored) {}
-        }
-        rawValue = StringUtils.trimToNull(System.getProperty(START_RETRY_DELAY_PROP));
-        if(rawValue != null) {
-            try {
-                retryDelay = Long.parseLong(rawValue);
-            } catch (Exception ignored) {}
-        }
         final ApplicationContainer application;
         try {
             application = new ApplicationContainer();
@@ -224,77 +212,20 @@ public class ApplicationContainer
     {
         instance = this;
         context = null;
-        int attempt = 0;
-        SLF4JLoggerProxy.debug(this,
-                               "Retry count: {} retry delay: {}",
-                               retryCount,
-                               retryDelay);
-        while(context == null) {
-            try {
-                context = generateContext();
-            } catch (Exception e) {
-                if(++attempt > retryCount) {
-                    SLF4JLoggerProxy.error(this,
-                                           e,
-                                           "Encountered startup problem after {} attempts, no more attempts",
-                                           retryCount);
-                    if(e instanceof RuntimeException) {
-                        throw (RuntimeException)e;
-                    } else {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    SLF4JLoggerProxy.debug(this,
-                                           e,
-                                           "Encountered startup problem, attempt {} of {}",
-                                           attempt,
-                                           retryCount);
-                    try {
-                        Thread.sleep(retryDelay);
-                    } catch (InterruptedException e1) {
-                        throw new RuntimeException(e1);
-                    }
-                }
+        try {
+            context = generateContext();
+        } catch (Exception e) {
+            SLF4JLoggerProxy.error(this,
+                                   e,
+                                   "Encountered startup problem");
+            if(e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            } else {
+                throw new RuntimeException(e);
             }
         }
         context.registerShutdownHook();
         running.set(true);
-    }
-    /**
-     * Get the retryCout value.
-     *
-     * @return a <code>int</code> value
-     */
-    public int getRetryCount()
-    {
-        return retryCount;
-    }
-    /**
-     * Sets the retryCout value.
-     *
-     * @param inRetryCount a <code>int</code> value
-     */
-    public void setRetryCount(int inRetryCount)
-    {
-        retryCount = inRetryCount;
-    }
-    /**
-     * Get the retryDelay value.
-     *
-     * @return a <code>long</code> value
-     */
-    public long getRetryDelay()
-    {
-        return retryDelay;
-    }
-    /**
-     * Sets the retryDelay value.
-     *
-     * @param inRetryDelay a <code>long</code> value
-     */
-    public void setRetryDelay(long inRetryDelay)
-    {
-        retryDelay = inRetryDelay;
     }
     /* (non-Javadoc)
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
@@ -381,14 +312,6 @@ public class ApplicationContainer
      */
     public static final String CONTEXT_FILE_PROP = "org.marketcetera.contextFile"; //$NON-NLS-1$
     /**
-     * optional command-line parameter that indicates how many times to try to start the application in case of startup error
-     */
-    public static final String START_RETRY_COUNT_PROP = "org.marketcetera.retryCount"; //$NON-NLS-1$
-    /**
-     * optional command-line parameter that indicates how long to wait between retry attempts
-     */
-    public static final String START_RETRY_DELAY_PROP = "org.marketcetera.retryDelay"; //$NON-NLS-1$
-    /**
      * indicates the name of the context file to use
      */
     private static String contextFilename = "application.xml";
@@ -400,12 +323,4 @@ public class ApplicationContainer
      * parent application context value
      */
     private ApplicationContext parentContext;
-    /**
-     * number of times to try to start the application
-     */
-    private static int retryCount = 5;
-    /**
-     * period to wait between attempts
-     */
-    private static long retryDelay = 1000;
 }
