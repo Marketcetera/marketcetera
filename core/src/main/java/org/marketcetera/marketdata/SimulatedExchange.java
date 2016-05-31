@@ -300,7 +300,7 @@ public class SimulatedExchange
                 // ready to return the data
                 Instrument requestInstrument = book.getInstrument();
                 MarketstatEventBuilder builder = MarketstatEventBuilder.marketstat(requestInstrument);
-                builder.withEventType(EventType.UPDATE_PART)
+                builder.withEventType(EventType.UPDATE_FINAL)
                        .withOpenPrice(openPrice)
                        .withHighPrice(highPrice)
                        .withLowPrice(lowPrice)
@@ -1114,7 +1114,7 @@ public class SimulatedExchange
                                                tradeSize.toPlainString(),
                                                tradePrice.toPlainString());
                         // create the new trade
-                        TradeEventBuilder<TradeEvent> tradeBuilder = TradeEventBuilder.tradeEvent(bid.getInstrument()).withEventType(EventType.UPDATE_PART)
+                        TradeEventBuilder<TradeEvent> tradeBuilder = TradeEventBuilder.tradeEvent(bid.getInstrument()).withEventType(EventType.UPDATE_FINAL)
                                                                                                                       .withExchange(bid.getExchange())
                                                                                                                       .withPrice(tradePrice)
                                                                                                                       .withSize(tradeSize)
@@ -1137,18 +1137,18 @@ public class SimulatedExchange
                             bidCorrection = QuoteEventBuilder.change(bid,
                                                                      new Date(tradeTime),
                                                                      bidSize.subtract(tradeSize));
-                            bidCorrection.setEventType(EventType.UPDATE_PART);
+                            bidCorrection.setEventType(EventType.UPDATE_FINAL);
                             askCorrection = QuoteEventBuilder.delete(ask); 
-                            askCorrection.setEventType(EventType.UPDATE_PART); 
+                            askCorrection.setEventType(EventType.UPDATE_FINAL); 
                         } else {
                             // trade is equal to the bid, this is a full fill
                             bidCorrection = QuoteEventBuilder.delete(bid);
-                            bidCorrection.setEventType(EventType.UPDATE_PART);
+                            bidCorrection.setEventType(EventType.UPDATE_FINAL);
                             askCorrection = tradeSize.equals(askSize) ? QuoteEventBuilder.delete(ask) :
                                                                         QuoteEventBuilder.change(ask,
                                                                                                  new Date(tradeTime),
                                                                                                  askSize.subtract(tradeSize));
-                            askCorrection.setEventType(EventType.UPDATE_PART); 
+                            askCorrection.setEventType(EventType.UPDATE_FINAL); 
                         }
                         // adjust the remainder we need to fill
                         bidSize = bidSize.subtract(tradeSize);
@@ -1444,7 +1444,7 @@ public class SimulatedExchange
                 newEvents.add(inEvent);
                 if(displacedEvent != null) {
                     QuoteEvent deleteQuote = QuoteEventBuilder.delete(displacedEvent);
-                    deleteQuote.setEventType(EventType.UPDATE_PART);
+                    deleteQuote.setEventType(EventType.UPDATE_FINAL);
                     newEvents.add(deleteQuote);
                 }
             }
@@ -1476,7 +1476,7 @@ public class SimulatedExchange
             Instrument marketInstrument = getBook().getInstrument();
             // create an ask event builder
             QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.askEvent(marketInstrument);
-            askBuilder.withEventType(EventType.UPDATE_PART)
+            askBuilder.withEventType(EventType.UPDATE_FINAL)
                       .withExchange(getCode())
                       .withPrice(getValue().add(PENNY))
                       .withSize(randomInteger(10000))
@@ -1484,7 +1484,7 @@ public class SimulatedExchange
                       .withQuoteDate(timestamp);
             // and a bid event builder
             QuoteEventBuilder<BidEvent> bidBuilder = QuoteEventBuilder.bidEvent(marketInstrument);
-            bidBuilder.withEventType(EventType.UPDATE_PART)
+            bidBuilder.withEventType(EventType.UPDATE_FINAL)
                       .withExchange(getCode())
                       .withPrice(getValue().subtract(PENNY))
                       .withSize(randomInteger(10000))
@@ -1627,7 +1627,7 @@ public class SimulatedExchange
                 long oneQuarter = oneDay * 90; // approximate, not really important
                 DividendEventBuilder builder = DividendEventBuilder.dividend().withEquity((Equity)inInstrument);
                 tempDividends.add(builder.withAmount(randomDecimal(10).add(PENNY))
-                                  .withEventType(EventType.UPDATE_PART)
+                                  .withEventType(EventType.UPDATE_FINAL)
                                   .withCurrency("USD") //$NON-NLS-1$
                                   .withDeclareDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
                                                                           DateUtils.DAYS))
@@ -1644,7 +1644,7 @@ public class SimulatedExchange
                 // now create, say, 3 more UNOFFICIAL future dividends
                 for(long quarterCounter=1;quarterCounter<=3;quarterCounter++) {
                     tempDividends.add(builder.withDeclareDate(null)
-                                      .withEventType(EventType.UPDATE_PART)
+                                      .withEventType(EventType.UPDATE_FINAL)
                                       .withPaymentDate(null)
                                       .withRecordDate(null)
                                       .withExecutionDate(DateUtils.dateToString(new Date(timestamp + oneQuarter * quarterCounter),
@@ -1998,7 +1998,7 @@ public class SimulatedExchange
                                            inLastTop);
                     // yes, there used to be a top quote, but it should go away now
                     QuoteEvent delete = QuoteEventBuilder.delete(inLastTop);
-                    delete.setEventType(EventType.UPDATE_PART);
+                    delete.setEventType(EventType.UPDATE_FINAL);
                     originalSubscriber.publishTo(delete);
                 } else {
                     // there didn't used to be a top quote, so don't do anything
@@ -2013,7 +2013,7 @@ public class SimulatedExchange
                                            inCurrentTop);
                     // there didn't used to be a top quote, just add the new one
                     QuoteEvent add = QuoteEventBuilder.add(inCurrentTop);
-                    add.setEventType(EventType.UPDATE_PART);
+                    add.setEventType(EventType.UPDATE_FINAL);
                     originalSubscriber.publishTo(add);
                 } else {
                     // there used to be a top quote, check to see if it's different than the current one
@@ -2023,7 +2023,7 @@ public class SimulatedExchange
                         SLF4JLoggerProxy.debug(SimulatedExchange.class,
                                                "Non-null current is different from non-null last: publish"); //$NON-NLS-1$
                         QuoteEvent add = QuoteEventBuilder.add(inCurrentTop);
-                        add.setEventType(EventType.UPDATE_PART);
+                        add.setEventType(EventType.UPDATE_FINAL);
                         originalSubscriber.publishTo(add);
                     } else {
                         // the current and previous tops are identical, so don't do anything

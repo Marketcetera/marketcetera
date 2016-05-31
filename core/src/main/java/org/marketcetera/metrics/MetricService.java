@@ -41,7 +41,7 @@ public class MetricService
     /**
      * singleton metrics instance
      */
-    private static MetricService instance = new MetricService();;
+    private static MetricService instance = new MetricService();
     /**
      * metrics registry
      */
