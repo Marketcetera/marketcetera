@@ -1,6 +1,10 @@
 package org.marketcetera.marketdata.core;
 
-import org.marketcetera.util.log.*;
+import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
 
@@ -47,4 +51,7 @@ public interface Messages
     static final I18NMessage2P BAD_FEED_STATUS = new I18NMessage2P(LOGGER,"bad_feed_status"); //$NON-NLS-1$
     static final I18NMessage2P CANNOT_RECONNECT_FEED = new I18NMessage2P(LOGGER,"cannot_reconnect_feed"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_DETERMINE_FEED_STATUS = new I18NMessage1P(LOGGER,"cannot_determine_feed_status"); //$NON-NLS-1$
+    static final I18NMessage1P NO_SUBSCRIBER = new I18NMessage1P(LOGGER,"no_subscriber"); //$NON-NLS-1$
+    static final I18NMessage2P PUBLISHING_ERROR = new I18NMessage2P(LOGGER,"publishing_error"); //$NON-NLS-1$
+    static final I18NMessage2P NO_INSTRUMENT = new I18NMessage2P(LOGGER,"no_instrument"); //$NON-NLS-1$
 }
