@@ -145,7 +145,7 @@ public class BrokerAlgoTagSpec
      *
      * @return a <code>Map&lt;String,String&gt;</code> value
      */
-    public Map<String, String> getOptions()
+    public Map<String,String> getOptions()
     {
         return options;
     }
@@ -154,7 +154,7 @@ public class BrokerAlgoTagSpec
      *
      * @param inOptions a <code>Map&lt;String,String&gt;</code> value
      */
-    public void setOptions(Map<String, String> inOptions)
+    public void setOptions(Map<String,String> inOptions)
     {
         options = inOptions;
     }

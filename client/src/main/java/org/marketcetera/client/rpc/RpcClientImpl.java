@@ -12,9 +12,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
@@ -24,6 +26,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.algo.BrokerAlgoSpec;
+import org.marketcetera.algo.BrokerAlgoTagSpec;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientImpl;
 import org.marketcetera.client.ClientParameters;
@@ -494,10 +498,40 @@ public class RpcClientImpl
                     settings.put(settingEntry.getKey(),
                                  settingEntry.getValue());
                 }
+                Set<BrokerAlgoSpec> algos = new HashSet<>();
+                for(RpcClient.BrokerAlgoSpec algoSpec : rpcBrokerStatus.getBrokerAlgosList()) {
+                    BrokerAlgoSpec newAlgoSpec = new BrokerAlgoSpec();
+                    newAlgoSpec.setName(algoSpec.getName());
+                    Set<BrokerAlgoTagSpec> newAlgoTagSpecs = new HashSet<>();
+                    for(RpcClient.BrokerAlgoTagSpec algoTagSpec : algoSpec.getAlgoTagSpecsList()) {
+                        BrokerAlgoTagSpec newAlgoTagSpec = new BrokerAlgoTagSpec();
+                        newAlgoTagSpec.setDescription(algoTagSpec.getDescription());
+                        newAlgoTagSpec.setIsMandatory(algoTagSpec.getMandatory());
+                        newAlgoTagSpec.setLabel(algoTagSpec.getLabel());
+                        Map<String,String> options = new HashMap<>();
+                        String rawOptions = algoTagSpec.getOptions();
+                        if(rawOptions != null) {
+                            Properties optionsProperties = Util.propertiesFromString(rawOptions);
+                            if(optionsProperties != null) {
+                                for(Map.Entry<Object,Object> optionEntry : optionsProperties.entrySet()) {
+                                    options.put(String.valueOf(optionEntry.getKey()),
+                                                String.valueOf(optionEntry.getValue()));
+                                }
+                            }
+                        }
+                        newAlgoTagSpec.setOptions(options);
+                        newAlgoTagSpec.setPattern(algoTagSpec.getPattern());
+                        newAlgoTagSpec.setTag(algoTagSpec.getTag());
+                        newAlgoTagSpecs.add(newAlgoTagSpec);
+                    }
+                    newAlgoSpec.setAlgoTagSpecs(newAlgoTagSpecs);
+                    algos.add(newAlgoSpec);
+                }
                 BrokerStatus brokerStatus = new BrokerStatus(rpcBrokerStatus.getName(),
                                                              new BrokerID(rpcBrokerStatus.getBrokerId()),
                                                              rpcBrokerStatus.getLoggedOn(),
-                                                             settings);
+                                                             settings,
+                                                             algos);
                 brokers.add(brokerStatus);
             }
             BrokersStatus brokersStatus = new BrokersStatus(brokers);
