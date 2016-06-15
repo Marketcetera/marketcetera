@@ -87,7 +87,7 @@ public enum ExecutionType {
     /**
      * values that indicate the execution is related to a trade fill
      */
-    private static final Set<ExecutionType> FILLS = EnumSet.of(Fill,Trade,PartialFill,Restated,TradeCorrect);
+    public static final Set<ExecutionType> FILLS = EnumSet.of(Fill,Trade,PartialFill,Restated,TradeCorrect);
     /**
      * all values by FIX value
      */
