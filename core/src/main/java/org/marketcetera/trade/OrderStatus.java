@@ -2,7 +2,9 @@ package org.marketcetera.trade;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.util.misc.ClassVersion;
@@ -80,11 +82,20 @@ public enum OrderStatus {
     }
     private final char mFIXValue;
     private static final Map<Character, OrderStatus> mFIXValueTable;
+    /**
+     * holds status values that represent open orders
+     */
+    public static final Set<OrderStatus> openOrderStatuses;
     static {
         Map<Character, OrderStatus> table = new HashMap<Character, OrderStatus>();
+        Set<OrderStatus> openOrderStatusValues = new HashSet<>();
         for(OrderStatus status: values()) {
             table.put(status.getFIXValue(), status);
+            if(FIXMessageUtil.isCancellable(status.getFIXValue())) {
+                openOrderStatusValues.add(status);
+            }
         }
+        openOrderStatuses = Collections.unmodifiableSet(openOrderStatusValues);
         mFIXValueTable = Collections.unmodifiableMap(table);
     }
 }
