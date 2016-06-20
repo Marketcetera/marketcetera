@@ -18,7 +18,7 @@
   <parent>
       <groupId>org.marketcetera</groupId>
       <artifactId>public-parent</artifactId>
-      <version>3.0.4</version>
+      <version>3.1.0</version>
   </parent>
   <artifactId>util-test</artifactId>
   <packaging>jar</packaging>
@@ -26,51 +26,8 @@
   <name>Testing Utilities</name>
 
   <dependencies>
-
-    <!-- Compile. -->
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-
-    <!-- Compile: log4j is invoked directly, not via slf4j. -->
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- Compile: junit is used by main classes, not just test classes. -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- Testing. -->
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
-    <plugins>
-
-      <!-- Configure Eclipse IDE metadata. -->
-      <plugin>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <pde>true</pde>
-          <manifest>null</manifest>
-          <resolveDependencies>false</resolveDependencies>
-        </configuration>
-      </plugin>
-    </plugins>
   </build>
 </project>
