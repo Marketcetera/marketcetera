@@ -580,7 +580,7 @@ public class MultiInstanceApplicationContainer
         arguments.add(DASH_D+PARAM_METC_HOST+"="+prepareHostId());
         arguments.add(DASH_D+ApplicationBase.APP_DIR_PROP+"="+inInstanceDirName);
         File parentLogFile = new File(getLog4jConfigFile());
-        arguments.add(DASH_D+PARAM_LOG4J_CONFIGURATION_FILE+"="+inInstanceDirName+File.separator+"conf"+File.separator+parentLogFile.getName());
+        arguments.add(DASH_D+PARAM_LOG4J_CONFIGURATION_FILE+"=file://"+inInstanceDirName+File.separator+"conf"+File.separator+parentLogFile.getName());
         if(enableProfiling()) {
             arguments.add("-XX:+UnlockCommercialFeatures");
             arguments.add("-XX:+FlightRecorder");
