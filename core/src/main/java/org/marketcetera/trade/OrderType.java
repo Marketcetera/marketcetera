@@ -32,7 +32,23 @@ public enum OrderType {
      * Sentinel value for Order Types that the system is not currently
      * aware of.
      */
-    Unknown(Character.MIN_VALUE);
+    Unknown(Character.MIN_VALUE),
+    ForexLimit(quickfix.field.OrdType.FOREX_LIMIT),
+    ForexMarket(quickfix.field.OrdType.FOREX_MARKET),
+    ForexPreviouslyQuoted(quickfix.field.OrdType.FOREX_PREVIOUSLY_QUOTED),
+    ForexSwap(quickfix.field.OrdType.FOREX_SWAP),
+    Funari(quickfix.field.OrdType.FUNARI),
+    LimitOnClose(quickfix.field.OrdType.LIMIT_ON_CLOSE),
+    LimitOrBetter(quickfix.field.OrdType.LIMIT_OR_BETTER),
+    LimitWithOrWithout(quickfix.field.OrdType.LIMIT_WITH_OR_WITHOUT),
+    OnBasis(quickfix.field.OrdType.ON_BASIS),
+    OnClose(quickfix.field.OrdType.ON_CLOSE),
+    Pegged(quickfix.field.OrdType.PEGGED),
+    PreviouslyIndicated(quickfix.field.OrdType.PREVIOUSLY_INDICATED),
+    PreviouslyQuoted(quickfix.field.OrdType.PREVIOUSLY_QUOTED),
+    Stop(quickfix.field.OrdType.STOP),
+    StopLimit(quickfix.field.OrdType.STOP_LIMIT),
+    WithOrWithout(quickfix.field.OrdType.WITH_OR_WITHOUT);
 
     /**
      * The FIX char value for this instance.
