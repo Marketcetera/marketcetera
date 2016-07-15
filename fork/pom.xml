@@ -4,11 +4,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>public-parent</artifactId>
-    <version>3.0.7</version>
+    <version>3.0.8</version>
   </parent>
   <groupId>org.marketcetera.fork</groupId>
   <artifactId>fork-parent</artifactId>
-  <version>3.0.7</version>
+  <version>3.0.8</version>
   <name>fork-parent</name>
   <packaging>pom</packaging>
   <url>http://maven.apache.org</url>
