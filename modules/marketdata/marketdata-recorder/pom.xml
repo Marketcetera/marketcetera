@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>marketdata</artifactId>
-    <version>3.0.8</version>
+    <version>3.0.9</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>marketdata-recorder</artifactId>
-  <version>3.0.8</version>
+  <version>3.0.9</version>
   <packaging>jar</packaging>
   <licenses>
     <license>
