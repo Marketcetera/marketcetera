@@ -121,6 +121,7 @@ import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.util.ws.tags.SessionId;
 
 import quickfix.Message;
 import quickfix.field.OrdStatus;
@@ -1226,6 +1227,14 @@ public class StrategyTestBase
                               BrokerID inBrokerID,
                               Hierarchy inHierarchy)
                 throws ConnectionException
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getSessionId()
+         */
+        @Override
+        public SessionId getSessionId()
         {
             throw new UnsupportedOperationException(); // TODO
         }

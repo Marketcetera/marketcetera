@@ -11,6 +11,7 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.tags.SessionId;
 
 /* $License$ */
 
@@ -539,4 +540,10 @@ public interface Client
      * @return an <code>OrderID</code> value
      */
     public OrderID findRootOrderIdFor(OrderID inOrderID);
+    /**
+     * Get the session id for the current session.
+     *
+     * @return a <code>SessionId</code> value
+     */
+    SessionId getSessionId();
 }

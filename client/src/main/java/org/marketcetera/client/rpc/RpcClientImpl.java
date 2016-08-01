@@ -559,7 +559,7 @@ public class RpcClientImpl
      * @see org.marketcetera.client.ClientImpl#getSessionId()
      */
     @Override
-    protected SessionId getSessionId()
+    public SessionId getSessionId()
     {
         return sessionId;
     }

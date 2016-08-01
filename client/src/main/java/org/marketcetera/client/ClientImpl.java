@@ -596,6 +596,14 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
                                           Messages.ERROR_REMOTE_EXECUTION);
         }
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#getSessionId()
+     */
+    @Override
+    public SessionId getSessionId()
+    {
+        return getServiceContext().getSessionId();
+    }
     /**
      * Creates an instance given the parameters and connects to the server.
      *
@@ -965,15 +973,6 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
             throws RemoteException
     {
         mService.heartbeat(getServiceContext());
-    }
-    /**
-     * Gets the session ID value.
-     *
-     * @return a <code>SessionId</code> value
-     */
-    protected SessionId getSessionId()
-    {
-        return getServiceContext().getSessionId();
     }
     /**
      * Starts the JMS connection.

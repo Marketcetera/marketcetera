@@ -10,6 +10,7 @@ import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.util.ws.tags.SessionId;
 
 import com.google.common.collect.Lists;
 
@@ -45,6 +46,14 @@ public class MockClient
     public MockClient()
     {
         this(null);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#getSessionId()
+     */
+    @Override
+    public SessionId getSessionId()
+    {
+        throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)
      * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderSingle)
