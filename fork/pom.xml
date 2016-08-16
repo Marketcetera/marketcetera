@@ -9,7 +9,7 @@
   <groupId>org.marketcetera.fork</groupId>
   <artifactId>fork-parent</artifactId>
   <version>2.4.3</version>
-  <name>fork-parent</name>
+  <name>Fork Parent</name>
   <packaging>pom</packaging>
   <url>http://maven.apache.org</url>
   <properties>
@@ -17,5 +17,6 @@
   </properties>
   <modules>
     <module>commons-csv</module>
+    <module>commons-i18n</module>
   </modules>
 </project>
