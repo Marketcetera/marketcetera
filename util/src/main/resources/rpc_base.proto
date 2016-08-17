@@ -1,0 +1,53 @@
+// protoc -I=src/main/resources --java_out=src/main/java src/main/resources/rpc_base.proto
+option java_generic_services = true;
+
+option java_package = "org.marketcetera.util.rpc";
+option java_outer_classname = "BaseRpc";
+
+message LoginRequest {
+    required string appId = 1;
+    required string clientId = 2;
+    required Locale locale = 3;
+    required string versionId = 4;
+    required string username = 5;
+    required string password = 6;
+}
+
+message LoginResponse {
+    required Status status = 1;
+    required string sessionId = 2;
+}
+
+message LogoutRequest {
+    required string sessionId = 1;
+}
+
+message LogoutResponse {
+    required Status status = 1;
+}
+
+message Locale {
+    required string country = 1;
+    required string language = 2;
+    optional string variant = 3;
+}
+
+message HeartbeatRequest {
+    required int64 id = 1;
+}
+
+message HeartbeatResponse {
+    required int64 id = 1;
+}
+
+message Status {
+    required bool failed = 1;
+    optional string message = 2;
+    optional string sessionId = 3;
+}
+
+service BaseRpcService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+}
