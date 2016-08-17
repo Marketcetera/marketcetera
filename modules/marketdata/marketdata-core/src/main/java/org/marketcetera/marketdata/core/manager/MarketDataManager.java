@@ -28,8 +28,6 @@ public interface MarketDataManager
      * <p>Market data will be published to the given subscriber as it becomes available until
      * the request is {@link #cancelMarketDataRequest(Subscriber) canceled}.
      * 
-     * TODO what is the behavior if the same request is submitted multiple times with the same subscriber?
-     *
      * @param inRequest a <code>MarketDataRequest</code> value
      * @param inSubscriber an <code>ISubscriber</code> value or <code>null</code> if no update events are required
      * @return a <code>long</code> value that identifies the request

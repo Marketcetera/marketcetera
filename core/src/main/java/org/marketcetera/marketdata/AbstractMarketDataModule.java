@@ -321,6 +321,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         } catch (Exception e) {
             throw new ModuleException(e);
         }
+        CapabilityCollection.reportCapability(feed.getCapabilities());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
