@@ -1,3 +1,2 @@
 #Names of module factory implementations
 org.marketcetera.marketdata.module.TestFeedModuleFactory
-org.marketcetera.marketdata.core.manager.MarketDataManagerModuleFactory

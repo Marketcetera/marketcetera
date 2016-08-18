@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import org.marketcetera.algo.BrokerAlgo;
-import org.marketcetera.algo.HasBrokerAlgo;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -19,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public interface NewOrReplaceOrder
-        extends OrderBase, HasBrokerAlgo, Serializable
+        extends OrderBase, Serializable
 {
     /**
      * Gets the OrderType for the Order.

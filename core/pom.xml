@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>public-parent</artifactId>
-    <version>3.0.11</version>
+    <version>3.0.8</version>
   </parent>
   <artifactId>core</artifactId>
   <packaging>jar</packaging>
@@ -44,7 +44,7 @@
       <artifactId>glazedlists_java15</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}.fork</groupId>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-i18n</artifactId>
     </dependency>
     <dependency>

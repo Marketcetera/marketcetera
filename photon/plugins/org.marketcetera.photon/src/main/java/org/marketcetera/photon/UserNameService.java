@@ -1,8 +1,5 @@
 package org.marketcetera.photon;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
@@ -28,13 +25,7 @@ public class UserNameService {
 	 */
 	public static String getUserName(UserID id) {
 		try {
-            String name = usernamesById.get(id);
-            if(name == null) {
-                name = ClientManager.getInstance().getUserInfo(id, true).getName();
-                usernamesById.put(id,
-                                  name);
-            }
-            return name;
+			return ClientManager.getInstance().getUserInfo(id, true).getName();
 		} catch (Exception e) {
 			Messages.USER_NAME_SERVICE_LOOKUP_FAILED.error(UserNameService.class, e, id);
 			return id.toString();
@@ -56,8 +47,4 @@ public class UserNameService {
 			return id;
 		}
 	}
-    /**
-     * caches user names by id
-     */
-    private static final Map<UserID,String> usernamesById = new HashMap<>();
 }

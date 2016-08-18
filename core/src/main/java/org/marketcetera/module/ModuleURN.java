@@ -6,7 +6,6 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import javax.management.ObjectName;
 import javax.management.MalformedObjectNameException;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.beans.ConstructorProperties;
@@ -354,14 +353,7 @@ public final class ModuleURN implements Serializable {
     private ModuleURN(String[] inPieces) {
         mURNPieces = inPieces;
     }
-    /**
-     * Create a new ModuleURN instance.
-     */
-    @SuppressWarnings("unused")
-    private ModuleURN()
-    {
-        mURNPieces = null;
-    }
+
     private final String[] mURNPieces;
     static final String URN_SEPARATOR_CHAR = ":";  //$NON-NLS-1$
     /**

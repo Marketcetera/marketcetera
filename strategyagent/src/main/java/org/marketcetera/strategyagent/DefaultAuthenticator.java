@@ -59,16 +59,10 @@ public class DefaultAuthenticator
      * @param serverVersion The server version.
      * @return True if the two versions are compatible.
      */
-    private boolean compatibleVersions(VersionInfo clientVersion,
-				       VersionInfo serverVersion)
+    private static boolean compatibleVersions(VersionInfo clientVersion,
+                                              VersionInfo serverVersion)
     {
-	if(!enforceVersionCompatibility) {
-	    return true;
-	}
+        // If the server's version is unknown, any client is allowed.
         return (VersionInfo.DEFAULT_VERSION.equals(serverVersion) || VersionInfo.DEFAULT_VERSION.equals(clientVersion) || ObjectUtils.equals(clientVersion, serverVersion));
     }
-    /**
-     * indicates if version compatibility should be enforced or not
-     */
-    private boolean enforceVersionCompatibility = false;
 }
