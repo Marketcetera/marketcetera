@@ -41,7 +41,6 @@
     <mvn.cxf.version>2.7.10</mvn.cxf.version>
     <mvn.querydsl.version>3.3.1</mvn.querydsl.version>
     <mvn.springdatajpa.version>1.5.0.RELEASE</mvn.springdatajpa.version>
-    <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>4.2.8.Final</mvn.hibernate.version>
     <mvn.hazelcast.version>3.6.2</mvn.hazelcast.version>
     <mvn.slf4j.version>1.7.10</mvn.slf4j.version>
@@ -418,29 +417,9 @@
         <version>2.3</version>
       </dependency>
       <dependency>
-        <groupId>org.joda</groupId>
-        <artifactId>joda-primitives</artifactId>
-        <version>1.0</version>
-      </dependency>
-      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>19.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j</groupId>
-        <artifactId>peaberry</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j</groupId>
-        <artifactId>peaberry.eclipse</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.inject</groupId>
-        <artifactId>guice</artifactId>
-        <version>2.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
@@ -455,21 +434,6 @@
           <exclusion>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>jparsec</groupId>
-        <artifactId>jparsec</artifactId>
-        <version>2.0.1</version>
-        <exclusions>
-          <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -705,12 +669,6 @@
         <scope>runtime</scope>
       </dependency>       
       <dependency>
-        <groupId>colt</groupId>
-        <artifactId>colt</artifactId>
-        <version>1.2.0</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
         <groupId>org.apache.mina</groupId>
         <artifactId>mina-core</artifactId>
         <version>2.0.10</version>
@@ -780,12 +738,6 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.11</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.easymock</groupId>
-        <artifactId>easymockclassextension</artifactId>
-        <version>3.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -1116,11 +1068,9 @@
     <module>fork</module>
     <module>modules</module>
     <module>orderloader</module>
-    <!-- Build strategy agent before photon. -->
     <module>saclient</module>
     <module>samples</module>
     <module>strategyagent</module>
-    <module>photon</module>
     <module>util</module>
     <module>util-test</module>
     <module>tools</module>
