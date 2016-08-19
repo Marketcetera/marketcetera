@@ -7,6 +7,11 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -36,7 +41,7 @@ import com.googlecode.protobuf.pro.duplex.logging.CategoryPerServiceLogger;
 /* $License$ */
 
 /**
- *
+ * Provides base RPC client services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -50,30 +55,54 @@ public abstract class BaseRpcClient<BlockingInterfaceClazz>
      */
     @Override
     @PostConstruct
-    public void start()
+    public synchronized void start()
     {
         try {
+            stopped.set(false);
+            heartbeatService = Executors.newSingleThreadScheduledExecutor();
             startService();
-            BaseRpc.LoginRequest.Builder requestBuilder =  BaseRpc.LoginRequest.newBuilder();
-            requestBuilder.setAppId(getAppId().getValue())
-                    .setVersionId(getVersionInfo().getVersionInfo())
-                    .setClientId(NodeId.generate().getValue())
-                    .setLocale(BaseRpc.Locale.newBuilder()
-                               .setCountry(locale.getCountry())
-                               .setLanguage(locale.getLanguage())
-                               .setVariant(locale.getVariant()).build())
-                               .setUsername(username)
-                               .setPassword(password).build();
-            BaseRpc.LoginResponse response = executeLogin(controller,
-                                                          requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                sessionId = null;
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            sessionId = new SessionId(response.getSessionId());
+            doLogin();
+            heartbeatService.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run()
+                {
+                    if(stopped.get()) {
+                        return;
+                    }
+                    try {
+                        if(!alive.get()) {
+                            stopService();
+                            startService();
+                            doLogin();
+                        }
+                        heartbeat();
+                    } catch (Exception e) {
+                        alive.set(false);
+                        if(!stopped.get()) {
+                            String message = ExceptionUtils.getRootCauseMessage(e);
+                            if(SLF4JLoggerProxy.isDebugEnabled(BaseRpcClient.this)) {
+                                SLF4JLoggerProxy.warn(BaseRpcClient.this,
+                                                      e,
+                                                      message);
+                            } else {
+                                SLF4JLoggerProxy.warn(BaseRpcClient.this,
+                                                      message);
+                            }
+                        }
+                        notifyStatusChange(false);
+                    }
+                }
+            },heartbeatInterval,heartbeatInterval,TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
+            String message = ExceptionUtils.getRootCauseMessage(e);
+            if(SLF4JLoggerProxy.isDebugEnabled(BaseRpcClient.this)) {
+                SLF4JLoggerProxy.warn(BaseRpcClient.this,
+                                      e,
+                                      message);
+            } else {
+                SLF4JLoggerProxy.warn(BaseRpcClient.this,
+                                      message);
+            }
             if(e instanceof RuntimeException) {
                 throw (RuntimeException)e;
             }
@@ -85,8 +114,15 @@ public abstract class BaseRpcClient<BlockingInterfaceClazz>
      */
     @Override
     @PreDestroy
-    public void stop()
+    public synchronized void stop()
     {
+        stopped.set(true);
+        if(heartbeatService != null) {
+            try {
+                heartbeatService.shutdownNow();
+            } catch (Exception ignored) {}
+            heartbeatService = null;
+        }
         try {
             stopService();
         } catch (Exception ignored) {}
@@ -97,8 +133,7 @@ public abstract class BaseRpcClient<BlockingInterfaceClazz>
     @Override
     public boolean isRunning()
     {
-        // TODO
-        return true;
+        return alive.get();
     }
     /**
      * Get the locale value.
@@ -182,12 +217,59 @@ public abstract class BaseRpcClient<BlockingInterfaceClazz>
         port = inPort;
     }
     /**
-     * Validate the current session.
+     * Get the heartbeatInterval value.
+     *
+     * @return a <code>long</code> value
      */
-    protected void validateSession()
+    public long getHeartbeatInterval()
     {
-        Validate.notNull(sessionId,
-                         "Not logged in");
+        return heartbeatInterval;
+    }
+    /**
+     * Sets the heartbeatInterval value.
+     *
+     * @param inHeartbeatInterval a <code>long</code> value
+     */
+    public void setHeartbeatInterval(long inHeartbeatInterval)
+    {
+        heartbeatInterval = inHeartbeatInterval;
+    }
+    /**
+     * Perform and verify heartbeat request.
+     *
+     * @throws ServiceException if an error occurs executing the call
+     * @throws IOException if an error occurs using the socket
+     */
+    protected void heartbeat()
+            throws ServiceException, IOException
+    {
+        try(CloseableLock requestLock = CloseableLock.create(serviceLock.readLock())) {
+            requestLock.lock();
+            long id = System.nanoTime();
+            SLF4JLoggerProxy.debug(this,
+                                   "{} sending heartbeat request: {}",
+                                   getAppId(),
+                                   id);
+            BaseRpc.HeartbeatResponse response = executeHeartbeat(controller,
+                                                                  BaseRpc.HeartbeatRequest.newBuilder().setId(id).build());
+            if(response.getStatus().getFailed()) {
+                // heartbeat failed
+                String message = response.getStatus().hasMessage()?response.getStatus().getMessage():null;
+                SLF4JLoggerProxy.warn(this,
+                                      "{} heartbeat request {} failed: {}",
+                                      getAppId(),
+                                      id,
+                                      message);
+                throw new IllegalStateException("Heartbeat failed: " + message);
+            }
+            if(response.getId() != id) {
+                throw new IllegalStateException("Heartbeat wrong id");
+            }
+            SLF4JLoggerProxy.debug(this,
+                                   "{} received heartbeat response: {}",
+                                   getAppId(),
+                                   id);
+        }
     }
     /**
      * Get the clientService value.
@@ -217,51 +299,142 @@ public abstract class BaseRpcClient<BlockingInterfaceClazz>
         return sessionId;
     }
     /**
-     * 
+     * Get the serviceLock value.
      *
+     * @return a <code>ReadWriteLock</code> value
+     */
+    protected ReadWriteLock getServiceLock()
+    {
+        return serviceLock;
+    }
+    /**
+     * Indicate that the server connection status has changed.
      *
-     * @return
+     * @param inIsConnected a <code>boolean</code> value
+     */
+    protected void onStatusChange(boolean inIsConnected)
+    {
+    }
+    /**
+     * Execute the given call with session awareness and error handling.
+     *
+     * @param inRequest a <code>Callable&lt;ResponseClazz&gt;</code> value
+     * @return a <code>ResponseClazz</code> value
+     */
+    protected <ResponseClazz> ResponseClazz executeCall(Callable<ResponseClazz> inRequest)
+    {
+        validateSession();
+        try(CloseableLock requestLock = CloseableLock.create(getServiceLock().writeLock())) {
+            requestLock.lock();
+            return inRequest.call();
+        } catch (Exception e) {
+            String message = ExceptionUtils.getRootCauseMessage(e);
+            if(SLF4JLoggerProxy.isDebugEnabled(this)) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      message);
+            } else {
+                SLF4JLoggerProxy.warn(this,
+                                      message);
+            }
+            if(e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            }
+            throw new RuntimeException(e);
+        }
+    }
+    /**
+     * Get the app id value of the client.
+     *
+     * @return an <code>AppId</code> value
      */
     protected abstract AppId getAppId();
     /**
-     * 
+     * Get the version info of the client.
      *
-     *
-     * @return
+     * @return a <code>VersionInfo</code> value
      */
     protected abstract VersionInfo getVersionInfo();
     /**
-     * 
+     * Create the client type with the given channel.
      *
-     *
-     * @param inChannel
-     * @return
+     * @param inChannel an <code>RpcClientChannel</code> value
+     * @return a <code>BlockingInterfaceClazz</code> value
      */
     protected abstract BlockingInterfaceClazz createClient(RpcClientChannel inChannel);
     /**
-     * 
+     * Execute the login call using the client.
      *
-     *
-     * @param inController
-     * @param inRequest
-     * @return
-     * @throws ServiceException
+     * @param inController an <code>RpcController</code> value
+     * @param inRequest a <code>BaseRpc.LoginRequest</code> value
+     * @return a <code>BaseRpc.LoginResponse</code> value
+     * @throws ServiceException if an error occurs executing the call
      */
     protected abstract BaseRpc.LoginResponse executeLogin(RpcController inController,
                                                           BaseRpc.LoginRequest inRequest)
             throws ServiceException;
     /**
-     * 
+     * Execute the logout call using the client.
      *
-     *
-     * @param inController
-     * @param inRequest
-     * @return
-     * @throws ServiceException
+     * @param inController an <code>RpcController</code> value
+     * @param inRequest a <code>BaseRpc.LogoutRequest</code> value
+     * @return a <code>BaseRpc.LogoutResponse</code> value
+     * @throws ServiceException if an error occurs executing the call
      */
     protected abstract BaseRpc.LogoutResponse executeLogout(RpcController inController,
                                                             BaseRpc.LogoutRequest inRequest)
             throws ServiceException;
+    /**
+     * Execute the heartbeat call using the client.
+     *
+     * @param inController an <code>RpcController</code> value
+     * @param inRequest a <code>BaseRpc.HeartbeatRequest</code> value
+     * @return a <code>BaseRpc.HeartbeatResponse</code> value
+     * @throws ServiceException if an error occurs executing the call
+     */
+    protected abstract BaseRpc.HeartbeatResponse executeHeartbeat(RpcController inController,
+                                                                  BaseRpc.HeartbeatRequest inRequest)
+            throws ServiceException;
+    /**
+     * Validate the current session.
+     */
+    private void validateSession()
+    {
+        Validate.notNull(sessionId,
+                         "Not logged in");
+    }
+    /**
+     * Perform the login and adjust the status if successful.
+     *
+     * @throws ServiceException if an error occurs executing the call
+     */
+    private void doLogin()
+            throws ServiceException
+    {
+        try(CloseableLock requestLock = CloseableLock.create(serviceLock.readLock())) {
+            requestLock.lock();
+            alive.set(false);
+            BaseRpc.LoginRequest.Builder requestBuilder =  BaseRpc.LoginRequest.newBuilder();
+            requestBuilder.setAppId(getAppId().getValue())
+                    .setVersionId(getVersionInfo().getVersionInfo())
+                    .setClientId(NodeId.generate().getValue())
+                    .setLocale(BaseRpc.Locale.newBuilder()
+                               .setCountry(locale.getCountry())
+                               .setLanguage(locale.getLanguage())
+                               .setVariant(locale.getVariant()).build())
+                               .setUsername(username)
+                               .setPassword(password).build();
+            BaseRpc.LoginResponse response = executeLogin(controller,
+                                                          requestBuilder.build());
+            if(response.getStatus().getFailed()) {
+                sessionId = null;
+                throw new RuntimeException(response.getStatus().getMessage());
+            }
+            sessionId = new SessionId(response.getSessionId());
+            alive.set(true);
+            notifyStatusChange(true);
+        }
+    }
     /**
      * Start the remote service.
      *
@@ -351,8 +524,45 @@ public abstract class BaseRpcClient<BlockingInterfaceClazz>
             controller = null;
             clientService = null;
             channel = null;
+            alive.set(false);
         }
     }
+    /**
+     * Notify on server status.
+     *
+     * @param inIsConnected a <code>boolean</code> value
+     */
+    private void notifyStatusChange(boolean inIsConnected)
+    {
+        if(inIsConnected != lastStatus) {
+            try {
+                onStatusChange(inIsConnected);
+            } catch (Exception e) {
+                String message = ExceptionUtils.getRootCauseMessage(e);
+                if(SLF4JLoggerProxy.isDebugEnabled(this)) {
+                    SLF4JLoggerProxy.warn(this,
+                                          e,
+                                          message);
+                } else {
+                    SLF4JLoggerProxy.warn(this,
+                                          message);
+                }
+            }
+            lastStatus = inIsConnected;
+        }
+    }
+    /**
+     * tracks the last notified status value
+     */
+    private volatile boolean lastStatus;
+    /**
+     * service with which to execute heartbeat checks at regular intervals
+     */
+    private ScheduledExecutorService heartbeatService = Executors.newSingleThreadScheduledExecutor();
+    /**
+     * interval in ms at which to execute heartbeat/health check calls
+     */
+    private long heartbeatInterval = 1000;
     /**
      * client locale value
      */
@@ -397,4 +607,12 @@ public abstract class BaseRpcClient<BlockingInterfaceClazz>
      * guards access to RPC service objects
      */
     private final ReadWriteLock serviceLock = new ReentrantReadWriteLock();
+    /**
+     * indicates if the client is currently started and connected
+     */
+    private final AtomicBoolean alive = new AtomicBoolean(false);
+    /**
+     * indicates if the client has been stopped
+     */
+    private final AtomicBoolean stopped = new AtomicBoolean(false);
 }

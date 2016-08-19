@@ -4271,11 +4271,24 @@ public final class BaseRpc {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>required int64 id = 1;</code>
+     * <code>required .Status status = 1;</code>
+     */
+    boolean hasStatus();
+    /**
+     * <code>required .Status status = 1;</code>
+     */
+    org.marketcetera.util.rpc.BaseRpc.Status getStatus();
+    /**
+     * <code>required .Status status = 1;</code>
+     */
+    org.marketcetera.util.rpc.BaseRpc.StatusOrBuilder getStatusOrBuilder();
+
+    /**
+     * <code>required int64 id = 2;</code>
      */
     boolean hasId();
     /**
-     * <code>required int64 id = 1;</code>
+     * <code>required int64 id = 2;</code>
      */
     long getId();
   }
@@ -4331,8 +4344,21 @@ public final class BaseRpc {
               }
               break;
             }
-            case 8: {
+            case 10: {
+              org.marketcetera.util.rpc.BaseRpc.Status.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                subBuilder = status_.toBuilder();
+              }
+              status_ = input.readMessage(org.marketcetera.util.rpc.BaseRpc.Status.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(status_);
+                status_ = subBuilder.buildPartial();
+              }
               bitField0_ |= 0x00000001;
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
               id_ = input.readInt64();
               break;
             }
@@ -4376,22 +4402,44 @@ public final class BaseRpc {
     }
 
     private int bitField0_;
-    public static final int ID_FIELD_NUMBER = 1;
-    private long id_;
+    public static final int STATUS_FIELD_NUMBER = 1;
+    private org.marketcetera.util.rpc.BaseRpc.Status status_;
     /**
-     * <code>required int64 id = 1;</code>
+     * <code>required .Status status = 1;</code>
      */
-    public boolean hasId() {
+    public boolean hasStatus() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required int64 id = 1;</code>
+     * <code>required .Status status = 1;</code>
+     */
+    public org.marketcetera.util.rpc.BaseRpc.Status getStatus() {
+      return status_;
+    }
+    /**
+     * <code>required .Status status = 1;</code>
+     */
+    public org.marketcetera.util.rpc.BaseRpc.StatusOrBuilder getStatusOrBuilder() {
+      return status_;
+    }
+
+    public static final int ID_FIELD_NUMBER = 2;
+    private long id_;
+    /**
+     * <code>required int64 id = 2;</code>
+     */
+    public boolean hasId() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required int64 id = 2;</code>
      */
     public long getId() {
       return id_;
     }
 
     private void initFields() {
+      status_ = org.marketcetera.util.rpc.BaseRpc.Status.getDefaultInstance();
       id_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
@@ -4400,7 +4448,15 @@ public final class BaseRpc {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
+      if (!hasStatus()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       if (!hasId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getStatus().isInitialized()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -4412,7 +4468,10 @@ public final class BaseRpc {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt64(1, id_);
+        output.writeMessage(1, status_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt64(2, id_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -4425,7 +4484,11 @@ public final class BaseRpc {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(1, id_);
+          .computeMessageSize(1, status_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, id_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4536,6 +4599,7 @@ public final class BaseRpc {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getStatusFieldBuilder();
         }
       }
       private static Builder create() {
@@ -4544,8 +4608,14 @@ public final class BaseRpc {
 
       public Builder clear() {
         super.clear();
-        id_ = 0L;
+        if (statusBuilder_ == null) {
+          status_ = org.marketcetera.util.rpc.BaseRpc.Status.getDefaultInstance();
+        } else {
+          statusBuilder_.clear();
+        }
         bitField0_ = (bitField0_ & ~0x00000001);
+        id_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -4577,6 +4647,14 @@ public final class BaseRpc {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
+        if (statusBuilder_ == null) {
+          result.status_ = status_;
+        } else {
+          result.status_ = statusBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
         result.id_ = id_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -4594,6 +4672,9 @@ public final class BaseRpc {
 
       public Builder mergeFrom(org.marketcetera.util.rpc.BaseRpc.HeartbeatResponse other) {
         if (other == org.marketcetera.util.rpc.BaseRpc.HeartbeatResponse.getDefaultInstance()) return this;
+        if (other.hasStatus()) {
+          mergeStatus(other.getStatus());
+        }
         if (other.hasId()) {
           setId(other.getId());
         }
@@ -4602,7 +4683,15 @@ public final class BaseRpc {
       }
 
       public final boolean isInitialized() {
+        if (!hasStatus()) {
+          
+          return false;
+        }
         if (!hasId()) {
+          
+          return false;
+        }
+        if (!getStatus().isInitialized()) {
           
           return false;
         }
@@ -4628,33 +4717,149 @@ public final class BaseRpc {
       }
       private int bitField0_;
 
-      private long id_ ;
+      private org.marketcetera.util.rpc.BaseRpc.Status status_ = org.marketcetera.util.rpc.BaseRpc.Status.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.marketcetera.util.rpc.BaseRpc.Status, org.marketcetera.util.rpc.BaseRpc.Status.Builder, org.marketcetera.util.rpc.BaseRpc.StatusOrBuilder> statusBuilder_;
       /**
-       * <code>required int64 id = 1;</code>
+       * <code>required .Status status = 1;</code>
        */
-      public boolean hasId() {
+      public boolean hasStatus() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required int64 id = 1;</code>
+       * <code>required .Status status = 1;</code>
+       */
+      public org.marketcetera.util.rpc.BaseRpc.Status getStatus() {
+        if (statusBuilder_ == null) {
+          return status_;
+        } else {
+          return statusBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>required .Status status = 1;</code>
+       */
+      public Builder setStatus(org.marketcetera.util.rpc.BaseRpc.Status value) {
+        if (statusBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          status_ = value;
+          onChanged();
+        } else {
+          statusBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .Status status = 1;</code>
+       */
+      public Builder setStatus(
+          org.marketcetera.util.rpc.BaseRpc.Status.Builder builderForValue) {
+        if (statusBuilder_ == null) {
+          status_ = builderForValue.build();
+          onChanged();
+        } else {
+          statusBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .Status status = 1;</code>
+       */
+      public Builder mergeStatus(org.marketcetera.util.rpc.BaseRpc.Status value) {
+        if (statusBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              status_ != org.marketcetera.util.rpc.BaseRpc.Status.getDefaultInstance()) {
+            status_ =
+              org.marketcetera.util.rpc.BaseRpc.Status.newBuilder(status_).mergeFrom(value).buildPartial();
+          } else {
+            status_ = value;
+          }
+          onChanged();
+        } else {
+          statusBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .Status status = 1;</code>
+       */
+      public Builder clearStatus() {
+        if (statusBuilder_ == null) {
+          status_ = org.marketcetera.util.rpc.BaseRpc.Status.getDefaultInstance();
+          onChanged();
+        } else {
+          statusBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      /**
+       * <code>required .Status status = 1;</code>
+       */
+      public org.marketcetera.util.rpc.BaseRpc.Status.Builder getStatusBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getStatusFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>required .Status status = 1;</code>
+       */
+      public org.marketcetera.util.rpc.BaseRpc.StatusOrBuilder getStatusOrBuilder() {
+        if (statusBuilder_ != null) {
+          return statusBuilder_.getMessageOrBuilder();
+        } else {
+          return status_;
+        }
+      }
+      /**
+       * <code>required .Status status = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          org.marketcetera.util.rpc.BaseRpc.Status, org.marketcetera.util.rpc.BaseRpc.Status.Builder, org.marketcetera.util.rpc.BaseRpc.StatusOrBuilder> 
+          getStatusFieldBuilder() {
+        if (statusBuilder_ == null) {
+          statusBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.marketcetera.util.rpc.BaseRpc.Status, org.marketcetera.util.rpc.BaseRpc.Status.Builder, org.marketcetera.util.rpc.BaseRpc.StatusOrBuilder>(
+                  getStatus(),
+                  getParentForChildren(),
+                  isClean());
+          status_ = null;
+        }
+        return statusBuilder_;
+      }
+
+      private long id_ ;
+      /**
+       * <code>required int64 id = 2;</code>
+       */
+      public boolean hasId() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required int64 id = 2;</code>
        */
       public long getId() {
         return id_;
       }
       /**
-       * <code>required int64 id = 1;</code>
+       * <code>required int64 id = 2;</code>
        */
       public Builder setId(long value) {
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         id_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required int64 id = 1;</code>
+       * <code>required int64 id = 2;</code>
        */
       public Builder clearId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         id_ = 0L;
         onChanged();
         return this;
@@ -5822,14 +6027,15 @@ public final class BaseRpc {
       "(\t\")\n\016LogoutResponse\022\027\n\006status\030\001 \002(\0132\007.S" +
       "tatus\"<\n\006Locale\022\017\n\007country\030\001 \002(\t\022\020\n\010lang" +
       "uage\030\002 \002(\t\022\017\n\007variant\030\003 \001(\t\"\036\n\020Heartbeat" +
-      "Request\022\n\n\002id\030\001 \002(\003\"\037\n\021HeartbeatResponse",
-      "\022\n\n\002id\030\001 \002(\003\"<\n\006Status\022\016\n\006failed\030\001 \002(\010\022\017" +
-      "\n\007message\030\002 \001(\t\022\021\n\tsessionId\030\003 \001(\t2\227\001\n\016B" +
-      "aseRpcService\022&\n\005login\022\r.LoginRequest\032\016." +
-      "LoginResponse\022)\n\006logout\022\016.LogoutRequest\032" +
-      "\017.LogoutResponse\0222\n\theartbeat\022\021.Heartbea" +
-      "tRequest\032\022.HeartbeatResponseB\'\n\031org.mark" +
-      "etcetera.util.rpcB\007BaseRpc\210\001\001"
+      "Request\022\n\n\002id\030\001 \002(\003\"8\n\021HeartbeatResponse",
+      "\022\027\n\006status\030\001 \002(\0132\007.Status\022\n\n\002id\030\002 \002(\003\"<\n" +
+      "\006Status\022\016\n\006failed\030\001 \002(\010\022\017\n\007message\030\002 \001(\t" +
+      "\022\021\n\tsessionId\030\003 \001(\t2\227\001\n\016BaseRpcService\022&" +
+      "\n\005login\022\r.LoginRequest\032\016.LoginResponse\022)" +
+      "\n\006logout\022\016.LogoutRequest\032\017.LogoutRespons" +
+      "e\0222\n\theartbeat\022\021.HeartbeatRequest\032\022.Hear" +
+      "tbeatResponseB\'\n\031org.marketcetera.util.r" +
+      "pcB\007BaseRpc\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -5884,7 +6090,7 @@ public final class BaseRpc {
     internal_static_HeartbeatResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_HeartbeatResponse_descriptor,
-        new java.lang.String[] { "Id", });
+        new java.lang.String[] { "Status", "Id", });
     internal_static_Status_descriptor =
       getDescriptor().getMessageTypes().get(7);
     internal_static_Status_fieldAccessorTable = new

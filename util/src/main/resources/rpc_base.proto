@@ -37,7 +37,8 @@ message HeartbeatRequest {
 }
 
 message HeartbeatResponse {
-    required int64 id = 1;
+    required Status status = 1;
+    required int64 id = 2;
 }
 
 message Status {

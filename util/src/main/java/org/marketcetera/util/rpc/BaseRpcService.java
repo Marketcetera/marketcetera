@@ -18,7 +18,7 @@ import com.google.protobuf.ServiceException;
 /* $License$ */
 
 /**
- *
+ * Provides base RPC server behavior.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -125,17 +125,24 @@ public abstract class BaseRpcService<SessionClazz>
                                getDescription(),
                                inRequest.getId());
         BaseRpc.HeartbeatResponse.Builder responseBuilder = BaseRpc.HeartbeatResponse.newBuilder();
+        BaseRpc.Status.Builder statusBuilder = BaseRpc.Status.newBuilder();
+        statusBuilder.setFailed(false);
         try {
             responseBuilder.setId(inRequest.getId());
         } catch (Exception e) {
+            String message = ExceptionUtils.getRootCauseMessage(e);
             if(SLF4JLoggerProxy.isDebugEnabled(this)) {
                 SLF4JLoggerProxy.warn(this,
-                                      e);
+                                      e,
+                                      message);
             } else {
                 SLF4JLoggerProxy.warn(this,
-                                      ExceptionUtils.getRootCauseMessage(e));
+                                      message);
             }
+            statusBuilder.setFailed(true);
+            statusBuilder.setMessage(message);
         }
+        responseBuilder.setStatus(statusBuilder.build());
         BaseRpc.HeartbeatResponse response = responseBuilder.build();
         SLF4JLoggerProxy.trace(this,
                                "Returning {}: {}",
