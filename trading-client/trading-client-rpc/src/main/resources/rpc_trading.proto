@@ -7,6 +7,61 @@ option java_outer_classname = "TradingRpc";
 import "rpc_base.proto";
 import "rpc_paging.proto";
 
+enum OrderType {
+    Market = 1;
+    Limit = 2;
+    Stop = 3;
+    StopLimit = 4;
+    MarketOnClose = 5;
+    WithOrWithout = 6;
+    LimitOrBetter = 7;
+    LimitWithOrWithout = 8;
+    OnBasis = 9;
+    OnClose = 10;
+    LimitOnClose = 11;
+    ForexMarket = 12;
+    PreviouslyQuoted = 13;
+    PreviouslyIndicated = 14;
+    ForexLimit = 15;
+    ForexSwap = 16;
+    ForexPreviouslyQuoted = 17;
+    Funari = 18;
+    Pegged = 19;
+    UnknownOrderType = 99;
+}
+
+enum OrderStatusType {
+    New = 0;
+    PartiallyFilled = 1;
+    Filled = 2;
+    DoneForDay = 3;
+    Canceled = 4;
+    Replaced = 5;
+    PendingCancel = 6;
+    Stopped = 7;
+    Rejected = 8;
+    Suspended = 9;
+    PendingNew = 10;
+    Calculated = 11;
+    Expired = 12;
+    AcceptedForBidding = 13;
+    PendingReplace = 14;
+    UnknownOrderStatus = 99;
+}
+
+enum SideType {
+    UnknownSide = 0;
+    Buy = 1;
+    Sell = 2;
+    BuyMinus = 3;
+    SellPlus = 4;
+    SellShort = 5;
+    SellShortExempt = 6;
+    Undisclosed = 7;
+    Cross = 8;
+    CrossShort = 9;
+}
+
 message OpenOrdersRequest {
     required string sessionId = 1;
     optional PageRequest pageRequest = 2;
@@ -21,9 +76,43 @@ message OpenOrdersResponse {
 message OpenOrder {
 }
 
+message OrderSingle {
+    optional string brokerId = 1;
+    required string symbol = 2;
+    required SideType side = 3;
+    required Qty quantity = 4;
+    optional Qty price = 5;
+    optional string account = 6;
+    optional OrderType orderType = 7;
+    optional string customFields = 8;
+    optional Qty displayQty = 9;
+    // algo?
+    // TIF?
+    // security type?
+    // order capacity?
+    // position effect?
+    // text?
+}
+
+message SendOrderRequest {
+    required string sessionId = 1;
+    repeated OrderSingle order = 2;
+}
+
+message SendOrderResponse {
+    required Status status = 1;
+    repeated OrderSingleResponse orderResponse = 2;
+}
+
+message OrderSingleResponse {
+    required Status status = 1;
+    optional string orderid = 2;
+}
+
 service TradingRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
     rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
     rpc getOpenOrders(OpenOrdersRequest) returns (OpenOrdersResponse);
+    rpc sendOrders(SendOrderRequest) returns (SendOrderResponse);
 }

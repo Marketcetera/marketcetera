@@ -4,6 +4,11 @@ option java_generic_services = true;
 option java_package = "org.marketcetera.util.rpc";
 option java_outer_classname = "BaseRpc";
 
+message Qty {
+    required int64 qty = 1;
+    required int32 scale = 2;
+}
+
 message LoginRequest {
     required string appId = 1;
     required string clientId = 2;

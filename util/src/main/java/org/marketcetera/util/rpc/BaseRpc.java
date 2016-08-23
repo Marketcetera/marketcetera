@@ -9,6 +9,497 @@ public final class BaseRpc {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
+  public interface QtyOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:Qty)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required int64 qty = 1;</code>
+     */
+    boolean hasQty();
+    /**
+     * <code>required int64 qty = 1;</code>
+     */
+    long getQty();
+
+    /**
+     * <code>required int32 scale = 2;</code>
+     */
+    boolean hasScale();
+    /**
+     * <code>required int32 scale = 2;</code>
+     */
+    int getScale();
+  }
+  /**
+   * Protobuf type {@code Qty}
+   */
+  public static final class Qty extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:Qty)
+      QtyOrBuilder {
+    // Use Qty.newBuilder() to construct.
+    private Qty(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private Qty(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final Qty defaultInstance;
+    public static Qty getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public Qty getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Qty(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              qty_ = input.readInt64();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              scale_ = input.readInt32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.util.rpc.BaseRpc.internal_static_Qty_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.util.rpc.BaseRpc.internal_static_Qty_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.util.rpc.BaseRpc.Qty.class, org.marketcetera.util.rpc.BaseRpc.Qty.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Qty> PARSER =
+        new com.google.protobuf.AbstractParser<Qty>() {
+      public Qty parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Qty(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Qty> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    public static final int QTY_FIELD_NUMBER = 1;
+    private long qty_;
+    /**
+     * <code>required int64 qty = 1;</code>
+     */
+    public boolean hasQty() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required int64 qty = 1;</code>
+     */
+    public long getQty() {
+      return qty_;
+    }
+
+    public static final int SCALE_FIELD_NUMBER = 2;
+    private int scale_;
+    /**
+     * <code>required int32 scale = 2;</code>
+     */
+    public boolean hasScale() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required int32 scale = 2;</code>
+     */
+    public int getScale() {
+      return scale_;
+    }
+
+    private void initFields() {
+      qty_ = 0L;
+      scale_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasQty()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasScale()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt64(1, qty_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(2, scale_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, qty_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, scale_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.util.rpc.BaseRpc.Qty parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Qty parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Qty parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Qty parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Qty parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Qty parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Qty parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Qty parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Qty parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Qty parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.util.rpc.BaseRpc.Qty prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code Qty}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:Qty)
+        org.marketcetera.util.rpc.BaseRpc.QtyOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_Qty_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_Qty_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.util.rpc.BaseRpc.Qty.class, org.marketcetera.util.rpc.BaseRpc.Qty.Builder.class);
+      }
+
+      // Construct using org.marketcetera.util.rpc.BaseRpc.Qty.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        qty_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        scale_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_Qty_descriptor;
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.Qty getDefaultInstanceForType() {
+        return org.marketcetera.util.rpc.BaseRpc.Qty.getDefaultInstance();
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.Qty build() {
+        org.marketcetera.util.rpc.BaseRpc.Qty result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.Qty buildPartial() {
+        org.marketcetera.util.rpc.BaseRpc.Qty result = new org.marketcetera.util.rpc.BaseRpc.Qty(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.qty_ = qty_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.scale_ = scale_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.util.rpc.BaseRpc.Qty) {
+          return mergeFrom((org.marketcetera.util.rpc.BaseRpc.Qty)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.util.rpc.BaseRpc.Qty other) {
+        if (other == org.marketcetera.util.rpc.BaseRpc.Qty.getDefaultInstance()) return this;
+        if (other.hasQty()) {
+          setQty(other.getQty());
+        }
+        if (other.hasScale()) {
+          setScale(other.getScale());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasQty()) {
+          
+          return false;
+        }
+        if (!hasScale()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.util.rpc.BaseRpc.Qty parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.util.rpc.BaseRpc.Qty) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private long qty_ ;
+      /**
+       * <code>required int64 qty = 1;</code>
+       */
+      public boolean hasQty() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required int64 qty = 1;</code>
+       */
+      public long getQty() {
+        return qty_;
+      }
+      /**
+       * <code>required int64 qty = 1;</code>
+       */
+      public Builder setQty(long value) {
+        bitField0_ |= 0x00000001;
+        qty_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int64 qty = 1;</code>
+       */
+      public Builder clearQty() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        qty_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private int scale_ ;
+      /**
+       * <code>required int32 scale = 2;</code>
+       */
+      public boolean hasScale() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required int32 scale = 2;</code>
+       */
+      public int getScale() {
+        return scale_;
+      }
+      /**
+       * <code>required int32 scale = 2;</code>
+       */
+      public Builder setScale(int value) {
+        bitField0_ |= 0x00000002;
+        scale_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 scale = 2;</code>
+       */
+      public Builder clearScale() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        scale_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:Qty)
+    }
+
+    static {
+      defaultInstance = new Qty(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:Qty)
+  }
+
   public interface LoginRequestOrBuilder extends
       // @@protoc_insertion_point(interface_extends:LoginRequest)
       com.google.protobuf.MessageOrBuilder {
@@ -5970,6 +6461,11 @@ public final class BaseRpc {
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_Qty_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_Qty_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_LoginRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -6018,24 +6514,25 @@ public final class BaseRpc {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\016rpc_base.proto\"\177\n\014LoginRequest\022\r\n\005appI" +
-      "d\030\001 \002(\t\022\020\n\010clientId\030\002 \002(\t\022\027\n\006locale\030\003 \002(" +
-      "\0132\007.Locale\022\021\n\tversionId\030\004 \002(\t\022\020\n\010usernam" +
-      "e\030\005 \002(\t\022\020\n\010password\030\006 \002(\t\";\n\rLoginRespon" +
-      "se\022\027\n\006status\030\001 \002(\0132\007.Status\022\021\n\tsessionId" +
-      "\030\002 \002(\t\"\"\n\rLogoutRequest\022\021\n\tsessionId\030\001 \002" +
-      "(\t\")\n\016LogoutResponse\022\027\n\006status\030\001 \002(\0132\007.S" +
-      "tatus\"<\n\006Locale\022\017\n\007country\030\001 \002(\t\022\020\n\010lang" +
-      "uage\030\002 \002(\t\022\017\n\007variant\030\003 \001(\t\"\036\n\020Heartbeat" +
-      "Request\022\n\n\002id\030\001 \002(\003\"8\n\021HeartbeatResponse",
-      "\022\027\n\006status\030\001 \002(\0132\007.Status\022\n\n\002id\030\002 \002(\003\"<\n" +
-      "\006Status\022\016\n\006failed\030\001 \002(\010\022\017\n\007message\030\002 \001(\t" +
-      "\022\021\n\tsessionId\030\003 \001(\t2\227\001\n\016BaseRpcService\022&" +
-      "\n\005login\022\r.LoginRequest\032\016.LoginResponse\022)" +
-      "\n\006logout\022\016.LogoutRequest\032\017.LogoutRespons" +
-      "e\0222\n\theartbeat\022\021.HeartbeatRequest\032\022.Hear" +
-      "tbeatResponseB\'\n\031org.marketcetera.util.r" +
-      "pcB\007BaseRpc\210\001\001"
+      "\n\016rpc_base.proto\"!\n\003Qty\022\013\n\003qty\030\001 \002(\003\022\r\n\005" +
+      "scale\030\002 \002(\005\"\177\n\014LoginRequest\022\r\n\005appId\030\001 \002" +
+      "(\t\022\020\n\010clientId\030\002 \002(\t\022\027\n\006locale\030\003 \002(\0132\007.L" +
+      "ocale\022\021\n\tversionId\030\004 \002(\t\022\020\n\010username\030\005 \002" +
+      "(\t\022\020\n\010password\030\006 \002(\t\";\n\rLoginResponse\022\027\n" +
+      "\006status\030\001 \002(\0132\007.Status\022\021\n\tsessionId\030\002 \002(" +
+      "\t\"\"\n\rLogoutRequest\022\021\n\tsessionId\030\001 \002(\t\")\n" +
+      "\016LogoutResponse\022\027\n\006status\030\001 \002(\0132\007.Status" +
+      "\"<\n\006Locale\022\017\n\007country\030\001 \002(\t\022\020\n\010language\030" +
+      "\002 \002(\t\022\017\n\007variant\030\003 \001(\t\"\036\n\020HeartbeatReque",
+      "st\022\n\n\002id\030\001 \002(\003\"8\n\021HeartbeatResponse\022\027\n\006s" +
+      "tatus\030\001 \002(\0132\007.Status\022\n\n\002id\030\002 \002(\003\"<\n\006Stat" +
+      "us\022\016\n\006failed\030\001 \002(\010\022\017\n\007message\030\002 \001(\t\022\021\n\ts" +
+      "essionId\030\003 \001(\t2\227\001\n\016BaseRpcService\022&\n\005log" +
+      "in\022\r.LoginRequest\032\016.LoginResponse\022)\n\006log" +
+      "out\022\016.LogoutRequest\032\017.LogoutResponse\0222\n\t" +
+      "heartbeat\022\021.HeartbeatRequest\032\022.Heartbeat" +
+      "ResponseB\'\n\031org.marketcetera.util.rpcB\007B" +
+      "aseRpc\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -6049,50 +6546,56 @@ public final class BaseRpc {
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
-    internal_static_LoginRequest_descriptor =
+    internal_static_Qty_descriptor =
       getDescriptor().getMessageTypes().get(0);
+    internal_static_Qty_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_Qty_descriptor,
+        new java.lang.String[] { "Qty", "Scale", });
+    internal_static_LoginRequest_descriptor =
+      getDescriptor().getMessageTypes().get(1);
     internal_static_LoginRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_LoginRequest_descriptor,
         new java.lang.String[] { "AppId", "ClientId", "Locale", "VersionId", "Username", "Password", });
     internal_static_LoginResponse_descriptor =
-      getDescriptor().getMessageTypes().get(1);
+      getDescriptor().getMessageTypes().get(2);
     internal_static_LoginResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_LoginResponse_descriptor,
         new java.lang.String[] { "Status", "SessionId", });
     internal_static_LogoutRequest_descriptor =
-      getDescriptor().getMessageTypes().get(2);
+      getDescriptor().getMessageTypes().get(3);
     internal_static_LogoutRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_LogoutRequest_descriptor,
         new java.lang.String[] { "SessionId", });
     internal_static_LogoutResponse_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_LogoutResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_LogoutResponse_descriptor,
         new java.lang.String[] { "Status", });
     internal_static_Locale_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_Locale_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Locale_descriptor,
         new java.lang.String[] { "Country", "Language", "Variant", });
     internal_static_HeartbeatRequest_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_HeartbeatRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_HeartbeatRequest_descriptor,
         new java.lang.String[] { "Id", });
     internal_static_HeartbeatResponse_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_HeartbeatResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_HeartbeatResponse_descriptor,
         new java.lang.String[] { "Status", "Id", });
     internal_static_Status_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(8);
     internal_static_Status_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Status_descriptor,
