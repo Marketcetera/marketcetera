@@ -1,0 +1,29 @@
+//  protoc -I=src/main/resources --proto_path=../util/src/main/resources/ --java_out=src/main/java src/main/resources/rpc_client.proto
+option java_generic_services = true;
+
+option java_package = "org.marketcetera.clientneo";
+option java_outer_classname = "ClientNeoRpc";
+
+import "rpc_base.proto";
+import "rpc_paging.proto";
+
+message OpenOrdersRequest {
+    required string sessionId = 1;
+    optional PageRequest pageRequest = 2;
+}
+
+message OpenOrdersResponse {
+    required Status status = 1;
+    optional PageResponse pageResponse = 2;
+    repeated OpenOrder orders = 3;
+}
+
+message OpenOrder {
+}
+
+service ClientNeoRpcService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc getOpenOrders(OpenOrdersRequest) returns (OpenOrdersResponse);
+}

@@ -237,58 +237,6 @@
           </execution>
         </executions>
       </plugin>
-
-      <!-- Configure Eclipse IDE metadata. -->
-      <plugin>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-	  <buildOutputDirectory>target/classes</buildOutputDirectory>
-	  <downloadSources>true</downloadSources>
-	  <downloadJavadocs>true</downloadJavadocs>
-          <pde>true</pde>
-          <manifest>null</manifest>
-          <resolveDependencies>false</resolveDependencies>
-          <additionalBuildcommands>
-            <!-- 
-                 - This build command runs the package goal every time test
-                 - files change. Its sole purpose is to update the core.tests
-                 - plug-in with the new code (see the antrun plug-in execution
-                 - below). 
-            -->
-            <buildCommand>
-              <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
-              <triggers>auto,full,incremental,</triggers>
-              <arguments>
-                <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/copyTestsToPlugin.launch</LaunchConfigHandle>
-              </arguments>
-            </buildCommand>      
-          </additionalBuildcommands>
-        </configuration>
-      </plugin>
-      
-      <!-- Copy generated test jar into the corresponding photon plugin. -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <configuration>
-              <tasks>
-                <property
-                    name="targetDirTests"
-                    value="../photon/plugins/org.marketcetera.core.tests/" />
-                <copy
-                    file="target/core-${project.version}-tests.jar"
-                    todir="${targetDirTests}" />
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-compiler-plugin</artifactId>

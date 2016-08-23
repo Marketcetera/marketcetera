@@ -1,0 +1,17 @@
+// protoc -I=src/main/resources --java_out=src/main/java src/main/resources/rpc_paging.proto
+option java_generic_services = true;
+option java_package = "org.marketcetera.util.rpc";
+option java_outer_classname = "PagingRpc";
+
+message PageRequest {
+    optional uint32 page = 1 [default=0];
+    optional uint32 size = 2 [default=2147483647];
+}
+
+message PageResponse {
+    optional uint64 totalSize = 1;
+    optional uint32 totalPages = 2;
+    optional uint32 pageNumber = 3;
+    optional uint32 pageSize = 4;
+    optional uint32 pageMaxSize = 5;
+}

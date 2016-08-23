@@ -1,11 +1,5 @@
 package org.marketcetera.util.rpc;
 
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
@@ -43,6 +37,12 @@ import com.googlecode.protobuf.pro.duplex.execute.RpcServerCallExecutor;
 import com.googlecode.protobuf.pro.duplex.execute.ThreadPoolCallExecutor;
 import com.googlecode.protobuf.pro.duplex.server.DuplexTcpServerPipelineFactory;
 import com.googlecode.protobuf.pro.duplex.util.RenamingThreadFactoryProxy;
+
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 /* $License$ */
 
@@ -138,10 +138,7 @@ public class RpcServer<SessionClazz>
                 throw new RuntimeException(e);
             }
         }
-        // TODO throw exception?
         running.set(channelToken.isSuccess());
-        //RpcClientConnectionRegistry clientRegistry = new RpcClientConnectionRegistry();
-        //serverFactory.registerConnectionEventListener(clientRegistry);
     }
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#stop()
