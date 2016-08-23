@@ -1,8 +1,8 @@
 //  protoc -I=src/main/resources --proto_path=../../util/src/main/resources/ --java_out=src/main/java src/main/resources/rpc_trading.proto
 option java_generic_services = true;
 
-option java_package = "org.marketcetera.tradingclient.rpc";
-option java_outer_classname = "TradingClientRpc";
+option java_package = "org.marketcetera.trading.rpc";
+option java_outer_classname = "TradingRpc";
 
 import "rpc_base.proto";
 import "rpc_paging.proto";
@@ -21,7 +21,7 @@ message OpenOrdersResponse {
 message OpenOrder {
 }
 
-service TradingClientRpcService {
+service TradingRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
     rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);

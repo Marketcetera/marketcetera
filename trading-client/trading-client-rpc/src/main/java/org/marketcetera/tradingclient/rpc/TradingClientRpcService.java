@@ -9,8 +9,9 @@ import org.marketcetera.core.Version;
 import org.marketcetera.core.VersionInfo;
 import org.marketcetera.rpc.BaseRpcClient;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trading.rpc.TradingRpc;
+import org.marketcetera.trading.rpc.TradingRpc.TradingRpcService.BlockingInterface;
 import org.marketcetera.tradingclient.TradingClient;
-import org.marketcetera.tradingclient.rpc.TradingClientRpc.TradingClientRpcService.BlockingInterface;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.rpc.BaseRpc.HeartbeatRequest;
 import org.marketcetera.util.rpc.BaseRpc.HeartbeatResponse;
@@ -35,7 +36,7 @@ import com.googlecode.protobuf.pro.duplex.RpcClientChannel;
  * @since $Release$
  */
 public class TradingClientRpcService<SessionClazz>
-        extends BaseRpcClient<TradingClientRpc.TradingClientRpcService.BlockingInterface>
+        extends BaseRpcClient<TradingRpc.TradingRpcService.BlockingInterface>
         implements TradingClient
 {
     /* (non-Javadoc)
@@ -53,17 +54,17 @@ public class TradingClientRpcService<SessionClazz>
                 SLF4JLoggerProxy.trace(this,
                                        "{} requesting open orders",
                                        getSessionId());
-                TradingClientRpc.OpenOrdersRequest.Builder requestBuilder = TradingClientRpc.OpenOrdersRequest.newBuilder();
+                TradingRpc.OpenOrdersRequest.Builder requestBuilder = TradingRpc.OpenOrdersRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setPageRequest(PagingUtil.buildPageRequest(inPageNumber,
                                                                           inPageSize));
-                TradingClientRpc.OpenOrdersResponse response = getClientService().getOpenOrders(getController(),
+                TradingRpc.OpenOrdersResponse response = getClientService().getOpenOrders(getController(),
                                                                                                 requestBuilder.build());
                 List<ExecutionReport> results = new ArrayList<>();
                 if(response.getStatus().getFailed()) {
                     throw new RuntimeException(response.getStatus().getMessage());
                 }
-                for(TradingClientRpc.OpenOrder rpcOpenOrder : response.getOrdersList()) {
+                for(TradingRpc.OpenOrder rpcOpenOrder : response.getOrdersList()) {
                 }
                 SLF4JLoggerProxy.trace(this,
                                        "{} returning {}",
@@ -95,7 +96,7 @@ public class TradingClientRpcService<SessionClazz>
     @Override
     protected BlockingInterface createClient(RpcClientChannel inChannel)
     {
-        return TradingClientRpc.TradingClientRpcService.newBlockingStub(inChannel);
+        return TradingRpc.TradingRpcService.newBlockingStub(inChannel);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.BaseRpcClient#executeLogin(com.google.protobuf.RpcController, org.marketcetera.util.rpc.BaseRpc.LoginRequest)

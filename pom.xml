@@ -61,12 +61,12 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>client-neo-api</artifactId>
+        <artifactId>trading-client-api</artifactId>
         <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>client-neo-rpc</artifactId>
+        <artifactId>trading-client-rpc</artifactId>
         <version>3.0.11</version>
       </dependency>
       <dependency>
@@ -1083,7 +1083,7 @@
     <module>util</module>
     <module>util-test</module>
     <module>tools</module>
-    <module>client-neo</module>
+    <module>trading-client</module>
   </modules>
   <repositories>
     <!--
