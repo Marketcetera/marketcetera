@@ -31,12 +31,19 @@ public interface TradingClient
     List<ExecutionReport> getOpenOrders(int inPageNumber,
                                         int inPageSize);
     /**
-     * Submit the given order.
+     * Submit the given orders.
      *
-     * @param inOrderSingle a <code>List&lt;OrderSingle&gt;</code> value
+     * @param inOrders a <code>List&lt;OrderSingle&gt;</code> value
      * @return a <code>List&lt;SendOrderResponse&gt;</code> value
      */
-    List<SendOrderResponse> sendOrders(List<OrderSingle> inOrderSingle);
+    List<SendOrderResponse> sendOrders(List<OrderSingle> inOrders);
+    /**
+     * Submit the given order.
+     *
+     * @param inOrderSingle a <code>OrderSingle</code> value
+     * @return a <code>SendOrderResponse</code> value
+     */
+    SendOrderResponse sendOrder(OrderSingle inOrderSingle);
     /**
      * Submit the given order cancel request.
      *

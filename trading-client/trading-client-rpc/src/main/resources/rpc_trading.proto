@@ -1,4 +1,4 @@
-//  protoc -I=src/main/resources --proto_path=../../util/src/main/resources/ --java_out=src/main/java src/main/resources/rpc_trading.proto
+// protoc -I=src/main/resources --proto_path=../../util/src/main/resources/ --java_out=src/main/java src/main/resources/rpc_trading.proto
 option java_generic_services = true;
 
 option java_package = "org.marketcetera.trading.rpc";
@@ -86,6 +86,7 @@ message OrderSingle {
     optional OrderType orderType = 7;
     optional string customFields = 8;
     optional Qty displayQty = 9;
+    required string orderId = 10;
     // algo?
     // TIF?
     // security type?

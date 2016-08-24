@@ -2780,28 +2780,57 @@ public final class TradingRpc {
 
     /**
      * <code>optional .Qty displayQty = 9;</code>
-     *
-     * <pre>
-     * algo?
-     * </pre>
      */
     boolean hasDisplayQty();
     /**
      * <code>optional .Qty displayQty = 9;</code>
-     *
-     * <pre>
-     * algo?
-     * </pre>
      */
     org.marketcetera.util.rpc.BaseRpc.Qty getDisplayQty();
     /**
      * <code>optional .Qty displayQty = 9;</code>
+     */
+    org.marketcetera.util.rpc.BaseRpc.QtyOrBuilder getDisplayQtyOrBuilder();
+
+    /**
+     * <code>required string orderId = 10;</code>
      *
      * <pre>
      * algo?
+     * TIF?
+     * security type?
+     * order capacity?
+     * position effect?
+     * text?
      * </pre>
      */
-    org.marketcetera.util.rpc.BaseRpc.QtyOrBuilder getDisplayQtyOrBuilder();
+    boolean hasOrderId();
+    /**
+     * <code>required string orderId = 10;</code>
+     *
+     * <pre>
+     * algo?
+     * TIF?
+     * security type?
+     * order capacity?
+     * position effect?
+     * text?
+     * </pre>
+     */
+    java.lang.String getOrderId();
+    /**
+     * <code>required string orderId = 10;</code>
+     *
+     * <pre>
+     * algo?
+     * TIF?
+     * security type?
+     * order capacity?
+     * position effect?
+     * text?
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getOrderIdBytes();
   }
   /**
    * Protobuf type {@code OrderSingle}
@@ -2938,6 +2967,12 @@ public final class TradingRpc {
                 displayQty_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000100;
+              break;
+            }
+            case 82: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000200;
+              orderId_ = bs;
               break;
             }
           }
@@ -3224,33 +3259,90 @@ public final class TradingRpc {
     private org.marketcetera.util.rpc.BaseRpc.Qty displayQty_;
     /**
      * <code>optional .Qty displayQty = 9;</code>
-     *
-     * <pre>
-     * algo?
-     * </pre>
      */
     public boolean hasDisplayQty() {
       return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
      * <code>optional .Qty displayQty = 9;</code>
-     *
-     * <pre>
-     * algo?
-     * </pre>
      */
     public org.marketcetera.util.rpc.BaseRpc.Qty getDisplayQty() {
       return displayQty_;
     }
     /**
      * <code>optional .Qty displayQty = 9;</code>
-     *
-     * <pre>
-     * algo?
-     * </pre>
      */
     public org.marketcetera.util.rpc.BaseRpc.QtyOrBuilder getDisplayQtyOrBuilder() {
       return displayQty_;
+    }
+
+    public static final int ORDERID_FIELD_NUMBER = 10;
+    private java.lang.Object orderId_;
+    /**
+     * <code>required string orderId = 10;</code>
+     *
+     * <pre>
+     * algo?
+     * TIF?
+     * security type?
+     * order capacity?
+     * position effect?
+     * text?
+     * </pre>
+     */
+    public boolean hasOrderId() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    /**
+     * <code>required string orderId = 10;</code>
+     *
+     * <pre>
+     * algo?
+     * TIF?
+     * security type?
+     * order capacity?
+     * position effect?
+     * text?
+     * </pre>
+     */
+    public java.lang.String getOrderId() {
+      java.lang.Object ref = orderId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          orderId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string orderId = 10;</code>
+     *
+     * <pre>
+     * algo?
+     * TIF?
+     * security type?
+     * order capacity?
+     * position effect?
+     * text?
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getOrderIdBytes() {
+      java.lang.Object ref = orderId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        orderId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     private void initFields() {
@@ -3263,6 +3355,7 @@ public final class TradingRpc {
       orderType_ = org.marketcetera.trading.rpc.TradingRpc.OrderType.Market;
       customFields_ = "";
       displayQty_ = org.marketcetera.util.rpc.BaseRpc.Qty.getDefaultInstance();
+      orderId_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3279,6 +3372,10 @@ public final class TradingRpc {
         return false;
       }
       if (!hasQuantity()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasOrderId()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -3332,6 +3429,9 @@ public final class TradingRpc {
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         output.writeMessage(9, displayQty_);
       }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeBytes(10, getOrderIdBytes());
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -3376,6 +3476,10 @@ public final class TradingRpc {
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(9, displayQty_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(10, getOrderIdBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3527,6 +3631,8 @@ public final class TradingRpc {
           displayQtyBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000100);
+        orderId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000200);
         return this;
       }
 
@@ -3603,6 +3709,10 @@ public final class TradingRpc {
         } else {
           result.displayQty_ = displayQtyBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        result.orderId_ = orderId_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3654,6 +3764,11 @@ public final class TradingRpc {
         if (other.hasDisplayQty()) {
           mergeDisplayQty(other.getDisplayQty());
         }
+        if (other.hasOrderId()) {
+          bitField0_ |= 0x00000200;
+          orderId_ = other.orderId_;
+          onChanged();
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -3668,6 +3783,10 @@ public final class TradingRpc {
           return false;
         }
         if (!hasQuantity()) {
+          
+          return false;
+        }
+        if (!hasOrderId()) {
           
           return false;
         }
@@ -4320,20 +4439,12 @@ public final class TradingRpc {
           org.marketcetera.util.rpc.BaseRpc.Qty, org.marketcetera.util.rpc.BaseRpc.Qty.Builder, org.marketcetera.util.rpc.BaseRpc.QtyOrBuilder> displayQtyBuilder_;
       /**
        * <code>optional .Qty displayQty = 9;</code>
-       *
-       * <pre>
-       * algo?
-       * </pre>
        */
       public boolean hasDisplayQty() {
         return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
        * <code>optional .Qty displayQty = 9;</code>
-       *
-       * <pre>
-       * algo?
-       * </pre>
        */
       public org.marketcetera.util.rpc.BaseRpc.Qty getDisplayQty() {
         if (displayQtyBuilder_ == null) {
@@ -4344,10 +4455,6 @@ public final class TradingRpc {
       }
       /**
        * <code>optional .Qty displayQty = 9;</code>
-       *
-       * <pre>
-       * algo?
-       * </pre>
        */
       public Builder setDisplayQty(org.marketcetera.util.rpc.BaseRpc.Qty value) {
         if (displayQtyBuilder_ == null) {
@@ -4364,10 +4471,6 @@ public final class TradingRpc {
       }
       /**
        * <code>optional .Qty displayQty = 9;</code>
-       *
-       * <pre>
-       * algo?
-       * </pre>
        */
       public Builder setDisplayQty(
           org.marketcetera.util.rpc.BaseRpc.Qty.Builder builderForValue) {
@@ -4382,10 +4485,6 @@ public final class TradingRpc {
       }
       /**
        * <code>optional .Qty displayQty = 9;</code>
-       *
-       * <pre>
-       * algo?
-       * </pre>
        */
       public Builder mergeDisplayQty(org.marketcetera.util.rpc.BaseRpc.Qty value) {
         if (displayQtyBuilder_ == null) {
@@ -4405,10 +4504,6 @@ public final class TradingRpc {
       }
       /**
        * <code>optional .Qty displayQty = 9;</code>
-       *
-       * <pre>
-       * algo?
-       * </pre>
        */
       public Builder clearDisplayQty() {
         if (displayQtyBuilder_ == null) {
@@ -4422,10 +4517,6 @@ public final class TradingRpc {
       }
       /**
        * <code>optional .Qty displayQty = 9;</code>
-       *
-       * <pre>
-       * algo?
-       * </pre>
        */
       public org.marketcetera.util.rpc.BaseRpc.Qty.Builder getDisplayQtyBuilder() {
         bitField0_ |= 0x00000100;
@@ -4434,10 +4525,6 @@ public final class TradingRpc {
       }
       /**
        * <code>optional .Qty displayQty = 9;</code>
-       *
-       * <pre>
-       * algo?
-       * </pre>
        */
       public org.marketcetera.util.rpc.BaseRpc.QtyOrBuilder getDisplayQtyOrBuilder() {
         if (displayQtyBuilder_ != null) {
@@ -4448,10 +4535,6 @@ public final class TradingRpc {
       }
       /**
        * <code>optional .Qty displayQty = 9;</code>
-       *
-       * <pre>
-       * algo?
-       * </pre>
        */
       private com.google.protobuf.SingleFieldBuilder<
           org.marketcetera.util.rpc.BaseRpc.Qty, org.marketcetera.util.rpc.BaseRpc.Qty.Builder, org.marketcetera.util.rpc.BaseRpc.QtyOrBuilder> 
@@ -4465,6 +4548,136 @@ public final class TradingRpc {
           displayQty_ = null;
         }
         return displayQtyBuilder_;
+      }
+
+      private java.lang.Object orderId_ = "";
+      /**
+       * <code>required string orderId = 10;</code>
+       *
+       * <pre>
+       * algo?
+       * TIF?
+       * security type?
+       * order capacity?
+       * position effect?
+       * text?
+       * </pre>
+       */
+      public boolean hasOrderId() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      /**
+       * <code>required string orderId = 10;</code>
+       *
+       * <pre>
+       * algo?
+       * TIF?
+       * security type?
+       * order capacity?
+       * position effect?
+       * text?
+       * </pre>
+       */
+      public java.lang.String getOrderId() {
+        java.lang.Object ref = orderId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            orderId_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string orderId = 10;</code>
+       *
+       * <pre>
+       * algo?
+       * TIF?
+       * security type?
+       * order capacity?
+       * position effect?
+       * text?
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getOrderIdBytes() {
+        java.lang.Object ref = orderId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          orderId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string orderId = 10;</code>
+       *
+       * <pre>
+       * algo?
+       * TIF?
+       * security type?
+       * order capacity?
+       * position effect?
+       * text?
+       * </pre>
+       */
+      public Builder setOrderId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000200;
+        orderId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string orderId = 10;</code>
+       *
+       * <pre>
+       * algo?
+       * TIF?
+       * security type?
+       * order capacity?
+       * position effect?
+       * text?
+       * </pre>
+       */
+      public Builder clearOrderId() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        orderId_ = getDefaultInstance().getOrderId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string orderId = 10;</code>
+       *
+       * <pre>
+       * algo?
+       * TIF?
+       * security type?
+       * order capacity?
+       * position effect?
+       * text?
+       * </pre>
+       */
+      public Builder setOrderIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000200;
+        orderId_ = value;
+        onChanged();
+        return this;
       }
 
       // @@protoc_insertion_point(builder_scope:OrderSingle)
@@ -7477,45 +7690,46 @@ public final class TradingRpc {
       "eRequest\"n\n\022OpenOrdersResponse\022\027\n\006status" +
       "\030\001 \002(\0132\007.Status\022#\n\014pageResponse\030\002 \001(\0132\r." +
       "PageResponse\022\032\n\006orders\030\003 \003(\0132\n.OpenOrder" +
-      "\"\013\n\tOpenOrder\"\325\001\n\013OrderSingle\022\020\n\010brokerI" +
+      "\"\013\n\tOpenOrder\"\346\001\n\013OrderSingle\022\020\n\010brokerI" +
       "d\030\001 \001(\t\022\016\n\006symbol\030\002 \002(\t\022\027\n\004side\030\003 \002(\0162\t." +
       "SideType\022\026\n\010quantity\030\004 \002(\0132\004.Qty\022\023\n\005pric" +
       "e\030\005 \001(\0132\004.Qty\022\017\n\007account\030\006 \001(\t\022\035\n\torderT",
       "ype\030\007 \001(\0162\n.OrderType\022\024\n\014customFields\030\010 " +
-      "\001(\t\022\030\n\ndisplayQty\030\t \001(\0132\004.Qty\"B\n\020SendOrd" +
-      "erRequest\022\021\n\tsessionId\030\001 \002(\t\022\033\n\005order\030\002 " +
-      "\003(\0132\014.OrderSingle\"Y\n\021SendOrderResponse\022\027" +
-      "\n\006status\030\001 \002(\0132\007.Status\022+\n\rorderResponse" +
-      "\030\002 \003(\0132\024.OrderSingleResponse\"?\n\023OrderSin" +
-      "gleResponse\022\027\n\006status\030\001 \002(\0132\007.Status\022\017\n\007" +
-      "orderid\030\002 \001(\t*\340\002\n\tOrderType\022\n\n\006Market\020\001\022" +
-      "\t\n\005Limit\020\002\022\010\n\004Stop\020\003\022\r\n\tStopLimit\020\004\022\021\n\rM" +
-      "arketOnClose\020\005\022\021\n\rWithOrWithout\020\006\022\021\n\rLim",
-      "itOrBetter\020\007\022\026\n\022LimitWithOrWithout\020\010\022\013\n\007" +
-      "OnBasis\020\t\022\013\n\007OnClose\020\n\022\020\n\014LimitOnClose\020\013" +
-      "\022\017\n\013ForexMarket\020\014\022\024\n\020PreviouslyQuoted\020\r\022" +
-      "\027\n\023PreviouslyIndicated\020\016\022\016\n\nForexLimit\020\017" +
-      "\022\r\n\tForexSwap\020\020\022\031\n\025ForexPreviouslyQuoted" +
-      "\020\021\022\n\n\006Funari\020\022\022\n\n\006Pegged\020\023\022\024\n\020UnknownOrd" +
-      "erType\020c*\225\002\n\017OrderStatusType\022\007\n\003New\020\000\022\023\n" +
-      "\017PartiallyFilled\020\001\022\n\n\006Filled\020\002\022\016\n\nDoneFo" +
-      "rDay\020\003\022\014\n\010Canceled\020\004\022\014\n\010Replaced\020\005\022\021\n\rPe" +
-      "ndingCancel\020\006\022\013\n\007Stopped\020\007\022\014\n\010Rejected\020\010",
-      "\022\r\n\tSuspended\020\t\022\016\n\nPendingNew\020\n\022\016\n\nCalcu" +
-      "lated\020\013\022\013\n\007Expired\020\014\022\026\n\022AcceptedForBiddi" +
-      "ng\020\r\022\022\n\016PendingReplace\020\016\022\026\n\022UnknownOrder" +
-      "Status\020c*\232\001\n\010SideType\022\017\n\013UnknownSide\020\000\022\007" +
-      "\n\003Buy\020\001\022\010\n\004Sell\020\002\022\014\n\010BuyMinus\020\003\022\014\n\010SellP" +
-      "lus\020\004\022\r\n\tSellShort\020\005\022\023\n\017SellShortExempt\020" +
-      "\006\022\017\n\013Undisclosed\020\007\022\t\n\005Cross\020\010\022\016\n\nCrossSh" +
-      "ort\020\t2\211\002\n\021TradingRpcService\022&\n\005login\022\r.L" +
-      "oginRequest\032\016.LoginResponse\022)\n\006logout\022\016." +
-      "LogoutRequest\032\017.LogoutResponse\0222\n\theartb",
-      "eat\022\021.HeartbeatRequest\032\022.HeartbeatRespon" +
-      "se\0228\n\rgetOpenOrders\022\022.OpenOrdersRequest\032" +
-      "\023.OpenOrdersResponse\0223\n\nsendOrders\022\021.Sen" +
-      "dOrderRequest\032\022.SendOrderResponseB-\n\034org" +
-      ".marketcetera.trading.rpcB\nTradingRpc\210\001\001"
+      "\001(\t\022\030\n\ndisplayQty\030\t \001(\0132\004.Qty\022\017\n\007orderId" +
+      "\030\n \002(\t\"B\n\020SendOrderRequest\022\021\n\tsessionId\030" +
+      "\001 \002(\t\022\033\n\005order\030\002 \003(\0132\014.OrderSingle\"Y\n\021Se" +
+      "ndOrderResponse\022\027\n\006status\030\001 \002(\0132\007.Status" +
+      "\022+\n\rorderResponse\030\002 \003(\0132\024.OrderSingleRes" +
+      "ponse\"?\n\023OrderSingleResponse\022\027\n\006status\030\001" +
+      " \002(\0132\007.Status\022\017\n\007orderid\030\002 \001(\t*\340\002\n\tOrder" +
+      "Type\022\n\n\006Market\020\001\022\t\n\005Limit\020\002\022\010\n\004Stop\020\003\022\r\n" +
+      "\tStopLimit\020\004\022\021\n\rMarketOnClose\020\005\022\021\n\rWithO",
+      "rWithout\020\006\022\021\n\rLimitOrBetter\020\007\022\026\n\022LimitWi" +
+      "thOrWithout\020\010\022\013\n\007OnBasis\020\t\022\013\n\007OnClose\020\n\022" +
+      "\020\n\014LimitOnClose\020\013\022\017\n\013ForexMarket\020\014\022\024\n\020Pr" +
+      "eviouslyQuoted\020\r\022\027\n\023PreviouslyIndicated\020" +
+      "\016\022\016\n\nForexLimit\020\017\022\r\n\tForexSwap\020\020\022\031\n\025Fore" +
+      "xPreviouslyQuoted\020\021\022\n\n\006Funari\020\022\022\n\n\006Pegge" +
+      "d\020\023\022\024\n\020UnknownOrderType\020c*\225\002\n\017OrderStatu" +
+      "sType\022\007\n\003New\020\000\022\023\n\017PartiallyFilled\020\001\022\n\n\006F" +
+      "illed\020\002\022\016\n\nDoneForDay\020\003\022\014\n\010Canceled\020\004\022\014\n" +
+      "\010Replaced\020\005\022\021\n\rPendingCancel\020\006\022\013\n\007Stoppe",
+      "d\020\007\022\014\n\010Rejected\020\010\022\r\n\tSuspended\020\t\022\016\n\nPend" +
+      "ingNew\020\n\022\016\n\nCalculated\020\013\022\013\n\007Expired\020\014\022\026\n" +
+      "\022AcceptedForBidding\020\r\022\022\n\016PendingReplace\020" +
+      "\016\022\026\n\022UnknownOrderStatus\020c*\232\001\n\010SideType\022\017" +
+      "\n\013UnknownSide\020\000\022\007\n\003Buy\020\001\022\010\n\004Sell\020\002\022\014\n\010Bu" +
+      "yMinus\020\003\022\014\n\010SellPlus\020\004\022\r\n\tSellShort\020\005\022\023\n" +
+      "\017SellShortExempt\020\006\022\017\n\013Undisclosed\020\007\022\t\n\005C" +
+      "ross\020\010\022\016\n\nCrossShort\020\t2\211\002\n\021TradingRpcSer" +
+      "vice\022&\n\005login\022\r.LoginRequest\032\016.LoginResp" +
+      "onse\022)\n\006logout\022\016.LogoutRequest\032\017.LogoutR",
+      "esponse\0222\n\theartbeat\022\021.HeartbeatRequest\032" +
+      "\022.HeartbeatResponse\0228\n\rgetOpenOrders\022\022.O" +
+      "penOrdersRequest\032\023.OpenOrdersResponse\0223\n" +
+      "\nsendOrders\022\021.SendOrderRequest\032\022.SendOrd" +
+      "erResponseB-\n\034org.marketcetera.trading.r" +
+      "pcB\nTradingRpc\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -7554,7 +7768,7 @@ public final class TradingRpc {
     internal_static_OrderSingle_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_OrderSingle_descriptor,
-        new java.lang.String[] { "BrokerId", "Symbol", "Side", "Quantity", "Price", "Account", "OrderType", "CustomFields", "DisplayQty", });
+        new java.lang.String[] { "BrokerId", "Symbol", "Side", "Quantity", "Price", "Account", "OrderType", "CustomFields", "DisplayQty", "OrderId", });
     internal_static_SendOrderRequest_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_SendOrderRequest_fieldAccessorTable = new

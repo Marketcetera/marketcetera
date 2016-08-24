@@ -29,6 +29,7 @@ import org.marketcetera.util.rpc.BaseUtil;
 import org.marketcetera.util.rpc.PagingUtil;
 import org.marketcetera.util.ws.tags.AppId;
 
+import com.google.common.collect.Lists;
 import com.google.protobuf.RpcController;
 import com.google.protobuf.ServiceException;
 import com.googlecode.protobuf.pro.duplex.RpcClientChannel;
@@ -82,6 +83,14 @@ public class TradingRpcClient
         });
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.tradingclient.TradingClient#sendOrder(org.marketcetera.trade.OrderSingle)
+     */
+    @Override
+    public SendOrderResponse sendOrder(OrderSingle inOrderSingle)
+    {
+        return sendOrders(Lists.newArrayList(inOrderSingle)).get(0);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.tradingclient.TradingClient#sendOrders(java.util.List)
      */
     @Override
@@ -93,9 +102,9 @@ public class TradingRpcClient
                     throws Exception
             {
                 SLF4JLoggerProxy.trace(this,
-                                       "{} sending",
+                                       "{} sending {} order(s)",
                                        getSessionId(),
-                                       inOrders);
+                                       inOrders.size());
                 TradingRpc.SendOrderRequest.Builder requestBuilder = TradingRpc.SendOrderRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
                 TradingRpc.OrderSingle.Builder orderBuilder = TradingRpc.OrderSingle.newBuilder();
@@ -121,6 +130,9 @@ public class TradingRpcClient
                     }
                     if(order.getOrderCapacity() != null) {
                         // TODO
+                    }
+                    if(order.getOrderID() != null) {
+                        orderBuilder.setOrderId(order.getOrderID().getValue());
                     }
                     if(order.getOrderType() != null) {
                         orderBuilder.setOrderType(TradingUtil.getOrderTypeFromOrderType(order.getOrderType()));
