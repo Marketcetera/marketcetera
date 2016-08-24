@@ -1,0 +1,58 @@
+syntax = "proto3";
+option java_generic_services = true;
+
+option java_package = "org.marketcetera.rpc.base";
+option java_outer_classname = "BaseRpc";
+
+message Qty {
+    int64 qty = 1;
+    int32 scale = 2;
+}
+
+message LoginRequest {
+    string appId = 1;
+    string clientId = 2;
+    Locale locale = 3;
+    string versionId = 4;
+    string username = 5;
+    string password = 6;
+}
+
+message LoginResponse {
+    Status status = 1;
+    string sessionId = 2;
+}
+
+message LogoutRequest {
+    string sessionId = 1;
+}
+
+message LogoutResponse {
+    Status status = 1;
+}
+
+message Locale {
+    string country = 1;
+    string language = 2;
+    string variant = 3;
+}
+
+message HeartbeatRequest {
+    string sessionId = 1;
+}
+
+message HeartbeatResponse {
+    string sessionId = 1;
+}
+
+message Status {
+    bool failed = 1;
+    string message = 2;
+    string sessionId = 3;
+}
+
+service BaseRpcService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+}
