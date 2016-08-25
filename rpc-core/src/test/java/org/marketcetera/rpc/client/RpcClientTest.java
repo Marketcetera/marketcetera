@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.junit.After;
 import org.junit.Before;
@@ -12,10 +14,12 @@ import org.junit.Test;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.rpc.MockAuthenticator;
+import org.marketcetera.rpc.sample.SampleRpcService;
 import org.marketcetera.rpc.sample.client.SampleRpcClient;
-import org.marketcetera.rpc.sample.client.SampleRpcService;
 import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.ws.stateful.SessionManager;
+import org.marketcetera.util.ws.tags.SessionId;
 import org.springframework.util.SocketUtils;
 
 import io.grpc.BindableService;
@@ -42,6 +46,7 @@ public class RpcClientTest
             throws Exception
     {
         clients.clear();
+        sessionManager = new SessionManager<>();
         authenticator = new MockAuthenticator();
         authenticator.getUserstore().put("test",
                                          "password");
@@ -222,10 +227,66 @@ public class RpcClientTest
         });
     }
     /**
-     * 
+     * Test that multiple clients are supported with the same credentials.
      *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testMultipleClients()
+            throws Exception
+    {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        final List<Exception> exceptions = new ArrayList<>();
+        final List<SampleRpcClient> multipleClients = new ArrayList<>();
+        for(int i=0;i<10;i++) {
+            executorService.submit(new Runnable() {
+                @Override
+                public void run()
+                {
+                    try {
+                        final SampleRpcClient client = createClient();
+                        multipleClients.add(client);
+                        assertTrue(client.isRunning());
+                        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+                            @Override
+                            public Boolean call()
+                                    throws Exception
+                            {
+                                return client.getHeartbeatCount() >= 5;
+                            }
+                        });
+                        client.stop();
+                        multipleClients.remove(client);
+                    } catch (Exception e) {
+                        SLF4JLoggerProxy.warn(RpcClientTest.this,
+                                              e);
+                        exceptions.add(e);
+                    }
+                }
+            });
+        }
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return !multipleClients.isEmpty();
+            }
+        });
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return multipleClients.isEmpty();
+            }
+        });
+        assertTrue(exceptions.isEmpty());
+    }
+    /**
+     * Create and start a client with default attributes.
      *
-     * @return
+     * @return a <code>SampleRpcClient</code> value
      */
     private SampleRpcClient createClient()
     {
@@ -235,14 +296,13 @@ public class RpcClientTest
                             "password");
     }
     /**
-     * 
+     * Create and start a client with the given attributes.
      *
-     *
-     * @param inHostname
-     * @param inPort
-     * @param inUsername
-     * @param inPassword
-     * @return
+     * @param inHostname a <code>String</code> value
+     * @param inPort an <code>int</code> value
+     * @param inUsername a <code>String</code> value
+     * @param inPassword a <code>String<code> value
+     * @return a <code>SampleRpcClient</code> value
      */
     private SampleRpcClient createClient(String inHostname,
                                          int inPort,
@@ -258,19 +318,23 @@ public class RpcClientTest
         clients.add(client);
         return client;
     }
+    /**
+     * Create a test service.
+     */
     private void createService()
     {
-        rpcService = new SampleRpcService();
+        rpcService = new SampleRpcService<>();
         rpcService.setAuthenticator(authenticator);
+        rpcService.setSessionManager(sessionManager);
+        rpcService.start();
     }
     /**
-     * 
+     * Create and start a test server with the given attributes.
      *
-     *
-     * @param inHostname
-     * @param inPort
-     * @param inServices
-     * @throws Exception
+     * @param inHostname a <code>String</code> value
+     * @param inPort an <code>int</code> value
+     * @param inServices a <code>BindableService[]</code> value
+     * @throws Exception if an unexpected error occurs
      */
     private void startServer(String inHostname,
                              int inPort,
@@ -288,10 +352,9 @@ public class RpcClientTest
         rpcServer.start();
     }
     /**
-     * 
+     * Stop the test server.
      *
-     *
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     private void stopServer()
             throws Exception
@@ -303,8 +366,24 @@ public class RpcClientTest
             rpcServer = null;
         }
     }
+    /**
+     * tracks the clients successfully started during the test session
+     */
     private final List<SampleRpcClient> clients = new ArrayList<>();
-    private SampleRpcService rpcService;
+    /**
+     * test RPC service
+     */
+    private SampleRpcService<SessionId> rpcService;
+    /**
+     * test RPC server
+     */
     private RpcServer rpcServer;
+    /**
+     * test authenticator
+     */
     private MockAuthenticator authenticator;
+    /**
+     * 
+     */
+    private SessionManager<SessionId> sessionManager;
 }

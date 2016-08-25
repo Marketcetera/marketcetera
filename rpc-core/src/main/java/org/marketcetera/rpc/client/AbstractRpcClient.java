@@ -388,8 +388,16 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
             }
         }
     }
+    /**
+     * 
+     *
+     *
+     */
     private void reconnect()
     {
+        if(stopped.get()) {
+            return;
+        }
         stopService();
         while(!alive.get()) {
             try {
@@ -463,12 +471,15 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
         @Override
         public void onError(Throwable inT)
         {
+            alive.set(false);
+            notifyStatusChange(false);
+            if(stopped.get()) {
+                return;
+            }
             SLF4JLoggerProxy.warn(AbstractRpcClient.this,
                                   inT,
                                   "{} received a heartbeat error",
                                   getAppId());
-            alive.set(false);
-            notifyStatusChange(false);
             reconnect();
         }
         /* (non-Javadoc)
