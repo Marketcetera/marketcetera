@@ -19,8 +19,7 @@ message LoginRequest {
 }
 
 message LoginResponse {
-    Status status = 1;
-    string sessionId = 2;
+    string sessionId = 1;
 }
 
 message LogoutRequest {
@@ -28,7 +27,6 @@ message LogoutRequest {
 }
 
 message LogoutResponse {
-    Status status = 1;
 }
 
 message Locale {
@@ -39,20 +37,16 @@ message Locale {
 
 message HeartbeatRequest {
     string sessionId = 1;
+    int64 interval = 2;
 }
 
 message HeartbeatResponse {
     string sessionId = 1;
-}
-
-message Status {
-    bool failed = 1;
-    string message = 2;
-    string sessionId = 3;
+    int64 timestamp = 2;
 }
 
 service BaseRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
-    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}
 }

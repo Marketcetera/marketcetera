@@ -10,13 +10,12 @@
   <groupId>org.marketcetera</groupId>
   <artifactId>rpc-core</artifactId>
   <version>3.0.11</version>
-  <name>rpc-core</name>
+  <name>RPC Core Library</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
-  <!-- TODO move to parent pom -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
@@ -39,10 +38,21 @@
       <artifactId>grpc-stub</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
+  <!-- TODO move to parent pom -->
   <build>
     <plugins>
       <plugin>

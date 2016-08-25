@@ -58,6 +58,11 @@
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-jta_1.1_spec</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <!-- Ensures that older versions are not used by other dependencies. -->
     <dependency>
       <groupId>commons-collections</groupId>

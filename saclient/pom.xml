@@ -36,6 +36,11 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>remote-emitter</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <scope>compile</scope>
+    </dependency>
 
     <!-- Runtime. -->
     <dependency>

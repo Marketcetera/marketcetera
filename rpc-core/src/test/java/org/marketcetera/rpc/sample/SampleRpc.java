@@ -39,7 +39,7 @@ public final class SampleRpc {
           com.google.protobuf.RpcCallback<org.marketcetera.rpc.base.BaseRpc.LogoutResponse> done);
 
       /**
-       * <code>rpc heartbeat(.HeartbeatRequest) returns (.HeartbeatResponse);</code>
+       * <code>rpc heartbeat(.HeartbeatRequest) returns (stream .HeartbeatResponse);</code>
        */
       public abstract void heartbeat(
           com.google.protobuf.RpcController controller,
@@ -168,7 +168,7 @@ public final class SampleRpc {
         com.google.protobuf.RpcCallback<org.marketcetera.rpc.base.BaseRpc.LogoutResponse> done);
 
     /**
-     * <code>rpc heartbeat(.HeartbeatRequest) returns (.HeartbeatResponse);</code>
+     * <code>rpc heartbeat(.HeartbeatRequest) returns (stream .HeartbeatResponse);</code>
      */
     public abstract void heartbeat(
         com.google.protobuf.RpcController controller,
@@ -397,13 +397,13 @@ public final class SampleRpc {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\020rpc_sample.proto\032\016rpc_base.proto2\231\001\n\020S" +
+      "\n\020rpc_sample.proto\032\016rpc_base.proto2\235\001\n\020S" +
       "ampleRpcService\022&\n\005login\022\r.LoginRequest\032" +
       "\016.LoginResponse\022)\n\006logout\022\016.LogoutReques" +
-      "t\032\017.LogoutResponse\0222\n\theartbeat\022\021.Heartb" +
-      "eatRequest\032\022.HeartbeatResponseB+\n\033org.ma" +
-      "rketcetera.rpc.sampleB\tSampleRpc\210\001\001b\006pro" +
-      "to3"
+      "t\032\017.LogoutResponse\0226\n\theartbeat\022\021.Heartb" +
+      "eatRequest\032\022.HeartbeatResponse\"\0000\001B+\n\033or" +
+      "g.marketcetera.rpc.sampleB\tSampleRpc\210\001\001b" +
+      "\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

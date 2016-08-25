@@ -1,4 +1,3 @@
-// protoc -I=src/test/proto --proto_path=src/main/proto/ --java_out=src/test/java src/test/proto/rpc_sample.proto
 syntax = "proto3";
 option java_generic_services = true;
 import "rpc_base.proto";
@@ -9,5 +8,5 @@ option java_outer_classname = "SampleRpc";
 service SampleRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
-    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}
 }

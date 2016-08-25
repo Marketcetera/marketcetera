@@ -28,6 +28,11 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>misc</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <!-- runtime -->
     <dependency>
       <groupId>org.apache.cxf</groupId>

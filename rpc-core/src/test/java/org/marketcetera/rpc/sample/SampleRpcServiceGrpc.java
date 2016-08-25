@@ -49,7 +49,7 @@ public class SampleRpcServiceGrpc {
   public static final io.grpc.MethodDescriptor<org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest,
       org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse> METHOD_HEARTBEAT =
       io.grpc.MethodDescriptor.create(
-          io.grpc.MethodDescriptor.MethodType.UNARY,
+          io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING,
           generateFullMethodName(
               "SampleRpcService", "heartbeat"),
           io.grpc.protobuf.ProtoUtils.marshaller(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest.getDefaultInstance()),
@@ -121,7 +121,7 @@ public class SampleRpcServiceGrpc {
                   this, METHODID_LOGOUT)))
           .addMethod(
             METHOD_HEARTBEAT,
-            asyncUnaryCall(
+            asyncServerStreamingCall(
               new MethodHandlers<
                 org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest,
                 org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse>(
@@ -168,7 +168,7 @@ public class SampleRpcServiceGrpc {
      */
     public void heartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest request,
         io.grpc.stub.StreamObserver<org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse> responseObserver) {
-      asyncUnaryCall(
+      asyncServerStreamingCall(
           getChannel().newCall(METHOD_HEARTBEAT, getCallOptions()), request, responseObserver);
     }
   }
@@ -207,8 +207,9 @@ public class SampleRpcServiceGrpc {
 
     /**
      */
-    public org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse heartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest request) {
-      return blockingUnaryCall(
+    public java.util.Iterator<org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse> heartbeat(
+        org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest request) {
+      return blockingServerStreamingCall(
           getChannel(), METHOD_HEARTBEAT, getCallOptions(), request);
     }
   }
@@ -245,14 +246,6 @@ public class SampleRpcServiceGrpc {
         org.marketcetera.rpc.base.BaseRpc.LogoutRequest request) {
       return futureUnaryCall(
           getChannel().newCall(METHOD_LOGOUT, getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse> heartbeat(
-        org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest request) {
-      return futureUnaryCall(
-          getChannel().newCall(METHOD_HEARTBEAT, getCallOptions()), request);
     }
   }
 

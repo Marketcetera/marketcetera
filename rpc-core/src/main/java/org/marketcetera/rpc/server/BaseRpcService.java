@@ -9,7 +9,7 @@ package org.marketcetera.rpc.server;
  * @version $Id$
  * @since $Release$
  */
-public abstract class AbstractRpcService
+public class BaseRpcService
 {
 
 }

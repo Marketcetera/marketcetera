@@ -21,7 +21,7 @@ import io.grpc.stub.StreamObserver;
 /* $License$ */
 
 /**
- *
+ * Provides a sample {@link AbstractRpcClient} implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -30,6 +30,24 @@ import io.grpc.stub.StreamObserver;
 public class SampleRpcClient
         extends AbstractRpcClient<SampleRpcServiceBlockingStub,SampleRpcServiceStub>
 {
+    /**
+     * Get the heartbeatCount value.
+     *
+     * @return an <code>int</code> value
+     */
+    public int getHeartbeatCount()
+    {
+        return heartbeatCount;
+    }
+    /**
+     * Sets the heartbeatCount value.
+     *
+     * @param inHeartbeatCount an <code>int</code> value
+     */
+    public void setHeartbeatCount(int inHeartbeatCount)
+    {
+        heartbeatCount = inHeartbeatCount;
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getBlockingStub(io.grpc.Channel)
      */
@@ -88,6 +106,28 @@ public class SampleRpcClient
     {
         return APP_ID_VERSION;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#onHeartbeat()
+     */
+    @Override
+    protected void onHeartbeat()
+    {
+        heartbeatCount += 1;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#onStatusChange(boolean)
+     */
+    @Override
+    protected void onStatusChange(boolean inIsConnected)
+    {
+        if(!inIsConnected) {
+            heartbeatCount = 0;
+        }
+    }
+    /**
+     * counts the number of heartbeats received
+     */
+    private volatile int heartbeatCount;
     /**
      * The client's application ID: the application name.
      */
