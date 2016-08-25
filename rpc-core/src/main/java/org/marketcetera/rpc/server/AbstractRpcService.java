@@ -35,7 +35,7 @@ import io.grpc.stub.StreamObserver;
 /* $License$ */
 
 /**
- *
+ * Provides common behavior for RPC service implementations.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -45,9 +45,7 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
         implements BindableService
 {
     /**
-     * 
-     *
-     *
+     * Validate and start the object.
      */
     @PostConstruct
     public void start()

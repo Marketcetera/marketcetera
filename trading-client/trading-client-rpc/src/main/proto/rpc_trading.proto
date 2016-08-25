@@ -1,5 +1,6 @@
-// protoc -I=src/main/resources --proto_path=../../util/src/main/resources/ --java_out=src/main/java src/main/resources/rpc_trading.proto
+syntax = "proto3";
 option java_generic_services = true;
+import "rpc_base.proto";
 
 option java_package = "org.marketcetera.trading.rpc";
 option java_outer_classname = "TradingRpc";
@@ -64,12 +65,12 @@ enum SideType {
 
 message OpenOrdersRequest {
     required string sessionId = 1;
-    optional PageRequest pageRequest = 2;
+    PageRequest pageRequest = 2;
 }
 
 message OpenOrdersResponse {
     required Status status = 1;
-    optional PageResponse pageResponse = 2;
+    PageResponse pageResponse = 2;
     repeated OpenOrder orders = 3;
 }
 
@@ -77,15 +78,15 @@ message OpenOrder {
 }
 
 message OrderSingle {
-    optional string brokerId = 1;
+    string brokerId = 1;
     required string symbol = 2;
     required SideType side = 3;
     required Qty quantity = 4;
-    optional Qty price = 5;
-    optional string account = 6;
-    optional OrderType orderType = 7;
-    optional string customFields = 8;
-    optional Qty displayQty = 9;
+    Qty price = 5;
+    string account = 6;
+    OrderType orderType = 7;
+    string customFields = 8;
+    Qty displayQty = 9;
     required string orderId = 10;
     // algo?
     // TIF?
@@ -107,13 +108,13 @@ message SendOrderResponse {
 
 message OrderSingleResponse {
     required Status status = 1;
-    optional string orderid = 2;
+    string orderid = 2;
 }
 
 service TradingRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
-    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}
     rpc getOpenOrders(OpenOrdersRequest) returns (OpenOrdersResponse);
     rpc sendOrders(SendOrderRequest) returns (SendOrderResponse);
 }
