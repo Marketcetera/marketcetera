@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
 import java.util.Deque;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -16,7 +13,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,16 +26,17 @@ import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.core.webservice.PageRequest;
 import org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider;
 import org.marketcetera.options.OptionUtils;
+import org.marketcetera.rpc.RpcTestBase;
+import org.marketcetera.rpc.client.AbstractRpcClient;
+import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
-import org.marketcetera.trade.TradeContextClassProvider;
 import org.marketcetera.trade.utils.OrderHistoryManagerTest;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.rpc.RpcServer;
-import org.marketcetera.util.ws.stateful.SessionManager;
+import org.marketcetera.util.ws.tags.SessionId;
 
 import com.google.common.collect.Lists;
 
@@ -53,6 +50,7 @@ import com.google.common.collect.Lists;
  * @since 2.4.0
  */
 public class MarketDataRpcClientServerTest
+        extends RpcTestBase
 {
     /**
      * Runs once before all tests.
@@ -66,34 +64,17 @@ public class MarketDataRpcClientServerTest
         OrderHistoryManagerTest.once();
     }
     /**
-     * Runs before each test.
-     *
+     * Run before each test.
+     *  
      * @throws Exception if an unexpected error occurs
      */
     @Before
     public void setup()
             throws Exception
     {
-        stopClientServer();
-        hostname = "127.0.0.1";
-        port = -1;
-        sessionManager = new SessionManager<MockSession>();
-        authenticator = new MockAuthenticator();
         serviceAdapter = new MockMarketDataServiceAdapter();
-        startClientServer();
-        assertTrue(server.isRunning());
-        assertTrue(client.isRunning());
-    }
-    /**
-     * Runs after each test.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @After
-    public void after()
-            throws Exception
-    {
-        stopClientServer();
+        super.setup();
+        client = setupClient(createClient());
     }
     /**
      * Tests disconnection and reconnection.
@@ -115,8 +96,8 @@ public class MarketDataRpcClientServerTest
         client.addServerStatusListener(statusListener);
         assertTrue(status.get());
         // kill the server
-        server.stop();
-        assertFalse(server.isRunning());
+        rpcServer.stop();
+        assertFalse(rpcServer.isRunning());
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -126,8 +107,8 @@ public class MarketDataRpcClientServerTest
             }
         });
         assertFalse(status.get());
-        server.start();
-        assertTrue(server.isRunning());
+        rpcServer.start();
+        assertTrue(rpcServer.isRunning());
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -407,115 +388,34 @@ public class MarketDataRpcClientServerTest
         assertEquals(2,
                      serviceAdapter.getCapabilityRequests().get());
     }
-    /**
-     * Stops the test client and server.
-     *
-     * @throws Exception if an unexpected error occurs
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.RpcTestBase#createClient()
      */
-    private void stopClientServer()
-            throws Exception
+    @Override
+    @SuppressWarnings("unchecked")
+    protected MarketDataRpcClient createClient()
     {
-        if(client != null && client.isRunning()) {
-            try {
-                client.stop();
-            } catch (Exception e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e);
-            }
-        }
-        client = null;
-        if(server != null && server.isRunning()) {
-            try {
-                server.stop();
-            } catch (Exception e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e);
-            }
-        }
-        server = null;
-    }
-    /**
-     * Starts the test client server and client.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    private void startClientServer()
-            throws Exception
-    {
-        server = new RpcServer<MockSession>();
-        server.setHostname(hostname);
-        if(port == -1) {
-            port = assignPort();
-        }
-        server.setPort(port);
-        server.setSessionManager(sessionManager);
-        server.setAuthenticator(authenticator);
-        server.setContextClassProvider(TradeContextClassProvider.INSTANCE);
-        MarketDataRpcService<MockSession> service = new MarketDataRpcService<>();
-        server.getServiceSpecs().add(service);
-        service.setServiceAdapter(serviceAdapter);
-        server.setContextClassProvider(MarketDataContextClassProvider.INSTANCE);
-        server.start();
-        client = new MarketDataRpcClient("username",
-                                         "password",
-                                         hostname,
-                                         port,
-                                         null);
+        MarketDataRpcClient client = new MarketDataRpcClient();
         client.setContextClassProvider(MarketDataContextClassProvider.INSTANCE);
-        client.start();
+        return client;
     }
-    /**
-     * Assigns a port value that is not in use.
-     * 
-     * @return an <code>int</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.RpcTestBase#createTestService()
      */
-    private int assignPort()
+    @Override
+    protected AbstractRpcService<SessionId,?> createTestService()
     {
-        for(int i=MIN_PORT_NUMBER;i<=MAX_PORT_NUMBER;i++) {
-            try(ServerSocket ss = new ServerSocket(i)) {
-                ss.setReuseAddress(true);
-                try(DatagramSocket ds = new DatagramSocket(i)) {
-                    ds.setReuseAddress(true);
-                    return i;
-                }
-            } catch (IOException e) {}
-        }
-        throw new IllegalArgumentException("No available ports");
+        MarketDataRpcService<SessionId> service = new MarketDataRpcService<SessionId>();
+        service.setServiceAdapter(serviceAdapter);
+        service.setContextClassProvider(MarketDataContextClassProvider.INSTANCE);
+        return service;
     }
     /**
      * test service adapter value
      */
     private MockMarketDataServiceAdapter serviceAdapter;
     /**
-     * test authenticator value
-     */
-    private MockAuthenticator authenticator;
-    /**
-     * test session manager value
-     */
-    private SessionManager<MockSession> sessionManager;
-    /**
-     * test hostname
-     */
-    private String hostname;
-    /**
-     * test port
-     */
-    private int port;
-    /**
-     * minimum test port value
-     */
-    private static final int MIN_PORT_NUMBER = 10000;
-    /**
-     * maximum test port value
-     */
-    private static final int MAX_PORT_NUMBER = 65535;
-    /**
-     * test client value
+     * test client
      */
     private MarketDataRpcClient client;
-    /**
-     * tests server value
-     */
-    private RpcServer<MockSession> server;
 }

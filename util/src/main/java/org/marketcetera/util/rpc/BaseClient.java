@@ -1,17 +1,37 @@
 package org.marketcetera.util.rpc;
 
-import org.springframework.context.Lifecycle;
-
 /* $License$ */
 
 /**
- *
+ * Base client implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public interface BaseClient
-        extends Lifecycle
 {
+    /**
+     * 
+     *
+     *
+     * @throws Exception
+     */
+    void start()
+            throws Exception;
+    /**
+     * 
+     *
+     *
+     * @throws Exception
+     */
+    void stop()
+            throws Exception;
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    boolean isRunning();
 }

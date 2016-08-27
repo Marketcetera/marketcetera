@@ -1,6 +1,10 @@
 package org.marketcetera.marketdata.core.webservice;
 
-import java.util.*;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.event.Event;
@@ -9,8 +13,8 @@ import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.rpc.BaseClient;
 import org.marketcetera.util.ws.stateful.ClientContext;
-import org.springframework.context.Lifecycle;
 
 /* $License$ */
 
@@ -23,7 +27,7 @@ import org.springframework.context.Lifecycle;
  */
 @ClassVersion("$Id$")
 public interface MarketDataServiceClient
-        extends Lifecycle
+        extends BaseClient
 {
     /**
      * Request market data.

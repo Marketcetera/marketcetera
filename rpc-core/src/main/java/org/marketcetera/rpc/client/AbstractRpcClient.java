@@ -1,12 +1,14 @@
 package org.marketcetera.rpc.client;
 
 import java.util.Locale;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.VersionInfo;
 import org.marketcetera.rpc.base.BaseRpc;
@@ -15,7 +17,6 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.tags.NodeId;
 import org.marketcetera.util.ws.tags.SessionId;
-import org.springframework.context.Lifecycle;
 
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
@@ -35,14 +36,13 @@ import io.grpc.stub.StreamObserver;
  */
 public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<BlockingStubClazz>,
                                         AsyncStubClazz extends AbstractStub<AsyncStubClazz>>
-        implements Lifecycle
 {
     /**
      * Validate and start the object.
      */
     @PostConstruct
-    @Override
     public void start()
+            throws Exception
     {
         stopped.set(false);
         startService();
@@ -53,38 +53,39 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
      * Validate and stop the object.
      */
     @PreDestroy
-    @Override
     public void stop()
+            throws Exception
     {
         stopped.set(true);
         doLogout();
         stopService();
     }
-    /* (non-Javadoc)
-     * @see org.springframework.context.Lifecycle#isRunning()
+    /**
+     * Indicate if the service is running.
+     *
+     * @return a <code>boolean</code> value
      */
-    @Override
     public boolean isRunning()
     {
         return alive.get() && !stopped.get();
     }
     /**
-     * Get the host value.
+     * Get the hostname value.
      *
      * @return a <code>String</code> value
      */
-    public String getHost()
+    public String getHostname()
     {
-        return host;
+        return hostname;
     }
     /**
-     * Sets the host value.
+     * Sets the hostname value.
      *
-     * @param inHost a <code>String</code> value
+     * @param inHostname a <code>String</code> value
      */
-    public void setHost(String inHost)
+    public void setHostname(String inHostname)
     {
-        host = inHost;
+        hostname = inHostname;
     }
     /**
      * Get the port value.
@@ -103,6 +104,24 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
     public void setPort(int inPort)
     {
         port = inPort;
+    }
+    /**
+     * Get the locale value.
+     *
+     * @return a <code>Locale</code> value
+     */
+    public Locale getLocale()
+    {
+        return locale;
+    }
+    /**
+     * Sets the locale value.
+     *
+     * @param a <code>Locale</code> value
+     */
+    public void setLocale(Locale inLocale)
+    {
+        locale = inLocale;
     }
     /**
      * Get the username value.
@@ -148,6 +167,42 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
     public void setShutdownWait(long inShutdownWait)
     {
         shutdownWait = inShutdownWait;
+    }
+    /**
+     * Get the session id of the current session.
+     *
+     * @return a <code>SessionId</code> value or <code>null</code>
+     */
+    protected SessionId getSessionId()
+    {
+        return sessionId;
+    }
+    /**
+     * Execute the given call with session awareness and error handling.
+     *
+     * @param inRequest a <code>Callable&lt;ResponseClazz&gt;</code> value
+     * @return a <code>ResponseClazz</code> value
+     */
+    protected <ResponseClazz> ResponseClazz executeCall(Callable<ResponseClazz> inRequest)
+    {
+        validateSession();
+        try {
+            return inRequest.call();
+        } catch (Exception e) {
+            String message = ExceptionUtils.getRootCauseMessage(e);
+            if(SLF4JLoggerProxy.isDebugEnabled(this)) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      message);
+            } else {
+                SLF4JLoggerProxy.warn(this,
+                                      message);
+            }
+            if(e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            }
+            throw new RuntimeException(e);
+        }
     }
     /**
      * Indicate that the server connection status has changed.
@@ -234,22 +289,28 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
      */
     protected abstract VersionInfo getVersionInfo();
     /**
-     * 
-     *
-     *
+     * Validate the current session.
+     */
+    private void validateSession()
+    {
+        Validate.isTrue(alive.get(),
+                        "Not connected");
+        Validate.notNull(sessionId,
+                         "Not logged in");
+    }
+    /**
+     * Start the client service.
      */
     private void startService()
     {
-        ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder.forAddress(host,
+        ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder.forAddress(hostname,
                                                                                    port).usePlaintext(true);
         channel = channelBuilder.build();
         blockingStub = getBlockingStub(channel);
         asyncStub = getAsyncStub(channel);
     }
     /**
-     * 
-     *
-     *
+     * Stop the client service.
      */
     private void stopService()
     {
@@ -324,7 +385,7 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
         SLF4JLoggerProxy.debug(this,
                                "{} initiating login to {}/{}",
                                getAppId(),
-                               host,
+                               hostname,
                                port);
         alive.set(false);
         BaseRpc.LoginRequest.Builder requestBuilder =  BaseRpc.LoginRequest.newBuilder();
@@ -389,9 +450,7 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
         }
     }
     /**
-     * 
-     *
-     *
+     * Reconnect the client service.
      */
     private void reconnect()
     {
@@ -524,7 +583,7 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
     /**
      * 
      */
-    private String host;
+    private String hostname;
     /**
      * 
      */

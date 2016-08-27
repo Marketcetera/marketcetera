@@ -1,14 +1,12 @@
 syntax = "proto3";
 option java_generic_services = true;
-import "rpc_base.proto";
-
 option java_package = "org.marketcetera.trading.rpc";
 option java_outer_classname = "TradingRpc";
-
 import "rpc_base.proto";
 import "rpc_paging.proto";
 
 enum OrderType {
+    UnknownOrderType = 0;
     Market = 1;
     Limit = 2;
     Stop = 3;
@@ -28,7 +26,6 @@ enum OrderType {
     ForexPreviouslyQuoted = 17;
     Funari = 18;
     Pegged = 19;
-    UnknownOrderType = 99;
 }
 
 enum OrderStatusType {
@@ -64,14 +61,13 @@ enum SideType {
 }
 
 message OpenOrdersRequest {
-    required string sessionId = 1;
+    string sessionId = 1;
     PageRequest pageRequest = 2;
 }
 
 message OpenOrdersResponse {
-    required Status status = 1;
-    PageResponse pageResponse = 2;
-    repeated OpenOrder orders = 3;
+    PageResponse pageResponse = 1;
+    repeated OpenOrder orders = 2;
 }
 
 message OpenOrder {
@@ -79,15 +75,15 @@ message OpenOrder {
 
 message OrderSingle {
     string brokerId = 1;
-    required string symbol = 2;
-    required SideType side = 3;
-    required Qty quantity = 4;
+    string symbol = 2;
+    SideType side = 3;
+    Qty quantity = 4;
     Qty price = 5;
     string account = 6;
     OrderType orderType = 7;
     string customFields = 8;
     Qty displayQty = 9;
-    required string orderId = 10;
+    string orderId = 10;
     // algo?
     // TIF?
     // security type?
@@ -97,18 +93,18 @@ message OrderSingle {
 }
 
 message SendOrderRequest {
-    required string sessionId = 1;
+    string sessionId = 1;
     repeated OrderSingle order = 2;
 }
 
 message SendOrderResponse {
-    required Status status = 1;
-    repeated OrderSingleResponse orderResponse = 2;
+    repeated OrderSingleResponse orderResponse = 1;
 }
 
 message OrderSingleResponse {
-    required Status status = 1;
-    string orderid = 2;
+    string orderid = 1;
+    bool failed = 2;
+    string message = 3;
 }
 
 service TradingRpcService {

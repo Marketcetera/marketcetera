@@ -27,11 +27,13 @@ public class MarketDataRpcClientFactory
                                       int inPort,
                                       ContextClassProvider inContextClassProvider)
     {
-        return new MarketDataRpcClient(inUsername,
-                                       inPassword,
-                                       inHostname,
-                                       inPort,
-                                       inContextClassProvider);
+        MarketDataRpcClient client = new MarketDataRpcClient();
+        client.setUsername(inUsername);
+        client.setPassword(inPassword);
+        client.setHostname(inHostname);
+        client.setPort(inPort);
+        client.setContextClassProvider(inContextClassProvider);
+        return client;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClientFactory#create(java.lang.String, java.lang.String, java.lang.String, int)
@@ -42,10 +44,10 @@ public class MarketDataRpcClientFactory
                                       String inHostname,
                                       int inPort)
     {
-        return new MarketDataRpcClient(inUsername,
-                                       inPassword,
-                                       inHostname,
-                                       inPort,
-                                       null);
+        return create(inUsername,
+                      inPassword,
+                      inHostname,
+                      inPort,
+                      null);
     }
 }

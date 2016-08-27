@@ -2,6 +2,7 @@ package org.marketcetera.rpc.server;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -16,7 +17,7 @@ import io.grpc.ServerBuilder;
 /* $License$ */
 
 /**
- *
+ * Provides an RPC server implementation that can run multiple {@link BindableService} services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -25,10 +26,9 @@ import io.grpc.ServerBuilder;
 public class RpcServer
 {
     /**
-     * 
+     * Validate and start the server.
      *
-     *
-     * @throws Exception
+     * @throws Exception if an unexpected error occcurs.
      */
     @PostConstruct
     public synchronized void start()
@@ -46,24 +46,36 @@ public class RpcServer
         }
         server = serverBuilder.build();
         server.start();
+        alive.set(true);
     }
     /**
-     * 
-     *
-     *
+     * Stop the service.
      */
     @PreDestroy
     public synchronized void stop()
     {
-        Messages.SERVER_STOPPING.info(this);
-        if(server != null) {
-            try {
-                server.shutdownNow();
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+            Messages.SERVER_STOPPING.info(this);
+            if(server != null) {
+                try {
+                    server.shutdownNow();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                server = null;
             }
-            server = null;
+        } finally {
+            alive.set(false);
         }
+    }
+    /**
+     * Indicate if the service is alive or not.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isRunning()
+    {
+        return alive.get();
     }
     /**
      * Get the port value.
@@ -120,19 +132,23 @@ public class RpcServer
         serverServiceDefinitions = inServerServiceDefinitions;
     }
     /**
-     * 
+     * indicates if the server is alive or not
+     */
+    private final AtomicBoolean alive = new AtomicBoolean(false);
+    /**
+     * port at which to find RPC services
      */
     private int port;
     /**
-     * 
+     * host to bind to
      */
     private String hostname;
     /**
-     * 
+     * internal service object
      */
     private Server server;
     /**
-     * 
+     * collection of services to provide
      */
     private List<BindableService> serverServiceDefinitions = new ArrayList<>();
 }

@@ -46,9 +46,12 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
 {
     /**
      * Validate and start the object.
+     * 
+     * @throws Exception if an unexpected error occurs
      */
     @PostConstruct
     public void start()
+            throws Exception
     {
         Validate.notNull(authenticator,
                          "Cannot bind " + getServiceDescription() + ": authenticator required");
@@ -61,6 +64,9 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
     @Override
     public ServerServiceDefinition bindService()
     {
+        SLF4JLoggerProxy.info(this,
+                              "Starting {}",
+                              getServiceDescription());
         return getService().bindService();
     }
     /**
@@ -259,11 +265,10 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
         }
     }
     /**
-     * 
+     * Execute the heartbeat request.
      *
-     *
-     * @param inRequest
-     * @param inResponseObserver
+     * @param inRequest a <code>BaseRpc.HeartbeatRequest</code> value
+     * @param inResponseObserver a <code>StreamObserver&lt;BaseRpc.HeartbeatResponse&gt;</code> value
      */
     protected void doHeartbeat(final BaseRpc.HeartbeatRequest inRequest,
                                final StreamObserver<BaseRpc.HeartbeatResponse> inResponseObserver)
@@ -309,14 +314,23 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
         }, heartbeatInterval, heartbeatInterval, TimeUnit.MILLISECONDS);
     }
     /**
-     * 
+     * Validates the given session value and returns the session meta information if successful.
      *
-     *
-     * @param inSessionIdValue
-     * @return
+     * @param inSessionIdValue a <code>String</code> value
+     * @return a <code>SessionHolder&lt;SessionClazz&gt;</code> value
+     * @throws StatusRuntimeException if the session is not valud
      */
     protected SessionHolder<SessionClazz> validateAndReturnSession(String inSessionIdValue)
     {
+        String rawRequestSessionId = StringUtils.trimToNull(inSessionIdValue);
+        if(rawRequestSessionId == null) {
+            throw new StatusRuntimeException(Status.UNAUTHENTICATED);
+        }
+        SessionId requestSessionId = new SessionId(rawRequestSessionId);
+        final SessionMetaData sessionMetaData = allSessionMetaData.get(requestSessionId);
+        if(sessionMetaData == null) {
+            throw new StatusRuntimeException(Status.UNAUTHENTICATED);
+        }
         SessionId session = new SessionId(inSessionIdValue);
         SessionHolder<SessionClazz> sessionInfo = sessionManager.get(session);
         if(sessionInfo == null) {

@@ -31,6 +31,7 @@ public class SampleRpcService<SessionClazz>
      */
     @PostConstruct
     public void start()
+            throws Exception
     {
         service = new Service();
         super.start();

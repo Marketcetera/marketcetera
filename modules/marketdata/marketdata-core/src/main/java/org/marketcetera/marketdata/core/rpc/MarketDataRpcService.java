@@ -1,338 +1,84 @@
 package org.marketcetera.marketdata.core.rpc;
 
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.concurrent.GuardedBy;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelRequest;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelResponse;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsRequest;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.HeartbeatRequest;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.HeartbeatResponse;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.LastUpdateRequest;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.LastUpdateResponse;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.LoginRequest;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.LoginResponse;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutRequest;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutResponse;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.MarketDataRequest;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.MarketDataResponse;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.AllEventsRequest;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.AllEventsResponse;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.AvailableCapabilityRequest;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.AvailableCapabilityResponse;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.CancelRequest;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.CancelResponse;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.EventsRequest;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.EventsResponse;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.LastUpdateRequest;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.LastUpdateResponse;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.MarketDataRequest;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.MarketDataResponse;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotPageRequest;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotPageResponse;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotRequest;
+import org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotResponse;
 import org.marketcetera.marketdata.core.webservice.PageRequest;
+import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
+import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
+import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
+import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
+import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
+import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
+import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.rpc.RpcCredentials;
-import org.marketcetera.util.rpc.RpcServerServices;
-import org.marketcetera.util.rpc.RpcServiceSpec;
-import org.marketcetera.util.ws.tags.SessionId;
+import org.marketcetera.util.ws.ContextClassProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.protobuf.BlockingService;
-import com.google.protobuf.RpcController;
-import com.google.protobuf.ServiceException;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
 
 /* $License$ */
 
 /**
- * Provides market data RPC server-side services.
+ * Provides an RPC market data service implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 2.4.0
+ * @since $Release$
  */
-@ClassVersion("$Id$")
 public class MarketDataRpcService<SessionClazz>
-        implements RpcServiceSpec<SessionClazz>,RpcMarketDataService.BlockingInterface
+        extends AbstractRpcService<SessionClazz,MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase>
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#login(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.LoginRequest)
+     * @see org.marketcetera.rpc.server.AbstractRpcService#start()
      */
     @Override
-    public LoginResponse login(RpcController inController,
-                               LoginRequest inRequest)
-            throws ServiceException
+    public void start()
+            throws Exception
     {
-        SLF4JLoggerProxy.debug(this,
-                               "{} received authentication request for {}", //$NON-NLS-1$
-                               DESCRIPTION,
-                               inRequest.getUsername());
-        RpcMarketdata.LoginResponse.Builder responseBuilder = RpcMarketdata.LoginResponse.newBuilder();
-        try {
-            SessionId sessionId = serverServices.login(new RpcCredentials(inRequest.getUsername(),
-                                                                          inRequest.getPassword(),
-                                                                          inRequest.getAppId(),
-                                                                          inRequest.getClientId(),
-                                                                          inRequest.getVersionId(),
-                                                                          new Locale(inRequest.getLocale().getLanguage(),
-                                                                                     inRequest.getLocale().getCountry(),
-                                                                                     inRequest.getLocale().getVariant())));
-            return responseBuilder.setSessionId(sessionId.getValue()).build();
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
-            return responseBuilder.setFailed(true).setSessionId("null").setMessage(e.getMessage()==null?"":e.getMessage()==null?"":e.getMessage()==null?"":e.getMessage()).build(); //$NON-NLS-1$
+        Validate.notNull(serviceAdapter,
+                         "Market data service required");
+        service = new Service();
+        synchronized(contextLock) {
+            context = JAXBContext.newInstance(contextClassProvider==null?new Class<?>[0]:contextClassProvider.getContextClasses());
+            marshaller = context.createMarshaller();
+            unmarshaller = context.createUnmarshaller();
         }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#logout(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutRequest)
-     */
-    @Override
-    public LogoutResponse logout(RpcController inController,
-                                 LogoutRequest inRequest)
-            throws ServiceException
-    {
-        SLF4JLoggerProxy.debug(this,
-                               "{} received logout request for {}", //$NON-NLS-1$
-                               DESCRIPTION,
-                               inRequest.getSessionId());
-        RpcMarketdata.LogoutResponse.Builder responseBuilder = RpcMarketdata.LogoutResponse.newBuilder();
-        try {
-            serverServices.logout(inRequest.getSessionId());
-            return responseBuilder.build();
-        } catch (Exception e) {
-            return responseBuilder.setFailed(true).setMessage(e.getMessage()==null?"":e.getMessage()).build();
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#heartbeat(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.HeartbeatRequest)
-     */
-    @Override
-    public HeartbeatResponse heartbeat(RpcController inController,
-                                       HeartbeatRequest inRequest)
-            throws ServiceException
-    {
-        RpcMarketdata.HeartbeatResponse.Builder responseBuilder = RpcMarketdata.HeartbeatResponse.newBuilder();
-        try {
-            return responseBuilder.setId(inRequest.getId()).build();
-        } catch (Exception e) {
-            return responseBuilder.setFailed(true).setMessage(e.getMessage()==null?"":e.getMessage()).build();
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#request(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.MarketDataRequest)
-     */
-    @Override
-    public MarketDataResponse request(RpcController inController,
-                                      MarketDataRequest inRequest)
-            throws ServiceException
-    {
-        RpcMarketdata.MarketDataResponse.Builder responseBuilder = RpcMarketdata.MarketDataResponse.newBuilder();
-        try {
-            serverServices.validateAndReturnSession(inRequest.getSessionId());
-            return responseBuilder.setId(serviceAdapter.request(org.marketcetera.marketdata.MarketDataRequestBuilder.newRequestFromString(inRequest.getRequest()),
-                                                                inRequest.getStreamEvents())).build();
-        } catch (Exception e) {
-            return responseBuilder.setFailed(true).setId(-1).setMessage(ExceptionUtils.getRootCauseMessage(e)).build();
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#getLastUpdate(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.LastUpdateRequest)
-     */
-    @Override
-    public LastUpdateResponse getLastUpdate(RpcController inController,
-                                            LastUpdateRequest inRequest)
-            throws ServiceException
-    {
-        RpcMarketdata.LastUpdateResponse.Builder responseBuilder = RpcMarketdata.LastUpdateResponse.newBuilder();
-        try {
-            serverServices.validateAndReturnSession(inRequest.getSessionId());
-            return responseBuilder.setTimestamp(serviceAdapter.getLastUpdate(inRequest.getId())).build();
-        } catch (Exception e) {
-            return responseBuilder.setFailed(true).setTimestamp(-1).setMessage(e.getMessage()==null?"":e.getMessage()).build();
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#cancel(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelRequest)
-     */
-    @Override
-    public CancelResponse cancel(RpcController inController,
-                                 CancelRequest inRequest)
-            throws ServiceException
-    {
-        RpcMarketdata.CancelResponse.Builder responseBuilder = RpcMarketdata.CancelResponse.newBuilder();
-        try {
-            serverServices.validateAndReturnSession(inRequest.getSessionId());
-            serviceAdapter.cancel(inRequest.getId());
-            return responseBuilder.build();
-        } catch (Exception e) {
-            return responseBuilder.setFailed(true).setMessage(e.getMessage()==null?"":e.getMessage()).build();
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#getEvents(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsRequest)
-     */
-    @Override
-    public EventsResponse getEvents(RpcController inController,
-                                    EventsRequest inRequest)
-            throws ServiceException
-    {
-        RpcMarketdata.EventsResponse.Builder responseBuilder = RpcMarketdata.EventsResponse.newBuilder();
-        try {
-            serverServices.validateAndReturnSession(inRequest.getSessionId());
-            Deque<Event> events = serviceAdapter.getEvents(inRequest.getId());
-            responseBuilder.setId(inRequest.getId());
-            for(Event event : events) {
-                responseBuilder.addPayload(serverServices.marshal(event));
-            }
-            return responseBuilder.build();
-        } catch (Exception e) {
-            return responseBuilder.setId(-1).setFailed(true).setMessage(e.getMessage()==null?"":e.getMessage()).build();
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#getAllEvents(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest)
-     */
-    @Override
-    public AllEventsResponse getAllEvents(RpcController inController,
-                                          AllEventsRequest inRequest)
-            throws ServiceException
-    {
-        RpcMarketdata.AllEventsResponse.Builder responseBuilder = RpcMarketdata.AllEventsResponse.newBuilder();
-        try {
-            serverServices.validateAndReturnSession(inRequest.getSessionId());
-            Map<Long,LinkedList<Event>> events = serviceAdapter.getAllEvents(inRequest.getIdList());
-            for(Map.Entry<Long,LinkedList<Event>> entry : events.entrySet()) {
-                RpcMarketdata.EventsResponse.Builder entryBuilder = RpcMarketdata.EventsResponse.newBuilder().setId(entry.getKey());
-                for(Event event : entry.getValue()) {
-                    entryBuilder.addPayload(serverServices.marshal(event));
-                }
-                responseBuilder.addEvents(entryBuilder.build());
-            }
-            return responseBuilder.build();
-        } catch (Exception e) {
-            return responseBuilder.setFailed(true).setMessage(e.getMessage()==null?"":e.getMessage()).build();
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#getSnapshot(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest)
-     */
-    @Override
-    public SnapshotResponse getSnapshot(RpcController inController,
-                                        SnapshotRequest inRequest)
-            throws ServiceException
-    {
-        RpcMarketdata.SnapshotResponse.Builder responseBuilder = RpcMarketdata.SnapshotResponse.newBuilder();
-        try {
-            serverServices.validateAndReturnSession(inRequest.getSessionId());
-            Instrument instrument = serverServices.unmarshall(inRequest.getInstrument().getPayload());
-            Content content = Content.valueOf(inRequest.getContent().name());
-            String provider = null;
-            if(inRequest.hasProvider()) {
-                provider = inRequest.getProvider();
-            }
-            Deque<Event> events = serviceAdapter.getSnapshot(instrument,
-                                                             content,
-                                                             provider);
-            for(Event event : events) {
-                responseBuilder.addPayload(serverServices.marshal(event));
-            }
-            return responseBuilder.build();
-        } catch (Exception e) {
-            return responseBuilder.setFailed(true).setMessage(e.getMessage()==null?"":e.getMessage()).build();
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#getSnapshotPage(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest)
-     */
-    @Override
-    public SnapshotPageResponse getSnapshotPage(RpcController inController,
-                                                SnapshotPageRequest inRequest)
-            throws ServiceException
-    {
-        RpcMarketdata.SnapshotPageResponse.Builder responseBuilder = RpcMarketdata.SnapshotPageResponse.newBuilder();
-        try {
-            serverServices.validateAndReturnSession(inRequest.getSessionId());
-            Instrument instrument = serverServices.unmarshall(inRequest.getInstrument().getPayload());
-            Content content = Content.valueOf(inRequest.getContent().name());
-            String provider = null;
-            if(inRequest.hasProvider()) {
-                provider = inRequest.getProvider();
-            }
-            Deque<Event> events = serviceAdapter.getSnapshotPage(instrument,
-                                                                 content,
-                                                                 provider,
-                                                                 new PageRequest(inRequest.getPage().getPage(),
-                                                                                 inRequest.getPage().getSize()));
-            for(Event event : events) {
-                responseBuilder.addPayload(serverServices.marshal(event));
-            }
-            return responseBuilder.build();
-        } catch (JAXBException e) {
-            return responseBuilder.setFailed(true).setMessage(e.getMessage()==null?"":e.getMessage()).build();
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#getAvailableCapability(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest)
-     */
-    @Override
-    public AvailableCapabilityResponse getAvailableCapability(RpcController inController,
-                                                              AvailableCapabilityRequest inRequest)
-            throws ServiceException
-    {
-        RpcMarketdata.AvailableCapabilityResponse.Builder responseBuilder = RpcMarketdata.AvailableCapabilityResponse.newBuilder();
-        try {
-            serverServices.validateAndReturnSession(inRequest.getSessionId());
-            Set<Capability> events = serviceAdapter.getAvailableCapability();
-            for(Capability event : events) {
-                responseBuilder.addCapability(RpcMarketdata.ContentAndCapability.valueOf(event.name()));
-            }
-            return responseBuilder.build();
-        } catch (Exception e) {
-            return responseBuilder.setFailed(true).setMessage(e.getMessage()==null?"":e.getMessage()).build();
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.util.rpc.RpcServiceSpec#getDescription()
-     */
-    @Override
-    public String getDescription()
-    {
-        return DESCRIPTION;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.util.rpc.RpcServiceSpec#generateService()
-     */
-    @Override
-    public BlockingService generateService()
-    {
-        return RpcMarketDataService.newReflectiveBlockingService(this);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.util.rpc.RpcServiceSpec#setRpcServerServices(org.marketcetera.util.rpc.RpcServerServices)
-     */
-    @Override
-    public void setRpcServerServices(RpcServerServices<SessionClazz> inServerServices)
-    {
-        serverServices = inServerServices;
-    }
-    /**
-     * Validates this object.
-     *
-     * @throws IllegalArgumentException if a validation error occurs
-     */
-    @PostConstruct
-    public void validate()
-    {
-        Validate.notNull(serviceAdapter);
+        super.start();
     }
     /**
      * Get the serviceAdapter value.
@@ -346,22 +92,349 @@ public class MarketDataRpcService<SessionClazz>
     /**
      * Sets the serviceAdapter value.
      *
-     * @param inServiceAdapter a <code>MarketDataServiceAdapter</code> value
+     * @param a <code>MarketDataServiceAdapter</code> value
      */
     public void setServiceAdapter(MarketDataServiceAdapter inServiceAdapter)
     {
         serviceAdapter = inServiceAdapter;
     }
     /**
-     * provides a link to the service provider for market data services
+     * Get the contextClassProvider value.
+     *
+     * @return a <code>ContextClassProvider</code> value
      */
+    public ContextClassProvider getContextClassProvider()
+    {
+        return contextClassProvider;
+    }
+    /**
+     * Sets the contextClassProvider value.
+     *
+     * @param inContextClassProvider a <code>ContextClassProvider</code> value
+     */
+    public void setContextClassProvider(ContextClassProvider inContextClassProvider)
+    {
+        contextClassProvider = inContextClassProvider;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.server.AbstractRpcService#getServiceDescription()
+     */
+    @Override
+    protected String getServiceDescription()
+    {
+        return description;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.server.AbstractRpcService#getService()
+     */
+    @Override
+    protected MarketDataRpcServiceImplBase getService()
+    {
+        return service;
+    }
+    /**
+     * Marketdata RPC Service implementation.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private class Service
+            extends MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#login(org.marketcetera.rpc.base.BaseRpc.LoginRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void login(LoginRequest inRequest,
+                          StreamObserver<LoginResponse> inResponseObserver)
+        {
+            MarketDataRpcService.this.doLogin(inRequest,
+                                              inResponseObserver);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#logout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void logout(LogoutRequest inRequest,
+                           StreamObserver<LogoutResponse> inResponseObserver)
+        {
+            MarketDataRpcService.this.doLogout(inRequest,
+                                               inResponseObserver);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#heartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void heartbeat(HeartbeatRequest inRequest,
+                              StreamObserver<HeartbeatResponse> inResponseObserver)
+        {
+            MarketDataRpcService.this.doHeartbeat(inRequest,
+                                                  inResponseObserver);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#request(org.marketcetera.marketdata.core.rpc.MarketdataRpc.MarketDataRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void request(MarketDataRequest inRequest,
+                            StreamObserver<MarketDataResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                MarketdataRpc.MarketDataResponse.Builder responseBuilder = MarketdataRpc.MarketDataResponse.newBuilder();
+                MarketdataRpc.MarketDataResponse response = responseBuilder.setId(serviceAdapter.request(org.marketcetera.marketdata.MarketDataRequestBuilder.newRequestFromString(inRequest.getRequest()),
+                                                                                                         inRequest.getStreamEvents())).build();
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#getLastUpdate(org.marketcetera.marketdata.core.rpc.MarketdataRpc.LastUpdateRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getLastUpdate(LastUpdateRequest inRequest,
+                                  StreamObserver<LastUpdateResponse> inResponseObserver)
+        {
+            MarketdataRpc.LastUpdateResponse.Builder responseBuilder = MarketdataRpc.LastUpdateResponse.newBuilder();
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                MarketdataRpc.LastUpdateResponse response = responseBuilder.setTimestamp(serviceAdapter.getLastUpdate(inRequest.getId())).build();
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#cancel(org.marketcetera.marketdata.core.rpc.MarketdataRpc.CancelRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void cancel(CancelRequest inRequest,
+                           StreamObserver<CancelResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                MarketdataRpc.CancelResponse.Builder responseBuilder = MarketdataRpc.CancelResponse.newBuilder();
+                serviceAdapter.cancel(inRequest.getId());
+                inResponseObserver.onNext(responseBuilder.build());
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#getEvents(org.marketcetera.marketdata.core.rpc.MarketdataRpc.EventsRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getEvents(EventsRequest inRequest,
+                              StreamObserver<EventsResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                MarketdataRpc.EventsResponse.Builder responseBuilder = MarketdataRpc.EventsResponse.newBuilder();
+                Deque<Event> events = serviceAdapter.getEvents(inRequest.getId());
+                responseBuilder.setId(inRequest.getId());
+                for(Event event : events) {
+                    responseBuilder.addPayload(marshal(event));
+                }
+                MarketdataRpc.EventsResponse response = responseBuilder.build();
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#getAllEvents(org.marketcetera.marketdata.core.rpc.MarketdataRpc.AllEventsRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getAllEvents(AllEventsRequest inRequest,
+                                 StreamObserver<AllEventsResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                MarketdataRpc.AllEventsResponse.Builder responseBuilder = MarketdataRpc.AllEventsResponse.newBuilder();
+                Map<Long,LinkedList<Event>> events = serviceAdapter.getAllEvents(inRequest.getIdList());
+                for(Map.Entry<Long,LinkedList<Event>> entry : events.entrySet()) {
+                    MarketdataRpc.EventsResponse.Builder entryBuilder = MarketdataRpc.EventsResponse.newBuilder().setId(entry.getKey());
+                    for(Event event : entry.getValue()) {
+                        entryBuilder.addPayload(marshal(event));
+                    }
+                    responseBuilder.addEvents(entryBuilder.build());
+                }
+                MarketdataRpc.AllEventsResponse response = responseBuilder.build();
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#getSnapshot(org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getSnapshot(SnapshotRequest inRequest,
+                                StreamObserver<SnapshotResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                MarketdataRpc.SnapshotResponse.Builder responseBuilder = MarketdataRpc.SnapshotResponse.newBuilder();
+                Instrument instrument = unmarshall(inRequest.getInstrument().getPayload());
+                Content content = Content.valueOf(inRequest.getContent().name());
+                Deque<Event> events = serviceAdapter.getSnapshot(instrument,
+                                                                 content,
+                                                                 inRequest.getProvider());
+                for(Event event : events) {
+                    responseBuilder.addPayload(marshal(event));
+                }
+                MarketdataRpc.SnapshotResponse response = responseBuilder.build();
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#getSnapshotPage(org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotPageRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getSnapshotPage(SnapshotPageRequest inRequest,
+                                    StreamObserver<SnapshotPageResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                MarketdataRpc.SnapshotPageResponse.Builder responseBuilder = MarketdataRpc.SnapshotPageResponse.newBuilder();
+                Instrument instrument = unmarshall(inRequest.getInstrument().getPayload());
+                Content content = Content.valueOf(inRequest.getContent().name());
+                Deque<Event> events = serviceAdapter.getSnapshotPage(instrument,
+                                                                     content,
+                                                                     inRequest.getProvider(),
+                                                                     new PageRequest(inRequest.getPage().getPage(),
+                                                                                     inRequest.getPage().getSize()));
+                for(Event event : events) {
+                    responseBuilder.addPayload(marshal(event));
+                }
+                MarketdataRpc.SnapshotPageResponse response = responseBuilder.build();
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#getAvailableCapability(org.marketcetera.marketdata.core.rpc.MarketdataRpc.AvailableCapabilityRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getAvailableCapability(AvailableCapabilityRequest inRequest,
+                                           StreamObserver<AvailableCapabilityResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                MarketdataRpc.AvailableCapabilityResponse.Builder responseBuilder = MarketdataRpc.AvailableCapabilityResponse.newBuilder();
+                Set<Capability> events = serviceAdapter.getAvailableCapability();
+                for(Capability event : events) {
+                    responseBuilder.addCapability(MarketdataRpc.ContentAndCapability.valueOf(event.name()));
+                }
+                MarketdataRpc.AvailableCapabilityResponse response = responseBuilder.build();
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
+    }
+    /**
+     * Marshals the given object to an XML stream.
+     *
+     * @param inObject an <code>Object</code> value
+     * @return a <code>String</code> value
+     * @throws JAXBException if an error occurs marshalling the data
+     */
+    private String marshal(Object inObject)
+            throws JAXBException
+    {
+        StringWriter output = new StringWriter();
+        synchronized(contextLock) {
+            marshaller.marshal(inObject,
+                               output);
+        }
+        return output.toString();
+    }
+    /**
+     * Unmarshals an object from the given XML stream.
+     *
+     * @param inData a <code>String</code> value
+     * @return a <code>Clazz</code> value
+     * @throws JAXBException if an error occurs unmarshalling the data
+     */
+    @SuppressWarnings({ "unchecked" })
+    private <Clazz> Clazz unmarshall(String inData)
+            throws JAXBException
+    {
+        synchronized(contextLock) {
+            return (Clazz)unmarshaller.unmarshal(new StringReader(inData));
+        }
+    }
+    /**
+     * provides context classes for marshalling/unmarshalling, may be <code>null</code>
+     */
+    private ContextClassProvider contextClassProvider;
+    /**
+     * guards access to JAXB context objects
+     */
+    private final Object contextLock = new Object();
+    /**
+     * context used to serialize and unserialize messages as necessary
+     */
+    @GuardedBy("contextLock")
+    private JAXBContext context;
+    /**
+     * marshals messages
+     */
+    @GuardedBy("contextLock")
+    private Marshaller marshaller;
+    /**
+     * unmarshals messages
+     */
+    @GuardedBy("contextLock")
+    private Unmarshaller unmarshaller;
+    /**
+     * provides access to market data services
+     */
+    @Autowired
     private MarketDataServiceAdapter serviceAdapter;
     /**
-     * provides RPC Server services
+     * service instance
      */
-    private RpcServerServices<SessionClazz> serverServices;
+    private Service service;
     /**
-     * description of the service
+     * description of this service
      */
-    private static final String DESCRIPTION = "MATP Marketdata RPC Service"; //$NON-NLS-1$
+    private final static String description = "Marketdata RPC Service";
 }

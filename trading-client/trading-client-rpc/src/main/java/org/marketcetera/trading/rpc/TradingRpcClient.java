@@ -9,42 +9,41 @@ import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.Version;
 import org.marketcetera.core.VersionInfo;
-import org.marketcetera.rpc.BaseRpcClient;
+import org.marketcetera.rpc.base.BaseRpc;
+import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
+import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
+import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
+import org.marketcetera.rpc.base.BaseUtil;
+import org.marketcetera.rpc.client.AbstractRpcClient;
+import org.marketcetera.rpc.paging.PagingUtil;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trading.rpc.TradingRpc.TradingRpcService.BlockingInterface;
+import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceBlockingStub;
+import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceStub;
 import org.marketcetera.tradingclient.SendOrderResponse;
 import org.marketcetera.tradingclient.TradingClient;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.rpc.BaseRpc.HeartbeatRequest;
-import org.marketcetera.util.rpc.BaseRpc.HeartbeatResponse;
-import org.marketcetera.util.rpc.BaseRpc.LoginRequest;
-import org.marketcetera.util.rpc.BaseRpc.LoginResponse;
-import org.marketcetera.util.rpc.BaseRpc.LogoutRequest;
-import org.marketcetera.util.rpc.BaseRpc.LogoutResponse;
-import org.marketcetera.util.rpc.BaseUtil;
-import org.marketcetera.util.rpc.PagingUtil;
 import org.marketcetera.util.ws.tags.AppId;
 
 import com.google.common.collect.Lists;
-import com.google.protobuf.RpcController;
-import com.google.protobuf.ServiceException;
-import com.googlecode.protobuf.pro.duplex.RpcClientChannel;
+
+import io.grpc.Channel;
+import io.grpc.stub.StreamObserver;
 
 /* $License$ */
 
 /**
- * Provides an RPC {@link TradingClient} interface.
+ * Provides an RPC {@link TradingClient} implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public class TradingRpcClient
-        extends BaseRpcClient<TradingRpc.TradingRpcService.BlockingInterface>
+        extends AbstractRpcClient<TradingRpcServiceBlockingStub,TradingRpcServiceStub>
         implements TradingClient
 {
     /* (non-Javadoc)
@@ -66,13 +65,10 @@ public class TradingRpcClient
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setPageRequest(PagingUtil.buildPageRequest(inPageNumber,
                                                                           inPageSize));
-                TradingRpc.OpenOrdersResponse response = getClientService().getOpenOrders(getController(),
-                                                                                                requestBuilder.build());
+                TradingRpc.OpenOrdersResponse response = getBlockingStub().getOpenOrders(requestBuilder.build());
                 List<ExecutionReport> results = new ArrayList<>();
-                if(response.getStatus().getFailed()) {
-                    throw new RuntimeException(response.getStatus().getMessage());
-                }
                 for(TradingRpc.OpenOrder rpcOpenOrder : response.getOrdersList()) {
+                    // TODO
                 }
                 SLF4JLoggerProxy.trace(this,
                                        "{} returning {}",
@@ -83,18 +79,10 @@ public class TradingRpcClient
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.tradingclient.TradingClient#sendOrder(org.marketcetera.trade.OrderSingle)
-     */
-    @Override
-    public SendOrderResponse sendOrder(OrderSingle inOrderSingle)
-    {
-        return sendOrders(Lists.newArrayList(inOrderSingle)).get(0);
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.tradingclient.TradingClient#sendOrders(java.util.List)
      */
     @Override
-    public List<SendOrderResponse> sendOrders(final List<OrderSingle> inOrders)
+    public List<SendOrderResponse> sendOrders(List<OrderSingle> inOrders)
     {
         return executeCall(new Callable<List<SendOrderResponse>>(){
             @Override
@@ -161,21 +149,13 @@ public class TradingRpcClient
                     requestBuilder.addOrder(orderBuilder.build());
                     orderBuilder.clear();
                 }
-                TradingRpc.SendOrderResponse response = getClientService().sendOrders(getController(),
-                                                                                      requestBuilder.build());
+                TradingRpc.SendOrderResponse response = getBlockingStub().sendOrders(requestBuilder.build());
                 List<SendOrderResponse> results = new ArrayList<>();
-                if(response.getStatus().getFailed()) {
-                    throw new RuntimeException(response.getStatus().getMessage());
-                }
                 for(TradingRpc.OrderSingleResponse rpcResponse : response.getOrderResponseList()) {
                     SendOrderResponse orderResponse = new SendOrderResponse();
-                    orderResponse.setFailed(rpcResponse.getStatus().getFailed());
-                    if(rpcResponse.getStatus().hasMessage()) {
-                        orderResponse.setMessage(rpcResponse.getStatus().getMessage());
-                    }
-                    if(rpcResponse.hasOrderid()) {
-                        orderResponse.setOrderId(new OrderID(rpcResponse.getOrderid()));
-                    }
+                    orderResponse.setFailed(rpcResponse.getFailed());
+                    orderResponse.setMessage(rpcResponse.getMessage());
+                    orderResponse.setOrderId(rpcResponse.getOrderid()==null?null:new OrderID(rpcResponse.getOrderid()));
                     results.add(orderResponse);
                 }
                 SLF4JLoggerProxy.trace(this,
@@ -185,6 +165,14 @@ public class TradingRpcClient
                 return results;
             }
         });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.tradingclient.TradingClient#sendOrder(org.marketcetera.trade.OrderSingle)
+     */
+    @Override
+    public SendOrderResponse sendOrder(OrderSingle inOrderSingle)
+    {
+        return sendOrders(Lists.newArrayList(inOrderSingle)).get(0);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.tradingclient.TradingClient#cancelOrder(org.marketcetera.trade.OrderCancel)
@@ -203,7 +191,49 @@ public class TradingRpcClient
         throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.rpc.BaseRpcClient#getAppId()
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#getBlockingStub(io.grpc.Channel)
+     */
+    @Override
+    protected TradingRpcServiceBlockingStub getBlockingStub(Channel inChannel)
+    {
+        return TradingRpcServiceGrpc.newBlockingStub(inChannel);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#getAsyncStub(io.grpc.Channel)
+     */
+    @Override
+    protected TradingRpcServiceStub getAsyncStub(Channel inChannel)
+    {
+        return TradingRpcServiceGrpc.newStub(inChannel);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#executeLogin(org.marketcetera.rpc.base.BaseRpc.LoginRequest)
+     */
+    @Override
+    protected LoginResponse executeLogin(BaseRpc.LoginRequest inRequest)
+    {
+        return getBlockingStub().login(inRequest);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#executeLogout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest)
+     */
+    @Override
+    protected LogoutResponse executeLogout(BaseRpc.LogoutRequest inRequest)
+    {
+        return getBlockingStub().logout(inRequest);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#executeHeartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    protected void executeHeartbeat(HeartbeatRequest inRequest,
+                                    StreamObserver<BaseRpc.HeartbeatResponse> inObserver)
+    {
+        getAsyncStub().heartbeat(inRequest,
+                                 inObserver);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#getAppId()
      */
     @Override
     protected AppId getAppId()
@@ -211,53 +241,12 @@ public class TradingRpcClient
         return APP_ID;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.rpc.BaseRpcClient#getVersionInfo()
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#getVersionInfo()
      */
     @Override
     protected VersionInfo getVersionInfo()
     {
         return APP_ID_VERSION;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.rpc.BaseRpcClient#createClient(com.googlecode.protobuf.pro.duplex.RpcClientChannel)
-     */
-    @Override
-    protected BlockingInterface createClient(RpcClientChannel inChannel)
-    {
-        return TradingRpc.TradingRpcService.newBlockingStub(inChannel);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.rpc.BaseRpcClient#executeLogin(com.google.protobuf.RpcController, org.marketcetera.util.rpc.BaseRpc.LoginRequest)
-     */
-    @Override
-    protected LoginResponse executeLogin(RpcController inController,
-                                         LoginRequest inRequest)
-            throws ServiceException
-    {
-        return getClientService().login(inController,
-                                        inRequest);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.rpc.BaseRpcClient#executeLogout(com.google.protobuf.RpcController, org.marketcetera.util.rpc.BaseRpc.LogoutRequest)
-     */
-    @Override
-    protected LogoutResponse executeLogout(RpcController inController,
-                                           LogoutRequest inRequest)
-            throws ServiceException
-    {
-        return getClientService().logout(inController,
-                                         inRequest);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.rpc.BaseRpcClient#executeHeartbeat(com.google.protobuf.RpcController, org.marketcetera.util.rpc.BaseRpc.HeartbeatRequest)
-     */
-    @Override
-    protected HeartbeatResponse executeHeartbeat(RpcController inController,
-                                                 HeartbeatRequest inRequest)
-            throws ServiceException
-    {
-        return getClientService().heartbeat(inController,
-                                            inRequest);
     }
     /**
      * The client's application ID: the application name.
