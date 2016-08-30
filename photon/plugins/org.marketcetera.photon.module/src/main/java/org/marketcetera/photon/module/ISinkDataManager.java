@@ -32,7 +32,7 @@ public interface ISinkDataManager {
      *             if the handler is null, if classes is empty, or if any class
      *             is null
      */
-    void register(ISinkDataHandler handler, Class<?>... classes);
+    void register(ISinkDataHandler handler, Class... classes);
 
     /**
      * Register a handler that handles all classes of data not otherwise handled
