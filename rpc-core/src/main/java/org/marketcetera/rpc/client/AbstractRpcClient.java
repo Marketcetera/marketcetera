@@ -35,7 +35,9 @@ import io.grpc.stub.StreamObserver;
  * @since $Release$
  */
 public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<BlockingStubClazz>,
-                                        AsyncStubClazz extends AbstractStub<AsyncStubClazz>>
+                                        AsyncStubClazz extends AbstractStub<AsyncStubClazz>,
+                                        ParameterClazz extends RpcClientParameters>
+        implements RpcClient<ParameterClazz>
 {
     /**
      * Validate and start the object.
@@ -69,104 +71,22 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
     {
         return alive.get() && !stopped.get();
     }
-    /**
-     * Get the hostname value.
-     *
-     * @return a <code>String</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.RpcClient#getParameters()
      */
-    public String getHostname()
+    @Override
+    public ParameterClazz getParameters()
     {
-        return hostname;
+        return parameters;
     }
     /**
-     * Sets the hostname value.
+     * Create a new AbstractRpcClient instance.
      *
-     * @param inHostname a <code>String</code> value
+     * @param inParameters
      */
-    public void setHostname(String inHostname)
+    protected AbstractRpcClient(ParameterClazz inParameters)
     {
-        hostname = inHostname;
-    }
-    /**
-     * Get the port value.
-     *
-     * @return an <code>int</code> value
-     */
-    public int getPort()
-    {
-        return port;
-    }
-    /**
-     * Sets the port value.
-     *
-     * @param inPort an <code>int</code> value
-     */
-    public void setPort(int inPort)
-    {
-        port = inPort;
-    }
-    /**
-     * Get the locale value.
-     *
-     * @return a <code>Locale</code> value
-     */
-    public Locale getLocale()
-    {
-        return locale;
-    }
-    /**
-     * Sets the locale value.
-     *
-     * @param a <code>Locale</code> value
-     */
-    public void setLocale(Locale inLocale)
-    {
-        locale = inLocale;
-    }
-    /**
-     * Get the username value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getUsername()
-    {
-        return username;
-    }
-    /**
-     * Sets the username value.
-     *
-     * @param inUsername a <code>String</code> value
-     */
-    public void setUsername(String inUsername)
-    {
-        username = inUsername;
-    }
-    /**
-     * Sets the password value.
-     *
-     * @param inPassword a <code>String</code> value
-     */
-    public void setPassword(String inPassword)
-    {
-        password = inPassword;
-    }
-    /**
-     * Get the shutdownWait value.
-     *
-     * @return a <code>long</code> value
-     */
-    public long getShutdownWait()
-    {
-        return shutdownWait;
-    }
-    /**
-     * Sets the shutdownWait value.
-     *
-     * @param inShutdownWait a <code>long</code> value
-     */
-    public void setShutdownWait(long inShutdownWait)
-    {
-        shutdownWait = inShutdownWait;
+        parameters = inParameters;
     }
     /**
      * Get the session id of the current session.
@@ -303,8 +223,8 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
      */
     private void startService()
     {
-        ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder.forAddress(hostname,
-                                                                                   port).usePlaintext(true);
+        ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder.forAddress(parameters.getHostname(),
+                                                                                   parameters.getPort()).usePlaintext(true);
         channel = channelBuilder.build();
         blockingStub = getBlockingStub(channel);
         asyncStub = getAsyncStub(channel);
@@ -317,7 +237,7 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
         // TODO stop hearbeat?
         if(channel != null) {
             try {
-                channel.shutdown().awaitTermination(shutdownWait,
+                channel.shutdown().awaitTermination(parameters.getHeartbeatInterval(),
                                                     TimeUnit.MILLISECONDS);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -340,7 +260,7 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
                                "{} sending heartbeat request: {}",
                                getAppId(),
                                sessionId);
-        executeHeartbeat(BaseRpc.HeartbeatRequest.newBuilder().setSessionId(sessionId.getValue()).setInterval(heartbeatInterval).build(),
+        executeHeartbeat(BaseRpc.HeartbeatRequest.newBuilder().setSessionId(sessionId.getValue()).setInterval(parameters.getHeartbeatInterval()).build(),
                          heartbeatExecutor);
     }
     /**
@@ -385,8 +305,8 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
         SLF4JLoggerProxy.debug(this,
                                "{} initiating login to {}/{}",
                                getAppId(),
-                               hostname,
-                               port);
+                               parameters.getHeartbeatInterval(),
+                               parameters.getPort());
         alive.set(false);
         BaseRpc.LoginRequest.Builder requestBuilder =  BaseRpc.LoginRequest.newBuilder();
         requestBuilder.setAppId(getAppId().getValue())
@@ -395,8 +315,8 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
             .setLocale(BaseRpc.Locale.newBuilder().setCountry(locale.getCountry())
                    .setLanguage(locale.getLanguage())
                    .setVariant(locale.getVariant()).build())
-            .setUsername(username)
-            .setPassword(password).build();
+            .setUsername(parameters.getUsername())
+            .setPassword(parameters.getPassword()).build();
         try {
             BaseRpc.LoginResponse response = executeLogin(requestBuilder.build());
             sessionId = new SessionId(response.getSessionId());
@@ -478,7 +398,7 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
                 }
                 if(e instanceof StatusRuntimeException) {
                     try {
-                        Thread.sleep(heartbeatInterval);
+                        Thread.sleep(parameters.getHeartbeatInterval());
                     } catch (InterruptedException e1) {
                         break;
                     }
@@ -571,26 +491,6 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
     /**
      * 
      */
-    private long shutdownWait = 5000;
-    /**
-     * username to use to connect
-     */
-    private String username;
-    /**
-     * password user to connect
-     */
-    private String password;
-    /**
-     * 
-     */
-    private String hostname;
-    /**
-     * 
-     */
-    private int port;
-    /**
-     * 
-     */
     private ManagedChannel channel;
     /**
      * 
@@ -601,15 +501,15 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
      */
     private AsyncStubClazz asyncStub;
     /**
-     * interval in ms at which to execute heartbeat/health check calls
-     */
-    private long heartbeatInterval = 1000;
-    /**
      * tracks the last notified status value
      */
     private volatile boolean lastStatus;
     /**
-     * 
+     * manages heartbeat communications with the server
      */
     private HeartbeatExecutor heartbeatExecutor;
+    /**
+     * parameters used to start the client
+     */
+    private final ParameterClazz parameters;
 }

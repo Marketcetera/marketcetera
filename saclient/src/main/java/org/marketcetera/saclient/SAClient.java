@@ -6,7 +6,7 @@ import java.util.Map;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.util.misc.ClassVersion;
-import org.springframework.context.Lifecycle;
+import org.marketcetera.util.rpc.BaseClient;
 
 /* $License$ */
 /**
@@ -22,8 +22,8 @@ import org.springframework.context.Lifecycle;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public interface SAClient
-        extends Lifecycle
+public interface SAClient<ParameterClazz>
+        extends BaseClient
 {
     /**
      * Returns the list of providers available.
@@ -229,7 +229,7 @@ public interface SAClient
      *
      * @return the connection parameters.
      */
-    public SAClientParameters getParameters();
+    public ParameterClazz getParameters();
     /**
      * Closes the connection to the remote strategy agent. The behavior
      * of the client after this method is invoked is undefined. If one

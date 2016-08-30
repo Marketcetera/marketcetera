@@ -37,7 +37,7 @@ public class SAClientConnectionTest {
      */
     @Test
     public void closedFailures() throws Exception {
-        final SAClient saclient = MockStrategyAgent.connectTo();
+        final SAClient<SAClientParameters> saclient = MockStrategyAgent.connectTo();
         //Close the connection
         saclient.close();
         //verify that the saclient fails all API invocations
@@ -121,7 +121,7 @@ public class SAClientConnectionTest {
      */
     @Test
     public void disconnectedFailures() throws Exception {
-        final SAClient saclient = MockStrategyAgent.connectTo();
+        final SAClient<SAClientParameters> saclient = MockStrategyAgent.connectTo();
         SAClientTestBase.MyConnectionStatusListener listener =
                 new SAClientTestBase.MyConnectionStatusListener();
         saclient.addConnectionStatusListener(listener);
@@ -209,7 +209,7 @@ public class SAClientConnectionTest {
      */
     @Test
     public void nullListeners() throws Exception {
-        final SAClient saclient = MockStrategyAgent.connectTo();
+        final SAClient<SAClientParameters> saclient = MockStrategyAgent.connectTo();
         new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
@@ -233,7 +233,7 @@ public class SAClientConnectionTest {
      */
     @Test(timeout = 100000)
     public void connectionNotifications() throws Exception {
-        SAClient client = MockStrategyAgent.connectTo();
+        SAClient<SAClientParameters> client = MockStrategyAgent.connectTo();
         SAClientTestBase.MyConnectionStatusListener listener = new SAClientTestBase.MyConnectionStatusListener();
         client.addConnectionStatusListener(listener);
         listener.reset();
@@ -272,7 +272,7 @@ public class SAClientConnectionTest {
      */
     @Test(timeout = 100000)
     public void connectionListenerFailure() throws Exception {
-        SAClient client = MockStrategyAgent.connectTo();
+        SAClient<SAClientParameters> client = MockStrategyAgent.connectTo();
         final SAClientTestBase.MyConnectionStatusListener listener1 =
                 new SAClientTestBase.MyConnectionStatusListener();
         SAClientTestBase.MyConnectionStatusListener listener2 =
@@ -307,7 +307,7 @@ public class SAClientConnectionTest {
      */
     @Test(timeout = 100000)
     public void listenerDuplicates() throws Exception {
-        SAClient client = MockStrategyAgent.connectTo();
+        SAClient<SAClientParameters> client = MockStrategyAgent.connectTo();
         final SAClientTestBase.MyConnectionStatusListener listener =
                 new SAClientTestBase.MyConnectionStatusListener();
         client.addConnectionStatusListener(listener);
@@ -331,7 +331,7 @@ public class SAClientConnectionTest {
      */
     @Test(timeout = 100000)
     public void listenerOrder() throws Exception {
-        SAClient client = MockStrategyAgent.connectTo();
+        SAClient<SAClientParameters> client = MockStrategyAgent.connectTo();
         final SAClientTestBase.MyConnectionStatusListener listener1 =
                 new SAClientTestBase.MyConnectionStatusListener();
         SAClientTestBase.MyConnectionStatusListener listener2 =
@@ -358,7 +358,7 @@ public class SAClientConnectionTest {
      */
     @Test(timeout = 100000)
     public void listenerRemove() throws Exception {
-        SAClient client = MockStrategyAgent.connectTo();
+        SAClient<SAClientParameters> client = MockStrategyAgent.connectTo();
         final SAClientTestBase.MyConnectionStatusListener listener1 =
                 new SAClientTestBase.MyConnectionStatusListener();
         SAClientTestBase.MyConnectionStatusListener listener2 =
@@ -392,7 +392,7 @@ public class SAClientConnectionTest {
      */
     @Test(timeout = 100000)
     public void duplicateListenerRemoveOrder() throws Exception {
-        SAClient client = MockStrategyAgent.connectTo();
+        SAClient<SAClientParameters> client = MockStrategyAgent.connectTo();
         final SAClientTestBase.MyConnectionStatusListener listener0 =
                 new SAClientTestBase.MyConnectionStatusListener();
         final SAClientTestBase.MyConnectionStatusListener listener1 =

@@ -43,7 +43,7 @@ public class SAClientFactoryTest {
             new ExpectedFailure<NullPointerException>(){
                 @Override
                 protected void run() throws Exception {
-                    SAClient client = SAClientFactoryImpl.getInstance().create(null);
+                    SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(null);
                     client.start();
                 }
             };
@@ -52,7 +52,7 @@ public class SAClientFactoryTest {
                     MockStrategyAgent.WS_HOSTNAME, "9009", creds) {
                 @Override
                 protected void run() throws Exception {
-                    SAClient client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
+                    SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
                                                                                                       creds.toCharArray(),
                                                                                                       MockStrategyAgent.DEFAULT_URL,
                                                                                                       MockStrategyAgent.WS_HOSTNAME,
@@ -66,7 +66,7 @@ public class SAClientFactoryTest {
                     url, creds) {
                 @Override
                 protected void run() throws Exception {
-                    SAClient client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
+                    SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
                             creds.toCharArray(), url,
                             MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT));
                     client.start();
@@ -78,7 +78,7 @@ public class SAClientFactoryTest {
                     String.valueOf(MockStrategyAgent.WS_PORT), creds) {
                 @Override
                 protected void run() throws Exception {
-                    SAClient client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
+                    SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
                             "bleh".toCharArray(), MockStrategyAgent.DEFAULT_URL,
                             MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT));
                     client.start();
@@ -90,7 +90,7 @@ public class SAClientFactoryTest {
                     url, username) {
                 @Override
                 protected void run() throws Exception {
-                    SAClient client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(username,
+                    SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(username,
                             username.toCharArray(), url,
                             MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT));
                     client.start();
@@ -98,7 +98,7 @@ public class SAClientFactoryTest {
             };
             assertTrue(ClientManager.getInstance().isCredentialsMatch(creds, creds.toCharArray()));
             //Success
-            SAClient client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
+            SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
                     creds.toCharArray(), MockStrategyAgent.DEFAULT_URL,
                     MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT));
             client.start();

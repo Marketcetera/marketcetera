@@ -28,7 +28,7 @@ import io.grpc.stub.StreamObserver;
  * @since $Release$
  */
 public class SampleRpcClient
-        extends AbstractRpcClient<SampleRpcServiceBlockingStub,SampleRpcServiceStub>
+        extends AbstractRpcClient<SampleRpcServiceBlockingStub,SampleRpcServiceStub,SampleRpcClientParameters>
 {
     /**
      * Get the heartbeatCount value.
@@ -47,6 +47,15 @@ public class SampleRpcClient
     public void setHeartbeatCount(int inHeartbeatCount)
     {
         heartbeatCount = inHeartbeatCount;
+    }
+    /**
+     * Create a new SampleRpcClient instance.
+     *
+     * @param inParameters a <code>SampleRpcClientParameters> value
+     */
+    SampleRpcClient(SampleRpcClientParameters inParameters)
+    {
+        super(inParameters);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getBlockingStub(io.grpc.Channel)

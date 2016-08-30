@@ -25,7 +25,7 @@ import org.springframework.context.Lifecycle;
  */
 @ClassVersion("$Id$")
 public abstract class AbstractSAClient
-        implements SAClient,EmitterAdapter,Lifecycle
+        implements SAClient<SAClientParameters>,EmitterAdapter,Lifecycle
 {
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#isRunning()

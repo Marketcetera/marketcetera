@@ -8,8 +8,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +15,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
@@ -26,14 +23,11 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.saclient.ConnectionException;
+import org.marketcetera.rpc.RpcTestBase;
+import org.marketcetera.rpc.client.RpcClientFactory;
 import org.marketcetera.saclient.ConnectionStatusListener;
 import org.marketcetera.saclient.CreateStrategyParameters;
-import org.marketcetera.saclient.SAClientParameters;
-import org.marketcetera.trade.TradeContextClassProvider;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.rpc.RpcServer;
-import org.marketcetera.util.ws.stateful.SessionManager;
+import org.marketcetera.util.ws.tags.SessionId;
 
 /* $License$ */
 
@@ -45,6 +39,7 @@ import org.marketcetera.util.ws.stateful.SessionManager;
  * @since 2.4.0
  */
 public class RpcSAClientImplTest
+        extends RpcTestBase<StrategyAgentRpcClientParameters,StrategyAgentRpcClient,SessionId,SAClientServiceRpcGrpc.SAClientServiceRpcImplBase,StrategyAgentRpcService<SessionId>>
 {
     /**
      * Runs before each test.
@@ -55,26 +50,9 @@ public class RpcSAClientImplTest
     public void setup()
             throws Exception
     {
-        stopClientServer();
-        hostname = "127.0.0.1";
-        port = -1;
-        sessionManager = new SessionManager<MockSession>();
-        authenticator = new MockAuthenticator();
         serviceAdapter = new MockSAClientServiceAdapter();
-        startClientServer();
-        assertTrue(server.isRunning());
-        assertTrue(client.isRunning());
-    }
-    /**
-     * Runs after each test.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @After
-    public void after()
-            throws Exception
-    {
-        stopClientServer();
+        super.setup();
+        client = createClient();
     }
     /**
      * Tests disconnection and reconnection.
@@ -96,8 +74,8 @@ public class RpcSAClientImplTest
         client.addConnectionStatusListener(statusListener);
         assertTrue(status.get());
         // kill the server
-        server.stop();
-        assertFalse(server.isRunning());
+        rpcServer.stop();
+        assertFalse(rpcServer.isRunning());
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -107,8 +85,8 @@ public class RpcSAClientImplTest
             }
         });
         assertFalse(status.get());
-        server.start();
-        assertTrue(server.isRunning());
+        rpcServer.start();
+        assertTrue(rpcServer.isRunning());
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -350,7 +328,7 @@ public class RpcSAClientImplTest
             throws Exception
     {
         assertNull(serviceAdapter.getSentData());
-        new ExpectedFailure<ConnectionException>() {
+        new ExpectedFailure<RuntimeException>() {
             @Override
             protected void run()
                     throws Exception
@@ -379,117 +357,48 @@ public class RpcSAClientImplTest
                                     "Lorum ipsum");
         return tmpFile;
     }
-    /**
-     * Stops the test client and server.
-     *
-     * @throws Exception if an unexpected error occurs
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.RpcTestBase#createTestService()
      */
-    private void stopClientServer()
-            throws Exception
+    @Override
+    protected StrategyAgentRpcService<SessionId> createTestService()
     {
-        if(client != null && client.isRunning()) {
-            try {
-                client.stop();
-            } catch (Exception e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e);
-            }
-        }
-        client = null;
-        if(server != null && server.isRunning()) {
-            try {
-                server.stop();
-            } catch (Exception e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e);
-            }
-        }
-        server = null;
-    }
-    /**
-     * Starts the test client server and client.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    private void startClientServer()
-            throws Exception
-    {
-        server = new RpcServer<MockSession>();
-        server.setHostname(hostname);
-        if(port == -1) {
-            port = assignPort();
-        }
-        server.setPort(port);
-        server.setSessionManager(sessionManager);
-        server.setAuthenticator(authenticator);
-        server.setContextClassProvider(TradeContextClassProvider.INSTANCE);
-        SAClientRpcService<MockSession> service = new SAClientRpcService<>();
-        server.getServiceSpecs().add(service);
+        StrategyAgentRpcService<SessionId> service = new StrategyAgentRpcService<>();
         service.setServiceAdapter(serviceAdapter);
-        server.setContextClassProvider(SAClientContextClassProvider.INSTANCE);
-        server.start();
-        client = new RpcSAClientFactory().create(new SAClientParameters("username",
-                                                                        "password".toCharArray(),
-                                                                        "",
-                                                                        hostname,
-                                                                        port,
-                                                                        null,
-                                                                        false));
-        client.setContextClassProvider(SAClientContextClassProvider.INSTANCE);
-        client.start();
+        service.setContextClassProvider(StrategyAgentClientContextClassProvider.INSTANCE);
+        return service;
     }
-    /**
-     * Assigns a port value that is not in use.
-     * 
-     * @return an <code>int</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.RpcTestBase#getRpcClientFactory()
      */
-    private int assignPort()
+    @Override
+    protected RpcClientFactory<StrategyAgentRpcClientParameters,StrategyAgentRpcClient> getRpcClientFactory()
     {
-        for(int i=MIN_PORT_NUMBER;i<=MAX_PORT_NUMBER;i++) {
-            try(ServerSocket ss = new ServerSocket(i)) {
-                ss.setReuseAddress(true);
-                try(DatagramSocket ds = new DatagramSocket(i)) {
-                    ds.setReuseAddress(true);
-                    return i;
-                }
-            } catch (IOException e) {}
-        }
-        throw new IllegalArgumentException("No available ports");
+        return new StrategyAgentRpcClientFactory();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.RpcTestBase#getClientParameters(java.lang.String, int, java.lang.String, java.lang.String)
+     */
+    @Override
+    protected StrategyAgentRpcClientParameters getClientParameters(String inHostname,
+                                                                   int inPort,
+                                                                   String inUsername,
+                                                                   String inPassword)
+    {
+        StrategyAgentRpcClientParameters parameters = new StrategyAgentRpcClientParameters();
+        parameters.setContextClassProvider(StrategyAgentClientContextClassProvider.INSTANCE);
+        parameters.setHostname(inHostname);
+        parameters.setPassword(inPassword);
+        parameters.setPort(inPort);
+        parameters.setUsername(inUsername);
+        return parameters;
     }
     /**
      * test service adapter value
      */
     private MockSAClientServiceAdapter serviceAdapter;
     /**
-     * test authenticator value
-     */
-    private MockAuthenticator authenticator;
-    /**
-     * test session manager value
-     */
-    private SessionManager<MockSession> sessionManager;
-    /**
-     * test hostname
-     */
-    private String hostname;
-    /**
-     * test port
-     */
-    private int port;
-    /**
-     * minimum test port value
-     */
-    private static final int MIN_PORT_NUMBER = 10000;
-    /**
-     * maximum test port value
-     */
-    private static final int MAX_PORT_NUMBER = 65535;
-    /**
      * test client value
      */
-    private RpcSAClientImpl client;
-    /**
-     * tests server value
-     */
-    private RpcServer<MockSession> server;
+    private StrategyAgentRpcClient client;
 }

@@ -3,13 +3,14 @@ package org.marketcetera.clienttest;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.saclient.CreateStrategyParameters;
 import org.marketcetera.saclient.DataReceiver;
 import org.marketcetera.saclient.SAClient;
-import org.marketcetera.saclient.SAClientParameters;
-import org.marketcetera.saclient.rpc.RpcSAClientFactory;
-import org.marketcetera.saclient.rpc.SAClientContextClassProvider;
+import org.marketcetera.saclient.rpc.StrategyAgentClientContextClassProvider;
+import org.marketcetera.saclient.rpc.StrategyAgentRpcClientFactory;
+import org.marketcetera.saclient.rpc.StrategyAgentRpcClientParameters;
 import org.marketcetera.strategy.Language;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -33,13 +34,21 @@ public class SaClientTest
     {
         SLF4JLoggerProxy.info(ClientTest.class,
                               "Starting strategy engine client test");
-        SAClient client = RpcSAClientFactory.INSTANCE.create(new SAClientParameters("user",
-                                                                                    "password".toCharArray(),
-                                                                                    "tcp://localhost:61617",
-                                                                                    "localhost",
-                                                                                    8998,
-                                                                                    SAClientContextClassProvider.INSTANCE));
-        client.start();
+        StrategyAgentRpcClientParameters parameters = new StrategyAgentRpcClientParameters();
+        parameters.setContextClassProvider(StrategyAgentClientContextClassProvider.INSTANCE);
+        parameters.setHostname("localhost");
+        parameters.setPassword("password");
+        parameters.setPort(8998);
+        parameters.setUsername("user");
+        SAClient<StrategyAgentRpcClientParameters> client = StrategyAgentRpcClientFactory.INSTANCE.create(parameters);
+        try {
+            client.start();
+        } catch (Exception e) {
+            if(e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            }
+            throw new RuntimeException(ExceptionUtils.getRootCauseMessage(e));
+        }
         SLF4JLoggerProxy.info(ClientTest.class,
                               "Connected to strategy engine: {}",
                               client.isRunning());

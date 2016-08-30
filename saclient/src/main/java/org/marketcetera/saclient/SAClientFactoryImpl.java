@@ -13,13 +13,13 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class SAClientFactoryImpl
-        implements SAClientFactory
+        implements SAClientFactory<SAClientParameters>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.saclient.SAClientFactory#create(org.marketcetera.saclient.SAClientParameters)
      */
     @Override
-    public SAClient create(SAClientParameters inParameters)
+    public SAClient<SAClientParameters> create(SAClientParameters inParameters)
     {
         return new SAClientImpl(inParameters);
     }

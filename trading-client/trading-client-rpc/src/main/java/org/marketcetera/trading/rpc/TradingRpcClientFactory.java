@@ -1,7 +1,6 @@
 package org.marketcetera.trading.rpc;
 
-import java.util.Locale;
-
+import org.marketcetera.rpc.client.RpcClientFactory;
 import org.marketcetera.tradingclient.TradingClient;
 import org.marketcetera.tradingclient.TradingClientFactory;
 
@@ -15,39 +14,15 @@ import org.marketcetera.tradingclient.TradingClientFactory;
  * @since $Release$
  */
 public class TradingRpcClientFactory
-        implements TradingClientFactory
+        implements RpcClientFactory<TradingRpcClientParameters,TradingRpcClient>,
+                                    TradingClientFactory<TradingRpcClientParameters>
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.tradingclient.TradingClientFactory#create(java.lang.String, java.lang.String, java.lang.String, int)
+     * @see org.marketcetera.rpc.client.RpcClientFactory#create(org.marketcetera.rpc.client.RpcClientParameters)
      */
     @Override
-    public TradingClient create(String inUsername,
-                                String inPassword,
-                                String inHostname,
-                                int inPort)
+    public TradingRpcClient create(TradingRpcClientParameters inParameters)
     {
-        return create(inUsername,
-                      inPassword,
-                      inHostname,
-                      inPort,
-                      Locale.getDefault());
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.tradingclient.TradingClientFactory#create(java.lang.String, java.lang.String, java.lang.String, int, java.util.Locale)
-     */
-    @Override
-    public TradingClient create(String inUsername,
-                                String inPassword,
-                                String inHostname,
-                                int inPort,
-                                Locale inLocale)
-    {
-        TradingRpcClient client = new TradingRpcClient();
-        client.setHostname(inHostname);
-        client.setPassword(inPassword);
-        client.setPort(inPort);
-        client.setUsername(inUsername);
-        client.setLocale(inLocale);
-        return client;
+        return new TradingRpcClient(inParameters);
     }
 }

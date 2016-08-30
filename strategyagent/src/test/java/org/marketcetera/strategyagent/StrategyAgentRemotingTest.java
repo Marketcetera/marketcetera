@@ -2,7 +2,12 @@ package org.marketcetera.strategyagent;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -28,7 +33,12 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleTestBase;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.saclient.*;
+import org.marketcetera.saclient.ConnectionException;
+import org.marketcetera.saclient.CreateStrategyParameters;
+import org.marketcetera.saclient.SAClient;
+import org.marketcetera.saclient.SAClientFactoryImpl;
+import org.marketcetera.saclient.SAClientParameters;
+import org.marketcetera.saclient.SAClientVersion;
 import org.marketcetera.strategy.Language;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.file.Deleter;
@@ -210,7 +220,7 @@ public class StrategyAgentRemotingTest
 
     @Test
     public void getInstances() throws Exception {
-        final SAClient saClient = createClient();
+        final SAClient<SAClientParameters> saClient = createClient();
         List<ModuleURN> urns = saClient.getInstances(null);
         assertFalse(urns.toString(), urns.isEmpty());
         //verify it contains the receiver and the client instances
@@ -228,7 +238,7 @@ public class StrategyAgentRemotingTest
     
     @Test
     public void getProviders() throws Exception {
-        SAClient saClient = createClient();
+        SAClient<SAClientParameters> saClient = createClient();
         List<ModuleURN> urns = saClient.getProviders();
         assertFalse(urns.toString(), urns.isEmpty());
         assertTrue(urns.toString(), urns.contains(ClientModuleFactory.INSTANCE_URN.parent()));
@@ -237,7 +247,7 @@ public class StrategyAgentRemotingTest
 
     @Test
     public void getModuleInfo() throws Exception {
-        final SAClient saClient = createClient();
+        final SAClient<SAClientParameters> saClient = createClient();
         //null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -263,7 +273,7 @@ public class StrategyAgentRemotingTest
 
     @Test
     public void getPropertiesFailure() throws Exception {
-        final SAClient saClient = createClient();
+        final SAClient<SAClientParameters> saClient = createClient();
         //null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -287,7 +297,7 @@ public class StrategyAgentRemotingTest
     public void setPropertiesFailure()
             throws Exception
     {
-        final SAClient saClient = createClient();
+        final SAClient<SAClientParameters> saClient = createClient();
         // null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -345,7 +355,7 @@ public class StrategyAgentRemotingTest
      */
     @Test
     public void createStrategyFailure() throws Exception {
-        final SAClient saClient = createClient();
+        final SAClient<SAClientParameters> saClient = createClient();
         //null parameter failure
         verifyNestedFailure(Messages.NO_STRATEGY_CREATE_PARMS_SPECIFIED, new WSOpFailure() {
             @Override
@@ -393,7 +403,7 @@ public class StrategyAgentRemotingTest
      */
     @Test
     public void getStrategyCreateParmsFailure() throws Exception {
-        final SAClient saClient = createClient();
+        final SAClient<SAClientParameters> saClient = createClient();
         //null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -424,7 +434,7 @@ public class StrategyAgentRemotingTest
     
     @Test
     public void startFailure() throws Exception {
-        final SAClient saClient = createClient();
+        final SAClient<SAClientParameters> saClient = createClient();
         //null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -455,7 +465,7 @@ public class StrategyAgentRemotingTest
 
     @Test
     public void stopFailure() throws Exception {
-        final SAClient saClient = createClient();
+        final SAClient<SAClientParameters> saClient = createClient();
         //null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -486,7 +496,7 @@ public class StrategyAgentRemotingTest
 
     @Test
     public void deleteFailure() throws Exception {
-        final SAClient saClient = createClient();
+        final SAClient<SAClientParameters> saClient = createClient();
         //null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -525,7 +535,7 @@ public class StrategyAgentRemotingTest
     public void strategyLifecycle()
             throws Exception
     {
-        final SAClient saClient = createClient();
+        final SAClient<SAClientParameters> saClient = createClient();
         // create, start, stop, delete, get/set props, get createParms
         // verify no instances exist yet
         List<ModuleURN> instances = saClient.getInstances(STRATEGY_PROVIDER_URN);
@@ -716,8 +726,8 @@ public class StrategyAgentRemotingTest
 
     }
 
-    private static SAClient createClient()
-            throws ConnectionException
+    private static SAClient<SAClientParameters> createClient()
+            throws Exception
     {
         sSAClient = SAClientFactoryImpl.getInstance().create(new SAClientParameters(DEFAULT_CREDENTIAL,
                                                                                     DEFAULT_CREDENTIAL.toCharArray(),
@@ -745,7 +755,7 @@ public class StrategyAgentRemotingTest
     private static final int JMS_PORT = 61617;
     private static final String RECEIVER_URL = "tcp://" + WS_HOST + ":" + JMS_PORT;
     private static final File TEST_STRATEGY = new File("src/test/sample_data/test_strategy.rb");
-    private static volatile SAClient sSAClient;
+    private static volatile SAClient<SAClientParameters> sSAClient;
     private static final ModuleURN RECEIVER_URN = new ModuleURN("metc:remote:receiver:single");
     private static final ModuleURN STRATEGY_PROVIDER_URN = new ModuleURN("metc:strategy:system");
     private static final String STRAT_PROP_ROUTING_ORDERS = "RoutingOrdersToORS";

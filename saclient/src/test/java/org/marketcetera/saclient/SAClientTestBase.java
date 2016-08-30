@@ -102,7 +102,7 @@ public class SAClientTestBase {
      *
      * @return the SA client.
      */
-    protected static SAClient getClient() {
+    protected static SAClient<SAClientParameters> getClient() {
         return sClient;
     }
 
@@ -150,7 +150,7 @@ public class SAClientTestBase {
         }
     }
     protected volatile static MockStrategyAgent sMockSA;
-    protected volatile static SAClient sClient;
+    protected volatile static SAClient<SAClientParameters> sClient;
 
     /**
      * A base class for testing listeners.

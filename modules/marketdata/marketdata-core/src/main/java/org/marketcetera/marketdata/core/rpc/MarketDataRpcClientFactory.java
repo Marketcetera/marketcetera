@@ -1,8 +1,8 @@
 package org.marketcetera.marketdata.core.rpc;
 
-import org.marketcetera.marketdata.core.webservice.MarketDataServiceClientFactory;
+import org.marketcetera.marketdata.core.MarketDataClientFactory;
+import org.marketcetera.rpc.client.RpcClientFactory;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.ContextClassProvider;
 
 /* $License$ */
 
@@ -15,39 +15,15 @@ import org.marketcetera.util.ws.ContextClassProvider;
  */
 @ClassVersion("$Id$")
 public class MarketDataRpcClientFactory
-        implements MarketDataServiceClientFactory
+        implements RpcClientFactory<MarketDataRpcClientParameters,MarketDataRpcClient>,
+                   MarketDataClientFactory<MarketDataRpcClientParameters>
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClientFactory#create(java.lang.String, java.lang.String, java.lang.String, int, org.marketcetera.util.ws.ContextClassProvider)
+     * @see org.marketcetera.rpc.client.RpcClientFactory#create(org.marketcetera.rpc.client.RpcClientParameters)
      */
     @Override
-    public MarketDataRpcClient create(String inUsername,
-                                      String inPassword,
-                                      String inHostname,
-                                      int inPort,
-                                      ContextClassProvider inContextClassProvider)
+    public MarketDataRpcClient create(MarketDataRpcClientParameters inParameters)
     {
-        MarketDataRpcClient client = new MarketDataRpcClient();
-        client.setUsername(inUsername);
-        client.setPassword(inPassword);
-        client.setHostname(inHostname);
-        client.setPort(inPort);
-        client.setContextClassProvider(inContextClassProvider);
-        return client;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClientFactory#create(java.lang.String, java.lang.String, java.lang.String, int)
-     */
-    @Override
-    public MarketDataRpcClient create(String inUsername,
-                                      String inPassword,
-                                      String inHostname,
-                                      int inPort)
-    {
-        return create(inUsername,
-                      inPassword,
-                      inHostname,
-                      inPort,
-                      null);
+        return new MarketDataRpcClient(inParameters);
     }
 }

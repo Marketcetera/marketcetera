@@ -43,7 +43,7 @@ import io.grpc.stub.StreamObserver;
  * @since $Release$
  */
 public class TradingRpcClient
-        extends AbstractRpcClient<TradingRpcServiceBlockingStub,TradingRpcServiceStub>
+        extends AbstractRpcClient<TradingRpcServiceBlockingStub,TradingRpcServiceStub,TradingRpcClientParameters>
         implements TradingClient
 {
     /* (non-Javadoc)
@@ -189,6 +189,15 @@ public class TradingRpcClient
     public OrderID modifyOrder(OrderReplace inOrderReplace)
     {
         throw new UnsupportedOperationException(); // TODO
+    }
+    /**
+     * Create a new TradingRpcClient instance.
+     *
+     * @param inParameters a <code>TradingRpcClientParameters</code> value
+     */
+    TradingRpcClient(TradingRpcClientParameters inParameters)
+    {
+        super(inParameters);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getBlockingStub(io.grpc.Channel)

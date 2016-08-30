@@ -148,9 +148,9 @@ class MockStrategyAgent {
      *
      * @return the client.
      *
-     * @throws ConnectionException if there were errors connecting.
+     * @throws Exception if there were errors connecting.
      */
-    static SAClient connectTo() throws ConnectionException {
+    static SAClient<SAClientParameters> connectTo() throws Exception {
         return connectTo(DEFAULT_PARAMETERS);
     }
     /**
@@ -158,12 +158,12 @@ class MockStrategyAgent {
      *
      * @param inParameters a <code>SAClientParameters</code> value
      * @return a <code>SAClient</code> value
-     * @throws ConnectionException if there were errors connecting.
+     * @throws Exception if there were errors connecting.
      */
-    static SAClient connectTo(SAClientParameters inParameters)
-            throws ConnectionException
+    static SAClient<SAClientParameters> connectTo(SAClientParameters inParameters)
+            throws Exception
     {
-        SAClient client = SAClientFactoryImpl.getInstance().create(inParameters);
+        SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(inParameters);
         client.start();
         return client;
     }

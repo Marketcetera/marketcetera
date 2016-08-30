@@ -15,7 +15,7 @@ import org.marketcetera.util.ws.ContextClassProvider;
  * @since 2.4.0
  */
 @ClassVersion("$Id$")
-public class SAClientContextClassProvider
+public class StrategyAgentClientContextClassProvider
         implements ContextClassProvider
 {
     /* (non-Javadoc)
@@ -33,5 +33,5 @@ public class SAClientContextClassProvider
     /**
      * instance value
      */
-    public static final SAClientContextClassProvider INSTANCE = new SAClientContextClassProvider();
+    public static final StrategyAgentClientContextClassProvider INSTANCE = new StrategyAgentClientContextClassProvider();
 }

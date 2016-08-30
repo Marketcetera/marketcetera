@@ -57,7 +57,7 @@ import io.grpc.stub.StreamObserver;
  * @since $Release$
  */
 public class MarketDataRpcClient
-        extends AbstractRpcClient<MarketDataRpcServiceBlockingStub,MarketDataRpcServiceStub>
+        extends AbstractRpcClient<MarketDataRpcServiceBlockingStub,MarketDataRpcServiceStub,MarketDataRpcClientParameters>
         implements MarketDataServiceClient
 {
     /* (non-Javadoc)
@@ -354,6 +354,16 @@ public class MarketDataRpcClient
     public void setContextClassProvider(ContextClassProvider inContextClassProvider)
     {
         contextClassProvider = inContextClassProvider;
+    }
+    /**
+     * Create a new MarketDataRpcClient instance.
+     *
+     * @param inParameters a <code>MarketDataRpcClientParameters</code> value
+     */
+    MarketDataRpcClient(MarketDataRpcClientParameters inParameters)
+    {
+        super(inParameters);
+        contextClassProvider = inParameters.getContextClassProvider();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getBlockingStub(io.grpc.Channel)

@@ -27,8 +27,7 @@ import org.marketcetera.marketdata.core.webservice.PageRequest;
 import org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider;
 import org.marketcetera.options.OptionUtils;
 import org.marketcetera.rpc.RpcTestBase;
-import org.marketcetera.rpc.client.AbstractRpcClient;
-import org.marketcetera.rpc.server.AbstractRpcService;
+import org.marketcetera.rpc.client.RpcClientFactory;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Future;
@@ -50,7 +49,7 @@ import com.google.common.collect.Lists;
  * @since 2.4.0
  */
 public class MarketDataRpcClientServerTest
-        extends RpcTestBase
+        extends RpcTestBase<MarketDataRpcClientParameters,MarketDataRpcClient,SessionId,MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase,MarketDataRpcService<SessionId>>
 {
     /**
      * Runs once before all tests.
@@ -74,7 +73,7 @@ public class MarketDataRpcClientServerTest
     {
         serviceAdapter = new MockMarketDataServiceAdapter();
         super.setup();
-        client = setupClient(createClient());
+        client = createClient();
     }
     /**
      * Tests disconnection and reconnection.
@@ -389,21 +388,35 @@ public class MarketDataRpcClientServerTest
                      serviceAdapter.getCapabilityRequests().get());
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.rpc.RpcTestBase#createClient()
+     * @see org.marketcetera.rpc.RpcTestBase#getRpcClientFactory()
      */
     @Override
-    @SuppressWarnings("unchecked")
-    protected MarketDataRpcClient createClient()
+    protected RpcClientFactory<MarketDataRpcClientParameters,MarketDataRpcClient> getRpcClientFactory()
     {
-        MarketDataRpcClient client = new MarketDataRpcClient();
-        client.setContextClassProvider(MarketDataContextClassProvider.INSTANCE);
-        return client;
+        return new MarketDataRpcClientFactory();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.RpcTestBase#getClientParameters(java.lang.String, int, java.lang.String, java.lang.String)
+     */
+    @Override
+    protected MarketDataRpcClientParameters getClientParameters(String inHostname,
+                                                                int inPort,
+                                                                String inUsername,
+                                                                String inPassword)
+    {
+        MarketDataRpcClientParameters parameters = new MarketDataRpcClientParameters();
+        parameters.setContextClassProvider(MarketDataContextClassProvider.INSTANCE);
+        parameters.setHostname(inHostname);
+        parameters.setPassword(inPassword);
+        parameters.setPort(inPort);
+        parameters.setUsername(inUsername);
+        return parameters;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.RpcTestBase#createTestService()
      */
     @Override
-    protected AbstractRpcService<SessionId,?> createTestService()
+    protected MarketDataRpcService<SessionId> createTestService()
     {
         MarketDataRpcService<SessionId> service = new MarketDataRpcService<SessionId>();
         service.setServiceAdapter(serviceAdapter);

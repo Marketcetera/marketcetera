@@ -14,12 +14,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.rpc.client.AbstractRpcClient;
+import org.marketcetera.rpc.client.RpcClient;
+import org.marketcetera.rpc.client.RpcClientFactory;
+import org.marketcetera.rpc.client.RpcClientParameters;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionManager;
-import org.marketcetera.util.ws.tags.SessionId;
 import org.springframework.util.SocketUtils;
 
 import io.grpc.BindableService;
@@ -34,7 +35,11 @@ import io.grpc.StatusRuntimeException;
  * @version $Id$
  * @since $Release$
  */
-public abstract class RpcTestBase
+public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientParameters,
+                                  RpcClientClazz extends RpcClient<RpcClientParametersClazz>,
+                                  SessionClazz,
+                                  ServiceClazz extends BindableService,
+                                  RpcServiceClazz extends AbstractRpcService<SessionClazz,ServiceClazz>>
 {
     /**
      * Run before each test.
@@ -64,7 +69,7 @@ public abstract class RpcTestBase
     public void cleanup()
             throws Exception
     {
-        for(AbstractRpcClient<?,?> client : clients) {
+        for(RpcClientClazz client : clients) {
             try {
                 client.stop();
             } catch (Exception e) {
@@ -89,11 +94,10 @@ public abstract class RpcTestBase
             protected void run()
                     throws Exception
             {
-                setupClient(createClient(),
-                            rpcServer.getHostname(),
-                            rpcServer.getPort(),
-                            "test",
-                            "bad-password");
+                createClient(rpcServer.getHostname(),
+                             rpcServer.getPort(),
+                             "test",
+                             "bad-password");
             }
         };
     }
@@ -111,11 +115,10 @@ public abstract class RpcTestBase
             protected void run()
                     throws Exception
             {
-                setupClient(createClient(),
-                            rpcServer.getHostname(),
-                            rpcServer.getPort(),
-                            "bad-username",
-                            "password");
+                createClient(rpcServer.getHostname(),
+                             rpcServer.getPort(),
+                             "bad-username",
+                             "password");
             }
         };
     }
@@ -133,11 +136,10 @@ public abstract class RpcTestBase
             protected void run()
                     throws Exception
             {
-                setupClient(createClient(),
-                            "not-a-valid-host",
-                            rpcServer.getPort(),
-                            "test",
-                            "password");
+                createClient("not-a-valid-host",
+                             rpcServer.getPort(),
+                             "test",
+                             "password");
             }
         };
     }
@@ -155,11 +157,10 @@ public abstract class RpcTestBase
             protected void run()
                     throws Exception
             {
-                setupClient(createClient(),
-                            rpcServer.getHostname(),
-                            rpcServer.getPort()+1,
-                            "test",
-                            "password");
+                createClient(rpcServer.getHostname(),
+                             rpcServer.getPort()+1,
+                             "test",
+                             "password");
             }
         };
     }
@@ -172,7 +173,7 @@ public abstract class RpcTestBase
     public void testNormalLogin()
             throws Exception
     {
-        final AbstractRpcClient<?,?> client = setupClient(createClient());
+        final RpcClientClazz client = createClient();
         assertTrue(client.isRunning());
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
@@ -192,7 +193,7 @@ public abstract class RpcTestBase
     public void testServerReconnection()
             throws Exception
     {
-        final AbstractRpcClient<?,?> client = setupClient(createClient());
+        final RpcClientClazz client = createClient();
         assertTrue(client.isRunning());
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
@@ -241,14 +242,14 @@ public abstract class RpcTestBase
     {
         ExecutorService executorService = Executors.newCachedThreadPool();
         final List<Exception> exceptions = new ArrayList<>();
-        final List<AbstractRpcClient<?,?>> multipleClients = new ArrayList<>();
+        final List<RpcClientClazz> multipleClients = new ArrayList<>();
         for(int i=0;i<10;i++) {
             executorService.submit(new Runnable() {
                 @Override
                 public void run()
                 {
                     try {
-                        final AbstractRpcClient<?,?> client = setupClient(createClient());
+                        final RpcClientClazz client = createClient();
                         multipleClients.add(client);
                         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
                             @Override
@@ -287,33 +288,35 @@ public abstract class RpcTestBase
         assertTrue(exceptions.isEmpty());
     }
     /**
-     * Create a new, uninitialized client object.
+     * Create a service class instance.
      *
-     * @return an <code>AbstractRpcClient&lt;?,?&gt;</code> value
+     * @return a <code>RpcServiceClazz</code> value
      */
-    protected abstract <ClientClazz extends AbstractRpcClient<?,?>> ClientClazz createClient();
+    protected abstract RpcServiceClazz createTestService();
     /**
-     * 
+     * Get a client factory instance.
      *
-     *
-     * @return
+     * @return a <code>RpcClientFactory&lt;RpcClientParametersClazz,RpcClientClazz&;gt;</code> value
      */
-    protected abstract AbstractRpcService<SessionId,?> createTestService();
+    protected abstract RpcClientFactory<RpcClientParametersClazz,RpcClientClazz> getRpcClientFactory();
     /**
      * Set up and start a client with default attributes.
      *
      * @return an <code>AbstractRpcClient&lt;?,?&gt;</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected <ClientClazz extends AbstractRpcClient<?,?>> ClientClazz setupClient(ClientClazz inClient)
+    protected RpcClientClazz createClient()
             throws Exception
     {
-        return setupClient(inClient,
-                            rpcServer.getHostname(),
+        return createClient(rpcServer.getHostname(),
                             rpcServer.getPort(),
                             "test",
                             "password");
     }
+    protected abstract RpcClientParametersClazz getClientParameters(String inHostname,
+                                                                    int inPort,
+                                                                    String inUsername,
+                                                                    String inPassword);
     /**
      * Set up and start a client with the given attributes.
      *
@@ -321,23 +324,22 @@ public abstract class RpcTestBase
      * @param inPort an <code>int</code> value
      * @param inUsername a <code>String</code> value
      * @param inPassword a <code>String<code> value
-     * @return an <code>AbstractRpcClient&lt;?,?&gt;</code> value
+     * @return a <code>RpcClientClazz</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected <ClientClazz extends AbstractRpcClient<?,?>> ClientClazz setupClient(ClientClazz inClient,
-                                                                                   String inHostname,
-                                                                                   int inPort,
-                                                                                   String inUsername,
-                                                                                   String inPassword)
+    protected RpcClientClazz createClient(String inHostname,
+                                          int inPort,
+                                          String inUsername,
+                                          String inPassword)
             throws Exception
     {
-        inClient.setHostname(inHostname);
-        inClient.setPort(inPort);
-        inClient.setUsername(inUsername);
-        inClient.setPassword(inPassword);
-        inClient.start();
-        clients.add(inClient);
-        return inClient;
+        RpcClientFactory<RpcClientParametersClazz,RpcClientClazz> factory = getRpcClientFactory();
+        RpcClientClazz client = factory.create(getClientParameters(inHostname,
+                                                                   inPort,
+                                                                   inUsername,
+                                                                   inPassword));
+        client.start();
+        return client;
     }
     /**
      * Create a test service.
@@ -393,11 +395,11 @@ public abstract class RpcTestBase
     /**
      * tracks the clients successfully started during the test session
      */
-    private final List<AbstractRpcClient<?,?>> clients = new ArrayList<>();
+    private final List<RpcClientClazz> clients = new ArrayList<>();
     /**
      * test RPC service
      */
-    protected AbstractRpcService<SessionId,?> rpcService;
+    protected RpcServiceClazz rpcService;
     /**
      * test RPC server
      */
@@ -409,5 +411,5 @@ public abstract class RpcTestBase
     /**
      * manages sessions
      */
-    protected SessionManager<SessionId> sessionManager;
+    protected SessionManager<SessionClazz> sessionManager;
 }

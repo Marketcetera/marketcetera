@@ -8,6 +8,7 @@ import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcClient;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcClientFactory;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpcClientParameters;
 import org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -32,11 +33,13 @@ public class MarketDataClientTest
         SLF4JLoggerProxy.info(ClientTest.class,
                               "Starting market data client test");
         try {
-            MarketDataRpcClient marketDataClient = new MarketDataRpcClientFactory().create("user",
-                                                                                           "password",
-                                                                                           "localhost",
-                                                                                           8998,
-                                                                                           new MarketDataContextClassProvider());
+            MarketDataRpcClientParameters parameters = new MarketDataRpcClientParameters();
+            parameters.setContextClassProvider(new MarketDataContextClassProvider());
+            parameters.setHostname("localhost");
+            parameters.setPassword("password");
+            parameters.setPort(8998);
+            parameters.setUsername("user");
+            MarketDataRpcClient marketDataClient = new MarketDataRpcClientFactory().create(parameters);
             marketDataClient.start();
             SLF4JLoggerProxy.info(ClientTest.class,
                                   "Connected to market data nexus: {}",
