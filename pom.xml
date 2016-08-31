@@ -66,6 +66,11 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>strategyengine-client-api</artifactId>
+        <version>3.0.11</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>trading-client-rpc</artifactId>
         <version>3.0.11</version>
       </dependency>
@@ -1138,7 +1143,6 @@
     <module>fork</module>
     <module>modules</module>
     <module>orderloader</module>
-    <module>saclient</module>
     <module>samples</module>
     <module>strategyagent</module>
     <module>util</module>
@@ -1146,6 +1150,7 @@
     <module>tools</module>
     <module>trading-client</module>
     <module>rpc-core</module>
+    <module>strategyengine-client</module>
   </modules>
   <repositories>
     <repository>
