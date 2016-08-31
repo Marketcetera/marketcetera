@@ -1,11 +1,10 @@
-package org.marketcetera.saclient.rpc;
+package org.marketcetera.strategyengine.client;
 
 import java.util.List;
 import java.util.Map;
 
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.strategyengine.client.CreateStrategyParameters;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */

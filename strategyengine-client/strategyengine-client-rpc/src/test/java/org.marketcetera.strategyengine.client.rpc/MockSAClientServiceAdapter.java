@@ -1,4 +1,4 @@
-package org.marketcetera.saclient.rpc;
+package org.marketcetera.strategyengine.client.rpc;
 
 import java.util.List;
 import java.util.Map;

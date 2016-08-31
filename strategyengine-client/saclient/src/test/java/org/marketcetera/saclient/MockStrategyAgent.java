@@ -16,6 +16,7 @@ import org.marketcetera.module.ModuleManager;
 import org.marketcetera.modules.remote.receiver.ClientLoginModule;
 import org.marketcetera.modules.remote.receiver.ReceiverFactory;
 import org.marketcetera.strategyengine.client.SAClient;
+import org.marketcetera.strategyengine.server.SAService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;

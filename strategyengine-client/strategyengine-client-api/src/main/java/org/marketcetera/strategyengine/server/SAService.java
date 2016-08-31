@@ -1,4 +1,4 @@
-package org.marketcetera.saclient;
+package org.marketcetera.strategyengine.server;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;

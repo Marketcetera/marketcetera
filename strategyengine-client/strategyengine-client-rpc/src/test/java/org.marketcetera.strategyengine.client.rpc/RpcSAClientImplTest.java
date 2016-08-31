@@ -1,4 +1,4 @@
-package org.marketcetera.saclient.rpc;
+package org.marketcetera.strategyengine.client.rpc;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,8 +25,10 @@ import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.rpc.RpcTestBase;
 import org.marketcetera.rpc.client.RpcClientFactory;
+import org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc;
 import org.marketcetera.strategyengine.client.ConnectionStatusListener;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
+import org.marketcetera.strategyengine.client.server.rpc.StrategyAgentRpcService;
 import org.marketcetera.util.ws.tags.SessionId;
 
 /* $License$ */
@@ -35,7 +37,7 @@ import org.marketcetera.util.ws.tags.SessionId;
  * Tests {@link RpcSAClientImpl}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
+ * @version $Id: RpcSAClientImplTest.java 17223 2016-08-31 01:03:01Z colin $
  * @since 2.4.0
  */
 public class RpcSAClientImplTest

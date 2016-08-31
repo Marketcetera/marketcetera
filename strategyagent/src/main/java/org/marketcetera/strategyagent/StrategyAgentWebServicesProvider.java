@@ -2,7 +2,7 @@ package org.marketcetera.strategyagent;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.marketcetera.saclient.SAService;
+import org.marketcetera.strategyengine.server.SAService;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.util.ws.stateful.*;

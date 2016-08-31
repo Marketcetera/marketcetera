@@ -6,6 +6,7 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
+import org.marketcetera.strategyengine.server.SAService;
 import org.marketcetera.module.ModuleInfo;
 
 import java.util.*;

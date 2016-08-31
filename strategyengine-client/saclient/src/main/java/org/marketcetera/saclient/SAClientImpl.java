@@ -8,6 +8,7 @@ import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategyengine.client.ConnectionException;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
+import org.marketcetera.strategyengine.server.SAService;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.Client;

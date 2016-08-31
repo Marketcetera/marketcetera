@@ -71,6 +71,11 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>strategyengine-client-rpc</artifactId>
+        <version>3.0.11</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>trading-client-rpc</artifactId>
         <version>3.0.11</version>
       </dependency>

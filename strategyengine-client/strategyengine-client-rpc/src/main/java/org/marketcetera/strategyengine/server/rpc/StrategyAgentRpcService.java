@@ -1,4 +1,4 @@
-package org.marketcetera.saclient.rpc;
+package org.marketcetera.strategyengine.server.rpc;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -22,6 +22,7 @@ import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.server.AbstractRpcService;
+import org.marketcetera.saclient.rpc.SAClientRpc;
 import org.marketcetera.saclient.rpc.SAClientRpc.CreateStrategyRequest;
 import org.marketcetera.saclient.rpc.SAClientRpc.CreateStrategyResponse;
 import org.marketcetera.saclient.rpc.SAClientRpc.DeleteRequest;
@@ -44,8 +45,11 @@ import org.marketcetera.saclient.rpc.SAClientRpc.StopRequest;
 import org.marketcetera.saclient.rpc.SAClientRpc.StopResponse;
 import org.marketcetera.saclient.rpc.SAClientRpc.StrategyCreateParmsRequest;
 import org.marketcetera.saclient.rpc.SAClientRpc.StrategyCreateParmsResponse;
+import org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc;
 import org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
+import org.marketcetera.strategyengine.client.SAServiceAdapter;
+import org.marketcetera.strategyengine.client.rpc.XmlValue;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package org.marketcetera.saclient.rpc;
+package org.marketcetera.strategyengine.client.rpc;
 
 import org.marketcetera.rpc.client.RpcClientFactory;
 import org.marketcetera.strategyengine.client.SAClientFactory;

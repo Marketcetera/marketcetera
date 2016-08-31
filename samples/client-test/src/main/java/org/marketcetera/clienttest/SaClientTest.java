@@ -5,13 +5,13 @@ import java.io.FileNotFoundException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.saclient.rpc.StrategyAgentClientContextClassProvider;
-import org.marketcetera.saclient.rpc.StrategyAgentRpcClientFactory;
-import org.marketcetera.saclient.rpc.StrategyAgentRpcClientParameters;
 import org.marketcetera.strategy.Language;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
 import org.marketcetera.strategyengine.client.DataReceiver;
 import org.marketcetera.strategyengine.client.SAClient;
+import org.marketcetera.strategyengine.client.rpc.StrategyAgentClientContextClassProvider;
+import org.marketcetera.strategyengine.client.rpc.StrategyAgentRpcClientFactory;
+import org.marketcetera.strategyengine.client.rpc.StrategyAgentRpcClientParameters;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */

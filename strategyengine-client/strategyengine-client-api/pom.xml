@@ -10,7 +10,7 @@
   <groupId>org.marketcetera</groupId>
   <artifactId>strategyengine-client-api</artifactId>
   <version>3.0.11</version>
-  <name>strategyengine-client-api</name>
+  <name>Strategy Engine Client API</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
