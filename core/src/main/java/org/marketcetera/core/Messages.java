@@ -136,4 +136,8 @@ public interface Messages
     static final I18NMessage0P APP_MISSING_CREDENTIALS = new I18NMessage0P(LOGGER,"app_missing_credentials"); //$NON-NLS-1$
     static final I18NMessage0P APP_NO_ARGS_ALLOWED = new I18NMessage0P(LOGGER,"app_no_args_allowed"); //$NON-NLS-1$
     static final I18NMessage0P APP_NO_CONFIGURATION = new I18NMessage0P(LOGGER,"app_no_configuration"); //$NON-NLS-1$
+    // System Information Logger
+    static final I18NMessage0P PORTS_IN_USE = new I18NMessage0P(LOGGER,"ports_in_use"); //$NON-NLS-1$
+    static final I18NMessage0P PORT = new I18NMessage0P(LOGGER,"port"); //$NON-NLS-1$
+    static final I18NMessage0P DESCRIPTION = new I18NMessage0P(LOGGER,"description"); //$NON-NLS-1$
 }

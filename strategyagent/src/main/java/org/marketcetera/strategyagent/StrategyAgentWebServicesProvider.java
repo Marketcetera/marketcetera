@@ -1,13 +1,21 @@
 package org.marketcetera.strategyagent;
 
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.marketcetera.saclient.SAService;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
-import org.marketcetera.util.ws.stateful.*;
+import org.marketcetera.util.ws.stateful.Authenticator;
+import org.marketcetera.util.ws.stateful.PortDescriptor;
+import org.marketcetera.util.ws.stateful.Server;
+import org.marketcetera.util.ws.stateful.ServerProvider;
+import org.marketcetera.util.ws.stateful.SessionManager;
+import org.marketcetera.util.ws.stateful.UsesPort;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.springframework.context.Lifecycle;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -20,7 +28,7 @@ import org.springframework.context.Lifecycle;
  */
 @ClassVersion("$Id$")
 public class StrategyAgentWebServicesProvider
-        implements Lifecycle, ServerProvider<ClientSession>
+        implements Lifecycle, ServerProvider<ClientSession>, UsesPort
 {
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#isRunning()
@@ -68,6 +76,15 @@ public class StrategyAgentWebServicesProvider
         } finally {
             running.set(false);
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.util.ws.stateful.UsesPort#getPortDescriptors()
+     */
+    @Override
+    public Collection<PortDescriptor> getPortDescriptors()
+    {
+        return Lists.newArrayList(new PortDescriptor(port,
+                                                     Messages.SERVICE_DESCRIPTION.getText()));
     }
     /**
      * Get the sessionManager value.

@@ -25,4 +25,6 @@ public interface Messages
     static final I18NMessage2P SERVER_STARTING = new I18NMessage2P(LOGGER,"server_starting");   //$NON-NLS-1$
     static final I18NMessage1P SERVICE_STARTING = new I18NMessage1P(LOGGER,"service_starting");   //$NON-NLS-1$
     static final I18NMessage0P SERVER_STOPPING = new I18NMessage0P(LOGGER,"server_stopping");   //$NON-NLS-1$
+    static final I18NMessage0P SERVER_DESCRIPTION = new I18NMessage0P(LOGGER,"server_description");   //$NON-NLS-1$
+    static final I18NMessage1P INVALID_SESSION = new I18NMessage1P(LOGGER,"invalid_session");   //$NON-NLS-1$
 }

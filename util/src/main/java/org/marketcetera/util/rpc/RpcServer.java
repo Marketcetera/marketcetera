@@ -8,6 +8,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -25,8 +26,10 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.util.ws.stateful.Authenticator;
+import org.marketcetera.util.ws.stateful.PortDescriptor;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
+import org.marketcetera.util.ws.stateful.UsesPort;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.tags.NodeId;
@@ -55,8 +58,15 @@ import com.googlecode.protobuf.pro.duplex.util.RenamingThreadFactoryProxy;
  */
 @ClassVersion("$Id$")
 public class RpcServer<SessionClazz>
-        implements Lifecycle,RpcServerServices<SessionClazz>
+        implements Lifecycle,RpcServerServices<SessionClazz>,UsesPort
 {
+    /**
+     * Create a new RpcServer instance.
+     */
+    public RpcServer()
+    {
+        description = Messages.SERVER_DESCRIPTION.getText();
+    }
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#isRunning()
      */
@@ -421,7 +431,7 @@ public class RpcServer<SessionClazz>
         SessionId session = new SessionId(inSessionIdValue);
         SessionHolder<SessionClazz> sessionInfo = sessionManager.get(session);
         if(sessionInfo == null) {
-            throw new IllegalArgumentException("Invalid session: " + inSessionIdValue); // TODO
+            throw new IllegalArgumentException(Messages.INVALID_SESSION.getText(inSessionIdValue));
         }
         return sessionInfo;
     }
@@ -451,6 +461,37 @@ public class RpcServer<SessionClazz>
             return (Clazz)unmarshaller.unmarshal(new StringReader(inData));
         }
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.util.ws.stateful.UsesPort#getPortDescriptors()
+     */
+    @Override
+    public Collection<PortDescriptor> getPortDescriptors()
+    {
+        return Lists.newArrayList(new PortDescriptor(port,
+                                                     getDescription()));
+    }
+    /**
+     * Get the description value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getDescription()
+    {
+        return description;
+    }
+    /**
+     * Sets the description value.
+     *
+     * @param inDescription a <code>String</code> value
+     */
+    public void setDescription(String inDescription)
+    {
+        description = inDescription;
+    }
+    /**
+     * describes the purpose of the server
+     */
+    private String description;
     /**
      * manages sessions
      */
