@@ -4,11 +4,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>public-parent</artifactId>
-    <version>3.0.11</version>
+    <version>3.1.0</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>strategyengine-client-parent</artifactId>
-  <version>3.0.11</version>
+  <version>3.1.0</version>
   <packaging>pom</packaging>
   <name>Strategy Engine Client Parent</name>
   <url>http://maven.apache.org</url>
