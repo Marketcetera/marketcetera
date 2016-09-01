@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
+import org.marketcetera.strategyengine.client.SAServiceAdapter;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

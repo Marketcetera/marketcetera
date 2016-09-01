@@ -28,7 +28,7 @@ import org.marketcetera.rpc.client.RpcClientFactory;
 import org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc;
 import org.marketcetera.strategyengine.client.ConnectionStatusListener;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
-import org.marketcetera.strategyengine.client.server.rpc.StrategyAgentRpcService;
+import org.marketcetera.strategyengine.server.rpc.StrategyAgentRpcService;
 import org.marketcetera.util.ws.tags.SessionId;
 
 /* $License$ */

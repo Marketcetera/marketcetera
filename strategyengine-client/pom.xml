@@ -19,6 +19,5 @@
     <module>strategyengine-client-api</module>
     <module>saclient</module>
     <module>strategyengine-client-rpc</module>
-    <module>strategyengine-client-server-rpc</module>
   </modules>
 </project>
