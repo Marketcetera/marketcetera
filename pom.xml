@@ -71,6 +71,11 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>seclient-rpc-core</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>strategyengine-client-rpc</artifactId>
         <version>3.1.0</version>
       </dependency>

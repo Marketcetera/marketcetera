@@ -1,8 +1,8 @@
 syntax = "proto3";
 import "rpc_base.proto";
 option java_generic_services = true;
-option java_package = "org.marketcetera.saclient.rpc";
-option java_outer_classname = "SAClientRpc";
+option java_package = "org.marketcetera.seclient.rpc";
+option java_outer_classname = "SEClientRpc";
 
 message ModuleURN {
     string value = 1;
@@ -120,7 +120,7 @@ message CreateStrategyParameters {
     string payload = 1;
 }
 
-service SAClientServiceRpc {
+service SEClientServiceRpc {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
     rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}

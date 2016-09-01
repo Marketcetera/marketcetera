@@ -22,31 +22,31 @@ import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.server.AbstractRpcService;
-import org.marketcetera.saclient.rpc.SAClientRpc;
-import org.marketcetera.saclient.rpc.SAClientRpc.CreateStrategyRequest;
-import org.marketcetera.saclient.rpc.SAClientRpc.CreateStrategyResponse;
-import org.marketcetera.saclient.rpc.SAClientRpc.DeleteRequest;
-import org.marketcetera.saclient.rpc.SAClientRpc.DeleteResponse;
-import org.marketcetera.saclient.rpc.SAClientRpc.GetPropertiesRequest;
-import org.marketcetera.saclient.rpc.SAClientRpc.GetPropertiesResponse;
-import org.marketcetera.saclient.rpc.SAClientRpc.InstancesRequest;
-import org.marketcetera.saclient.rpc.SAClientRpc.InstancesResponse;
-import org.marketcetera.saclient.rpc.SAClientRpc.ModuleInfoRequest;
-import org.marketcetera.saclient.rpc.SAClientRpc.ModuleInfoResponse;
-import org.marketcetera.saclient.rpc.SAClientRpc.ProvidersRequest;
-import org.marketcetera.saclient.rpc.SAClientRpc.ProvidersResponse;
-import org.marketcetera.saclient.rpc.SAClientRpc.SendDataRequest;
-import org.marketcetera.saclient.rpc.SAClientRpc.SendDataResponse;
-import org.marketcetera.saclient.rpc.SAClientRpc.SetPropertiesRequest;
-import org.marketcetera.saclient.rpc.SAClientRpc.SetPropertiesResponse;
-import org.marketcetera.saclient.rpc.SAClientRpc.StartRequest;
-import org.marketcetera.saclient.rpc.SAClientRpc.StartResponse;
-import org.marketcetera.saclient.rpc.SAClientRpc.StopRequest;
-import org.marketcetera.saclient.rpc.SAClientRpc.StopResponse;
-import org.marketcetera.saclient.rpc.SAClientRpc.StrategyCreateParmsRequest;
-import org.marketcetera.saclient.rpc.SAClientRpc.StrategyCreateParmsResponse;
-import org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc;
-import org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase;
+import org.marketcetera.seclient.rpc.SEClientRpc;
+import org.marketcetera.seclient.rpc.SEClientRpc.CreateStrategyRequest;
+import org.marketcetera.seclient.rpc.SEClientRpc.CreateStrategyResponse;
+import org.marketcetera.seclient.rpc.SEClientRpc.DeleteRequest;
+import org.marketcetera.seclient.rpc.SEClientRpc.DeleteResponse;
+import org.marketcetera.seclient.rpc.SEClientRpc.GetPropertiesRequest;
+import org.marketcetera.seclient.rpc.SEClientRpc.GetPropertiesResponse;
+import org.marketcetera.seclient.rpc.SEClientRpc.InstancesRequest;
+import org.marketcetera.seclient.rpc.SEClientRpc.InstancesResponse;
+import org.marketcetera.seclient.rpc.SEClientRpc.ModuleInfoRequest;
+import org.marketcetera.seclient.rpc.SEClientRpc.ModuleInfoResponse;
+import org.marketcetera.seclient.rpc.SEClientRpc.ProvidersRequest;
+import org.marketcetera.seclient.rpc.SEClientRpc.ProvidersResponse;
+import org.marketcetera.seclient.rpc.SEClientRpc.SendDataRequest;
+import org.marketcetera.seclient.rpc.SEClientRpc.SendDataResponse;
+import org.marketcetera.seclient.rpc.SEClientRpc.SetPropertiesRequest;
+import org.marketcetera.seclient.rpc.SEClientRpc.SetPropertiesResponse;
+import org.marketcetera.seclient.rpc.SEClientRpc.StartRequest;
+import org.marketcetera.seclient.rpc.SEClientRpc.StartResponse;
+import org.marketcetera.seclient.rpc.SEClientRpc.StopRequest;
+import org.marketcetera.seclient.rpc.SEClientRpc.StopResponse;
+import org.marketcetera.seclient.rpc.SEClientRpc.StrategyCreateParmsRequest;
+import org.marketcetera.seclient.rpc.SEClientRpc.StrategyCreateParmsResponse;
+import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc;
+import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SEClientServiceRpcImplBase;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
 import org.marketcetera.strategyengine.client.SAServiceAdapter;
 import org.marketcetera.strategyengine.client.rpc.XmlValue;
@@ -71,7 +71,7 @@ import io.grpc.stub.StreamObserver;
  * @since $Release$
  */
 public class StrategyAgentRpcService<SessionClazz>
-        extends AbstractRpcService<SessionClazz,SAClientServiceRpcGrpc.SAClientServiceRpcImplBase>
+        extends AbstractRpcService<SessionClazz,SEClientServiceRpcGrpc.SEClientServiceRpcImplBase>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.server.AbstractRpcService#start()
@@ -138,7 +138,7 @@ public class StrategyAgentRpcService<SessionClazz>
      * @see org.marketcetera.rpc.server.AbstractRpcService#getService()
      */
     @Override
-    protected SAClientServiceRpcImplBase getService()
+    protected SEClientServiceRpcImplBase getService()
     {
         return service;
     }
@@ -182,10 +182,10 @@ public class StrategyAgentRpcService<SessionClazz>
      * @since $Release$
      */
     private class Service
-            extends SAClientServiceRpcGrpc.SAClientServiceRpcImplBase
+            extends SEClientServiceRpcGrpc.SEClientServiceRpcImplBase
     {
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#login(org.marketcetera.rpc.base.BaseRpc.LoginRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#login(org.marketcetera.rpc.base.BaseRpc.LoginRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void login(LoginRequest inRequest,
@@ -195,7 +195,7 @@ public class StrategyAgentRpcService<SessionClazz>
                                                        inResponseObserver);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#logout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#logout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void logout(LogoutRequest inRequest,
@@ -205,7 +205,7 @@ public class StrategyAgentRpcService<SessionClazz>
                                                         inResponseObserver);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#heartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#heartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void heartbeat(HeartbeatRequest inRequest,
@@ -215,7 +215,7 @@ public class StrategyAgentRpcService<SessionClazz>
                                                            inResponseObserver);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#getProviders(org.marketcetera.saclient.rpc.SAClientRpc.ProvidersRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#getProviders(org.marketcetera.saclient.rpc.SEClientRpc.ProvidersRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void getProviders(ProvidersRequest inRequest,
@@ -227,13 +227,13 @@ public class StrategyAgentRpcService<SessionClazz>
                                        "{} received getProviders request",
                                        getServiceDescription());
                 List<ModuleURN> providers = serviceAdapter.getProviders();
-                SAClientRpc.ProvidersResponse.Builder responseBuilder = SAClientRpc.ProvidersResponse.newBuilder();
+                SEClientRpc.ProvidersResponse.Builder responseBuilder = SEClientRpc.ProvidersResponse.newBuilder();
                 if(providers != null) {
                     for(ModuleURN provider : providers) {
-                        responseBuilder.addProvider(SAClientRpc.ModuleURN.newBuilder().setValue(provider.getValue()).build());
+                        responseBuilder.addProvider(SEClientRpc.ModuleURN.newBuilder().setValue(provider.getValue()).build());
                     }
                 }
-                SAClientRpc.ProvidersResponse response = responseBuilder.build();
+                SEClientRpc.ProvidersResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -248,7 +248,7 @@ public class StrategyAgentRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#getInstances(org.marketcetera.saclient.rpc.SAClientRpc.InstancesRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#getInstances(org.marketcetera.saclient.rpc.SEClientRpc.InstancesRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void getInstances(InstancesRequest inRequest,
@@ -262,13 +262,13 @@ public class StrategyAgentRpcService<SessionClazz>
                                        getServiceDescription(),
                                        provider);
                 List<ModuleURN> instances = serviceAdapter.getInstances(provider);
-                SAClientRpc.InstancesResponse.Builder responseBuilder = SAClientRpc.InstancesResponse.newBuilder();
+                SEClientRpc.InstancesResponse.Builder responseBuilder = SEClientRpc.InstancesResponse.newBuilder();
                 if(instances != null) {
                     for(ModuleURN instance : instances) {
-                        responseBuilder.addInstance(SAClientRpc.ModuleURN.newBuilder().setValue(instance.getValue()).build());
+                        responseBuilder.addInstance(SEClientRpc.ModuleURN.newBuilder().setValue(instance.getValue()).build());
                     }
                 }
-                SAClientRpc.InstancesResponse response = responseBuilder.build();
+                SEClientRpc.InstancesResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -283,7 +283,7 @@ public class StrategyAgentRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#getModuleInfo(org.marketcetera.saclient.rpc.SAClientRpc.ModuleInfoRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#getModuleInfo(org.marketcetera.saclient.rpc.SEClientRpc.ModuleInfoRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void getModuleInfo(ModuleInfoRequest inRequest,
@@ -297,15 +297,15 @@ public class StrategyAgentRpcService<SessionClazz>
                                        getServiceDescription(),
                                        instance);
                 ModuleInfo info = serviceAdapter.getModuleInfo(instance);
-                SAClientRpc.ModuleInfoResponse.Builder responseBuilder = SAClientRpc.ModuleInfoResponse.newBuilder();
+                SEClientRpc.ModuleInfoResponse.Builder responseBuilder = SEClientRpc.ModuleInfoResponse.newBuilder();
                 if(info != null) {
                     try {
-                        responseBuilder.setInfo(SAClientRpc.ModuleInfo.newBuilder().setPayload(marshal(info)));
+                        responseBuilder.setInfo(SEClientRpc.ModuleInfo.newBuilder().setPayload(marshal(info)));
                     } catch (JAXBException e) {
                         throw new ServiceException(e);
                     }
                 }
-                SAClientRpc.ModuleInfoResponse response = responseBuilder.build();
+                SEClientRpc.ModuleInfoResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -320,7 +320,7 @@ public class StrategyAgentRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#start(org.marketcetera.saclient.rpc.SAClientRpc.StartRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#start(org.marketcetera.saclient.rpc.SEClientRpc.StartRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void start(StartRequest inRequest,
@@ -333,9 +333,9 @@ public class StrategyAgentRpcService<SessionClazz>
                                        "{} received start for {} request",
                                        getServiceDescription(),
                                        instance);
-                SAClientRpc.StartResponse.Builder responseBuilder = SAClientRpc.StartResponse.newBuilder();
+                SEClientRpc.StartResponse.Builder responseBuilder = SEClientRpc.StartResponse.newBuilder();
                 serviceAdapter.start(instance);
-                SAClientRpc.StartResponse response = responseBuilder.build();
+                SEClientRpc.StartResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -350,7 +350,7 @@ public class StrategyAgentRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#stop(org.marketcetera.saclient.rpc.SAClientRpc.StopRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#stop(org.marketcetera.saclient.rpc.SEClientRpc.StopRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void stop(StopRequest inRequest,
@@ -363,9 +363,9 @@ public class StrategyAgentRpcService<SessionClazz>
                                        "{} received stop for {} request",
                                        getServiceDescription(),
                                        instance);
-                SAClientRpc.StopResponse.Builder responseBuilder = SAClientRpc.StopResponse.newBuilder();
+                SEClientRpc.StopResponse.Builder responseBuilder = SEClientRpc.StopResponse.newBuilder();
                 serviceAdapter.stop(instance);
-                SAClientRpc.StopResponse response = responseBuilder.build();
+                SEClientRpc.StopResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -380,7 +380,7 @@ public class StrategyAgentRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#delete(org.marketcetera.saclient.rpc.SAClientRpc.DeleteRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#delete(org.marketcetera.saclient.rpc.SEClientRpc.DeleteRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void delete(DeleteRequest inRequest,
@@ -393,9 +393,9 @@ public class StrategyAgentRpcService<SessionClazz>
                                        "{} received delete for {} request",
                                        getServiceDescription(),
                                        instance);
-                SAClientRpc.DeleteResponse.Builder responseBuilder = SAClientRpc.DeleteResponse.newBuilder();
+                SEClientRpc.DeleteResponse.Builder responseBuilder = SEClientRpc.DeleteResponse.newBuilder();
                 serviceAdapter.delete(instance);
-                SAClientRpc.DeleteResponse response = responseBuilder.build();
+                SEClientRpc.DeleteResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -410,7 +410,7 @@ public class StrategyAgentRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#getProperties(org.marketcetera.saclient.rpc.SAClientRpc.GetPropertiesRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#getProperties(org.marketcetera.saclient.rpc.SEClientRpc.GetPropertiesRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void getProperties(GetPropertiesRequest inRequest,
@@ -424,11 +424,11 @@ public class StrategyAgentRpcService<SessionClazz>
                                        getServiceDescription(),
                                        instance);
                 Map<String,Object> properties = serviceAdapter.getProperties(instance);
-                SAClientRpc.GetPropertiesResponse.Builder responseBuilder = SAClientRpc.GetPropertiesResponse.newBuilder();
-                SAClientRpc.Properties.Builder propertiesBuilder = SAClientRpc.Properties.newBuilder();
+                SEClientRpc.GetPropertiesResponse.Builder responseBuilder = SEClientRpc.GetPropertiesResponse.newBuilder();
+                SEClientRpc.Properties.Builder propertiesBuilder = SEClientRpc.Properties.newBuilder();
                 if(properties != null) {
                     for(Map.Entry<String,Object> entry : properties.entrySet()) {
-                        SAClientRpc.Entry.Builder entryBuilder = SAClientRpc.Entry.newBuilder();
+                        SEClientRpc.Entry.Builder entryBuilder = SEClientRpc.Entry.newBuilder();
                         entryBuilder.setKey(entry.getKey());
                         // note that this assumes that all values are marshallable
                         try {
@@ -440,7 +440,7 @@ public class StrategyAgentRpcService<SessionClazz>
                     }
                 }
                 responseBuilder.setProperties(propertiesBuilder.build());
-                SAClientRpc.GetPropertiesResponse response = responseBuilder.build();
+                SEClientRpc.GetPropertiesResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -455,7 +455,7 @@ public class StrategyAgentRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#setProperties(org.marketcetera.saclient.rpc.SAClientRpc.SetPropertiesRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#setProperties(org.marketcetera.saclient.rpc.SEClientRpc.SetPropertiesRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void setProperties(SetPropertiesRequest inRequest,
@@ -465,7 +465,7 @@ public class StrategyAgentRpcService<SessionClazz>
                 validateAndReturnSession(inRequest.getSessionId());
                 ModuleURN instance = new ModuleURN(inRequest.getInstance().getValue());
                 Map<String,Object> properties = Maps.newHashMap();
-                for(SAClientRpc.Entry entry : inRequest.getProperties().getEntryList()) {
+                for(SEClientRpc.Entry entry : inRequest.getProperties().getEntryList()) {
                     try {
                         // note that this assumes that all values are marshallable
                         properties.put(entry.getKey(),
@@ -481,11 +481,11 @@ public class StrategyAgentRpcService<SessionClazz>
                                        instance);
                 properties = serviceAdapter.setProperties(instance,
                                                           properties);
-                SAClientRpc.SetPropertiesResponse.Builder responseBuilder = SAClientRpc.SetPropertiesResponse.newBuilder();
-                SAClientRpc.Properties.Builder propertiesBuilder = SAClientRpc.Properties.newBuilder();
+                SEClientRpc.SetPropertiesResponse.Builder responseBuilder = SEClientRpc.SetPropertiesResponse.newBuilder();
+                SEClientRpc.Properties.Builder propertiesBuilder = SEClientRpc.Properties.newBuilder();
                 if(properties != null) {
                     for(Map.Entry<String,Object> entry : properties.entrySet()) {
-                        SAClientRpc.Entry.Builder entryBuilder = SAClientRpc.Entry.newBuilder();
+                        SEClientRpc.Entry.Builder entryBuilder = SEClientRpc.Entry.newBuilder();
                         entryBuilder.setKey(entry.getKey());
                         // note that this assumes that all values are marshallable
                         try {
@@ -497,7 +497,7 @@ public class StrategyAgentRpcService<SessionClazz>
                     }
                 }
                 responseBuilder.setProperties(propertiesBuilder.build());
-                SAClientRpc.SetPropertiesResponse response = responseBuilder.build();
+                SEClientRpc.SetPropertiesResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -512,7 +512,7 @@ public class StrategyAgentRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#createStrategy(org.marketcetera.saclient.rpc.SAClientRpc.CreateStrategyRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#createStrategy(org.marketcetera.saclient.rpc.SEClientRpc.CreateStrategyRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void createStrategy(CreateStrategyRequest inRequest,
@@ -531,9 +531,9 @@ public class StrategyAgentRpcService<SessionClazz>
                                        getServiceDescription(),
                                        parameters);
                 ModuleURN instance = serviceAdapter.createStrategy(parameters);
-                SAClientRpc.CreateStrategyResponse.Builder responseBuilder = SAClientRpc.CreateStrategyResponse.newBuilder();
-                responseBuilder.setInstance(SAClientRpc.ModuleURN.newBuilder().setValue(instance.getValue()));
-                SAClientRpc.CreateStrategyResponse response = responseBuilder.build();
+                SEClientRpc.CreateStrategyResponse.Builder responseBuilder = SEClientRpc.CreateStrategyResponse.newBuilder();
+                responseBuilder.setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(instance.getValue()));
+                SEClientRpc.CreateStrategyResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -548,7 +548,7 @@ public class StrategyAgentRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#getStrategyCreateParms(org.marketcetera.saclient.rpc.SAClientRpc.StrategyCreateParmsRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#getStrategyCreateParms(org.marketcetera.saclient.rpc.SEClientRpc.StrategyCreateParmsRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void getStrategyCreateParms(StrategyCreateParmsRequest inRequest,
@@ -562,13 +562,13 @@ public class StrategyAgentRpcService<SessionClazz>
                                        getServiceDescription(),
                                        instance);
                 CreateStrategyParameters parameters = serviceAdapter.getStrategyCreateParms(instance);
-                SAClientRpc.StrategyCreateParmsResponse.Builder responseBuilder = SAClientRpc.StrategyCreateParmsResponse.newBuilder();
+                SEClientRpc.StrategyCreateParmsResponse.Builder responseBuilder = SEClientRpc.StrategyCreateParmsResponse.newBuilder();
                 try {
-                    responseBuilder.setCreateStrategyParameters(SAClientRpc.CreateStrategyParameters.newBuilder().setPayload(marshal(parameters)));
+                    responseBuilder.setCreateStrategyParameters(SEClientRpc.CreateStrategyParameters.newBuilder().setPayload(marshal(parameters)));
                 } catch (JAXBException e) {
                     throw new ServiceException(e);
                 }
-                SAClientRpc.StrategyCreateParmsResponse response = responseBuilder.build();
+                SEClientRpc.StrategyCreateParmsResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -583,7 +583,7 @@ public class StrategyAgentRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcImplBase#sendData(org.marketcetera.saclient.rpc.SAClientRpc.SendDataRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#sendData(org.marketcetera.saclient.rpc.SEClientRpc.SendDataRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void sendData(SendDataRequest inRequest,
@@ -601,9 +601,9 @@ public class StrategyAgentRpcService<SessionClazz>
                                        "{} received sendData for {} request",
                                        getServiceDescription(),
                                        data);
-                SAClientRpc.SendDataResponse.Builder responseBuilder = SAClientRpc.SendDataResponse.newBuilder();
+                SEClientRpc.SendDataResponse.Builder responseBuilder = SEClientRpc.SendDataResponse.newBuilder();
                 serviceAdapter.sendData(data);
-                SAClientRpc.SendDataResponse response = responseBuilder.build();
+                SEClientRpc.SendDataResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning from sendData call",
                                        getServiceDescription());
@@ -652,5 +652,5 @@ public class StrategyAgentRpcService<SessionClazz>
     /**
      * description of this service
      */
-    private final static String description = "StrategyAgent RPC Service";
+    private final static String description = "StrategyEngine RPC Service";
 }

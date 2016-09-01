@@ -25,7 +25,7 @@ import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.rpc.RpcTestBase;
 import org.marketcetera.rpc.client.RpcClientFactory;
-import org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc;
+import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc;
 import org.marketcetera.strategyengine.client.ConnectionStatusListener;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
 import org.marketcetera.strategyengine.server.rpc.StrategyAgentRpcService;
@@ -41,7 +41,7 @@ import org.marketcetera.util.ws.tags.SessionId;
  * @since 2.4.0
  */
 public class RpcSAClientImplTest
-        extends RpcTestBase<StrategyAgentRpcClientParameters,StrategyAgentRpcClient,SessionId,SAClientServiceRpcGrpc.SAClientServiceRpcImplBase,StrategyAgentRpcService<SessionId>>
+        extends RpcTestBase<StrategyAgentRpcClientParameters,StrategyAgentRpcClient,SessionId,SEClientServiceRpcGrpc.SEClientServiceRpcImplBase,StrategyAgentRpcService<SessionId>>
 {
     /**
      * Runs before each test.

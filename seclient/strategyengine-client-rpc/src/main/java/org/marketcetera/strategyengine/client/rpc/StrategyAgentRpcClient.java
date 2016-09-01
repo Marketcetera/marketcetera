@@ -22,10 +22,10 @@ import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.client.AbstractRpcClient;
-import org.marketcetera.saclient.rpc.SAClientRpc;
-import org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc;
-import org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcBlockingStub;
-import org.marketcetera.saclient.rpc.SAClientServiceRpcGrpc.SAClientServiceRpcStub;
+import org.marketcetera.seclient.rpc.SEClientRpc;
+import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc;
+import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SEClientServiceRpcBlockingStub;
+import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SEClientServiceRpcStub;
 import org.marketcetera.strategyengine.client.ConnectionException;
 import org.marketcetera.strategyengine.client.ConnectionStatusListener;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
@@ -46,14 +46,14 @@ import io.grpc.stub.StreamObserver;
 /* $License$ */
 
 /**
- * Provides an RPC {@link SAClient} interface.
+ * Provides an RPC {@link SEClient} interface.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public class StrategyAgentRpcClient
-        extends AbstractRpcClient<SAClientServiceRpcBlockingStub,SAClientServiceRpcStub,StrategyAgentRpcClientParameters>
+        extends AbstractRpcClient<SEClientServiceRpcBlockingStub,SEClientServiceRpcStub,StrategyAgentRpcClientParameters>
         implements SAClient<StrategyAgentRpcClientParameters>
 {
     /**
@@ -82,7 +82,7 @@ public class StrategyAgentRpcClient
         super.start();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#getProviders()
+     * @see org.marketcetera.SEClient.SEClient#getProviders()
      */
     @Override
     public List<ModuleURN> getProviders()
@@ -93,9 +93,9 @@ public class StrategyAgentRpcClient
             public List<ModuleURN> call()
                     throws Exception
             {
-                SAClientRpc.ProvidersResponse response = getBlockingStub().getProviders(SAClientRpc.ProvidersRequest.newBuilder().setSessionId(getSessionId().getValue()).build());
+                SEClientRpc.ProvidersResponse response = getBlockingStub().getProviders(SEClientRpc.ProvidersRequest.newBuilder().setSessionId(getSessionId().getValue()).build());
                 List<ModuleURN> providers = Lists.newArrayList();
-                for(SAClientRpc.ModuleURN provider : response.getProviderList()) {
+                for(SEClientRpc.ModuleURN provider : response.getProviderList()) {
                     providers.add(new ModuleURN(provider.getValue()));
                 }
                 return providers;
@@ -103,7 +103,7 @@ public class StrategyAgentRpcClient
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#getInstances(org.marketcetera.module.ModuleURN)
+     * @see org.marketcetera.SEClient.SEClient#getInstances(org.marketcetera.module.ModuleURN)
      */
     @Override
     public List<ModuleURN> getInstances(ModuleURN inProviderURN)
@@ -114,10 +114,10 @@ public class StrategyAgentRpcClient
             public List<ModuleURN> call()
                     throws Exception
             {
-                SAClientRpc.InstancesResponse response = getBlockingStub().getInstances(SAClientRpc.InstancesRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                                                                        .setProvider(SAClientRpc.ModuleURN.newBuilder().setValue(inProviderURN.getValue())).build());
+                SEClientRpc.InstancesResponse response = getBlockingStub().getInstances(SEClientRpc.InstancesRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                                                                        .setProvider(SEClientRpc.ModuleURN.newBuilder().setValue(inProviderURN.getValue())).build());
                 List<ModuleURN> instances = Lists.newArrayList();
-                for(SAClientRpc.ModuleURN instance : response.getInstanceList()) {
+                for(SEClientRpc.ModuleURN instance : response.getInstanceList()) {
                     instances.add(new ModuleURN(instance.getValue()));
                 }
                 return instances;
@@ -125,7 +125,7 @@ public class StrategyAgentRpcClient
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#getModuleInfo(org.marketcetera.module.ModuleURN)
+     * @see org.marketcetera.SEClient.SEClient#getModuleInfo(org.marketcetera.module.ModuleURN)
      */
     @Override
     public ModuleInfo getModuleInfo(ModuleURN inURN)
@@ -136,8 +136,8 @@ public class StrategyAgentRpcClient
             public ModuleInfo call()
                     throws Exception
             {
-                SAClientRpc.ModuleInfoResponse response = getBlockingStub().getModuleInfo(SAClientRpc.ModuleInfoRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                                                                          .setInstance(SAClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
+                SEClientRpc.ModuleInfoResponse response = getBlockingStub().getModuleInfo(SEClientRpc.ModuleInfoRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                                                                          .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
                 ModuleInfo info = null;
                 if(response.hasInfo()) {
                     info = unmarshal(response.getInfo().getPayload());
@@ -147,7 +147,7 @@ public class StrategyAgentRpcClient
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#start(org.marketcetera.module.ModuleURN)
+     * @see org.marketcetera.SEClient.SEClient#start(org.marketcetera.module.ModuleURN)
      */
     @Override
     public void start(final ModuleURN inURN)
@@ -158,14 +158,14 @@ public class StrategyAgentRpcClient
             public Void call()
                     throws Exception
             {
-                getBlockingStub().start(SAClientRpc.StartRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                        .setInstance(SAClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
+                getBlockingStub().start(SEClientRpc.StartRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                        .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
                 return null;
             }
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#stop(org.marketcetera.module.ModuleURN)
+     * @see org.marketcetera.SEClient.SEClient#stop(org.marketcetera.module.ModuleURN)
      */
     @Override
     public void stop(ModuleURN inURN)
@@ -176,14 +176,14 @@ public class StrategyAgentRpcClient
             public Void call()
                     throws Exception
             {
-                getBlockingStub().stop(SAClientRpc.StopRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                       .setInstance(SAClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
+                getBlockingStub().stop(SEClientRpc.StopRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                       .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
                 return null;
             }
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#delete(org.marketcetera.module.ModuleURN)
+     * @see org.marketcetera.SEClient.SEClient#delete(org.marketcetera.module.ModuleURN)
      */
     @Override
     public void delete(ModuleURN inURN)
@@ -194,14 +194,14 @@ public class StrategyAgentRpcClient
             public Void call()
                     throws Exception
             {
-                getBlockingStub().delete(SAClientRpc.DeleteRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                         .setInstance(SAClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
+                getBlockingStub().delete(SEClientRpc.DeleteRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                         .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
                 return null;
             }
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#getProperties(org.marketcetera.module.ModuleURN)
+     * @see org.marketcetera.SEClient.SEClient#getProperties(org.marketcetera.module.ModuleURN)
      */
     @Override
     public Map<String,Object> getProperties(ModuleURN inURN)
@@ -212,10 +212,10 @@ public class StrategyAgentRpcClient
             public Map<String,Object> call()
                     throws Exception
             {
-                SAClientRpc.GetPropertiesResponse response = getBlockingStub().getProperties(SAClientRpc.GetPropertiesRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                                                                             .setInstance(SAClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
+                SEClientRpc.GetPropertiesResponse response = getBlockingStub().getProperties(SEClientRpc.GetPropertiesRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                                                                             .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
                 Map<String,Object> properties = Maps.newHashMap();
-                for(SAClientRpc.Entry entry : response.getProperties().getEntryList()) {
+                for(SEClientRpc.Entry entry : response.getProperties().getEntryList()) {
                     String key = entry.getKey();
                     Object value = ((XmlValue)unmarshal(entry.getValue())).getValue();
                     properties.put(key,
@@ -226,7 +226,7 @@ public class StrategyAgentRpcClient
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#setProperties(org.marketcetera.module.ModuleURN, java.util.Map)
+     * @see org.marketcetera.SEClient.SEClient#setProperties(org.marketcetera.module.ModuleURN, java.util.Map)
      */
     @Override
     public Map<String,Object> setProperties(ModuleURN inURN,
@@ -238,10 +238,10 @@ public class StrategyAgentRpcClient
             public Map<String,Object> call()
                     throws Exception
             {
-                SAClientRpc.Properties.Builder propertiesBuilder = SAClientRpc.Properties.newBuilder();
+                SEClientRpc.Properties.Builder propertiesBuilder = SEClientRpc.Properties.newBuilder();
                 try {
                     for(Map.Entry<String,Object> entry : inProperties.entrySet()) {
-                        SAClientRpc.Entry.Builder entryBuilder = SAClientRpc.Entry.newBuilder();
+                        SEClientRpc.Entry.Builder entryBuilder = SEClientRpc.Entry.newBuilder();
                         entryBuilder.setKey(entry.getKey());
                         // note that this assumes that all values are marshallable
                         entryBuilder.setValue(marshal(new XmlValue(entry.getValue())));
@@ -250,11 +250,11 @@ public class StrategyAgentRpcClient
                 } catch (JAXBException e) {
                     throw new StatusRuntimeException(Status.ABORTED.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
                 }
-                SAClientRpc.SetPropertiesResponse response = getBlockingStub().setProperties(SAClientRpc.SetPropertiesRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                                                                         .setInstance(SAClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue()))
+                SEClientRpc.SetPropertiesResponse response = getBlockingStub().setProperties(SEClientRpc.SetPropertiesRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                                                                         .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue()))
                                                                                          .setProperties(propertiesBuilder.build()).build());
                 Map<String,Object> properties = Maps.newHashMap();
-                for(SAClientRpc.Entry entry : response.getProperties().getEntryList()) {
+                for(SEClientRpc.Entry entry : response.getProperties().getEntryList()) {
                     String key = entry.getKey();
                     Object value = ((XmlValue)unmarshal(entry.getValue())).getValue();
                     properties.put(key,
@@ -265,7 +265,7 @@ public class StrategyAgentRpcClient
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#createStrategy(org.marketcetera.saclient.CreateStrategyParameters)
+     * @see org.marketcetera.SEClient.SEClient#createStrategy(org.marketcetera.SEClient.CreateStrategyParameters)
      */
     @Override
     public ModuleURN createStrategy(CreateStrategyParameters inParameters)
@@ -276,15 +276,15 @@ public class StrategyAgentRpcClient
             public ModuleURN call()
                     throws Exception
             {
-                SAClientRpc.CreateStrategyResponse response = getBlockingStub().createStrategy(SAClientRpc.CreateStrategyRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                                                                               .setCreateStrategyParameters(SAClientRpc.CreateStrategyParameters.newBuilder().setPayload(marshal(inParameters)).build()).build());
+                SEClientRpc.CreateStrategyResponse response = getBlockingStub().createStrategy(SEClientRpc.CreateStrategyRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                                                                               .setCreateStrategyParameters(SEClientRpc.CreateStrategyParameters.newBuilder().setPayload(marshal(inParameters)).build()).build());
                 ModuleURN instance = new ModuleURN(response.getInstance().getValue());
                 return instance;
             }
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#getStrategyCreateParms(org.marketcetera.module.ModuleURN)
+     * @see org.marketcetera.SEClient.SEClient#getStrategyCreateParms(org.marketcetera.module.ModuleURN)
      */
     @Override
     public CreateStrategyParameters getStrategyCreateParms(ModuleURN inURN)
@@ -295,15 +295,15 @@ public class StrategyAgentRpcClient
             public CreateStrategyParameters call()
                     throws Exception
             {
-                SAClientRpc.StrategyCreateParmsResponse response = getBlockingStub().getStrategyCreateParms(SAClientRpc.StrategyCreateParmsRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                                                                                            .setInstance(SAClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
+                SEClientRpc.StrategyCreateParmsResponse response = getBlockingStub().getStrategyCreateParms(SEClientRpc.StrategyCreateParmsRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                                                                                            .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
                 CreateStrategyParameters params = unmarshal(response.getCreateStrategyParameters().getPayload());
                 return params;
             }
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#sendData(java.lang.Object)
+     * @see org.marketcetera.SEClient.SEClient#sendData(java.lang.Object)
      */
     @Override
     public void sendData(Object inData)
@@ -315,14 +315,14 @@ public class StrategyAgentRpcClient
                     throws Exception
             {
                 // note that inData must be JAXB marshallable
-                getBlockingStub().sendData(SAClientRpc.SendDataRequest.newBuilder().setSessionId(getSessionId().getValue())
+                getBlockingStub().sendData(SEClientRpc.SendDataRequest.newBuilder().setSessionId(getSessionId().getValue())
                                            .setPayload(marshal(new XmlValue(inData))).build());
                 return null;
             }
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#addDataReceiver(org.marketcetera.saclient.DataReceiver)
+     * @see org.marketcetera.SEClient.SEClient#addDataReceiver(org.marketcetera.SEClient.DataReceiver)
      */
     @Override
     public void addDataReceiver(DataReceiver inReceiver)
@@ -335,7 +335,7 @@ public class StrategyAgentRpcClient
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#removeDataReciever(org.marketcetera.saclient.DataReceiver)
+     * @see org.marketcetera.SEClient.SEClient#removeDataReciever(org.marketcetera.SEClient.DataReceiver)
      */
     @Override
     public void removeDataReciever(DataReceiver inReceiver)
@@ -348,7 +348,7 @@ public class StrategyAgentRpcClient
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#addConnectionStatusListener(org.marketcetera.saclient.ConnectionStatusListener)
+     * @see org.marketcetera.SEClient.SEClient#addConnectionStatusListener(org.marketcetera.SEClient.ConnectionStatusListener)
      */
     @Override
     public void addConnectionStatusListener(ConnectionStatusListener inListener)
@@ -362,7 +362,7 @@ public class StrategyAgentRpcClient
         inListener.receiveConnectionStatus(isRunning());
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#removeConnectionStatusListener(org.marketcetera.saclient.ConnectionStatusListener)
+     * @see org.marketcetera.SEClient.SEClient#removeConnectionStatusListener(org.marketcetera.SEClient.ConnectionStatusListener)
      */
     @Override
     public void removeConnectionStatusListener(ConnectionStatusListener inListener)
@@ -375,7 +375,7 @@ public class StrategyAgentRpcClient
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#getParameters()
+     * @see org.marketcetera.SEClient.SEClient#getParameters()
      */
     @Override
     public StrategyAgentRpcClientParameters getParameters()
@@ -384,7 +384,7 @@ public class StrategyAgentRpcClient
     }
     // TODO received data - this is currently sent via JMS and DataEmitter/RemoteDataEmitter, prob want to switch to XML
     /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#close()
+     * @see org.marketcetera.SEClient.SEClient#close()
      */
     @Override
     public void close()
@@ -420,17 +420,17 @@ public class StrategyAgentRpcClient
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getBlockingStub(io.grpc.Channel)
      */
     @Override
-    protected SAClientServiceRpcBlockingStub getBlockingStub(Channel inChannel)
+    protected SEClientServiceRpcBlockingStub getBlockingStub(Channel inChannel)
     {
-        return SAClientServiceRpcGrpc.newBlockingStub(inChannel);
+        return SEClientServiceRpcGrpc.newBlockingStub(inChannel);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getAsyncStub(io.grpc.Channel)
      */
     @Override
-    protected SAClientServiceRpcStub getAsyncStub(Channel inChannel)
+    protected SEClientServiceRpcStub getAsyncStub(Channel inChannel)
     {
-        return SAClientServiceRpcGrpc.newStub(inChannel);
+        return SEClientServiceRpcGrpc.newStub(inChannel);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#executeLogin(org.marketcetera.rpc.base.BaseRpc.LoginRequest)
