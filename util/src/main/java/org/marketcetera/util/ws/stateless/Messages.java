@@ -1,6 +1,7 @@
 package org.marketcetera.util.ws.stateless;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessage4P;
@@ -49,4 +50,5 @@ public interface Messages
         new I18NMessage1P(LOGGER,"call_success"); //$NON-NLS-1$
     static final I18NMessage1P CALL_FAILURE=
         new I18NMessage1P(LOGGER,"call_failure"); //$NON-NLS-1$
+    static final I18NMessage0P WEB_SERVICE_DESCRIPTION = new I18NMessage0P(LOGGER,"web_service_description"); //$NON-NLS-1$
 }
