@@ -33,11 +33,11 @@
     </dependency>
     <dependency>
       <groupId>org.marketcetera</groupId>
-      <artifactId>strategyengine-client-rpc</artifactId>
+      <artifactId>seclient-rpc-client</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>strategyengine-client-api</artifactId>
+      <artifactId>seclient-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.marketcetera</groupId>

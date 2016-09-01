@@ -30,7 +30,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>strategyengine-client-api</artifactId>
+      <artifactId>seclient-api</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

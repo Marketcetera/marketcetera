@@ -4,11 +4,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.marketcetera</groupId>
-    <artifactId>strategyengine-client-parent</artifactId>
+    <artifactId>seclient-parent</artifactId>
     <version>3.1.0</version>
   </parent>
   <groupId>org.marketcetera</groupId>
-  <artifactId>strategyengine-client-api</artifactId>
+  <artifactId>seclient-api</artifactId>
   <version>3.1.0</version>
   <name>Strategy Engine Client API</name>
   <url>http://maven.apache.org</url>

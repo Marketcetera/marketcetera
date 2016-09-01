@@ -7,7 +7,7 @@
     <version>3.1.0</version>
   </parent>
   <groupId>org.marketcetera</groupId>
-  <artifactId>strategyengine-client-parent</artifactId>
+  <artifactId>seclient-parent</artifactId>
   <version>3.1.0</version>
   <packaging>pom</packaging>
   <name>Strategy Engine Client Parent</name>
@@ -16,9 +16,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <modules>
-    <module>strategyengine-client-api</module>
     <module>saclient</module>
-    <module>strategyengine-client-rpc</module>
+    <module>seclient-api</module>
+    <module>seclient-rpc-client</module>
     <module>seclient-rpc-core</module>
     <module>seclient-rpc-server</module>
   </modules>
