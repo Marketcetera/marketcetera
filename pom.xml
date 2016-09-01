@@ -61,7 +61,17 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>trading-client-api</artifactId>
+        <artifactId>tradingclient-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>tradingclient-rpc</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>tradingclient-rpc-core</artifactId>
         <version>3.1.0</version>
       </dependency>
       <dependency>
@@ -89,11 +99,6 @@
         <artifactId>seclient-rpc-client</artifactId>
 	<type>test-jar</type>
 	<scope>test</scope>
-        <version>3.1.0</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>trading-client-rpc</artifactId>
         <version>3.1.0</version>
       </dependency>
       <dependency>

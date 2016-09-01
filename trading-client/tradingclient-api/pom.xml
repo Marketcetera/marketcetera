@@ -4,11 +4,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.marketcetera</groupId>
-    <artifactId>trading-client-parent</artifactId>
+    <artifactId>tradingclient-parent</artifactId>
     <version>3.1.0</version>
   </parent>
   <groupId>org.marketcetera</groupId>
-  <artifactId>trading-client-api</artifactId>
+  <artifactId>tradingclient-api</artifactId>
   <version>3.1.0</version>
   <name>Trading Client API</name>
   <url>http://maven.apache.org</url>
