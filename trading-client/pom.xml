@@ -20,7 +20,7 @@
 
   <modules>
     <module>tradingclient-api</module>
-    <module>tradingclient-rpc</module>
+    <module>tradingclient-rpc-client</module>
     <module>tradingclient-rpc-core</module>
   </modules>
 </project>
