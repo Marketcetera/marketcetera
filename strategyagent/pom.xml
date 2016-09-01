@@ -26,7 +26,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>saclient</artifactId>
+      <artifactId>seclient-ws-client</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

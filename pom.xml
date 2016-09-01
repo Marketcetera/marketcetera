@@ -199,7 +199,7 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>saclient</artifactId>
+        <artifactId>seclient-ws-client</artifactId>
         <version>3.1.0</version>
       </dependency>
       <!-- Compile: QuickFIX/J -->
