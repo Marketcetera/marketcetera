@@ -1155,7 +1155,7 @@
     <module>tools</module>
     <module>trading-client</module>
     <module>rpc-core</module>
-    <module>strategyengine-client</module>
+    <module>seclient</module>
   </modules>
   <repositories>
     <repository>
