@@ -1,6 +1,5 @@
 package org.marketcetera.trading.rpc;
 
-import org.marketcetera.rpc.client.RpcClientFactory;
 import org.marketcetera.tradingclient.TradingClient;
 import org.marketcetera.tradingclient.TradingClientFactory;
 
@@ -14,8 +13,7 @@ import org.marketcetera.tradingclient.TradingClientFactory;
  * @since $Release$
  */
 public class TradingRpcClientFactory
-        implements RpcClientFactory<TradingRpcClientParameters,TradingRpcClient>,
-                                    TradingClientFactory<TradingRpcClientParameters>
+        implements TradingClientFactory<TradingRpcClientParameters>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.RpcClientFactory#create(org.marketcetera.rpc.client.RpcClientParameters)
