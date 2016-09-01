@@ -40,6 +40,11 @@
       <artifactId>rpc-core</artifactId>
       <type>test-jar</type>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
