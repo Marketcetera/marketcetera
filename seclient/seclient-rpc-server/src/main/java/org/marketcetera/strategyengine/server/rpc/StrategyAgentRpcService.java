@@ -49,7 +49,7 @@ import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc;
 import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SEClientServiceRpcImplBase;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
 import org.marketcetera.strategyengine.client.SAServiceAdapter;
-import org.marketcetera.strategyengine.client.rpc.XmlValue;
+import org.marketcetera.strategyengine.client.XmlValue;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.springframework.beans.factory.annotation.Autowired;

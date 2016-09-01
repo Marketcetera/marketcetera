@@ -1,4 +1,4 @@
-package org.marketcetera.strategyengine.client.rpc;
+package org.marketcetera.strategyengine.client;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

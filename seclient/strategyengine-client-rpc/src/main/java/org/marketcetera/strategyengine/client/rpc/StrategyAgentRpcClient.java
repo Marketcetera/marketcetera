@@ -31,6 +31,7 @@ import org.marketcetera.strategyengine.client.ConnectionStatusListener;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
 import org.marketcetera.strategyengine.client.DataReceiver;
 import org.marketcetera.strategyengine.client.SAClient;
+import org.marketcetera.strategyengine.client.XmlValue;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.util.ws.tags.AppId;

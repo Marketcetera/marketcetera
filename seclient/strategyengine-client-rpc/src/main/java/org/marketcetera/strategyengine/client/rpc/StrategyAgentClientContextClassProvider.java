@@ -2,6 +2,7 @@ package org.marketcetera.strategyengine.client.rpc;
 
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
+import org.marketcetera.strategyengine.client.XmlValue;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
 
