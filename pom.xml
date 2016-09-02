@@ -103,6 +103,33 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-rpc-core</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-rpc-server</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-rpc-client</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-rpc-client</artifactId>
+	<type>test-jar</type>
+	<scope>test</scope>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
         <version>3.1.0</version>
       </dependency>
@@ -1147,6 +1174,7 @@
   </profiles>
   <modules>
     <module>client</module>
+    <module>clients</module>
     <module>core</module>
     <module>fork</module>
     <module>modules</module>

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>mdclient-parent</artifactId>
+    <version>3.1.0</version>
+  </parent>
+  <groupId>org.marketcetera</groupId>
+  <artifactId>mdclient-rpc-client</artifactId>
+  <version>3.1.0</version>
+  <packaging>jar</packaging>
+  <licenses>
+    <license>
+      <name>GNU General Public License (GPL)v2</name>
+      <url>http://www.fsf.org/licensing/licenses/gpl.txt</url>
+    </license>
+  </licenses>
+  <name>Market Data RPC Client</name>
+  <dependencies>
+    <!-- compile -->
+    <!-- runtime -->
+    <!-- test -->
+  </dependencies>
+</project>
