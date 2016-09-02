@@ -9,7 +9,7 @@ import org.marketcetera.modules.remote.emitter.RemoteDataEmitter;
 import org.marketcetera.strategyengine.client.ConnectionException;
 import org.marketcetera.strategyengine.client.ConnectionStatusListener;
 import org.marketcetera.strategyengine.client.DataReceiver;
-import org.marketcetera.strategyengine.client.SAClient;
+import org.marketcetera.strategyengine.client.SEClient;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
@@ -28,8 +28,8 @@ import org.springframework.context.Lifecycle;
  * @since 2.4.0
  */
 @ClassVersion("$Id$")
-public abstract class AbstractSAClient
-        implements SAClient<SAClientParameters>,EmitterAdapter,Lifecycle
+public abstract class AbstractSEClient
+        implements SEClient,EmitterAdapter,Lifecycle
 {
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#isRunning()
@@ -111,7 +111,7 @@ public abstract class AbstractSAClient
      * @param inParameters an <code>SAClientParameters</code> value
      * @throws ConnectionException if a connection could not be made
      */
-    protected AbstractSAClient(SAClientParameters inParameters)
+    protected AbstractSEClient(SEClientParameters inParameters)
     {
         if(inParameters == null) {
             throw new NullPointerException();
@@ -178,18 +178,6 @@ public abstract class AbstractSAClient
         synchronized (listeners) {
             listeners.removeFirstOccurrence(inListener);
         }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.saclient.SAClient#getParameters()
-     */
-    @Override
-    public SAClientParameters getParameters()
-    {
-        return new SAClientParameters(parameters.getUsername(),
-                                      "*****".toCharArray(),  //$NON-NLS-1$
-                                      parameters.getURL(),
-                                      parameters.getHostname(),
-                                      parameters.getPort());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.modules.remote.emitter.EmitterAdapter#receiveData(java.lang.Object)
@@ -294,7 +282,7 @@ public abstract class AbstractSAClient
     /**
      * SA connection parameters
      */
-    protected final SAClientParameters parameters;
+    protected final SEClientParameters parameters;
     /**
      * indicates if the connection is active or not
      */

@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.strategyengine.client.ConnectionStatusListener;
 import org.marketcetera.strategyengine.client.DataReceiver;
-import org.marketcetera.strategyengine.client.SAClient;
+import org.marketcetera.strategyengine.client.SEClient;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
 
@@ -22,7 +22,7 @@ import org.marketcetera.util.ws.ContextClassProvider;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class SAClientTestBase {
+public class SEClientTestBase {
     /**
      * Run before each test.
      *
@@ -32,17 +32,17 @@ public class SAClientTestBase {
     public void before()
             throws Exception
     {
-        MockStrategyAgent.setContextClassProvider(getContextClassProvider());
-        MockStrategyAgent.startServerAndClient();
+        MockStrategyEngine.setContextClassProvider(getContextClassProvider());
+        MockStrategyEngine.startServerAndClient();
         startAgent();
-        SAClientParameters defaultParams = MockStrategyAgent.DEFAULT_PARAMETERS;
-        SAClientParameters modifiedParams = new SAClientParameters(defaultParams.getUsername(),
+        SEClientParameters defaultParams = MockStrategyEngine.DEFAULT_PARAMETERS;
+        SEClientParameters modifiedParams = new SEClientParameters(defaultParams.getUsername(),
                                                                    defaultParams.getPassword(),
                                                                    defaultParams.getURL(),
                                                                    defaultParams.getHostname(),
                                                                    defaultParams.getPort(),
                                                                    getContextClassProvider());
-        sClient = MockStrategyAgent.connectTo(modifiedParams);
+        sClient = MockStrategyEngine.connectTo(modifiedParams);
     }
     /**
      * Run after each test.
@@ -58,7 +58,7 @@ public class SAClientTestBase {
             sClient = null;
         }
         stopAgent();
-        MockStrategyAgent.closeServerAndClient();
+        MockStrategyEngine.closeServerAndClient();
     }
     /**
      * Adds additional context classes to the SA client/server context.
@@ -78,7 +78,7 @@ public class SAClientTestBase {
      * @throws Exception if there were unexpected errors.
      */
     protected static void startAgent() throws Exception {
-        sMockSA = new MockStrategyAgent();
+        sMockSA = new MockStrategyEngine();
     }
 
     /**
@@ -105,7 +105,7 @@ public class SAClientTestBase {
      *
      * @return the SA client.
      */
-    protected static SAClient<SAClientParameters> getClient() {
+    protected static SEClient getClient() {
         return sClient;
     }
 
@@ -123,7 +123,7 @@ public class SAClientTestBase {
      *
      * @return the mock service instance.
      */
-    protected static MockSAServiceImpl getMockSAService() {
+    protected static MockSEServiceImpl getMockSAService() {
         return sMockSA.getService();
     }
 
@@ -152,8 +152,8 @@ public class SAClientTestBase {
             add(inStatus);
         }
     }
-    protected volatile static MockStrategyAgent sMockSA;
-    protected volatile static SAClient<SAClientParameters> sClient;
+    protected volatile static MockStrategyEngine sMockSA;
+    protected volatile static SEClient sClient;
 
     /**
      * A base class for testing listeners.

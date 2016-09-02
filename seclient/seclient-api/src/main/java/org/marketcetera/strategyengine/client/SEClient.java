@@ -3,10 +3,10 @@ package org.marketcetera.strategyengine.client;
 import java.util.List;
 import java.util.Map;
 
+import org.marketcetera.core.BaseClient;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.rpc.BaseClient;
 
 /* $License$ */
 /**
@@ -22,7 +22,7 @@ import org.marketcetera.util.rpc.BaseClient;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public interface SAClient<ParameterClazz>
+public interface SEClient
         extends BaseClient
 {
     /**
@@ -222,14 +222,6 @@ public interface SAClient<ParameterClazz>
      * @param inListener the listener to remove. Cannot be null.
      */
     public void removeConnectionStatusListener(ConnectionStatusListener inListener);
-
-    /**
-     * The parameters that were specified when connecting to the remote
-     * strategy agent.
-     *
-     * @return the connection parameters.
-     */
-    public ParameterClazz getParameters();
     /**
      * Closes the connection to the remote strategy agent. The behavior
      * of the client after this method is invoked is undefined. If one

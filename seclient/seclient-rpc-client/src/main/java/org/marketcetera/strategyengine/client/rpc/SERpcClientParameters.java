@@ -12,7 +12,7 @@ import org.marketcetera.rpc.client.RpcClientParameters;
  * @version $Id$
  * @since $Release$
  */
-public class StrategyAgentRpcClientParameters
+public class SERpcClientParameters
         extends AbstractContextAwareRpcClientParameters
         implements RpcClientParameters
 {

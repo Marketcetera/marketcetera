@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.marketcetera.module.*;
 import org.marketcetera.strategyengine.client.ConnectionException;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
-import org.marketcetera.strategyengine.client.SAClient;
+import org.marketcetera.strategyengine.client.SEClient;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.file.CopyCharsUtils;
 import org.marketcetera.util.log.I18NMessage0P;
@@ -31,7 +31,7 @@ import org.marketcetera.util.ws.wrappers.MapWrapper;
 
 /* $License$ */
 /**
- * Tests {@link SAClient} web services.
+ * Tests {@link SEClient} web services.
  * <p/>
  * For each web service, verifies that the parameters to each web service
  * are correctly received and that the return values are correctly received.
@@ -42,7 +42,7 @@ import org.marketcetera.util.ws.wrappers.MapWrapper;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class SAClientWSTest extends SAClientTestBase {
+public class SAClientWSTest extends SEClientTestBase {
     /**
      * Run before each test.
      *
@@ -515,7 +515,7 @@ public class SAClientWSTest extends SAClientTestBase {
      */
     private abstract static class WSTester<R> {
         /**
-         * Sets the return value for the API on {@link MockSAServiceImpl}.
+         * Sets the return value for the API on {@link MockSEServiceImpl}.
          *
          * @param isNullParams if testing mode is testing null
          *                     parameters/return values.
@@ -536,7 +536,7 @@ public class SAClientWSTest extends SAClientTestBase {
         protected abstract R invokeApi(boolean isNullParams) throws Exception;
 
         /**
-         * Verify the input parameter values received by {@link MockSAServiceImpl}
+         * Verify the input parameter values received by {@link MockSEServiceImpl}
          * after the API invocation went through.
          *
          * @param isNullParams if the testing mode is testing null

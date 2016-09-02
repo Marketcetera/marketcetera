@@ -1,5 +1,7 @@
 package org.marketcetera.rpc.client;
 
+import org.marketcetera.core.BaseClient;
+
 /* $License$ */
 
 /**
@@ -9,36 +11,7 @@ package org.marketcetera.rpc.client;
  * @version $Id$
  * @since $Release$
  */
-public interface RpcClient<ParameterClazz extends RpcClientParameters>
+public interface RpcClient
+        extends BaseClient
 {
-    /**
-     * 
-     *
-     *
-     * @throws Exception
-     */
-    void start()
-            throws Exception;
-    /**
-     * 
-     *
-     *
-     * @throws Exception
-     */
-    void stop()
-            throws Exception;
-    /**
-     * 
-     *
-     *
-     * @return
-     */
-    boolean isRunning();
-    /**
-     * 
-     *
-     *
-     * @return
-     */
-    ParameterClazz getParameters();
 }

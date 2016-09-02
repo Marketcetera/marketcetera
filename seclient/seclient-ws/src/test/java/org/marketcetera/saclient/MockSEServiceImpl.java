@@ -6,7 +6,7 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
-import org.marketcetera.strategyengine.server.SAService;
+import org.marketcetera.strategyengine.server.SEService;
 import org.marketcetera.module.ModuleInfo;
 
 import java.util.*;
@@ -27,7 +27,7 @@ import java.util.*;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-class MockSAServiceImpl extends ServiceBaseImpl<Object> implements SAService {
+class MockSEServiceImpl extends ServiceBaseImpl<Object> implements SEService {
 
     @Override
     public List<ModuleURN> getProviders(ClientContext inCtx)
@@ -222,7 +222,7 @@ class MockSAServiceImpl extends ServiceBaseImpl<Object> implements SAService {
      *
      * @param inSessionManager the session manager.
      */
-    MockSAServiceImpl(SessionManager<Object> inSessionManager) {
+    MockSEServiceImpl(SessionManager<Object> inSessionManager) {
         super(inSessionManager);
     }
 

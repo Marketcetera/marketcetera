@@ -10,7 +10,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Provides {@link SAService} services.
+ * Provides {@link SEService} services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

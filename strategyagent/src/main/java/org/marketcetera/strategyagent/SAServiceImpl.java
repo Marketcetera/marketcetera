@@ -27,7 +27,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.modules.remote.receiver.ReceiverFactory;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
 import org.marketcetera.strategyengine.client.SAServiceAdapter;
-import org.marketcetera.strategyengine.server.SAService;
+import org.marketcetera.strategyengine.server.SEService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.file.CopyBytesUtils;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -57,7 +57,7 @@ import com.google.common.collect.Maps;
 @ClassVersion("$Id$")
 public class SAServiceImpl
         extends ServiceBaseImpl<ClientSession>
-        implements SAService,SAServiceAdapter
+        implements SEService,SAServiceAdapter
 {
 
     @Override

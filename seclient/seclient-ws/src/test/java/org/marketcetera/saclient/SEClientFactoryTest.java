@@ -8,26 +8,26 @@ import org.junit.Test;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.strategyengine.client.ConnectionException;
-import org.marketcetera.strategyengine.client.SAClient;
+import org.marketcetera.strategyengine.client.SEClient;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
- * Tests {@link SAClientFactoryImpl}.
+ * Tests {@link SEClientFactoryImpl}.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class SAClientFactoryTest {
+public class SEClientFactoryTest {
     /**
      * Verifies the singleton instance.
      */
     @Test
     public void singleton() {
-        assertNotNull(SAClientFactoryImpl.getInstance());
-        assertSame(SAClientFactoryImpl.getInstance(), SAClientFactoryImpl.getInstance());
+        assertNotNull(SEClientFactoryImpl.getInstance());
+        assertSame(SEClientFactoryImpl.getInstance(), SEClientFactoryImpl.getInstance());
     }
 
     /**
@@ -37,27 +37,27 @@ public class SAClientFactoryTest {
      */
     @Test
     public void connect() throws Exception {
-        final String creds = MockStrategyAgent.USER_CREDS;
-        MockStrategyAgent mockSA = new MockStrategyAgent();
+        final String creds = MockStrategyEngine.USER_CREDS;
+        MockStrategyEngine mockSE = new MockStrategyEngine();
         try {
-            MockStrategyAgent.startServerAndClient();
+            MockStrategyEngine.startServerAndClient();
             //null parameters
             new ExpectedFailure<NullPointerException>(){
                 @Override
                 protected void run() throws Exception {
-                    SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(null);
+                    SEClient client = SEClientFactoryImpl.getInstance().create(null);
                     client.start();
                 }
             };
             //WS failure
             new ExpectedFailure<ConnectionException>(Messages.ERROR_WS_CONNECT,
-                    MockStrategyAgent.WS_HOSTNAME, "9009", creds) {
+                    MockStrategyEngine.WS_HOSTNAME, "9009", creds) {
                 @Override
                 protected void run() throws Exception {
-                    SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
-                                                                                                      creds.toCharArray(),
-                                                                                                      MockStrategyAgent.DEFAULT_URL,
-                                                                                                      MockStrategyAgent.WS_HOSTNAME,
+                    SEClient client = SEClientFactoryImpl.getInstance().create(new SEClientParameters(creds,
+                                                                                                      creds,
+                                                                                                      MockStrategyEngine.DEFAULT_URL,
+                                                                                                      MockStrategyEngine.WS_HOSTNAME,
                                                                                                       9009));
                     client.start();
                 }
@@ -68,21 +68,21 @@ public class SAClientFactoryTest {
                     url, creds) {
                 @Override
                 protected void run() throws Exception {
-                    SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
-                            creds.toCharArray(), url,
-                            MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT));
+                    SEClient client = SEClientFactoryImpl.getInstance().create(new SEClientParameters(creds,
+                            creds, url,
+                            MockStrategyEngine.WS_HOSTNAME, MockStrategyEngine.WS_PORT));
                     client.start();
                 }
             };
             //Credential failure:  wrong password
             new ExpectedFailure<ConnectionException>(Messages.ERROR_WS_CONNECT,
-                    MockStrategyAgent.WS_HOSTNAME,
-                    String.valueOf(MockStrategyAgent.WS_PORT), creds) {
+                    MockStrategyEngine.WS_HOSTNAME,
+                    String.valueOf(MockStrategyEngine.WS_PORT), creds) {
                 @Override
                 protected void run() throws Exception {
-                    SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
-                            "bleh".toCharArray(), MockStrategyAgent.DEFAULT_URL,
-                            MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT));
+                    SEClient client = SEClientFactoryImpl.getInstance().create(new SEClientParameters(creds,
+                            "bleh", MockStrategyEngine.DEFAULT_URL,
+                            MockStrategyEngine.WS_HOSTNAME, MockStrategyEngine.WS_PORT));
                     client.start();
                 }
             };
@@ -92,23 +92,23 @@ public class SAClientFactoryTest {
                     url, username) {
                 @Override
                 protected void run() throws Exception {
-                    SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(username,
-                            username.toCharArray(), url,
-                            MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT));
+                    SEClient client = SEClientFactoryImpl.getInstance().create(new SEClientParameters(username,
+                            username, url,
+                            MockStrategyEngine.WS_HOSTNAME, MockStrategyEngine.WS_PORT));
                     client.start();
                 }
             };
             assertTrue(ClientManager.getInstance().isCredentialsMatch(creds, creds.toCharArray()));
             //Success
-            SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
-                    creds.toCharArray(), MockStrategyAgent.DEFAULT_URL,
-                    MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT));
+            SEClient client = SEClientFactoryImpl.getInstance().create(new SEClientParameters(creds,
+                    creds, MockStrategyEngine.DEFAULT_URL,
+                    MockStrategyEngine.WS_HOSTNAME, MockStrategyEngine.WS_PORT));
             client.start();
             client.close();
 
         } finally {
-            MockStrategyAgent.closeServerAndClient();
-            mockSA.close();
+            MockStrategyEngine.closeServerAndClient();
+            mockSE.close();
         }
     }
 }

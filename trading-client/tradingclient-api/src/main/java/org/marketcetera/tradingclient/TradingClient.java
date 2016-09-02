@@ -2,12 +2,12 @@ package org.marketcetera.tradingclient;
 
 import java.util.List;
 
+import org.marketcetera.core.BaseClient;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.util.rpc.BaseClient;
 
 /* $License$ */
 

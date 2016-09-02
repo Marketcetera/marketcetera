@@ -18,7 +18,7 @@ import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.modules.remote.receiver.ReceiverFactory;
-import org.marketcetera.strategyengine.client.SAClient;
+import org.marketcetera.strategyengine.client.SEClient;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
@@ -31,14 +31,14 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
- * Tests {@link SAClient} JMS functions.
+ * Tests {@link SEClient} JMS functions.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class SAClientJMSTest extends SAClientTestBase {
+public class SEClientJMSTest extends SEClientTestBase {
     /**
      * Tests the behavior when a null receiver is added / removed.
      *

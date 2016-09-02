@@ -30,7 +30,7 @@ import org.marketcetera.strategyengine.client.ConnectionException;
 import org.marketcetera.strategyengine.client.ConnectionStatusListener;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
 import org.marketcetera.strategyengine.client.DataReceiver;
-import org.marketcetera.strategyengine.client.SAClient;
+import org.marketcetera.strategyengine.client.SEClient;
 import org.marketcetera.strategyengine.client.XmlValue;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.ws.ContextClassProvider;
@@ -53,16 +53,16 @@ import io.grpc.stub.StreamObserver;
  * @version $Id$
  * @since $Release$
  */
-public class StrategyAgentRpcClient
-        extends AbstractRpcClient<SEClientServiceRpcBlockingStub,SEClientServiceRpcStub,StrategyAgentRpcClientParameters>
-        implements SAClient<StrategyAgentRpcClientParameters>
+public class SERpcClient
+        extends AbstractRpcClient<SEClientServiceRpcBlockingStub,SEClientServiceRpcStub,SERpcClientParameters>
+        implements SEClient
 {
     /**
-     * Create a new StrategyAgentRpcClient instance.
+     * Create a new SERpcClient instance.
      *
-     * @param inParameters a <code>StrategyAgentRpcClientParameters</code> value
+     * @param inParameters an <code>SERpcClientParameters</code> value
      */
-    StrategyAgentRpcClient(StrategyAgentRpcClientParameters inParameters)
+    SERpcClient(SERpcClientParameters inParameters)
     {
         super(inParameters);
         contextClassProvider = inParameters.getContextClassProvider();
@@ -375,14 +375,6 @@ public class StrategyAgentRpcClient
             listeners.removeFirstOccurrence(inListener);
         }
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.SEClient.SEClient#getParameters()
-     */
-    @Override
-    public StrategyAgentRpcClientParameters getParameters()
-    {
-        return parameters;
-    }
     // TODO received data - this is currently sent via JMS and DataEmitter/RemoteDataEmitter, prob want to switch to XML
     /* (non-Javadoc)
      * @see org.marketcetera.SEClient.SEClient#close()
@@ -529,7 +521,7 @@ public class StrategyAgentRpcClient
     /**
      * parameters used to create the client
      */
-    private final StrategyAgentRpcClientParameters parameters;
+    private final SERpcClientParameters parameters;
     /**
      * receivers of remove data
      */
@@ -545,7 +537,7 @@ public class StrategyAgentRpcClient
     /**
      * The client's application ID: the application name.
      */
-    private static final String APP_ID_NAME = StrategyAgentRpcClient.class.getSimpleName();
+    private static final String APP_ID_NAME = SERpcClient.class.getSimpleName();
     /**
      * The client's application ID: the version.
      */

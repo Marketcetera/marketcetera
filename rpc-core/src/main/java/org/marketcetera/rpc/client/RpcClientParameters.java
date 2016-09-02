@@ -1,6 +1,6 @@
 package org.marketcetera.rpc.client;
 
-import java.util.Locale;
+import org.marketcetera.core.ClientParameters;
 
 /* $License$ */
 
@@ -12,24 +12,20 @@ import java.util.Locale;
  * @since $Release$
  */
 public interface RpcClientParameters
+        extends ClientParameters
 {
     /**
-    *
-    *
-    * @param inHostname
-    */
-    void setHostname(String inHostname);
-    String getHostname();
-    void setPort(int inPort);
-    int getPort();
-    void setUsername(String inUsername);
-    String getUsername();
-    void setPassword(String inPassword);
-    String getPassword();
-    void setLocale(Locale inLocale);
-    Locale getLocale();
-    void setHeartbeatInterval(long inHeartbeatInterval);
+     * 
+     *
+     *
+     * @return
+     */
     long getHeartbeatInterval();
-    void setShutdownWait(long inShutdownWait);
+    /**
+     * 
+     *
+     *
+     * @return
+     */
     long getShutdownWait();
 }

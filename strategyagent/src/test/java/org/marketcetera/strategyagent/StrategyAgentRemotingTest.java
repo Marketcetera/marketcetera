@@ -33,13 +33,13 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleTestBase;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.saclient.SAClientFactoryImpl;
-import org.marketcetera.saclient.SAClientParameters;
+import org.marketcetera.saclient.SEClientFactoryImpl;
+import org.marketcetera.saclient.SEClientParameters;
 import org.marketcetera.saclient.SAClientVersion;
 import org.marketcetera.strategy.Language;
 import org.marketcetera.strategyengine.client.ConnectionException;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
-import org.marketcetera.strategyengine.client.SAClient;
+import org.marketcetera.strategyengine.client.SEClient;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.file.Deleter;
 import org.marketcetera.util.log.I18NBoundMessage;
@@ -107,9 +107,9 @@ public class StrategyAgentRemotingTest
     @After
     public void closeClient()
     {
-        if(sSAClient != null) {
-            sSAClient.close();
-            sSAClient = null;
+        if(sSEClient != null) {
+            sSEClient.close();
+            sSEClient = null;
         }
         for(ModuleURN strategyInstance : moduleManager.getModuleInstances(STRATEGY_PROVIDER_URN)) {
             try {
@@ -134,8 +134,8 @@ public class StrategyAgentRemotingTest
                 org.marketcetera.saclient.Messages.ERROR_WS_CONNECT){
             @Override
             protected void run() throws Exception {
-                SAClientFactoryImpl.getInstance().create(
-                        new SAClientParameters(DEFAULT_CREDENTIAL, null,
+                SEClientFactoryImpl.getInstance().create(
+                        new SEClientParameters(DEFAULT_CREDENTIAL, null,
                                 RECEIVER_URL, WS_HOST, WS_PORT)).start();
             }
         };
@@ -144,8 +144,8 @@ public class StrategyAgentRemotingTest
                 org.marketcetera.saclient.Messages.ERROR_WS_CONNECT){
             @Override
             protected void run() throws Exception {
-                SAClientFactoryImpl.getInstance().create(
-                        new SAClientParameters(DEFAULT_CREDENTIAL, "".toCharArray(),
+                SEClientFactoryImpl.getInstance().create(
+                        new SEClientParameters(DEFAULT_CREDENTIAL, "",
                                 RECEIVER_URL, WS_HOST, WS_PORT)).start();
             }
         };
@@ -154,8 +154,8 @@ public class StrategyAgentRemotingTest
                 org.marketcetera.saclient.Messages.ERROR_WS_CONNECT){
             @Override
             protected void run() throws Exception {
-                SAClientFactoryImpl.getInstance().create(
-                        new SAClientParameters(DEFAULT_CREDENTIAL, "what?".toCharArray(),
+                SEClientFactoryImpl.getInstance().create(
+                        new SEClientParameters(DEFAULT_CREDENTIAL, "what?",
                                 RECEIVER_URL, WS_HOST, WS_PORT)).start();
             }
         };
@@ -164,8 +164,8 @@ public class StrategyAgentRemotingTest
                 org.marketcetera.saclient.Messages.ERROR_WS_CONNECT){
             @Override
             protected void run() throws Exception {
-                SAClientFactoryImpl.getInstance().create(
-                        new SAClientParameters("who", DEFAULT_CREDENTIAL.toCharArray(),
+                SEClientFactoryImpl.getInstance().create(
+                        new SEClientParameters("who", DEFAULT_CREDENTIAL,
                                 RECEIVER_URL, WS_HOST, WS_PORT)).start();
             }
         };
@@ -220,7 +220,7 @@ public class StrategyAgentRemotingTest
 
     @Test
     public void getInstances() throws Exception {
-        final SAClient<SAClientParameters> saClient = createClient();
+        final SEClient saClient = createClient();
         List<ModuleURN> urns = saClient.getInstances(null);
         assertFalse(urns.toString(), urns.isEmpty());
         //verify it contains the receiver and the client instances
@@ -238,7 +238,7 @@ public class StrategyAgentRemotingTest
     
     @Test
     public void getProviders() throws Exception {
-        SAClient<SAClientParameters> saClient = createClient();
+        SEClient saClient = createClient();
         List<ModuleURN> urns = saClient.getProviders();
         assertFalse(urns.toString(), urns.isEmpty());
         assertTrue(urns.toString(), urns.contains(ClientModuleFactory.INSTANCE_URN.parent()));
@@ -247,7 +247,7 @@ public class StrategyAgentRemotingTest
 
     @Test
     public void getModuleInfo() throws Exception {
-        final SAClient<SAClientParameters> saClient = createClient();
+        final SEClient saClient = createClient();
         //null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -273,7 +273,7 @@ public class StrategyAgentRemotingTest
 
     @Test
     public void getPropertiesFailure() throws Exception {
-        final SAClient<SAClientParameters> saClient = createClient();
+        final SEClient saClient = createClient();
         //null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -297,7 +297,7 @@ public class StrategyAgentRemotingTest
     public void setPropertiesFailure()
             throws Exception
     {
-        final SAClient<SAClientParameters> saClient = createClient();
+        final SEClient saClient = createClient();
         // null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -355,7 +355,7 @@ public class StrategyAgentRemotingTest
      */
     @Test
     public void createStrategyFailure() throws Exception {
-        final SAClient<SAClientParameters> saClient = createClient();
+        final SEClient saClient = createClient();
         //null parameter failure
         verifyNestedFailure(Messages.NO_STRATEGY_CREATE_PARMS_SPECIFIED, new WSOpFailure() {
             @Override
@@ -403,7 +403,7 @@ public class StrategyAgentRemotingTest
      */
     @Test
     public void getStrategyCreateParmsFailure() throws Exception {
-        final SAClient<SAClientParameters> saClient = createClient();
+        final SEClient saClient = createClient();
         //null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -434,7 +434,7 @@ public class StrategyAgentRemotingTest
     
     @Test
     public void startFailure() throws Exception {
-        final SAClient<SAClientParameters> saClient = createClient();
+        final SEClient saClient = createClient();
         //null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -465,7 +465,7 @@ public class StrategyAgentRemotingTest
 
     @Test
     public void stopFailure() throws Exception {
-        final SAClient<SAClientParameters> saClient = createClient();
+        final SEClient saClient = createClient();
         //null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -496,7 +496,7 @@ public class StrategyAgentRemotingTest
 
     @Test
     public void deleteFailure() throws Exception {
-        final SAClient<SAClientParameters> saClient = createClient();
+        final SEClient saClient = createClient();
         //null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
@@ -535,7 +535,7 @@ public class StrategyAgentRemotingTest
     public void strategyLifecycle()
             throws Exception
     {
-        final SAClient<SAClientParameters> saClient = createClient();
+        final SEClient saClient = createClient();
         // create, start, stop, delete, get/set props, get createParms
         // verify no instances exist yet
         List<ModuleURN> instances = saClient.getInstances(STRATEGY_PROVIDER_URN);
@@ -726,16 +726,16 @@ public class StrategyAgentRemotingTest
 
     }
 
-    private static SAClient<SAClientParameters> createClient()
+    private static SEClient createClient()
             throws Exception
     {
-        sSAClient = SAClientFactoryImpl.getInstance().create(new SAClientParameters(DEFAULT_CREDENTIAL,
-                                                                                    DEFAULT_CREDENTIAL.toCharArray(),
+        sSEClient = SEClientFactoryImpl.getInstance().create(new SEClientParameters(DEFAULT_CREDENTIAL,
+                                                                                    DEFAULT_CREDENTIAL,
                                                                                     RECEIVER_URL,
                                                                                     WS_HOST,
                                                                                     WS_PORT));
-        sSAClient.start();
-        return sSAClient;
+        sSEClient.start();
+        return sSEClient;
     }
 
     /**
@@ -755,7 +755,7 @@ public class StrategyAgentRemotingTest
     private static final int JMS_PORT = 61617;
     private static final String RECEIVER_URL = "tcp://" + WS_HOST + ":" + JMS_PORT;
     private static final File TEST_STRATEGY = new File("src/test/sample_data/test_strategy.rb");
-    private static volatile SAClient<SAClientParameters> sSAClient;
+    private static volatile SEClient sSEClient;
     private static final ModuleURN RECEIVER_URN = new ModuleURN("metc:remote:receiver:single");
     private static final ModuleURN STRATEGY_PROVIDER_URN = new ModuleURN("metc:strategy:system");
     private static final String STRAT_PROP_ROUTING_ORDERS = "RoutingOrdersToORS";

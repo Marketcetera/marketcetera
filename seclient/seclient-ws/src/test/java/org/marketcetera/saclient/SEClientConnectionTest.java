@@ -5,8 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-import java.util.Arrays;
-
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -17,12 +15,12 @@ import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.strategyengine.client.ConnectionException;
-import org.marketcetera.strategyengine.client.SAClient;
+import org.marketcetera.strategyengine.client.SEClient;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
- * Tests aspects of {@link SAClient} related to it's ability to connect
+ * Tests aspects of {@link SEClient} related to it's ability to connect
  * with the remote strategy agent.
  *
  * @author anshul@marketcetera.com
@@ -30,7 +28,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class SAClientConnectionTest {
+public class SEClientConnectionTest {
     /**
      * verifies behavior of Web services after the connection to the client
      * has been closed.
@@ -39,7 +37,7 @@ public class SAClientConnectionTest {
      */
     @Test
     public void closedFailures() throws Exception {
-        final SAClient<SAClientParameters> saclient = MockStrategyAgent.connectTo();
+        final SEClient saclient = MockStrategyEngine.connectTo();
         //Close the connection
         saclient.close();
         //verify that the saclient fails all API invocations
@@ -104,14 +102,12 @@ public class SAClientConnectionTest {
             }
         };
         //These methods can be invoked even when the client is not connected.
-        SAClientTestBase.MyConnectionStatusListener listener = new SAClientTestBase.MyConnectionStatusListener();
+        SEClientTestBase.MyConnectionStatusListener listener = new SEClientTestBase.MyConnectionStatusListener();
         saclient.addConnectionStatusListener(listener);
         saclient.removeConnectionStatusListener(listener);
-        SAClientTestBase.MyDataReceiver receiver = new SAClientTestBase.MyDataReceiver();
+        SEClientTestBase.MyDataReceiver receiver = new SEClientTestBase.MyDataReceiver();
         saclient.addDataReceiver(receiver);
         saclient.removeDataReciever(receiver);
-        verifyParameters(MockStrategyAgent.DEFAULT_PARAMETERS,
-                         saclient.getParameters());
         //We can close it again if we want
         saclient.close();
     }
@@ -123,9 +119,9 @@ public class SAClientConnectionTest {
      */
     @Test
     public void disconnectedFailures() throws Exception {
-        final SAClient<SAClientParameters> saclient = MockStrategyAgent.connectTo();
-        SAClientTestBase.MyConnectionStatusListener listener =
-                new SAClientTestBase.MyConnectionStatusListener();
+        final SEClient saclient = MockStrategyEngine.connectTo();
+        SEClientTestBase.MyConnectionStatusListener listener =
+                new SEClientTestBase.MyConnectionStatusListener();
         saclient.addConnectionStatusListener(listener);
         listener.reset();
         //stop the agent to force disconnection
@@ -196,10 +192,9 @@ public class SAClientConnectionTest {
         //These methods can be invoked even when the client is not connected.
         saclient.addConnectionStatusListener(listener);
         saclient.removeConnectionStatusListener(listener);
-        SAClientTestBase.MyDataReceiver receiver = new SAClientTestBase.MyDataReceiver();
+        SEClientTestBase.MyDataReceiver receiver = new SEClientTestBase.MyDataReceiver();
         saclient.addDataReceiver(receiver);
         saclient.removeDataReciever(receiver);
-        verifyParameters(MockStrategyAgent.DEFAULT_PARAMETERS, saclient.getParameters());
         //We can close it again if we want
         saclient.close();
     }
@@ -211,7 +206,7 @@ public class SAClientConnectionTest {
      */
     @Test
     public void nullListeners() throws Exception {
-        final SAClient<SAClientParameters> saclient = MockStrategyAgent.connectTo();
+        final SEClient saclient = MockStrategyEngine.connectTo();
         new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
@@ -235,8 +230,8 @@ public class SAClientConnectionTest {
      */
     @Test(timeout = 100000)
     public void connectionNotifications() throws Exception {
-        SAClient<SAClientParameters> client = MockStrategyAgent.connectTo();
-        SAClientTestBase.MyConnectionStatusListener listener = new SAClientTestBase.MyConnectionStatusListener();
+        SEClient client = MockStrategyEngine.connectTo();
+        SEClientTestBase.MyConnectionStatusListener listener = new SEClientTestBase.MyConnectionStatusListener();
         client.addConnectionStatusListener(listener);
         listener.reset();
         assertFalse(listener.hasData());
@@ -250,7 +245,7 @@ public class SAClientConnectionTest {
         assertFalse(listener.hasData());
 
         //Connect again
-        client = MockStrategyAgent.connectTo();
+        client = MockStrategyEngine.connectTo();
         client.addConnectionStatusListener(listener);
         listener.reset();
         //but this time kill the server
@@ -274,11 +269,11 @@ public class SAClientConnectionTest {
      */
     @Test(timeout = 100000)
     public void connectionListenerFailure() throws Exception {
-        SAClient<SAClientParameters> client = MockStrategyAgent.connectTo();
-        final SAClientTestBase.MyConnectionStatusListener listener1 =
-                new SAClientTestBase.MyConnectionStatusListener();
-        SAClientTestBase.MyConnectionStatusListener listener2 =
-                new SAClientTestBase.MyConnectionStatusListener();
+        SEClient client = MockStrategyEngine.connectTo();
+        final SEClientTestBase.MyConnectionStatusListener listener1 =
+                new SEClientTestBase.MyConnectionStatusListener();
+        SEClientTestBase.MyConnectionStatusListener listener2 =
+                new SEClientTestBase.MyConnectionStatusListener();
         //configure both listeners to fail
         client.addConnectionStatusListener(listener1);
         client.addConnectionStatusListener(listener2);
@@ -309,9 +304,9 @@ public class SAClientConnectionTest {
      */
     @Test(timeout = 100000)
     public void listenerDuplicates() throws Exception {
-        SAClient<SAClientParameters> client = MockStrategyAgent.connectTo();
-        final SAClientTestBase.MyConnectionStatusListener listener =
-                new SAClientTestBase.MyConnectionStatusListener();
+        SEClient client = MockStrategyEngine.connectTo();
+        final SEClientTestBase.MyConnectionStatusListener listener =
+                new SEClientTestBase.MyConnectionStatusListener();
         client.addConnectionStatusListener(listener);
         //Add listener twice
         client.addConnectionStatusListener(listener);
@@ -333,11 +328,11 @@ public class SAClientConnectionTest {
      */
     @Test(timeout = 100000)
     public void listenerOrder() throws Exception {
-        SAClient<SAClientParameters> client = MockStrategyAgent.connectTo();
-        final SAClientTestBase.MyConnectionStatusListener listener1 =
-                new SAClientTestBase.MyConnectionStatusListener();
-        SAClientTestBase.MyConnectionStatusListener listener2 =
-                new SAClientTestBase.MyConnectionStatusListener();
+        SEClient client = MockStrategyEngine.connectTo();
+        final SEClientTestBase.MyConnectionStatusListener listener1 =
+                new SEClientTestBase.MyConnectionStatusListener();
+        SEClientTestBase.MyConnectionStatusListener listener2 =
+                new SEClientTestBase.MyConnectionStatusListener();
         client.addConnectionStatusListener(listener1);
         client.addConnectionStatusListener(listener2);
         listener1.reset();
@@ -360,11 +355,11 @@ public class SAClientConnectionTest {
      */
     @Test(timeout = 100000)
     public void listenerRemove() throws Exception {
-        SAClient<SAClientParameters> client = MockStrategyAgent.connectTo();
-        final SAClientTestBase.MyConnectionStatusListener listener1 =
-                new SAClientTestBase.MyConnectionStatusListener();
-        SAClientTestBase.MyConnectionStatusListener listener2 =
-                new SAClientTestBase.MyConnectionStatusListener();
+        SEClient client = MockStrategyEngine.connectTo();
+        final SEClientTestBase.MyConnectionStatusListener listener1 =
+                new SEClientTestBase.MyConnectionStatusListener();
+        SEClientTestBase.MyConnectionStatusListener listener2 =
+                new SEClientTestBase.MyConnectionStatusListener();
         client.addConnectionStatusListener(listener1);
         client.addConnectionStatusListener(listener2);
         listener1.reset();
@@ -374,7 +369,7 @@ public class SAClientConnectionTest {
         //Remove listener2
         client.removeConnectionStatusListener(listener2);
         //remove a listener that is not added for kicks
-        client.removeConnectionStatusListener(new SAClientTestBase.MyConnectionStatusListener());
+        client.removeConnectionStatusListener(new SEClientTestBase.MyConnectionStatusListener());
         //close the connection
         client.close();
         //Verify listener1 gets notifications
@@ -394,13 +389,13 @@ public class SAClientConnectionTest {
      */
     @Test(timeout = 100000)
     public void duplicateListenerRemoveOrder() throws Exception {
-        SAClient<SAClientParameters> client = MockStrategyAgent.connectTo();
-        final SAClientTestBase.MyConnectionStatusListener listener0 =
-                new SAClientTestBase.MyConnectionStatusListener();
-        final SAClientTestBase.MyConnectionStatusListener listener1 =
-                new SAClientTestBase.MyConnectionStatusListener();
-        SAClientTestBase.MyConnectionStatusListener listener2 =
-                new SAClientTestBase.MyConnectionStatusListener();
+        SEClient client = MockStrategyEngine.connectTo();
+        final SEClientTestBase.MyConnectionStatusListener listener0 =
+                new SEClientTestBase.MyConnectionStatusListener();
+        final SEClientTestBase.MyConnectionStatusListener listener1 =
+                new SEClientTestBase.MyConnectionStatusListener();
+        SEClientTestBase.MyConnectionStatusListener listener2 =
+                new SEClientTestBase.MyConnectionStatusListener();
         client.addConnectionStatusListener(listener0);
         client.addConnectionStatusListener(listener1);
         client.addConnectionStatusListener(listener2);
@@ -445,7 +440,7 @@ public class SAClientConnectionTest {
 
     @Before
     public void startAgent() throws Exception {
-        mAgent = new MockStrategyAgent();
+        mAgent = new MockStrategyEngine();
     }
 
     @After
@@ -458,23 +453,12 @@ public class SAClientConnectionTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        MockStrategyAgent.startServerAndClient();
+        MockStrategyEngine.startServerAndClient();
     }
 
     @AfterClass
     public static void teardown() throws Exception {
-        MockStrategyAgent.closeServerAndClient();
-    }
-    
-    private void verifyParameters(SAClientParameters inExpected,
-                                  SAClientParameters inActual) {
-        assertEquals(inExpected.getURL(), inActual.getURL());
-        assertEquals(inExpected.getHostname(), inActual.getHostname());
-        assertEquals(inExpected.getPort(), inActual.getPort());
-        assertEquals(inExpected.getUsername(), inActual.getUsername());
-        //password should be smudged!
-        assertFalse(String.valueOf(inActual.getPassword()),
-                Arrays.equals(inExpected.getPassword(), inActual.getPassword()));
+        MockStrategyEngine.closeServerAndClient();
     }
     /**
      * Closure for testing saclient failures after it has been
@@ -488,5 +472,5 @@ public class SAClientConnectionTest {
         }
     }
 
-    private volatile MockStrategyAgent mAgent;
+    private volatile MockStrategyEngine mAgent;
 }

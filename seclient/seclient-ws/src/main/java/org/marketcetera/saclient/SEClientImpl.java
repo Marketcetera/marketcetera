@@ -8,7 +8,7 @@ import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategyengine.client.ConnectionException;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
-import org.marketcetera.strategyengine.server.SAService;
+import org.marketcetera.strategyengine.server.SEService;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.Client;
@@ -26,8 +26,8 @@ import org.marketcetera.util.ws.wrappers.MapWrapper;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-class SAClientImpl
-        extends AbstractSAClient
+public class SEClientImpl
+        extends AbstractSEClient
 {
     /* (non-Javadoc)
      * @see org.marketcetera.saclient.SAClient#getProviders()
@@ -208,7 +208,7 @@ class SAClientImpl
      * @param inParameters the connection details. Cannot be null.
      * @throws ConnectionException if there were errors connecting to the remote strategy agent. 
      */
-    SAClientImpl(SAClientParameters inParameters)
+    SEClientImpl(SEClientParameters inParameters)
             throws ConnectionException
     {
         super(inParameters);
@@ -240,8 +240,8 @@ class SAClientImpl
                                         SAClientVersion.APP_ID,
                                         parameters.getContextClassProvider());
             mServiceClient.login(parameters.getUsername(),
-                                 parameters.getPassword());
-            mSAService = mServiceClient.getService(SAService.class);
+                                 parameters.getPassword()==null?null:parameters.getPassword().toCharArray());
+            mSAService = mServiceClient.getService(SEService.class);
         } catch (Exception e) {
             throw new ConnectionException(e,
                                           new I18NBoundMessage3P(Messages.ERROR_WS_CONNECT,
@@ -266,5 +266,5 @@ class SAClientImpl
     /**
      * provides services
      */
-    private SAService mSAService;
+    private SEService mSAService;
 }

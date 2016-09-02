@@ -1,7 +1,6 @@
 package org.marketcetera.saclient;
 
-import org.marketcetera.strategyengine.client.SAClient;
-import org.marketcetera.strategyengine.client.SAClientFactory;
+import org.marketcetera.strategyengine.client.SEClientFactory;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -14,16 +13,16 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class SAClientFactoryImpl
-        implements SAClientFactory<SAClientParameters>
+public class SEClientFactoryImpl
+        implements SEClientFactory<SEClientParameters>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.saclient.SAClientFactory#create(org.marketcetera.saclient.SAClientParameters)
      */
     @Override
-    public SAClient<SAClientParameters> create(SAClientParameters inParameters)
+    public SEClientImpl create(SEClientParameters inParameters)
     {
-        return new SAClientImpl(inParameters);
+        return new SEClientImpl(inParameters);
     }
     /**
      * Returns the singleton factory instance that can be used to
@@ -31,16 +30,16 @@ public class SAClientFactoryImpl
      *
      * @return the singleton factory instance.
      */
-    public static SAClientFactoryImpl getInstance()
+    public static SEClientFactoryImpl getInstance()
     {
         return sInstance;
     }
     /**
      * Creates an instance.
      */
-    protected SAClientFactoryImpl() {}
+    protected SEClientFactoryImpl() {}
     /**
      * The singleton factory instance.
      */
-    private final static SAClientFactoryImpl sInstance = new SAClientFactoryImpl();
+    private final static SEClientFactoryImpl sInstance = new SEClientFactoryImpl();
 }

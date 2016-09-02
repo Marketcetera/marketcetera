@@ -1,11 +1,11 @@
 package org.marketcetera.marketdata.core.rpc;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.rpc.Messages;
-import org.marketcetera.util.l10n.MessageComparator;
-import org.junit.Test;
-
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+import org.marketcetera.core.Messages;
+import org.marketcetera.util.l10n.MessageComparator;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**

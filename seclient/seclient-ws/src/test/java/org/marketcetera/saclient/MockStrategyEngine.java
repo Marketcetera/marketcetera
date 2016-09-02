@@ -15,8 +15,8 @@ import org.marketcetera.module.MockConfigProvider;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.modules.remote.receiver.ClientLoginModule;
 import org.marketcetera.modules.remote.receiver.ReceiverFactory;
-import org.marketcetera.strategyengine.client.SAClient;
-import org.marketcetera.strategyengine.server.SAService;
+import org.marketcetera.strategyengine.client.SEClient;
+import org.marketcetera.strategyengine.server.SEService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
@@ -36,13 +36,13 @@ import org.marketcetera.util.ws.stateless.StatelessClientContext;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-class MockStrategyAgent {
+class MockStrategyEngine {
     /**
      * Starts the mock strategy agent.
      *
      * @throws Exception if there were unexpected failures.
      */
-    MockStrategyAgent() throws Exception {
+    MockStrategyEngine() throws Exception {
         mManager = new ModuleManager();
         MockConfigProvider provider = new MockConfigProvider();
         provider.addDefault(ReceiverFactory.INSTANCE_URN, "URL", DEFAULT_URL);
@@ -63,8 +63,8 @@ class MockStrategyAgent {
                  }
              },sessionManager,
              contextClasses);
-        mService = new MockSAServiceImpl(sessionManager);
-        mRemoteService = mServer.publish(mService, SAService.class);
+        mService = new MockSEServiceImpl(sessionManager);
+        mRemoteService = mServer.publish(mService, SEService.class);
     }
     /**
      * Get the contextClasses value.
@@ -112,7 +112,7 @@ class MockStrategyAgent {
      *
      * @return the mock service implementation.
      */
-    MockSAServiceImpl getService() {
+    MockSEServiceImpl getService() {
         return mService;
     }
 
@@ -152,7 +152,7 @@ class MockStrategyAgent {
      *
      * @throws Exception if there were errors connecting.
      */
-    static SAClient<SAClientParameters> connectTo() throws Exception {
+    static SEClient connectTo() throws Exception {
         return connectTo(DEFAULT_PARAMETERS);
     }
     /**
@@ -162,10 +162,10 @@ class MockStrategyAgent {
      * @return a <code>SAClient</code> value
      * @throws Exception if there were errors connecting.
      */
-    static SAClient<SAClientParameters> connectTo(SAClientParameters inParameters)
+    static SEClient connectTo(SEClientParameters inParameters)
             throws Exception
     {
-        SAClient<SAClientParameters> client = SAClientFactoryImpl.getInstance().create(inParameters);
+        SEClient client = SEClientFactoryImpl.getInstance().create(inParameters);
         client.start();
         return client;
     }
@@ -201,12 +201,15 @@ class MockStrategyAgent {
     public static final int WS_PORT = 9001;
     public static final String DEFAULT_URL = "tcp://localhost:61617";
     static final String USER_CREDS = "blue";
-    static final SAClientParameters DEFAULT_PARAMETERS = new SAClientParameters(USER_CREDS,
-            USER_CREDS.toCharArray(), DEFAULT_URL, WS_HOSTNAME, WS_PORT);
+    static final SEClientParameters DEFAULT_PARAMETERS = new SEClientParameters(USER_CREDS,
+                                                                                USER_CREDS,
+                                                                                DEFAULT_URL,
+                                                                                WS_HOSTNAME,
+                                                                                WS_PORT);
     private volatile static MockServer sMockServer;
     private volatile Server<Object> mServer;
     private volatile ModuleManager mManager;
     private volatile ServiceInterface mRemoteService;
-    private final MockSAServiceImpl mService;
+    private final MockSEServiceImpl mService;
     private static ContextClassProvider contextClasses;
 }

@@ -37,7 +37,7 @@ import io.grpc.stub.StreamObserver;
 public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<BlockingStubClazz>,
                                         AsyncStubClazz extends AbstractStub<AsyncStubClazz>,
                                         ParameterClazz extends RpcClientParameters>
-        implements RpcClient<ParameterClazz>
+        implements RpcClient
 {
     /**
      * Validate and start the object.
@@ -70,14 +70,6 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
     public boolean isRunning()
     {
         return alive.get() && !stopped.get();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.rpc.client.RpcClient#getParameters()
-     */
-    @Override
-    public ParameterClazz getParameters()
-    {
-        return parameters;
     }
     /**
      * Create a new AbstractRpcClient instance.

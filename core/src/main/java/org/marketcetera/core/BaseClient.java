@@ -1,4 +1,4 @@
-package org.marketcetera.util.rpc;
+package org.marketcetera.core;
 
 /* $License$ */
 

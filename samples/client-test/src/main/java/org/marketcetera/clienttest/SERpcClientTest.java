@@ -8,22 +8,22 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategy.Language;
 import org.marketcetera.strategyengine.client.CreateStrategyParameters;
 import org.marketcetera.strategyengine.client.DataReceiver;
-import org.marketcetera.strategyengine.client.SAClient;
+import org.marketcetera.strategyengine.client.SEClient;
 import org.marketcetera.strategyengine.client.rpc.StrategyAgentClientContextClassProvider;
 import org.marketcetera.strategyengine.client.rpc.StrategyAgentRpcClientFactory;
-import org.marketcetera.strategyengine.client.rpc.StrategyAgentRpcClientParameters;
+import org.marketcetera.strategyengine.client.rpc.SERpcClientParameters;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
 /**
- *
+ * Demonstrates use of the RPC SEClient.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class SaClientTest
+public class SERpcClientTest
 {
     /**
      * Main run method.
@@ -34,13 +34,13 @@ public class SaClientTest
     {
         SLF4JLoggerProxy.info(ClientTest.class,
                               "Starting strategy engine client test");
-        StrategyAgentRpcClientParameters parameters = new StrategyAgentRpcClientParameters();
+        SERpcClientParameters parameters = new SERpcClientParameters();
         parameters.setContextClassProvider(StrategyAgentClientContextClassProvider.INSTANCE);
         parameters.setHostname("localhost");
         parameters.setPassword("password");
         parameters.setPort(8998);
         parameters.setUsername("user");
-        SAClient<StrategyAgentRpcClientParameters> client = StrategyAgentRpcClientFactory.INSTANCE.create(parameters);
+        SEClient client = StrategyAgentRpcClientFactory.INSTANCE.create(parameters);
         try {
             client.start();
         } catch (Exception e) {
@@ -71,7 +71,7 @@ public class SaClientTest
             strategyParameters = new CreateStrategyParameters("test_instance",
                                                               "HelloWorld",
                                                               Language.JAVA.name(),
-                                                              new File(SaClientTest.class.getClassLoader().getResource("HelloWorld.java").getFile()),
+                                                              new File(SERpcClientTest.class.getClassLoader().getResource("HelloWorld.java").getFile()),
                                                               null,
                                                               true);
         } catch (FileNotFoundException e1) {

@@ -12,13 +12,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.4.0
  */
 @ClassVersion("$Id$")
-public interface SAClientFactory<ParameterClazz>
+public interface SEClientFactory<ParameterClazz>
 {
     /**
-     * Creates an <code>SAClient</code> instance.
+     * Creates an <code>SEClient</code> instance.
      *
      * @param inParameters a <code>ParameterClazz</code> value
-     * @return an <code>SAClient</code> value
+     * @return an <code>SEClient</code> value
      */
-    public SAClient<ParameterClazz> create(ParameterClazz inParameters);
+    public SEClient create(ParameterClazz inParameters);
 }

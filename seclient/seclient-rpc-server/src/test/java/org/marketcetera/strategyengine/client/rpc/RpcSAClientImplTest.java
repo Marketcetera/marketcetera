@@ -41,7 +41,7 @@ import org.marketcetera.util.ws.tags.SessionId;
  * @since 2.4.0
  */
 public class RpcSAClientImplTest
-        extends RpcTestBase<StrategyAgentRpcClientParameters,StrategyAgentRpcClient,SessionId,SEClientServiceRpcGrpc.SEClientServiceRpcImplBase,StrategyAgentRpcService<SessionId>>
+        extends RpcTestBase<SERpcClientParameters,SERpcClient,SessionId,SEClientServiceRpcGrpc.SEClientServiceRpcImplBase,StrategyAgentRpcService<SessionId>>
 {
     /**
      * Runs before each test.
@@ -374,7 +374,7 @@ public class RpcSAClientImplTest
      * @see org.marketcetera.rpc.RpcTestBase#getRpcClientFactory()
      */
     @Override
-    protected RpcClientFactory<StrategyAgentRpcClientParameters,StrategyAgentRpcClient> getRpcClientFactory()
+    protected RpcClientFactory<SERpcClientParameters,SERpcClient> getRpcClientFactory()
     {
         return new StrategyAgentRpcClientFactory();
     }
@@ -382,12 +382,12 @@ public class RpcSAClientImplTest
      * @see org.marketcetera.rpc.RpcTestBase#getClientParameters(java.lang.String, int, java.lang.String, java.lang.String)
      */
     @Override
-    protected StrategyAgentRpcClientParameters getClientParameters(String inHostname,
+    protected SERpcClientParameters getClientParameters(String inHostname,
                                                                    int inPort,
                                                                    String inUsername,
                                                                    String inPassword)
     {
-        StrategyAgentRpcClientParameters parameters = new StrategyAgentRpcClientParameters();
+        SERpcClientParameters parameters = new SERpcClientParameters();
         parameters.setContextClassProvider(StrategyAgentClientContextClassProvider.INSTANCE);
         parameters.setHostname(inHostname);
         parameters.setPassword(inPassword);
@@ -402,5 +402,5 @@ public class RpcSAClientImplTest
     /**
      * test client value
      */
-    private StrategyAgentRpcClient client;
+    private SERpcClient client;
 }

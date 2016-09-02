@@ -3,13 +3,13 @@
  * The client for communicating with remote instances of a strategy agent.
  * <p>
  * All the communication with remote strategy agents is accomplished via
- * {@link org.marketcetera.strategyengine.client.SAClient} interface. Instances of
+ * {@link org.marketcetera.strategyengine.client.SEClient} interface. Instances of
  * this client can be created via
- * {@link org.marketcetera.saclient.SAClientFactoryImpl#create(org.marketcetera.saclient.SAClientParameters)}.
+ * {@link org.marketcetera.saclient.SEClientFactoryImpl#create(org.marketcetera.saclient.SAClientParameters)}.
  * <p>
  * The client provides facilitites to deploy / manage strategies onto
  * the remote strategy agent and receive the data emitted by them.
- * See {@link org.marketcetera.strategyengine.client.SAClient} documentation for details.
+ * See {@link org.marketcetera.strategyengine.client.SEClient} documentation for details.
  *
  * @author anshul@marketcetera.com
  * @version $Id$

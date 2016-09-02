@@ -36,7 +36,7 @@ import io.grpc.StatusRuntimeException;
  * @since $Release$
  */
 public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientParameters,
-                                  RpcClientClazz extends RpcClient<RpcClientParametersClazz>,
+                                  RpcClientClazz extends RpcClient,
                                   SessionClazz,
                                   ServiceClazz extends BindableService,
                                   RpcServiceClazz extends AbstractRpcService<SessionClazz,ServiceClazz>>

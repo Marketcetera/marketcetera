@@ -26,7 +26,7 @@ import java.util.List;
  */
 @WebService(targetNamespace="strategyengine")
 @ClassVersion("$Id$")
-public interface SAService
+public interface SEService
         extends ServiceBase
 {
     /**

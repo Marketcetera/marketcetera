@@ -34,7 +34,6 @@ import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.utils.OrderHistoryManagerTest;
-import org.marketcetera.util.rpc.RpcServer;
 import org.marketcetera.util.ws.tags.SessionId;
 
 import com.google.common.collect.Lists;
@@ -42,7 +41,7 @@ import com.google.common.collect.Lists;
 /* $License$ */
 
 /**
- * Tests {@link RpcClientImpl} and {@link RpcServer}.
+ * Tests the market data RPC client and server.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

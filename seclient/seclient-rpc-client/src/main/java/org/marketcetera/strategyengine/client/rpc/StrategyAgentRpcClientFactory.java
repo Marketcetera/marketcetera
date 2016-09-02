@@ -1,7 +1,7 @@
 package org.marketcetera.strategyengine.client.rpc;
 
 import org.marketcetera.rpc.client.RpcClientFactory;
-import org.marketcetera.strategyengine.client.SAClientFactory;
+import org.marketcetera.strategyengine.client.SEClientFactory;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -15,15 +15,15 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class StrategyAgentRpcClientFactory
-        implements RpcClientFactory<StrategyAgentRpcClientParameters,StrategyAgentRpcClient>,SAClientFactory<StrategyAgentRpcClientParameters>
+        implements RpcClientFactory<SERpcClientParameters,SERpcClient>,SEClientFactory<SERpcClientParameters>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.RpcClientFactory#create(org.marketcetera.rpc.client.RpcClientParameters)
      */
     @Override
-    public StrategyAgentRpcClient create(StrategyAgentRpcClientParameters inParameters)
+    public SERpcClient create(SERpcClientParameters inParameters)
     {
-        return new StrategyAgentRpcClient(inParameters);
+        return new SERpcClient(inParameters);
     }
     /**
      * factory instance value
