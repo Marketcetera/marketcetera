@@ -1,4 +1,4 @@
-package org.marketcetera.marketdata.core.rpc;
+package org.marketcetera.mdclient;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -6,25 +6,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.marketcetera.core.PageRequest;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.core.webservice.PageRequest;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- * Provides an adapter interface between a market data client and the market data service provider.
+ * Provides market data services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 2.4.0
  */
 @ClassVersion("$Id$")
-public interface MarketDataServiceAdapter
+public interface MarketDataService
 {
     /**
      * Requests the given market data.

@@ -1,7 +1,5 @@
 package org.marketcetera.rpc.client;
 
-import org.marketcetera.core.ClientFactory;
-
 /* $License$ */
 
 /**
@@ -12,7 +10,6 @@ import org.marketcetera.core.ClientFactory;
  * @since $Release$
  */
 public interface RpcClientFactory<RpcClientParametersClazz extends RpcClientParameters,RpcClientClazz extends RpcClient>
-        extends ClientFactory<RpcClientClazz,RpcClientParametersClazz>
 {
     /**
      * Create a factory suitable to construct the desired client factory.

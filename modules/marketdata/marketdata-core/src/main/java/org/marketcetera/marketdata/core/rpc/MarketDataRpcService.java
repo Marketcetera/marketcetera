@@ -15,6 +15,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.marketcetera.core.PageRequest;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
@@ -35,7 +36,7 @@ import org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotPageRequest;
 import org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotPageResponse;
 import org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotRequest;
 import org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotResponse;
-import org.marketcetera.marketdata.core.webservice.PageRequest;
+import org.marketcetera.mdclient.MarketDataServiceAdapter;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
 import org.marketcetera.rpc.base.BaseRpc.LoginRequest;

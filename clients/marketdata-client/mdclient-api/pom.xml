@@ -20,6 +20,10 @@
   <name>Market Data Client API</name>
   <dependencies>
     <!-- compile -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
     <!-- runtime -->
     <!-- test -->
   </dependencies>

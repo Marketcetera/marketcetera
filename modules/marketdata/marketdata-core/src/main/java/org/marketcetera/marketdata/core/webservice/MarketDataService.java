@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 
+import org.marketcetera.core.PageRequest;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;

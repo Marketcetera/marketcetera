@@ -7,12 +7,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.marketcetera.core.PageRequest;
 import org.marketcetera.core.Pair;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.core.webservice.PageRequest;
+import org.marketcetera.mdclient.MarketDataServiceAdapter;
 import org.marketcetera.trade.Instrument;
 
 import com.google.common.collect.Lists;

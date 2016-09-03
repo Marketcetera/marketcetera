@@ -66,7 +66,6 @@ public class SERpcClient
     {
         super(inParameters);
         contextClassProvider = inParameters.getContextClassProvider();
-        parameters = inParameters;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#start()
@@ -518,10 +517,6 @@ public class SERpcClient
      */
     @GuardedBy("contextLock")
     private Unmarshaller unmarshaller;
-    /**
-     * parameters used to create the client
-     */
-    private final SERpcClientParameters parameters;
     /**
      * receivers of remove data
      */

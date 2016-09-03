@@ -1,4 +1,4 @@
-package org.marketcetera.marketdata.core.webservice;
+package org.marketcetera.core;
 
 import java.io.Serializable;
 

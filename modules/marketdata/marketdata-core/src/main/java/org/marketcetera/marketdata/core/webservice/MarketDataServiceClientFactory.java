@@ -1,5 +1,6 @@
 package org.marketcetera.marketdata.core.webservice;
 
+import org.marketcetera.mdclient.MarketDataServiceClient;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
 

@@ -1,5 +1,7 @@
 package org.marketcetera.strategyengine.client;
 
+import org.marketcetera.core.ClientFactory;
+import org.marketcetera.core.ClientParameters;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -12,7 +14,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.4.0
  */
 @ClassVersion("$Id$")
-public interface SEClientFactory<ParameterClazz>
+public interface SEClientFactory<ParameterClazz extends ClientParameters>
+        extends ClientFactory<SEClient,ParameterClazz>
 {
     /**
      * Creates an <code>SEClient</code> instance.

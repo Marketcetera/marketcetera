@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata.core.rpc;
 
-import org.marketcetera.marketdata.core.MarketDataClientFactory;
+import org.marketcetera.mdclient.MarketDataClientFactory;
 import org.marketcetera.rpc.client.RpcClientFactory;
 import org.marketcetera.util.misc.ClassVersion;
 

@@ -1,4 +1,4 @@
-package org.marketcetera.marketdata.core.webservice;
+package org.marketcetera.mdclient;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.marketcetera.core.BaseClient;
+import org.marketcetera.core.PageRequest;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
@@ -26,7 +27,7 @@ import org.marketcetera.util.ws.stateful.ClientContext;
  * @since 2.4.0
  */
 @ClassVersion("$Id$")
-public interface MarketDataServiceClient
+public interface MDClient
         extends BaseClient
 {
     /**
