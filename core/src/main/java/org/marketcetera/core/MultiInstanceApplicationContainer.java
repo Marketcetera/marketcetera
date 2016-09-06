@@ -370,8 +370,11 @@ public class MultiInstanceApplicationContainer
                                 instanceConfDir);
         File instanceModulesDir = new File(instanceDir,
                                            File.separator+MODULES_DIR_NAME);
-         FileUtils.copyDirectory(new File(appDir+File.separator+MODULES_DIR_NAME),
-                                 instanceModulesDir);
+        File modulesDir = new File(appDir+File.separator+MODULES_DIR_NAME);
+        if(modulesDir.exists()) {
+            FileUtils.copyDirectory(modulesDir,
+                                    instanceModulesDir);
+        }
         File instancePropertiesFile = new File(instanceConfDir,
                                                File.separator + INSTANCE_PROPERTIES_FILE);
         // write out instance props file
