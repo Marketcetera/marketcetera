@@ -64,36 +64,31 @@ class JarClassLoader
             throws MalformedURLException, FileNotFoundException
     {
         super(new URL[0], inParent);
-        try {
-            Messages.LOG_JAR_LOADER_INIT.info(this, inAppInfoProvider);
-            if(!inAppInfoProvider.getModulesDir().isDirectory()) {
-                throw new FileNotFoundException(Messages.JAR_DIR_DOES_NOT_EXIST.getText(inAppInfoProvider.getModulesDir().getAbsolutePath()));
+        Messages.LOG_JAR_LOADER_INIT.info(this, inAppInfoProvider);
+        if(!inAppInfoProvider.getModulesDir().isDirectory()) {
+            throw new FileNotFoundException(Messages.JAR_DIR_DOES_NOT_EXIST.getText(inAppInfoProvider.getModulesDir().getAbsolutePath()));
+        }
+        //Initialize the directory containing all the module jars
+        mJarDir = new File(inAppInfoProvider.getModulesDir(),
+                "jars");  //$NON-NLS-1$
+        if(!mJarDir.isDirectory()) {
+            throw new FileNotFoundException(Messages.JAR_DIR_DOES_NOT_EXIST.
+                                            getText(mJarDir.getAbsolutePath()));
+        }
+        //The directory containing the module default configuration
+        //properties files.
+        File jarConfDir = new File(inAppInfoProvider.getModulesDir(),
+                "conf");  //$NON-NLS-1$
+        if(!jarConfDir.isDirectory()) {
+            throw new FileNotFoundException(Messages.JAR_DIR_DOES_NOT_EXIST.getText(jarConfDir.getAbsolutePath()));
+        }
+        //Add the conf directory to the classloader
+        addURL(jarConfDir.toURI().toURL());
+        List<URL> urls = getJarURLs();
+        if (urls != null) {
+            for(URL url:urls) {
+                addURL(url);
             }
-            //Initialize the directory containing all the module jars
-            mJarDir = new File(inAppInfoProvider.getModulesDir(),
-                               "jars");  //$NON-NLS-1$
-            if(!mJarDir.isDirectory()) {
-                throw new FileNotFoundException(Messages.JAR_DIR_DOES_NOT_EXIST.
-                        getText(mJarDir.getAbsolutePath()));
-            }
-            //The directory containing the module default configuration
-            //properties files.
-            File jarConfDir = new File(inAppInfoProvider.getModulesDir(),
-                                       "conf");  //$NON-NLS-1$
-            if(!jarConfDir.isDirectory()) {
-                throw new FileNotFoundException(Messages.JAR_DIR_DOES_NOT_EXIST.getText(jarConfDir.getAbsolutePath()));
-            }
-            //Add the conf directory to the classloader
-            addURL(jarConfDir.toURI().toURL());
-            List<URL> urls = getJarURLs();
-            if (urls != null) {
-                for(URL url:urls) {
-                    addURL(url);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
         }
     }
 
