@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+  <context:component-scan base-package="org.marketcetera"/>
+  <bean id="messageFactory" class="quickfix.DefaultMessageFactory"/>
+  <bean id="fixSettingsProviderFactory" class="org.marketcetera.core.fix.FixSettingsProviderFactoryImpl">
+    <property name="messageStoreFactoryClass" value="quickfix.FileStoreFactory"/>
+    <property name="logFactoryClass" value="quickfix.SLF4JLogFactory"/>
+    <property name="messageFactory" ref="messageFactory"/>
+    <property name="acceptorHost" value="127.0.0.1"/>
+    <property name="acceptorPort" value="15100"/>
+  </bean>
+  <bean id="moduleManager" class="org.marketcetera.module.ModuleManager" destroy-method="stop" init-method="init" depends-on="fixSettingsProviderFactory">
+    <constructor-arg ref="moduleLoader"/>
+    <property name="configurationProvider" ref="propertyConfig"/>
+    <property name="refreshListener" ref="moduleLoader"/>
+  </bean>
+  <bean id="moduleLoader" class="org.marketcetera.strategyagent.JarClassLoader">
+    <constructor-arg ref="saInfoProvider"/>
+    <constructor-arg ref="currentLoader"/>
+  </bean>
+  <bean id="currentLoader" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="class"/>
+    <property name="targetMethod" value="getClassLoader"/>
+  </bean>
+  <!-- info provider that contains info about the running application -->
+  <bean id="saInfoProvider" class="org.marketcetera.strategyagent.StaticStrategyAgentApplicationInfoProvider"/>
+  <!-- The default configuration provider -->
+  <bean id="propertyConfig" class="org.marketcetera.strategyagent.AgentConfigurationProvider">
+    <constructor-arg ref="moduleLoader"/>
+  </bean>
+  <bean id="class" class="java.lang.Class" factory-method="forName">
+    <constructor-arg value="org.marketcetera.strategyagent.JarClassLoader"/>
+  </bean>
+</beans>

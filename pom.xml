@@ -162,6 +162,11 @@
         <artifactId>saclient</artifactId>
         <version>3.0.11</version>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fix-acceptor-module</artifactId>
+        <version>3.0.11</version>
+      </dependency>
       <!-- Compile: QuickFIX/J -->
       <dependency>
         <groupId>org.quickfixj</groupId>
