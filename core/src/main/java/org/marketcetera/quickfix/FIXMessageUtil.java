@@ -18,8 +18,9 @@ import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
-import quickfix.StringField;
 import quickfix.Message.Header;
+import quickfix.SessionID;
+import quickfix.StringField;
 import quickfix.field.CFICode;
 import quickfix.field.CollReqID;
 import quickfix.field.ConfirmReqID;
@@ -84,7 +85,19 @@ public class FIXMessageUtil {
     	}
         return false;
     }
-
+    /**
+     * Get the mirror image of the given session id.
+     *
+     * @param inSessionId a <code>SessionID</code> value
+     * @return a <code>SessionID</code> value
+     */
+    public static SessionID getReversedSessionId(SessionID inSessionId)
+    {
+        SessionID reversedSessionId = new SessionID(inSessionId.getBeginString(),
+                                                    inSessionId.getTargetCompID(),
+                                                    inSessionId.getSenderCompID());
+        return reversedSessionId;
+    }
     public static boolean isExecutionReport(Message message) {
         return msgTypeHelper(message, MsgType.EXECUTION_REPORT);
     }
