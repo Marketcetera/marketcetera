@@ -5,7 +5,7 @@ import org.marketcetera.util.ws.ContextClassProvider;
 /* $License$ */
 
 /**
- *
+ * Provides client parameters that include an XML context provider.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

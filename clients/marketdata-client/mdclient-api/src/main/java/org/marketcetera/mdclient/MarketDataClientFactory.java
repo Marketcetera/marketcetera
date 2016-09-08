@@ -1,6 +1,7 @@
 package org.marketcetera.mdclient;
 
 import org.marketcetera.core.ClientFactory;
+import org.marketcetera.core.ClientParameters;
 
 /* $License$ */
 
@@ -11,15 +12,15 @@ import org.marketcetera.core.ClientFactory;
  * @version $Id$
  * @since $Release$
  */
-public interface MarketDataClientFactory
-        extends ClientFactory<MDClient,MarketDataClientParameters>
+public interface MarketDataClientFactory<ParameterClazz extends ClientParameters>
+        extends ClientFactory<MDClient,ParameterClazz>
 {
     /**
      * Create a {@link MarketDataServiceClient} instance.
      *
-     * @param inParameters a <code>MarketDataClientParameters</code> value
+     * @param inParameters a <code>ParameterClazz</code> value
      * @return a <code>MarketDataServiceClient</code> value
      */
     @Override
-    MDClient create(MarketDataClientParameters inParameters);
+    MDClient create(ParameterClazz inParameters);
 }

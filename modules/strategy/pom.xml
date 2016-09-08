@@ -41,6 +41,10 @@
       <artifactId>client</artifactId>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mdclient-server</artifactId>
+    </dependency>
+    <dependency>
       <groupId>bsf</groupId>
       <artifactId>bsf</artifactId>
     </dependency>

@@ -6,10 +6,10 @@ import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpcClient;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpcClientFactory;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpcClientParameters;
-import org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider;
+import org.marketcetera.mdclient.MarketDataContextClassProvider;
+import org.marketcetera.mdclient.rpc.client.MarketDataRpcClient;
+import org.marketcetera.mdclient.rpc.client.MarketDataRpcClientFactory;
+import org.marketcetera.mdclient.rpc.client.MarketDataRpcClientParameters;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */

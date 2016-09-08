@@ -20,5 +20,9 @@
     <module>mdclient-rpc-client</module>
     <module>mdclient-rpc-core</module>
     <module>mdclient-rpc-server</module>
+    <module>mdclient-ws-client</module>
+    <module>mdclient-ws-core</module>
+    <module>mdclient-server</module>
+    <module>marketdata-ws-server</module>
   </modules>
 </project>

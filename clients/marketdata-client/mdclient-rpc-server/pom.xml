@@ -20,7 +20,34 @@
   <name>Market Data Client RPC Server</name>
   <dependencies>
     <!-- compile -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mdclient-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mdclient-rpc-core</artifactId>
+    </dependency>
     <!-- runtime -->
     <!-- test -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mdclient-rpc-client</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>rpc-core</artifactId>
+      <type>test-jar</type>
+    </dependency>
   </dependencies>
 </project>

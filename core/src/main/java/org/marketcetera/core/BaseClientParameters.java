@@ -5,7 +5,7 @@ import java.util.Locale;
 /* $License$ */
 
 /**
- *
+ * Provides common parameters to connect to client services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -100,23 +100,23 @@ public class BaseClientParameters
         locale = inLocale;
     }
     /**
-     * 
+     * hostname value
      */
     private String hostname;
     /**
-     * 
+     * port value
      */
     private int port;
     /**
-     * 
+     * username value
      */
     private String username;
     /**
-     * 
+     * password value
      */
     private String password;
     /**
-     * 
+     * locale value
      */
     private Locale locale;
 }

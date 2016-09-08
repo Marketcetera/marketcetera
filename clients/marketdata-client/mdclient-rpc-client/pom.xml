@@ -20,6 +20,18 @@
   <name>Market Data RPC Client</name>
   <dependencies>
     <!-- compile -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mdclient-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mdclient-rpc-core</artifactId>
+    </dependency>
     <!-- runtime -->
     <!-- test -->
   </dependencies>
