@@ -11,6 +11,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.DataDictionary;
 import quickfix.Field;
@@ -22,6 +23,7 @@ import quickfix.Message.Header;
 import quickfix.SessionID;
 import quickfix.StringField;
 import quickfix.field.CFICode;
+import quickfix.field.ClOrdID;
 import quickfix.field.CollReqID;
 import quickfix.field.ConfirmReqID;
 import quickfix.field.EncodedText;
@@ -32,6 +34,7 @@ import quickfix.field.MsgType;
 import quickfix.field.NetworkRequestID;
 import quickfix.field.NoMDEntries;
 import quickfix.field.OrdStatus;
+import quickfix.field.OrigClOrdID;
 import quickfix.field.PosReqID;
 import quickfix.field.PutOrCall;
 import quickfix.field.QuoteID;
@@ -97,6 +100,72 @@ public class FIXMessageUtil {
                                                     inSessionId.getTargetCompID(),
                                                     inSessionId.getSenderCompID());
         return reversedSessionId;
+    }
+    /**
+     * Gets the human-readable message identifier from the given message.
+     *
+     * @param inMessage an <code>LvtsMessage</code> value
+     * @return a <code>String</code> value
+     */
+    public static String getMessageIdentifier(Message inMessage)
+    {
+        StringBuilder output = new StringBuilder();
+        try {
+            SessionID sessionId = null;
+            try {
+                sessionId = new SessionID(inMessage.getHeader().getString(quickfix.field.BeginString.FIELD),
+                                          inMessage.getHeader().getString(quickfix.field.SenderCompID.FIELD),
+                                          inMessage.getHeader().getString(quickfix.field.TargetCompID.FIELD));
+            } catch(FieldNotFound ignored) {}
+            String msgType = inMessage.getHeader().getString(quickfix.field.MsgType.FIELD);
+            if(sessionId != null) {
+                output.append(sessionId).append(' ');
+            }
+            output.append(msgType).append(' ');
+            switch(msgType) {
+                case MsgType.ORDER_SINGLE:
+                case MsgType.ORDER_STATUS_REQUEST:
+                    if(inMessage.isSetField(ClOrdID.FIELD)) {
+                        output.append(inMessage.getString(ClOrdID.FIELD));
+                    } else {
+                        output.append("no-clordid");
+                    }
+                    break;
+                case MsgType.ORDER_CANCEL_REPLACE_REQUEST:
+                case MsgType.ORDER_CANCEL_REQUEST:
+                    if(inMessage.isSetField(ClOrdID.FIELD)) {
+                        output.append(inMessage.getString(ClOrdID.FIELD));
+                    } else {
+                        output.append("no clordid");
+                    }
+                    output.append(' ');
+                    if(inMessage.isSetField(OrigClOrdID.FIELD)) {
+                        output.append(inMessage.getString(OrigClOrdID.FIELD));
+                    } else {
+                        output.append("no-orig-clordid");
+                    }
+                    break;
+                case MsgType.DONT_KNOW_TRADE:
+                    if(inMessage.isSetField(quickfix.field.OrderID.FIELD)) {
+                        output.append(inMessage.getString(quickfix.field.OrderID.FIELD));
+                    } else {
+                        output.append("no-orderid");
+                    }
+                    output.append(' ');
+                    if(inMessage.isSetField(quickfix.field.ExecID.FIELD)) {
+                        output.append(inMessage.getString(quickfix.field.ExecID.FIELD));
+                    } else {
+                        output.append("no-execid");
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(FIXMessageUtil.class,
+                                  e);
+        }
+        return output.toString();
     }
     public static boolean isExecutionReport(Message message) {
         return msgTypeHelper(message, MsgType.EXECUTION_REPORT);
