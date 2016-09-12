@@ -5,6 +5,8 @@ import static org.marketcetera.quickfix.Messages.CANNOT_CREATE_FIX_FIELD;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import org.marketcetera.core.ClassVersion;
@@ -12,6 +14,10 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.quickfix.AnalyzedMessage;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import quickfix.DataDictionary;
 import quickfix.Field;
@@ -58,6 +64,11 @@ import quickfix.field.UserRequestID;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXMessageUtil {
+    /**
+     * caches data dictionaries by FIX Version
+     */
+    private static final Cache<FIXVersion,DataDictionary> cachedDataDictionaries = CacheBuilder.newBuilder().build();
+    public static final String prettyPrintCategory = "fix.prettyprint";
     public static final String FIX_RESTORE_LOGGER_NAME = "metc.restore";
     private static final String LOGGER_NAME = FIXMessageUtil.class.getName();
     private static final int MAX_FIX_FIELDS = 2000;     // What we think the ID of the last fix field is
@@ -100,6 +111,45 @@ public class FIXMessageUtil {
                                                     inSessionId.getTargetCompID(),
                                                     inSessionId.getSenderCompID());
         return reversedSessionId;
+    }
+    /**
+     * Log the given message.
+     *
+     * @param inMessage a <code>Message</code> value
+     */
+    public static void logMessage(Message inMessage)
+    {
+        if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
+            try {
+                SLF4JLoggerProxy.debug(FIXMessageUtil.prettyPrintCategory,
+                                       new AnalyzedMessage(FIXMessageUtil.getDataDictionary(inMessage),
+                                                           inMessage).toString());
+            } catch (FieldNotFound | ExecutionException e) {
+                SLF4JLoggerProxy.warn(FIXMessageUtil.prettyPrintCategory,
+                                      e);
+            }
+        }
+    }
+    /**
+     * Get the data dictionary for the given message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @return a <code>DataDictionary</code> value
+     * @throws FieldNotFound if the FIX version could not be determined from the given message
+     * @throws ExecutionException if an uncached dictionary cannot be loaded
+     */
+    public static DataDictionary getDataDictionary(Message inMessage)
+            throws FieldNotFound, ExecutionException
+    {
+        final FIXVersion version = FIXVersion.getFIXVersion(inMessage);
+        return cachedDataDictionaries.get(version, new Callable<DataDictionary>() {
+            @Override
+            public DataDictionary call()
+                    throws Exception
+            {
+                return new DataDictionary(version.getDataDictionaryURL());
+            }
+        });
     }
     /**
      * Gets the human-readable message identifier from the given message.
