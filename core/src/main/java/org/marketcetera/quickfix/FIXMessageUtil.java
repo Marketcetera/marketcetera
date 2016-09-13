@@ -2,9 +2,11 @@ package org.marketcetera.quickfix;
 
 import static org.marketcetera.quickfix.Messages.CANNOT_CREATE_FIX_FIELD;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
@@ -12,6 +14,9 @@ import java.util.regex.Pattern;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
+import org.marketcetera.trade.ExecutionTransType;
+import org.marketcetera.trade.ExecutionType;
+import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
@@ -28,11 +33,20 @@ import quickfix.Message;
 import quickfix.Message.Header;
 import quickfix.SessionID;
 import quickfix.StringField;
+import quickfix.field.AvgPx;
 import quickfix.field.CFICode;
 import quickfix.field.ClOrdID;
 import quickfix.field.CollReqID;
 import quickfix.field.ConfirmReqID;
+import quickfix.field.CumQty;
 import quickfix.field.EncodedText;
+import quickfix.field.ExecID;
+import quickfix.field.ExecRefID;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
+import quickfix.field.LastPx;
+import quickfix.field.LastShares;
+import quickfix.field.LeavesQty;
 import quickfix.field.MDEntryType;
 import quickfix.field.MDReqID;
 import quickfix.field.MarketDepth;
@@ -40,6 +54,7 @@ import quickfix.field.MsgType;
 import quickfix.field.NetworkRequestID;
 import quickfix.field.NoMDEntries;
 import quickfix.field.OrdStatus;
+import quickfix.field.OrderQty;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.PosReqID;
 import quickfix.field.PutOrCall;
@@ -150,6 +165,89 @@ public class FIXMessageUtil {
                 return new DataDictionary(version.getDataDictionaryURL());
             }
         });
+    }
+    /**
+     * Create an execution report response to the given message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inOrderStatus an <code>OrderStatus</code> value
+     * @param inExecType an <code>ExecutionType</code> value or <code>null</code>
+     * @param inExecTransType an <code>ExecutionTransType</code> value or <code>null</code>
+     * @param inText a <code>String</code> value or <code>null</code>
+     * @return a <code>Message</code> value
+     */
+    public static Message createExecutionReport(Message inMessage,
+                                                OrderStatus inOrderStatus,
+                                                ExecutionType inExecType,
+                                                ExecutionTransType inExecTransType,
+                                                String inText)
+    {
+        try {
+            FIXVersion fixVersion = FIXVersion.getFIXVersion(inMessage);
+            Message executionReport = fixVersion.getMessageFactory().createMessage(MsgType.EXECUTION_REPORT);
+            FIXMessageUtil.fillFieldsFromExistingMessage(executionReport,
+                                                         inMessage,
+                                                         getDataDictionary(inMessage),
+                                                         false);
+            if(inExecTransType != null) {
+                executionReport.setField(new ExecTransType(inExecTransType.getFIXValue()));
+                if(inExecTransType == ExecutionTransType.Cancel || inExecTransType == ExecutionTransType.Correct) {
+                    if(inMessage.isSetField(ClOrdID.FIELD)) {
+                        executionReport.setField(new ExecRefID(inMessage.getString(ClOrdID.FIELD)));
+                    } else {
+                        executionReport.setField(new ExecRefID(UUID.randomUUID().toString()));
+                    }
+                }
+            }
+            if(inOrderStatus != null) {
+                executionReport.setField(new OrdStatus(inOrderStatus.getFIXValue()));
+            }
+            if(inExecType != null) {
+                executionReport.setField(new ExecType(inExecType.getFIXValue()));
+            }
+            executionReport.setField(new ExecID(UUID.randomUUID().toString()));
+            if(inText != null) {
+                executionReport.setField(new Text(inText));
+            }
+            if(inMessage.isSetField(ClOrdID.FIELD)) {
+                ClOrdID clOrdId = new ClOrdID();
+                inMessage.getField(clOrdId);
+                executionReport.setField(clOrdId);
+            }
+            if(inMessage.isSetField(quickfix.field.OrderID.FIELD)) {
+                quickfix.field.OrderID orderId = new quickfix.field.OrderID();
+                inMessage.getField(orderId);
+                executionReport.setField(orderId);
+            }
+            if(!executionReport.isSetField(quickfix.field.OrderID.FIELD)) {
+                executionReport.setField(new quickfix.field.OrderID(UUID.randomUUID().toString()));
+            }
+            if(!executionReport.isSetField(quickfix.field.LeavesQty.FIELD)) {
+                executionReport.setField(new LeavesQty(BigDecimal.ZERO));
+            }
+            if(!executionReport.isSetField(quickfix.field.CumQty.FIELD)) {
+                executionReport.setField(new CumQty(BigDecimal.ZERO));
+            }
+            if(!executionReport.isSetField(quickfix.field.AvgPx.FIELD)) {
+                executionReport.setField(new AvgPx(BigDecimal.ZERO));
+            }
+            if(!executionReport.isSetField(quickfix.field.LastShares.FIELD)) {
+                executionReport.setField(new LastShares(BigDecimal.ZERO));
+            }
+            if(!executionReport.isSetField(quickfix.field.LastPx.FIELD)) {
+                executionReport.setField(new LastPx(BigDecimal.ZERO));
+            }
+            BigDecimal orderQty = BigDecimal.ZERO;
+            if(inMessage.isSetField(OrderQty.FIELD)) {
+                OrderQty fixOrderQty = new OrderQty();
+                inMessage.getField(fixOrderQty);
+                orderQty = fixOrderQty.getValue();
+            }
+            executionReport.setField(new OrderQty(orderQty));
+            return executionReport;
+        } catch (FieldNotFound | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
     /**
      * Gets the human-readable message identifier from the given message.
