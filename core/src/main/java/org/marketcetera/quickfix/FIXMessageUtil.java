@@ -32,6 +32,7 @@ import quickfix.Group;
 import quickfix.Message;
 import quickfix.Message.Header;
 import quickfix.SessionID;
+import quickfix.SessionNotFound;
 import quickfix.StringField;
 import quickfix.field.AvgPx;
 import quickfix.field.CFICode;
@@ -165,6 +166,65 @@ public class FIXMessageUtil {
                 return new DataDictionary(version.getDataDictionaryURL());
             }
         });
+    }
+    public static Message createSessionReject(Message inMessage,
+                                              int inReason,
+                                              String inText)
+            throws FieldNotFound, SessionNotFound, ExecutionException
+    {
+        FIXVersion version = FIXVersion.getFIXVersion(inMessage);
+        Message reject = version.getMessageFactory().createSessionReject(inMessage,
+                                                                         inReason);
+        FIXMessageUtil.fillFieldsFromExistingMessage(reject,
+                                                     inMessage,
+                                                     FIXMessageUtil.getDataDictionary(inMessage),
+                                                     true);
+        reject.setField(new Text(inText));
+        return reject;
+    }
+    public static Message createBusinessReject(Message inMessage,
+                                               int inReason,
+                                               String inText)
+            throws FieldNotFound, SessionNotFound, ExecutionException
+    {
+        FIXVersion version = FIXVersion.getFIXVersion(inMessage);
+        Message reject = version.getMessageFactory().createMessage(MsgType.BUSINESS_MESSAGE_REJECT);
+        FIXMessageUtil.fillFieldsFromExistingMessage(reject,
+                                                     inMessage,
+                                                     FIXMessageUtil.getDataDictionary(inMessage),
+                                                     true);
+        reject.setField(new Text(inText==null?"No message":inText));
+        reject.setString(quickfix.field.RefMsgType.FIELD,
+                         inMessage.getHeader().getString(MsgType.FIELD));
+        reject.setInt(quickfix.field.RefSeqNum.FIELD,
+                      inMessage.getHeader().getInt(quickfix.field.MsgSeqNum.FIELD));
+        reject.setInt(quickfix.field.BusinessRejectReason.FIELD,
+                      inReason);
+        return reject;
+    }
+    public static Message createOrderCancelReject(Message inMessage,
+                                                  String inText,
+                                                  int inCancelRejResponseTo,
+                                                  int inCancelRejReason)
+            throws FieldNotFound, SessionNotFound, ExecutionException
+    {
+        FIXVersion version = FIXVersion.getFIXVersion(inMessage);
+        Message reject = version.getMessageFactory().createMessage(MsgType.ORDER_CANCEL_REJECT);
+        FIXMessageUtil.fillFieldsFromExistingMessage(reject,
+                                                     inMessage,
+                                                     FIXMessageUtil.getDataDictionary(inMessage),
+                                                     true);
+        if(inText != null) {
+            reject.setField(new Text(inText));
+        }
+        reject.setInt(quickfix.field.CxlRejResponseTo.FIELD,
+                      inCancelRejResponseTo);
+        reject.setInt(quickfix.field.CxlRejReason.FIELD,
+                      inCancelRejReason);
+        if(inCancelRejReason == quickfix.field.CxlRejReason.UNKNOWN_ORDER) {
+            reject.setField(new quickfix.field.OrderID("none"));
+        }
+        return reject;
     }
     /**
      * Create an execution report response to the given message.
