@@ -177,9 +177,11 @@ public class FIXMessageUtil {
                                                                          inReason);
         FIXMessageUtil.fillFieldsFromExistingMessage(reject,
                                                      inMessage,
-                                                     FIXMessageUtil.getDataDictionary(inMessage),
-                                                     true);
-        reject.setField(new Text(inText));
+                                                     getDataDictionary(inMessage),
+                                                     false);
+        if(inText != null) {
+            reject.setField(new Text(inText));
+        }
         return reject;
     }
     public static Message createBusinessReject(Message inMessage,
@@ -191,9 +193,11 @@ public class FIXMessageUtil {
         Message reject = version.getMessageFactory().createMessage(MsgType.BUSINESS_MESSAGE_REJECT);
         FIXMessageUtil.fillFieldsFromExistingMessage(reject,
                                                      inMessage,
-                                                     FIXMessageUtil.getDataDictionary(inMessage),
-                                                     true);
-        reject.setField(new Text(inText==null?"No message":inText));
+                                                     getDataDictionary(inMessage),
+                                                     false);
+        if(inText != null) {
+            reject.setField(new Text(inText));
+        }
         reject.setString(quickfix.field.RefMsgType.FIELD,
                          inMessage.getHeader().getString(MsgType.FIELD));
         reject.setInt(quickfix.field.RefSeqNum.FIELD,
@@ -223,8 +227,8 @@ public class FIXMessageUtil {
         Message reject = version.getMessageFactory().createMessage(MsgType.ORDER_CANCEL_REJECT);
         FIXMessageUtil.fillFieldsFromExistingMessage(reject,
                                                      inMessage,
-                                                     FIXMessageUtil.getDataDictionary(inMessage),
-                                                     true);
+                                                     getDataDictionary(inMessage),
+                                                     false);
         if(inText != null) {
             reject.setField(new Text(inText));
         }
