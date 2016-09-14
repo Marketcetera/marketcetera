@@ -202,9 +202,20 @@ public class FIXMessageUtil {
                       inReason);
         return reject;
     }
+    public static char getCancelRejResponseToFor(Message inMessage)
+            throws FieldNotFound
+    {
+        switch(inMessage.getHeader().getString(quickfix.field.MsgType.FIELD)) {
+            case quickfix.field.MsgType.ORDER_CANCEL_REPLACE_REQUEST:
+                return quickfix.field.CxlRejResponseTo.ORDER_CANCEL_REPLACE_REQUEST;
+            case quickfix.field.MsgType.ORDER_CANCEL_REQUEST:
+                return quickfix.field.CxlRejResponseTo.ORDER_CANCEL_REQUEST;
+        }
+        throw new IllegalArgumentException();
+    }
     public static Message createOrderCancelReject(Message inMessage,
                                                   String inText,
-                                                  int inCancelRejResponseTo,
+                                                  char inCancelRejResponseTo,
                                                   int inCancelRejReason)
             throws FieldNotFound, SessionNotFound, ExecutionException
     {
@@ -217,10 +228,12 @@ public class FIXMessageUtil {
         if(inText != null) {
             reject.setField(new Text(inText));
         }
-        reject.setInt(quickfix.field.CxlRejResponseTo.FIELD,
-                      inCancelRejResponseTo);
-        reject.setInt(quickfix.field.CxlRejReason.FIELD,
-                      inCancelRejReason);
+        reject.setChar(quickfix.field.CxlRejResponseTo.FIELD,
+                       inCancelRejResponseTo);
+        if(inCancelRejReason != -1) {
+            reject.setInt(quickfix.field.CxlRejReason.FIELD,
+                          inCancelRejReason);
+        }
         if(inCancelRejReason == quickfix.field.CxlRejReason.UNKNOWN_ORDER) {
             reject.setField(new quickfix.field.OrderID("none"));
         }
