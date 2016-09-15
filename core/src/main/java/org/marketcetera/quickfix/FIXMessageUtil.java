@@ -14,15 +14,13 @@ import java.util.regex.Pattern;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.trade.ExecutionTransType;
 import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 import quickfix.DataDictionary;
 import quickfix.Field;
@@ -71,6 +69,9 @@ import quickfix.field.Text;
 import quickfix.field.TradSesReqID;
 import quickfix.field.TradeRequestID;
 import quickfix.field.UserRequestID;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * Collection of utilities to create work with FIX messages
@@ -262,17 +263,21 @@ public class FIXMessageUtil {
         try {
             FIXVersion fixVersion = FIXVersion.getFIXVersion(inMessage);
             Message executionReport = fixVersion.getMessageFactory().createMessage(MsgType.EXECUTION_REPORT);
+            FIXMessageAugmentor messageAugmentor = fixVersion.getMessageFactory().getMsgAugmentor();
+            DataDictionary dataDictionary = getDataDictionary(inMessage);
             FIXMessageUtil.fillFieldsFromExistingMessage(executionReport,
                                                          inMessage,
-                                                         getDataDictionary(inMessage),
+                                                         dataDictionary,
                                                          false);
-            if(inExecTransType != null) {
-                executionReport.setField(new ExecTransType(inExecTransType.getFIXValue()));
-                if(inExecTransType == ExecutionTransType.Cancel || inExecTransType == ExecutionTransType.Correct) {
-                    if(inMessage.isSetField(ClOrdID.FIELD)) {
-                        executionReport.setField(new ExecRefID(inMessage.getString(ClOrdID.FIELD)));
-                    } else {
-                        executionReport.setField(new ExecRefID(UUID.randomUUID().toString()));
+            if(dataDictionary.isField(quickfix.field.ExecTransType.FIELD)) {
+                if(inExecTransType != null) {
+                    executionReport.setField(new ExecTransType(inExecTransType.getFIXValue()));
+                    if(inExecTransType == ExecutionTransType.Cancel || inExecTransType == ExecutionTransType.Correct) {
+                        if(inMessage.isSetField(ClOrdID.FIELD)) {
+                            executionReport.setField(new ExecRefID(inMessage.getString(ClOrdID.FIELD)));
+                        } else {
+                            executionReport.setField(new ExecRefID(UUID.randomUUID().toString()));
+                        }
                     }
                 }
             }
@@ -321,6 +326,7 @@ public class FIXMessageUtil {
                 orderQty = fixOrderQty.getValue();
             }
             executionReport.setField(new OrderQty(orderQty));
+            messageAugmentor.executionReportAugment(executionReport);
             return executionReport;
         } catch (FieldNotFound | ExecutionException e) {
             throw new RuntimeException(e);
