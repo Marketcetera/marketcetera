@@ -267,8 +267,8 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         Message req = msgFactory.newMarketDataRequest("toliID", new ArrayList<Instrument>()); //$NON-NLS-1$
         assertEquals("sending 0 numSymbols doesn't work", 0, req.getInt(NoRelatedSym.FIELD)); //$NON-NLS-1$
         assertEquals("toliID", req.getString(MDReqID.FIELD)); //$NON-NLS-1$
-        assertEquals(SubscriptionRequestType.SNAPSHOT, req.getChar(SubscriptionRequestType.FIELD));
-        assertEquals(2, req.getInt(NoMDEntryTypes.FIELD));
+        assertEquals(SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES, req.getChar(SubscriptionRequestType.FIELD));
+        assertEquals(3, req.getInt(NoMDEntryTypes.FIELD));
         Group entryTypeGroup =  msgFactory.createGroup(MsgType.MARKET_DATA_REQUEST, NoMDEntryTypes.FIELD);
         req.getGroup(1, entryTypeGroup);
         assertEquals(MDEntryType.BID, entryTypeGroup.getChar(MDEntryType.FIELD));
