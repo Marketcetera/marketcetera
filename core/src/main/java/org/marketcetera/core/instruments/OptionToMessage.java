@@ -4,6 +4,8 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.quickfix.FIXVersion;
+
+import quickfix.Group;
 import quickfix.Message;
 import quickfix.DataDictionary;
 import quickfix.field.*;
@@ -19,7 +21,9 @@ import java.util.regex.Pattern;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class OptionToMessage extends InstrumentToMessage<Option> {
+public class OptionToMessage
+        extends InstrumentToMessage<Option>
+{
     /**
      * Creates an instance that handles options.
      */
@@ -79,7 +83,45 @@ public class OptionToMessage extends InstrumentToMessage<Option> {
                 (inDictionary.isMsgField(inMsgType,MaturityDate.FIELD) ||
                         inDictionary.isMsgField(inMsgType,MaturityMonthYear.FIELD));
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.instruments.InstrumentToMessage#set(org.marketcetera.trade.Instrument, quickfix.DataDictionary, java.lang.String, quickfix.Group)
+     */
+    @Override
+    public void set(Instrument inInstrument,
+                    DataDictionary inDictionary,
+                    String inMsgType,
+                    Group inGroup)
+    {
+        setSecurityType(inInstrument,
+                        inDictionary,
+                        inMsgType,
+                        inGroup);
+        setSymbol(inInstrument,
+                  inDictionary,
+                  inMsgType,
+                  inGroup);
+        Option option = (Option) inInstrument;
+        //set as many fields as are available in the dictionary.
+        if(inDictionary.isMsgField(inMsgType, CFICode.FIELD)) {
+            setCFICode(inGroup, option);
+        }
+        if(inDictionary.isMsgField(inMsgType, PutOrCall.FIELD)) {
+            inGroup.setField(new PutOrCall(option.getType().getFIXValue()));
+        }
+        if(inDictionary.isMsgField(inMsgType, StrikePrice.FIELD)) {
+            inGroup.setField(new StrikePrice(option.getStrikePrice()));
+        }
+        final String expiry = option.getExpiry();
+        if(inDictionary.isMsgField(inMsgType, MaturityMonthYear.FIELD)) {
+            inGroup.setField(new MaturityMonthYear(expiry));
+        }
+        if(inDictionary.isMsgField(inMsgType, MaturityDay.FIELD)&& isYYYYMMDD(expiry)) {
+            inGroup.setField(new MaturityDay(expiry.substring(6)));
+        }
+        if(inDictionary.isMsgField(inMsgType, MaturityDate.FIELD) && isYYYYMMDD(expiry)) {
+            inGroup.setField(new MaturityDate(expiry));
+        }
+    }
     @Override
     public void set(Instrument inInstrument, DataDictionary inDictionary,
                     String inMsgType, Message inMessage) {
@@ -120,7 +162,20 @@ public class OptionToMessage extends InstrumentToMessage<Option> {
             inMessage.setField(new CFICode(cfiCode));
         }
     }
-
+    /**
+     * Set the CFI code for the option in the group.
+     *
+     * @param inGroup a <code>Group</code> value
+     * @param inOption an <code>Option</code. value
+     */
+    private static void setCFICode(Group inGroup,
+                                   Option inOption)
+    {
+        String cfiCode = CFICodeUtils.getOptionCFICode(inOption.getType());
+        if(cfiCode != null) {
+            inGroup.setField(new CFICode(cfiCode));
+        }
+    }
     /**
      * Returns true if the option expiry includes the day.
      *

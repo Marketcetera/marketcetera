@@ -4,13 +4,16 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Messages;
+import org.marketcetera.util.except.I18NException;
 
+import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
@@ -54,7 +57,6 @@ import quickfix.field.SendingTime;
 import quickfix.field.SessionRejectReason;
 import quickfix.field.Side;
 import quickfix.field.SubscriptionRequestType;
-import quickfix.field.Symbol;
 import quickfix.field.TargetCompID;
 import quickfix.field.Text;
 import quickfix.field.TimeInForce;
@@ -165,33 +167,46 @@ public class FIXMessageFactory {
     /**
      * Returns a Market Data Request for the given symbols from the given exchange.
      *
-     * @param reqID a <code>String</code> value containing the identifier to assign to the message
-     * @param symbols a <code>List&lt;MSymbol&gt;</code> value containing the symbols for which to request data
+     * @param inRequestId a <code>String</code> value containing the identifier to assign to the message
+     * @param inInstruments a <code>List&lt;Instrument&gt;</code> value containing the symbols for which to request data
      * @param inExchange a <code>String</code> value containing the exchange from which to request data or <code>null</code> to not specify an exchange
      * @return a <code>Message</code> value
+     * @throws ExecutionException if the data dictionary could not be determined
+     * @throws FieldNotFound if the message could not be constructed
      */
-    public Message newMarketDataRequest(String reqID,
-                                        List<Equity> symbols,
+    public Message newMarketDataRequest(String inRequestId,
+                                        List<Instrument> inInstruments,
                                         String inExchange)
+            throws FieldNotFound, ExecutionException
     {
         Message request = msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST);
         request.setField(new MarketDepth(TOP_OF_BOOK_DEPTH));
-        request.setField(new MDReqID(reqID));
+        request.setField(new MDReqID(inRequestId));
         request.setChar(SubscriptionRequestType.FIELD, SubscriptionRequestType.SNAPSHOT);
         Group entryTypeGroup =  msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST, NoMDEntryTypes.FIELD);
         entryTypeGroup.setField(new MDEntryType(MDEntryType.BID));
         request.addGroup(entryTypeGroup);
         entryTypeGroup.setField(new MDEntryType(MDEntryType.OFFER));
         request.addGroup(entryTypeGroup);
-
-        int numSymbols = symbols.size();
+        int numSymbols = inInstruments.size();
         if (numSymbols == 0){
             request.setInt(NoRelatedSym.FIELD, numSymbols);
         }
-        for (Equity oneSymbol : symbols) {
-            if(oneSymbol != null) {
-                Group symbolGroup =  msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
-                symbolGroup.setField(new Symbol(oneSymbol.getSymbol()));
+        DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(request);
+        for(Instrument instrument : inInstruments) {
+            if(instrument != null) {
+                InstrumentToMessage<?> instrumentFunction = InstrumentToMessage.SELECTOR.forInstrument(instrument);
+                Group symbolGroup =  msgFactory.create(beginString,
+                                                       MsgType.MARKET_DATA_REQUEST,
+                                                       NoRelatedSym.FIELD);
+                if(!instrumentFunction.isSupported(fixDictionary,
+                                                   quickfix.field.MsgType.ORDER_SINGLE)) {
+                    throw new I18NException(Messages.UNSUPPORTED_INSTRUMENT);
+                }
+                instrumentFunction.set(instrument,
+                                       fixDictionary,
+                                       quickfix.field.MsgType.ORDER_SINGLE,
+                                       symbolGroup);
                 if(inExchange != null &&
                    !inExchange.isEmpty()) {
                     symbolGroup.setField(new SecurityExchange(inExchange));
@@ -204,12 +219,17 @@ public class FIXMessageFactory {
     /** Creates a new MarketDataRequest for the specified symbols.
      * Setting the incoming symbols array to empty results in a "get all" request
      * @param reqID request id to assign to this
-     * @param symbols   List of symbols, or an empty list to get all available
+     * @param inInstruments   List of symbols, or an empty list to get all available
      * @return Message corresponding to the market data request
+     * @throws ExecutionException if the data dictionary could not be determined
+     * @throws FieldNotFound if the message could not be constructed
      */
-    public Message newMarketDataRequest(String reqID, List<Equity> symbols) {
+    public Message newMarketDataRequest(String reqID,
+                                        List<Instrument> inInstruments)
+            throws FieldNotFound, ExecutionException
+    {
         return newMarketDataRequest(reqID,
-                                    symbols,
+                                    inInstruments,
                                     null);
     }
     /**

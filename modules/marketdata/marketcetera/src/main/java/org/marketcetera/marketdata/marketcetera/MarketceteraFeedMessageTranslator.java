@@ -7,6 +7,7 @@ import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.core.CoreException;
@@ -15,8 +16,10 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 
+import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.SubscriptionRequestType;
 
@@ -80,16 +83,21 @@ public class MarketceteraFeedMessageTranslator
      */
     private static Request fixMessageFromMarketDataRequest(MarketDataRequest inRequest)
     {
-        List<Equity> symbolList = new ArrayList<Equity>();
+        List<Instrument> symbolList = new ArrayList<>();
         for(String symbol : inRequest.getSymbols()) {
             symbolList.add(new Equity(symbol));
         }
         long id = counter.incrementAndGet();
         // generate the message using the current FIXMessageFactory
         // sets symbols
-        Message message = DEFAULT_MESSAGE_FACTORY.getMessageFactory().newMarketDataRequest(Long.toString(id), 
-                                                                                           symbolList,
-                                                                                           inRequest.getExchange());
+        Message message;
+        try {
+            message = DEFAULT_MESSAGE_FACTORY.getMessageFactory().newMarketDataRequest(Long.toString(id), 
+                                                                                       symbolList,
+                                                                                       inRequest.getExchange());
+        } catch (FieldNotFound | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
         // set the update type indicator
         message.setChar(SubscriptionRequestType.FIELD, 
                         SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);

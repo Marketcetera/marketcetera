@@ -1,10 +1,12 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.Instrument;
 import org.marketcetera.quickfix.FIXVersion;
-import quickfix.Message;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.DataDictionary;
+import quickfix.Group;
+import quickfix.Message;
 import quickfix.field.SecurityType;
 import quickfix.field.Symbol;
 
@@ -78,7 +80,19 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
                              DataDictionary inDictionary,
                              String inMsgType,
                              Message inMessage);
-    
+    /**
+     * 
+     *
+     *
+     * @param inInstrument
+     * @param inDictionary
+     * @param inMsgType
+     * @param inGroup
+     */
+    public abstract void set(Instrument inInstrument,
+                             DataDictionary inDictionary,
+                             String inMsgType,
+                             Group inGroup);
     /**
      * Creates an instance that handles the specified instrument subclass.
      *
@@ -127,7 +141,26 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
             }
         }
     }
-
+    /**
+     * Set the security type on the given group.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inDictionary a <code>DataDictionary</code> value
+     * @param inMsgType a <code>String</code> value
+     * @param inGroup a <code>Group</code> value
+     */
+    protected static void setSecurityType(Instrument inInstrument,
+                                          DataDictionary inDictionary,
+                                          String inMsgType,
+                                          Group inGroup) {
+        if(inInstrument.getSecurityType() != null &&
+                inDictionary.isMsgField(inMsgType,SecurityType.FIELD)) {
+            String fixValue = inInstrument.getSecurityType().getFIXValue();
+            if(inDictionary.isFieldValue(SecurityType.FIELD, fixValue)) {
+                inGroup.setField(new SecurityType(fixValue));
+            }
+        }
+    }
     /**
      * Sets the symbol field on the instrument if the FIX dictionary
      * supports the symbol field.
@@ -144,7 +177,23 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
             inMessage.setField(new Symbol(inInstrument.getSymbol()));
         }
     }
-
+    /**
+     * Set the symbol on the given group.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inDictionary a <code>DataDictionary</code> value
+     * @param inMsgType a <code>String</code> value
+     * @param inGroup a <code>Group</code> value
+     */
+    protected static void setSymbol(Instrument inInstrument,
+                                    DataDictionary inDictionary,
+                                    String inMsgType,
+                                    Group inGroup)
+    {
+        if(inDictionary.isMsgField(inMsgType, Symbol.FIELD)) {
+            inGroup.setField(new Symbol(inInstrument.getSymbol()));
+        }
+    }
     /**
      * The factory that provides the handler instance for the specified
      * instrument. 

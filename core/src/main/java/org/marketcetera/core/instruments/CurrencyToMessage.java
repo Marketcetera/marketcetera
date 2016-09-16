@@ -6,6 +6,7 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.DataDictionary;
+import quickfix.Group;
 import quickfix.Message;
 import quickfix.field.*;
 
@@ -14,7 +15,9 @@ import quickfix.field.*;
  *
  */
 @ClassVersion("$Id$")
-public class CurrencyToMessage extends InstrumentToMessage<Currency>{
+public class CurrencyToMessage
+        extends InstrumentToMessage<Currency>
+{
 
     /**
      * Creates an instance.
@@ -76,11 +79,9 @@ public class CurrencyToMessage extends InstrumentToMessage<Currency>{
         // always include the symbol
         message.setString(Symbol.FIELD, instrument.getSymbol());
         message.setString(SecurityType.FIELD,SecurityType.FOREIGN_EXCHANGE_CONTRACT);
-
         if (dictionary.isMsgField(msgType, Product.FIELD)) {
             message.setInt(Product.FIELD, Product.CURRENCY);
         }
-
         Currency currencyInstrument = (Currency) instrument;
         if (dictionary.isMsgField(msgType, quickfix.field.Currency.FIELD) && currencyInstrument.getTradedCCY()!=null) {
             message.setString(quickfix.field.Currency.FIELD,currencyInstrument.getTradedCCY());
@@ -100,7 +101,42 @@ public class CurrencyToMessage extends InstrumentToMessage<Currency>{
                 message.setChar(quickfix.field.OrdType.FIELD,quickfix.field.OrdType.PREVIOUSLY_QUOTED);
             }
         }
-	}
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.instruments.InstrumentToMessage#set(org.marketcetera.trade.Instrument, quickfix.DataDictionary, java.lang.String, quickfix.Group)
+     */
+    @Override
+    public void set(Instrument inInstrument,
+                    DataDictionary inDictionary,
+                    String inMsgType,
+                    Group inGroup)
+    {
+        // always include the symbol
+        inGroup.setString(Symbol.FIELD, inInstrument.getSymbol());
+        inGroup.setString(SecurityType.FIELD,SecurityType.FOREIGN_EXCHANGE_CONTRACT);
+        if(inDictionary.isMsgField(inMsgType, Product.FIELD)) {
+            inGroup.setInt(Product.FIELD, Product.CURRENCY);
+        }
+        Currency currencyInstrument = (Currency) inInstrument;
+        if (inDictionary.isMsgField(inMsgType, quickfix.field.Currency.FIELD) && currencyInstrument.getTradedCCY()!=null) {
+            inGroup.setString(quickfix.field.Currency.FIELD,currencyInstrument.getTradedCCY());
+        }
+        if(MsgType.ORDER_CANCEL_REQUEST.equals(inMsgType)) {
+            inGroup.removeField(FutSettDate.FIELD);
+            inGroup.removeField(quickfix.field.OrdType.FIELD);
+        } else {
+            if(currencyInstrument.getNearTenor() !=null) {
+                inGroup.setString(FutSettDate.FIELD,currencyInstrument.getNearTenor());
+            }
+            if (currencyInstrument.isSwap()) {
+                inGroup.setString(FutSettDate2.FIELD,currencyInstrument.getFarTenor());
+                inGroup.setChar(quickfix.field.OrdType.FIELD,quickfix.field.OrdType.FOREX_SWAP);
+            } else {
+                // potentially a broker dependent element
+                inGroup.setChar(quickfix.field.OrdType.FIELD,quickfix.field.OrdType.PREVIOUSLY_QUOTED);
+            }
+        }
+    }
     /**
      * Sets the CFI Code on the given <code>Message</code> for the given <code>Currency</code>.
      *
