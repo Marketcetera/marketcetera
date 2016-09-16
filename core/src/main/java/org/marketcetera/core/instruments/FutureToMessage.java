@@ -6,8 +6,7 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.DataDictionary;
-import quickfix.Group;
-import quickfix.Message;
+import quickfix.FieldMap;
 import quickfix.field.CFICode;
 import quickfix.field.MaturityDay;
 import quickfix.field.MaturityMonthYear;
@@ -41,9 +40,7 @@ public class FutureToMessage
                                String inMsgType)
     {
         // dictionary supports means to specify the 2 attributes of a future
-        return (inDictionary.isMsgField(inMsgType,Symbol.FIELD)) &&
-                inDictionary.isMsgField(inMsgType,
-                                        MaturityMonthYear.FIELD);
+        return (inDictionary.isMsgField(inMsgType,Symbol.FIELD)) && inDictionary.isMsgField(inMsgType,MaturityMonthYear.FIELD);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.instruments.InstrumentToMessage#set(org.marketcetera.trade.Instrument, java.lang.String, quickfix.Message)
@@ -51,7 +48,7 @@ public class FutureToMessage
     @Override
     public void set(Instrument inInstrument,
                     String inBeginString,
-                    Message inMessage)
+                    FieldMap inMessage)
     {
         if(FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(inBeginString))) {
             throw new IllegalArgumentException(
@@ -99,7 +96,7 @@ public class FutureToMessage
     public void set(Instrument inInstrument,
                     DataDictionary inDictionary,
                     String inMsgType,
-                    Message inMessage)
+                    FieldMap inMessage)
     {
         setSecurityType(inInstrument,
                         inDictionary,
@@ -120,41 +117,13 @@ public class FutureToMessage
             inMessage.setField(future.getExpiryAsMaturityMonthYear());
         }
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.core.instruments.InstrumentToMessage#set(org.marketcetera.trade.Instrument, quickfix.DataDictionary, java.lang.String, quickfix.Group)
-     */
-    @Override
-    public void set(Instrument inInstrument,
-                    DataDictionary inDictionary,
-                    String inMsgType,
-                    Group inGroup)
-    {
-        setSecurityType(inInstrument,
-                        inDictionary,
-                        inMsgType,
-                        inGroup);
-        setSymbol(inInstrument,
-                  inDictionary,
-                  inMsgType,
-                  inGroup);
-        Future future = (Future)inInstrument;
-        //set as many fields as are available in the dictionary.
-        if(inDictionary.isMsgField(inMsgType,
-                                   CFICode.FIELD)) {
-            setCFICode(inGroup,
-                       future);
-        }
-        if(inDictionary.isMsgField(inMsgType, MaturityMonthYear.FIELD)) {
-            inGroup.setField(future.getExpiryAsMaturityMonthYear());
-        }
-    }
     /**
      * Sets the CFI Code on the given <code>Message</code> for the given <code>Future</code>.
      *
-     * @param inMessage a <code>Message</code> value
+     * @param inMessage a <code>FieldMap</code> value
      * @param inFuture a <code>Future</code> value
      */
-    private static void setCFICode(Message inMessage,
+    private static void setCFICode(FieldMap inMessage,
                                    Future inFuture)
     {
         String cfiCode = CFICodeUtils.getCFICode(inFuture);
@@ -162,20 +131,5 @@ public class FutureToMessage
             inMessage.setField(new CFICode(cfiCode));
         }
         inMessage.setField(inFuture.getExpiryAsMaturityMonthYear());
-    }
-    /**
-     * Sets the CFI Code on the given <code>Group</code> for the given <code>Future</code>.
-     *
-     * @param inGroup a <code>Group</code> value
-     * @param inFuture a <code>Future</code> value
-     */
-    private static void setCFICode(Group inGroup,
-                                   Future inFuture)
-    {
-        String cfiCode = CFICodeUtils.getCFICode(inFuture);
-        if(cfiCode != null) {
-            inGroup.setField(new CFICode(cfiCode));
-        }
-        inGroup.setField(inFuture.getExpiryAsMaturityMonthYear());
     }
 }

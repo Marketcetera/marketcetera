@@ -1,12 +1,13 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Equity;
-import quickfix.Message;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
+
+import quickfix.FieldMap;
 import quickfix.FieldNotFound;
-import quickfix.field.SecurityType;
 import quickfix.field.CFICode;
+import quickfix.field.SecurityType;
 
 /* $License$ */
 /**
@@ -19,16 +20,24 @@ import quickfix.field.CFICode;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class EquityFromMessage extends InstrumentFromMessage {
-
+public class EquityFromMessage
+        extends InstrumentFromMessage
+{
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.instruments.InstrumentFromMessage#extract(quickfix.FieldMap)
+     */
     @Override
-    public Instrument extract(Message inMessage) {
+    public Instrument extract(FieldMap inMessage)
+    {
         String symbol = getSymbol(inMessage);
         return symbol == null ? null : new Equity(symbol);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.instruments.DynamicInstrumentHandler#isHandled(java.lang.Object)
+     */
     @Override
-    protected boolean isHandled(Message inValue) {
+    protected boolean isHandled(FieldMap inValue)
+    {
         try {
             return (!(inValue.isSetField(CFICode.FIELD))) &&
                     ((!inValue.isSetField(SecurityType.FIELD)) ||

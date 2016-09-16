@@ -1,12 +1,11 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 
-import quickfix.Group;
-import quickfix.Message;
 import quickfix.DataDictionary;
+import quickfix.FieldMap;
 import quickfix.field.Symbol;
 
 /* $License$ */
@@ -29,7 +28,7 @@ public class EquityToMessage
     }
 
     @Override
-    public void set(Instrument inInstrument, String inBeginString, Message inMessage) {
+    public void set(Instrument inInstrument, String inBeginString, FieldMap inMessage) {
         setSecurityType(inInstrument, inBeginString, inMessage);
         inMessage.setField(new Symbol(inInstrument.getSymbol()));
     }
@@ -41,26 +40,8 @@ public class EquityToMessage
 
     @Override
     public void set(Instrument inInstrument, DataDictionary inDictionary,
-                    String inMsgType, Message inMessage) {
+                    String inMsgType, FieldMap inMessage) {
         setSecurityType(inInstrument, inDictionary, inMsgType, inMessage);
         setSymbol(inInstrument, inDictionary, inMsgType, inMessage);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.core.instruments.InstrumentToMessage#set(org.marketcetera.trade.Instrument, quickfix.DataDictionary, java.lang.String, quickfix.Group)
-     */
-    @Override
-    public void set(Instrument inInstrument,
-                    DataDictionary inDictionary,
-                    String inMsgType,
-                    Group inGroup)
-    {
-        setSecurityType(inInstrument,
-                        inDictionary,
-                        inMsgType,
-                        inGroup);
-        setSymbol(inInstrument,
-                  inDictionary,
-                  inMsgType,
-                  inGroup);
     }
 }

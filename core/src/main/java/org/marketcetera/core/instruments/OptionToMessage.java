@@ -1,16 +1,22 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
+import java.util.regex.Pattern;
+
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
-import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.util.misc.ClassVersion;
 
-import quickfix.Group;
-import quickfix.Message;
 import quickfix.DataDictionary;
-import quickfix.field.*;
-
-import java.util.regex.Pattern;
+import quickfix.FieldMap;
+import quickfix.field.CFICode;
+import quickfix.field.MaturityDate;
+import quickfix.field.MaturityDay;
+import quickfix.field.MaturityMonthYear;
+import quickfix.field.PutOrCall;
+import quickfix.field.SecurityType;
+import quickfix.field.StrikePrice;
+import quickfix.field.Symbol;
 
 /* $License$ */
 /**
@@ -32,7 +38,7 @@ public class OptionToMessage
     }
 
     @Override
-    public void set(Instrument inInstrument, String inBeginString, Message inMessage) {
+    public void set(Instrument inInstrument, String inBeginString, FieldMap inMessage) {
         if(FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(inBeginString))) {
             throw new IllegalArgumentException(
                     Messages.OPTION_NOT_SUPPORTED_FOR_FIX_VERSION.getText(inBeginString));
@@ -83,48 +89,9 @@ public class OptionToMessage
                 (inDictionary.isMsgField(inMsgType,MaturityDate.FIELD) ||
                         inDictionary.isMsgField(inMsgType,MaturityMonthYear.FIELD));
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.core.instruments.InstrumentToMessage#set(org.marketcetera.trade.Instrument, quickfix.DataDictionary, java.lang.String, quickfix.Group)
-     */
-    @Override
-    public void set(Instrument inInstrument,
-                    DataDictionary inDictionary,
-                    String inMsgType,
-                    Group inGroup)
-    {
-        setSecurityType(inInstrument,
-                        inDictionary,
-                        inMsgType,
-                        inGroup);
-        setSymbol(inInstrument,
-                  inDictionary,
-                  inMsgType,
-                  inGroup);
-        Option option = (Option) inInstrument;
-        //set as many fields as are available in the dictionary.
-        if(inDictionary.isMsgField(inMsgType, CFICode.FIELD)) {
-            setCFICode(inGroup, option);
-        }
-        if(inDictionary.isMsgField(inMsgType, PutOrCall.FIELD)) {
-            inGroup.setField(new PutOrCall(option.getType().getFIXValue()));
-        }
-        if(inDictionary.isMsgField(inMsgType, StrikePrice.FIELD)) {
-            inGroup.setField(new StrikePrice(option.getStrikePrice()));
-        }
-        final String expiry = option.getExpiry();
-        if(inDictionary.isMsgField(inMsgType, MaturityMonthYear.FIELD)) {
-            inGroup.setField(new MaturityMonthYear(expiry));
-        }
-        if(inDictionary.isMsgField(inMsgType, MaturityDay.FIELD)&& isYYYYMMDD(expiry)) {
-            inGroup.setField(new MaturityDay(expiry.substring(6)));
-        }
-        if(inDictionary.isMsgField(inMsgType, MaturityDate.FIELD) && isYYYYMMDD(expiry)) {
-            inGroup.setField(new MaturityDate(expiry));
-        }
-    }
     @Override
     public void set(Instrument inInstrument, DataDictionary inDictionary,
-                    String inMsgType, Message inMessage) {
+                    String inMsgType, FieldMap inMessage) {
         setSecurityType(inInstrument, inDictionary, inMsgType, inMessage);
         setSymbol(inInstrument, inDictionary, inMsgType, inMessage);
         Option option = (Option) inInstrument;
@@ -156,24 +123,10 @@ public class OptionToMessage
      * @param inMessage the message
      * @param inOption the option
      */
-    private static void setCFICode(Message inMessage, Option inOption) {
+    private static void setCFICode(FieldMap inMessage, Option inOption) {
         String cfiCode = CFICodeUtils.getOptionCFICode(inOption.getType());
         if(cfiCode != null) {
             inMessage.setField(new CFICode(cfiCode));
-        }
-    }
-    /**
-     * Set the CFI code for the option in the group.
-     *
-     * @param inGroup a <code>Group</code> value
-     * @param inOption an <code>Option</code. value
-     */
-    private static void setCFICode(Group inGroup,
-                                   Option inOption)
-    {
-        String cfiCode = CFICodeUtils.getOptionCFICode(inOption.getType());
-        if(cfiCode != null) {
-            inGroup.setField(new CFICode(cfiCode));
         }
     }
     /**
