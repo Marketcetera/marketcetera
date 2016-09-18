@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang.Validate;
+import org.joda.time.DateTime;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.marketdata.Content;
@@ -160,14 +161,13 @@ public class FIXMessageFactory {
                 oldMessage, onlyCopyRequiredFields);
     }
     /**
-     * 
+     * Create a new market data snapshow (35=W) message.
      *
-     *
-     * @param inRequestId
-     * @param inInstrument
-     * @return
-     * @throws FieldNotFound
-     * @throws ExecutionException
+     * @param inRequestId a <code>String</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>Message</code> value
+     * @throws FieldNotFound if the message could not be built
+     * @throws ExecutionException if the message could not be built
      */
     public Message newMarketDataSnapshot(String inRequestId,
                                          Instrument inInstrument)
@@ -183,6 +183,49 @@ public class FIXMessageFactory {
                                request);
         request.setField(new quickfix.field.MDReqID(inRequestId));
         return request;
+    }
+    /**
+     * Create a new market data incremental refresh (35=X) message.
+     *
+     * @param inRequestId a <code>String</code> value
+     */
+    public Message newMarketDataIncrementalRefresh(String inRequestId)
+    {
+        Message request = msgFactory.create(beginString,
+                                            MsgType.MARKET_DATA_INCREMENTAL_REFRESH);
+        request.setField(new quickfix.field.MDReqID(inRequestId));
+        return request;
+    }
+    /**
+     * Create an MDEntry group.
+     *
+     * @param inMessageFactory a <code>FIXMessageFactory</code> value
+     * @param inMdEntryType a <code>char</code> value
+     * @return a <code>Group</code> value
+     */
+    public Group createMdEntryGroup(String inMsgType,
+                                    char inMdEntryType)
+    {
+        Group newGroup = createGroup(inMsgType,
+                                     quickfix.field.NoMDEntries.FIELD);
+        newGroup.setField(new quickfix.field.MDEntryType(inMdEntryType));
+        return newGroup;
+    }
+    /**
+     * Populate the MDEntry given group with the given date time value.
+     *
+     * @param inGroup a <code>Group</code> value
+     * @param inDateTime a <code>DateTime</code> value
+     */
+    public void populateMdEntryGroupWithDateTime(Group inGroup,
+                                                 DateTime inDateTime)
+    {
+        if(inDateTime == null) {
+            return;
+        }
+        // TODO the time doesn't seem quite right
+        inGroup.setField(new quickfix.field.MDEntryDate(inDateTime.minusMillis(inDateTime.getMillisOfDay()).toDate()));
+        inGroup.setField(new quickfix.field.MDEntryTime(inDateTime.minusYears(inDateTime.getYear()).minusDays(inDateTime.getDayOfYear()).toDate()));
     }
     /**
      * Create a new market data request with the given parameters.
@@ -297,6 +340,8 @@ public class FIXMessageFactory {
         request.setField(new quickfix.field.NoMDEntryTypes(contentCount));
         request.setChar(quickfix.field.SubscriptionRequestType.FIELD,
                         inSubscriptionType);
+        request.setInt(quickfix.field.MDUpdateType.FIELD,
+                       quickfix.field.MDUpdateType.INCREMENTAL_REFRESH);
         int numSymbols = inInstruments.size();
         if (numSymbols == 0){
             request.setInt(quickfix.field.NoRelatedSym.FIELD,
