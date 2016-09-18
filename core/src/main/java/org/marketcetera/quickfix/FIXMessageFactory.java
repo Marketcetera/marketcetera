@@ -262,7 +262,10 @@ public class FIXMessageFactory {
                 case MARKET_STAT:
                     contentCount = addMdEntry(request,quickfix.field.MDEntryType.OPENING_PRICE,contentCount);
                     contentCount = addMdEntry(request,quickfix.field.MDEntryType.CLOSING_PRICE,contentCount);
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADE_VOLUME,contentCount);
+                    if(fixDictionary.isFieldValue(quickfix.field.MDEntryType.FIELD,
+                                                  String.valueOf(quickfix.field.MDEntryType.TRADE_VOLUME))) {
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADE_VOLUME,contentCount);
+                    }
                     contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_HIGH_PRICE,contentCount);
                     contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_LOW_PRICE,contentCount);
                     contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_VWAP_PRICE,contentCount);
@@ -285,6 +288,11 @@ public class FIXMessageFactory {
                 default:
                     throw new UnsupportedOperationException("Unsupported content: " + content);
             }
+        }
+        if(!request.isSetField(quickfix.field.MarketDepth.FIELD)) {
+            maxDepth = setMaxDepth(request,
+                                   1,
+                                   maxDepth);
         }
         request.setField(new quickfix.field.NoMDEntryTypes(contentCount));
         request.setChar(quickfix.field.SubscriptionRequestType.FIELD,
