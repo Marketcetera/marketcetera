@@ -1,2 +1,2 @@
 #Names of module factory implementations
-org.marketcetera.marketdata.marketcetera.MarketceteraFeedModuleFactory
+org.marketcetera.marketdata.exsim.ExsimFeedModuleFactory
