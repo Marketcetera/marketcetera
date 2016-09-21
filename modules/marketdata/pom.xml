@@ -25,5 +25,6 @@
     <module>marketdata-core</module>
     <module>marketdata-recorder</module>
     <module>yahoo</module>
+    <module>marketdata-marketcetera-new</module>
   </modules>
 </project>
