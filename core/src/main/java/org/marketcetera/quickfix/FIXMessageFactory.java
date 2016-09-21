@@ -2,6 +2,7 @@ package org.marketcetera.quickfix;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -228,6 +229,25 @@ public class FIXMessageFactory {
         inGroup.setField(new quickfix.field.MDEntryTime(inDateTime.minusYears(inDateTime.getYear()).minusDays(inDateTime.getDayOfYear()).toDate()));
     }
     /**
+     * Create a new market data request that cancels the market data request with the given request id.
+     *
+     * @param inRequestId a <code>String</code> value
+     * @return a <code>Message</code> value
+     * @throws ExecutionException if the data dictionary could not be determined
+     * @throws FieldNotFound if the message could not be constructed
+     */
+    public Message newMarketDataRequestCancel(String inRequestId)
+            throws FieldNotFound, ExecutionException
+    {
+        Message request = newMarketDataRequest(inRequestId,
+                                    new ArrayList<Instrument>(),
+                                    null,
+                                    new ArrayList<Content>(),
+                                    quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST);
+        request.removeField(quickfix.field.MDUpdateType.FIELD);
+        return request;
+    }
+    /**
      * Create a new market data request with the given parameters.
      *
      * @param inRequestId a <code>String</code> value
@@ -256,80 +276,82 @@ public class FIXMessageFactory {
         int contentCount = 0;
         Integer maxDepth = null;
         Boolean aggregatedBook = null;
-        for(Content content : inContent) {
-            switch(content) {
-                case AGGREGATED_DEPTH:
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
-                    maxDepth = setMaxDepth(request,
-                                           Integer.MAX_VALUE,
-                                           maxDepth);
-                    aggregatedBook = setAggregatedBook(request,
-                                                       true,
-                                                       aggregatedBook);
-                    break;
-                case BBO10:
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
-                    maxDepth = setMaxDepth(request,
-                                           10,
-                                           maxDepth);
-                    aggregatedBook = setAggregatedBook(request,
-                                                       true,
-                                                       aggregatedBook);
-                    break;
-                case OPEN_BOOK:
-                case TOTAL_VIEW:
-                case UNAGGREGATED_DEPTH:
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
-                    maxDepth = setMaxDepth(request,
-                                           Integer.MAX_VALUE,
-                                           maxDepth);
-                    aggregatedBook = setAggregatedBook(request,
-                                                       false,
-                                                       aggregatedBook);
-                    break;
-                case LATEST_TICK:
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADE,contentCount);
-                    break;
-                case LEVEL_2:
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.INDEX_VALUE,contentCount);
-                    maxDepth = setMaxDepth(request,
-                                           Integer.MAX_VALUE,
-                                           maxDepth);
-                    aggregatedBook = setAggregatedBook(request,
-                                                       false,
-                                                       aggregatedBook);
-                    break;
-                case MARKET_STAT:
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.OPENING_PRICE,contentCount);
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.CLOSING_PRICE,contentCount);
-                    if(fixDictionary.isFieldValue(quickfix.field.MDEntryType.FIELD,
-                                                  String.valueOf(quickfix.field.MDEntryType.TRADE_VOLUME))) {
-                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADE_VOLUME,contentCount);
-                    }
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_HIGH_PRICE,contentCount);
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_LOW_PRICE,contentCount);
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_VWAP_PRICE,contentCount);
-                    break;
-                case NBBO:
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.INDEX_VALUE,contentCount);
-                    maxDepth = setMaxDepth(request,
-                                           TOP_OF_BOOK_DEPTH,
-                                           maxDepth);
-                    break;
-                case TOP_OF_BOOK:
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
-                    contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
-                    maxDepth = setMaxDepth(request,
-                                           TOP_OF_BOOK_DEPTH,
-                                           maxDepth);
-                    break;
-                case IMBALANCE:
-                case DIVIDEND:
-                default:
-                    throw new UnsupportedOperationException("Unsupported content: " + content);
+        if(inContent != null) {
+            for(Content content : inContent) {
+                switch(content) {
+                    case AGGREGATED_DEPTH:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               Integer.MAX_VALUE,
+                                               maxDepth);
+                        aggregatedBook = setAggregatedBook(request,
+                                                           true,
+                                                           aggregatedBook);
+                        break;
+                    case BBO10:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               10,
+                                               maxDepth);
+                        aggregatedBook = setAggregatedBook(request,
+                                                           true,
+                                                           aggregatedBook);
+                        break;
+                    case OPEN_BOOK:
+                    case TOTAL_VIEW:
+                    case UNAGGREGATED_DEPTH:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               Integer.MAX_VALUE,
+                                               maxDepth);
+                        aggregatedBook = setAggregatedBook(request,
+                                                           false,
+                                                           aggregatedBook);
+                        break;
+                    case LATEST_TICK:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADE,contentCount);
+                        break;
+                    case LEVEL_2:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.INDEX_VALUE,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               Integer.MAX_VALUE,
+                                               maxDepth);
+                        aggregatedBook = setAggregatedBook(request,
+                                                           false,
+                                                           aggregatedBook);
+                        break;
+                    case MARKET_STAT:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OPENING_PRICE,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.CLOSING_PRICE,contentCount);
+                        if(fixDictionary.isFieldValue(quickfix.field.MDEntryType.FIELD,
+                                                      String.valueOf(quickfix.field.MDEntryType.TRADE_VOLUME))) {
+                            contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADE_VOLUME,contentCount);
+                        }
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_HIGH_PRICE,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_LOW_PRICE,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_VWAP_PRICE,contentCount);
+                        break;
+                    case NBBO:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.INDEX_VALUE,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               TOP_OF_BOOK_DEPTH,
+                                               maxDepth);
+                        break;
+                    case TOP_OF_BOOK:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               TOP_OF_BOOK_DEPTH,
+                                               maxDepth);
+                        break;
+                    case IMBALANCE:
+                    case DIVIDEND:
+                    default:
+                        throw new UnsupportedOperationException("Unsupported content: " + content);
+                }
             }
         }
         if(!request.isSetField(quickfix.field.MarketDepth.FIELD)) {
@@ -342,26 +364,32 @@ public class FIXMessageFactory {
                         inSubscriptionType);
         request.setInt(quickfix.field.MDUpdateType.FIELD,
                        quickfix.field.MDUpdateType.INCREMENTAL_REFRESH);
-        int numSymbols = inInstruments.size();
-        if (numSymbols == 0){
-            request.setInt(quickfix.field.NoRelatedSym.FIELD,
-                           numSymbols);
-        }
-        for(Instrument instrument : inInstruments) {
-            if(instrument != null) {
-                InstrumentToMessage<?> instrumentFunction = InstrumentToMessage.SELECTOR.forInstrument(instrument);
-                Group symbolGroup =  msgFactory.create(beginString,
-                                                       MsgType.MARKET_DATA_REQUEST,
-                                                       NoRelatedSym.FIELD);
-                instrumentFunction.set(instrument,
-                                       fixDictionary,
-                                       quickfix.field.MsgType.ORDER_SINGLE,
-                                       symbolGroup);
-                if(inExchange != null && !inExchange.isEmpty()) {
-                    symbolGroup.setField(new quickfix.field.SecurityExchange(inExchange));
-                }
-                request.addGroup(symbolGroup);
+        int numSymbols = 0;
+        if(inInstruments != null) {
+            numSymbols = inInstruments.size();
+            if(numSymbols == 0){
+                request.setInt(quickfix.field.NoRelatedSym.FIELD,
+                               numSymbols);
             }
+            for(Instrument instrument : inInstruments) {
+                if(instrument != null) {
+                    InstrumentToMessage<?> instrumentFunction = InstrumentToMessage.SELECTOR.forInstrument(instrument);
+                    Group symbolGroup =  msgFactory.create(beginString,
+                                                           MsgType.MARKET_DATA_REQUEST,
+                                                           NoRelatedSym.FIELD);
+                    instrumentFunction.set(instrument,
+                                           fixDictionary,
+                                           quickfix.field.MsgType.ORDER_SINGLE,
+                                           symbolGroup);
+                    if(inExchange != null && !inExchange.isEmpty()) {
+                        symbolGroup.setField(new quickfix.field.SecurityExchange(inExchange));
+                    }
+                    request.addGroup(symbolGroup);
+                }
+            }
+        } else {
+            request.setInt(quickfix.field.NoRelatedSym.FIELD,
+                           0);
         }
         return request;
     }
