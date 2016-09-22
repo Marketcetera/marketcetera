@@ -213,6 +213,27 @@ public class FIXMessageFactory {
         return newGroup;
     }
     /**
+     * Get the MDEntry groups from the given message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @return a <code>List&lt:Group&gt;</code> value
+     * @throws FieldNotFound if the groups could not be extracted
+     */
+    public List<Group> getMdEntriesFromMessage(Message inMessage)
+            throws FieldNotFound
+    {
+        List<Group> mdEntries = Lists.newArrayList();
+        int noMdEntries = inMessage.getInt(quickfix.field.NoMDEntries.FIELD);
+        for(int i=1;i<=noMdEntries;i++) {
+            Group mdEntryGroup = createGroup(inMessage.getHeader().getString(quickfix.field.MsgType.FIELD),
+                                             quickfix.field.NoMDEntries.FIELD);
+            mdEntryGroup = inMessage.getGroup(i,
+                                              mdEntryGroup);
+            mdEntries.add(mdEntryGroup);
+        }
+        return mdEntries;
+    }
+    /**
      * Populate the MDEntry given group with the given date time value.
      *
      * @param inGroup a <code>Group</code> value
