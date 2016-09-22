@@ -578,260 +578,6 @@ public class ExsimFeedModule
         return events;
     }
     /**
-     * Get the events that are present in the message.
-     *
-     * @param inMessageWrapper a <code>MessageWrapper</code> value
-     * @return a <code>Deque&lt;Event&gt;</code> value
-     * @throws FieldNotFound if the message cannot be processed
-     * @throws ExecutionException 
-     */
-    private Deque<Event> getEvents(MessageWrapper inMessageWrapper)
-            throws FieldNotFound, ExecutionException
-    {
-        Message message = inMessageWrapper.getMessage();
-        String msgType = inMessageWrapper.getMsgType();
-        long receivedTimestamp = inMessageWrapper.getReceivedTimestamp();
-        String reqId = inMessageWrapper.getRequestId();
-        Deque<Event> events = Lists.newLinkedList();
-        boolean isSnapshot = true;
-        // if the message is a snapshot, then it's one instrument/exchange per message. if it's an incremental refresh, then it can be multiple instrument/exchange tuples per message
-        switch(msgType) {
-            case quickfix.field.MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH:
-                Instrument instrument = FIXMessageUtil.getInstrumentFromMessageFragment(message);
-                if(instrument == null) {
-                    throw new UnsupportedOperationException("Message does not specify an instrument");
-                }
-                OrderBook orderbook = getOrderBookFor(instrument);
-                String exchange = FIXMessageUtil.getSecurityExchangeFromMessageFragment(message);
-                // what types of events do we have here?
-                List<Group> mdEntries = messageFactory.getMdEntriesFromMessage(message);
-                SLF4JLoggerProxy.debug(this,
-                                       "Extracted {} groups from {}",
-                                       mdEntries.size(),
-                                       message);
-                events.addAll(getEvents(inMessageWrapper,
-                                        true));
-                break;
-            case quickfix.field.MsgType.MARKET_DATA_INCREMENTAL_REFRESH:
-                isSnapshot = false;
-                mdEntries = messageFactory.getMdEntriesFromMessage(message);
-                SLF4JLoggerProxy.debug(this,
-                                       "Extracted {} groups from {}",
-                                       mdEntries.size(),
-                                       message);
-                boolean marketstat = false;
-                MarketstatEventBuilder marketstatBuilder = null;
-                for(Group mdEntry : mdEntries) {
-                    SLF4JLoggerProxy.debug(this,
-                                           "Examining group {}",
-                                           mdEntry);
-                    BigDecimal closingPrice = null;
-                    BigDecimal volume = null;
-                    BigDecimal highPrice = null;
-                    BigDecimal lowPrice = null;
-                    BigDecimal vwap = null;
-                    instrument = FIXMessageUtil.getInstrumentFromMessageFragment(mdEntry);
-                    orderbook = getOrderBookFor(instrument);
-                    exchange = FIXMessageUtil.getSecurityExchangeFromMessageFragment(mdEntry);
-                    char entryType = mdEntry.getChar(quickfix.field.MDEntryType.FIELD);
-                    QuoteAction quoteAction = null;
-                    char updateAction = mdEntry.getChar(quickfix.field.MDUpdateAction.FIELD);
-                    switch(updateAction) {
-                        case quickfix.field.MDUpdateAction.CHANGE:
-                            quoteAction = QuoteAction.CHANGE;
-                            break;
-                        case quickfix.field.MDUpdateAction.DELETE:
-                            quoteAction = QuoteAction.DELETE;
-                            break;
-                        case quickfix.field.MDUpdateAction.NEW:
-                            quoteAction = QuoteAction.ADD;
-                            break;
-                        case quickfix.field.MDUpdateAction.DELETE_FROM:
-                        case quickfix.field.MDUpdateAction.DELETE_THRU:
-                        default:
-                            throw new UnsupportedOperationException("Unsupported update action: " + updateAction);
-                    }
-                    Date date = mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD);
-                    Date time = mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD);
-                    Date eventDate = new Date(date.getTime()+time.getTime());
-                    switch(entryType) {
-                        case quickfix.field.MDEntryType.BID:
-                            QuoteEventBuilder<BidEvent> bidBuilder = QuoteEventBuilder.bidEvent(instrument);
-                            bidBuilder.withAction(quoteAction);
-                            bidBuilder.withCount(mdEntry.getInt(quickfix.field.NumberOfOrders.FIELD));
-                            bidBuilder.withEventType(EventType.UPDATE_PART);
-                            bidBuilder.withExchange(exchange);
-                            int level = mdEntry.getInt(quickfix.field.MDEntryPositionNo.FIELD);
-                            bidBuilder.withLevel(level);
-                            bidBuilder.withPrice(mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD));
-                            bidBuilder.withProcessedTimestamp(System.nanoTime());
-                            bidBuilder.withProvider(ExsimFeedModuleFactory.IDENTIFIER);
-                            bidBuilder.withQuoteDate(eventDate);
-                            bidBuilder.withReceivedTimestamp(receivedTimestamp);
-                            bidBuilder.withSize(mdEntry.getDecimal(quickfix.field.MDEntrySize.FIELD));
-                            bidBuilder.withSource(reqId);
-                            if(instrument instanceof Option) {
-                                bidBuilder.withExpirationType(ExpirationType.UNKNOWN);
-                                bidBuilder.withUnderlyingInstrument(new Equity(instrument.getSymbol()));
-                            }
-                            switch(quoteAction) {
-                                case CHANGE:
-                                case DELETE:
-                                    bidBuilder.withMessageId(getBidIdFor(orderbook,
-                                                                         level));
-                                    break;
-                                case ADD:
-                                    bidBuilder.withMessageId(idCounter.incrementAndGet());
-                                    break;
-                            }
-                            BidEvent bid = bidBuilder.create();
-                            orderbook.process(bid);
-                            events.add(bid);
-                            break;
-                        case quickfix.field.MDEntryType.OFFER:
-                            QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.askEvent(instrument);
-                            askBuilder.withAction(quoteAction);
-                            askBuilder.withCount(mdEntry.getInt(quickfix.field.NumberOfOrders.FIELD));
-                            askBuilder.withEventType(EventType.UPDATE_PART);
-                            askBuilder.withExchange(exchange);
-                            level = mdEntry.getInt(quickfix.field.MDEntryPositionNo.FIELD);
-                            askBuilder.withLevel(level);
-                            askBuilder.withPrice(mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD));
-                            askBuilder.withProcessedTimestamp(System.nanoTime());
-                            askBuilder.withProvider(ExsimFeedModuleFactory.IDENTIFIER);
-                            askBuilder.withQuoteDate(eventDate);
-                            askBuilder.withReceivedTimestamp(receivedTimestamp);
-                            askBuilder.withSize(mdEntry.getDecimal(quickfix.field.MDEntrySize.FIELD));
-                            askBuilder.withSource(reqId);
-                            if(instrument instanceof Option) {
-                                askBuilder.withExpirationType(ExpirationType.UNKNOWN);
-                                askBuilder.withUnderlyingInstrument(new Equity(instrument.getSymbol()));
-                            }
-                            switch(quoteAction) {
-                                case CHANGE:
-                                case DELETE:
-                                    askBuilder.withMessageId(getAskIdFor(orderbook,
-                                                                         level));
-                                    break;
-                                case ADD:
-                                    askBuilder.withMessageId(idCounter.incrementAndGet());
-                                    break;
-                            }
-                            AskEvent ask = askBuilder.create();
-                            orderbook.process(ask);
-                            events.add(ask);
-                            break;
-                        case quickfix.field.MDEntryType.TRADE:
-                            TradeEventBuilder<? extends TradeEvent> tradeBuilder = TradeEventBuilder.tradeEvent(instrument);
-                            tradeBuilder.withEventType(EventType.UPDATE_PART);
-                            tradeBuilder.withExchange(exchange);
-                            tradeBuilder.withPrice(mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD));
-                            tradeBuilder.withProcessedTimestamp(System.nanoTime());
-                            tradeBuilder.withProvider(ExsimFeedModuleFactory.IDENTIFIER);
-                            tradeBuilder.withTradeDate(eventDate);
-                            tradeBuilder.withReceivedTimestamp(receivedTimestamp);
-                            tradeBuilder.withSize(mdEntry.getDecimal(quickfix.field.MDEntrySize.FIELD));
-                            tradeBuilder.withSource(reqId);
-                            if(instrument instanceof Option) {
-                                tradeBuilder.withExpirationType(ExpirationType.UNKNOWN);
-                                tradeBuilder.withUnderlyingInstrument(new Equity(instrument.getSymbol()));
-                            }
-                            events.add(tradeBuilder.create());
-                            if(mdEntry.isSetField(quickfix.field.TotalVolumeTraded.FIELD)) {
-                                marketstat = true;
-                                volume = mdEntry.getDecimal(quickfix.field.TotalVolumeTraded.FIELD);
-                            }
-                            break;
-                        case quickfix.field.MDEntryType.CLOSING_PRICE:
-                            marketstat = true;
-                            closingPrice = mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD);
-                            break;
-                        case quickfix.field.MDEntryType.TRADE_VOLUME:
-                            marketstat = true;
-                            volume = mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD);
-                            break;
-                        case quickfix.field.MDEntryType.TRADING_SESSION_HIGH_PRICE:
-                            marketstat = true;
-                            highPrice = mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD);
-                            break;
-                        case quickfix.field.MDEntryType.TRADING_SESSION_LOW_PRICE:
-                            marketstat = true;
-                            lowPrice = mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD);
-                            break;
-                        case quickfix.field.MDEntryType.TRADING_SESSION_VWAP_PRICE:
-                            marketstat = true;
-                            vwap = mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD);
-                            break;
-                        case quickfix.field.MDEntryType.AUCTION_CLEARING_PRICE:
-                        case quickfix.field.MDEntryType.COMPOSITE_UNDERLYING_PRICE:
-                        case quickfix.field.MDEntryType.EARLY_PRICES:
-                        case quickfix.field.MDEntryType.EMPTY_BOOK:
-                        case quickfix.field.MDEntryType.IMBALANCE:
-                        case quickfix.field.MDEntryType.INDEX_VALUE:
-                        case quickfix.field.MDEntryType.MARGIN_RATE:
-                        case quickfix.field.MDEntryType.MID_PRICE:
-                        case quickfix.field.MDEntryType.OPEN_INTEREST:
-                        case quickfix.field.MDEntryType.PRIOR_SETTLE_PRICE:
-                        case quickfix.field.MDEntryType.SESSION_HIGH_BID:
-                        case quickfix.field.MDEntryType.SESSION_LOW_OFFER:
-                        case quickfix.field.MDEntryType.SETTLE_HIGH_PRICE:
-                        case quickfix.field.MDEntryType.SETTLE_LOW_PRICE:
-                        case quickfix.field.MDEntryType.SETTLEMENT_PRICE:
-                        case quickfix.field.MDEntryType.SIMULATED_BUY_PRICE:
-                        case quickfix.field.MDEntryType.SIMULATED_SELL_PRICE:
-                        default:
-                            SLF4JLoggerProxy.warn(this,
-                                                  "Ignoring unhandled update type: {}",
-                                                  entryType);
-                    }
-                    if(marketstat) {
-                        if(marketstatBuilder == null) {
-                            marketstatBuilder = MarketstatEventBuilder.marketstat(instrument);
-                        }
-                        marketstatBuilder.withExchangeCode(exchange);
-                        if(closingPrice != null) {
-                            marketstatBuilder.withClosePrice(closingPrice);
-                        }
-                        if(volume != null) {
-                            marketstatBuilder.withVolume(volume);
-                        }
-                        if(highPrice != null) {
-                            marketstatBuilder.withHighPrice(highPrice);
-                        }
-                        if(lowPrice != null) {
-                            marketstatBuilder.withLowPrice(lowPrice);
-                        }
-                        if(vwap != null) {
-                            marketstatBuilder.withValue(vwap);
-                        }
-                        if(instrument instanceof Option) {
-                            marketstatBuilder.withExpirationType(ExpirationType.UNKNOWN);
-                            marketstatBuilder.withUnderlyingInstrument(new Equity(instrument.getSymbol()));
-                        }
-                        marketstatBuilder.withEventType(EventType.UPDATE_PART);
-                    }
-                }
-                if(marketstat) {
-                    events.add(marketstatBuilder.create());
-                }
-                break;
-            default:
-                throw new UnsupportedOperationException("Cannot retrieve events from message type " + msgType);
-        }
-        if(!events.isEmpty()) {
-            Event lastEvent = events.getLast();
-            if(lastEvent instanceof HasEventType) {
-                HasEventType eventTypeEvent = (HasEventType)lastEvent;
-                eventTypeEvent.setEventType(isSnapshot?EventType.SNAPSHOT_FINAL:EventType.UPDATE_FINAL);
-            }
-        }
-        SLF4JLoggerProxy.debug(this,
-                               "Produced {} from {}",
-                               events,
-                               message);
-        return events;
-    }
-    /**
      * Get the message id used for the event at the given level of the ask book.
      *
      * @param inOrderbook an <code>OrderBook</code> value
@@ -916,10 +662,25 @@ public class ExsimFeedModule
                                            message);
                     String msgType = messageWrapper.getMsgType();
                     String requestId = messageWrapper.getRequestId();
+                    boolean isSnapshot = false;
                     switch(msgType) {
                         case quickfix.field.MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH:
+                            isSnapshot = true;
                         case quickfix.field.MsgType.MARKET_DATA_INCREMENTAL_REFRESH:
-                            publishEvents(getEvents(messageWrapper),
+                            Deque<Event> events = Lists.newLinkedList();
+                            events.addAll(getEvents(messageWrapper,
+                                                    isSnapshot));
+                            if(!events.isEmpty()) {
+                                Event lastEvent = events.getLast();
+                                if(lastEvent instanceof HasEventType) {
+                                    HasEventType eventTypeEvent = (HasEventType)lastEvent;
+                                    eventTypeEvent.setEventType(isSnapshot?EventType.SNAPSHOT_FINAL:EventType.UPDATE_FINAL);
+                                }
+                            }
+                            SLF4JLoggerProxy.debug(this,
+                                                   "Produced {}",
+                                                   events);
+                            publishEvents(events,
                                           requestId);
                             break;
                         case quickfix.field.MsgType.MARKET_DATA_REQUEST_REJECT:
