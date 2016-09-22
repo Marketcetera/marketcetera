@@ -1,10 +1,8 @@
 package org.marketcetera.marketdata.exsim;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.lang.management.ManagementFactory;
-import java.util.concurrent.Callable;
 
 import javax.management.JMX;
 import javax.management.MBeanServer;
@@ -13,12 +11,9 @@ import javax.management.ObjectName;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
-import org.marketcetera.marketdata.FeedStatus;
-import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleState;
 import org.springframework.beans.BeansException;
@@ -71,24 +66,25 @@ public class ExsimFeedModuleTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Ignore@Test
+    @Test
     public void testStartAndStop()
             throws Exception
     {
         moduleManager.start(ExsimFeedModuleFactory.INSTANCE_URN);
         assertEquals(ModuleState.STARTED,
                      moduleManager.getModuleInfo(ExsimFeedModuleFactory.INSTANCE_URN).getState());
-        final AbstractMarketDataModuleMXBean moduleBean = getModuleBean();
-        assertNotNull(moduleBean);
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                FeedStatus feedStatus = FeedStatus.valueOf(moduleBean.getFeedStatus());
-                return feedStatus.isRunning();
-            }
-        });
+        // uncomment this next block to make it actually connect
+//        final AbstractMarketDataModuleMXBean moduleBean = getModuleBean();
+//        assertNotNull(moduleBean);
+//        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+//            @Override
+//            public Boolean call()
+//                    throws Exception
+//            {
+//                FeedStatus feedStatus = FeedStatus.valueOf(moduleBean.getFeedStatus());
+//                return feedStatus.isRunning();
+//            }
+//        });
         moduleManager.stop(ExsimFeedModuleFactory.INSTANCE_URN);
     }
     /* (non-Javadoc)
@@ -106,6 +102,7 @@ public class ExsimFeedModuleTest
      * @return an <code>AbstractMarketDataModuleMXBean</code> value
      * @throws MalformedObjectNameException if an error occurs getting the provider bean
      */
+    @SuppressWarnings("unused")
     private AbstractMarketDataModuleMXBean getModuleBean()
             throws MalformedObjectNameException
     {
