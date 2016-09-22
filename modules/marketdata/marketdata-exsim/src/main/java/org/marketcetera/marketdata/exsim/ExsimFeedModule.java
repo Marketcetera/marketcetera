@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Deque;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -13,6 +14,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.BatchQueueProcessor;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventType;
+import org.marketcetera.event.HasEventType;
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Capability;
@@ -44,6 +48,7 @@ import quickfix.ConfigError;
 import quickfix.DoNotSend;
 import quickfix.FieldNotFound;
 import quickfix.FileLogFactory;
+import quickfix.Group;
 import quickfix.IncorrectDataFormat;
 import quickfix.IncorrectTagValue;
 import quickfix.LogFactory;
@@ -60,6 +65,7 @@ import quickfix.SocketInitiator;
 import quickfix.UnsupportedMessageType;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -285,11 +291,15 @@ public class ExsimFeedModule
                                marketDataRequest,
                                inRequest,
                                inPayload);
+        receiversByMdReqId.put(id,
+                               inSupport);
         if(!Session.sendToTarget(marketDataRequest,
                                  sessionId)) {
+            receiversByMdReqId.remove(id);
             throw new StopDataFlowException(null); // TODO
         }
     }
+    private final Map<String,DataEmitterSupport> receiversByMdReqId = Maps.newHashMap();
     /**
      * Update the feed status to the new given value.
      *
@@ -301,6 +311,110 @@ public class ExsimFeedModule
             return;
         }
         feedStatus = inNewStatus;
+    }
+    /**
+     * 
+     *
+     *
+     * @param inMessage
+     * @param inMsgType
+     * @return
+     * @throws FieldNotFound 
+     */
+    private Deque<Event> getEventsFromMessage(Message inMessage,
+                                              String inMsgType)
+            throws FieldNotFound
+    {
+        Deque<Event> events = Lists.newLinkedList();
+        // if the message is a snapshot, then it's one instrument/exchange per message. if it's an incremental refresh, then it can be multiple instrument/exchange tuples per message
+        switch(inMsgType) {
+            case quickfix.field.MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH:
+                Instrument instrument = FIXMessageUtil.getInstrumentFromMessageFragment(inMessage);
+                if(instrument == null) {
+                    throw new UnsupportedOperationException("Message does not specify an instrument");
+                }
+                String exchange = FIXMessageUtil.getSecurityExchangeFromMessageFragment(inMessage);
+                // what types of events do we have here?
+                List<Group> mdEntries = getMdEntriesFromMessage(inMessage);
+                SLF4JLoggerProxy.debug(this,
+                                       "Extracted {} from {}",
+                                       mdEntries,
+                                       inMessage);
+                break;
+            case quickfix.field.MsgType.MARKET_DATA_INCREMENTAL_REFRESH:
+                mdEntries = getMdEntriesFromMessage(inMessage);
+                SLF4JLoggerProxy.debug(this,
+                                       "Extracted {} from {}",
+                                       mdEntries,
+                                       inMessage);
+                break;
+            default:
+                throw new UnsupportedOperationException("Cannot retrieve events from message type " + inMsgType);
+        }
+        return events;
+    }
+    private List<Group> getMdEntriesFromMessage(Message inMessage)
+            throws FieldNotFound
+    {
+        List<Group> mdEntries = Lists.newArrayList();
+        int noMdEntries = inMessage.getInt(quickfix.field.NoMDEntries.FIELD);
+        for(int i=1;i<=noMdEntries;i++) {
+            Group mdEntryGroup = messageFactory.createGroup(inMessage.getHeader().getString(quickfix.field.MsgType.FIELD),
+                                                            quickfix.field.NoMDEntries.FIELD);
+            mdEntryGroup = inMessage.getGroup(i,
+                                              mdEntryGroup);
+            mdEntries.add(mdEntryGroup);
+        }
+        return mdEntries;
+    }
+    /**
+     * 
+     *
+     *
+     * @param inEvents
+     * @param inRequestId
+     * @param inIsSnapshot
+     */
+    private void publishEvents(Deque<Event> inEvents,
+                               String inRequestId,
+                               boolean inIsSnapshot)
+    {
+        if(inRequestId == null) {
+            throw new UnsupportedOperationException("Cannot process response without MDReqID (262)");
+        }
+        if(inEvents.isEmpty()) {
+            throw new UnsupportedOperationException("Cannot process response with no events");
+        }
+        DataEmitterSupport receiver = receiversByMdReqId.get(inRequestId);
+        if(receiver == null) {
+            SLF4JLoggerProxy.debug(this,
+                                   "Not publishing {} to {} because it seems to have just been canceled",
+                                   inEvents,
+                                   inRequestId);
+            return;
+        }
+        Event lastEvent = inEvents.getLast();
+        if(lastEvent instanceof HasEventType) {
+            ((HasEventType)lastEvent).setEventType(inIsSnapshot?EventType.SNAPSHOT_FINAL:EventType.UPDATE_FINAL);
+        }
+        for(Event event : inEvents) {
+            try {
+                // this fulfills the EVENT_BOUNDARY contract
+                if(event instanceof HasEventType) {
+                    HasEventType eventWithEventType = (HasEventType)event;
+                    if(eventWithEventType.getEventType() == null || !eventWithEventType.getEventType().isComplete()) {
+                        eventWithEventType.setEventType(inIsSnapshot?EventType.SNAPSHOT_PART:EventType.UPDATE_PART);
+                    }
+                }
+                receiver.send(event);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Caught and ignored exception while sending {} to {}",
+                                      event,
+                                      receiver);
+            }
+        }
     }
     /**
      * Process incoming FIX messages received from the exchange simulator.
@@ -326,12 +440,23 @@ public class ExsimFeedModule
                                            this,
                                            message);
                     String msgType = message.getHeader().getString(quickfix.field.MsgType.FIELD);
+                    String requestId = null;
+                    if(message.isSetField(quickfix.field.MDReqID.FIELD)) {
+                        requestId = message.getString(quickfix.field.MDReqID.FIELD);
+                    }
+                    boolean isSnapshot = false;
                     switch(msgType) {
+                        case quickfix.field.MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH:
+                            isSnapshot = true;
+                            // fall through on purpose
                         case quickfix.field.MsgType.MARKET_DATA_INCREMENTAL_REFRESH:
+                            publishEvents(getEventsFromMessage(message,
+                                                               msgType),
+                                          requestId,
+                                          isSnapshot);
                             break;
                         case quickfix.field.MsgType.MARKET_DATA_REQUEST_REJECT:
-                            break;
-                        case quickfix.field.MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH:
+                            // TODO cancel corresponding request?
                             break;
                         default:
                             SLF4JLoggerProxy.warn(ExsimFeedModule.this,

@@ -152,7 +152,7 @@ public class FIXMessageFactory {
 	}
 
     protected void addSendingTime(Message inCancelMessage) {
-        inCancelMessage.getHeader().setField(new SendingTime(new Date())); //non-i18n
+        inCancelMessage.getHeader().setField(new SendingTime(new Date()));
     }
 
     protected void fillFieldsFromExistingMessage(Message oldMessage,
@@ -268,7 +268,6 @@ public class FIXMessageFactory {
             throws FieldNotFound,ExecutionException
     {
         // TODO add support for content in non 4.2 if dictionary supports it (imbalance, eg)
-        // TODO how to include exchange in requests where no instruments are provided?
         Message request = msgFactory.create(beginString,
                                             MsgType.MARKET_DATA_REQUEST);
         DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(request);
@@ -549,96 +548,6 @@ public class FIXMessageFactory {
         newMessage.setField(new OrdType(OrdType.MARKET));
         return newMessage;
     }
-    /**
-     * Add an MDEntry to the given message with the given type.
-     *
-     * @param inMarketDataRequest a <code>Message</code> value
-     * @param inMdEntryType a <code>char</code> value
-     * @param inCurrentContentCount an <code>int</code> value
-     * @return an <code>int</code> value
-     * @throws FieldNotFound if the given message is invalid
-     */
-    private int addMdEntry(Message inMarketDataRequest,
-                           char inMdEntryType,
-                           int inCurrentContentCount)
-            throws FieldNotFound
-    {
-        Group newGroup =  msgFactory.create(beginString,
-                                            inMarketDataRequest.getHeader().getString(quickfix.field.MsgType.FIELD),
-                                            quickfix.field.NoMDEntryTypes.FIELD);
-        newGroup.setField(new quickfix.field.MDEntryType(inMdEntryType));
-        inMarketDataRequest.addGroup(newGroup);
-        return inCurrentContentCount + 1;
-    }
-    /**
-     * Set the AggregatedBook value on the given message based on the inputs.
-     *
-     * @param inMarketDataRequest a <code>Message</code> value
-     * @param inNewAggregatedBookValue a <code>boolean</code> value
-     * @param inCurrentAggregatedBookValue a <code>Boolean</code> value or <code>null</code> if the value has not yet been set
-     * @return a <code>boolean</code> value holding the new AggregatedBook value for the message
-     * @throws IllegalArgumentException if the new aggregated book value conflicts with the old aggregated book value
-     */
-    private boolean setAggregatedBook(Message inMarketDataRequest,
-                                      boolean inNewAggregatedBookValue,
-                                      Boolean inCurrentAggregatedBookValue)
-    {
-        Validate.isTrue(inCurrentAggregatedBookValue == null || inNewAggregatedBookValue == inCurrentAggregatedBookValue,
-                        "Request has conflicting implied aggregated book");
-        inMarketDataRequest.setField(new quickfix.field.AggregatedBook(inNewAggregatedBookValue));
-        return inNewAggregatedBookValue;
-    }
-    /**
-     * Set the MaxDepth value on the given message based on the inputs.
-     *
-     * @param inMarketDataRequest a <code>Message</code> value
-     * @param inNewDepthValue an <code>int</code> value
-     * @param inCurrentDepthValue an <code>Integer</code> value or <code>null</code> if the value has not yet been set 
-     * @return an <code>int</code> value containing the new MaxDepth value for the message
-     * @throws IllegalArgumentException if the new MaxDepth value conflicts with the old MaxDepth value
-     */
-    private int setMaxDepth(Message inMarketDataRequest,
-                            int inNewDepthValue,
-                            Integer inCurrentDepthValue)
-    {
-        Validate.isTrue(inCurrentDepthValue == null || inNewDepthValue == inCurrentDepthValue,
-                        "Request has conflicting implied market depth");
-        inMarketDataRequest.setField(new quickfix.field.MarketDepth(inNewDepthValue));
-        return inNewDepthValue;
-    }
-    /**
-     * Creates a new FIX order
-     * <p>
-     * <b>NOTE:</b> This method is only meant to be used for unit testing.
-     *
-     * @param clOrderID     Internally generated clOrderID that will become the {@link ClOrdID} that
-     *                    uniquely identifies this orderlater
-     * @param side        Buy/Sell side
-     * @param quantity    # of shares being bought/sold
-     * @param instrument      instrument
-     * @param timeInForce How long the order is in effect
-     * @param account     Account ID
-     * @return Message representing this new order
-     */
-    private Message newOrderHelper(String clOrderID, char side, BigDecimal quantity, 
-    		Instrument instrument, char timeInForce, String account) {
-        Message aMessage = msgFactory.create(beginString, MsgType.ORDER_SINGLE);
-        aMessage.setField(new ClOrdID(clOrderID));
-        addHandlingInst(aMessage);
-        InstrumentToMessage.SELECTOR.forInstrument(instrument).
-                set(instrument, beginString, aMessage);
-        aMessage.setField(new Side(side));
-
-        aMessage.setField(new OrderQty(quantity));
-        aMessage.setField(new TimeInForce(timeInForce));
-        if (account != null) {
-            aMessage.setField(new Account(account));
-        }
-        addTransactionTimeIfNeeded(aMessage);
-        msgAugmentor.newOrderSingleAugment(aMessage);
-        return aMessage;
-    }
-
     /**
      * Helps create a cancel order for an existing cancel request
      * <p>
@@ -928,5 +837,97 @@ public class FIXMessageFactory {
         addTransactionTimeIfNeeded(msg);
         return msg;
     }
+    /**
+     * Add an MDEntry to the given message with the given type.
+     *
+     * @param inMarketDataRequest a <code>Message</code> value
+     * @param inMdEntryType a <code>char</code> value
+     * @param inCurrentContentCount an <code>int</code> value
+     * @return an <code>int</code> value
+     * @throws FieldNotFound if the given message is invalid
+     */
+    private int addMdEntry(Message inMarketDataRequest,
+                           char inMdEntryType,
+                           int inCurrentContentCount)
+            throws FieldNotFound
+    {
+        Group newGroup =  msgFactory.create(beginString,
+                                            inMarketDataRequest.getHeader().getString(quickfix.field.MsgType.FIELD),
+                                            quickfix.field.NoMDEntryTypes.FIELD);
+        newGroup.setField(new quickfix.field.MDEntryType(inMdEntryType));
+        inMarketDataRequest.addGroup(newGroup);
+        return inCurrentContentCount + 1;
+    }
+    /**
+     * Set the AggregatedBook value on the given message based on the inputs.
+     *
+     * @param inMarketDataRequest a <code>Message</code> value
+     * @param inNewAggregatedBookValue a <code>boolean</code> value
+     * @param inCurrentAggregatedBookValue a <code>Boolean</code> value or <code>null</code> if the value has not yet been set
+     * @return a <code>boolean</code> value holding the new AggregatedBook value for the message
+     * @throws IllegalArgumentException if the new aggregated book value conflicts with the old aggregated book value
+     */
+    private boolean setAggregatedBook(Message inMarketDataRequest,
+                                      boolean inNewAggregatedBookValue,
+                                      Boolean inCurrentAggregatedBookValue)
+    {
+        Validate.isTrue(inCurrentAggregatedBookValue == null || inNewAggregatedBookValue == inCurrentAggregatedBookValue,
+                        "Request has conflicting implied aggregated book");
+        inMarketDataRequest.setField(new quickfix.field.AggregatedBook(inNewAggregatedBookValue));
+        return inNewAggregatedBookValue;
+    }
+    /**
+     * Set the MaxDepth value on the given message based on the inputs.
+     *
+     * @param inMarketDataRequest a <code>Message</code> value
+     * @param inNewDepthValue an <code>int</code> value
+     * @param inCurrentDepthValue an <code>Integer</code> value or <code>null</code> if the value has not yet been set 
+     * @return an <code>int</code> value containing the new MaxDepth value for the message
+     * @throws IllegalArgumentException if the new MaxDepth value conflicts with the old MaxDepth value
+     */
+    private int setMaxDepth(Message inMarketDataRequest,
+                            int inNewDepthValue,
+                            Integer inCurrentDepthValue)
+    {
+        Validate.isTrue(inCurrentDepthValue == null || inNewDepthValue == inCurrentDepthValue,
+                        "Request has conflicting implied market depth");
+        inMarketDataRequest.setField(new quickfix.field.MarketDepth(inNewDepthValue));
+        return inNewDepthValue;
+    }
+    /**
+     * Creates a new FIX order
+     * <p>
+     * <b>NOTE:</b> This method is only meant to be used for unit testing.
+     *
+     * @param clOrderID     Internally generated clOrderID that will become the {@link ClOrdID} that
+     *                    uniquely identifies this orderlater
+     * @param side        Buy/Sell side
+     * @param quantity    # of shares being bought/sold
+     * @param instrument      instrument
+     * @param timeInForce How long the order is in effect
+     * @param account     Account ID
+     * @return Message representing this new order
+     */
+    private Message newOrderHelper(String clOrderID, char side, BigDecimal quantity, 
+            Instrument instrument, char timeInForce, String account) {
+        Message aMessage = msgFactory.create(beginString, MsgType.ORDER_SINGLE);
+        aMessage.setField(new ClOrdID(clOrderID));
+        addHandlingInst(aMessage);
+        InstrumentToMessage.SELECTOR.forInstrument(instrument).
+                set(instrument, beginString, aMessage);
+        aMessage.setField(new Side(side));
+
+        aMessage.setField(new OrderQty(quantity));
+        aMessage.setField(new TimeInForce(timeInForce));
+        if (account != null) {
+            aMessage.setField(new Account(account));
+        }
+        addTransactionTimeIfNeeded(aMessage);
+        msgAugmentor.newOrderSingleAugment(aMessage);
+        return aMessage;
+    }
+    /**
+     * value used to indicate top of book only
+     */
     private final int TOP_OF_BOOK_DEPTH = 1;
 }

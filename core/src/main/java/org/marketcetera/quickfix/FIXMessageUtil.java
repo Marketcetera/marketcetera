@@ -13,10 +13,12 @@ import java.util.regex.Pattern;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.core.instruments.InstrumentFromMessage;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.trade.ExecutionTransType;
 import org.marketcetera.trade.ExecutionType;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -115,6 +117,33 @@ public class FIXMessageUtil {
             }
     	}
         return false;
+    }
+    /**
+     * Get the <code>Instrument</code> value indicated in the given <code>Message</code> or <code>Group</code>.
+     *
+     * @param inFragment a <code>FieldMap</code> value
+     * @return an <code>Instrument</code> value or <code>null</code> if no <code>Instrument</code> could be extracted
+     */
+    public static Instrument getInstrumentFromMessageFragment(FieldMap inFragment)
+    {
+        return InstrumentFromMessage.SELECTOR.forValue(inFragment).extract(inFragment);
+    }
+    /**
+     * Get the <code>SecurityExchange</code> (207) value from the given <code>Message</code> or <code>Group</code>.
+     *
+     * @param inFragment a <code>FieldMap</code> value
+     * @return a <code>String</code> value or <code>null</code>
+     */
+    public static String getSecurityExchangeFromMessageFragment(FieldMap inFragment)
+    {
+        if(inFragment.isSetField(quickfix.field.SecurityExchange.FIELD)) {
+            try {
+                return inFragment.getString(quickfix.field.SecurityExchange.FIELD);
+            } catch (FieldNotFound e) {
+                // this shouldn't happen because we just checked for it, but return null anyway
+            }
+        }
+        return null;
     }
     /**
      * Get the mirror image of the given session id.
