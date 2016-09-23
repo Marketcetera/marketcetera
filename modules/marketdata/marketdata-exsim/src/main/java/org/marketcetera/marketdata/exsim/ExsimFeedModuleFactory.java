@@ -8,7 +8,18 @@ import org.marketcetera.module.ModuleURN;
 /* $License$ */
 
 /**
- *
+ * <code>ModuleFactory</code> implementation for the <code>ExsimFeed</code> market data provider.
+ * <p>
+ * The factory has the following characteristics.
+ * <table>
+ * <tr><th>Provider URN:</th><td><code>metc:mdata:exsim</code></td></tr>
+ * <tr><th>Cardinality:</th><td>Singleton</td></tr>
+ * <tr><th>Instance URN:</th><td><code>metc:mdata:exsim:single</code></td></tr>
+ * <tr><th>Auto-Instantiated:</th><td>No</td></tr>
+ * <tr><th>Auto-Started:</th><td>No</td></tr>
+ * <tr><th>Instantiation Arguments:</th><td>None</td></tr>
+ * <tr><th>Module Type:</th><td>{@link ExsimFeedModule}</td></tr>
+ * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
