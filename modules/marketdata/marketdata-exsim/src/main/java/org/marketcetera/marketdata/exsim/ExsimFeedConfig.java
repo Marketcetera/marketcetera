@@ -2,7 +2,7 @@ package org.marketcetera.marketdata.exsim;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.Validate;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.Initiator;
@@ -220,9 +220,9 @@ public class ExsimFeedConfig
         dataDictionary = inDataDictionary;
     }
     /**
+     * Get the sessionId value.
      *
-     *
-     * @return
+     * @return a <code>SessionID</code> value
      */
     public SessionID getSessionId()
     {
@@ -234,68 +234,68 @@ public class ExsimFeedConfig
     @PostConstruct
     public void start()
     {
-        Validate.notNull(senderCompId,
-                         "SenderCompId required");
+        if(senderCompId == null) {
+            throw new CoreException(Messages.SENDER_COMPID_REQURED);
+        }
         sessionId = new SessionID(fixVersion.toString(),
                                   senderCompId,
                                   targetCompId);
     }
     /**
-     * 
+     * Populates the given session settings value with the settings established for this config.
      *
-     *
-     * @param sessionSettings
+     * @param inSessionSettings a <code>SessionSettings</code> value
      */
-    void populateSessionSettings(SessionSettings sessionSettings)
+    void populateSessionSettings(SessionSettings inSessionSettings)
     {
-        sessionSettings.setString(sessionId,
-                                  Initiator.SETTING_SOCKET_CONNECT_HOST,
-                                  hostname);
-        sessionSettings.setLong(sessionId,
-                                Initiator.SETTING_SOCKET_CONNECT_PORT,
-                                port);
-        sessionSettings.setLong(sessionId,
-                                Session.SETTING_HEARTBTINT,
-                                heartBtInt);
-        sessionSettings.setString(sessionId,
-                                  Session.SETTING_START_TIME,
-                                  startTime);
-        sessionSettings.setString(sessionId,
-                                  Session.SETTING_END_TIME,
-                                  endTime);
-        sessionSettings.setString(sessionId,
-                                  Session.SETTING_TIMEZONE,
-                                  timeZone);
-        sessionSettings.setString(sessionId,
-                                  Session.SETTING_RESET_ON_LOGON,
-                                  "Y");
-        sessionSettings.setString(sessionId,
-                                  Session.SETTING_RESET_ON_LOGOUT,
-                                  "Y");
-        sessionSettings.setString(sessionId,
-                                  Session.SETTING_RESET_ON_DISCONNECT,
-                                  "Y");
-        sessionSettings.setString(sessionId,
-                                  Session.SETTING_RESET_ON_ERROR,
-                                  "Y");
-        sessionSettings.setString(sessionId,
-                                  Session.SETTING_DATA_DICTIONARY,
-                                  dataDictionary);
-        sessionSettings.setString(sessionId,
-                                  SessionSettings.BEGINSTRING,
-                                  sessionId.getBeginString());
-        sessionSettings.setString(sessionId,
-                                  SessionSettings.SENDERCOMPID,
-                                  sessionId.getSenderCompID());
-        sessionSettings.setString(sessionId,
-                                  SessionSettings.TARGETCOMPID,
-                                  sessionId.getTargetCompID());
-        sessionSettings.setLong(sessionId,
-                                Initiator.SETTING_RECONNECT_INTERVAL,
-                                reconnectInterval);
+        inSessionSettings.setString(sessionId,
+                                    Initiator.SETTING_SOCKET_CONNECT_HOST,
+                                    hostname);
+        inSessionSettings.setLong(sessionId,
+                                  Initiator.SETTING_SOCKET_CONNECT_PORT,
+                                  port);
+        inSessionSettings.setLong(sessionId,
+                                  Session.SETTING_HEARTBTINT,
+                                  heartBtInt);
+        inSessionSettings.setString(sessionId,
+                                    Session.SETTING_START_TIME,
+                                    startTime);
+        inSessionSettings.setString(sessionId,
+                                    Session.SETTING_END_TIME,
+                                    endTime);
+        inSessionSettings.setString(sessionId,
+                                    Session.SETTING_TIMEZONE,
+                                    timeZone);
+        inSessionSettings.setString(sessionId,
+                                    Session.SETTING_RESET_ON_LOGON,
+                "Y");
+        inSessionSettings.setString(sessionId,
+                                    Session.SETTING_RESET_ON_LOGOUT,
+                "Y");
+        inSessionSettings.setString(sessionId,
+                                    Session.SETTING_RESET_ON_DISCONNECT,
+                "Y");
+        inSessionSettings.setString(sessionId,
+                                    Session.SETTING_RESET_ON_ERROR,
+                "Y");
+        inSessionSettings.setString(sessionId,
+                                    Session.SETTING_DATA_DICTIONARY,
+                                    dataDictionary);
+        inSessionSettings.setString(sessionId,
+                                    SessionSettings.BEGINSTRING,
+                                    sessionId.getBeginString());
+        inSessionSettings.setString(sessionId,
+                                    SessionSettings.SENDERCOMPID,
+                                    sessionId.getSenderCompID());
+        inSessionSettings.setString(sessionId,
+                                    SessionSettings.TARGETCOMPID,
+                                    sessionId.getTargetCompID());
+        inSessionSettings.setLong(sessionId,
+                                  Initiator.SETTING_RECONNECT_INTERVAL,
+                                  reconnectInterval);
     }
     /**
-     * 
+     * session id value
      */
     private SessionID sessionId;
     /**
@@ -323,23 +323,23 @@ public class ExsimFeedConfig
      */
     private int reconnectInterval = 5;
     /**
-     * 
+     * session heart beat interval
      */
     private int heartBtInt = 30;
     /**
-     * 
+     * session start time
      */
     private String startTime = "00:00:00";
     /**
-     * 
+     * session end time
      */
     private String endTime = "23:50:00";
     /**
-     * 
+     * session time zone
      */
     private String timeZone = "US/Pacific";
     /**
-     * 
+     * session FIX dictionary
      */
     private String dataDictionary = "FIX42.xml";
 }

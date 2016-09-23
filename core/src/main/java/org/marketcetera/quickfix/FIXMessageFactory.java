@@ -2,7 +2,6 @@ package org.marketcetera.quickfix;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -250,23 +249,19 @@ public class FIXMessageFactory {
         inGroup.setField(new quickfix.field.MDEntryTime(inDateTime.minusYears(inDateTime.getYear()).minusDays(inDateTime.getDayOfYear()).toDate()));
     }
     /**
-     * Create a new market data request that cancels the market data request with the given request id.
+     * Create a new market data request that cancels the market data request based on the given original request.
      *
-     * @param inRequestId a <code>String</code> value
+     * @param inOriginalMessage a <code>String</code> value
      * @return a <code>Message</code> value
      * @throws ExecutionException if the data dictionary could not be determined
      * @throws FieldNotFound if the message could not be constructed
      */
-    public Message newMarketDataRequestCancel(String inRequestId)
+    public Message newMarketDataRequestCancel(Message inOriginalMessage)
             throws FieldNotFound, ExecutionException
     {
-        Message request = newMarketDataRequest(inRequestId,
-                                    new ArrayList<Instrument>(),
-                                    null,
-                                    new ArrayList<Content>(),
-                                    quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST);
-        request.removeField(quickfix.field.MDUpdateType.FIELD);
-        return request;
+        Message cancelRequest = inOriginalMessage;
+        cancelRequest.setField(new quickfix.field.SubscriptionRequestType(quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
+        return cancelRequest;
     }
     /**
      * Create a new market data request with the given parameters.

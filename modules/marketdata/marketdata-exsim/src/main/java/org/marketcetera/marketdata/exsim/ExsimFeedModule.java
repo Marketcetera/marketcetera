@@ -15,9 +15,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.BatchQueueProcessor;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
@@ -55,6 +55,10 @@ import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.I18NBoundMessage0P;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -143,16 +147,16 @@ public class ExsimFeedModule
             throws RequestDataException
     {
         SLF4JLoggerProxy.debug(this,
-                               "Received a data flow request: {}",
+                               "Received a data flow request: {}", //$NON-NLS-1$
                                inRequest);
         if(!feedStatus.isRunning()) {
-            // TODO message
-            throw new RequestDataException(new IllegalArgumentException("Feed is unavailable"));
+            throw new RequestDataException(Messages.FEED_OFFLINE);
         }
         Object payload = inRequest.getData();
         try {
-            Validate.notNull(payload,
-                             "Data request data required");
+            if(payload == null) {
+                throw new RequestDataException(Messages.DATA_REQUEST_PAYLOAD_REQUIRED);
+            }
             if(payload instanceof String) {
                 String stringPayload = (String)payload;
                 try {
@@ -160,37 +164,65 @@ public class ExsimFeedModule
                                         inRequest,
                                         inSupport);
                 } catch (Exception e) {
-                    throw new UnsupportedOperationException(stringPayload + " is not a valid market data request or a valid feed status request");
+                    throw new RequestDataException(new I18NBoundMessage2P(Messages.INVALID_DATA_REQUEST_PAYLOAD,
+                                                                          stringPayload,
+                                                                          ExceptionUtils.getRootCause(e)));
                 }
             } else if(payload instanceof MarketDataRequest) {
                 doMarketDataRequest((MarketDataRequest)payload,
                                     inRequest,
                                     inSupport);
             } else {
-                throw new UnsupportedOperationException("Unsupported data request data type: " + payload.getClass().getSimpleName());
+                throw new RequestDataException(new I18NBoundMessage1P(Messages.UNSUPPORTED_DATA_REQUEST_PAYLOAD,
+                                                                      payload.getClass().getSimpleName()));
             }
         } catch (Exception e) {
             if(SLF4JLoggerProxy.isDebugEnabled(this)) {
-                SLF4JLoggerProxy.debug(this,
-                                       e,
-                                       "Market data request failed: {}",
-                                       ExceptionUtils.getRootCauseMessage(e));
+                Messages.MARKET_DATA_REQUEST_FAILED.warn(this,
+                                                         e,
+                                                         inRequest,
+                                                         ExceptionUtils.getRootCauseMessage(e));
             } else {
-                SLF4JLoggerProxy.warn(this,
-                                      "Market data request failed: {}",
-                                      ExceptionUtils.getRootCauseMessage(e));
+                Messages.MARKET_DATA_REQUEST_FAILED.warn(this,
+                                                         inRequest,
+                                                         ExceptionUtils.getRootCauseMessage(e));
             }
-            throw new RequestDataException(e);
+            throw new RequestDataException(e,
+                                           new I18NBoundMessage2P(Messages.MARKET_DATA_REQUEST_FAILED,
+                                                                  inRequest,
+                                                                  ExceptionUtils.getRootCause(e)));
         }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.DataFlowID, org.marketcetera.module.RequestID)
      */
     @Override
-    public void cancel(DataFlowID inFlowID,
+    public void cancel(DataFlowID inFlowId,
                        RequestID inRequestID)
     {
-        // TODO
+        RequestData requestData = requestsByDataFlowId.remove(inFlowId);
+        if(requestData == null) {
+            Messages.DATA_FLOW_ALREADY_CANCELED.warn(this,
+                                                     inFlowId);
+        } else {
+            SLF4JLoggerProxy.debug(this,
+                                   "Canceling data flow {} with market data request id {}", //$NON-NLS-1$
+                                   inFlowId,
+                                   requestData);
+            requestsByRequestId.remove(requestData);
+            try {
+                cancelMarketDataRequest(requestData);
+            } catch (Exception e) {
+                if(SLF4JLoggerProxy.isDebugEnabled(this)) {
+                    Messages.CANNOT_CANCEL_DATA_FLOW.warn(this,
+                                                          e,
+                                                          inFlowId);
+                } else {
+                    Messages.CANNOT_CANCEL_DATA_FLOW.warn(this,
+                                                          inFlowId);
+                }
+            }
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStart()
@@ -199,8 +231,9 @@ public class ExsimFeedModule
     protected void preStart()
             throws ModuleException
     {
-        Validate.notNull(exsimFeedConfig,
-                         "Exsim feed configuration required");
+        if(exsimFeedConfig == null) {
+            throw new ModuleException(Messages.FEED_CONFIG_REQUIRED);
+        }
         try {
             fixMessageProcessor = new FixMessageProcessor();
             fixMessageProcessor.start();
@@ -213,7 +246,7 @@ public class ExsimFeedModule
             exsimFeedConfig.populateSessionSettings(sessionSettings);
             File workspaceDir = new File(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
             File quoteFeedLogDir = new File(workspaceDir,
-                                            "marketdata-exsim-" + UUID.randomUUID().toString());
+                                            "marketdata-exsim-" + UUID.randomUUID().toString()); //$NON-NLS-1$
             FileUtils.forceMkdir(quoteFeedLogDir);
             sessionSettings.setString(sessionId,
                                       FileLogFactory.SETTING_FILE_LOG_PATH,
@@ -221,7 +254,7 @@ public class ExsimFeedModule
             sessionSettings.setString(SessionFactory.SETTING_CONNECTION_TYPE,
                                       SessionFactory.INITIATOR_CONNECTION_TYPE);
             SLF4JLoggerProxy.debug(this,
-                                   "Session settings: {}",
+                                   "Session settings: {}", //$NON-NLS-1$
                                    sessionSettings);
             LogFactory logFactory = new EventLogFactory(sessionSettings);
             socketInitiator = new SocketInitiator(application,
@@ -292,9 +325,8 @@ public class ExsimFeedModule
         for(String symbol : inPayload.getSymbols()) {
             Instrument instrument = symbolResolverService.resolveSymbol(symbol);
             if(instrument == null) {
-                SLF4JLoggerProxy.warn(this,
-                                      "Could not resolve symbol {}",
-                                      instrument);
+                Messages.CANNOT_RESOLVE_SYMBOL.warn(this,
+                                                    symbol);
             } else {
                 requestedInstruments.add(instrument);
             }
@@ -306,16 +338,41 @@ public class ExsimFeedModule
                                                                         Lists.newArrayList(inPayload.getContent()),
                                                                         quickfix.field.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
         SLF4JLoggerProxy.debug(this,
-                               "Built {} for {} from {}",
+                               "Built {} for {} from {}", //$NON-NLS-1$
                                marketDataRequest,
                                inRequest,
                                inPayload);
-        receiversByMdReqId.put(id,
-                               inSupport);
+        RequestData requestData = new RequestData(marketDataRequest,
+                                                  inSupport);
+        requestsByRequestId.put(id,
+                                requestData);
+        requestsByDataFlowId.put(inSupport.getFlowID(),
+                                 requestData);
         if(!Session.sendToTarget(marketDataRequest,
                                  sessionId)) {
-            receiversByMdReqId.remove(id);
-            throw new StopDataFlowException(null); // TODO
+            requestsByRequestId.remove(id);
+            requestsByDataFlowId.remove(inSupport.getFlowID());
+            throw new StopDataFlowException(new I18NBoundMessage1P(Messages.CANNOT_REQUEST_DATA,
+                                                                   marketDataRequest));
+        }
+    }
+    /**
+     * Cancel the market data request with the given id.
+     *
+     * @param inMarketDataRequestData a <code>String</code> value
+     * @throws ExecutionException if the market data request cancel cannot be constructed
+     * @throws FieldNotFound if the market data request cancel cannot be constructed
+     * @throws SessionNotFound if the cancel message cannot be sent
+     */
+    private void cancelMarketDataRequest(RequestData inMarketDataRequestData)
+            throws FieldNotFound, ExecutionException, SessionNotFound
+    {
+        Message marketDataCancel = messageFactory.newMarketDataRequestCancel(inMarketDataRequestData.getRequestMessage());
+        if(!Session.sendToTarget(marketDataCancel,
+                                 sessionId)) {
+            throw new CoreException(new I18NBoundMessage2P(Messages.CANNOT_CANCEL_DATA,
+                                                           marketDataCancel,
+                                                           sessionId));
         }
     }
     /**
@@ -329,6 +386,9 @@ public class ExsimFeedModule
             return;
         }
         feedStatus = inNewStatus;
+        Messages.FEED_STATUS_UPDATE.info(this,
+                                         ExsimFeedModuleFactory.IDENTIFIER.toUpperCase(),
+                                         feedStatus);
     }
     /**
      * Get the order book for the given instrument.
@@ -380,7 +440,7 @@ public class ExsimFeedModule
         }
         for(Group mdEntry : mdEntries) {
             SLF4JLoggerProxy.debug(this,
-                                   "Examining group {}",
+                                   "Examining group {}", //$NON-NLS-1$
                                    mdEntry);
             BigDecimal closingPrice = null;
             BigDecimal volume = null;
@@ -409,7 +469,8 @@ public class ExsimFeedModule
                     case quickfix.field.MDUpdateAction.DELETE_FROM:
                     case quickfix.field.MDUpdateAction.DELETE_THRU:
                     default:
-                        throw new UnsupportedOperationException("Unsupported update action: " + updateAction);
+                        throw new CoreException(new I18NBoundMessage1P(Messages.UNSUPPORTED_UPDATE_ACTION,
+                                                                       updateAction));
                 }
             }
             Date date = mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD);
@@ -541,9 +602,8 @@ public class ExsimFeedModule
                 case quickfix.field.MDEntryType.SIMULATED_BUY_PRICE:
                 case quickfix.field.MDEntryType.SIMULATED_SELL_PRICE:
                 default:
-                    SLF4JLoggerProxy.warn(this,
-                                          "Ignoring unhandled update type: {}",
-                                          entryType);
+                    Messages.IGNORING_UNHANDLED_UPDATE_TYPE.warn(this,
+                                                                 entryType);
             }
             if(marketstat) {
                 if(marketstatBuilder == null) {
@@ -610,29 +670,30 @@ public class ExsimFeedModule
     private void publishEvents(Deque<Event> inEvents,
                                String inRequestId)
     {
-        if(inRequestId == null) {
-            throw new UnsupportedOperationException("Cannot process response without MDReqID (262)");
-        }
-        if(inEvents.isEmpty()) {
-            throw new UnsupportedOperationException("Cannot process response with no events");
-        }
-        DataEmitterSupport receiver = receiversByMdReqId.get(inRequestId);
-        if(receiver == null) {
+        RequestData requestData = requestsByRequestId.get(inRequestId);
+        if(requestData == null) {
             SLF4JLoggerProxy.debug(this,
-                                   "Not publishing {} to {} because it seems to have just been canceled",
+                                   "Not publishing {} to {} because it seems to have just been canceled", //$NON-NLS-1$
                                    inEvents,
                                    inRequestId);
             return;
         }
         for(Event event : inEvents) {
             try {
-                receiver.send(event);
+                requestData.getDataEmitterSupport().send(event);
             } catch (Exception e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e,
-                                      "Caught and ignored exception while sending {} to {}",
-                                      event,
-                                      receiver);
+                if(SLF4JLoggerProxy.isDebugEnabled(this)) {
+                    Messages.IGNORED_EXCEPTION_ON_SEND.warn(this,
+                                                            e,
+                                                            ExceptionUtils.getRootCause(e),
+                                                            event,
+                                                            requestData);
+                } else {
+                    Messages.IGNORED_EXCEPTION_ON_SEND.warn(this,
+                                                            ExceptionUtils.getRootCause(e),
+                                                            event,
+                                                            requestData);
+                }
             }
         }
     }
@@ -647,6 +708,14 @@ public class ExsimFeedModule
             extends BatchQueueProcessor<MessageWrapper>
     {
         /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return description;
+        }
+        /* (non-Javadoc)
          * @see org.marketcetera.core.BatchQueueProcessor#processData(java.util.Deque)
          */
         @Override
@@ -657,7 +726,7 @@ public class ExsimFeedModule
                 Message message = messageWrapper.getMessage();
                 try {
                     SLF4JLoggerProxy.trace(ExsimFeedModule.this,
-                                           "{} procssing {}",
+                                           "{} procssing {}", //$NON-NLS-1$
                                            this,
                                            message);
                     String msgType = messageWrapper.getMsgType();
@@ -678,27 +747,47 @@ public class ExsimFeedModule
                                 }
                             }
                             SLF4JLoggerProxy.debug(this,
-                                                   "Produced {}",
+                                                   "Produced {}", //$NON-NLS-1$
                                                    events);
                             publishEvents(events,
                                           requestId);
                             break;
                         case quickfix.field.MsgType.MARKET_DATA_REQUEST_REJECT:
-                            // TODO cancel corresponding request?
+                            // cancel corresponding request
+                            RequestData requestData = requestsByRequestId.remove(messageWrapper.getRequestId());
+                            if(requestData == null) {
+                                
+                            } else {
+                                requestsByDataFlowId.remove(requestData.getDataEmitterSupport().getFlowID());
+                                I18NBoundMessage errorMessage;
+                                if(message.isSetField(quickfix.field.Text.FIELD)) {
+                                    errorMessage = new I18NBoundMessage1P(Messages.MARKETDATA_REJECT_WITH_MESSAGE,
+                                                                          message.getString(quickfix.field.Text.FIELD));
+                                } else {
+                                    errorMessage = new I18NBoundMessage0P(Messages.MARKETDATA_REJECT_WITHOUT_MESSAGE);
+                                }
+                                requestData.getDataEmitterSupport().dataEmitError(errorMessage,
+                                                                                  true);
+                            }
                             break;
                         default:
-                            SLF4JLoggerProxy.warn(ExsimFeedModule.this,
-                                                  "{} ignoring unexpected message {}",
-                                                  this,
-                                                  message);
+                            Messages.IGNORING_UNEXPECTED_MESSAGE.warn(ExsimFeedModule.this,
+                                                                      this,
+                                                                      message);
                     }
                 } catch (Exception e) {
-                    SLF4JLoggerProxy.warn(ExsimFeedModule.this,
-                                          e,
-                                          "{} unable to process {}: {}",
-                                          this,
-                                          message,
-                                          ExceptionUtils.getRootCauseMessage(e));
+                    if(SLF4JLoggerProxy.isDebugEnabled(ExsimFeedModule.this)) {
+                        Messages.UNABLE_TO_PROCESS_MESSAGE.warn(ExsimFeedModule.this,
+                                                                e,
+                                                                this,
+                                                                message,
+                                                                ExceptionUtils.getRootCauseMessage(e));
+                    } else {
+                        Messages.UNABLE_TO_PROCESS_MESSAGE.warn(ExsimFeedModule.this,
+                                                                this,
+                                                                message,
+                                                                ExceptionUtils.getRootCauseMessage(e));
+                    }
                 }
             }
         }
@@ -718,8 +807,13 @@ public class ExsimFeedModule
          */
         private FixMessageProcessor()
         {
-            super(ExsimFeedModule.class.getSimpleName()+"-MessageProcessor");
+            super(ExsimFeedModule.class.getSimpleName()+"-MessageProcessor"); //$NON-NLS-1$
+            description = ExsimFeedModule.class.getSimpleName()+"-MessageProcessor"; //$NON-NLS-1$
         }
+        /**
+         * human-readable description of the processor
+         */
+        private final String description;
     }
     /**
      * Contains a received message and meta information about that message.
@@ -813,7 +907,7 @@ public class ExsimFeedModule
         public void onCreate(SessionID inSessionId)
         {
             SLF4JLoggerProxy.debug(ExsimFeedModule.this,
-                                   "Session {} created",
+                                   "Session {} created", //$NON-NLS-1$
                                    inSessionId);
         }
         /* (non-Javadoc)
@@ -823,7 +917,7 @@ public class ExsimFeedModule
         public void onLogon(SessionID inSessionId)
         {
             SLF4JLoggerProxy.debug(ExsimFeedModule.this,
-                                   "Session {} logon",
+                                   "Session {} logon", //$NON-NLS-1$
                                    inSessionId);
             updateFeedStatus(FeedStatus.AVAILABLE);
         }
@@ -834,7 +928,7 @@ public class ExsimFeedModule
         public void onLogout(SessionID inSessionId)
         {
             SLF4JLoggerProxy.debug(ExsimFeedModule.this,
-                                   "Session {} logout",
+                                   "Session {} logout", //$NON-NLS-1$
                                    inSessionId);
             updateFeedStatus(FeedStatus.OFFLINE);
         }
@@ -846,7 +940,7 @@ public class ExsimFeedModule
                             SessionID inSessionId)
         {
             SLF4JLoggerProxy.trace(ExsimFeedModule.this,
-                                   "{} sending admin {}",
+                                   "{} sending admin {}", //$NON-NLS-1$
                                    inSessionId,
                                    inMessage);
         }
@@ -859,7 +953,7 @@ public class ExsimFeedModule
                 throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, RejectLogon
         {
             SLF4JLoggerProxy.trace(ExsimFeedModule.this,
-                                   "{} received admin {}",
+                                   "{} received admin {}", //$NON-NLS-1$
                                    inSessionId,
                                    inMessage);
         }
@@ -872,7 +966,7 @@ public class ExsimFeedModule
                 throws DoNotSend
         {
             SLF4JLoggerProxy.trace(ExsimFeedModule.this,
-                                   "{} sending app {}",
+                                   "{} sending app {}", //$NON-NLS-1$
                                    inSessionId,
                                    inMessage);
             FIXMessageUtil.logMessage(inMessage);
@@ -886,7 +980,7 @@ public class ExsimFeedModule
                 throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType
         {
             SLF4JLoggerProxy.trace(ExsimFeedModule.this,
-                                   "{} received app {}",
+                                   "{} received app {}", //$NON-NLS-1$
                                    inSessionId,
                                    inMessage);
             FIXMessageUtil.logMessage(inMessage);
@@ -896,6 +990,67 @@ public class ExsimFeedModule
                 fixMessageProcessor.add(inMessage);
             }
         }
+    }
+    /**
+     * Holds data relevant to a market data request as part of a module data flow.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class RequestData
+    {
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return description;
+        }
+        /**
+         * Get the requestMessage value.
+         *
+         * @return a <code>Message</code> value
+         */
+        private Message getRequestMessage()
+        {
+            return requestMessage;
+        }
+        /**
+         * Get the dataEmitterSupport value.
+         *
+         * @return a <code>DataEmitterSupport</code> value
+         */
+        private DataEmitterSupport getDataEmitterSupport()
+        {
+            return dataEmitterSupport;
+        }
+        /**
+         * Create a new RequestData instance.
+         *
+         * @param inRequestMessage a <code>Message</code> value
+         * @param inDataEmitterSupport a <code>DataEmitterSupport</code> value
+         */
+        private RequestData(Message inRequestMessage,
+                            DataEmitterSupport inDataEmitterSupport)
+        {
+            requestMessage = inRequestMessage;
+            dataEmitterSupport = inDataEmitterSupport;
+            description = RequestData.class.getSimpleName() + " [" + inDataEmitterSupport.getFlowID() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        /**
+         * human-readable description of the object
+         */
+        private final String description;
+        /**
+         * original request message sent to the exchange
+         */
+        private final Message requestMessage;
+        /**
+         * information about the data flow requester
+         */
+        private final DataEmitterSupport dataEmitterSupport;
     }
     /**
      * processes incoming FIX messages
@@ -940,9 +1095,13 @@ public class ExsimFeedModule
      */
     private final AtomicLong idCounter = new AtomicLong(0);
     /**
-     * holds data flow receivers keyed by request id
+     * holds data request info keyed by request id
      */
-    private final Map<String,DataEmitterSupport> receiversByMdReqId = Maps.newHashMap();
+    private final Map<String,RequestData> requestsByRequestId = Maps.newHashMap();
+    /**
+     * holds market data request info by data flow id
+     */
+    private final Map<DataFlowID,RequestData> requestsByDataFlowId = Maps.newHashMap();
     /**
      * supported asset classes for this provider
      */
