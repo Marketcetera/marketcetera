@@ -1,8 +1,10 @@
 package org.marketcetera.trade;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.util.misc.ClassVersion;
@@ -47,6 +49,15 @@ public enum OrderStatus {
         return FIXMessageUtil.isCancellable(getFIXValue());
     }
     /**
+     * Indicate if the order status is pending or not.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isPending()
+    {
+        return pendingOrderStatusValues.contains(this);
+    }
+    /**
      * The FIX char value for this instance.
      *
      * @return the FIX char value for this instance.
@@ -80,6 +91,7 @@ public enum OrderStatus {
     }
     private final char mFIXValue;
     private static final Map<Character, OrderStatus> mFIXValueTable;
+    private static final Set<OrderStatus> pendingOrderStatusValues = EnumSet.of(PendingCancel,PendingNew,PendingReplace);
     static {
         Map<Character, OrderStatus> table = new HashMap<Character, OrderStatus>();
         for(OrderStatus status: values()) {
