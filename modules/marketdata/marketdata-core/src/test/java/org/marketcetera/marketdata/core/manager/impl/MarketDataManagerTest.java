@@ -39,6 +39,7 @@ public class MarketDataManagerTest
         moduleManager.init();
         moduleManager.start(BogusFeedModuleFactory.INSTANCE_URN);
         marketDataManager = new MarketDataManagerImpl();
+        marketDataManager.setDefaultMarketDataProvider(BogusFeedModuleFactory.IDENTIFIER);
     }
     /**
      * Run after each test.
