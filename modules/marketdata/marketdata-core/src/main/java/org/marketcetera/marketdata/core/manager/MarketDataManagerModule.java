@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.HasInstrument;
@@ -20,6 +21,7 @@ import org.marketcetera.module.DataFlowSupport;
 import org.marketcetera.module.DataReceiver;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleException;
+import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
@@ -190,45 +192,65 @@ public class MarketDataManagerModule
     public long requestMarketData(MarketDataRequest inRequest,
                                   ISubscriber inSubscriber)
     {
-        long requestId = counter.incrementAndGet();
-        String provider = inRequest.getProvider();
-        SLF4JLoggerProxy.debug(this,
-                               "Requesting market data: {} from {}",
-                               inRequest,
-                               provider);
-        if(provider == null) {
-            provider = defaultProvider;
-        }
-        if(provider == null) {
+        try {
+            long requestId = counter.incrementAndGet();
+            String provider = inRequest.getProvider();
             SLF4JLoggerProxy.debug(this,
-                                   "No provider requested, issuing request to all providers");
-            for(ModuleURN providerUrn : ModuleManager.getInstance().getProviders()) {
-                String providerType = providerUrn.providerType();
-                String providerName = providerUrn.providerName();
-                if(providerType.equals("mdata") && !providerName.equals(MarketDataManagerModuleFactory.PROVIDER_NAME)) {
-                    for(ModuleURN instanceUrn : ModuleManager.getInstance().getModuleInstances(providerUrn)) {
-                        try {
-                            doDataRequest(inRequest,
-                                          instanceUrn,
-                                          inSubscriber,
-                                          requestId);
-                        } catch (Exception e) {
-                            SLF4JLoggerProxy.warn(this,
-                                                  "Unable to request market data from {}: {}",
-                                                  instanceUrn,
-                                                  ExceptionUtils.getRootCauseMessage(e));
+                                   "Requesting market data: {} from {}",
+                                   inRequest,
+                                   provider);
+            if(provider == null) {
+                provider = defaultProvider;
+            }
+            if(provider == null) {
+                SLF4JLoggerProxy.debug(this,
+                                       "No provider requested, issuing request to all providers");
+                for(ModuleURN providerUrn : ModuleManager.getInstance().getProviders()) {
+                    String providerType = providerUrn.providerType();
+                    String providerName = providerUrn.providerName();
+                    if(providerType.equals("mdata") && !providerName.equals(MarketDataManagerModuleFactory.PROVIDER_NAME)) {
+                        for(ModuleURN instanceUrn : ModuleManager.getInstance().getModuleInstances(providerUrn)) {
+                            try {
+                                doDataRequest(inRequest,
+                                              instanceUrn,
+                                              inSubscriber,
+                                              requestId);
+                            } catch (Exception e) {
+                                SLF4JLoggerProxy.warn(this,
+                                                      "Unable to request market data from {}: {}",
+                                                      instanceUrn,
+                                                      ExceptionUtils.getRootCauseMessage(e));
+                            }
                         }
                     }
                 }
+            } else {
+                ModuleURN sourceUrn = getInstanceUrn(provider);
+                doDataRequest(inRequest,
+                              sourceUrn,
+                              inSubscriber,
+                              requestId);
             }
-        } else {
-            ModuleURN sourceUrn = getInstanceUrn(provider);
-            doDataRequest(inRequest,
-                          sourceUrn,
-                          inSubscriber,
-                          requestId);
+            return requestId;
+        } catch (Exception e) {
+            if(SLF4JLoggerProxy.isDebugEnabled(this)) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Unable to request market data {}: {}",
+                                      inRequest,
+                                      ExceptionUtils.getRootCauseMessage(e));
+            } else {
+                SLF4JLoggerProxy.warn(this,
+                                      "Unable to request market data {}: {}",
+                                      inRequest,
+                                      ExceptionUtils.getRootCauseMessage(e));
+            }
+            if(e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            } else {
+                throw new CoreException(e);
+            }
         }
-        return requestId;
     }
     /**
      * Get a market data snapshot with the given attributes.
@@ -312,17 +334,9 @@ public class MarketDataManagerModule
     {
         ModuleURN instanceUrn = instanceUrnsByProviderName.get(inProviderName);
         if(instanceUrn == null) {
-            // this will be our guess in case we don't find something
             instanceUrn = new ModuleURN("metc:mdata:" + inProviderName+":single");
-            for(ModuleURN moduleUrn : ModuleManager.getInstance().getProviders()) {
-                String providerType = moduleUrn.providerType();
-                if(providerType.equals("mdata") && moduleUrn.providerName().equals(inProviderName)) {
-                    instanceUrnsByProviderName.put(inProviderName,
-                                                   moduleUrn);
-                    instanceUrn = moduleUrn;
-                    break;
-                }
-            }
+            instanceUrnsByProviderName.put(inProviderName,
+                                           instanceUrn);
         }
         return instanceUrn;
     }
@@ -339,6 +353,7 @@ public class MarketDataManagerModule
                                ISubscriber inSubscriber,
                                long inRequestId)
     {
+        startProviderIfNecessary(inSourceUrn);
         DataRequest sourceRequest = new DataRequest(inSourceUrn,
                                                     inMarketDataRequest);
         DataRequest targetRequest = new DataRequest(getURN());
@@ -360,6 +375,23 @@ public class MarketDataManagerModule
         }
         synchronized(subscribersByDataFlowId) {
             subscribersByDataFlowId.notifyAll();
+        }
+    }
+    /**
+     * Start the given provider if necessary.
+     *
+     * @param inProviderUrn a <code>ModuleURN</code> value
+     */
+    private void startProviderIfNecessary(ModuleURN inProviderUrn)
+    {
+        ModuleManager moduleManager = ModuleManager.getInstance();
+        ModuleInfo moduleInfo = moduleManager.getModuleInfo(inProviderUrn);
+        SLF4JLoggerProxy.debug(this,
+                               "{} is {}",
+                               inProviderUrn,
+                               moduleInfo);
+        if(!moduleInfo.getState().isStarted()) {
+            moduleManager.start(inProviderUrn);
         }
     }
     /**
