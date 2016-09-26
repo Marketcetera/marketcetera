@@ -76,7 +76,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>marketdata-bogus</artifactId>
+      <artifactId>marketdata-exsim</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

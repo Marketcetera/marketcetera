@@ -126,4 +126,9 @@
   <bean id="wsServerPort" class="java.lang.Integer">
     <constructor-arg value="${metc.sa.ws.port}"/>
   </bean>
+  <bean id="exsimFeedConfig" class="org.marketcetera.marketdata.exsim.ExsimFeedConfig">
+    <property name="senderCompId" value="marketDataTestSenderCompId"/>
+    <property name="hostname" value="dare.marketcetera.com"/>
+    <property name="port" value="7005"/>
+  </bean>
 </beans>

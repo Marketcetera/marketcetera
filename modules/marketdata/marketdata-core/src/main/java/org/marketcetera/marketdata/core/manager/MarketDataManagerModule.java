@@ -188,7 +188,7 @@ public class MarketDataManagerModule
      * @return a <code>long</code> value
      */
     public long requestMarketData(MarketDataRequest inRequest,
-                           ISubscriber inSubscriber)
+                                  ISubscriber inSubscriber)
     {
         long requestId = counter.incrementAndGet();
         String provider = inRequest.getProvider();
@@ -196,6 +196,9 @@ public class MarketDataManagerModule
                                "Requesting market data: {} from {}",
                                inRequest,
                                provider);
+        if(provider == null) {
+            provider = defaultProvider;
+        }
         if(provider == null) {
             SLF4JLoggerProxy.debug(this,
                                    "No provider requested, issuing request to all providers");
@@ -253,6 +256,24 @@ public class MarketDataManagerModule
     public static MarketDataManagerModule getInstance()
     {
         return instance;
+    }
+    /**
+     * Get the defaultProvider value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getDefaultProvider()
+    {
+        return defaultProvider;
+    }
+    /**
+     * Sets the defaultProvider value.
+     *
+     * @param a <code>String</code> value
+     */
+    public void setDefaultProvider(String inDefaultProvider)
+    {
+        defaultProvider = inDefaultProvider;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStart()
@@ -341,6 +362,10 @@ public class MarketDataManagerModule
             subscribersByDataFlowId.notifyAll();
         }
     }
+    /**
+     * default market data provider
+     */
+    private String defaultProvider = "exsim";
     /**
      * provides access to data flow services
      */

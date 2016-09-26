@@ -85,6 +85,24 @@ public class MarketDataManagerImpl
         subscriberTimeout = inSubscriberTimeout;
     }
     /**
+     * Get the defaultMarketDataProvider value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getDefaultMarketDataProvider()
+    {
+        return defaultMarketDataProvider;
+    }
+    /**
+     * Sets the defaultMarketDataProvider value.
+     *
+     * @param a <code>String</code> value
+     */
+    public void setDefaultMarketDataProvider(String inDefaultMarketDataProvider)
+    {
+        defaultMarketDataProvider = inDefaultMarketDataProvider;
+    }
+    /**
      * Initialize the market data manager module, if necessary. 
      */
     private synchronized void initMarketDataManagerModule()
@@ -93,6 +111,7 @@ public class MarketDataManagerImpl
             marketDataManagerModule = MarketDataManagerModule.getInstance();
             Validate.notNull(marketDataManagerModule);
             marketDataManagerModule.setSubscriberTimeout(subscriberTimeout);
+            marketDataManagerModule.setDefaultProvider(defaultMarketDataProvider);
         }
     }
     /**
@@ -103,4 +122,8 @@ public class MarketDataManagerImpl
      * provides an entry point into the module system
      */
     private MarketDataManagerModule marketDataManagerModule;
+    /**
+     * default market data provider
+     */
+    private String defaultMarketDataProvider = "exsim";
 }

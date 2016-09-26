@@ -31,6 +31,7 @@ import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.CapabilityCollection;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
@@ -150,7 +151,17 @@ public class ExsimFeedModule
                                "Received a data flow request: {}", //$NON-NLS-1$
                                inRequest);
         if(!feedStatus.isRunning()) {
-            throw new RequestDataException(Messages.FEED_OFFLINE);
+            try {
+                long timestamp = System.currentTimeMillis();
+                while(!feedStatus.isRunning() && System.currentTimeMillis() < timestamp+feedAvailableTimeout) {
+                    Thread.sleep(100);
+                }
+            } catch (InterruptedException e) {
+                throw new RequestDataException(Messages.FEED_OFFLINE);
+            }
+            if(!feedStatus.isRunning()) {
+                throw new RequestDataException(Messages.FEED_OFFLINE);
+            }
         }
         Object payload = inRequest.getData();
         try {
@@ -235,6 +246,7 @@ public class ExsimFeedModule
             throw new ModuleException(Messages.FEED_CONFIG_REQUIRED);
         }
         try {
+            CapabilityCollection.reportCapability(getCapabilities());
             fixMessageProcessor = new FixMessageProcessor();
             fixMessageProcessor.start();
             FIXVersion version = exsimFeedConfig.getFixVersion();
@@ -1082,6 +1094,10 @@ public class ExsimFeedModule
      */
     @Autowired
     private SymbolResolverService symbolResolverService;
+    /**
+     * number of milliseconds to wait for the feed to become available if a request is made while it is offline
+     */
+    private long feedAvailableTimeout = 10000;
     /**
      * current status of the feed
      */
