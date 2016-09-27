@@ -363,7 +363,9 @@ public abstract class OrderTicketModel {
                 map.put(key, value);
             }
         }
-        if (!map.isEmpty()) {
+        if(map.isEmpty()) {
+            order.setCustomFields(null);
+        } else {
             order.setCustomFields(map);
         }
     }
