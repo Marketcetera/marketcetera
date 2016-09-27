@@ -9,6 +9,9 @@ import java.util.Set;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.util.misc.ClassVersion;
 
+import quickfix.FieldNotFound;
+import quickfix.Message;
+
 /* $License$ */
 /**
  * Order status values.
@@ -71,7 +74,21 @@ public enum OrderStatus {
                 ? Unknown
                 : status;
     }
-
+    /**
+     * Return the OrderStatus instance on the supplied FIX message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @return an <code>OrderStatus</code> value
+     * @throws IllegalArgumentException if the message does not contain an OrdStatus value
+     */
+    public static OrderStatus getInstanceForFIXMessage(Message inMessage)
+    {
+        try {
+            return getInstanceForFIXValue(inMessage.getChar(quickfix.field.OrdStatus.FIELD));
+        } catch (FieldNotFound e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
     /**
      * Creates an instance.
      *
