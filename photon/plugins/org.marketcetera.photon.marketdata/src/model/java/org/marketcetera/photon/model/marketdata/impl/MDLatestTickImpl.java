@@ -32,10 +32,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * </p>
  *
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
+public class MDLatestTickImpl
+        extends MDItemImpl
+        implements MDLatestTick
+{
     /**
      * The default value of the '{@link #getPrice() <em>Price</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -101,7 +104,8 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDLatestTickImpl() {
+    public MDLatestTickImpl()
+    {
         super();
     }
 
@@ -111,7 +115,8 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * @generated
      */
     @Override
-    protected EClass eStaticClass() {
+    protected EClass eStaticClass()
+    {
         return MDPackage.Literals.MD_LATEST_TICK;
     }
 
@@ -120,7 +125,8 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * <!-- end-user-doc -->
      * @generated
      */
-    public BigDecimal getPrice() {
+    public BigDecimal getPrice()
+    {
         return price;
     }
 
@@ -129,12 +135,16 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setPrice(BigDecimal newPrice) {
+    public void setPrice(BigDecimal newPrice)
+    {
         BigDecimal oldPrice = price;
         price = newPrice;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    MDPackage.MD_LATEST_TICK__PRICE, oldPrice, price));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_LATEST_TICK__PRICE,
+                                          oldPrice,
+                                          price));
     }
 
     /**
@@ -142,7 +152,8 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * <!-- end-user-doc -->
      * @generated
      */
-    public BigDecimal getSize() {
+    public BigDecimal getSize()
+    {
         return size;
     }
 
@@ -151,12 +162,16 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setSize(BigDecimal newSize) {
+    public void setSize(BigDecimal newSize)
+    {
         BigDecimal oldSize = size;
         size = newSize;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    MDPackage.MD_LATEST_TICK__SIZE, oldSize, size));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_LATEST_TICK__SIZE,
+                                          oldSize,
+                                          size));
     }
 
     /**
@@ -164,7 +179,8 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * <!-- end-user-doc -->
      * @generated
      */
-    public BigDecimal getMultiplier() {
+    public BigDecimal getMultiplier()
+    {
         return multiplier;
     }
 
@@ -173,13 +189,16 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setMultiplier(BigDecimal newMultiplier) {
+    public void setMultiplier(BigDecimal newMultiplier)
+    {
         BigDecimal oldMultiplier = multiplier;
         multiplier = newMultiplier;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    MDPackage.MD_LATEST_TICK__MULTIPLIER, oldMultiplier,
-                    multiplier));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_LATEST_TICK__MULTIPLIER,
+                                          oldMultiplier,
+                                          multiplier));
     }
 
     /**
@@ -188,16 +207,21 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * @generated
      */
     @Override
-    public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    public Object eGet(int featureID,
+                       boolean resolve,
+                       boolean coreType)
+    {
         switch (featureID) {
-        case MDPackage.MD_LATEST_TICK__PRICE:
-            return getPrice();
-        case MDPackage.MD_LATEST_TICK__SIZE:
-            return getSize();
-        case MDPackage.MD_LATEST_TICK__MULTIPLIER:
-            return getMultiplier();
+            case MDPackage.MD_LATEST_TICK__PRICE:
+                return getPrice();
+            case MDPackage.MD_LATEST_TICK__SIZE:
+                return getSize();
+            case MDPackage.MD_LATEST_TICK__MULTIPLIER:
+                return getMultiplier();
         }
-        return super.eGet(featureID, resolve, coreType);
+        return super.eGet(featureID,
+                          resolve,
+                          coreType);
     }
 
     /**
@@ -206,19 +230,22 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * @generated
      */
     @Override
-    public void eSet(int featureID, Object newValue) {
+    public void eSet(int featureID,
+                     Object newValue)
+    {
         switch (featureID) {
-        case MDPackage.MD_LATEST_TICK__PRICE:
-            setPrice((BigDecimal) newValue);
-            return;
-        case MDPackage.MD_LATEST_TICK__SIZE:
-            setSize((BigDecimal) newValue);
-            return;
-        case MDPackage.MD_LATEST_TICK__MULTIPLIER:
-            setMultiplier((BigDecimal) newValue);
-            return;
+            case MDPackage.MD_LATEST_TICK__PRICE:
+                setPrice((BigDecimal) newValue);
+                return;
+            case MDPackage.MD_LATEST_TICK__SIZE:
+                setSize((BigDecimal) newValue);
+                return;
+            case MDPackage.MD_LATEST_TICK__MULTIPLIER:
+                setMultiplier((BigDecimal) newValue);
+                return;
         }
-        super.eSet(featureID, newValue);
+        super.eSet(featureID,
+                   newValue);
     }
 
     /**
@@ -227,17 +254,18 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * @generated
      */
     @Override
-    public void eUnset(int featureID) {
+    public void eUnset(int featureID)
+    {
         switch (featureID) {
-        case MDPackage.MD_LATEST_TICK__PRICE:
-            setPrice(PRICE_EDEFAULT);
-            return;
-        case MDPackage.MD_LATEST_TICK__SIZE:
-            setSize(SIZE_EDEFAULT);
-            return;
-        case MDPackage.MD_LATEST_TICK__MULTIPLIER:
-            setMultiplier(MULTIPLIER_EDEFAULT);
-            return;
+            case MDPackage.MD_LATEST_TICK__PRICE:
+                setPrice(PRICE_EDEFAULT);
+                return;
+            case MDPackage.MD_LATEST_TICK__SIZE:
+                setSize(SIZE_EDEFAULT);
+                return;
+            case MDPackage.MD_LATEST_TICK__MULTIPLIER:
+                setMultiplier(MULTIPLIER_EDEFAULT);
+                return;
         }
         super.eUnset(featureID);
     }
@@ -248,17 +276,15 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * @generated
      */
     @Override
-    public boolean eIsSet(int featureID) {
+    public boolean eIsSet(int featureID)
+    {
         switch (featureID) {
-        case MDPackage.MD_LATEST_TICK__PRICE:
-            return PRICE_EDEFAULT == null ? price != null : !PRICE_EDEFAULT
-                    .equals(price);
-        case MDPackage.MD_LATEST_TICK__SIZE:
-            return SIZE_EDEFAULT == null ? size != null : !SIZE_EDEFAULT
-                    .equals(size);
-        case MDPackage.MD_LATEST_TICK__MULTIPLIER:
-            return MULTIPLIER_EDEFAULT == null ? multiplier != null
-                    : !MULTIPLIER_EDEFAULT.equals(multiplier);
+            case MDPackage.MD_LATEST_TICK__PRICE:
+                return PRICE_EDEFAULT == null ? price != null : !PRICE_EDEFAULT.equals(price);
+            case MDPackage.MD_LATEST_TICK__SIZE:
+                return SIZE_EDEFAULT == null ? size != null : !SIZE_EDEFAULT.equals(size);
+            case MDPackage.MD_LATEST_TICK__MULTIPLIER:
+                return MULTIPLIER_EDEFAULT == null ? multiplier != null : !MULTIPLIER_EDEFAULT.equals(multiplier);
         }
         return super.eIsSet(featureID);
     }
@@ -269,7 +295,8 @@ public class MDLatestTickImpl extends MDItemImpl implements MDLatestTick {
      * @generated
      */
     @Override
-    public String toString() {
+    public String toString()
+    {
         if (eIsProxy())
             return super.toString();
 

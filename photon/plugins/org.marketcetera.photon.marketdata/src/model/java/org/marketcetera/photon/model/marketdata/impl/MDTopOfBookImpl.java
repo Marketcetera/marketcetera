@@ -33,10 +33,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * </p>
  *
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
+public class MDTopOfBookImpl
+        extends MDItemImpl
+        implements MDTopOfBook
+{
     /**
      * The default value of the '{@link #getBidSize() <em>Bid Size</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -122,7 +125,8 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDTopOfBookImpl() {
+    public MDTopOfBookImpl()
+    {
         super();
     }
 
@@ -132,7 +136,8 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * @generated
      */
     @Override
-    protected EClass eStaticClass() {
+    protected EClass eStaticClass()
+    {
         return MDPackage.Literals.MD_TOP_OF_BOOK;
     }
 
@@ -141,7 +146,8 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public BigDecimal getBidSize() {
+    public BigDecimal getBidSize()
+    {
         return bidSize;
     }
 
@@ -150,12 +156,16 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setBidSize(BigDecimal newBidSize) {
+    public void setBidSize(BigDecimal newBidSize)
+    {
         BigDecimal oldBidSize = bidSize;
         bidSize = newBidSize;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    MDPackage.MD_TOP_OF_BOOK__BID_SIZE, oldBidSize, bidSize));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_TOP_OF_BOOK__BID_SIZE,
+                                          oldBidSize,
+                                          bidSize));
     }
 
     /**
@@ -163,7 +173,8 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public BigDecimal getBidPrice() {
+    public BigDecimal getBidPrice()
+    {
         return bidPrice;
     }
 
@@ -172,12 +183,16 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setBidPrice(BigDecimal newBidPrice) {
+    public void setBidPrice(BigDecimal newBidPrice)
+    {
         BigDecimal oldBidPrice = bidPrice;
         bidPrice = newBidPrice;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    MDPackage.MD_TOP_OF_BOOK__BID_PRICE, oldBidPrice, bidPrice));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_TOP_OF_BOOK__BID_PRICE,
+                                          oldBidPrice,
+                                          bidPrice));
     }
 
     /**
@@ -185,7 +200,8 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public BigDecimal getAskSize() {
+    public BigDecimal getAskSize()
+    {
         return askSize;
     }
 
@@ -194,12 +210,16 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setAskSize(BigDecimal newAskSize) {
+    public void setAskSize(BigDecimal newAskSize)
+    {
         BigDecimal oldAskSize = askSize;
         askSize = newAskSize;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    MDPackage.MD_TOP_OF_BOOK__ASK_SIZE, oldAskSize, askSize));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_TOP_OF_BOOK__ASK_SIZE,
+                                          oldAskSize,
+                                          askSize));
     }
 
     /**
@@ -207,7 +227,8 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public BigDecimal getAskPrice() {
+    public BigDecimal getAskPrice()
+    {
         return askPrice;
     }
 
@@ -216,12 +237,16 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setAskPrice(BigDecimal newAskPrice) {
+    public void setAskPrice(BigDecimal newAskPrice)
+    {
         BigDecimal oldAskPrice = askPrice;
         askPrice = newAskPrice;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    MDPackage.MD_TOP_OF_BOOK__ASK_PRICE, oldAskPrice, askPrice));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_TOP_OF_BOOK__ASK_PRICE,
+                                          oldAskPrice,
+                                          askPrice));
     }
 
     /**
@@ -230,18 +255,23 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * @generated
      */
     @Override
-    public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    public Object eGet(int featureID,
+                       boolean resolve,
+                       boolean coreType)
+    {
         switch (featureID) {
-        case MDPackage.MD_TOP_OF_BOOK__BID_SIZE:
-            return getBidSize();
-        case MDPackage.MD_TOP_OF_BOOK__BID_PRICE:
-            return getBidPrice();
-        case MDPackage.MD_TOP_OF_BOOK__ASK_SIZE:
-            return getAskSize();
-        case MDPackage.MD_TOP_OF_BOOK__ASK_PRICE:
-            return getAskPrice();
+            case MDPackage.MD_TOP_OF_BOOK__BID_SIZE:
+                return getBidSize();
+            case MDPackage.MD_TOP_OF_BOOK__BID_PRICE:
+                return getBidPrice();
+            case MDPackage.MD_TOP_OF_BOOK__ASK_SIZE:
+                return getAskSize();
+            case MDPackage.MD_TOP_OF_BOOK__ASK_PRICE:
+                return getAskPrice();
         }
-        return super.eGet(featureID, resolve, coreType);
+        return super.eGet(featureID,
+                          resolve,
+                          coreType);
     }
 
     /**
@@ -250,22 +280,25 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * @generated
      */
     @Override
-    public void eSet(int featureID, Object newValue) {
+    public void eSet(int featureID,
+                     Object newValue)
+    {
         switch (featureID) {
-        case MDPackage.MD_TOP_OF_BOOK__BID_SIZE:
-            setBidSize((BigDecimal) newValue);
-            return;
-        case MDPackage.MD_TOP_OF_BOOK__BID_PRICE:
-            setBidPrice((BigDecimal) newValue);
-            return;
-        case MDPackage.MD_TOP_OF_BOOK__ASK_SIZE:
-            setAskSize((BigDecimal) newValue);
-            return;
-        case MDPackage.MD_TOP_OF_BOOK__ASK_PRICE:
-            setAskPrice((BigDecimal) newValue);
-            return;
+            case MDPackage.MD_TOP_OF_BOOK__BID_SIZE:
+                setBidSize((BigDecimal) newValue);
+                return;
+            case MDPackage.MD_TOP_OF_BOOK__BID_PRICE:
+                setBidPrice((BigDecimal) newValue);
+                return;
+            case MDPackage.MD_TOP_OF_BOOK__ASK_SIZE:
+                setAskSize((BigDecimal) newValue);
+                return;
+            case MDPackage.MD_TOP_OF_BOOK__ASK_PRICE:
+                setAskPrice((BigDecimal) newValue);
+                return;
         }
-        super.eSet(featureID, newValue);
+        super.eSet(featureID,
+                   newValue);
     }
 
     /**
@@ -274,20 +307,21 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * @generated
      */
     @Override
-    public void eUnset(int featureID) {
+    public void eUnset(int featureID)
+    {
         switch (featureID) {
-        case MDPackage.MD_TOP_OF_BOOK__BID_SIZE:
-            setBidSize(BID_SIZE_EDEFAULT);
-            return;
-        case MDPackage.MD_TOP_OF_BOOK__BID_PRICE:
-            setBidPrice(BID_PRICE_EDEFAULT);
-            return;
-        case MDPackage.MD_TOP_OF_BOOK__ASK_SIZE:
-            setAskSize(ASK_SIZE_EDEFAULT);
-            return;
-        case MDPackage.MD_TOP_OF_BOOK__ASK_PRICE:
-            setAskPrice(ASK_PRICE_EDEFAULT);
-            return;
+            case MDPackage.MD_TOP_OF_BOOK__BID_SIZE:
+                setBidSize(BID_SIZE_EDEFAULT);
+                return;
+            case MDPackage.MD_TOP_OF_BOOK__BID_PRICE:
+                setBidPrice(BID_PRICE_EDEFAULT);
+                return;
+            case MDPackage.MD_TOP_OF_BOOK__ASK_SIZE:
+                setAskSize(ASK_SIZE_EDEFAULT);
+                return;
+            case MDPackage.MD_TOP_OF_BOOK__ASK_PRICE:
+                setAskPrice(ASK_PRICE_EDEFAULT);
+                return;
         }
         super.eUnset(featureID);
     }
@@ -298,20 +332,17 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * @generated
      */
     @Override
-    public boolean eIsSet(int featureID) {
+    public boolean eIsSet(int featureID)
+    {
         switch (featureID) {
-        case MDPackage.MD_TOP_OF_BOOK__BID_SIZE:
-            return BID_SIZE_EDEFAULT == null ? bidSize != null
-                    : !BID_SIZE_EDEFAULT.equals(bidSize);
-        case MDPackage.MD_TOP_OF_BOOK__BID_PRICE:
-            return BID_PRICE_EDEFAULT == null ? bidPrice != null
-                    : !BID_PRICE_EDEFAULT.equals(bidPrice);
-        case MDPackage.MD_TOP_OF_BOOK__ASK_SIZE:
-            return ASK_SIZE_EDEFAULT == null ? askSize != null
-                    : !ASK_SIZE_EDEFAULT.equals(askSize);
-        case MDPackage.MD_TOP_OF_BOOK__ASK_PRICE:
-            return ASK_PRICE_EDEFAULT == null ? askPrice != null
-                    : !ASK_PRICE_EDEFAULT.equals(askPrice);
+            case MDPackage.MD_TOP_OF_BOOK__BID_SIZE:
+                return BID_SIZE_EDEFAULT == null ? bidSize != null : !BID_SIZE_EDEFAULT.equals(bidSize);
+            case MDPackage.MD_TOP_OF_BOOK__BID_PRICE:
+                return BID_PRICE_EDEFAULT == null ? bidPrice != null : !BID_PRICE_EDEFAULT.equals(bidPrice);
+            case MDPackage.MD_TOP_OF_BOOK__ASK_SIZE:
+                return ASK_SIZE_EDEFAULT == null ? askSize != null : !ASK_SIZE_EDEFAULT.equals(askSize);
+            case MDPackage.MD_TOP_OF_BOOK__ASK_PRICE:
+                return ASK_PRICE_EDEFAULT == null ? askPrice != null : !ASK_PRICE_EDEFAULT.equals(askPrice);
         }
         return super.eIsSet(featureID);
     }
@@ -322,7 +353,8 @@ public class MDTopOfBookImpl extends MDItemImpl implements MDTopOfBook {
      * @generated
      */
     @Override
-    public String toString() {
+    public String toString()
+    {
         if (eIsProxy())
             return super.toString();
 

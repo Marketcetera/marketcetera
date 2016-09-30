@@ -134,6 +134,8 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
      */
     public void start(BundleContext context) throws Exception {
         super.start(context);
+        System.setProperty("log4j.configurationFile",
+                           getBundle().getResource("log4j2.xml").getPath());
         bundleContext = context;
 
         configureLogs();

@@ -32,7 +32,6 @@ import org.marketcetera.util.misc.ClassVersion;
  *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl#getLowPrice <em>Low Price</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl#getVolumeTraded <em>Volume Traded</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl#getOpenPrice <em>Open Price</em>}</li>
- *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl#getVolume <em>Volume</em>}</li>
  * </ul>
  * </p>
  *
@@ -129,7 +128,7 @@ public class MDMarketstatImpl
      * @ordered
      */
 
-    protected static final BigDecimal HIGH_PRICE_EDEFAULT = null;
+    protected static final BigDecimal HIGH_PRICE_EDEFAULT = new BigDecimal("0");
 
     /**
      * The cached value of the '{@link #getHighPrice() <em>High Price</em>}' attribute.
@@ -200,26 +199,6 @@ public class MDMarketstatImpl
      * @ordered
      */
     protected volatile BigDecimal openPrice = OPEN_PRICE_EDEFAULT;
-
-    /**
-     * The default value of the '{@link #getVolume() <em>Volume</em>}' attribute.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * @see #getVolume()
-     * @generated
-     * @ordered
-     */
-
-    protected static final BigDecimal VOLUME_EDEFAULT = null;
-
-    /**
-     * The cached value of the '{@link #getVolume() <em>Volume</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see #getVolume()
-     * @generated
-     * @ordered
-     */
-    protected volatile BigDecimal volume = VOLUME_EDEFAULT;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -366,8 +345,6 @@ public class MDMarketstatImpl
                 return getVolumeTraded();
             case MDPackage.MD_MARKETSTAT__OPEN_PRICE:
                 return getOpenPrice();
-            case MDPackage.MD_MARKETSTAT__VOLUME:
-                return getVolume();
         }
         return super.eGet(featureID,
                           resolve,
@@ -407,9 +384,6 @@ public class MDMarketstatImpl
             case MDPackage.MD_MARKETSTAT__OPEN_PRICE:
                 setOpenPrice((BigDecimal) newValue);
                 return;
-            case MDPackage.MD_MARKETSTAT__VOLUME:
-                setVolume((BigDecimal) newValue);
-                return;
         }
         super.eSet(featureID,
                    newValue);
@@ -447,9 +421,6 @@ public class MDMarketstatImpl
             case MDPackage.MD_MARKETSTAT__OPEN_PRICE:
                 setOpenPrice(OPEN_PRICE_EDEFAULT);
                 return;
-            case MDPackage.MD_MARKETSTAT__VOLUME:
-                setVolume(VOLUME_EDEFAULT);
-                return;
         }
         super.eUnset(featureID);
     }
@@ -481,8 +452,6 @@ public class MDMarketstatImpl
                         .equals(volumeTraded);
             case MDPackage.MD_MARKETSTAT__OPEN_PRICE:
                 return OPEN_PRICE_EDEFAULT == null ? openPrice != null : !OPEN_PRICE_EDEFAULT.equals(openPrice);
-            case MDPackage.MD_MARKETSTAT__VOLUME:
-                return VOLUME_EDEFAULT == null ? volume != null : !VOLUME_EDEFAULT.equals(volume);
         }
         return super.eIsSet(featureID);
     }
@@ -514,8 +483,6 @@ public class MDMarketstatImpl
         result.append(volumeTraded);
         result.append(", openPrice: "); //$NON-NLS-1$
         result.append(openPrice);
-        result.append(", volume: "); //$NON-NLS-1$
-        result.append(volume);
         result.append(')');
         return result.toString();
     }
@@ -556,22 +523,31 @@ public class MDMarketstatImpl
                                           lowPrice));
     }
 
-    @Override
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public BigDecimal getVolumeTraded()
     {
-        return volume;
+        return volumeTraded;
     }
 
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public void setVolumeTraded(BigDecimal newVolumeTraded)
     {
-        BigDecimal oldVolume = volume;
-        volume = newVolumeTraded;
+        BigDecimal oldVolumeTraded = volumeTraded;
+        volumeTraded = newVolumeTraded;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this,
                                           Notification.SET,
-                                          MDPackage.MD_MARKETSTAT__VOLUME,
-                                          oldVolume,
-                                          volume));
+                                          MDPackage.MD_MARKETSTAT__VOLUME_TRADED,
+                                          oldVolumeTraded,
+                                          volumeTraded));
     }
 
     @Override
@@ -594,33 +570,6 @@ public class MDMarketstatImpl
                                           MDPackage.MD_MARKETSTAT__OPEN_PRICE,
                                           oldOpenPrice,
                                           openPrice));
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public BigDecimal getVolume()
-    {
-        return volume;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public void setVolume(BigDecimal newVolume)
-    {
-        BigDecimal oldVolume = volume;
-        volume = newVolume;
-        if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this,
-                                          Notification.SET,
-                                          MDPackage.MD_MARKETSTAT__VOLUME,
-                                          oldVolume,
-                                          volume));
     }
 
 } // MDMarketstatImpl

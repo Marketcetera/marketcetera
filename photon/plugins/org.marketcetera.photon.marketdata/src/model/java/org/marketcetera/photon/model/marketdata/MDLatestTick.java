@@ -26,10 +26,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDLatestTick()
  * @model
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public interface MDLatestTick extends MDItem {
+public interface MDLatestTick
+        extends MDItem
+{
     /**
      * Returns the value of the '<em><b>Price</b></em>' attribute.
      * <!-- begin-user-doc -->

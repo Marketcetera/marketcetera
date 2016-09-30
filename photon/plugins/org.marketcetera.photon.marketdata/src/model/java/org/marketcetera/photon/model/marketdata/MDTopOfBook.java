@@ -12,28 +12,26 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * <!-- begin-user-doc --> A representation of the model object '
  * <em><b>Top Of Book</b></em>'. <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getBidSize
- * <em>Bid Size</em>}</li>
- * <li>{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getBidPrice
- * <em>Bid Price</em>}</li>
- * <li>{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getAskSize
- * <em>Ask Size</em>}</li>
- * <li>{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getAskPrice
- * <em>Ask Price</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getBidSize <em>Bid Size</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getBidPrice <em>Bid Price</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getAskSize <em>Ask Size</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getAskPrice <em>Ask Price</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDTopOfBook()
  * @model
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public interface MDTopOfBook extends MDItem {
+public interface MDTopOfBook
+        extends MDItem
+{
     /**
      * Returns the value of the '<em><b>Bid Size</b></em>' attribute. <!--
      * begin-user-doc --> <!-- end-user-doc -->

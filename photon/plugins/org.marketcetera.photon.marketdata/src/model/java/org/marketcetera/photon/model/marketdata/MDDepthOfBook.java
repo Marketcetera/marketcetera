@@ -28,10 +28,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDDepthOfBook()
  * @model
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public interface MDDepthOfBook extends MDItem {
+public interface MDDepthOfBook
+        extends MDItem
+{
     /**
      * Returns the value of the '<em><b>Product</b></em>' attribute.
      * <!-- begin-user-doc -->

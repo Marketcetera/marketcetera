@@ -25,10 +25,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDItem()
  * @model abstract="true"
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public interface MDItem extends EObject {
+public interface MDItem
+        extends EObject
+{
     /**
      * Returns the value of the '<em><b>Instrument</b></em>' attribute.
      * <!-- begin-user-doc -->

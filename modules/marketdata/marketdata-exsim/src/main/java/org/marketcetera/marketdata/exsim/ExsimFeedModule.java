@@ -460,6 +460,7 @@ public class ExsimFeedModule
                                    "Examining group {}", //$NON-NLS-1$
                                    mdEntry);
             BigDecimal closingPrice = null;
+            BigDecimal openPrice = null;
             BigDecimal volume = null;
             BigDecimal highPrice = null;
             BigDecimal lowPrice = null;
@@ -586,6 +587,10 @@ public class ExsimFeedModule
                     marketstat = true;
                     closingPrice = mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD);
                     break;
+                case quickfix.field.MDEntryType.OPENING_PRICE:
+                    marketstat = true;
+                    openPrice = mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD);
+                    break;
                 case quickfix.field.MDEntryType.TRADE_VOLUME:
                     marketstat = true;
                     volume = mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD);
@@ -630,12 +635,16 @@ public class ExsimFeedModule
                 marketstatBuilder.withExchangeCode(exchange);
                 if(closingPrice != null) {
                     marketstatBuilder.withClosePrice(closingPrice);
+                    marketstatBuilder.withPreviousClosePrice(closingPrice);
                 }
                 if(volume != null) {
                     marketstatBuilder.withVolume(volume);
                 }
                 if(highPrice != null) {
                     marketstatBuilder.withHighPrice(highPrice);
+                }
+                if(openPrice != null) {
+                    marketstatBuilder.withOpenPrice(openPrice);
                 }
                 if(lowPrice != null) {
                     marketstatBuilder.withLowPrice(lowPrice);
