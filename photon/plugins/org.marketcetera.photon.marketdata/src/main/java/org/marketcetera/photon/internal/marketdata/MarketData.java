@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -14,10 +15,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
+import org.marketcetera.event.HasEventType;
+import org.marketcetera.event.HasInstrument;
 import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Content;
@@ -27,8 +33,8 @@ import org.marketcetera.marketdata.core.manager.MarketDataProviderNotAvailable;
 import org.marketcetera.marketdata.core.manager.MarketDataRequestFailed;
 import org.marketcetera.marketdata.core.manager.MarketDataRequestTimedOut;
 import org.marketcetera.marketdata.core.manager.NoMarketDataProvidersAvailable;
+import org.marketcetera.marketdata.core.provider.MarketdataCacheElement;
 import org.marketcetera.marketdata.core.webservice.ConnectionException;
-import org.marketcetera.marketdata.core.webservice.PageRequest;
 import org.marketcetera.marketdata.core.webservice.UnknownRequestException;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
@@ -46,6 +52,9 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -85,7 +94,6 @@ public class MarketData
     @Override
     public void reset()
     {
-//        requests.clear();
         if(marketDataRefreshExecutor != null) {
             marketDataRefreshExecutor.shutdownNow();
         }
@@ -241,6 +249,18 @@ public class MarketData
         return newMarketDataDetails.getReference();
     }
     /**
+     * Get the cached market data element for the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>MarketdataCacheElement</code> value
+     * @throws ExecutionException if the cache element cannot be created as needed
+     */
+    private MarketdataCacheElement getCacheElementFor(Instrument inInstrument)
+            throws ExecutionException
+    {
+        return marketDataCache.get(inInstrument);
+    }
+    /**
      * Manages a market data subscription and applies updates.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -284,30 +304,19 @@ public class MarketData
                     cancel();
                     return;
                 }
-                long updateTimestamp = marketDataClientProvider.getMarketDataClient().getLastUpdate(id);
-                if(updateTimestamp > lastUpdate) {
-                    // TODO switch to get snapshot page
-                    PageRequest page = new PageRequest(1,
-                                                       Integer.MAX_VALUE);
-                    Deque<Event> events = marketDataClientProvider.getMarketDataClient().getSnapshotPage(instrument,
-                                                                                                         content,
-                                                                                                         null,
-                                                                                                         page);
-                    if(events == null || events.isEmpty()) {
-                        return;
-                    }
+                Deque<Event> events = marketDataClientProvider.getMarketDataClient().getEvents(id);
+                if(events != null) {
                     updater.update(item,
                                    events);
-                    lastUpdate = updateTimestamp;
                 }
             } catch (UnknownRequestException e) {
                 // this is likely a transient problem, which will sort itself out shortly
-                SLF4JLoggerProxy.warn(MarketData.this,
+                SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
                                       e);
                 cancel();
             } catch (ConnectionException e) {
                 // exception caused by a lost connection - cancel this request
-                SLF4JLoggerProxy.error(MarketData.this,
+                SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
                                        e);
                 updater.clear(item);
                 cancel();
@@ -357,10 +366,6 @@ public class MarketData
          * reference token for the scheduled market data refresh job, if <code>null</code>, no job is scheduled
          */
         private Future<?> refreshJobToken;
-        /**
-         * tracks the last update time
-         */
-        private long lastUpdate = 0;
     }
     /**
      * Uniquely identifies the contents of a market data request.
@@ -475,7 +480,7 @@ public class MarketData
             }
             try {
                 requestId = marketDataClientProvider.getMarketDataClient().request(request,
-                                                                                   false);
+                                                                                   true);
             } catch (NoMarketDataProvidersAvailable | MarketDataProviderNotAvailable | MarketDataRequestTimedOut e) {
                 SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
                                        "Request for {} - {} failed because no market data providers are available that can honor the request",
@@ -700,7 +705,7 @@ public class MarketData
      * @since 2.4.0
      */
     @ClassVersion("$Id$")
-    private abstract static class AbstractDepthUpdater
+    private abstract class AbstractDepthUpdater
             implements ItemUpdater<MDDepthOfBookImpl>
     {
         /* (non-Javadoc)
@@ -710,59 +715,87 @@ public class MarketData
         public void update(final MDDepthOfBookImpl inItem,
                            final Deque<Event> inEvents)
         {
-            inItem.setInstrument(inItem.getInstrument());
-            inItem.setProduct(getContent());
-            final List<AskEvent> newAsks = Lists.newArrayList();
-            final List<BidEvent> newBids = Lists.newArrayList();
-            for(Event event : inEvents) {
-                if(event instanceof BidEvent) {
-                    newBids.add((BidEvent)event);
-                } else if(event instanceof AskEvent) {
-                    newAsks.add((AskEvent)event);
-                } else {
-                    throw new UnsupportedOperationException();
+            if(inEvents == null) {
+                return;
+            }
+            if(inEvents.isEmpty()) {
+                return;
+            }
+            clear(inItem);
+            try {
+                Event firstEvent = inEvents.getFirst();
+                HasInstrument hasInstrument = (HasInstrument)firstEvent;
+                Instrument instrument = hasInstrument.getInstrument();
+                MarketdataCacheElement marketDataCache = getCacheElementFor(instrument);
+                if(firstEvent instanceof HasEventType) {
+                    HasEventType hasEventType = (HasEventType)firstEvent;
+                    if(hasEventType.getEventType().isSnapshot()) {
+//                        marketDataCache.invalidate(Content.TOP_OF_BOOK);
+                    }
                 }
-            }
-            // TODO measure difference only
-            if(!newAsks.isEmpty()) {
-                inItem.getAsks().doWriteOperation(new Callable<Void>() {
-                    @Override
-                    public Void call()
-                            throws Exception
-                    {
-                        inItem.getAsks().clear();
-                        for(AskEvent ask : newAsks) {
-                            MDQuoteImpl quoteItem = new MDQuoteImpl();
-                            quoteItem.setInstrument(ask.getInstrument());
-                            quoteItem.setPrice(ask.getPrice());
-                            quoteItem.setSize(ask.getSize());
-                            quoteItem.setSource(String.valueOf(ask.getSource()));
-                            quoteItem.setTime(ask.getTimeMillis());
-                            inItem.getAsks().add(quoteItem);
+                List<Event> reversedEvents = Lists.reverse(Lists.newArrayList(inEvents));
+                marketDataCache.update(getContent(),
+                                       reversedEvents.toArray(new Event[reversedEvents.size()]));
+                Event snapshot = marketDataCache.getSnapshot(getContent());
+                if(snapshot != null) {
+                    inItem.setInstrument(instrument);
+                    inItem.setProduct(getContent());
+                    final List<AskEvent> newAsks = Lists.newArrayList();
+                    final List<BidEvent> newBids = Lists.newArrayList();
+                    SLF4JLoggerProxy.debug(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                           "{} snapshot is {}",
+                                           getContent(),
+                                           snapshot);
+                    AggregateEvent events = (AggregateEvent)snapshot;
+                    for(QuoteEvent event : events.decompose()) {
+                        if(event instanceof BidEvent) {
+                            newBids.add((BidEvent)event);
+                        } else if(event instanceof AskEvent) {
+                            newAsks.add((AskEvent)event);
+                        } else {
+                            throw new UnsupportedOperationException();
                         }
-                        return null;
                     }
-                });
-            }
-            if(!newBids.isEmpty()) {
-                inItem.getBids().doWriteOperation(new Callable<Void>() {
-                    @Override
-                    public Void call()
-                            throws Exception
-                    {
-                        inItem.getBids().clear();
-                        for(BidEvent bid : newBids) {
-                            MDQuoteImpl quoteItem = new MDQuoteImpl();
-                            quoteItem.setInstrument(bid.getInstrument());
-                            quoteItem.setPrice(bid.getPrice());
-                            quoteItem.setSize(bid.getSize());
-                            quoteItem.setSource(String.valueOf(bid.getSource()));
-                            quoteItem.setTime(bid.getTimeMillis());
-                            inItem.getBids().add(quoteItem);
+                    inItem.getAsks().doWriteOperation(new Callable<Void>() {
+                        @Override
+                        public Void call()
+                                throws Exception
+                        {
+                            inItem.getAsks().clear();
+                            for(AskEvent ask : newAsks) {
+                                MDQuoteImpl quoteItem = new MDQuoteImpl();
+                                quoteItem.setInstrument(ask.getInstrument());
+                                quoteItem.setPrice(ask.getPrice());
+                                quoteItem.setSize(ask.getSize());
+                                quoteItem.setSource(String.valueOf(ask.getSource()));
+                                quoteItem.setTime(ask.getTimeMillis());
+                                inItem.getAsks().add(quoteItem);
+                            }
+                            return null;
                         }
-                        return null;
-                    }
-                });
+                    });
+                    inItem.getBids().doWriteOperation(new Callable<Void>() {
+                        @Override
+                        public Void call()
+                                throws Exception
+                        {
+                            inItem.getBids().clear();
+                            for(BidEvent bid : newBids) {
+                                MDQuoteImpl quoteItem = new MDQuoteImpl();
+                                quoteItem.setInstrument(bid.getInstrument());
+                                quoteItem.setPrice(bid.getPrice());
+                                quoteItem.setSize(bid.getSize());
+                                quoteItem.setSource(String.valueOf(bid.getSource()));
+                                quoteItem.setTime(bid.getTimeMillis());
+                                inItem.getBids().add(quoteItem);
+                            }
+                            return null;
+                        }
+                    });
+                }
+            } catch (ExecutionException e) {
+                SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                      e);
             }
         }
         /* (non-Javadoc)
@@ -831,12 +864,38 @@ public class MarketData
         public void update(MDLatestTickImpl inItem,
                            Deque<Event> inEvents)
         {
-            Event mostRecentEvent = inEvents.getFirst();
-            if(mostRecentEvent instanceof TradeEvent) {
-                TradeEvent trade = (TradeEvent)mostRecentEvent;
-                inItem.setInstrument(trade.getInstrument());
-                inItem.setPrice(trade.getPrice());
-                inItem.setSize(trade.getSize());
+            if(inEvents == null) {
+                return;
+            }
+            if(inEvents.isEmpty()) {
+                return;
+            }
+            clear(inItem);
+            try {
+                Event firstEvent = inEvents.getFirst();
+                HasInstrument hasInstrument = (HasInstrument)firstEvent;
+                Instrument instrument = hasInstrument.getInstrument();
+                MarketdataCacheElement marketDataCache = getCacheElementFor(instrument);
+                if(firstEvent instanceof HasEventType) {
+                    HasEventType hasEventType = (HasEventType)firstEvent;
+                    if(hasEventType.getEventType().isSnapshot()) {
+//                        marketDataCache.invalidate(Content.LATEST_TICK);
+                    }
+                }
+                marketDataCache.update(Content.LATEST_TICK,
+                                       inEvents.toArray(new Event[inEvents.size()]));
+                marketDataCache.update(Content.MARKET_STAT,
+                                       inEvents.toArray(new Event[inEvents.size()]));
+                Event snapshot = marketDataCache.getSnapshot(Content.LATEST_TICK);
+                if(snapshot != null) {
+                    TradeEvent trade = (TradeEvent)snapshot;
+                    inItem.setInstrument(trade.getInstrument());
+                    inItem.setPrice(trade.getPrice());
+                    inItem.setSize(trade.getSize());
+                }
+            } catch (ExecutionException e) {
+                SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                      e);
             }
         }
         @Override
@@ -854,26 +913,47 @@ public class MarketData
         public void update(MDTopOfBookImpl inItem,
                            Deque<Event> inEvents)
         {
-            // traverse the list from front to back, stopping when we have one each of bid and ask
-            boolean askFound = false;
-            boolean bidFound = false;
-            for(Event event : inEvents) {
-                if(event instanceof AskEvent) {
-                    AskEvent ask = (AskEvent)event;
-                    askFound = true;
-                    inItem.setInstrument(ask.getInstrument());
-                    inItem.setAskPrice(ask.getPrice());
-                    inItem.setAskSize(ask.getSize());
-                } else if(event instanceof BidEvent) {
-                    BidEvent bid = (BidEvent)event;
-                    bidFound = true;
-                    inItem.setInstrument(bid.getInstrument());
-                    inItem.setBidPrice(bid.getPrice());
-                    inItem.setBidSize(bid.getSize());
+            if(inEvents == null) {
+                return;
+            }
+            if(inEvents.isEmpty()) {
+                return;
+            }
+            clear(inItem);
+            try {
+                Event firstEvent = inEvents.getFirst();
+                HasInstrument hasInstrument = (HasInstrument)firstEvent;
+                Instrument instrument = hasInstrument.getInstrument();
+                MarketdataCacheElement marketDataCache = getCacheElementFor(instrument);
+                if(firstEvent instanceof HasEventType) {
+                    HasEventType hasEventType = (HasEventType)firstEvent;
+                    if(hasEventType.getEventType().isSnapshot()) {
+//                        marketDataCache.invalidate(Content.TOP_OF_BOOK);
+                    }
                 }
-                if(askFound && bidFound) {
-                    break;
+                marketDataCache.update(Content.TOP_OF_BOOK,
+                                       inEvents.toArray(new Event[inEvents.size()]));
+                Event snapshot = marketDataCache.getSnapshot(Content.TOP_OF_BOOK);
+                if(snapshot != null) {
+                    TopOfBookEvent newTop = (TopOfBookEvent)snapshot;
+                    List<QuoteEvent> newTopEvents = newTop.decompose();
+                    for(QuoteEvent quote : newTopEvents) {
+                        if(quote instanceof AskEvent) {
+                            AskEvent ask = (AskEvent)quote;
+                            inItem.setInstrument(ask.getInstrument());
+                            inItem.setAskPrice(ask.getPrice());
+                            inItem.setAskSize(ask.getSize());
+                        } else if(quote instanceof BidEvent) {
+                            BidEvent bid = (BidEvent)quote;
+                            inItem.setInstrument(bid.getInstrument());
+                            inItem.setBidPrice(bid.getPrice());
+                            inItem.setBidSize(bid.getSize());
+                        }
+                    }
                 }
+            } catch (ExecutionException e) {
+                SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                      e);
             }
         }
         @Override
@@ -893,18 +973,42 @@ public class MarketData
         public void update(MDMarketstatImpl inItem,
                            Deque<Event> inEvents)
         {
-            Event mostRecentEvent = inEvents.getFirst();
-            if(mostRecentEvent instanceof MarketstatEvent) {
-                MarketstatEvent statEvent = (MarketstatEvent)mostRecentEvent;
-                inItem.setInstrument(statEvent.getInstrument());
-                inItem.setCloseDate(statEvent.getCloseDate());
-                inItem.setClosePrice(statEvent.getClose());
-                inItem.setHighPrice(statEvent.getHigh());
-                inItem.setLowPrice(statEvent.getLow());
-                inItem.setOpenPrice(statEvent.getOpen());
-                inItem.setPreviousCloseDate(statEvent.getPreviousCloseDate());
-                inItem.setPreviousClosePrice(statEvent.getPreviousClose());
-                inItem.setVolumeTraded(statEvent.getVolume());
+            if(inEvents == null) {
+                return;
+            }
+            if(inEvents.isEmpty()) {
+                return;
+            }
+            clear(inItem);
+            try {
+                Event firstEvent = inEvents.getFirst();
+                HasInstrument hasInstrument = (HasInstrument)firstEvent;
+                Instrument instrument = hasInstrument.getInstrument();
+                MarketdataCacheElement marketDataCache = getCacheElementFor(instrument);
+                if(firstEvent instanceof HasEventType) {
+                    HasEventType hasEventType = (HasEventType)firstEvent;
+                    if(hasEventType.getEventType().isSnapshot()) {
+//                        marketDataCache.invalidate(Content.MARKET_STAT);
+                    }
+                }
+                marketDataCache.update(Content.MARKET_STAT,
+                                       inEvents.toArray(new Event[inEvents.size()]));
+                Event snapshot = marketDataCache.getSnapshot(Content.MARKET_STAT);
+                if(snapshot != null) {
+                    MarketstatEvent statEvent = (MarketstatEvent)snapshot;
+                    inItem.setInstrument(statEvent.getInstrument());
+                    inItem.setCloseDate(statEvent.getCloseDate());
+                    inItem.setClosePrice(statEvent.getClose());
+                    inItem.setHighPrice(statEvent.getHigh());
+                    inItem.setLowPrice(statEvent.getLow());
+                    inItem.setOpenPrice(statEvent.getOpen());
+                    inItem.setPreviousCloseDate(statEvent.getPreviousCloseDate());
+                    inItem.setPreviousClosePrice(statEvent.getPreviousClose());
+                    inItem.setVolumeTraded(statEvent.getVolume());
+                }
+            } catch (ExecutionException e) {
+                SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                      e);
             }
         }
         @Override
@@ -980,6 +1084,17 @@ public class MarketData
             return Content.TOTAL_VIEW;
         }
     };
+    /**
+     * caches market data
+     */
+    private final LoadingCache<Instrument,MarketdataCacheElement> marketDataCache = CacheBuilder.newBuilder().build(new CacheLoader<Instrument,MarketdataCacheElement>() {
+        @Override
+        public MarketdataCacheElement load(Instrument inInstrument)
+                throws Exception
+        {
+            return new MarketdataCacheElement(inInstrument);
+        }
+    });
     /**
      * contains market data active requests by reference key (for reuse)
      */

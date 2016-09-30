@@ -12,6 +12,7 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.manager.MarketDataManager;
 import org.marketcetera.marketdata.core.manager.MarketDataManagerModule;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -53,10 +54,22 @@ public class MarketDataManagerImpl
                                            Content inContent,
                                            String inProvider)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Requesting market data snapshot: {} {} {}",
+                               inInstrument,
+                               inContent,
+                               inProvider);
         initMarketDataManagerModule();
-        return marketDataManagerModule.requestMarketDataSnapshot(inInstrument,
-                                                                 inContent,
-                                                                 inProvider);
+        Event snapshot = marketDataManagerModule.requestMarketDataSnapshot(inInstrument,
+                                                                           inContent,
+                                                                           inProvider);
+        SLF4JLoggerProxy.debug(this,
+                               "Returning market data snapshot: {} {} {}: {}",
+                               inInstrument,
+                               inContent,
+                               inProvider,
+                               snapshot);
+        return snapshot;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.manager.MarketDataManager#getAvailableCapability()

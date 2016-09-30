@@ -15,6 +15,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.BatchQueueProcessor;
 import org.marketcetera.core.CoreException;
@@ -406,13 +408,15 @@ public class ExsimFeedModule
      * Get the order book for the given instrument.
      *
      * @param inInstrument an <code>Instrument</code> value
+     * @param inRequestId a <code>String</code> value
      * @return an <code>OrderBook</code> value
      * @throws ExecutionException if a missing order book could not be constructed
      */
-    private OrderBook getOrderBookFor(final Instrument inInstrument)
+    private OrderBook getOrderBookFor(final Instrument inInstrument,
+                                      String inRequestId)
             throws ExecutionException
     {
-        return orderBooksByInstrument.get(inInstrument,
+        return orderBooksByInstrument.get(new OrderBookKey(inRequestId,inInstrument),
                                           new Callable<OrderBook>() {
             @Override
             public OrderBook call()
@@ -447,7 +451,8 @@ public class ExsimFeedModule
         String exchange = null;
         if(inIsSnapshot) {
             instrument = FIXMessageUtil.getInstrumentFromMessageFragment(message);
-            orderbook = getOrderBookFor(instrument);
+            orderbook = getOrderBookFor(instrument,
+                                        requestId);
             exchange = FIXMessageUtil.getSecurityExchangeFromMessageFragment(message);
         }
         for(Group mdEntry : mdEntries) {
@@ -461,7 +466,8 @@ public class ExsimFeedModule
             BigDecimal vwap = null;
             if(!inIsSnapshot) {
                 instrument = FIXMessageUtil.getInstrumentFromMessageFragment(mdEntry);
-                orderbook = getOrderBookFor(instrument);
+                orderbook = getOrderBookFor(instrument,
+                                            requestId);
                 exchange = FIXMessageUtil.getSecurityExchangeFromMessageFragment(mdEntry);
             }
             char entryType = mdEntry.getChar(quickfix.field.MDEntryType.FIELD);
@@ -1065,6 +1071,56 @@ public class ExsimFeedModule
         private final DataEmitterSupport dataEmitterSupport;
     }
     /**
+     * Serves as the unique key for a cached order book.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static final class OrderBookKey
+    {
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode()
+        {
+            return new HashCodeBuilder().append(requestId).append(instrument).toHashCode();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof OrderBookKey)) {
+                return false;
+            }
+            OrderBookKey other = (OrderBookKey) obj;
+            return new EqualsBuilder().append(requestId,other.requestId).append(instrument,other.instrument).isEquals();
+        }
+        /**
+         * Create a new OrderBookKey instance.
+         *
+         * @param inRequestId a <code>String</code> value
+         * @param inInstrument an <code>Instrument</code> value
+         */
+        private OrderBookKey(String inRequestId,
+                             Instrument inInstrument)
+        {
+            requestId = inRequestId;
+            instrument = inInstrument;
+        }
+        private final String requestId;
+        private final Instrument instrument;
+    }
+    /**
      * processes incoming FIX messages
      */
     private FixMessageProcessor fixMessageProcessor;
@@ -1105,7 +1161,7 @@ public class ExsimFeedModule
     /**
      * event order books keyed by instrument
      */
-    private final Cache<Instrument,OrderBook> orderBooksByInstrument;
+    private final Cache<OrderBookKey,OrderBook> orderBooksByInstrument;
     /**
      * used to assign unique event ids
      */
@@ -1125,5 +1181,5 @@ public class ExsimFeedModule
     /**
      * supported capabilities for this provider
      */
-    private static final Set<Capability> supportedCapabilities = EnumSet.of(Capability.AGGREGATED_DEPTH,Capability.BBO10,Capability.EVENT_BOUNDARY,Capability.LATEST_TICK,Capability.MARKET_STAT,Capability.TOP_OF_BOOK);
+    private static final Set<Capability> supportedCapabilities = EnumSet.of(Capability.BBO10,Capability.EVENT_BOUNDARY,Capability.LATEST_TICK,Capability.MARKET_STAT,Capability.TOP_OF_BOOK);
 }

@@ -268,16 +268,16 @@ public class ExsimFeedConfig
                                     timeZone);
         inSessionSettings.setString(sessionId,
                                     Session.SETTING_RESET_ON_LOGON,
-                "Y");
+                                    "Y");
         inSessionSettings.setString(sessionId,
                                     Session.SETTING_RESET_ON_LOGOUT,
-                "Y");
+                                    "Y");
         inSessionSettings.setString(sessionId,
                                     Session.SETTING_RESET_ON_DISCONNECT,
-                "Y");
+                                    "Y");
         inSessionSettings.setString(sessionId,
                                     Session.SETTING_RESET_ON_ERROR,
-                "Y");
+                                    "Y");
         inSessionSettings.setString(sessionId,
                                     Session.SETTING_DATA_DICTIONARY,
                                     dataDictionary);

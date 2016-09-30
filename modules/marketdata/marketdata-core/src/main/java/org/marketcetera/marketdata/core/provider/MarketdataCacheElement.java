@@ -40,10 +40,18 @@ public class MarketdataCacheElement
     {
         Validate.notNull(inInstrument);
         instrument = inInstrument;
-        marketstatCache = new MarketstatEventCache(inInstrument,
+        clear();
+    }
+    /**
+     * Clear the cache.
+     */
+    public void clear()
+    {
+        marketstatCache = new MarketstatEventCache(instrument,
                                                    true);
         trade = null;
         imbalance = null;
+        orderbooks.clear();
     }
     /**
      * Gets the latest snapshot for the given content.
