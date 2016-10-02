@@ -84,6 +84,8 @@
                             <layoutData x:class="gridData" verticalAlignment="BEGINNING"
                                 horizontalAlignment="FILL"/>
                         </text>
+                        <button x:id="PegToMidpoint" x:style="SWT.CHECK" text="Peg to Midpoint" enabled="false"/>
+                        <button x:id="PegToMidpointLocked" x:style="SWT.CHECK" text="Locked" enabled="false"/>
                     </composite>
                 </section>
                 <section x:id="AlgoExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Broker Algos" expanded="true" client="_algo_composite">

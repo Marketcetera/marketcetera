@@ -3,8 +3,20 @@ package org.marketcetera.photon.views;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
-import org.eclipse.core.databinding.*;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.databinding.AggregateValidationStatus;
+import org.eclipse.core.databinding.Binding;
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.ObservablesManager;
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.ValidationStatusProvider;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
@@ -25,11 +37,32 @@ import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -48,13 +81,18 @@ import org.marketcetera.photon.commons.databinding.TypedConverter;
 import org.marketcetera.photon.commons.databinding.TypedObservableValue;
 import org.marketcetera.photon.commons.ui.databinding.RequiredFieldSupport;
 import org.marketcetera.photon.commons.ui.databinding.UpdateStrategyFactory;
+import org.marketcetera.photon.marketdata.IMarketDataManager;
+import org.marketcetera.photon.marketdata.IMarketDataReference;
+import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.photon.ui.databinding.StatusToImageConverter;
 import org.marketcetera.photon.views.providers.AlgoTableColumnEdditorSupport;
 import org.marketcetera.photon.views.providers.AlgoTableObservableMapLabelProvider;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.ibm.icu.text.NumberFormat;
@@ -98,9 +136,23 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
     private ComboViewer mTimeInForceComboViewer;
 
     private ComboViewer mOrderTypeComboViewer;
-
     private IValueChangeListener mFocusListener;
-
+    /**
+     * used to schedule updates to the price value
+     */
+    private ScheduledExecutorService priceUpdateService = Executors.newSingleThreadScheduledExecutor();
+    /**
+     * holds the current price update job token
+     */
+    private volatile ScheduledFuture<?> priceUpdateFuture;
+    /**
+     * provides current top-of-book values
+     */
+    private volatile MDTopOfBook topOfBook;
+    /**
+     * reference to top-of-book
+     */
+    private volatile IMarketDataReference<MDTopOfBook> topOfBookReference;
     /**
      * Constructor.
      * 
@@ -133,7 +185,6 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
     protected M getModel() {
         return mModel;
     }
-
     /**
      * Returns the {@link ObservablesManager} that will clean up managed
      * observables.
@@ -146,7 +197,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
 
     @Override
     protected void finishUI() {
-        T ticket = getXSWTView();
+        final T ticket = getXSWTView();
 
         /*
          * Set background of error message area.
@@ -174,7 +225,51 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                 getModel().clearOrderMessage();
             }
         });
-
+        ticket.getPegToMidpoint().addSelectionListener(new SelectionAdapter() {
+            /* (non-Javadoc)
+             * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
+             */
+            @Override
+            public void widgetSelected(SelectionEvent inE)
+            {
+                Button pegToMidpoint = ticket.getPegToMidpoint();
+                pegToMidpoint.setSelection(pegToMidpoint(pegToMidpoint.getSelection()));
+                if(!pegToMidpoint.getSelection()) {
+                    ticket.getPegToMidpointLocked().setSelection(false);
+                }
+                updateOrderPegToMidpoint();
+            }
+        });
+        ticket.getPegToMidpointLocked().addSelectionListener(new SelectionAdapter() {
+            /* (non-Javadoc)
+             * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
+             */
+            @Override
+            public void widgetSelected(SelectionEvent inE)
+            {
+                if(ticket.getPegToMidpointLocked().getSelection()) {
+                    if(ticket.getPegToMidpoint().getSelection()) {
+                        updateOrderPegToMidpoint();
+                    } else {
+                        ticket.getPegToMidpointLocked().setSelection(false);
+                    }
+                } else {
+                    updateOrderPegToMidpoint();
+                }
+            }
+        });
+        ticket.getSymbolText().addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent inEvent)
+            {
+                pegToMidpoint(false);
+                String value = StringUtils.trimToNull(ticket.getSymbolText().getText());
+                ticket.getPegToMidpoint().setEnabled(value != null);
+                ticket.getPegToMidpointLocked().setEnabled(ticket.getPegToMidpoint().getEnabled());
+                ticket.getPegToMidpoint().setSelection(false);
+                ticket.getPriceText().setText("");
+            }
+        });
         /*
          * Handle send button click.
          */
@@ -217,7 +312,103 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
 
         ticket.getForm().reflow(true);
     }
-
+    /**
+     * Update the underlying order peg-to-midpoint value.
+     */
+    private void updateOrderPegToMidpoint()
+    {
+        T ticket = getXSWTView();
+        Button pegToMidpoint = ticket.getPegToMidpoint();
+        Button pegToMidpointLocked = ticket.getPegToMidpointLocked();
+        boolean pegToMidpointOrderValue = pegToMidpoint.getSelection();
+        // if the end result is that peg-to-midpoint is selected, set it on the underlying order, but only if 'locked' is _not_ selected
+        if(pegToMidpointOrderValue) {
+            pegToMidpointOrderValue = !pegToMidpointLocked.getSelection();
+        }
+        getModel().getOrderObservable().getTypedValue().setPegToMidpoint(pegToMidpointOrderValue);
+    }
+    /**
+     * Update the price value with the top-of-book midpoint value.
+     */
+    private void updateTopOfBook()
+    {
+        if(topOfBook != null) {
+            T ticket = getXSWTView();
+            if(ticket.getPriceText().getEnabled()) {
+                BigDecimal askPrice = topOfBook.getAskPrice();
+                BigDecimal bidPrice = topOfBook.getBidPrice();
+                if(!ticket.getPegToMidpointLocked().getSelection() && askPrice != null && bidPrice != null) {
+                    BigDecimal midPoint = askPrice.add(bidPrice);
+                    midPoint = midPoint.divide(new BigDecimal(2)).setScale(2,RoundingMode.HALF_UP);
+                    ticket.getPriceText().setText(midPoint.toPlainString());
+                }
+            } else {
+                ticket.getPriceText().setText("");
+            }
+        }
+    }
+    /**
+     * Activate or deactivate peg-to-midpoint feature.
+     *
+     * @param inActivate a <code>boolean</code> value
+     * @return a <code>boolean</code> value indicating whether the feature was successfully activated or not
+     */
+    private boolean pegToMidpoint(boolean inActivate)
+    {
+        if(inActivate) {
+            IMarketDataManager marketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
+            if(marketDataManager.isRunning()) {
+                Instrument instrument = getModel().getOrderObservable().getTypedValue().getInstrument();
+                if(instrument == null) {
+                    return false;
+                } else {
+                    topOfBookReference = marketDataManager.getMarketData().getTopOfBook(instrument);
+                    topOfBook = topOfBookReference.get();
+                    // TODO need to hook up some kind of listener here to changes in top of book
+                    priceUpdateFuture = priceUpdateService.scheduleAtFixedRate(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            try {
+                                Display display = Display.getDefault();
+                                display.asyncExec(new Runnable() {
+                                    @Override
+                                    public void run()
+                                    {
+                                        try {
+                                            updateTopOfBook();
+                                        } catch (Exception e) {
+                                            SLF4JLoggerProxy.warn(PhotonPlugin.MAIN_CONSOLE_LOGGER_NAME,
+                                                                  e);
+                                        }
+                                    }
+                                });
+                            } catch (Exception e) {
+                                SLF4JLoggerProxy.warn(PhotonPlugin.MAIN_CONSOLE_LOGGER_NAME,
+                                                      e);
+                            }
+                        }
+                    },1000,1000,TimeUnit.MILLISECONDS);
+                    return true;
+                }
+            } else {
+                SLF4JLoggerProxy.warn(PhotonPlugin.MAIN_CONSOLE_LOGGER_NAME,
+                                      "Market data is not available");
+                return false;
+            }
+        } else {
+            if(priceUpdateFuture != null) {
+                priceUpdateFuture.cancel(true);
+                priceUpdateFuture = null;
+            }
+            if(topOfBookReference != null) {
+                topOfBookReference.dispose();
+                topOfBookReference = null;
+                topOfBook = null;
+            }
+            return false;
+        }
+    }
     /**
      * Customize the widgets.
      * 
@@ -262,7 +453,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
      * 
      * @param ticket
      */
-    protected void initViewers(T ticket) {
+    protected void initViewers(final T ticket) {
         /*
          * Side combo based on Side enum.
          */
@@ -276,7 +467,6 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         mOrderTypeComboViewer = new ComboViewer(ticket.getOrderTypeCombo());
         mOrderTypeComboViewer.setContentProvider(new ArrayContentProvider());
         mOrderTypeComboViewer.setInput(getModel().getValidOrderTypeValues());
-
         /*
          * Broker combo based on available brokers.
          */
@@ -345,8 +535,10 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                                                                                                           BrokerAlgoTag.class,
                                                                                                           new String[] { "tagSpec", "value" })));//$NON-NLS-1$ //$NON-NLS-2$
         valueColumn.setEditingSupport(new AlgoTableColumnEdditorSupport(mAlgoTagsTableViewer));
+        // disable the peg to midpoint until symbol has a value and order is established as non-market
+        ticket.getPegToMidpoint().setEnabled(false);
+        ticket.getPegToMidpointLocked().setEnabled(ticket.getPegToMidpoint().getEnabled());
     }
-    
     /**
      * Get the UI string to show for a "new order" message.
      * 
@@ -423,13 +615,12 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          * Display Quantity
          */
         bindText(ticket.getDisplayQuantityText(), model.getDisplayQuantity());
-        
-
         /*
          * Symbol
          */
-        bindRequiredText(ticket.getSymbolText(), getModel().getSymbol(),
-                Messages.ORDER_TICKET_VIEW_SYMBOL__LABEL.getText());
+        bindRequiredText(ticket.getSymbolText(), 
+                         getModel().getSymbol(),
+                         Messages.ORDER_TICKET_VIEW_SYMBOL__LABEL.getText());
         enableForNewOrderOnly(ticket.getSymbolText());
 
         /*
@@ -730,7 +921,6 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                     }
                 }), null);
     }
-
     /**
      * Binds a combo viewer and makes it required.
      * 
@@ -828,7 +1018,6 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         }
         return dbc.bindValue(target, model, targetToModel, null);
     }
-
     /**
      * Binds a text widget and makes it required.
      * 

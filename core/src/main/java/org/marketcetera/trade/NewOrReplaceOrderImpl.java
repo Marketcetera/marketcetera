@@ -94,6 +94,22 @@ class NewOrReplaceOrderImpl
     {
         brokerAlgo = inBrokerAlgo;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.NewOrReplaceOrder#setPegToMidpoint(boolean)
+     */
+    @Override
+    public void setPegToMidpoint(boolean inPegToMidpoint)
+    {
+        pegToMidpoint = inPegToMidpoint;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.NewOrReplaceOrder#getPegToMidpoint()
+     */
+    @Override
+    public boolean getPegToMidpoint()
+    {
+        return pegToMidpoint;
+    }
     private OrderCapacity mOrderCapacity;
     private PositionEffect mPositionEffect;
     private OrderType mOrderType;
@@ -101,5 +117,6 @@ class NewOrReplaceOrderImpl
     private BigDecimal mPrice;
     private BigDecimal mDisplayQuantity;
     private BrokerAlgo brokerAlgo;
-    private static final long serialVersionUID = 3745608449209190015L;
+    private boolean pegToMidpoint = false;
+    private static final long serialVersionUID = 4343594623580234993L;
 }

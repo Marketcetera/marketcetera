@@ -67,5 +67,16 @@ public interface IOrderTicket {
 	Table getCustomFieldsTable();
 	
 	Text getMessageDebugText();
-	
+    /**
+     * Get the peg-to-midpoint control.
+     *
+     * @return a <code>Button</code> value
+     */
+    Button getPegToMidpoint();
+    /**
+     * Get the peg-to-midpoint (locked) control.
+     *
+     * @return a <code>Button</code> value
+     */
+    Button getPegToMidpointLocked();
 }

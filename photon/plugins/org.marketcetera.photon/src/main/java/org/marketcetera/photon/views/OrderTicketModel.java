@@ -23,7 +23,14 @@ import org.marketcetera.photon.BrokerManager.Broker;
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator;
 import org.marketcetera.photon.ui.databinding.NewOrReplaceOrderObservable;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.NewOrReplaceOrder;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -44,6 +51,7 @@ public abstract class OrderTicketModel {
 
     protected static final Object BLANK = new NullSentinel(""); //$NON-NLS-1$
     private final NewOrReplaceOrderObservable mOrderObservable = new NewOrReplaceOrderObservable();
+    private final ITypedObservableValue<Instrument> instrument;
     private final ITypedObservableValue<BrokerID> mBrokerId;
     private final ITypedObservableValue<Side> mSide;
     private final ITypedObservableValue<BigDecimal> mQuantity;
@@ -75,8 +83,8 @@ public abstract class OrderTicketModel {
         mTimeInForce = mOrderObservable.observeTimeInForce();
         mAccount = mOrderObservable.observeAccount();
         mBrokerId = mOrderObservable.observeBrokerId();
+        instrument = mOrderObservable.observeInstrument();
         mBrokerAlgo = mOrderObservable.observeBrokerAlgo();
-
         mIsLimitOrder = TypedObservableValueDecorator.decorate(
                 new ComputedValue(Boolean.class) {
                     @Override
@@ -186,7 +194,15 @@ public abstract class OrderTicketModel {
     public final NewOrReplaceOrderObservable getOrderObservable() {
         return mOrderObservable;
     }
-
+    /**
+     * Get the instrument of the ticket being edited.
+     *
+     * @return an <code>ITypedObservableValue&lt;Instrument&gt;</code> value
+     */
+    public final ITypedObservableValue<Instrument> getInstrument()
+    {
+        return instrument;
+    }
     /**
      * Returns the broker of the ticket being edited.
      * 
@@ -255,7 +271,6 @@ public abstract class OrderTicketModel {
     public final ITypedObservableValue<Boolean> isLimitOrder() {
         return mIsLimitOrder;
     }
-
     /**
      * Returns an observable that tracks the price of the current order.
      * 
@@ -289,7 +304,6 @@ public abstract class OrderTicketModel {
     public final void clearOrderMessage() {
         mOrderObservable.setValue(createNewOrder());
     }
-
     /**
      * Creates a new empty order.
      * 
@@ -315,6 +329,7 @@ public abstract class OrderTicketModel {
             order.setSide(currentOrder.getSide());
             order.setText(currentOrder.getText());
             order.setTimeInForce(currentOrder.getTimeInForce());
+            order.setPegToMidpoint(currentOrder.getPegToMidpoint());
         }
         return order;
     }
