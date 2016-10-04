@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -357,19 +358,19 @@ public class MarketData
             } catch (ConnectionException e) {
                 // exception caused by a lost connection - cancel this request
                 SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
-                                       e);
+                                       "Market Data Nexus {}",
+                                       ExceptionUtils.getRootCauseMessage(e));
                 updater.clear(item);
                 cancel();
             } catch (Exception e) {
                 // this is an exception that occurred during update - must be caught or it kills the scheduled executor - log it and report a problem to the user
                 updater.clear(item);
                 SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
-                                       "A problem occurred updating market data for {} {} [{}]",
+                                       "A problem occurred updating market data for {} {} [{}]: {}",
                                        content,
                                        instrument,
-                                       id);
-                SLF4JLoggerProxy.error(MarketData.this,
-                                       e);
+                                       id,
+                                       ExceptionUtils.getRootCauseMessage(e));
             }
         }
         /**
@@ -763,7 +764,7 @@ public class MarketData
                 if(firstEvent instanceof HasEventType) {
                     HasEventType hasEventType = (HasEventType)firstEvent;
                     if(hasEventType.getEventType().isSnapshot()) {
-//                        marketDataCache.invalidate(Content.TOP_OF_BOOK);
+                        marketDataCache.invalidate(getContent());
                     }
                 }
                 List<Event> reversedEvents = Lists.reverse(Lists.newArrayList(inEvents));
@@ -912,7 +913,7 @@ public class MarketData
                 if(firstEvent instanceof HasEventType) {
                     HasEventType hasEventType = (HasEventType)firstEvent;
                     if(hasEventType.getEventType().isSnapshot()) {
-//                        marketDataCache.invalidate(Content.LATEST_TICK);
+                        marketDataCache.invalidate(Content.LATEST_TICK);
                     }
                 }
                 marketDataCache.update(Content.LATEST_TICK,
@@ -961,7 +962,7 @@ public class MarketData
                 if(firstEvent instanceof HasEventType) {
                     HasEventType hasEventType = (HasEventType)firstEvent;
                     if(hasEventType.getEventType().isSnapshot()) {
-//                        marketDataCache.invalidate(Content.TOP_OF_BOOK);
+                        marketDataCache.invalidate(Content.TOP_OF_BOOK);
                     }
                 }
                 marketDataCache.update(Content.TOP_OF_BOOK,
@@ -1021,7 +1022,7 @@ public class MarketData
                 if(firstEvent instanceof HasEventType) {
                     HasEventType hasEventType = (HasEventType)firstEvent;
                     if(hasEventType.getEventType().isSnapshot()) {
-//                        marketDataCache.invalidate(Content.MARKET_STAT);
+                        marketDataCache.invalidate(Content.MARKET_STAT);
                     }
                 }
                 marketDataCache.update(Content.MARKET_STAT,

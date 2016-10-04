@@ -54,6 +54,39 @@ public class MarketdataCacheElement
         orderbooks.clear();
     }
     /**
+     * Invalidate the given content type of the cache.
+     *
+     * @param inContent a <code>Content</code>value
+     */
+    public void invalidate(Content inContent)
+    {
+        switch(inContent) {
+            case NBBO:
+            case UNAGGREGATED_DEPTH:
+            case AGGREGATED_DEPTH:
+            case BBO10:
+            case TOP_OF_BOOK:
+            case LEVEL_2:
+            case OPEN_BOOK:
+            case TOTAL_VIEW:
+                getOrderBookFor(inContent).clear();
+                break;
+            case DIVIDEND:
+                dividends.clear();
+                break;
+            case LATEST_TICK:
+                trade = null;
+                break;
+            case IMBALANCE:
+                imbalance = null;
+            case MARKET_STAT:
+                marketstatCache = null;
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+    /**
      * Gets the latest snapshot for the given content.
      *
      * @param inContent a <code>Content</code> value

@@ -118,6 +118,14 @@ public class OrderBook
         return mMaxDepth;
     }
     /**
+     * Clear the order book.
+     */
+    public void clear()
+    {
+        mAskBook.clear();
+        mBidBook.clear();
+    }
+    /**
      * Gets the {@link TopOfBookEvent} view of the order book.
      * 
      * @return a <code>TopOfBook</code> value
@@ -606,6 +614,16 @@ public class OrderBook
             Collections.sort(events,
                              inComparator);
             return Collections.unmodifiableList(events);
+        }
+        /**
+         * Clear the book.
+         */
+        private synchronized void clear()
+        {
+            mBook.clear();
+            if(mBookOrder != null) {
+                mBookOrder.clear();
+            }
         }
     }
     /**

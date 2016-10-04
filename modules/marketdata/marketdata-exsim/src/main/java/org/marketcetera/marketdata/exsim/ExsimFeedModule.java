@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.FileUtils;
@@ -86,8 +84,9 @@ import quickfix.SessionSettings;
 import quickfix.SocketInitiator;
 import quickfix.UnsupportedMessageType;
 
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -317,7 +316,14 @@ public class ExsimFeedModule
         super(inInstanceUrn,
               false);
         feedStatus = FeedStatus.OFFLINE;
-        orderBooksByInstrument = CacheBuilder.newBuilder().build();
+        orderBooksByInstrument = CacheBuilder.newBuilder().build(new CacheLoader<OrderBookKey,OrderBook>() {
+            @Override
+            public OrderBook load(OrderBookKey inKey)
+                    throws Exception
+            {
+                return new OrderBook(inKey.instrument);
+            }
+        });
     }
     /**
      * Perform the market data request
@@ -325,14 +331,13 @@ public class ExsimFeedModule
      * @param inPayload a <code>MarketDataRequest</code> value
      * @param inRequest a <code>DataRequest</code> value
      * @param inSupport a <code>DataEmitterSupport</code> value
-     * @throws ExecutionException if the request could not be built
      * @throws FieldNotFound if the request could not be built
      * @throws SessionNotFound if the message could not be sent
      */
     private void doMarketDataRequest(MarketDataRequest inPayload,
                                      DataRequest inRequest,
                                      DataEmitterSupport inSupport)
-            throws FieldNotFound, ExecutionException, SessionNotFound
+            throws FieldNotFound, SessionNotFound
     {
         // build some number of market data request object and fire it off
         List<Instrument> requestedInstruments = Lists.newArrayList();
@@ -374,12 +379,11 @@ public class ExsimFeedModule
      * Cancel the market data request with the given id.
      *
      * @param inMarketDataRequestData a <code>String</code> value
-     * @throws ExecutionException if the market data request cancel cannot be constructed
      * @throws FieldNotFound if the market data request cancel cannot be constructed
      * @throws SessionNotFound if the cancel message cannot be sent
      */
     private void cancelMarketDataRequest(RequestData inMarketDataRequestData)
-            throws FieldNotFound, ExecutionException, SessionNotFound
+            throws FieldNotFound, SessionNotFound
     {
         Message marketDataCancel = messageFactory.newMarketDataRequestCancel(inMarketDataRequestData.getRequestMessage());
         if(!Session.sendToTarget(marketDataCancel,
@@ -396,6 +400,10 @@ public class ExsimFeedModule
      */
     private void updateFeedStatus(FeedStatus inNewStatus)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Updating feed status from {} to {}",
+                               feedStatus,
+                               inNewStatus);
         if(inNewStatus == feedStatus) {
             return;
         }
@@ -403,7 +411,33 @@ public class ExsimFeedModule
         Messages.FEED_STATUS_UPDATE.info(this,
                                          ExsimFeedModuleFactory.IDENTIFIER.toUpperCase(),
                                          feedStatus);
-        // TODO if feed status is (now) available, cancel and resubmit all requests
+        if(feedStatus.isRunning()) {
+            orderBooksByInstrument.invalidateAll();
+            SLF4JLoggerProxy.debug(this,
+                                   "Feed is available, resubmitting data requests");
+            for(RequestData requestData : requestsByRequestId.values()) {
+                try {
+                    try {
+                        SLF4JLoggerProxy.debug(this,
+                                               "Canceling {}",
+                                               requestData);
+                        requestData.resubmitting = true;
+                        cancelMarketDataRequest(requestData);
+                    } catch (Exception e) {
+                        SLF4JLoggerProxy.warn(this,
+                                              e);
+                    }
+                    SLF4JLoggerProxy.debug(this,
+                                           "Resubmitting {}",
+                                           requestData.getRequestMessage());
+                    Session.sendToTarget(requestData.getRequestMessage(),
+                                         sessionId);
+                } catch (SessionNotFound e) {
+                    SLF4JLoggerProxy.warn(this,
+                                          e);
+                }
+            }
+        }
     }
     /**
      * Get the order book for the given instrument.
@@ -411,21 +445,11 @@ public class ExsimFeedModule
      * @param inInstrument an <code>Instrument</code> value
      * @param inRequestId a <code>String</code> value
      * @return an <code>OrderBook</code> value
-     * @throws ExecutionException if a missing order book could not be constructed
      */
     private OrderBook getOrderBookFor(final Instrument inInstrument,
                                       String inRequestId)
-            throws ExecutionException
     {
-        return orderBooksByInstrument.get(new OrderBookKey(inRequestId,inInstrument),
-                                          new Callable<OrderBook>() {
-            @Override
-            public OrderBook call()
-                    throws Exception
-            {
-                return new OrderBook(inInstrument);
-            }
-        });
+        return orderBooksByInstrument.getUnchecked(new OrderBookKey(inRequestId,inInstrument));
     }
     /**
      * Get the market data events from the given message.
@@ -433,12 +457,11 @@ public class ExsimFeedModule
      * @param inMessageWrapper a <code>MessageWrapper</code>value
      * @param inIsSnapshot a <code>boolean</code> vlue
      * @return a <code>List&lt;Event&gt;</code> value containing the constructed events
-     * @throws ExecutionException if a group cannot be constructed
      * @throws FieldNotFound if an expected field cannot be found
      */
     private List<Event> getEvents(MessageWrapper inMessageWrapper,
                                   boolean inIsSnapshot)
-            throws ExecutionException, FieldNotFound
+            throws FieldNotFound
     {
         Message message = inMessageWrapper.getMessage();
         String requestId = inMessageWrapper.getRequestId();
@@ -781,21 +804,29 @@ public class ExsimFeedModule
                                           requestId);
                             break;
                         case quickfix.field.MsgType.MARKET_DATA_REQUEST_REJECT:
-                            // cancel corresponding request
-                            RequestData requestData = requestsByRequestId.remove(messageWrapper.getRequestId());
+                            SLF4JLoggerProxy.warn(ExsimFeedModule.this,
+                                                  "COLIN: processing market data request reject");
+                            // cancel corresponding request, unless resubmitting due to feed status change
+                            RequestData requestData = requestsByRequestId.get(messageWrapper.getRequestId());
+                            SLF4JLoggerProxy.warn(ExsimFeedModule.this,
+                                                  "COLIN: request data is {}",
+                                                  requestData);
                             if(requestData == null) {
                                 
                             } else {
-                                requestsByDataFlowId.remove(requestData.getDataEmitterSupport().getFlowID());
-                                I18NBoundMessage errorMessage;
-                                if(message.isSetField(quickfix.field.Text.FIELD)) {
-                                    errorMessage = new I18NBoundMessage1P(Messages.MARKETDATA_REJECT_WITH_MESSAGE,
-                                                                          message.getString(quickfix.field.Text.FIELD));
-                                } else {
-                                    errorMessage = new I18NBoundMessage0P(Messages.MARKETDATA_REJECT_WITHOUT_MESSAGE);
+                                if(!requestData.resubmitting) {
+                                    requestsByRequestId.remove(messageWrapper.getRequestId());
+                                    requestsByDataFlowId.remove(requestData.getDataEmitterSupport().getFlowID());
+                                    I18NBoundMessage errorMessage;
+                                    if(message.isSetField(quickfix.field.Text.FIELD)) {
+                                        errorMessage = new I18NBoundMessage1P(Messages.MARKETDATA_REJECT_WITH_MESSAGE,
+                                                                              message.getString(quickfix.field.Text.FIELD));
+                                    } else {
+                                        errorMessage = new I18NBoundMessage0P(Messages.MARKETDATA_REJECT_WITHOUT_MESSAGE);
+                                    }
+                                    requestData.getDataEmitterSupport().dataEmitError(errorMessage,
+                                                                                      true);
                                 }
-                                requestData.getDataEmitterSupport().dataEmitError(errorMessage,
-                                                                                  true);
                             }
                             break;
                         default:
@@ -1068,6 +1099,10 @@ public class ExsimFeedModule
             description = RequestData.class.getSimpleName() + " [" + inDataEmitterSupport.getFlowID() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
         }
         /**
+         * 
+         */
+        private volatile boolean resubmitting = false;
+        /**
          * human-readable description of the object
          */
         private final String description;
@@ -1171,7 +1206,7 @@ public class ExsimFeedModule
     /**
      * event order books keyed by instrument
      */
-    private final Cache<OrderBookKey,OrderBook> orderBooksByInstrument;
+    private final LoadingCache<OrderBookKey,OrderBook> orderBooksByInstrument;
     /**
      * used to assign unique event ids
      */
