@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
@@ -72,8 +71,9 @@ import quickfix.field.TradSesReqID;
 import quickfix.field.TradeRequestID;
 import quickfix.field.UserRequestID;
 
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * Collection of utilities to create work with FIX messages
@@ -86,7 +86,14 @@ public class FIXMessageUtil {
     /**
      * caches data dictionaries by FIX Version
      */
-    private static final Cache<FIXVersion,DataDictionary> cachedDataDictionaries = CacheBuilder.newBuilder().build();
+    private static final LoadingCache<FIXVersion,DataDictionary> cachedDataDictionaries = CacheBuilder.newBuilder().build(new CacheLoader<FIXVersion,DataDictionary>() {
+        @Override
+        public DataDictionary load(FIXVersion inKey)
+                throws Exception
+        {
+            return new DataDictionary(inKey.getDataDictionaryURL());
+        }
+    } );
     public static final String prettyPrintCategory = "fix.prettyprint";
     public static final String FIX_RESTORE_LOGGER_NAME = "metc.restore";
     private static final String LOGGER_NAME = FIXMessageUtil.class.getName();
@@ -146,6 +153,20 @@ public class FIXMessageUtil {
         return null;
     }
     /**
+     * Get the session ID of the given message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @return a <code>SessionID</code> value
+     * @throws FieldNotFound if the session ID could not be built
+     */
+    public static SessionID getSessionId(Message inMessage)
+            throws FieldNotFound
+    {
+        return new SessionID(inMessage.getHeader().getString(quickfix.field.BeginString.FIELD),
+                             inMessage.getHeader().getString(quickfix.field.SenderCompID.FIELD),
+                             inMessage.getHeader().getString(quickfix.field.TargetCompID.FIELD));
+    }
+    /**
      * Get the mirror image of the given session id.
      *
      * @param inSessionId a <code>SessionID</code> value
@@ -170,7 +191,7 @@ public class FIXMessageUtil {
                 SLF4JLoggerProxy.debug(FIXMessageUtil.prettyPrintCategory,
                                        new AnalyzedMessage(FIXMessageUtil.getDataDictionary(inMessage),
                                                            inMessage).toString());
-            } catch (FieldNotFound | ExecutionException e) {
+            } catch (FieldNotFound e) {
                 SLF4JLoggerProxy.warn(FIXMessageUtil.prettyPrintCategory,
                                       e);
             }
@@ -182,20 +203,12 @@ public class FIXMessageUtil {
      * @param inMessage a <code>Message</code> value
      * @return a <code>DataDictionary</code> value
      * @throws FieldNotFound if the FIX version could not be determined from the given message
-     * @throws ExecutionException if an uncached dictionary cannot be loaded
      */
     public static DataDictionary getDataDictionary(Message inMessage)
-            throws FieldNotFound, ExecutionException
+            throws FieldNotFound
     {
         final FIXVersion version = FIXVersion.getFIXVersion(inMessage);
-        return cachedDataDictionaries.get(version, new Callable<DataDictionary>() {
-            @Override
-            public DataDictionary call()
-                    throws Exception
-            {
-                return new DataDictionary(version.getDataDictionaryURL());
-            }
-        });
+        return cachedDataDictionaries.getUnchecked(version);
     }
     public static Message createSessionReject(Message inMessage,
                                               int inReason,
@@ -357,7 +370,7 @@ public class FIXMessageUtil {
             executionReport.setField(new OrderQty(orderQty));
             messageAugmentor.executionReportAugment(executionReport);
             return executionReport;
-        } catch (FieldNotFound | ExecutionException e) {
+        } catch (FieldNotFound e) {
             throw new RuntimeException(e);
         }
     }

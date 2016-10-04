@@ -7,7 +7,6 @@ import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.core.CoreException;
@@ -95,7 +94,7 @@ public class MarketceteraFeedMessageTranslator
             message = DEFAULT_MESSAGE_FACTORY.getMessageFactory().newMarketDataRequest(Long.toString(id), 
                                                                                        symbolList,
                                                                                        inRequest.getExchange());
-        } catch (FieldNotFound | ExecutionException e) {
+        } catch (FieldNotFound e) {
             throw new RuntimeException(e);
         }
         // set the update type indicator

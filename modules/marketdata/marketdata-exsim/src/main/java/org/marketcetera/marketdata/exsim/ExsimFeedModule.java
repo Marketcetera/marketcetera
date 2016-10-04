@@ -403,6 +403,7 @@ public class ExsimFeedModule
         Messages.FEED_STATUS_UPDATE.info(this,
                                          ExsimFeedModuleFactory.IDENTIFIER.toUpperCase(),
                                          feedStatus);
+        // TODO if feed status is (now) available, cancel and resubmit all requests
     }
     /**
      * Get the order book for the given instrument.

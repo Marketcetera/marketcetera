@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang.Validate;
 import org.joda.time.DateTime;
@@ -167,11 +166,10 @@ public class FIXMessageFactory {
      * @param inInstrument an <code>Instrument</code> value
      * @return a <code>Message</code> value
      * @throws FieldNotFound if the message could not be built
-     * @throws ExecutionException if the message could not be built
      */
     public Message newMarketDataSnapshot(String inRequestId,
                                          Instrument inInstrument)
-            throws FieldNotFound, ExecutionException
+            throws FieldNotFound
     {
         Message request = msgFactory.create(beginString,
                                             MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH);
@@ -253,11 +251,10 @@ public class FIXMessageFactory {
      *
      * @param inOriginalMessage a <code>String</code> value
      * @return a <code>Message</code> value
-     * @throws ExecutionException if the data dictionary could not be determined
      * @throws FieldNotFound if the message could not be constructed
      */
     public Message newMarketDataRequestCancel(Message inOriginalMessage)
-            throws FieldNotFound, ExecutionException
+            throws FieldNotFound
     {
         Message cancelRequest = inOriginalMessage;
         cancelRequest.setField(new quickfix.field.SubscriptionRequestType(quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
@@ -272,7 +269,6 @@ public class FIXMessageFactory {
      * @param inContent a <code>List&lt;Content&gt;</code> value
      * @param inSubscriptionType a <code>char</code> value
      * @return a <code>Message</code> value
-     * @throws ExecutionException if the data dictionary could not be determined
      * @throws FieldNotFound if the message could not be constructed
      * @throws IllegalArgumentException if the provided content is contradictory, eg. aggregated depth and unaggregated depth or top of book and bbo10
      */
@@ -281,7 +277,7 @@ public class FIXMessageFactory {
                                         String inExchange,
                                         List<Content> inContent,
                                         char inSubscriptionType)
-            throws FieldNotFound,ExecutionException
+            throws FieldNotFound
     {
         // TODO add support for content in non 4.2 if dictionary supports it (imbalance, eg)
         Message request = msgFactory.create(beginString,
@@ -415,13 +411,12 @@ public class FIXMessageFactory {
      * @param inInstruments a <code>List&lt;Instrument&gt;</code> value containing the symbols for which to request data
      * @param inExchange a <code>String</code> value containing the exchange from which to request data or <code>null</code> to not specify an exchange
      * @return a <code>Message</code> value
-     * @throws ExecutionException if the data dictionary could not be determined
      * @throws FieldNotFound if the message could not be constructed
      */
     public Message newMarketDataRequest(String inRequestId,
                                         List<Instrument> inInstruments,
                                         String inExchange)
-            throws FieldNotFound,ExecutionException
+            throws FieldNotFound
     {
         return newMarketDataRequest(inRequestId,
                                     inInstruments,
@@ -434,12 +429,11 @@ public class FIXMessageFactory {
      * @param reqID request id to assign to this
      * @param inInstruments   List of symbols, or an empty list to get all available
      * @return Message corresponding to the market data request
-     * @throws ExecutionException if the data dictionary could not be determined
      * @throws FieldNotFound if the message could not be constructed
      */
     public Message newMarketDataRequest(String reqID,
                                         List<Instrument> inInstruments)
-            throws FieldNotFound, ExecutionException
+            throws FieldNotFound
     {
         return newMarketDataRequest(reqID,
                                     inInstruments,
