@@ -256,12 +256,7 @@ public class FIXMessageFactory {
     public Message newMarketDataRequestCancel(Message inOriginalMessage)
             throws FieldNotFound
     {
-        Message cancelRequest = msgFactory.create(beginString,
-                                                  MsgType.MARKET_DATA_REQUEST);
-        FIXMessageUtil.fillFieldsFromExistingMessage(cancelRequest,
-                                                     inOriginalMessage,
-                                                     FIXMessageUtil.getDataDictionary(cancelRequest),
-                                                     false);
+        Message cancelRequest = inOriginalMessage;
         cancelRequest.setField(new quickfix.field.SubscriptionRequestType(quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
         return cancelRequest;
     }

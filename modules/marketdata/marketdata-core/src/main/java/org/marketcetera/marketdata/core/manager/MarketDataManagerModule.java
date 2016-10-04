@@ -121,6 +121,7 @@ public class MarketDataManagerModule
                 }
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
+                                      e,
                                       "An error occurred processing {} for {}: {}",
                                       inData,
                                       inFlowId,

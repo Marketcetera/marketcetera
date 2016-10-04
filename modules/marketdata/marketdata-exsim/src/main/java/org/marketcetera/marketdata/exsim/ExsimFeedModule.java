@@ -362,7 +362,10 @@ public class ExsimFeedModule
                                inRequest,
                                inPayload);
         RequestData requestData = new RequestData(marketDataRequest,
-                                                  inSupport);
+                                                  inSupport,
+                                                  id,
+                                                  inPayload,
+                                                  requestedInstruments);
         requestsByRequestId.put(id,
                                 requestData);
         requestsByDataFlowId.put(inSupport.getFlowID(),
@@ -385,7 +388,11 @@ public class ExsimFeedModule
     private void cancelMarketDataRequest(RequestData inMarketDataRequestData)
             throws FieldNotFound, SessionNotFound
     {
-        Message marketDataCancel = messageFactory.newMarketDataRequestCancel(inMarketDataRequestData.getRequestMessage());
+        Message marketDataCancel = messageFactory.newMarketDataRequest(inMarketDataRequestData.requestId,
+                                                                       inMarketDataRequestData.requestedInstruments,
+                                                                       inMarketDataRequestData.marketDataRequest.getExchange(),
+                                                                       Lists.newArrayList(inMarketDataRequestData.marketDataRequest.getContent()),
+                                                                       quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST);
         if(!Session.sendToTarget(marketDataCancel,
                                  sessionId)) {
             throw new CoreException(new I18NBoundMessage2P(Messages.CANNOT_CANCEL_DATA,
@@ -804,15 +811,9 @@ public class ExsimFeedModule
                                           requestId);
                             break;
                         case quickfix.field.MsgType.MARKET_DATA_REQUEST_REJECT:
-                            SLF4JLoggerProxy.warn(ExsimFeedModule.this,
-                                                  "COLIN: processing market data request reject");
                             // cancel corresponding request, unless resubmitting due to feed status change
                             RequestData requestData = requestsByRequestId.get(messageWrapper.getRequestId());
-                            SLF4JLoggerProxy.warn(ExsimFeedModule.this,
-                                                  "COLIN: request data is {}",
-                                                  requestData);
                             if(requestData == null) {
-                                
                             } else {
                                 if(!requestData.resubmitting) {
                                     requestsByRequestId.remove(messageWrapper.getRequestId());
@@ -1090,13 +1091,21 @@ public class ExsimFeedModule
          *
          * @param inRequestMessage a <code>Message</code> value
          * @param inDataEmitterSupport a <code>DataEmitterSupport</code> value
+         * @param inMarketDataRequest 
+         * @param inRequestedInstruments 
          */
         private RequestData(Message inRequestMessage,
-                            DataEmitterSupport inDataEmitterSupport)
+                            DataEmitterSupport inDataEmitterSupport,
+                            String inRequestId,
+                            MarketDataRequest inMarketDataRequest,
+                            List<Instrument> inRequestedInstruments)
         {
             requestMessage = inRequestMessage;
             dataEmitterSupport = inDataEmitterSupport;
             description = RequestData.class.getSimpleName() + " [" + inDataEmitterSupport.getFlowID() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+            requestId = inRequestId;
+            requestedInstruments = inRequestedInstruments;
+            marketDataRequest = inMarketDataRequest;
         }
         /**
          * 
@@ -1114,6 +1123,9 @@ public class ExsimFeedModule
          * information about the data flow requester
          */
         private final DataEmitterSupport dataEmitterSupport;
+        private final String requestId;
+        private final List<Instrument> requestedInstruments;
+        private final MarketDataRequest marketDataRequest;
     }
     /**
      * Serves as the unique key for a cached order book.
