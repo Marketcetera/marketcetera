@@ -85,6 +85,15 @@ public enum OrderType {
         return marketTypes.contains(this);
     }
     /**
+     * Indicate if the order type represetns a stop order.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isStopOrder()
+    {
+        return stopTypes.contains(this);
+    }
+    /**
      * Creates an instance.
      *
      * @param inFIXValue the FIX char value for this instance.
@@ -92,12 +101,25 @@ public enum OrderType {
     private OrderType(char inFIXValue) {
         mFIXValue = inFIXValue;
     }
+    /**
+     * FIX value of the order type
+     */
     private final char mFIXValue;
-    private static final Map<Character, OrderType> mFIXValueMap;
+    /**
+     * stores FIX values to order type values
+     */
+    private static final Map<Character,OrderType> mFIXValueMap;
     /**
      * market order types
      */
     private static final Set<OrderType> marketTypes = EnumSet.of(Market,MarketOnClose,ForexMarket,Stop);
+    /**
+     * stop order types
+     */
+    private static final Set<OrderType> stopTypes = EnumSet.of(Stop,StopLimit);
+    /**
+     * perform static initialization
+     */
     static {
         Map<Character, OrderType> table = new HashMap<Character, OrderType>();
         for(OrderType ot: values()) {
