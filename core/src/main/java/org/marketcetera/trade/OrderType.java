@@ -97,7 +97,7 @@ public enum OrderType {
     /**
      * market order types
      */
-    private static final Set<OrderType> marketTypes = EnumSet.of(Market,MarketOnClose,ForexMarket);
+    private static final Set<OrderType> marketTypes = EnumSet.of(Market,MarketOnClose,ForexMarket,Stop);
     static {
         Map<Character, OrderType> table = new HashMap<Character, OrderType>();
         for(OrderType ot: values()) {

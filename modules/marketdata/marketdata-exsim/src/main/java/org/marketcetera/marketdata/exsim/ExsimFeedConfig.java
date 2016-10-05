@@ -293,6 +293,9 @@ public class ExsimFeedConfig
         inSessionSettings.setLong(sessionId,
                                   Initiator.SETTING_RECONNECT_INTERVAL,
                                   reconnectInterval);
+        inSessionSettings.setString(sessionId,
+                                    Session.SETTING_PERSIST_MESSAGES,
+                                    "N");
     }
     /**
      * session id value
