@@ -35,9 +35,22 @@ public class Equity
      */
     public Equity(String inSymbol)
     {
+        this(inSymbol,
+             null);
+    }
+    /**
+     * Create a new Equity instance.
+     *
+     * @param inSymbol a <code>String</code> value
+     * @param inSymbolSfx a <code>String</code> value
+     */
+    public Equity(String inSymbol,
+                  String inSymbolSfx)
+    {
         inSymbol = StringUtils.trimToNull(inSymbol);
         Validate.notNull(inSymbol);
         symbol = inSymbol;
+        symbolSfx = StringUtils.trimToNull(inSymbolSfx);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Instrument#getSymbol()
@@ -46,6 +59,15 @@ public class Equity
     public String getSymbol()
     {
         return symbol;
+    }
+    /**
+     * Get the symbolSfx value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getSymbolSfx()
+    {
+        return symbolSfx;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Instrument#getSecurityType()
@@ -61,7 +83,7 @@ public class Equity
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder().append(symbol).toHashCode();
+        return new HashCodeBuilder().append(symbol).append(symbolSfx).toHashCode();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -79,7 +101,7 @@ public class Equity
             return false;
         }
         Equity other = (Equity) obj;
-        return new EqualsBuilder().append(symbol,other.symbol).isEquals();
+        return new EqualsBuilder().append(symbol,other.symbol).append(symbolSfx,other.symbolSfx).isEquals();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -87,7 +109,12 @@ public class Equity
     @Override
     public String toString()
     {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("symbol", symbol).toString(); //$NON-NLS-1$
+        ToStringBuilder builder = new ToStringBuilder(this,ToStringStyle.SHORT_PREFIX_STYLE);
+        builder.append("symbol", symbol); //$NON-NLS-1$
+        if(symbolSfx != null) {
+            builder.append("symbolSfx", symbolSfx); //$NON-NLS-1$
+        }
+        return builder.toString();
     }
     /**
      * Create a new Equity instance.
@@ -96,10 +123,15 @@ public class Equity
     private Equity()
     {
         symbol = null;
+        symbolSfx = null;
     }
     /**
      * symbol value
      */
     private final String symbol;
-    private static final long serialVersionUID = 1L;
+    /**
+     * symbolSfx value
+     */
+    private final String symbolSfx;
+    private static final long serialVersionUID = -1512895603247044198L;
 }

@@ -30,7 +30,9 @@ public class EquityFromMessage
     public Instrument extract(FieldMap inMessage)
     {
         String symbol = getSymbol(inMessage);
-        return symbol == null ? null : new Equity(symbol);
+        String symbolSfx = getSymbolSfx(inMessage);
+        return symbol == null ? null : new Equity(symbol,
+                                                  symbolSfx);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.instruments.DynamicInstrumentHandler#isHandled(java.lang.Object)
@@ -39,11 +41,25 @@ public class EquityFromMessage
     protected boolean isHandled(FieldMap inValue)
     {
         try {
-            return (!(inValue.isSetField(CFICode.FIELD))) &&
-                    ((!inValue.isSetField(SecurityType.FIELD)) ||
-                            SecurityType.COMMON_STOCK.equals(inValue.getString(SecurityType.FIELD)));
+            return (!(inValue.isSetField(CFICode.FIELD))) && ((!inValue.isSetField(SecurityType.FIELD)) || SecurityType.COMMON_STOCK.equals(inValue.getString(SecurityType.FIELD)));
         } catch (FieldNotFound ignore) {
             return false;
         }
+    }
+    /**
+     * Fetches the symbolSfx field value from the supplied FIX message.
+     *
+     * @param inMessage a <code>FieldMap</code> value
+     * @return the symbolSfx field value or <code>null</code>
+     */
+    protected static String getSymbolSfx(FieldMap inMessage)
+    {
+        if(inMessage.isSetField(quickfix.field.SymbolSfx.FIELD)) {
+            try {
+                return inMessage.getString(quickfix.field.SymbolSfx.FIELD);
+            } catch (FieldNotFound ignore) {
+            }
+        }
+        return null;
     }
 }
