@@ -1029,7 +1029,9 @@ public class ExsimFeedModule
                                    "{} sending app {}", //$NON-NLS-1$
                                    inSessionId,
                                    inMessage);
-            FIXMessageUtil.logMessage(inMessage);
+            if(SLF4JLoggerProxy.isDebugEnabled(ExsimFeedModule.this)) {
+                FIXMessageUtil.logMessage(inMessage);
+            }
         }
         /* (non-Javadoc)
          * @see quickfix.Application#fromApp(quickfix.Message, quickfix.SessionID)
@@ -1043,7 +1045,9 @@ public class ExsimFeedModule
                                    "{} received app {}", //$NON-NLS-1$
                                    inSessionId,
                                    inMessage);
-            FIXMessageUtil.logMessage(inMessage);
+            if(SLF4JLoggerProxy.isDebugEnabled(ExsimFeedModule.this)) {
+                FIXMessageUtil.logMessage(inMessage);
+            }
             if(fixMessageProcessor == null) {
                 
             } else {

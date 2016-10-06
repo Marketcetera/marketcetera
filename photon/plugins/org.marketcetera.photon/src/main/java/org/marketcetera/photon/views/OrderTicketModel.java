@@ -85,18 +85,21 @@ public abstract class OrderTicketModel {
         mBrokerId = mOrderObservable.observeBrokerId();
         instrument = mOrderObservable.observeInstrument();
         mBrokerAlgo = mOrderObservable.observeBrokerAlgo();
-        mIsLimitOrder = TypedObservableValueDecorator.decorate(
-                new ComputedValue(Boolean.class) {
-                    @Override
-                    protected Object calculate() {
-                        return mOrderType.getValue() == OrderType.Limit;
-                    }
-                }, true, Boolean.class);
-
+        mIsLimitOrder = TypedObservableValueDecorator.decorate(new ComputedValue(Boolean.class) {
+            @Override
+            protected Object calculate()
+            {
+                OrderType orderTypeValue = mOrderType.getTypedValue();
+                if(orderTypeValue == null) {
+                    return false;
+                }
+                return !orderTypeValue.isMarketOrder();
+            }
+        },true,Boolean.class);
         mIsLimitOrder.addValueChangeListener(new IValueChangeListener() {
             @Override
             public void handleValueChange(ValueChangeEvent event) {
-                if (!mIsLimitOrder.getTypedValue()) {
+                if(!mIsLimitOrder.getTypedValue()) {
                     mPrice.setValue(null);
                 }
             }
