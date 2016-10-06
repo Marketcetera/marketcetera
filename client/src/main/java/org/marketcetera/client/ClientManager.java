@@ -148,7 +148,7 @@ public final class ClientManager
      */
     private volatile static Client client;
     /**
-     * 
+     * indicates how to conenct to the client
      */
     private ClientParameters parameters;
 }
