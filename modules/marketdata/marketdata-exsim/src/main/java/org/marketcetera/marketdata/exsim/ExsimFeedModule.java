@@ -68,13 +68,12 @@ import quickfix.ConfigError;
 import quickfix.DoNotSend;
 import quickfix.FieldNotFound;
 import quickfix.FileLogFactory;
+import quickfix.FileStoreFactory;
 import quickfix.Group;
 import quickfix.IncorrectDataFormat;
 import quickfix.IncorrectTagValue;
 import quickfix.LogFactory;
-import quickfix.MemoryStoreFactory;
 import quickfix.Message;
-import quickfix.MessageStoreFactory;
 import quickfix.RejectLogon;
 import quickfix.Session;
 import quickfix.SessionFactory;
@@ -254,7 +253,6 @@ public class ExsimFeedModule
             messageFactory = version.getMessageFactory();
             application = new FixApplication();
             sessionId = exsimFeedConfig.getSessionId();
-            MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
             SessionSettings sessionSettings = new SessionSettings();
             exsimFeedConfig.populateSessionSettings(sessionSettings);
             File workspaceDir = new File(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
@@ -266,10 +264,14 @@ public class ExsimFeedModule
                                       quoteFeedLogDir.getAbsolutePath());
             sessionSettings.setString(SessionFactory.SETTING_CONNECTION_TYPE,
                                       SessionFactory.INITIATOR_CONNECTION_TYPE);
+            sessionSettings.setString(sessionId,
+                                      FileStoreFactory.SETTING_FILE_STORE_PATH,
+                                      quoteFeedLogDir.getAbsolutePath());
             SLF4JLoggerProxy.debug(this,
                                    "Session settings: {}", //$NON-NLS-1$
                                    sessionSettings);
             LogFactory logFactory = new EventLogFactory(sessionSettings);
+            FileStoreFactory messageStoreFactory = new FileStoreFactory(sessionSettings);
             socketInitiator = new SocketInitiator(application,
                                                   messageStoreFactory,
                                                   sessionSettings,
