@@ -1,7 +1,6 @@
 package org.marketcetera.core.file;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessageProvider;
@@ -23,6 +22,6 @@ public interface Messages
     static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
     static final I18NMessage2P SUBSCRIBER_FILE_PROCESSING_FAILED = new I18NMessage2P(LOGGER,"subscriber_file_processing_failed"); //$NON-NLS-1$
     static final I18NMessage1P FILE_DELETE_FAILURE = new I18NMessage1P(LOGGER,"file_delete_failure"); //$NON-NLS-1$
-    static final I18NMessage0P MISSING_DIRECTORY = new I18NMessage0P(LOGGER,"missing_directory"); //$NON-NLS-1$
+    static final I18NMessage1P MISSING_DIRECTORY = new I18NMessage1P(LOGGER,"missing_directory"); //$NON-NLS-1$
     static final I18NMessage1P DIRECTORY_ACCESS_DENIED = new I18NMessage1P(LOGGER,"directory_access_denied"); //$NON-NLS-1$
 }

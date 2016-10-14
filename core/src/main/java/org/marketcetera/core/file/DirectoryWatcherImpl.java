@@ -18,9 +18,10 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.util.log.I18NBoundMessage0P;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+
+import com.google.common.collect.Sets;
 
 /* $License$ */
 
@@ -50,6 +51,8 @@ public class DirectoryWatcherImpl
     @PostConstruct
     public void start()
     {
+        final Set<File> missingWarnedFiles = Sets.newHashSet();
+        final Set<File> accessWarnedFiles = Sets.newHashSet();
         executor.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
@@ -57,7 +60,23 @@ public class DirectoryWatcherImpl
                     synchronized (directoriesToWatch) {
                         Set<File> inputFileList = new TreeSet<File>();
                         for(File inputDir : directoriesToWatch) {
-                            inputFileList.addAll(Arrays.asList(inputDir.listFiles()));
+                            if(inputDir.exists() && inputDir.isDirectory()) {
+                                if(inputDir.canRead() && inputDir.canWrite()) {
+                                    inputFileList.addAll(Arrays.asList(inputDir.listFiles()));
+                                } else {
+                                    if(!accessWarnedFiles.contains(inputDir)) {
+                                        Messages.DIRECTORY_ACCESS_DENIED.warn(DirectoryWatcherImpl.class,
+                                                                              inputDir.getAbsolutePath());
+                                        accessWarnedFiles.add(inputDir);
+                                    }
+                                }
+                            } else {
+                                if(!missingWarnedFiles.contains(inputDir)) {
+                                    Messages.MISSING_DIRECTORY.warn(DirectoryWatcherImpl.class,
+                                                                    inputDir.getAbsolutePath());
+                                    missingWarnedFiles.add(inputDir);
+                                }
+                            }
                         }
                         synchronized(subscriberList) {
                             for(File curFile : inputFileList) {
@@ -112,19 +131,7 @@ public class DirectoryWatcherImpl
         synchronized (directoriesToWatch) {
             directoriesToWatch.clear();
             for(File dir : inDirectories) {
-                if(dir != null) {
-                    if(dir.isDirectory() && dir.canRead() && dir.canWrite()) {
-                        directoriesToWatch.add(dir);
-                    } else {
-                        Messages.DIRECTORY_ACCESS_DENIED.error(DirectoryWatcherImpl.class,
-                                                               dir.getAbsolutePath());
-                        throw new CoreException(new I18NBoundMessage1P(Messages.DIRECTORY_ACCESS_DENIED,
-                                                                       dir.getAbsolutePath()));
-                    }
-                } else {
-                    Messages.MISSING_DIRECTORY.error(DirectoryWatcherImpl.class);
-                    throw new CoreException(new I18NBoundMessage0P(Messages.MISSING_DIRECTORY));
-                }
+                directoriesToWatch.add(dir);
             }
         }
     }
