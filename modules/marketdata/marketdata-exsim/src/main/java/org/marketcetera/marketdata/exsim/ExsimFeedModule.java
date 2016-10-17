@@ -453,12 +453,16 @@ public class ExsimFeedModule
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inRequestId a <code>String</code> value
+     * @param inExchange a <code>String</code> value
      * @return an <code>OrderBook</code> value
      */
     private OrderBook getOrderBookFor(final Instrument inInstrument,
-                                      String inRequestId)
+                                      String inRequestId,
+                                      String inExchange)
     {
-        return orderBooksByInstrument.getUnchecked(new OrderBookKey(inRequestId,inInstrument));
+        return orderBooksByInstrument.getUnchecked(new OrderBookKey(inRequestId,
+                                                                    inInstrument,
+                                                                    inExchange));
     }
     /**
      * Get the market data events from the given message.
@@ -484,9 +488,11 @@ public class ExsimFeedModule
         String exchange = null;
         if(inIsSnapshot) {
             instrument = FIXMessageUtil.getInstrumentFromMessageFragment(message);
-            orderbook = getOrderBookFor(instrument,
-                                        requestId);
             exchange = FIXMessageUtil.getSecurityExchangeFromMessageFragment(message);
+            orderbook = getOrderBookFor(instrument,
+                                        requestId,
+                                        exchange);
+            orderbook.clear();
         }
         for(Group mdEntry : mdEntries) {
             SLF4JLoggerProxy.debug(this,
@@ -500,9 +506,10 @@ public class ExsimFeedModule
             BigDecimal vwap = null;
             if(!inIsSnapshot) {
                 instrument = FIXMessageUtil.getInstrumentFromMessageFragment(mdEntry);
-                orderbook = getOrderBookFor(instrument,
-                                            requestId);
                 exchange = FIXMessageUtil.getSecurityExchangeFromMessageFragment(mdEntry);
+                orderbook = getOrderBookFor(instrument,
+                                            requestId,
+                                            exchange);
             }
             char entryType = mdEntry.getChar(quickfix.field.MDEntryType.FIELD);
             QuoteAction quoteAction = QuoteAction.ADD;
@@ -738,6 +745,10 @@ public class ExsimFeedModule
                                    inRequestId);
             return;
         }
+        SLF4JLoggerProxy.trace(this,
+                               "Publishing {} to {}", //$NON-NLS-1$
+                               inEvents,
+                               inRequestId);
         for(Event event : inEvents) {
             try {
                 requestData.getDataEmitterSupport().send(event);
@@ -786,7 +797,7 @@ public class ExsimFeedModule
                 Message message = messageWrapper.getMessage();
                 try {
                     SLF4JLoggerProxy.trace(ExsimFeedModule.this,
-                                           "{} procssing {}", //$NON-NLS-1$
+                                           "{} processing {}", //$NON-NLS-1$
                                            this,
                                            message);
                     String msgType = messageWrapper.getMsgType();
@@ -1031,7 +1042,7 @@ public class ExsimFeedModule
                                    "{} sending app {}", //$NON-NLS-1$
                                    inSessionId,
                                    inMessage);
-            if(SLF4JLoggerProxy.isDebugEnabled(ExsimFeedModule.this)) {
+            if(SLF4JLoggerProxy.isTraceEnabled(ExsimFeedModule.this)) {
                 FIXMessageUtil.logMessage(inMessage);
             }
         }
@@ -1047,7 +1058,7 @@ public class ExsimFeedModule
                                    "{} received app {}", //$NON-NLS-1$
                                    inSessionId,
                                    inMessage);
-            if(SLF4JLoggerProxy.isDebugEnabled(ExsimFeedModule.this)) {
+            if(SLF4JLoggerProxy.isTraceEnabled(ExsimFeedModule.this)) {
                 FIXMessageUtil.logMessage(inMessage);
             }
             if(fixMessageProcessor == null) {
@@ -1097,8 +1108,9 @@ public class ExsimFeedModule
          *
          * @param inRequestMessage a <code>Message</code> value
          * @param inDataEmitterSupport a <code>DataEmitterSupport</code> value
-         * @param inMarketDataRequest 
-         * @param inRequestedInstruments 
+         * @param inRequestId a <code>String</code> value
+         * @param inMarketDataRequest a <code>MarketDataRequest</code> value
+         * @param inRequestedInstruments a <code>List&lt;Instrument&gt;</code> value
          */
         private RequestData(Message inRequestMessage,
                             DataEmitterSupport inDataEmitterSupport,
@@ -1114,7 +1126,7 @@ public class ExsimFeedModule
             marketDataRequest = inMarketDataRequest;
         }
         /**
-         * 
+         * indicates if the request is in the process of being resubmitted
          */
         private volatile boolean resubmitting = false;
         /**
@@ -1129,8 +1141,17 @@ public class ExsimFeedModule
          * information about the data flow requester
          */
         private final DataEmitterSupport dataEmitterSupport;
+        /**
+         * request id of the request
+         */
         private final String requestId;
+        /**
+         * instruments requested
+         */
         private final List<Instrument> requestedInstruments;
+        /**
+         * original market data request
+         */
         private final MarketDataRequest marketDataRequest;
     }
     /**
@@ -1148,7 +1169,7 @@ public class ExsimFeedModule
         @Override
         public int hashCode()
         {
-            return new HashCodeBuilder().append(requestId).append(instrument).toHashCode();
+            return new HashCodeBuilder().append(requestId).append(instrument).append(exchange).toHashCode();
         }
         /* (non-Javadoc)
          * @see java.lang.Object#equals(java.lang.Object)
@@ -1166,22 +1187,35 @@ public class ExsimFeedModule
                 return false;
             }
             OrderBookKey other = (OrderBookKey) obj;
-            return new EqualsBuilder().append(requestId,other.requestId).append(instrument,other.instrument).isEquals();
+            return new EqualsBuilder().append(requestId,other.requestId).append(instrument,other.instrument).append(exchange,other.exchange).isEquals();
         }
         /**
          * Create a new OrderBookKey instance.
          *
          * @param inRequestId a <code>String</code> value
          * @param inInstrument an <code>Instrument</code> value
+         * @param inExchange a <code>String</code> value
          */
         private OrderBookKey(String inRequestId,
-                             Instrument inInstrument)
+                             Instrument inInstrument,
+                             String inExchange)
         {
             requestId = inRequestId;
             instrument = inInstrument;
+            exchange = inExchange;
         }
+        /**
+         * request id value
+         */
         private final String requestId;
+        /**
+         * instrument value
+         */
         private final Instrument instrument;
+        /**
+         * exchange value
+         */
+        private final String exchange;
     }
     /**
      * processes incoming FIX messages
