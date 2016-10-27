@@ -80,10 +80,21 @@ public class SlackNotificationExecutorMethod
     private void notifySlackWebhook(INotification inNotification)
             throws IOException
     {
-        if(slackWebHookUrl != null) {
+        String url = slackWebHookUrl;
+        String params = slackWebHookParams;
+        if(inNotification instanceof SlackNotification) {
+            SlackNotification slackNotification = (SlackNotification)inNotification;
+            if(slackNotification.getSlackWebHookUrl() != null) {
+                url = slackNotification.getSlackWebHookUrl();
+            }
+            if(slackNotification.getSlackWebHookParams() != null) {
+                params = slackNotification.getSlackWebHookParams();
+            }
+        }
+        if(url != null) {
             try(CloseableHttpClient httpclient = HttpClients.createDefault()) {
                 HttpPost postRequest = null;
-                postRequest = new HttpPost(slackWebHookUrl);
+                postRequest = new HttpPost(url);
                 StringBuilder payloadBuilder = new StringBuilder();
                 payloadBuilder.append("{\"text\":");
                 // prepare notification subject and body
@@ -96,8 +107,8 @@ public class SlackNotificationExecutorMethod
                 body = body.replaceAll("\n","\\n");
                 payloadBuilder.append(body);
                 payloadBuilder.append("```\"");
-                if(slackWebHookParams != null) {
-                    payloadBuilder.append(',').append(slackWebHookParams);
+                if(params != null) {
+                    payloadBuilder.append(',').append(params);
                 }
                 payloadBuilder.append("}");
                 SLF4JLoggerProxy.debug(this,
