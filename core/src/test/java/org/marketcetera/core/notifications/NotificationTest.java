@@ -40,8 +40,8 @@ public class NotificationTest
                      low.getOriginator());
         assertEquals(Severity.LOW,
                      low.getSeverity());
-        assertNotNull(low.getDate());
-        assertTrue(low.getDate().getTime() > beginTime);
+        assertNotNull(low.getTimestamp());
+        assertTrue(low.getTimestamp().getTime() > beginTime);
         // test medium
         Thread.sleep(100);
         subject = "subject_" + System.nanoTime(); //$NON-NLS-1$
@@ -59,8 +59,8 @@ public class NotificationTest
                      medium.getOriginator());
         assertEquals(Severity.MEDIUM,
                      medium.getSeverity());
-        assertNotNull(medium.getDate());
-        assertTrue(medium.getDate().getTime() > low.getDate().getTime());
+        assertNotNull(medium.getTimestamp());
+        assertTrue(medium.getTimestamp().getTime() > low.getTimestamp().getTime());
         // test high
         Thread.sleep(100);
         subject = "subject_" + System.nanoTime(); //$NON-NLS-1$
@@ -78,7 +78,7 @@ public class NotificationTest
                      high.getOriginator());
         assertEquals(Severity.HIGH,
                      high.getSeverity());
-        assertNotNull(high.getDate());
-        assertTrue(high.getDate().getTime() > medium.getDate().getTime());
+        assertNotNull(high.getTimestamp());
+        assertTrue(high.getTimestamp().getTime() > medium.getTimestamp().getTime());
     }
 }

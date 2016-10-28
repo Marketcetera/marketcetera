@@ -84,6 +84,11 @@ public class SlackNotificationExecutorMethod
         String params = slackWebHookParams;
         if(inNotification instanceof SlackNotification) {
             SlackNotification slackNotification = (SlackNotification)inNotification;
+            if(!slackNotification.shouldSlack()) {
+                SLF4JLoggerProxy.debug(this,
+                                       "Not sending slack notification because the notification canceled it");
+                return;
+            }
             if(slackNotification.getSlackWebHookUrl() != null) {
                 url = slackNotification.getSlackWebHookUrl();
             }

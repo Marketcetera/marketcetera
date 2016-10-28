@@ -101,7 +101,7 @@ public class PagerDutyNotificationExecutorMethod
     @Override
     protected boolean verifySeverityThreshold(INotification inNotification)
     {
-        return inNotification instanceof PagerDutyNotification || super.verifySeverityThreshold(inNotification);
+        return inNotification instanceof PagerDutyNotificationImpl || super.verifySeverityThreshold(inNotification);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.notifications.AbstractNotificationExecutorMethod#doNotify(org.marketcetera.core.notifications.INotification)
@@ -121,29 +121,41 @@ public class PagerDutyNotificationExecutorMethod
     private void notifyPagerDuty(INotification inNotification)
             throws IOException
     {
-        if(pagerDutyUrl != null) {
+        String urlToUse = pagerDutyUrl;
+        String serviceKeyToUse = pagerDutyServiceKey;
+        String eventTypeToUse = pagerDutyEventType;
+        String incidentKeyToUse = inNotification.getSubject();
+        if(inNotification instanceof PagerDutyNotification) {
+            PagerDutyNotification pagerDutyNotification = (PagerDutyNotification)inNotification;
+            if(!pagerDutyNotification.shouldPagerDuty()) {
+                SLF4JLoggerProxy.debug(this,
+                                       "Not sending pager duty notification because the notification canceled it");
+                return;
+            }
+            if(pagerDutyNotification.getPagerDutyUrl() != null) {
+                urlToUse = pagerDutyNotification.getPagerDutyUrl();
+            }
+            if(pagerDutyNotification.getServiceKey() != null) {
+                serviceKeyToUse = pagerDutyNotification.getServiceKey();
+            }
+            if(pagerDutyNotification.getEventType() != null) {
+                eventTypeToUse = pagerDutyNotification.getEventType().name().toLowerCase();
+            }
+            if(pagerDutyNotification.getIncidentKey() != null) {
+                incidentKeyToUse = pagerDutyNotification.getIncidentKey();
+            }
+        }
+        if(urlToUse != null) {
             try(CloseableHttpClient httpclient = HttpClients.createDefault()) {
                 HttpPost postRequest = null;
-                postRequest = new HttpPost(pagerDutyUrl);
-                String subject = getSubject(inNotification);
-                String body = getBody(inNotification);
+                postRequest = new HttpPost(urlToUse);
                 JSONObject payloadBuilder = new JSONObject();
-                if(inNotification instanceof PagerDutyNotification) {
-                    PagerDutyNotification pdNotification = (PagerDutyNotification)inNotification;
-                    payloadBuilder.put("service_key",pagerDutyServiceKey)
-                    .put("event_type", pdNotification.getEventType() == null?pagerDutyEventType:pdNotification.getEventType().name().toLowerCase())
-                    .put("description", pdNotification.getSubject())
-                    .put("incident_key", pdNotification.getIncidentKey())
-                    .put("details", pdNotification.getBody())
+                payloadBuilder.put("service_key",serviceKeyToUse)
+                    .put("event_type",eventTypeToUse)
+                    .put("description",inNotification.getSubject())
+                    .put("incident_key",incidentKeyToUse)
+                    .put("details",inNotification.getBody())
                     .put("client",pagerDutyClient);
-                } else {
-                    payloadBuilder.put("service_key",pagerDutyServiceKey)
-                    .put("event_type",pagerDutyEventType)
-                    .put("description", subject)
-                    .put("incident_key",subject)
-                    .put("details", body)
-                    .put("client",pagerDutyClient);
-                }
                 SLF4JLoggerProxy.debug(this,
                                        "Pager duty payload is {}",
                                        payloadBuilder);
