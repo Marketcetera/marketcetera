@@ -522,6 +522,9 @@ public class RpcClientImpl
                         newAlgoTagSpec.setOptions(options);
                         newAlgoTagSpec.setPattern(algoTagSpec.getPattern());
                         newAlgoTagSpec.setTag(algoTagSpec.getTag());
+                        newAlgoTagSpec.setIsReadOnly(algoTagSpec.getReadOnly());
+                        newAlgoTagSpec.setDefaultValue(algoTagSpec.getDefaultValue());
+                        newAlgoTagSpec.setAdvice(algoTagSpec.getAdvice());
                         newAlgoTagSpecs.add(newAlgoTagSpec);
                     }
                     newAlgoSpec.setAlgoTagSpecs(newAlgoTagSpecs);

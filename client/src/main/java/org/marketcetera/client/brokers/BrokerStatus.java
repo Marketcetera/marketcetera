@@ -15,6 +15,9 @@ import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.misc.ClassVersion;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 import quickfix.SessionFactory;
 
 /* $License$ */
@@ -50,8 +53,12 @@ public class BrokerStatus
         name = inName;
         brokerId = inBrokerId;
         loggedOn = inLoggedOn;
-        settings = inSettings;
-        brokerAlgos = inAlgoSpecs;
+        if(inSettings != null) {
+            settings.putAll(inSettings);
+        }
+        if(inAlgoSpecs != null) {
+            brokerAlgos.addAll(inAlgoSpecs);
+        }
     }
     /**
      * Create a new BrokerStatus instance.
@@ -116,8 +123,6 @@ public class BrokerStatus
         name = null;
         brokerId = null;
         loggedOn = false;
-        brokerAlgos = null;
-        settings = null;
     }
     /**
      * Get the name value.
@@ -265,11 +270,11 @@ public class BrokerStatus
     /**
      * broker algos value
      */
-    private final Set<BrokerAlgoSpec> brokerAlgos;
+    private final Set<BrokerAlgoSpec> brokerAlgos = Sets.newHashSet();
     /**
      * broker settings value
      */
-    private final Map<String,String> settings;
+    private final Map<String,String> settings = Maps.newHashMap();
     /**
      * QJF initiator host key
      */

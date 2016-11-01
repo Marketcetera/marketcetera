@@ -71,7 +71,6 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.marketcetera.algo.BrokerAlgo;
-import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.BrokerManager.Broker;
@@ -85,7 +84,7 @@ import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.photon.ui.databinding.StatusToImageConverter;
-import org.marketcetera.photon.views.providers.AlgoTableColumnEdditorSupport;
+import org.marketcetera.photon.views.providers.AlgoTableColumnEditorSupport;
 import org.marketcetera.photon.views.providers.AlgoTableObservableMapLabelProvider;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Instrument;
@@ -529,12 +528,13 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                                                                                                               new String[] { "keyString", "valueString" })));//$NON-NLS-1$ //$NON-NLS-2$
         mAlgoTagsTableViewer = new TableViewer(ticket.getAlgoTagsTable());
         ObservableListContentProvider algoTagsContentProvider = new ObservableListContentProvider();
-        TableViewerColumn valueColumn = new TableViewerColumn(mAlgoTagsTableViewer, mAlgoTagsTableViewer.getTable().getColumns()[1]);
+        TableViewerColumn valueColumn = new TableViewerColumn(mAlgoTagsTableViewer,
+                                                              mAlgoTagsTableViewer.getTable().getColumns()[1]);
         mAlgoTagsTableViewer.setContentProvider(algoTagsContentProvider);
         mAlgoTagsTableViewer.setLabelProvider(new AlgoTableObservableMapLabelProvider(BeansObservables.observeMaps(algoTagsContentProvider.getKnownElements(),
-                                                                                                          BrokerAlgoTag.class,
-                                                                                                          new String[] { "tagSpec", "value" })));//$NON-NLS-1$ //$NON-NLS-2$
-        valueColumn.setEditingSupport(new AlgoTableColumnEdditorSupport(mAlgoTagsTableViewer));
+                                                                                                                   ObservableAlgoTag.class,
+                                                                                                                   new String[] { "keyString", "valueString" })));//$NON-NLS-1$ //$NON-NLS-2$
+        valueColumn.setEditingSupport(new AlgoTableColumnEditorSupport(mAlgoTagsTableViewer));
         // disable the peg to midpoint until symbol has a value and order is established as non-market
         ticket.getPegToMidpoint().setEnabled(false);
         ticket.getPegToMidpointLocked().setEnabled(ticket.getPegToMidpoint().getEnabled());
@@ -761,73 +761,68 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          */
         bindText(getXSWTView().getAccountText(), model.getAccount());
     }
-    
     /**
      * Listener for changes on element from algo tags list.
      */
     private PropertyChangeListener algoTagsListChanged = new PropertyChangeListener() {
-		
-		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-			BrokerAlgoTag tag = (BrokerAlgoTag)evt.getSource();
-			int index = getModel().getAlgoTagsList().indexOf(tag);
-			getModel().getAlgoTagsList().set(index, tag);
-		}
-	};
-    
-	/**
+        @Override
+        public void propertyChange(PropertyChangeEvent inEvent)
+        {
+            ObservableAlgoTag tag = (ObservableAlgoTag)inEvent.getSource();
+            int index = getModel().getAlgoTagsList().indexOf(tag);
+            getModel().getAlgoTagsList().set(index,
+                                             tag);
+        }
+    };
+    /**
      * Binds the algo tags on the model to the view.
      */
     protected void bindAlgoTags()
     {
-        M model = getModel();
+        final M model = getModel();
         mAlgoTagsTableViewer.setInput(model.getAlgoTagsList());
         model.getAlgoTagsList().addListChangeListener(new IListChangeListener() {
             public void handleListChange(ListChangeEvent event)
             {
-            	for(ListDiffEntry entry:event.diff.getDifferences()){
-            		if(entry.isAddition()){
-            			BrokerAlgoTag tag = (BrokerAlgoTag)entry.getElement();
-            			tag.addPropertyChangeListener(algoTagsListChanged);
-            		}else{
-            			BrokerAlgoTag tag = (BrokerAlgoTag)entry.getElement();
-            			tag.removePropertyChangeListener(algoTagsListChanged);            			
-            		}
-            	}
+                for(ListDiffEntry entry:event.diff.getDifferences()){
+                    if(entry.isAddition()){
+                        ObservableAlgoTag tag = (ObservableAlgoTag)entry.getElement();
+                        tag.addPropertyChangeListener(algoTagsListChanged);
+                    } else {
+                        ObservableAlgoTag tag = (ObservableAlgoTag)entry.getElement();
+                        tag.removePropertyChangeListener(algoTagsListChanged);
+                    }
+                }
             }
         });
         //Add validation for algo tags list
         getDataBindingContext().addValidationStatusProvider(new ValidationStatusProvider() {
-			
-			@Override
-			public IObservableValue getValidationStatus() {
-				return new ComputedValue() {
-					
-					@Override
-					protected Object calculate() {
-						for(Object object: getModel().getAlgoTagsList()){
-							BrokerAlgoTag algoTag = (BrokerAlgoTag)object;
-							try{
-								algoTag.validate();
-							}catch (CoreException e){
-								return ValidationStatus.error(e.getLocalizedMessage());
-							}
-						}
-						return ValidationStatus.OK_STATUS;
-					}
-				};
-			}
-			
-			@Override
-			public IObservableList getTargets() {
-				return ViewersObservables.observeMultiSelection(mAlgoTagsTableViewer);
-			}
-			
-			@Override
-			public IObservableList getModels() {
-				return getModel().getAlgoTagsList();
-			}
-		});
+            @Override
+            public IObservableValue getValidationStatus() {
+                return new ComputedValue() {
+                    @Override
+                    protected Object calculate() {
+                        for(Object object: getModel().getAlgoTagsList()){
+                            ObservableAlgoTag algoTag = (ObservableAlgoTag)object;
+                            try {
+                                algoTag.validate();
+                            } catch (CoreException e) {
+                                return ValidationStatus.error(e.getLocalizedMessage());
+                            }
+                        }
+                        return ValidationStatus.OK_STATUS;
+                    }
+                };
+            }
+            @Override
+            public IObservableList getTargets() {
+                return ViewersObservables.observeMultiSelection(mAlgoTagsTableViewer);
+            }
+            @Override
+            public IObservableList getModels() {
+                return getModel().getAlgoTagsList();
+            }
+        });
     }
     /**
      * Bind the custom fields on the model to the view.
@@ -1223,7 +1218,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         super.dispose();
     }
     /**
-     *
+     * Provides labels from algos.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
