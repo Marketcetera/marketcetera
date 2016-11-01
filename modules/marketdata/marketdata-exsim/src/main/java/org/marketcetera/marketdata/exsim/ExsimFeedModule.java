@@ -1,7 +1,5 @@
 package org.marketcetera.marketdata.exsim;
 
-import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Deque;
@@ -12,7 +10,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -48,10 +45,10 @@ import org.marketcetera.module.RequestDataException;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.NullLogFactory;
 import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
@@ -67,13 +64,13 @@ import quickfix.Application;
 import quickfix.ConfigError;
 import quickfix.DoNotSend;
 import quickfix.FieldNotFound;
-import quickfix.FileLogFactory;
-import quickfix.FileStoreFactory;
 import quickfix.Group;
 import quickfix.IncorrectDataFormat;
 import quickfix.IncorrectTagValue;
 import quickfix.LogFactory;
+import quickfix.MemoryStoreFactory;
 import quickfix.Message;
+import quickfix.MessageStoreFactory;
 import quickfix.RejectLogon;
 import quickfix.Session;
 import quickfix.SessionFactory;
@@ -255,30 +252,20 @@ public class ExsimFeedModule
             sessionId = exsimFeedConfig.getSessionId();
             SessionSettings sessionSettings = new SessionSettings();
             exsimFeedConfig.populateSessionSettings(sessionSettings);
-            File workspaceDir = new File(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
-            File quoteFeedLogDir = new File(workspaceDir,
-                                            "marketdata-exsim-" + UUID.randomUUID().toString()); //$NON-NLS-1$
-            FileUtils.forceMkdir(quoteFeedLogDir);
-            sessionSettings.setString(sessionId,
-                                      FileLogFactory.SETTING_FILE_LOG_PATH,
-                                      quoteFeedLogDir.getAbsolutePath());
             sessionSettings.setString(SessionFactory.SETTING_CONNECTION_TYPE,
                                       SessionFactory.INITIATOR_CONNECTION_TYPE);
-            sessionSettings.setString(sessionId,
-                                      FileStoreFactory.SETTING_FILE_STORE_PATH,
-                                      quoteFeedLogDir.getAbsolutePath());
             SLF4JLoggerProxy.debug(this,
                                    "Session settings: {}", //$NON-NLS-1$
                                    sessionSettings);
-            LogFactory logFactory = new EventLogFactory(sessionSettings);
-            FileStoreFactory messageStoreFactory = new FileStoreFactory(sessionSettings);
+            LogFactory logFactory = new NullLogFactory();
+            MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
             socketInitiator = new SocketInitiator(application,
                                                   messageStoreFactory,
                                                   sessionSettings,
                                                   logFactory,
                                                   messageFactory.getUnderlyingMessageFactory());
             socketInitiator.start();
-        } catch (IOException | ConfigError e) {
+        } catch (ConfigError e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
             throw new ModuleException(e);

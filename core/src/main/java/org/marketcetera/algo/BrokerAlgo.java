@@ -103,13 +103,13 @@ public class BrokerAlgo
      */
     public void applyTo(NewOrReplaceOrder inOrder)
     {
+        if(algoTags == null) {
+            return;
+        }
         SLF4JLoggerProxy.debug(this,
                                "Broker algo {} being applied to {}",
                                algoSpec.getName(),
                                inOrder);
-        if(algoTags == null) {
-            return;
-        }
         Map<String,String> customFields = inOrder.getCustomFields();
         if(customFields == null) {
             customFields = new HashMap<String,String>();
