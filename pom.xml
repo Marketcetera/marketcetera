@@ -268,10 +268,17 @@
         </exclusions>
       </dependency>
       <!-- Compile: Other -->
+      <!-- use for windows -->
       <dependency>
-        <groupId>com.jezhumble</groupId>
-        <artifactId>javasysmon</artifactId>
-        <version>0.3.3</version>
+	<groupId>com.jezhumble</groupId>
+	<artifactId>javasysmon</artifactId>
+	<version>0.3.3</version>
+      </dependency>
+      <!-- use for non-windows -->
+      <dependency>
+        <groupId>com.outr.javasysmon</groupId>
+        <artifactId>javasysmon_2.10</artifactId>
+        <version>0.3.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
