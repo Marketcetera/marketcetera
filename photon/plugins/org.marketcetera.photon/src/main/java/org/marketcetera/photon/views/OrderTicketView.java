@@ -533,7 +533,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         mAlgoTagsTableViewer.setContentProvider(algoTagsContentProvider);
         mAlgoTagsTableViewer.setLabelProvider(new AlgoTableObservableMapLabelProvider(BeansObservables.observeMaps(algoTagsContentProvider.getKnownElements(),
                                                                                                                    ObservableAlgoTag.class,
-                                                                                                                   new String[] { "keyString", "valueString" })));//$NON-NLS-1$ //$NON-NLS-2$
+                                                                                                                   new String[] { "keyString", "valueString", "descriptionString" })));//$NON-NLS-1$ //$NON-NLS-2$
         valueColumn.setEditingSupport(new AlgoTableColumnEditorSupport(mAlgoTagsTableViewer));
         // disable the peg to midpoint until symbol has a value and order is established as non-market
         ticket.getPegToMidpoint().setEnabled(false);

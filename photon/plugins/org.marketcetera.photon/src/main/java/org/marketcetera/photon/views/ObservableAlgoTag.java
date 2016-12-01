@@ -66,6 +66,15 @@ public class ObservableAlgoTag
         return algoTag.getValue();
     }
     /**
+     * Get the description string value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getDescriptionString()
+    {
+        return algoTag.getTagSpec().getDescription();
+    }
+    /**
      * Set the value.
      *
      * @param inValue a <code>String</code> value

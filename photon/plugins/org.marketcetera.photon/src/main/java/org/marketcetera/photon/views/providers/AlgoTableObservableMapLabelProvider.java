@@ -45,6 +45,8 @@ public class AlgoTableObservableMapLabelProvider
                             return key;
                     }
                     return "";
+                case 2:
+                    return observableAlgoTag.getAlgoTag().getTagSpec().getDescription();
             }
         }
         return null;
