@@ -27,6 +27,7 @@ import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.DisplayName;
 import org.marketcetera.module.IllegalRequestParameterValue;
 import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleException;
@@ -98,6 +99,15 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
             return FeedStatus.OFFLINE.toString();
         }
         return feedStatus.toString();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#disconnect()
+     */
+    @Override
+    @DisplayName("Causes the feed to disconnect")
+    public void disconnect()
+    {
+        feed.logout();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#reconnect()

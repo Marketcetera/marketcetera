@@ -137,7 +137,7 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 				parent.getFont(), SWT.NONE);
 		createLabel(composite, Messages.POPUP_TIMESTAMP_LABEL.getText(),
 				getLabelFont(), SWT.RIGHT);
-		createLabel(composite, mNotification.getDate().toString(), parent
+		createLabel(composite, mNotification.getTimestamp().toString(), parent
 				.getFont(), SWT.NONE);
 	}
 

@@ -53,7 +53,7 @@ public class NotificationHandler extends SinkDataHandler {
         String enhancedSubject = Messages.NOTIFICATION_HANDLER_ENHANCED_SUBJECT_FORMAT
                 .getText(getLabel(inFlowID), original.getSubject());
         mNotificationManager.publish(new ModuleNotification(enhancedSubject,
-                original.getBody(), original.getDate(), original.getSeverity(),
+                original.getBody(), original.getTimestamp(), original.getSeverity(),
                 original.getOriginator()));
     }
 
