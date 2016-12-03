@@ -121,6 +121,14 @@ public class ExsimFeedModule
         preStart();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#disconnect()
+     */
+    @Override
+    public void disconnect()
+    {
+        preStop();
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getCapabilities()
      */
     @Override
