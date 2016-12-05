@@ -2,6 +2,7 @@ package org.marketcetera.trade;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Set;
 
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -9,6 +10,8 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.collect.Sets;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
@@ -576,11 +579,17 @@ public final class FIXConverter
             return;
         }
         for(Map.Entry<String,String> entry : fields.entrySet()) {
-            msg.setString(Integer.parseInt(String.valueOf(entry.getKey())),
-                          String.valueOf(entry.getValue()));
+            int key = Integer.parseInt(String.valueOf(entry.getKey()));
+            String value = String.valueOf(entry.getValue());
+            if(headerTags.contains(key)) {
+                msg.getHeader().setString(key,
+                                          value);
+            } else {
+                msg.setString(key,
+                              value);
+            }
         }
     }
-
     /**
      * Returns the QuickFIX/J message form of the given single order,
      * using the given message factory (alongside the associated data
@@ -781,4 +790,13 @@ public final class FIXConverter
      * Create a new FIXConverter instance.
      */
     private FIXConverter() {}
+    /**
+     * tags that go in the header
+     */
+    private static final Set<Integer> headerTags = Sets.newHashSet(quickfix.field.BeginString.FIELD,quickfix.field.BodyLength.FIELD,quickfix.field.MsgType.FIELD,quickfix.field.SenderCompID.FIELD,quickfix.field.TargetCompID.FIELD,
+                                                                   quickfix.field.OnBehalfOfCompID.FIELD,quickfix.field.DeliverToCompID.FIELD,quickfix.field.SecureDataLen.FIELD,quickfix.field.SecureData.FIELD,quickfix.field.MsgSeqNum.FIELD,
+                                                                   quickfix.field.SenderSubID.FIELD,quickfix.field.SenderLocationID.FIELD,quickfix.field.TargetSubID.FIELD,quickfix.field.TargetLocationID.FIELD,quickfix.field.OnBehalfOfSubID.FIELD,
+                                                                   quickfix.field.OnBehalfOfLocationID.FIELD,quickfix.field.DeliverToSubID.FIELD,quickfix.field.DeliverToLocationID.FIELD,quickfix.field.PossDupFlag.FIELD,
+                                                                   quickfix.field.PossResend.FIELD,quickfix.field.SendingTime.FIELD,quickfix.field.OrigSendingTime.FIELD,quickfix.field.XmlDataLen.FIELD,quickfix.field.XmlData.FIELD,
+                                                                   quickfix.field.MessageEncoding.FIELD,quickfix.field.LastMsgSeqNumProcessed.FIELD,quickfix.field.OnBehalfOfSendingTime.FIELD);
 }
