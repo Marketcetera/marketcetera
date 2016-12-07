@@ -31,6 +31,6 @@ public class EquityToMemento extends
     @Override
     protected void doSave(Equity instrument, IMemento memento) {
         IMemento equity = memento.createChild(EQUITY_TAG);
-        equity.putString(SYMBOL_ATTRIBUTE, instrument.getSymbol());
+        equity.putString(SYMBOL_ATTRIBUTE, instrument.getFullSymbol());
     }
 }

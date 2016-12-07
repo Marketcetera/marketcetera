@@ -35,7 +35,7 @@ public class EquityObservable extends
         Instrument instrument = getParent().getTypedValue();
         if (instrument instanceof Equity) {
             Equity equity = (Equity) instrument;
-            setIfChanged(mSymbol, equity.getSymbol());
+            setIfChanged(mSymbol, equity.getFullSymbol());
         } else {
             setIfChanged(mSymbol, null);
         }
@@ -44,9 +44,26 @@ public class EquityObservable extends
     @Override
     protected void updateParent() {
         String symbol = mSymbol.getTypedValue();
+        String symbolSfx = null;
         Equity newValue = null;
-        if (StringUtils.isNotBlank(symbol)) {
-            newValue = new Equity(symbol);
+        if(StringUtils.isNotBlank(symbol)) {
+            int pos = symbol.indexOf('.');
+            if(pos == -1) {
+                symbol = StringUtils.trimToNull(symbol);
+                symbolSfx = null;
+            } else {
+                symbolSfx = StringUtils.trimToNull(symbol.substring(pos+1));
+                symbol = StringUtils.trimToNull(symbol.substring(0,
+                                                                 pos));
+            }
+            if(symbol != null) {
+                if(symbolSfx == null) {
+                    newValue = new Equity(symbol);
+                } else {
+                    newValue = new Equity(symbol,
+                                          symbolSfx);
+                }
+            }
         }
         ITypedObservableValue<Instrument> instrument = getParent();
         setIfChanged(instrument, newValue);

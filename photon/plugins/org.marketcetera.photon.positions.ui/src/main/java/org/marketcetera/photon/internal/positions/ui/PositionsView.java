@@ -99,7 +99,6 @@ public class PositionsView extends PageBookView implements IColumnProvider {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
         public Object getAdapter(Class adapter) {
             return null;
         }

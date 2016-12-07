@@ -26,6 +26,6 @@ public class EquityPrettyPrinter extends
 
     @Override
     protected String doPrint(Equity instrument) {
-        return instrument.getSymbol();
+        return instrument.getFullSymbol();
     }
 }

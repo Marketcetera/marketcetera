@@ -281,7 +281,7 @@ public class PositionEngineFactory {
         @Override
         public String toString() {
             return Messages.EXECUTION_REPORT_ADAPTER_TO_STRING.getText(String
-                    .valueOf(getPositionKey().getInstrument().getSymbol()),
+                    .valueOf(getPositionKey().getInstrument().getFullSymbol()),
                     String.valueOf(getPositionKey().getAccount()), String
                             .valueOf(getPositionKey().getTraderId()), String
                             .valueOf(getPrice()),

@@ -51,6 +51,11 @@ public class Equity
         Validate.notNull(inSymbol);
         symbol = inSymbol;
         symbolSfx = StringUtils.trimToNull(inSymbolSfx);
+        if(symbolSfx == null) {
+            fullSymbol = symbol;
+        } else {
+            fullSymbol = symbol+"."+symbolSfx;
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Instrument#getSymbol()
@@ -59,6 +64,14 @@ public class Equity
     public String getSymbol()
     {
         return symbol;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.Instrument#getFullSymbol()
+     */
+    @Override
+    public String getFullSymbol()
+    {
+        return fullSymbol;
     }
     /**
      * Get the symbolSfx value.
@@ -124,6 +137,7 @@ public class Equity
     {
         symbol = null;
         symbolSfx = null;
+        fullSymbol = null;
     }
     /**
      * symbol value
@@ -133,5 +147,9 @@ public class Equity
      * symbolSfx value
      */
     private final String symbolSfx;
-    private static final long serialVersionUID = -1512895603247044198L;
+    /**
+     * full symbol display value
+     */
+    private final String fullSymbol;
+    private static final long serialVersionUID = -4249367582080830122L;
 }

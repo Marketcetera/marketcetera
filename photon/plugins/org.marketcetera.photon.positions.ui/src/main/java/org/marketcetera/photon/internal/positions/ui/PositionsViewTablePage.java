@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IMemento;
 import org.marketcetera.core.position.PositionEngine;
-import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.position.PositionEngine.PositionData;
+import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.photon.commons.ui.workbench.ColumnState;
 import org.marketcetera.util.misc.ClassVersion;
 
