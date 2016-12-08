@@ -45,6 +45,25 @@ public class PatternSymbolResolver
         if(inSymbol.contains("/")) { //$NON-NLS-1$
             return new Currency(inSymbol);
         }
+        String symbol = null;
+        String symbolSfx = null;
+        int pos = inSymbol.indexOf('.');
+        if(pos == -1) {
+            symbol = StringUtils.trimToNull(inSymbol);
+            symbolSfx = null;
+        } else {
+            symbol = StringUtils.trimToNull(inSymbol.substring(0,
+                                                               pos));
+            symbolSfx = StringUtils.trimToNull(inSymbol.substring(pos+1));
+        }
+        if(symbol != null) {
+            if(symbolSfx == null) {
+                return new Equity(symbol);
+            } else {
+                return new Equity(symbol,
+                                  symbolSfx);
+            }
+        }
         return new Equity(inSymbol);
     }
     /* (non-Javadoc)
