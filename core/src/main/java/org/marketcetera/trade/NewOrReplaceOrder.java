@@ -134,4 +134,16 @@ public interface NewOrReplaceOrder
      * @return a <code>boolean</code> value
      */
     boolean getPegToMidpoint();
+    /**
+     * Get the execution destination for the order.
+     *
+     * @return a <code>String</code> value
+     */
+    String getExecutionDestination();
+    /**
+     * Set the execution destination for the order.
+     *
+     * @param inExecutionDestination a <code>String</code> value
+     */
+    void setExecutionDestination(String inExecutionDestination);
 }

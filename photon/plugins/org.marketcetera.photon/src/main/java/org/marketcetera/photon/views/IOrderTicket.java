@@ -53,6 +53,12 @@ public interface IOrderTicket {
 	Combo getTifCombo();
 
 	Text getAccountText();
+	/**
+	 * Get the control corresponding to the execution destination.
+	 *
+	 * @return a <code>Text</code> value
+	 */
+	Text getExecutionDestinationText();
 
 	Label getErrorMessageLabel();
 	

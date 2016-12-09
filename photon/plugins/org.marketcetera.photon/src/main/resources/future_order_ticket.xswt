@@ -79,6 +79,10 @@
                             <layoutData x:class="gridData" verticalAlignment="BEGINNING"
                                 horizontalAlignment="FILL"/>
                         </text>
+                        <label text="Ex Destination:"/>
+                        <text x:style="BORDER" x:id="ExecutionDestinationText" text="">
+                            <layoutData x:class="gridData" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="FILL" horizontalSpan="1" />
+                        </text>
                         <label text="Iceberg:"/>
                         <text x:style="BORDER" x:id="DisplayQuantityText" text="">
                             <layoutData x:class="gridData" verticalAlignment="BEGINNING"

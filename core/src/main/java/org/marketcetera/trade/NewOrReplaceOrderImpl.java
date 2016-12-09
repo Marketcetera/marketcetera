@@ -110,6 +110,22 @@ class NewOrReplaceOrderImpl
     {
         return pegToMidpoint;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.OrderBase#getExecutionDestination()
+     */
+    @Override
+    public String getExecutionDestination()
+    {
+        return executionDestination;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.OrderBase#setExecutionDestination(java.lang.String)
+     */
+    @Override
+    public void setExecutionDestination(String inExecutionDestination)
+    {
+        executionDestination = inExecutionDestination;
+    }
     private OrderCapacity mOrderCapacity;
     private PositionEffect mPositionEffect;
     private OrderType mOrderType;
@@ -118,5 +134,6 @@ class NewOrReplaceOrderImpl
     private BigDecimal mDisplayQuantity;
     private BrokerAlgo brokerAlgo;
     private boolean pegToMidpoint = false;
-    private static final long serialVersionUID = 4343594623580234993L;
+    private String executionDestination;
+    private static final long serialVersionUID = -1427257655721372174L;
 }

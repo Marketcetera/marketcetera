@@ -431,6 +431,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         selectOnFocus(ticket.getSymbolText());
         selectOnFocus(ticket.getPriceText());
         selectOnFocus(ticket.getAccountText());
+        selectOnFocus(ticket.getExecutionDestinationText());
         selectOnFocus(ticket.getDisplayQuantityText());
 
         /*
@@ -760,6 +761,11 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          * Account
          */
         bindText(getXSWTView().getAccountText(), model.getAccount());
+        /*
+         * execution destination
+         */
+        bindText(getXSWTView().getExecutionDestinationText(),
+                 model.getExecutionDestination());
     }
     /**
      * Listener for changes on element from algo tags list.

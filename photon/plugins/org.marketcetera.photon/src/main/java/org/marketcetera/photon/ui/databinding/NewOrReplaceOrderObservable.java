@@ -136,7 +136,16 @@ public class NewOrReplaceOrderObservable extends
     public ITypedObservableValue<String> observeAccount() {
         return observeDetail("account", String.class); //$NON-NLS-1$
     }
-
+    /**
+     * Get a detail observable value for the execution destination field on the underlying order.
+     *
+     * @return an <code>ITypedObservableValue&lt;String&gt;</code> value
+     */
+    public ITypedObservableValue<String> observeExecutionDestination()
+    {
+        return observeDetail("executionDestination",
+                             String.class);
+    }
     /**
      * Provides a detail observable value for the time in force field on the
      * underlying order. The created observable will be disposed with this

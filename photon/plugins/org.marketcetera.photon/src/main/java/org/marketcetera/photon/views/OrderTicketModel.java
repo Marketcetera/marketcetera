@@ -59,6 +59,7 @@ public abstract class OrderTicketModel {
     private final ITypedObservableValue<BigDecimal> mPrice;
     private final ITypedObservableValue<TimeInForce> mTimeInForce;
     private final ITypedObservableValue<String> mAccount;
+    private final ITypedObservableValue<String> executionDestination;
     private final ITypedObservableValue<OrderType> mOrderType;
     private final ITypedObservableValue<Boolean> mIsLimitOrder;
     private final ITypedObservableValue<BrokerAlgo> mBrokerAlgo;
@@ -82,6 +83,7 @@ public abstract class OrderTicketModel {
         mPrice = mOrderObservable.observePrice();
         mTimeInForce = mOrderObservable.observeTimeInForce();
         mAccount = mOrderObservable.observeAccount();
+        executionDestination = mOrderObservable.observeExecutionDestination();
         mBrokerId = mOrderObservable.observeBrokerId();
         instrument = mOrderObservable.observeInstrument();
         mBrokerAlgo = mOrderObservable.observeBrokerAlgo();
@@ -300,7 +302,15 @@ public abstract class OrderTicketModel {
     public final ITypedObservableValue<String> getAccount() {
         return mAccount;
     }
-
+    /**
+     * Get and observable that tracks the execution destination of the current order.
+     *
+     * @return an <code>ITypedObservableValue&lt;String&gt;</code> value
+     */
+    public final ITypedObservableValue<String> getExecutionDestination()
+    {
+        return executionDestination;
+    }
     /**
      * Clear the existing order message and replace it with a new empty one.
      */
@@ -322,6 +332,7 @@ public abstract class OrderTicketModel {
             order.setBrokerID(currentOrder.getBrokerID());
             order.setCustomFields(currentOrder.getCustomFields());
             order.setDisplayQuantity(currentOrder.getDisplayQuantity());
+            order.setExecutionDestination(currentOrder.getExecutionDestination());
             order.setInstrument(currentOrder.getInstrument());
             order.setOrderCapacity(currentOrder.getOrderCapacity());
             // do not set order id

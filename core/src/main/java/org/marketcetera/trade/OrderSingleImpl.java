@@ -47,7 +47,8 @@ public class OrderSingleImpl extends NewOrReplaceOrderImpl implements OrderSingl
                 String.valueOf(getTimeInForce()),
                 String.valueOf(getText()),
                 String.valueOf(getPegToMidpoint()),
-                String.valueOf(getBrokerAlgo())
+                String.valueOf(getBrokerAlgo()),
+                String.valueOf(getExecutionDestination())
         );
     }
 

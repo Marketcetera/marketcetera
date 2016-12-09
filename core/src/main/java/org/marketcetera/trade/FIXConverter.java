@@ -177,7 +177,25 @@ public final class FIXConverter
     }
     
     
-
+    private static void addExecutionDestination(String inExecutionDestination,
+                                                DataDictionary inDataDictionary,
+                                                String inMsgType,
+                                                Message inMessage,
+                                                boolean inRequired)
+    {
+        boolean supported = (inDataDictionary.isMsgField(inMsgType,
+                                                         quickfix.field.ExDestination.FIELD));
+            if(inExecutionDestination == null) {
+                if(supported && inRequired) {
+                    throw new I18NException(Messages.NO_EXECUTION_DESTINATION);
+                }
+            } else{
+                if(!supported) {
+                    throw new I18NException(Messages.UNSUPPORTED_EXECUTION_DESTINATION);
+                }
+                inMessage.setField(new quickfix.field.ExDestination(inExecutionDestination));
+            }
+    }
     /**
      * Adds the given account to the given QuickFIX/J message (of the
      * given FIX dictionary).
@@ -620,6 +638,7 @@ public final class FIXConverter
         addDisplayQuantity(o.getDisplayQuantity(),fixDictionary,msgType,msg,false);
         addTimeInForce(o.getTimeInForce(),fixDictionary,msgType,msg,false);
         addAccount(o.getAccount(),fixDictionary,msgType,msg,false);
+        addExecutionDestination(o.getExecutionDestination(),fixDictionary,msgType,msg,false);
         addText(o.getText(),fixDictionary,msgType,msg,false);
         addPositionEffect(o.getPositionEffect(),fixDictionary,msgType,msg,false);
         addOrderCapacity(o.getOrderCapacity(),fixDictionary,msgType,msg,false);
@@ -696,6 +715,7 @@ public final class FIXConverter
         addQuantity(o.getQuantity(),fixDictionary,msgType,msg,false);
         addDisplayQuantity(o.getDisplayQuantity(),fixDictionary,msgType,msg,false);
         addAccount(o.getAccount(),fixDictionary,msgType,msg,false);
+        addExecutionDestination(o.getExecutionDestination(),fixDictionary,msgType,msg,false);
         addText(o.getText(),fixDictionary,msgType,msg,false);
         addPrice(o.getPrice(),fixDictionary,msgType,msg,false);
         addTimeInForce(o.getTimeInForce(),fixDictionary,msgType,msg,false);

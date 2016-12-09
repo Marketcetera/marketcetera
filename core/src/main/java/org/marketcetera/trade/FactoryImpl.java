@@ -277,6 +277,7 @@ class FactoryImpl
         }
         OrderSingle order = createOrderSingle();
         order.setAccount(FIXUtil.getAccount(inMessage));
+        order.setExecutionDestination(FIXUtil.getExecutionDestination(inMessage));
         order.setBrokerID(inBrokerID);
         order.setCustomFields(getFieldMap(inMessage, SystemFIXMessageFactory.ORDER_SINGLE_FIELDS));
         order.setOrderID(FIXUtil.getOrderID(inMessage));
@@ -330,6 +331,7 @@ class FactoryImpl
         }
         OrderReplace order = new OrderReplaceImpl();
         order.setAccount(FIXUtil.getAccount(inMessage));
+        order.setExecutionDestination(FIXUtil.getExecutionDestination(inMessage));
         order.setBrokerID(inBrokerID);
         order.setBrokerOrderID(FIXUtil.getBrokerOrderID(inMessage));
         order.setCustomFields(getFieldMap(inMessage, SystemFIXMessageFactory.ORDER_REPLACE_FIELDS));
