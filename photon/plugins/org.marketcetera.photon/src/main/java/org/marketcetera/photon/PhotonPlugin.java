@@ -121,6 +121,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     private ServiceTracker<?,?> mSymbolResolverServiceTracker;
     
     private Job mReconnectMarketDataFeedJob;
+    private String currentUser;
 
     /**
      * The constructor.
@@ -191,7 +192,24 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         futureOrderTicketController = new FutureOrderTicketController(futureOrderTicketModel);
         currencyOrderTicketController = new CurrencyOrderTicketController(currencyOrderTicketModel);
     }
-
+    /**
+     * Get the currentUser value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getCurrentUser()
+    {
+        return currentUser;
+    }
+    /**
+     * Sets the currentUser value.
+     *
+     * @param a <code>String</code> value
+     */
+    public void setCurrentUser(String inCurrentUser)
+    {
+        currentUser = inCurrentUser;
+    }
     private void initPhotonController() {
         photonController = new PhotonController();
         photonController.setMessageHistory(mTradeReportsHistory);

@@ -375,6 +375,9 @@
              <control
                    class="org.marketcetera.photon.ui.ClockTrimWidget">
              </control>
+             <control
+                   class="org.marketcetera.photon.ui.UsernameWidget">
+             </control>
           </toolbar>
        </menuContribution>
        <menuContribution
