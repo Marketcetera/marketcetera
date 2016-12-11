@@ -59,7 +59,11 @@ class FactoryImpl
             order.setInstrument(inLatestReport.getInstrument());
             order.setText(inLatestReport.getText());
             addCustomFieldsFromReport(inLatestReport, order, SystemFIXMessageFactory.EXECUTION_REPORT_FIELDS);
-
+            Map<String,String> customFields = order.getCustomFields();
+            if(customFields != null) {
+                customFields.remove(String.valueOf(quickfix.field.MaxFloor.FIELD));
+                order.setCustomFields(customFields);
+            }
             // set this manually after the customFields are copied, so that we take the OrigClOrdId from the report itself,
             // not from the custom field of the report
             order.setOriginalOrderID(inLatestReport.getOrderID());
