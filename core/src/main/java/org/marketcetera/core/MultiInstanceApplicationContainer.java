@@ -1,28 +1,29 @@
 package org.marketcetera.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.ProcessBuilder.Redirect;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
-import com.jezhumble.javasysmon.JavaSysMon;
-import com.jezhumble.javasysmon.OsProcess;
-import com.jezhumble.javasysmon.ProcessVisitor;
+import jnr.process.Process;
+import jnr.process.ProcessBuilder;
 
 /* $License$ */
 
@@ -85,7 +86,7 @@ public class MultiInstanceApplicationContainer
         synchronized(spawnProcessMutex) {
             for(Process process : processInstances.values()) {
                 try {
-                    process.destroy();
+                    process.kill();
                 } catch (Exception ignored) {}
             }
             for(Process process : processInstances.values()) {
@@ -437,13 +438,9 @@ public class MultiInstanceApplicationContainer
         FileUtils.write(startScript,
                         "[ ${retval} -eq 0 ] && [ ${pid} -eq ${pid} ] && echo ${pid} > " + instanceDir.getAbsolutePath()+File.separator+"bin"+File.separator+"dare.pid"+System.lineSeparator(),
                         true);
-        File log = new File(getLogDir(),
-                            getLogName()+inInstanceNumber+".log");
         ProcessBuilder pb = new ProcessBuilder(arguments);
-        pb.redirectErrorStream(true);
-        pb.redirectOutput(Redirect.appendTo(log));
-        int pid = spawnInstance(pb,
-                                inInstanceNumber);
+        long pid = spawnInstance(pb,
+                                 inInstanceNumber);
         FileUtils.write(darePid,
                         pid + System.lineSeparator());
         FileUtils.write(stopScript,
@@ -474,42 +471,22 @@ public class MultiInstanceApplicationContainer
      *
      * @param inProcBuilder a <code>ProcessBuilder</code> value
      * @param inInstanceNumber an <code>int</code> value
-     * @return an <code>int</code> value containing the spawned PID
+     * @return a <code>long</code> value containing the spawned PID
      * @throws IOException if the instance could not be spawned
      */
-    private static int spawnInstance(ProcessBuilder inProcBuilder,
-                                     int inInstanceNumber)
+    private static long spawnInstance(ProcessBuilder inProcBuilder,
+                                      int inInstanceNumber)
             throws IOException
     {
         synchronized (spawnProcessMutex) {
-            JavaSysMon monitor = new JavaSysMon();
-            DirectChildProcessVisitor beforeVisitor = new DirectChildProcessVisitor(monitor);
-            monitor.visitProcessTree(monitor.currentPid(),
-                                     beforeVisitor);
-            Set<Integer> alreadySpawnedProcesses = beforeVisitor.getPids();
-            Process p = inProcBuilder.start();
-            processInstances.put(inInstanceNumber,
-                                 p);
-            DirectChildProcessVisitor afterVisitor = new DirectChildProcessVisitor(monitor);
-            monitor.visitProcessTree(monitor.currentPid(),
-                                     afterVisitor);
-            Set<Integer> newProcesses = afterVisitor.getPids();
-            newProcesses.removeAll(alreadySpawnedProcesses);
-            if(newProcesses.isEmpty()){
-                SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
-                                       "There is no new instance PID");
-            } else if(newProcesses.size() > 1){
-                SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
-                                       "There are multiple new instance PIDs: {}",
-                                       newProcesses);
-            } else {
-                int newPid = newProcesses.iterator().next();
-                SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
-                                       "New PID: {}",
-                                       newPid);
-                return newPid;
-            }
-            return -1;
+            Process spawnedProcess = inProcBuilder.start();
+            long newPid = spawnedProcess.getPid();
+            captureOutput(spawnedProcess,
+                          inInstanceNumber);
+            SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                                   "New PID: {}",
+                                   newPid);
+            return newPid;
         }
     }
     /**
@@ -601,55 +578,84 @@ public class MultiInstanceApplicationContainer
         return System.getProperty("metc.enable.profiling") != null;
     }
     /**
-     * Visits running processes.
+     * Capture the output of the given process for the given instance.
+     *
+     * @param inProcess a <code>jnr.process.Process</code> value
+     * @param inInstance an <code>int</code> value
+     * @throws FileNotFoundException if the output cannot be written to a file
+     */
+    private static void captureOutput(jnr.process.Process inProcess,
+                                      int inInstance)
+            throws FileNotFoundException
+    {
+        InputStreamConsumer errout;
+        errout = new InputStreamConsumer(inProcess.getErrorStream(),
+                                         inInstance);
+        InputStreamConsumer stdout = new InputStreamConsumer(inProcess.getInputStream(),
+                                                             inInstance);
+        outputCapturingService.execute(errout);
+        outputCapturingService.execute(stdout);
+    }
+    /**
+     * Consumes an input stream and writes it to an output file.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
      * @since $Release$
      */
-    private static class DirectChildProcessVisitor
-            implements ProcessVisitor
+    private static class InputStreamConsumer
+            implements Runnable
     {
+        /**
+         * Create a new InputStreamConsumer instance.
+         *
+         * @param inInputStream an <code>InputStream</code> value
+         * @param inInstanceNumber an <code>int</code> value
+         * @throws FileNotFoundException if the file cannot be created
+         */
+        private InputStreamConsumer(InputStream inInputStream,
+                                    int inInstanceNumber)
+                throws FileNotFoundException
+        {
+            inputStream = inInputStream;
+            File stdout = new File(getLogDir(),
+                              getLogName()+inInstanceNumber+".log");
+            stdoutStream = new FileOutputStream(stdout);
+        }
         /* (non-Javadoc)
-         * @see com.jezhumble.javasysmon.ProcessVisitor#visit(com.jezhumble.javasysmon.OsProcess, int)
+         * @see java.lang.Runnable#run()
          */
         @Override
-        public boolean visit(OsProcess inOsProcess,
-                             int inChildIndex)
+        public void run()
         {
-            int currentPid = parent.currentPid();
-            if(inOsProcess.processInfo().getParentPid() == currentPid) {
-                newPids.add(inOsProcess.processInfo().getPid());
+            try {
+                byte[] buf = new byte[1024];
+                int len;
+                while((len = inputStream.read(buf)) > 0) {
+                    stdoutStream.write(buf,0,len);
+                }
+            } catch(Exception e) {
+                SLF4JLoggerProxy.warn(MultiInstanceApplicationContainer.class,
+                                      e);
+            } finally {
+                try {
+                    stdoutStream.close();
+                } catch (IOException ignored) {}
             }
-            return false;
         }
         /**
-         * Gets the new pids discovered for this parent.
-         *
-         * @return a <code>Set&lt;Integer&gt;</code> value
+         * input stream to monitor
          */
-        private Set<Integer> getPids()
-        {
-            return newPids;
-        }
+        private InputStream inputStream;
         /**
-         * Create a new DirectChildProcessVisitor instance.
-         *
-         * @param inParent a <code>JavaSysMon</code> value
+         * output stream to pass the output to
          */
-        private DirectChildProcessVisitor(JavaSysMon inParent)
-        {
-            parent = inParent;
-        }
-        /**
-         * current process (parent of visitor processes)
-         */
-        private final JavaSysMon parent;
-        /**
-         * query result, holds process ids identified
-         */
-        private Set<Integer> newPids = new HashSet<Integer>();
+        private FileOutputStream stdoutStream;
     }
+    /**
+     * manages jobs to capture instance output
+     */
+    private static ExecutorService outputCapturingService = Executors.newCachedThreadPool();
     /**
      * tracks child instance processes
      */
