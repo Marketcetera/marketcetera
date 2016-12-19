@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
+import jnr.constants.platform.Signal;
 import jnr.process.Process;
 import jnr.process.ProcessBuilder;
 
@@ -86,12 +87,14 @@ public class MultiInstanceApplicationContainer
         synchronized(spawnProcessMutex) {
             for(Process process : processInstances.values()) {
                 try {
-                    process.kill();
+                    process.kill(Signal.SIGTERM);
                 } catch (Exception ignored) {}
             }
+            // TODO wait for a period of time (10s?) then kill
             for(Process process : processInstances.values()) {
                 process.waitFor();
             }
+            processInstances.clear();
         }
     }
     /**
@@ -483,6 +486,8 @@ public class MultiInstanceApplicationContainer
             long newPid = spawnedProcess.getPid();
             captureOutput(spawnedProcess,
                           inInstanceNumber);
+            processInstances.put(newPid,
+                                 spawnedProcess);
             SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
                                    "New PID: {}",
                                    newPid);
@@ -659,7 +664,7 @@ public class MultiInstanceApplicationContainer
     /**
      * tracks child instance processes
      */
-    private static Map<Integer,Process> processInstances = new HashMap<>();
+    private static Map<Long,Process> processInstances = new HashMap<>();
     /**
      * holds the number of instances to launch
      */
