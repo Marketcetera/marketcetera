@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ProcessBuilder.Redirect;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -19,12 +20,10 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
-import jnr.constants.platform.Signal;
-import jnr.process.Process;
-import jnr.process.ProcessBuilder;
 
 /* $License$ */
 
@@ -85,16 +84,28 @@ public class MultiInstanceApplicationContainer
             throws InterruptedException
     {
         synchronized(spawnProcessMutex) {
-            for(Process process : processInstances.values()) {
-                try {
-                    process.kill(Signal.SIGTERM);
-                } catch (Exception ignored) {}
+            if(SystemUtils.IS_OS_WINDOWS) {
+                for(Process process : windowsProcessInstances.values()) {
+                    try {
+                        process.destroy();
+                    } catch (Exception ignored) {}
+                }
+                for(Process process : windowsProcessInstances.values()) {
+                    process.waitFor();
+                }
+                windowsProcessInstances.clear();
+            } else {
+                for(jnr.process.Process process : unixProcessInstances.values()) {
+                    try {
+                        process.kill(jnr.constants.platform.Signal.SIGTERM);
+                    } catch (Exception ignored) {}
+                }
+                // TODO wait for a period of time (10s?) then kill
+                for(jnr.process.Process process : unixProcessInstances.values()) {
+                    process.waitFor();
+                }
+                unixProcessInstances.clear();
             }
-            // TODO wait for a period of time (10s?) then kill
-            for(Process process : processInstances.values()) {
-                process.waitFor();
-            }
-            processInstances.clear();
         }
     }
     /**
@@ -407,65 +418,64 @@ public class MultiInstanceApplicationContainer
                               inInstanceNumber,
                               totalInstances,
                               Arrays.toString(arguments));
-        // write execution to a start script
-        // TODO windows version
-        File startScript = new File(instanceDir+File.separator+"bin",
-                                    "start_dare.sh");
-        File stopScript = new File(instanceDir+File.separator+"bin",
-                                   "stop_dare.sh");
-        File darePid = new File(instanceDir+File.separator+"bin",
-                                "dare.pid");
-        // add "go to instance dir" to start script
-        FileUtils.write(startScript,
-                        "cd " + instanceDir.getAbsolutePath()+System.lineSeparator());
-        int lineCount = arguments.length;
-        int lineNumber = 1;
-        for(String entry : arguments) {
-            // TODO is this line different for windows?
-            if(lineNumber++ == lineCount) {
-                FileUtils.write(startScript,
-                                entry+" &"+System.lineSeparator(),
-                                true);
-            } else {
-                FileUtils.write(startScript,
-                                entry+" \\"+System.lineSeparator(),
-                                true);
-            }
-        }
-        FileUtils.write(startScript,
-                        "retval=$?"+System.lineSeparator(),
-                        true);
-        FileUtils.write(startScript,
-                        "pid=$!"+System.lineSeparator(),
-                        true);
-        FileUtils.write(startScript,
-                        "[ ${retval} -eq 0 ] && [ ${pid} -eq ${pid} ] && echo ${pid} > " + instanceDir.getAbsolutePath()+File.separator+"bin"+File.separator+"dare.pid"+System.lineSeparator(),
-                        true);
-        ProcessBuilder pb = new ProcessBuilder(arguments);
-        long pid = spawnInstance(pb,
+        long pid = spawnInstance(arguments,
                                  inInstanceNumber);
-        FileUtils.write(darePid,
-                        pid + System.lineSeparator());
-        FileUtils.write(stopScript,
-                        "cd " + instanceDir.getAbsolutePath()+File.separator+"bin"+System.lineSeparator());
-        FileUtils.write(stopScript,
-                        "if [ -f dare.pid ]" + System.lineSeparator(),
-                        true);
-        FileUtils.write(stopScript,
-                        "then" + System.lineSeparator(),
-                        true);
-        FileUtils.write(stopScript,
-                        "    kill `cat dare.pid`" + System.lineSeparator(),
-                        true);
-        FileUtils.write(stopScript,
-                        "else" + System.lineSeparator(),
-                        true);
-        FileUtils.write(stopScript,
-                        "    kill `ps -ef | grep metc.instance="+ inInstanceNumber +" | grep java | awk '{print $2}'`"+System.lineSeparator(),
-                        true);
-        FileUtils.write(stopScript,
-                        "fi" + System.lineSeparator(),
-                        true);
+        // write execution to a start script
+        if(!SystemUtils.IS_OS_WINDOWS) {
+            File startScript = new File(instanceDir+File.separator+"bin",
+                                        "start_dare.sh");
+            File stopScript = new File(instanceDir+File.separator+"bin",
+                                       "stop_dare.sh");
+            File darePid = new File(instanceDir+File.separator+"bin",
+                                    "dare.pid");
+            // add "go to instance dir" to start script
+            FileUtils.write(startScript,
+                            "cd " + instanceDir.getAbsolutePath()+System.lineSeparator());
+            int lineCount = arguments.length;
+            int lineNumber = 1;
+            for(String entry : arguments) {
+                if(lineNumber++ == lineCount) {
+                    FileUtils.write(startScript,
+                                    entry+" &"+System.lineSeparator(),
+                                    true);
+                } else {
+                    FileUtils.write(startScript,
+                                    entry+" \\"+System.lineSeparator(),
+                                    true);
+                }
+            }
+            FileUtils.write(startScript,
+                            "retval=$?"+System.lineSeparator(),
+                            true);
+            FileUtils.write(startScript,
+                            "pid=$!"+System.lineSeparator(),
+                            true);
+            FileUtils.write(startScript,
+                            "[ ${retval} -eq 0 ] && [ ${pid} -eq ${pid} ] && echo ${pid} > " + instanceDir.getAbsolutePath()+File.separator+"bin"+File.separator+"dare.pid"+System.lineSeparator(),
+                            true);
+            FileUtils.write(darePid,
+                            pid + System.lineSeparator());
+            FileUtils.write(stopScript,
+                            "cd " + instanceDir.getAbsolutePath()+File.separator+"bin"+System.lineSeparator());
+            FileUtils.write(stopScript,
+                            "if [ -f dare.pid ]" + System.lineSeparator(),
+                            true);
+            FileUtils.write(stopScript,
+                            "then" + System.lineSeparator(),
+                            true);
+            FileUtils.write(stopScript,
+                            "    kill `cat dare.pid`" + System.lineSeparator(),
+                            true);
+            FileUtils.write(stopScript,
+                            "else" + System.lineSeparator(),
+                            true);
+            FileUtils.write(stopScript,
+                            "    kill `ps -ef | grep metc.instance="+ inInstanceNumber +" | grep java | awk '{print $2}'`"+System.lineSeparator(),
+                            true);
+            FileUtils.write(stopScript,
+                            "fi" + System.lineSeparator(),
+                            true);
+        }
         // sleep to generate separation between the instances to help clearly identify the order of instances on the host
         Thread.sleep(getInstanceStartDelay());
     }
@@ -477,20 +487,34 @@ public class MultiInstanceApplicationContainer
      * @return a <code>long</code> value containing the spawned PID
      * @throws IOException if the instance could not be spawned
      */
-    private static long spawnInstance(ProcessBuilder inProcBuilder,
+    private static long spawnInstance(String[] arguments,
                                       int inInstanceNumber)
             throws IOException
     {
+        long newPid = -1;
         synchronized (spawnProcessMutex) {
-            Process spawnedProcess = inProcBuilder.start();
-            long newPid = spawnedProcess.getPid();
-            captureOutput(spawnedProcess,
-                          inInstanceNumber);
-            processInstances.put(newPid,
-                                 spawnedProcess);
-            SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
-                                   "New PID: {}",
-                                   newPid);
+            if(SystemUtils.IS_OS_WINDOWS) {
+                File log = new File(getLogDir(),
+                                    getLogName()+inInstanceNumber+".log");
+                ProcessBuilder pb = new ProcessBuilder(arguments);
+                pb.redirectErrorStream(true);
+                pb.redirectOutput(Redirect.appendTo(log));
+                newPid = System.nanoTime();
+                Process spawnedProcess = pb.start();
+                windowsProcessInstances.put(newPid,
+                                            spawnedProcess);
+            } else {
+                jnr.process.ProcessBuilder pb = new jnr.process.ProcessBuilder(arguments);
+                jnr.process.Process spawnedProcess = pb.start();
+                newPid = spawnedProcess.getPid();
+                captureOutput(spawnedProcess,
+                              inInstanceNumber);
+                SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                                       "New PID: {}",
+                                       newPid);
+                unixProcessInstances.put(newPid,
+                                         spawnedProcess);
+            }
             return newPid;
         }
     }
@@ -662,9 +686,13 @@ public class MultiInstanceApplicationContainer
      */
     private static ExecutorService outputCapturingService = Executors.newCachedThreadPool();
     /**
-     * tracks child instance processes
+     * tracks child instance processes on unix platforms
      */
-    private static Map<Long,Process> processInstances = new HashMap<>();
+    private final static Map<Long,jnr.process.Process> unixProcessInstances = new HashMap<>();
+    /**
+     * tracks child instance processes on windows platforms
+     */
+    private final static Map<Long,Process> windowsProcessInstances = new HashMap<>();
     /**
      * holds the number of instances to launch
      */
