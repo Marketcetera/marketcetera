@@ -5,7 +5,7 @@ import org.springframework.context.Lifecycle;
 /* $License$ */
 
 /**
- *
+ * Provides common RPC client behavior.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

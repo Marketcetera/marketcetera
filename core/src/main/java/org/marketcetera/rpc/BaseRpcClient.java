@@ -36,7 +36,7 @@ import com.googlecode.protobuf.pro.duplex.logging.CategoryPerServiceLogger;
 /* $License$ */
 
 /**
- *
+ * Provides common RPC client behaviors.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
