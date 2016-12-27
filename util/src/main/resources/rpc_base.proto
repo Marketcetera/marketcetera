@@ -46,6 +46,28 @@ message Status {
     optional string sessionId = 3;
 }
 
+message Properties {
+    repeated Property property = 1;
+}
+
+message Property {
+    required string key = 1;
+    required string value = 2;
+}
+
+message PageRequest {
+    optional uint32 page = 1 [default=0];
+    optional uint32 size = 2 [default=2147483647];
+}
+
+message PageResponse {
+    optional uint64 totalSize = 1;
+    optional uint32 totalPages = 2;
+    optional uint32 pageNumber = 3;
+    optional uint32 pageSize = 4;
+    optional uint32 pageMaxSize = 5;
+}
+
 service BaseRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);

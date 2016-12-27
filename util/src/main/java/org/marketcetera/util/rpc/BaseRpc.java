@@ -5390,6 +5390,2527 @@ public final class BaseRpc {
     // @@protoc_insertion_point(class_scope:Status)
   }
 
+  public interface PropertiesOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:Properties)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .Property property = 1;</code>
+     */
+    java.util.List<org.marketcetera.util.rpc.BaseRpc.Property> 
+        getPropertyList();
+    /**
+     * <code>repeated .Property property = 1;</code>
+     */
+    org.marketcetera.util.rpc.BaseRpc.Property getProperty(int index);
+    /**
+     * <code>repeated .Property property = 1;</code>
+     */
+    int getPropertyCount();
+    /**
+     * <code>repeated .Property property = 1;</code>
+     */
+    java.util.List<? extends org.marketcetera.util.rpc.BaseRpc.PropertyOrBuilder> 
+        getPropertyOrBuilderList();
+    /**
+     * <code>repeated .Property property = 1;</code>
+     */
+    org.marketcetera.util.rpc.BaseRpc.PropertyOrBuilder getPropertyOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code Properties}
+   */
+  public static final class Properties extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:Properties)
+      PropertiesOrBuilder {
+    // Use Properties.newBuilder() to construct.
+    private Properties(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private Properties(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final Properties defaultInstance;
+    public static Properties getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public Properties getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Properties(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                property_ = new java.util.ArrayList<org.marketcetera.util.rpc.BaseRpc.Property>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              property_.add(input.readMessage(org.marketcetera.util.rpc.BaseRpc.Property.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          property_ = java.util.Collections.unmodifiableList(property_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.util.rpc.BaseRpc.internal_static_Properties_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.util.rpc.BaseRpc.internal_static_Properties_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.util.rpc.BaseRpc.Properties.class, org.marketcetera.util.rpc.BaseRpc.Properties.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Properties> PARSER =
+        new com.google.protobuf.AbstractParser<Properties>() {
+      public Properties parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Properties(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Properties> getParserForType() {
+      return PARSER;
+    }
+
+    public static final int PROPERTY_FIELD_NUMBER = 1;
+    private java.util.List<org.marketcetera.util.rpc.BaseRpc.Property> property_;
+    /**
+     * <code>repeated .Property property = 1;</code>
+     */
+    public java.util.List<org.marketcetera.util.rpc.BaseRpc.Property> getPropertyList() {
+      return property_;
+    }
+    /**
+     * <code>repeated .Property property = 1;</code>
+     */
+    public java.util.List<? extends org.marketcetera.util.rpc.BaseRpc.PropertyOrBuilder> 
+        getPropertyOrBuilderList() {
+      return property_;
+    }
+    /**
+     * <code>repeated .Property property = 1;</code>
+     */
+    public int getPropertyCount() {
+      return property_.size();
+    }
+    /**
+     * <code>repeated .Property property = 1;</code>
+     */
+    public org.marketcetera.util.rpc.BaseRpc.Property getProperty(int index) {
+      return property_.get(index);
+    }
+    /**
+     * <code>repeated .Property property = 1;</code>
+     */
+    public org.marketcetera.util.rpc.BaseRpc.PropertyOrBuilder getPropertyOrBuilder(
+        int index) {
+      return property_.get(index);
+    }
+
+    private void initFields() {
+      property_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      for (int i = 0; i < getPropertyCount(); i++) {
+        if (!getProperty(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      for (int i = 0; i < property_.size(); i++) {
+        output.writeMessage(1, property_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < property_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, property_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.util.rpc.BaseRpc.Properties parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Properties parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Properties parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Properties parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Properties parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Properties parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Properties parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Properties parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Properties parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Properties parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.util.rpc.BaseRpc.Properties prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code Properties}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:Properties)
+        org.marketcetera.util.rpc.BaseRpc.PropertiesOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_Properties_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_Properties_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.util.rpc.BaseRpc.Properties.class, org.marketcetera.util.rpc.BaseRpc.Properties.Builder.class);
+      }
+
+      // Construct using org.marketcetera.util.rpc.BaseRpc.Properties.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getPropertyFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        if (propertyBuilder_ == null) {
+          property_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          propertyBuilder_.clear();
+        }
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_Properties_descriptor;
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.Properties getDefaultInstanceForType() {
+        return org.marketcetera.util.rpc.BaseRpc.Properties.getDefaultInstance();
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.Properties build() {
+        org.marketcetera.util.rpc.BaseRpc.Properties result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.Properties buildPartial() {
+        org.marketcetera.util.rpc.BaseRpc.Properties result = new org.marketcetera.util.rpc.BaseRpc.Properties(this);
+        int from_bitField0_ = bitField0_;
+        if (propertyBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            property_ = java.util.Collections.unmodifiableList(property_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.property_ = property_;
+        } else {
+          result.property_ = propertyBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.util.rpc.BaseRpc.Properties) {
+          return mergeFrom((org.marketcetera.util.rpc.BaseRpc.Properties)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.util.rpc.BaseRpc.Properties other) {
+        if (other == org.marketcetera.util.rpc.BaseRpc.Properties.getDefaultInstance()) return this;
+        if (propertyBuilder_ == null) {
+          if (!other.property_.isEmpty()) {
+            if (property_.isEmpty()) {
+              property_ = other.property_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensurePropertyIsMutable();
+              property_.addAll(other.property_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.property_.isEmpty()) {
+            if (propertyBuilder_.isEmpty()) {
+              propertyBuilder_.dispose();
+              propertyBuilder_ = null;
+              property_ = other.property_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              propertyBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getPropertyFieldBuilder() : null;
+            } else {
+              propertyBuilder_.addAllMessages(other.property_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        for (int i = 0; i < getPropertyCount(); i++) {
+          if (!getProperty(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.util.rpc.BaseRpc.Properties parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.util.rpc.BaseRpc.Properties) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<org.marketcetera.util.rpc.BaseRpc.Property> property_ =
+        java.util.Collections.emptyList();
+      private void ensurePropertyIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          property_ = new java.util.ArrayList<org.marketcetera.util.rpc.BaseRpc.Property>(property_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.marketcetera.util.rpc.BaseRpc.Property, org.marketcetera.util.rpc.BaseRpc.Property.Builder, org.marketcetera.util.rpc.BaseRpc.PropertyOrBuilder> propertyBuilder_;
+
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public java.util.List<org.marketcetera.util.rpc.BaseRpc.Property> getPropertyList() {
+        if (propertyBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(property_);
+        } else {
+          return propertyBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public int getPropertyCount() {
+        if (propertyBuilder_ == null) {
+          return property_.size();
+        } else {
+          return propertyBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public org.marketcetera.util.rpc.BaseRpc.Property getProperty(int index) {
+        if (propertyBuilder_ == null) {
+          return property_.get(index);
+        } else {
+          return propertyBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public Builder setProperty(
+          int index, org.marketcetera.util.rpc.BaseRpc.Property value) {
+        if (propertyBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePropertyIsMutable();
+          property_.set(index, value);
+          onChanged();
+        } else {
+          propertyBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public Builder setProperty(
+          int index, org.marketcetera.util.rpc.BaseRpc.Property.Builder builderForValue) {
+        if (propertyBuilder_ == null) {
+          ensurePropertyIsMutable();
+          property_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          propertyBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public Builder addProperty(org.marketcetera.util.rpc.BaseRpc.Property value) {
+        if (propertyBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePropertyIsMutable();
+          property_.add(value);
+          onChanged();
+        } else {
+          propertyBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public Builder addProperty(
+          int index, org.marketcetera.util.rpc.BaseRpc.Property value) {
+        if (propertyBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePropertyIsMutable();
+          property_.add(index, value);
+          onChanged();
+        } else {
+          propertyBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public Builder addProperty(
+          org.marketcetera.util.rpc.BaseRpc.Property.Builder builderForValue) {
+        if (propertyBuilder_ == null) {
+          ensurePropertyIsMutable();
+          property_.add(builderForValue.build());
+          onChanged();
+        } else {
+          propertyBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public Builder addProperty(
+          int index, org.marketcetera.util.rpc.BaseRpc.Property.Builder builderForValue) {
+        if (propertyBuilder_ == null) {
+          ensurePropertyIsMutable();
+          property_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          propertyBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public Builder addAllProperty(
+          java.lang.Iterable<? extends org.marketcetera.util.rpc.BaseRpc.Property> values) {
+        if (propertyBuilder_ == null) {
+          ensurePropertyIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, property_);
+          onChanged();
+        } else {
+          propertyBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public Builder clearProperty() {
+        if (propertyBuilder_ == null) {
+          property_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          propertyBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public Builder removeProperty(int index) {
+        if (propertyBuilder_ == null) {
+          ensurePropertyIsMutable();
+          property_.remove(index);
+          onChanged();
+        } else {
+          propertyBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public org.marketcetera.util.rpc.BaseRpc.Property.Builder getPropertyBuilder(
+          int index) {
+        return getPropertyFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public org.marketcetera.util.rpc.BaseRpc.PropertyOrBuilder getPropertyOrBuilder(
+          int index) {
+        if (propertyBuilder_ == null) {
+          return property_.get(index);  } else {
+          return propertyBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public java.util.List<? extends org.marketcetera.util.rpc.BaseRpc.PropertyOrBuilder> 
+           getPropertyOrBuilderList() {
+        if (propertyBuilder_ != null) {
+          return propertyBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(property_);
+        }
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public org.marketcetera.util.rpc.BaseRpc.Property.Builder addPropertyBuilder() {
+        return getPropertyFieldBuilder().addBuilder(
+            org.marketcetera.util.rpc.BaseRpc.Property.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public org.marketcetera.util.rpc.BaseRpc.Property.Builder addPropertyBuilder(
+          int index) {
+        return getPropertyFieldBuilder().addBuilder(
+            index, org.marketcetera.util.rpc.BaseRpc.Property.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Property property = 1;</code>
+       */
+      public java.util.List<org.marketcetera.util.rpc.BaseRpc.Property.Builder> 
+           getPropertyBuilderList() {
+        return getPropertyFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.marketcetera.util.rpc.BaseRpc.Property, org.marketcetera.util.rpc.BaseRpc.Property.Builder, org.marketcetera.util.rpc.BaseRpc.PropertyOrBuilder> 
+          getPropertyFieldBuilder() {
+        if (propertyBuilder_ == null) {
+          propertyBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.marketcetera.util.rpc.BaseRpc.Property, org.marketcetera.util.rpc.BaseRpc.Property.Builder, org.marketcetera.util.rpc.BaseRpc.PropertyOrBuilder>(
+                  property_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          property_ = null;
+        }
+        return propertyBuilder_;
+      }
+
+      // @@protoc_insertion_point(builder_scope:Properties)
+    }
+
+    static {
+      defaultInstance = new Properties(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:Properties)
+  }
+
+  public interface PropertyOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:Property)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required string key = 1;</code>
+     */
+    boolean hasKey();
+    /**
+     * <code>required string key = 1;</code>
+     */
+    java.lang.String getKey();
+    /**
+     * <code>required string key = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getKeyBytes();
+
+    /**
+     * <code>required string value = 2;</code>
+     */
+    boolean hasValue();
+    /**
+     * <code>required string value = 2;</code>
+     */
+    java.lang.String getValue();
+    /**
+     * <code>required string value = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getValueBytes();
+  }
+  /**
+   * Protobuf type {@code Property}
+   */
+  public static final class Property extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:Property)
+      PropertyOrBuilder {
+    // Use Property.newBuilder() to construct.
+    private Property(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private Property(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final Property defaultInstance;
+    public static Property getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public Property getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Property(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000001;
+              key_ = bs;
+              break;
+            }
+            case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000002;
+              value_ = bs;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.util.rpc.BaseRpc.internal_static_Property_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.util.rpc.BaseRpc.internal_static_Property_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.util.rpc.BaseRpc.Property.class, org.marketcetera.util.rpc.BaseRpc.Property.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Property> PARSER =
+        new com.google.protobuf.AbstractParser<Property>() {
+      public Property parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Property(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Property> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    public static final int KEY_FIELD_NUMBER = 1;
+    private java.lang.Object key_;
+    /**
+     * <code>required string key = 1;</code>
+     */
+    public boolean hasKey() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string key = 1;</code>
+     */
+    public java.lang.String getKey() {
+      java.lang.Object ref = key_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          key_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string key = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getKeyBytes() {
+      java.lang.Object ref = key_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        key_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int VALUE_FIELD_NUMBER = 2;
+    private java.lang.Object value_;
+    /**
+     * <code>required string value = 2;</code>
+     */
+    public boolean hasValue() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string value = 2;</code>
+     */
+    public java.lang.String getValue() {
+      java.lang.Object ref = value_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          value_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string value = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getValueBytes() {
+      java.lang.Object ref = value_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        value_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private void initFields() {
+      key_ = "";
+      value_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasKey()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasValue()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getKeyBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getValueBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getKeyBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getValueBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.util.rpc.BaseRpc.Property parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Property parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Property parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Property parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Property parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Property parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Property parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Property parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Property parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.Property parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.util.rpc.BaseRpc.Property prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code Property}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:Property)
+        org.marketcetera.util.rpc.BaseRpc.PropertyOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_Property_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_Property_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.util.rpc.BaseRpc.Property.class, org.marketcetera.util.rpc.BaseRpc.Property.Builder.class);
+      }
+
+      // Construct using org.marketcetera.util.rpc.BaseRpc.Property.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        key_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        value_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_Property_descriptor;
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.Property getDefaultInstanceForType() {
+        return org.marketcetera.util.rpc.BaseRpc.Property.getDefaultInstance();
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.Property build() {
+        org.marketcetera.util.rpc.BaseRpc.Property result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.Property buildPartial() {
+        org.marketcetera.util.rpc.BaseRpc.Property result = new org.marketcetera.util.rpc.BaseRpc.Property(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.key_ = key_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.value_ = value_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.util.rpc.BaseRpc.Property) {
+          return mergeFrom((org.marketcetera.util.rpc.BaseRpc.Property)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.util.rpc.BaseRpc.Property other) {
+        if (other == org.marketcetera.util.rpc.BaseRpc.Property.getDefaultInstance()) return this;
+        if (other.hasKey()) {
+          bitField0_ |= 0x00000001;
+          key_ = other.key_;
+          onChanged();
+        }
+        if (other.hasValue()) {
+          bitField0_ |= 0x00000002;
+          value_ = other.value_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasKey()) {
+          
+          return false;
+        }
+        if (!hasValue()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.util.rpc.BaseRpc.Property parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.util.rpc.BaseRpc.Property) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object key_ = "";
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public boolean hasKey() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public java.lang.String getKey() {
+        java.lang.Object ref = key_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            key_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getKeyBytes() {
+        java.lang.Object ref = key_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          key_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public Builder setKey(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        key_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public Builder clearKey() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        key_ = getDefaultInstance().getKey();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string key = 1;</code>
+       */
+      public Builder setKeyBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        key_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object value_ = "";
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public boolean hasValue() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public java.lang.String getValue() {
+        java.lang.Object ref = value_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            value_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getValueBytes() {
+        java.lang.Object ref = value_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          value_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public Builder setValue(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public Builder clearValue() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        value_ = getDefaultInstance().getValue();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public Builder setValueBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:Property)
+    }
+
+    static {
+      defaultInstance = new Property(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:Property)
+  }
+
+  public interface PageRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:PageRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional uint32 page = 1 [default = 0];</code>
+     */
+    boolean hasPage();
+    /**
+     * <code>optional uint32 page = 1 [default = 0];</code>
+     */
+    int getPage();
+
+    /**
+     * <code>optional uint32 size = 2 [default = 2147483647];</code>
+     */
+    boolean hasSize();
+    /**
+     * <code>optional uint32 size = 2 [default = 2147483647];</code>
+     */
+    int getSize();
+  }
+  /**
+   * Protobuf type {@code PageRequest}
+   */
+  public static final class PageRequest extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:PageRequest)
+      PageRequestOrBuilder {
+    // Use PageRequest.newBuilder() to construct.
+    private PageRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private PageRequest(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final PageRequest defaultInstance;
+    public static PageRequest getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public PageRequest getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PageRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              page_ = input.readUInt32();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              size_ = input.readUInt32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.util.rpc.BaseRpc.internal_static_PageRequest_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.util.rpc.BaseRpc.internal_static_PageRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.util.rpc.BaseRpc.PageRequest.class, org.marketcetera.util.rpc.BaseRpc.PageRequest.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<PageRequest> PARSER =
+        new com.google.protobuf.AbstractParser<PageRequest>() {
+      public PageRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new PageRequest(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PageRequest> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    public static final int PAGE_FIELD_NUMBER = 1;
+    private int page_;
+    /**
+     * <code>optional uint32 page = 1 [default = 0];</code>
+     */
+    public boolean hasPage() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional uint32 page = 1 [default = 0];</code>
+     */
+    public int getPage() {
+      return page_;
+    }
+
+    public static final int SIZE_FIELD_NUMBER = 2;
+    private int size_;
+    /**
+     * <code>optional uint32 size = 2 [default = 2147483647];</code>
+     */
+    public boolean hasSize() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional uint32 size = 2 [default = 2147483647];</code>
+     */
+    public int getSize() {
+      return size_;
+    }
+
+    private void initFields() {
+      page_ = 0;
+      size_ = 2147483647;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt32(1, page_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(2, size_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(1, page_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, size_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.util.rpc.BaseRpc.PageRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.util.rpc.BaseRpc.PageRequest prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code PageRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:PageRequest)
+        org.marketcetera.util.rpc.BaseRpc.PageRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_PageRequest_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_PageRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.util.rpc.BaseRpc.PageRequest.class, org.marketcetera.util.rpc.BaseRpc.PageRequest.Builder.class);
+      }
+
+      // Construct using org.marketcetera.util.rpc.BaseRpc.PageRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        page_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        size_ = 2147483647;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_PageRequest_descriptor;
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.PageRequest getDefaultInstanceForType() {
+        return org.marketcetera.util.rpc.BaseRpc.PageRequest.getDefaultInstance();
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.PageRequest build() {
+        org.marketcetera.util.rpc.BaseRpc.PageRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.PageRequest buildPartial() {
+        org.marketcetera.util.rpc.BaseRpc.PageRequest result = new org.marketcetera.util.rpc.BaseRpc.PageRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.page_ = page_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.size_ = size_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.util.rpc.BaseRpc.PageRequest) {
+          return mergeFrom((org.marketcetera.util.rpc.BaseRpc.PageRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.util.rpc.BaseRpc.PageRequest other) {
+        if (other == org.marketcetera.util.rpc.BaseRpc.PageRequest.getDefaultInstance()) return this;
+        if (other.hasPage()) {
+          setPage(other.getPage());
+        }
+        if (other.hasSize()) {
+          setSize(other.getSize());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.util.rpc.BaseRpc.PageRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.util.rpc.BaseRpc.PageRequest) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private int page_ ;
+      /**
+       * <code>optional uint32 page = 1 [default = 0];</code>
+       */
+      public boolean hasPage() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional uint32 page = 1 [default = 0];</code>
+       */
+      public int getPage() {
+        return page_;
+      }
+      /**
+       * <code>optional uint32 page = 1 [default = 0];</code>
+       */
+      public Builder setPage(int value) {
+        bitField0_ |= 0x00000001;
+        page_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 page = 1 [default = 0];</code>
+       */
+      public Builder clearPage() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        page_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int size_ = 2147483647;
+      /**
+       * <code>optional uint32 size = 2 [default = 2147483647];</code>
+       */
+      public boolean hasSize() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional uint32 size = 2 [default = 2147483647];</code>
+       */
+      public int getSize() {
+        return size_;
+      }
+      /**
+       * <code>optional uint32 size = 2 [default = 2147483647];</code>
+       */
+      public Builder setSize(int value) {
+        bitField0_ |= 0x00000002;
+        size_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 size = 2 [default = 2147483647];</code>
+       */
+      public Builder clearSize() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        size_ = 2147483647;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:PageRequest)
+    }
+
+    static {
+      defaultInstance = new PageRequest(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:PageRequest)
+  }
+
+  public interface PageResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:PageResponse)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional uint64 totalSize = 1;</code>
+     */
+    boolean hasTotalSize();
+    /**
+     * <code>optional uint64 totalSize = 1;</code>
+     */
+    long getTotalSize();
+
+    /**
+     * <code>optional uint32 totalPages = 2;</code>
+     */
+    boolean hasTotalPages();
+    /**
+     * <code>optional uint32 totalPages = 2;</code>
+     */
+    int getTotalPages();
+
+    /**
+     * <code>optional uint32 pageNumber = 3;</code>
+     */
+    boolean hasPageNumber();
+    /**
+     * <code>optional uint32 pageNumber = 3;</code>
+     */
+    int getPageNumber();
+
+    /**
+     * <code>optional uint32 pageSize = 4;</code>
+     */
+    boolean hasPageSize();
+    /**
+     * <code>optional uint32 pageSize = 4;</code>
+     */
+    int getPageSize();
+
+    /**
+     * <code>optional uint32 pageMaxSize = 5;</code>
+     */
+    boolean hasPageMaxSize();
+    /**
+     * <code>optional uint32 pageMaxSize = 5;</code>
+     */
+    int getPageMaxSize();
+  }
+  /**
+   * Protobuf type {@code PageResponse}
+   */
+  public static final class PageResponse extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:PageResponse)
+      PageResponseOrBuilder {
+    // Use PageResponse.newBuilder() to construct.
+    private PageResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private PageResponse(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final PageResponse defaultInstance;
+    public static PageResponse getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public PageResponse getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PageResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              totalSize_ = input.readUInt64();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              totalPages_ = input.readUInt32();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              pageNumber_ = input.readUInt32();
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              pageSize_ = input.readUInt32();
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              pageMaxSize_ = input.readUInt32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.util.rpc.BaseRpc.internal_static_PageResponse_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.util.rpc.BaseRpc.internal_static_PageResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.util.rpc.BaseRpc.PageResponse.class, org.marketcetera.util.rpc.BaseRpc.PageResponse.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<PageResponse> PARSER =
+        new com.google.protobuf.AbstractParser<PageResponse>() {
+      public PageResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new PageResponse(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PageResponse> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    public static final int TOTALSIZE_FIELD_NUMBER = 1;
+    private long totalSize_;
+    /**
+     * <code>optional uint64 totalSize = 1;</code>
+     */
+    public boolean hasTotalSize() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional uint64 totalSize = 1;</code>
+     */
+    public long getTotalSize() {
+      return totalSize_;
+    }
+
+    public static final int TOTALPAGES_FIELD_NUMBER = 2;
+    private int totalPages_;
+    /**
+     * <code>optional uint32 totalPages = 2;</code>
+     */
+    public boolean hasTotalPages() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional uint32 totalPages = 2;</code>
+     */
+    public int getTotalPages() {
+      return totalPages_;
+    }
+
+    public static final int PAGENUMBER_FIELD_NUMBER = 3;
+    private int pageNumber_;
+    /**
+     * <code>optional uint32 pageNumber = 3;</code>
+     */
+    public boolean hasPageNumber() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional uint32 pageNumber = 3;</code>
+     */
+    public int getPageNumber() {
+      return pageNumber_;
+    }
+
+    public static final int PAGESIZE_FIELD_NUMBER = 4;
+    private int pageSize_;
+    /**
+     * <code>optional uint32 pageSize = 4;</code>
+     */
+    public boolean hasPageSize() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional uint32 pageSize = 4;</code>
+     */
+    public int getPageSize() {
+      return pageSize_;
+    }
+
+    public static final int PAGEMAXSIZE_FIELD_NUMBER = 5;
+    private int pageMaxSize_;
+    /**
+     * <code>optional uint32 pageMaxSize = 5;</code>
+     */
+    public boolean hasPageMaxSize() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional uint32 pageMaxSize = 5;</code>
+     */
+    public int getPageMaxSize() {
+      return pageMaxSize_;
+    }
+
+    private void initFields() {
+      totalSize_ = 0L;
+      totalPages_ = 0;
+      pageNumber_ = 0;
+      pageSize_ = 0;
+      pageMaxSize_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt64(1, totalSize_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(2, totalPages_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt32(3, pageNumber_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeUInt32(4, pageSize_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeUInt32(5, pageMaxSize_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(1, totalSize_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, totalPages_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(3, pageNumber_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(4, pageSize_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, pageMaxSize_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.util.rpc.BaseRpc.PageResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.util.rpc.BaseRpc.PageResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.util.rpc.BaseRpc.PageResponse prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code PageResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:PageResponse)
+        org.marketcetera.util.rpc.BaseRpc.PageResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_PageResponse_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_PageResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.util.rpc.BaseRpc.PageResponse.class, org.marketcetera.util.rpc.BaseRpc.PageResponse.Builder.class);
+      }
+
+      // Construct using org.marketcetera.util.rpc.BaseRpc.PageResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        totalSize_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        totalPages_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        pageNumber_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        pageSize_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        pageMaxSize_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.util.rpc.BaseRpc.internal_static_PageResponse_descriptor;
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.PageResponse getDefaultInstanceForType() {
+        return org.marketcetera.util.rpc.BaseRpc.PageResponse.getDefaultInstance();
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.PageResponse build() {
+        org.marketcetera.util.rpc.BaseRpc.PageResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.util.rpc.BaseRpc.PageResponse buildPartial() {
+        org.marketcetera.util.rpc.BaseRpc.PageResponse result = new org.marketcetera.util.rpc.BaseRpc.PageResponse(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.totalSize_ = totalSize_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.totalPages_ = totalPages_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.pageNumber_ = pageNumber_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.pageSize_ = pageSize_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.pageMaxSize_ = pageMaxSize_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.util.rpc.BaseRpc.PageResponse) {
+          return mergeFrom((org.marketcetera.util.rpc.BaseRpc.PageResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.util.rpc.BaseRpc.PageResponse other) {
+        if (other == org.marketcetera.util.rpc.BaseRpc.PageResponse.getDefaultInstance()) return this;
+        if (other.hasTotalSize()) {
+          setTotalSize(other.getTotalSize());
+        }
+        if (other.hasTotalPages()) {
+          setTotalPages(other.getTotalPages());
+        }
+        if (other.hasPageNumber()) {
+          setPageNumber(other.getPageNumber());
+        }
+        if (other.hasPageSize()) {
+          setPageSize(other.getPageSize());
+        }
+        if (other.hasPageMaxSize()) {
+          setPageMaxSize(other.getPageMaxSize());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.util.rpc.BaseRpc.PageResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.util.rpc.BaseRpc.PageResponse) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private long totalSize_ ;
+      /**
+       * <code>optional uint64 totalSize = 1;</code>
+       */
+      public boolean hasTotalSize() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional uint64 totalSize = 1;</code>
+       */
+      public long getTotalSize() {
+        return totalSize_;
+      }
+      /**
+       * <code>optional uint64 totalSize = 1;</code>
+       */
+      public Builder setTotalSize(long value) {
+        bitField0_ |= 0x00000001;
+        totalSize_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint64 totalSize = 1;</code>
+       */
+      public Builder clearTotalSize() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        totalSize_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private int totalPages_ ;
+      /**
+       * <code>optional uint32 totalPages = 2;</code>
+       */
+      public boolean hasTotalPages() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional uint32 totalPages = 2;</code>
+       */
+      public int getTotalPages() {
+        return totalPages_;
+      }
+      /**
+       * <code>optional uint32 totalPages = 2;</code>
+       */
+      public Builder setTotalPages(int value) {
+        bitField0_ |= 0x00000002;
+        totalPages_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 totalPages = 2;</code>
+       */
+      public Builder clearTotalPages() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        totalPages_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int pageNumber_ ;
+      /**
+       * <code>optional uint32 pageNumber = 3;</code>
+       */
+      public boolean hasPageNumber() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional uint32 pageNumber = 3;</code>
+       */
+      public int getPageNumber() {
+        return pageNumber_;
+      }
+      /**
+       * <code>optional uint32 pageNumber = 3;</code>
+       */
+      public Builder setPageNumber(int value) {
+        bitField0_ |= 0x00000004;
+        pageNumber_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 pageNumber = 3;</code>
+       */
+      public Builder clearPageNumber() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        pageNumber_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int pageSize_ ;
+      /**
+       * <code>optional uint32 pageSize = 4;</code>
+       */
+      public boolean hasPageSize() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional uint32 pageSize = 4;</code>
+       */
+      public int getPageSize() {
+        return pageSize_;
+      }
+      /**
+       * <code>optional uint32 pageSize = 4;</code>
+       */
+      public Builder setPageSize(int value) {
+        bitField0_ |= 0x00000008;
+        pageSize_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 pageSize = 4;</code>
+       */
+      public Builder clearPageSize() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        pageSize_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int pageMaxSize_ ;
+      /**
+       * <code>optional uint32 pageMaxSize = 5;</code>
+       */
+      public boolean hasPageMaxSize() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional uint32 pageMaxSize = 5;</code>
+       */
+      public int getPageMaxSize() {
+        return pageMaxSize_;
+      }
+      /**
+       * <code>optional uint32 pageMaxSize = 5;</code>
+       */
+      public Builder setPageMaxSize(int value) {
+        bitField0_ |= 0x00000010;
+        pageMaxSize_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 pageMaxSize = 5;</code>
+       */
+      public Builder clearPageMaxSize() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        pageMaxSize_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:PageResponse)
+    }
+
+    static {
+      defaultInstance = new PageResponse(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:PageResponse)
+  }
+
   /**
    * Protobuf service {@code BaseRpcService}
    */
@@ -5804,6 +8325,26 @@ public final class BaseRpc {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Status_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_Properties_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_Properties_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_Property_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_Property_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_PageRequest_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_PageRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_PageResponse_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_PageResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -5824,12 +8365,19 @@ public final class BaseRpc {
       "uage\030\002 \002(\t\022\017\n\007variant\030\003 \001(\t\"\036\n\020Heartbeat" +
       "Request\022\n\n\002id\030\001 \002(\003\"\037\n\021HeartbeatResponse",
       "\022\n\n\002id\030\001 \002(\003\"<\n\006Status\022\016\n\006failed\030\001 \002(\010\022\017" +
-      "\n\007message\030\002 \001(\t\022\021\n\tsessionId\030\003 \001(\t2\227\001\n\016B" +
-      "aseRpcService\022&\n\005login\022\r.LoginRequest\032\016." +
-      "LoginResponse\022)\n\006logout\022\016.LogoutRequest\032" +
-      "\017.LogoutResponse\0222\n\theartbeat\022\021.Heartbea" +
-      "tRequest\032\022.HeartbeatResponseB\'\n\031org.mark" +
-      "etcetera.util.rpcB\007BaseRpc\210\001\001"
+      "\n\007message\030\002 \001(\t\022\021\n\tsessionId\030\003 \001(\t\")\n\nPr" +
+      "operties\022\033\n\010property\030\001 \003(\0132\t.Property\"&\n" +
+      "\010Property\022\013\n\003key\030\001 \002(\t\022\r\n\005value\030\002 \002(\t\"8\n" +
+      "\013PageRequest\022\017\n\004page\030\001 \001(\r:\0010\022\030\n\004size\030\002 " +
+      "\001(\r:\n2147483647\"p\n\014PageResponse\022\021\n\ttotal" +
+      "Size\030\001 \001(\004\022\022\n\ntotalPages\030\002 \001(\r\022\022\n\npageNu" +
+      "mber\030\003 \001(\r\022\020\n\010pageSize\030\004 \001(\r\022\023\n\013pageMaxS" +
+      "ize\030\005 \001(\r2\227\001\n\016BaseRpcService\022&\n\005login\022\r." +
+      "LoginRequest\032\016.LoginResponse\022)\n\006logout\022\016",
+      ".LogoutRequest\032\017.LogoutResponse\0222\n\theart" +
+      "beat\022\021.HeartbeatRequest\032\022.HeartbeatRespo" +
+      "nseB\'\n\031org.marketcetera.util.rpcB\007BaseRp" +
+      "c\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -5891,6 +8439,30 @@ public final class BaseRpc {
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Status_descriptor,
         new java.lang.String[] { "Failed", "Message", "SessionId", });
+    internal_static_Properties_descriptor =
+      getDescriptor().getMessageTypes().get(8);
+    internal_static_Properties_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_Properties_descriptor,
+        new java.lang.String[] { "Property", });
+    internal_static_Property_descriptor =
+      getDescriptor().getMessageTypes().get(9);
+    internal_static_Property_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_Property_descriptor,
+        new java.lang.String[] { "Key", "Value", });
+    internal_static_PageRequest_descriptor =
+      getDescriptor().getMessageTypes().get(10);
+    internal_static_PageRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_PageRequest_descriptor,
+        new java.lang.String[] { "Page", "Size", });
+    internal_static_PageResponse_descriptor =
+      getDescriptor().getMessageTypes().get(11);
+    internal_static_PageResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_PageResponse_descriptor,
+        new java.lang.String[] { "TotalSize", "TotalPages", "PageNumber", "PageSize", "PageMaxSize", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
