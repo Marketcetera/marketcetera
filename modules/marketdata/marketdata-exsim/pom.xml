@@ -21,6 +21,15 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <!-- runtime -->
+    <dependency>
+      <groupId>org.apache.mina</groupId>
+      <artifactId>mina-core</artifactId>
+    </dependency>
     <!-- test -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -30,6 +39,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
       <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
 </project>

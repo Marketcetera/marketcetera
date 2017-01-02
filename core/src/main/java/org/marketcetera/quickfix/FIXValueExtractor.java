@@ -88,7 +88,7 @@ public class FIXValueExtractor {
         Object value = null;
         if (inFieldMap != null) {
             try {
-                FieldType fieldType = inDataDictionary.getFieldTypeEnum(inFieldId);
+                FieldType fieldType = inDataDictionary.getFieldType(inFieldId);
                 if(fieldType == null){
                     value = inFieldMap.getString(inFieldId);
                 } else if (inHumanReadable && inDataDictionary.hasFieldValue(inFieldId)) {
@@ -100,16 +100,16 @@ public class FIXValueExtractor {
                     } catch (Exception ignored) {
                         // do nothing, use the string value
                     }
-                } else if(fieldType.equals(FieldType.UtcTimeOnly)) {
+                } else if(fieldType.equals(FieldType.UTCTIMEONLY)) {
                     value = inFieldMap.getUtcTimeOnly(inFieldId); //i18n_time
-                } else if(fieldType.equals(FieldType.UtcTimeStamp)){
+                } else if(fieldType.equals(FieldType.UTCTIMESTAMP)){
                     DateTime actualValue = new DateTime(inFieldMap.getUtcTimeStamp(inFieldId));
                     if(actualValue.isAfter(LocalTime.MIDNIGHT.toDateTimeToday())) {
                         value = TimeFactoryImpl.WALLCLOCK_MILLISECONDS_LOCAL.print(actualValue);
                     } else {
                         value = TimeFactoryImpl.FULL_MILLISECONDS_LOCAL.print(actualValue);
                     }
-                } else if(fieldType.equals(FieldType.UtcDateOnly) ||fieldType.equals(FieldType.UtcDate)){
+                } else if(fieldType.equals(FieldType.UTCDATEONLY) ||fieldType.equals(FieldType.UTCDATE)){
                     value = inFieldMap.getUtcDateOnly(inFieldId); //i18n_date
                 } else if(Number.class.isAssignableFrom(fieldType.getJavaType())){
                     value = inFieldMap.getDecimal(inFieldId);
