@@ -58,6 +58,7 @@ message Property {
 message PageRequest {
     optional uint32 page = 1 [default=0];
     optional uint32 size = 2 [default=2147483647];
+    optional SortOrder sortOrder = 3;
 }
 
 message PageResponse {
@@ -66,6 +67,21 @@ message PageResponse {
     optional uint32 pageNumber = 3;
     optional uint32 pageSize = 4;
     optional uint32 pageMaxSize = 5;
+    optional SortOrder sortOrder = 6;
+}
+
+enum SortDirection {
+    ASCENDING = 0;
+    DESCENDING = 1;
+}
+
+message Sort {
+    required string property = 1;
+    required SortDirection direction = 2;
+}
+
+message SortOrder {
+    repeated Sort sort = 1;
 }
 
 service BaseRpcService {

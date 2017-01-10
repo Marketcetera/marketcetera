@@ -1,5 +1,9 @@
 package org.marketcetera.persist;
 
+import java.util.List;
+
+import com.google.common.collect.Lists;
+
 /* $License$ */
 
 /**
@@ -47,6 +51,28 @@ public class PageRequest
     {
         pageSize = inPageSize;
     }
+    /**
+     * Get the sortOrder value.
+     *
+     * @return a <code>List&lt;Sort&gt;</code> value
+     */
+    public List<Sort> getSortOrder()
+    {
+        return sortOrder;
+    }
+    /**
+     * Sets the sortOrder value.
+     *
+     * @param inSortOrder a <code>List&lt;Sort&gt;</code> value
+     */
+    public void setSortOrder(List<Sort> inSortOrder)
+    {
+        sortOrder = inSortOrder;
+    }
+    /**
+     * optional sort directive
+     */
+    private List<Sort> sortOrder = Lists.newArrayList();
     /**
      * zero-indexed page number
      */

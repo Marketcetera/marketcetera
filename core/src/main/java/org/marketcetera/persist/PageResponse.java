@@ -1,5 +1,9 @@
 package org.marketcetera.persist;
 
+import java.util.List;
+
+import com.google.common.collect.Lists;
+
 /* $License$ */
 
 /**
@@ -101,6 +105,28 @@ public abstract class PageResponse
     {
         pageMaxSize = inPageMaxSize;
     }
+    /**
+     * Get the sortOrder value.
+     *
+     * @return a <code>List&lt;Sort&gt;</code> value
+     */
+    public List<Sort> getSortOrder()
+    {
+        return sortOrder;
+    }
+    /**
+     * Sets the sortOrder value.
+     *
+     * @param inSortOrder a <code>List&lt;Sort&gt;</code> value
+     */
+    public void setSortOrder(List<Sort> inSortOrder)
+    {
+        sortOrder = inSortOrder;
+    }
+    /**
+     * optional sort order
+     */
+    private List<Sort> sortOrder = Lists.newArrayList();
     /**
      * the total number of items
      */
