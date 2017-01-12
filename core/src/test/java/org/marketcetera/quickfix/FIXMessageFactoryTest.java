@@ -108,6 +108,10 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
     }
     
     public void testNewResendRequest() throws Exception {
+        FIXVersion fixVersion = FIXVersion.getFIXVersion(msgFactory.getBeginString());
+        if(fixVersion.isFix5OrGreater()) {
+            return;
+        }
     	Message rr;
     	rr = msgFactory.newResendRequest(null, null);
     	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));

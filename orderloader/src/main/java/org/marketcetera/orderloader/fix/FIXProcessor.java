@@ -53,7 +53,7 @@ public class FIXProcessor extends RowProcessor {
         super(inProcessor, inBrokerID);
         mMsgFactory = inFIXVersion.getMessageFactory();
         try {
-            mDictionary = new FIXDataDictionary(inFIXVersion.getDataDictionaryURL());
+            mDictionary = new FIXDataDictionary(inFIXVersion.getDataDictionaryName());
         } catch (FIXFieldConverterNotAvailable e) {
             throw new OrderParsingException(e, new I18NBoundMessage1P(
                     Messages.ERROR_PROCESS_FIX_VERSION,

@@ -54,7 +54,7 @@ public abstract class NewFixVersionedTestCase
         fixDD = FIXDataDictionaryManager.getFIXDataDictionary(fixVersion);
         if(fixDD == null) {
             FIXDataDictionaryManager.initialize(fixVersion,
-                                                fixVersion.getDataDictionaryURL());
+                                                fixVersion.getDataDictionaryName());
             fixDD = FIXDataDictionaryManager.getFIXDataDictionary(fixVersion);
         }
         CurrentFIXDataDictionary.setCurrentFIXDataDictionary(fixDD);

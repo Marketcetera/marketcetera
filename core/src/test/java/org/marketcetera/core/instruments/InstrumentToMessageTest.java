@@ -67,7 +67,7 @@ public class InstrumentToMessageTest {
         //Initialize all fix dictionaries.
         for (FIXVersion version : FIXVersion.values()) {
             FIXDataDictionaryManager.initialize(version,
-                    version.getDataDictionaryURL());
+                    version.getDataDictionaryName());
         }
     }
 

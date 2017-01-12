@@ -45,7 +45,7 @@ public class CustomFieldsTest extends TestCase {
         request.setField(new DateFrom(new GregorianCalendar(2001, 4, 1).getTime()));
         request.setField(new DateTo(new Date()));
 
-        DataDictionary dict = new DataDictionary(FIXVersion.FIX44.getDataDictionaryURL());
+        DataDictionary dict = new DataDictionary(FIXVersion.FIX44.getDataDictionaryName());
         dict.validate(request, true);
 
         // now round-trip it

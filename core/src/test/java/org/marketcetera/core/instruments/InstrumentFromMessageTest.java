@@ -56,7 +56,7 @@ public class InstrumentFromMessageTest {
     @BeforeClass
     public static void logSetup() throws Exception {
         FIXDataDictionaryManager.initialize(FIX_VERSION,
-                FIX_VERSION.getDataDictionaryURL());
+                FIX_VERSION.getDataDictionaryName());
     }
     
     @Test

@@ -91,7 +91,7 @@ public class FIXMessageUtil {
         public DataDictionary load(FIXVersion inKey)
                 throws Exception
         {
-            return new DataDictionary(inKey.getDataDictionaryURL());
+            return new DataDictionary(inKey.getDataDictionaryName());
         }
     } );
     public static final String prettyPrintCategory = "fix.prettyprint";

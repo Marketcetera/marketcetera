@@ -43,7 +43,7 @@ public class DynamicInstrumentFunctionSelectorTest {
     @BeforeClass
     public static void logSetup() throws Exception {
         FIXDataDictionaryManager.initialize(FIXVersion.FIX42,
-                FIXVersion.FIX42.getDataDictionaryURL());
+                FIXVersion.FIX42.getDataDictionaryName());
     }
 
     /**

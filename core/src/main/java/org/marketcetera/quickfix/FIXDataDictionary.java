@@ -24,6 +24,10 @@ public class FIXDataDictionary {
     public static final String FIX_4_2_BEGIN_STRING = "FIX.4.2"; //$NON-NLS-1$
     public static final String FIX_4_3_BEGIN_STRING = "FIX.4.3"; //$NON-NLS-1$
     public static final String FIX_4_4_BEGIN_STRING = "FIX.4.4"; //$NON-NLS-1$
+    public static final String FIX_5_0_BEGIN_STRING = "FIX.5.0"; //$NON-NLS-1$
+    public static final String FIX_5_0_SP1_BEGIN_STRING = "FIX.5.0SP1"; //$NON-NLS-1$
+    public static final String FIX_5_0_SP2_BEGIN_STRING = "FIX.5.0SP2"; //$NON-NLS-1$
+//    public static final String FIXT_1_1_BEGIN_STRING = "FIXT.1.1"; //$NON-NLS-1$
 
     private final DataDictionary mDictionary;
 

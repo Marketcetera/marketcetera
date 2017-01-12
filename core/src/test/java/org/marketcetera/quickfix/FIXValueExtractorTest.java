@@ -52,7 +52,7 @@ public class FIXValueExtractorTest extends FIXVersionedTestCase {
 
 		assertEquals("1", extractor.extractValue(message, OrderID.FIELD, null, null, null).toString()); //$NON-NLS-1$
 		assertEquals("2", extractor.extractValue(message, ExecID.FIELD, null, null, null).toString()); //$NON-NLS-1$
-		if (fixVersion!=FIXVersion.FIX44){
+		if (fixVersion.ordinal()<=FIXVersion.FIX42.ordinal()){
 			assertEquals("NEW", extractor.extractValue(message, ExecTransType.FIELD, null, null, null, true)); //$NON-NLS-1$
 		}
 		assertEquals("FILLED", extractor.extractValue(message, OrdStatus.FIELD, null, null, null, true)); //$NON-NLS-1$

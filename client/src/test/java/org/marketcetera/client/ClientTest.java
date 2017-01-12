@@ -106,7 +106,7 @@ public class ClientTest
     @BeforeClass
     public static void setup() throws Exception {
         FIXDataDictionaryManager.initialize(FIXVersion.FIX42,
-                FIXVersion.FIX42.getDataDictionaryURL());
+                FIXVersion.FIX42.getDataDictionaryName());
         initServer();
     }
 

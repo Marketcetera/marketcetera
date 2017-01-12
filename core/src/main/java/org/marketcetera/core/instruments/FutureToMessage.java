@@ -83,6 +83,15 @@ public class FutureToMessage
                     inMessage.setField(new MaturityDay(String.valueOf(maturityDay)));
                 }
                 break;
+            case FIX50:
+            case FIX50SP1:
+            case FIX50SP2:
+                setCFICode(inMessage,
+                           future);
+                if(maturityDay != -1) {
+                    inMessage.setField(new MaturityDay(String.valueOf(maturityDay)));
+                }
+                break;
             default:
                 setCFICode(inMessage,
                            future);
