@@ -65,7 +65,7 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 		Integer fieldID;
 		if (column instanceof IFieldIdentifier
 				&& (fieldID = ((IFieldIdentifier)column).getFieldID()) != null
-				&& (fieldTypeEnum = dict.getFieldTypeEnum(fieldID)) != null
+				&& (fieldTypeEnum = dict.getFieldType(fieldID)) != null
 				&& (javaType = fieldTypeEnum.getJavaType()) != null
 				&& (Number.class.isAssignableFrom(javaType)
 					|| Date.class.isAssignableFrom(javaType)
@@ -124,12 +124,12 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 			Object objValue = getColumnValue((T)element, columnIndex);
 			String value = ""; //$NON-NLS-1$
 			if (objValue != null){
-				FieldType fieldType = dataDictionary.getFieldTypeEnum(fieldID);
-				if (fieldType.equals(FieldType.UtcTimeOnly)
-						|| fieldType.equals(FieldType.UtcTimeStamp)){
+				FieldType fieldType = dataDictionary.getFieldType(fieldID);
+				if (fieldType.equals(FieldType.UTCTIMEONLY)
+						|| fieldType.equals(FieldType.UTCTIMESTAMP)){
 					value = TIME_FORMAT.format((Date)objValue);
-				} else if (fieldType.equals(FieldType.UtcDateOnly)
-						||fieldType.equals(FieldType.UtcDate)){
+				} else if (fieldType.equals(FieldType.UTCDATEONLY)
+						||fieldType.equals(FieldType.UTCDATE)){
 					value = DATE_FORMAT.format((Date)objValue);
 				} else if (objValue instanceof BigDecimal){
 					value  = ((BigDecimal)objValue).toPlainString();

@@ -193,7 +193,7 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 			return false;
 		}
 		try {
-			FieldType fieldTypeEnum = dict.getFieldTypeEnum(fieldNum);
+			FieldType fieldTypeEnum = dict.getFieldType(fieldNum);
 			Class<?> javaType;
 			if (fieldTypeEnum == null){
 				javaType = String.class;
@@ -317,13 +317,13 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		if (objValue != null) {
 			DataDictionary dictionary = getDataDictionary();
 			int fieldNum = columnTracker.getFieldNumber(columnIndex);
-			FieldType fieldType = dictionary.getFieldTypeEnum(fieldNum);
+			FieldType fieldType = dictionary.getFieldType(fieldNum);
 			if (objValue instanceof Date) {
-				if (fieldType.equals(FieldType.UtcTimeOnly)
-						|| fieldType.equals(FieldType.UtcTimeStamp)) {
+				if (fieldType.equals(FieldType.UTCTIMEONLY)
+						|| fieldType.equals(FieldType.UTCTIMESTAMP)) {
 					textValue = TIME_FORMAT.format((Date) objValue);
-				} else if (fieldType.equals(FieldType.UtcDateOnly)
-						|| fieldType.equals(FieldType.UtcDate)) {
+				} else if (fieldType.equals(FieldType.UTCDATEONLY)
+						|| fieldType.equals(FieldType.UTCDATE)) {
 					textValue = DATE_FORMAT.format((Date) objValue);
 				}
 			}

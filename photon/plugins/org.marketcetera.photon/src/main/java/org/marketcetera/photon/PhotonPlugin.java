@@ -294,7 +294,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         CurrentFIXDataDictionary
                 .setCurrentFIXDataDictionary(FIXDataDictionaryManager
                         .initialize(fixVersion, fixVersion
-                                .getDataDictionaryURL()));
+                                .getDataDictionaryName()));
     }
 
     /**
