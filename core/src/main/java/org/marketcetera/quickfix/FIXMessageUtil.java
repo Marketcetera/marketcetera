@@ -23,6 +23,10 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 import quickfix.DataDictionary;
 import quickfix.Field;
 import quickfix.FieldMap;
@@ -30,6 +34,8 @@ import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
 import quickfix.Message.Header;
+import quickfix.MessageUtils;
+import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.SessionNotFound;
 import quickfix.StringField;
@@ -70,10 +76,6 @@ import quickfix.field.Text;
 import quickfix.field.TradSesReqID;
 import quickfix.field.TradeRequestID;
 import quickfix.field.UserRequestID;
-
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 
 /**
  * Collection of utilities to create work with FIX messages
@@ -162,9 +164,7 @@ public class FIXMessageUtil {
     public static SessionID getSessionId(Message inMessage)
             throws FieldNotFound
     {
-        return new SessionID(inMessage.getHeader().getString(quickfix.field.BeginString.FIELD),
-                             inMessage.getHeader().getString(quickfix.field.SenderCompID.FIELD),
-                             inMessage.getHeader().getString(quickfix.field.TargetCompID.FIELD));
+        return MessageUtils.getSessionID(inMessage);
     }
     /**
      * Get the mirror image of the given session id.
@@ -189,7 +189,7 @@ public class FIXMessageUtil {
         if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
             try {
                 SLF4JLoggerProxy.debug(FIXMessageUtil.prettyPrintCategory,
-                                       new AnalyzedMessage(FIXMessageUtil.getDataDictionary(inMessage),
+                                       new AnalyzedMessage(FIXMessageUtil.getDataDictionary(FIXVersion.getFIXVersion(inMessage)),
                                                            inMessage).toString());
             } catch (FieldNotFound e) {
                 SLF4JLoggerProxy.warn(FIXMessageUtil.prettyPrintCategory,
@@ -207,8 +207,35 @@ public class FIXMessageUtil {
     public static DataDictionary getDataDictionary(Message inMessage)
             throws FieldNotFound
     {
-        final FIXVersion version = FIXVersion.getFIXVersion(inMessage);
-        return cachedDataDictionaries.getUnchecked(version);
+        return getDataDictionary(FIXVersion.getFIXVersion(inMessage));
+    }
+    /**
+     * Get the data dictionary for the given session.
+     *
+     * @param inSessionId a <code>Message</code> value
+     * @return a <code>DataDictionary</code> value
+     * @throws FieldNotFound if the FIX version could not be determined from the given message
+     * @throws UnsupportedOperationException if the given session ID does not correspond to an active session
+     */
+    public static DataDictionary getDataDictionary(SessionID inSessionId)
+            throws FieldNotFound
+    {
+        Session session = Session.lookupSession(inSessionId);
+        if(session == null) {
+            throw new UnsupportedOperationException(Messages.MISSING_SESSION.getText(session));
+        }
+        quickfix.field.ApplVerID applVerId = session.getTargetDefaultApplicationVersionID();
+        return getDataDictionary(FIXVersion.getFIXVersion(applVerId));
+    }
+    /**
+     * Get the data dictionary for the given version.
+     *
+     * @param inVersion a <code>FIXVersion</code> value
+     * @return a <code>DataDictionary</code> value
+     */
+    public static DataDictionary getDataDictionary(FIXVersion inVersion)
+    {
+        return cachedDataDictionaries.getUnchecked(inVersion);
     }
     public static Message createSessionReject(Message inMessage,
                                               int inReason,
@@ -306,7 +333,7 @@ public class FIXMessageUtil {
             FIXVersion fixVersion = FIXVersion.getFIXVersion(inMessage);
             Message executionReport = fixVersion.getMessageFactory().createMessage(MsgType.EXECUTION_REPORT);
             FIXMessageAugmentor messageAugmentor = fixVersion.getMessageFactory().getMsgAugmentor();
-            DataDictionary dataDictionary = getDataDictionary(inMessage);
+            DataDictionary dataDictionary = getDataDictionary(fixVersion);
             FIXMessageUtil.fillFieldsFromExistingMessage(executionReport,
                                                          inMessage,
                                                          dataDictionary,
@@ -386,9 +413,7 @@ public class FIXMessageUtil {
         try {
             SessionID sessionId = null;
             try {
-                sessionId = new SessionID(inMessage.getHeader().getString(quickfix.field.BeginString.FIELD),
-                                          inMessage.getHeader().getString(quickfix.field.SenderCompID.FIELD),
-                                          inMessage.getHeader().getString(quickfix.field.TargetCompID.FIELD));
+                sessionId = getSessionId(inMessage);
             } catch(FieldNotFound ignored) {}
             String msgType = inMessage.getHeader().getString(quickfix.field.MsgType.FIELD);
             if(sessionId != null) {

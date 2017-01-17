@@ -30,24 +30,47 @@ public class FIXValueExtractor {
 	public Object extractValue(FieldMap inMap, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue) {
 		return extractValue(inMap, fieldID, groupID, groupDiscriminatorID, groupDiscriminatorValue, false);
 	}
-	public Object extractValue(FieldMap inMap, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue, boolean humanReadable) {
-		Object value = null;
-		if (fieldID != null) {
-			FieldMap map;
-			if (inMap instanceof Message){
-				if (groupID != null && groupDiscriminatorID!=null &&
-						groupDiscriminatorValue!=null){
-					map = extractGroup((Message)inMap, groupID, groupDiscriminatorID, groupDiscriminatorValue);
-				} else {
-					map = extractMap(inMap, fieldID);
-				}
-			} else {
-				map = inMap;
-			}
-			value = fieldValueFromMap(map, fieldID, dataDictionary, humanReadable);
-		}
-		return value;
-	}
+    /**
+     * Extract a value from the given field map.
+     *
+     * @param inMap a <code>FieldMap</code> value
+     * @param inFieldId an <code>Integer</code> value
+     * @param inGroupId an <code>Integer</code> value
+     * @param inGroupDiscriminatorId an <code>Integer</code> value
+     * @param inGroupDiscriminatorValue an <code>Integer</code> value
+     * @param inHumanReadable a <code>boolean</code> value
+     * @return an <code>Object</code> value
+     */
+    public Object extractValue(FieldMap inMap,
+                               Integer inFieldId,
+                               Integer inGroupId,
+                               Integer inGroupDiscriminatorId,
+                               Object inGroupDiscriminatorValue,
+                               boolean inHumanReadable)
+    {
+        Object value = null;
+        if(inFieldId != null) {
+            FieldMap map;
+            if(inMap instanceof Message) {
+                if(inGroupId != null && inGroupDiscriminatorId != null && inGroupDiscriminatorValue != null) {
+                    map = extractGroup((Message)inMap,
+                                       inGroupId,
+                                       inGroupDiscriminatorId,
+                                       inGroupDiscriminatorValue);
+                } else {
+                    map = extractMap(inMap,
+                                     inFieldId);
+                }
+            } else {
+                map = inMap;
+            }
+            value = fieldValueFromMap(map,
+                                      inFieldId,
+                                      dataDictionary,
+                                      inHumanReadable);
+        }
+        return value;
+    }
 	
 	private FieldMap extractGroup(Message message, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue) {
 		FieldMap map = null;

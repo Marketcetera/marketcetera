@@ -13,6 +13,8 @@ import org.marketcetera.marketdata.Content;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.trade.Instrument;
 
+import com.google.common.collect.Lists;
+
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -57,8 +59,6 @@ import quickfix.field.Text;
 import quickfix.field.TimeInForce;
 import quickfix.field.TransactTime;
 
-import com.google.common.collect.Lists;
-
 /**
  * Factory class that creates a particular beginString of the FIX message
  * based on the beginString specified.
@@ -76,14 +76,21 @@ public class FIXMessageFactory {
     private String beginString;
     /*package */static final char SOH_REPLACE_CHAR = '|';
     private static final char SOH_CHAR = '\001';
-
-    public FIXMessageFactory(String beginString, MessageFactory inFactory, FIXMessageAugmentor augmentor) {
-        this.beginString = beginString;
+    /**
+     * Create a new FIXMessageFactory instance.
+     *
+     * @param inBeginString a <code>String</code> value
+     * @param inFactory a <code>MessageFactory</code> value
+     * @param inAugmentor a <code>FIXMessageAugmentor</code> value
+     */
+    public FIXMessageFactory(String inBeginString,
+                             MessageFactory inFactory,
+                             FIXMessageAugmentor inAugmentor)
+    {
+        beginString = inBeginString;
         msgFactory = inFactory;
-        msgAugmentor = augmentor;
+        msgAugmentor = inAugmentor;
     }
-
-
     /**
      * Creates a message representing an ExecutionReport (type {@link MsgType#ORDER_CANCEL_REJECT}
      * @return  appropriately versioned message object
@@ -126,28 +133,50 @@ public class FIXMessageFactory {
     public Message newCancelFromMessage(Message oldMessage) throws FieldNotFound {
     	return newCancelHelper(MsgType.ORDER_CANCEL_REQUEST, oldMessage, false);
     }
-
-	public Message newCancelReplaceFromMessage(Message oldMessage) throws FieldNotFound {
-    	Message cancelMessage = newCancelHelper(MsgType.ORDER_CANCEL_REPLACE_REQUEST, oldMessage, false);
-		if (oldMessage.isSetField(Price.FIELD)){
-			cancelMessage.setField(oldMessage.getField(new Price()));
-		}
+    /**
+     * Create a new cancel replace from the given message.
+     *
+     * @param inOldMessage a <code>Message</code> value
+     * @return a <code>Message</code> value
+     * @throws FieldNotFound
+     */
+    public Message newCancelReplaceFromMessage(Message inOldMessage)
+            throws FieldNotFound
+    {
+        Message cancelMessage = newCancelHelper(MsgType.ORDER_CANCEL_REPLACE_REQUEST,
+                                                inOldMessage,
+                                                false);
+        if(inOldMessage.isSetField(Price.FIELD)) {
+            cancelMessage.setField(inOldMessage.getField(new Price()));
+        }
         addHandlingInst(cancelMessage);
         return cancelMessage;
 	}
-	
-	public Message newCancelHelper(String msgType, Message oldMessage, boolean onlyCopyRequiredFields) throws FieldNotFound {
-        Message cancelMessage = msgFactory.create(beginString, msgType);
-		cancelMessage.setField(new OrigClOrdID(oldMessage.getString(ClOrdID.FIELD)));
-        fillFieldsFromExistingMessage(oldMessage, onlyCopyRequiredFields, cancelMessage);
-        if (oldMessage.isSetField(OrderQty.FIELD)){
-			cancelMessage.setField(oldMessage.getField(new OrderQty()));
-		}
+    /**
+     * Create a new cancel helper from the given inputs.
+     *
+     * @param inMsgType a <code>String</code> value
+     * @param inOldMessage a <code>Message</code> value
+     * @param inOnlyCopyRequiredFields a <code>boolean</code> value
+     * @return a <code>Message</code> value
+     * @throws FieldNotFound
+     */
+    public Message newCancelHelper(String inMsgType,
+                                   Message inOldMessage,
+                                   boolean inOnlyCopyRequiredFields)
+            throws FieldNotFound
+    {
+        Message cancelMessage = msgFactory.create(beginString,
+                                                  inMsgType);
+        cancelMessage.setField(new OrigClOrdID(inOldMessage.getString(ClOrdID.FIELD)));
+        fillFieldsFromExistingMessage(inOldMessage, inOnlyCopyRequiredFields, cancelMessage);
+        if (inOldMessage.isSetField(OrderQty.FIELD)){
+            cancelMessage.setField(inOldMessage.getField(new OrderQty()));
+        }
         addTransactionTimeIfNeeded(cancelMessage);
         addSendingTime(cancelMessage);
         return cancelMessage;
-
-	}
+    }
 
     protected void addSendingTime(Message inCancelMessage) {
         inCancelMessage.getHeader().setField(new SendingTime(new Date()));

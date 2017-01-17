@@ -16,6 +16,9 @@ import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_50SP2;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.MessageUtils;
+import quickfix.Session;
+import quickfix.SessionID;
 
 /**
  * An enum for all the supported FIX versions, with the default URL for the data dictionary file.
@@ -67,14 +70,12 @@ public enum FIXVersion
              new FIXMessageFactory(FIXDataDictionary.FIX_5_0_SP2_BEGIN_STRING,
                                    new quickfix.fix50sp2.MessageFactory(),
                                    new FIXMessageAugmentor_50SP2())),
-//    FIXT11(FIXDataDictionary.FIXT_1_1_BEGIN_STRING,
-//           "FIXT11.xml", //$NON-NLS-1$
-//           new FIXMessageFactory(FIXDataDictionary.FIXT_1_1_BEGIN_STRING,
-//                                 new quickfix.fixt11.MessageFactory(),
-//                                 new FIXMessageAugmentor_T11())),
     FIX_SYSTEM(FIXDataDictionary.FIX_SYSTEM_BEGIN_STRING,
                "FIX00-system.xml", //$NON-NLS-1$
                new SystemFIXMessageFactory());
+    // nb: FIXT11 deliberately excluded from this list. this is complicated, but it's not an application
+    //  version and therefore has no corresponding (complete) data dictionary. the proper approach for FIXT
+    //  is to use one of the getFIXVersion calls below to find the correct application FIX version.
     /**
      * Get the FIX version value associated with the given string representation.
      *
@@ -101,22 +102,81 @@ public enum FIXVersion
     public static FIXVersion getFIXVersion(Message inMessage)
             throws FieldNotFound
     {
-        String beginString = inMessage.getHeader().getString(quickfix.field.BeginString.FIELD);
-        FIXVersion fixVersion = versionMap.get(beginString);
-        if(fixVersion == null) {
-            throw new IllegalArgumentException(Messages.FIX_VERSION_UNSUPPORTED.getText(beginString));
+        SessionID sessionId = MessageUtils.getSessionID(inMessage);
+        if(sessionId.isFIXT()) {
+            if(inMessage.getHeader().isSetField(quickfix.field.ApplVerID.FIELD)) {
+                return doFixVersionLookup(inMessage.getHeader().getString(quickfix.field.ApplVerID.FIELD));
+            }
+            // this is a FIXT message _and_ ApplVerID is _not_ set, we need to know something about the session
+            Session session = Session.lookupSession(sessionId);
+            if(session == null) {
+                throw new UnsupportedOperationException(Messages.APPL_VERID_REQUIRED.getText());
+            }
+            quickfix.field.ApplVerID defaultAppVerId = session.getTargetDefaultApplicationVersionID();
+            return getFIXVersion(defaultAppVerId);
+        } else {
+            return doFixVersionLookup(inMessage.getHeader().getString(quickfix.field.BeginString.FIELD));
         }
-        return fixVersion;
     }
     /**
-     * Indicate if the FIX version
+     * Get the FIX version from the given session ID.
      *
+     * @param inSessionId a <code>SessionID</code> value
+     * @return a <code>FIXVersion</code> value
+     */
+    public static FIXVersion getFIXVersion(SessionID inSessionId)
+    {
+        if(inSessionId.isFIXT()) {
+            // this is a FIXT message _and_ ApplVerID is _not_ set, we need to know something about the session
+            Session session = Session.lookupSession(inSessionId);
+            if(session == null) {
+                throw new UnsupportedOperationException(Messages.APPL_VERID_REQUIRED.getText());
+            }
+            quickfix.field.ApplVerID defaultAppVerId = session.getTargetDefaultApplicationVersionID();
+            return getFIXVersion(defaultAppVerId);
+        } else {
+            return getFIXVersion(inSessionId.getBeginString());
+        }
+    }
+    /**
+     * Get the FIX version associated with the given <code>ApplVerID</code> value.
+     *
+     * @param inApplVerId a <code>quickfix.field.ApplVerID</code> value
+     * @return a <code>FIXVersion</code> value
+     */
+    public static FIXVersion getFIXVersion(quickfix.field.ApplVerID inApplVerId)
+    {
+        switch(inApplVerId.getValue()) {
+            case quickfix.field.ApplVerID.FIX40:
+                return FIX40;
+            case quickfix.field.ApplVerID.FIX41:
+                return FIX41;
+            case quickfix.field.ApplVerID.FIX42:
+                return FIX42;
+            case quickfix.field.ApplVerID.FIX43:
+                return FIX43;
+            case quickfix.field.ApplVerID.FIX44:
+                return FIX44;
+            case quickfix.field.ApplVerID.FIX50:
+                return FIX50;
+            case quickfix.field.ApplVerID.FIX50SP1:
+                return FIX50SP1;
+            case quickfix.field.ApplVerID.FIX50SP2:
+                return FIX50SP2;
+            case quickfix.field.ApplVerID.FIX27:
+            case quickfix.field.ApplVerID.FIX30:
+            default:
+                throw new IllegalArgumentException(Messages.FIX_VERSION_UNSUPPORTED.getText(inApplVerId));
+        }
+    }
+    /**
+     * Indicate if the FIX version uses FIXT1.1 or greater.
      *
      * @return a <code>boolean</code> value
      */
-    public boolean isFix5OrGreater()
+    public boolean isFixT()
     {
-        return version5OrGreater.contains(this);
+        return fixtVersions.contains(this);
     }
     /**
      * Return a string representation of the value.
@@ -164,6 +224,22 @@ public enum FIXVersion
         dataDictionary = inDataDictionaryName;
     }
     /**
+     * Perform a FIX version lookup using the given version string.
+     *
+     * @param inVersionString a <code>String</code> value
+     * @return a <code>FIXVersion</code> value
+     * @throws FieldNotFound if the version could not be determined
+     */
+    private static FIXVersion doFixVersionLookup(String inVersionString)
+            throws FieldNotFound
+    {
+        FIXVersion fixVersion = versionMap.get(inVersionString);
+        if(fixVersion == null) {
+            throw new IllegalArgumentException(Messages.FIX_VERSION_UNSUPPORTED.getText(inVersionString));
+        }
+        return fixVersion;
+    }
+    /**
      * FIX message factory value for this version
      */
     private final FIXMessageFactory msgFactory;
@@ -180,9 +256,9 @@ public enum FIXVersion
      */
     private static final HashMap<String,FIXVersion> versionMap;
     /**
-     * 
+     * collection of FIX versions that use FIXT
      */
-    private static final Set<FIXVersion> version5OrGreater = EnumSet.of(FIX50,FIX50SP1,FIX50SP2);
+    private static final Set<FIXVersion> fixtVersions = EnumSet.of(FIX50,FIX50SP1,FIX50SP2);
     /**
      * Performs static initialization
      */

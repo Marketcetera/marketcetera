@@ -2,11 +2,10 @@ package org.marketcetera.quickfix;
 
 import java.math.BigDecimal;
 
-import junit.framework.Test;
-
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 
+import junit.framework.Test;
 import quickfix.Group;
 import quickfix.Message;
 import quickfix.field.AvgPx;
