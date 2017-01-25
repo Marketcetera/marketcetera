@@ -280,6 +280,42 @@ public class MultiInstanceApplicationContainer
         return id;
     }
     /**
+     * 
+     *
+     *
+     * @param inInstanceNumber
+     * @return
+     * @throws IOException
+     */
+    private static String prepareClusterUuid(int inInstanceNumber)
+            throws IOException
+    {
+        String uuidFileName = CLUSTER_UUID_NAME.replace("<instance>",
+                                                        String.valueOf(inInstanceNumber));
+        File uuidFile = new File(getAppDir(),
+                                 uuidFileName);
+        String id = null;
+        if(uuidFile.exists()) {
+            // this host has already been identified, return existing id
+            id = StringUtils.trimToNull(FileUtils.readFileToString(uuidFile,
+                                                                   StandardCharsets.UTF_8));
+            SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                                   "Cluster member uuid file: {} exists, existing id is {}",
+                                   uuidFile.getAbsolutePath(),
+                                   id);
+        } else {
+            SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
+                                   "Cluster member uuid file: {} does not exist",
+                                   uuidFile.getAbsolutePath());
+        }
+        if(id == null) {
+            id = UUID.randomUUID().toString();
+            FileUtils.write(uuidFile,
+                            id);
+        }
+        return id;
+    }
+    /**
      * Prepares the instance directory.
      *
      * @throws IOException if an error occurs preparing the instance directory
@@ -365,7 +401,7 @@ public class MultiInstanceApplicationContainer
         File instanceDir = new File(getInstanceDir(),
                                     INSTANCE_DIR_NAME+inInstanceNumber);
         File instanceConfDir = new File(instanceDir,
-                                       File.separator+CONF_DIR_NAME);
+                                        File.separator+CONF_DIR_NAME);
         FileUtils.copyDirectory(new File(appDir+File.separator+CONF_DIR_NAME),
                                 instanceConfDir);
         File instanceModulesDir = new File(instanceDir,
@@ -578,6 +614,7 @@ public class MultiInstanceApplicationContainer
         }
         arguments.add(DASH_D+"metc.max.instances="+String.valueOf(totalInstances));
         arguments.add(DASH_D+PARAM_METC_HOST+"="+prepareHostId());
+        arguments.add(DASH_D+PARAM_METC_INSTANCE_UUID+"="+prepareClusterUuid(inInstanceNumber));
         arguments.add(DASH_D+ApplicationBase.APP_DIR_PROP+"="+inInstanceDirName);
         File parentLogFile = new File(getLog4jConfigFile());
         arguments.add(DASH_D+PARAM_LOG4J_CONFIGURATION_FILE+"=file://"+inInstanceDirName+File.separator+"conf"+File.separator+parentLogFile.getName());
@@ -696,6 +733,10 @@ public class MultiInstanceApplicationContainer
      */
     public static final String HOST_ID_NAME = ".metc_host.txt";
     /**
+     * name of the cluster uuid file
+     */
+    public static final String CLUSTER_UUID_NAME = ".metc_instance<instance>_uuid.txt";
+    /**
      * path separator constant name
      */
     public static final String PATH_SEPARATOR = "path.separator";
@@ -731,6 +772,10 @@ public class MultiInstanceApplicationContainer
      * metc-specific instance param name
      */
     public static final String PARAM_METC_INSTANCE = "metc.instance.";
+    /**
+     * metc-specific instance uuid param name
+     */
+    public static final String PARAM_METC_INSTANCE_UUID = "metc.instance.uuid";
     /**
      * metc-specific instance/port param name
      */
