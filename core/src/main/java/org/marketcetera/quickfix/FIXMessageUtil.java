@@ -23,10 +23,6 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-
 import quickfix.DataDictionary;
 import quickfix.Field;
 import quickfix.FieldMap;
@@ -76,6 +72,10 @@ import quickfix.field.Text;
 import quickfix.field.TradSesReqID;
 import quickfix.field.TradeRequestID;
 import quickfix.field.UserRequestID;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * Collection of utilities to create work with FIX messages
@@ -254,10 +254,19 @@ public class FIXMessageUtil {
         }
         return reject;
     }
+    /**
+     * Create a business reject (35=j) with the given reason and text for the given message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inReason an <code>int</code> value
+     * @param inText a <code>String</code> value
+     * @return a <code>Message</code> value
+     * @throws FieldNotFound if the message could not be built
+     */
     public static Message createBusinessReject(Message inMessage,
                                                int inReason,
                                                String inText)
-            throws FieldNotFound, SessionNotFound, ExecutionException
+            throws FieldNotFound
     {
         FIXVersion version = FIXVersion.getFIXVersion(inMessage);
         Message reject = version.getMessageFactory().createMessage(MsgType.BUSINESS_MESSAGE_REJECT);
