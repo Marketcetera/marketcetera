@@ -255,6 +255,40 @@ public class FIXMessageUtil {
         return reject;
     }
     /**
+     * 
+     *
+     *
+     * @param inSessionId
+     * @param inMessage
+     * @param inReason
+     * @param inText
+     * @return
+     * @throws FieldNotFound
+     */
+    public static Message createBusinessReject(SessionID inSessionId,
+                                               Message inMessage,
+                                               int inReason,
+                                               String inText)
+            throws FieldNotFound
+    {
+        FIXVersion version = FIXVersion.getFIXVersion(inSessionId);
+        Message reject = version.getMessageFactory().createMessage(MsgType.BUSINESS_MESSAGE_REJECT);
+        FIXMessageUtil.fillFieldsFromExistingMessage(reject,
+                                                     inMessage,
+                                                     getDataDictionary(version),
+                                                     false);
+        if(inText != null) {
+            reject.setField(new Text(inText));
+        }
+        reject.setString(quickfix.field.RefMsgType.FIELD,
+                         inMessage.getHeader().getString(MsgType.FIELD));
+        reject.setInt(quickfix.field.RefSeqNum.FIELD,
+                      inMessage.getHeader().getInt(quickfix.field.MsgSeqNum.FIELD));
+        reject.setInt(quickfix.field.BusinessRejectReason.FIELD,
+                      inReason);
+        return reject;
+    }
+    /**
      * Create a business reject (35=j) with the given reason and text for the given message.
      *
      * @param inMessage a <code>Message</code> value
@@ -296,6 +330,45 @@ public class FIXMessageUtil {
         }
         throw new IllegalArgumentException();
     }
+    /**
+     * 
+     *
+     *
+     * @param inSessionId
+     * @param inMessage
+     * @param inText
+     * @param inCancelRejResponseTo
+     * @param inCancelRejReason
+     * @return
+     * @throws FieldNotFound
+     */
+    public static Message createOrderCancelReject(SessionID inSessionId,
+                                                  Message inMessage,
+                                                  String inText,
+                                                  char inCancelRejResponseTo,
+                                                  int inCancelRejReason)
+             throws FieldNotFound
+    {
+        FIXVersion version = FIXVersion.getFIXVersion(inSessionId);
+        Message reject = version.getMessageFactory().createMessage(MsgType.ORDER_CANCEL_REJECT);
+        FIXMessageUtil.fillFieldsFromExistingMessage(reject,
+                                                     inMessage,
+                                                     getDataDictionary(version),
+                                                     false);
+        if(inText != null) {
+            reject.setField(new Text(inText));
+        }
+        reject.setChar(quickfix.field.CxlRejResponseTo.FIELD,
+                       inCancelRejResponseTo);
+        if(inCancelRejReason != -1) {
+            reject.setInt(quickfix.field.CxlRejReason.FIELD,
+                          inCancelRejReason);
+        }
+        if(inCancelRejReason == quickfix.field.CxlRejReason.UNKNOWN_ORDER) {
+            reject.setField(new quickfix.field.OrderID("none"));
+        }
+        return reject;
+    }
     public static Message createOrderCancelReject(Message inMessage,
                                                   String inText,
                                                   char inCancelRejResponseTo,
@@ -321,6 +394,96 @@ public class FIXMessageUtil {
             reject.setField(new quickfix.field.OrderID("none"));
         }
         return reject;
+    }
+    /**
+     * Create an execution report response to the given message.
+     *
+     * @param inSessionId a <code>SessionID</code> value
+     * @param inMessage a <code>Message</code> value
+     * @param inOrderStatus an <code>OrderStatus</code> value
+     * @param inExecType an <code>ExecutionType</code> value or <code>null</code>
+     * @param inExecTransType an <code>ExecutionTransType</code> value or <code>null</code>
+     * @param inText a <code>String</code> value or <code>null</code>
+     * @return a <code>Message</code> value
+     */
+    public static Message createExecutionReport(SessionID inSessionId,
+                                                Message inMessage,
+                                                OrderStatus inOrderStatus,
+                                                ExecutionType inExecType,
+                                                ExecutionTransType inExecTransType,
+                                                String inText)
+    {
+        try {
+            FIXVersion fixVersion = FIXVersion.getFIXVersion(inSessionId);
+            Message executionReport = fixVersion.getMessageFactory().createMessage(MsgType.EXECUTION_REPORT);
+            FIXMessageAugmentor messageAugmentor = fixVersion.getMessageFactory().getMsgAugmentor();
+            DataDictionary dataDictionary = getDataDictionary(fixVersion);
+            FIXMessageUtil.fillFieldsFromExistingMessage(executionReport,
+                                                         inMessage,
+                                                         dataDictionary,
+                                                         false);
+            if(dataDictionary.isField(quickfix.field.ExecTransType.FIELD)) {
+                if(inExecTransType != null) {
+                    executionReport.setField(new ExecTransType(inExecTransType.getFIXValue()));
+                    if(inExecTransType == ExecutionTransType.Cancel || inExecTransType == ExecutionTransType.Correct) {
+                        if(inMessage.isSetField(ClOrdID.FIELD)) {
+                            executionReport.setField(new ExecRefID(inMessage.getString(ClOrdID.FIELD)));
+                        } else {
+                            executionReport.setField(new ExecRefID(UUID.randomUUID().toString()));
+                        }
+                    }
+                }
+            }
+            if(inOrderStatus != null) {
+                executionReport.setField(new OrdStatus(inOrderStatus.getFIXValue()));
+            }
+            if(inExecType != null) {
+                executionReport.setField(new ExecType(inExecType.getFIXValue()));
+            }
+            executionReport.setField(new ExecID(UUID.randomUUID().toString()));
+            if(inText != null) {
+                executionReport.setField(new Text(inText));
+            }
+            if(inMessage.isSetField(ClOrdID.FIELD)) {
+                ClOrdID clOrdId = new ClOrdID();
+                inMessage.getField(clOrdId);
+                executionReport.setField(clOrdId);
+            }
+            if(inMessage.isSetField(quickfix.field.OrderID.FIELD)) {
+                quickfix.field.OrderID orderId = new quickfix.field.OrderID();
+                inMessage.getField(orderId);
+                executionReport.setField(orderId);
+            }
+            if(!executionReport.isSetField(quickfix.field.OrderID.FIELD)) {
+                executionReport.setField(new quickfix.field.OrderID(UUID.randomUUID().toString()));
+            }
+            if(!executionReport.isSetField(quickfix.field.LeavesQty.FIELD)) {
+                executionReport.setField(new LeavesQty(BigDecimal.ZERO));
+            }
+            if(!executionReport.isSetField(quickfix.field.CumQty.FIELD)) {
+                executionReport.setField(new CumQty(BigDecimal.ZERO));
+            }
+            if(!executionReport.isSetField(quickfix.field.AvgPx.FIELD)) {
+                executionReport.setField(new AvgPx(BigDecimal.ZERO));
+            }
+            if(!executionReport.isSetField(quickfix.field.LastShares.FIELD)) {
+                executionReport.setField(new LastShares(BigDecimal.ZERO));
+            }
+            if(!executionReport.isSetField(quickfix.field.LastPx.FIELD)) {
+                executionReport.setField(new LastPx(BigDecimal.ZERO));
+            }
+            BigDecimal orderQty = BigDecimal.ZERO;
+            if(inMessage.isSetField(OrderQty.FIELD)) {
+                OrderQty fixOrderQty = new OrderQty();
+                inMessage.getField(fixOrderQty);
+                orderQty = fixOrderQty.getValue();
+            }
+            executionReport.setField(new OrderQty(orderQty));
+            messageAugmentor.executionReportAugment(executionReport);
+            return executionReport;
+        } catch (FieldNotFound e) {
+            throw new RuntimeException(e);
+        }
     }
     /**
      * Create an execution report response to the given message.
