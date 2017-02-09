@@ -31,46 +31,55 @@ import quickfix.SessionID;
 public enum FIXVersion
 {
     FIX40(FIXDataDictionary.FIX_4_0_BEGIN_STRING,
+          quickfix.field.ApplVerID.FIX40,
           "FIX40.xml", //$NON-NLS-1$
           new FIXMessageFactory(FIXDataDictionary.FIX_4_0_BEGIN_STRING,
                                 new quickfix.fix40.MessageFactory(),
                                 new FIXMessageAugmentor_40())),
     FIX41(FIXDataDictionary.FIX_4_1_BEGIN_STRING,
+          quickfix.field.ApplVerID.FIX41,
           "FIX41.xml", //$NON-NLS-1$
           new FIXMessageFactory(FIXDataDictionary.FIX_4_1_BEGIN_STRING,
                                 new quickfix.fix41.MessageFactory(),
                                 new FIXMessageAugmentor_41())),
     FIX42(FIXDataDictionary.FIX_4_2_BEGIN_STRING,
+          quickfix.field.ApplVerID.FIX42,
           "FIX42.xml", //$NON-NLS-1$
           new FIXMessageFactory(FIXDataDictionary.FIX_4_2_BEGIN_STRING,
                                 new quickfix.fix42.MessageFactory(),
                                 new FIXMessageAugmentor_42())),
     FIX43(FIXDataDictionary.FIX_4_3_BEGIN_STRING,
+          quickfix.field.ApplVerID.FIX43,
           "FIX43.xml", //$NON-NLS-1$
           new FIXMessageFactory(FIXDataDictionary.FIX_4_3_BEGIN_STRING,
                                 new quickfix.fix43.MessageFactory(),
                                 new FIXMessageAugmentor_43())),
     FIX44(FIXDataDictionary.FIX_4_4_BEGIN_STRING,
+          quickfix.field.ApplVerID.FIX44,
           "FIX44-marketcetera.xml", //$NON-NLS-1$
           new FIXMessageFactory(FIXDataDictionary.FIX_4_4_BEGIN_STRING,
                                 new quickfix.fix44.MessageFactory(),
                                 new FIXMessageAugmentor_44())),
     FIX50(FIXDataDictionary.FIX_5_0_BEGIN_STRING,
+          quickfix.field.ApplVerID.FIX50,
           "FIX50.xml", //$NON-NLS-1$
           new FIXMessageFactory(FIXDataDictionary.FIX_5_0_BEGIN_STRING,
                                 new quickfix.fix50.MessageFactory(),
                                 new FIXMessageAugmentor_50())),
     FIX50SP1(FIXDataDictionary.FIX_5_0_SP1_BEGIN_STRING,
+             quickfix.field.ApplVerID.FIX50SP1,
              "FIX50SP1.xml", //$NON-NLS-1$
              new FIXMessageFactory(FIXDataDictionary.FIX_5_0_SP1_BEGIN_STRING,
                                    new quickfix.fix50sp1.MessageFactory(),
                                    new FIXMessageAugmentor_50SP1())),
     FIX50SP2(FIXDataDictionary.FIX_5_0_SP2_BEGIN_STRING,
+             quickfix.field.ApplVerID.FIX50SP2,
              "FIX50SP2.xml", //$NON-NLS-1$
              new FIXMessageFactory(FIXDataDictionary.FIX_5_0_SP2_BEGIN_STRING,
                                    new quickfix.fix50sp2.MessageFactory(),
                                    new FIXMessageAugmentor_50SP2())),
     FIX_SYSTEM(FIXDataDictionary.FIX_SYSTEM_BEGIN_STRING,
+               null,
                "FIX00-system.xml", //$NON-NLS-1$
                new SystemFIXMessageFactory());
     // nb: FIXT11 deliberately excluded from this list. this is complicated, but it's not an application
@@ -209,6 +218,42 @@ public enum FIXVersion
         return dataDictionary;
     }
     /**
+     * Get the applicationVersion value.
+     *
+     * @return a <code>String</code> value or <code>null</code>
+     */
+    public String getApplicationVersion()
+    {
+        return applicationVersion;
+    }
+    /**
+     * Get the version value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getVersion()
+    {
+        return version;
+    }
+    /**
+     * Create a new FIXVersion instance.
+     *
+     * @param inVersion a <code>String</code> value
+     * @param inApplicationVersion a <code>String</code> value
+     * @param inDataDictionaryName a <code>String</code> value
+     * @param inFactory a <code>FIXMessageFactory</code> value
+     */
+    private FIXVersion(String inVersion,
+                       String inApplicationVersion,
+                       String inDataDictionaryName,
+                       FIXMessageFactory inFactory)
+    {
+        version = inVersion;
+        applicationVersion = inApplicationVersion;
+        msgFactory = inFactory;
+        dataDictionary = inDataDictionaryName;
+    }
+    /**
      * Create a new FIXVersion instance.
      *
      * @param inVersion a <code>String</code> value
@@ -219,9 +264,10 @@ public enum FIXVersion
                        String inDataDictionaryName,
                        FIXMessageFactory inFactory)
     {
-        version = inVersion;
-        msgFactory = inFactory;
-        dataDictionary = inDataDictionaryName;
+        this(inVersion,
+             null,
+             inDataDictionaryName,
+             inFactory);
     }
     /**
      * Perform a FIX version lookup using the given version string.
@@ -239,6 +285,10 @@ public enum FIXVersion
         }
         return fixVersion;
     }
+    /**
+     * FIX application version, if applicable
+     */
+    private final String applicationVersion;
     /**
      * FIX message factory value for this version
      */

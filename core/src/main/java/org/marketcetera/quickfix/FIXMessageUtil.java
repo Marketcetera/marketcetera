@@ -367,6 +367,9 @@ public class FIXMessageUtil {
         if(inCancelRejReason == quickfix.field.CxlRejReason.UNKNOWN_ORDER) {
             reject.setField(new quickfix.field.OrderID("none"));
         }
+        if(version.isFixT()) {
+            reject.getHeader().setField(new quickfix.field.ApplVerID(version.getApplicationVersion()));
+        }
         return reject;
     }
     public static Message createOrderCancelReject(Message inMessage,
@@ -479,6 +482,9 @@ public class FIXMessageUtil {
                 orderQty = fixOrderQty.getValue();
             }
             executionReport.setField(new OrderQty(orderQty));
+            if(fixVersion.isFixT()) {
+                executionReport.getHeader().setField(new quickfix.field.ApplVerID(fixVersion.getApplicationVersion()));
+            }
             messageAugmentor.executionReportAugment(executionReport);
             return executionReport;
         } catch (FieldNotFound e) {
@@ -567,6 +573,9 @@ public class FIXMessageUtil {
                 orderQty = fixOrderQty.getValue();
             }
             executionReport.setField(new OrderQty(orderQty));
+            if(fixVersion.isFixT()) {
+                executionReport.getHeader().setField(new quickfix.field.ApplVerID(fixVersion.getApplicationVersion()));
+            }
             messageAugmentor.executionReportAugment(executionReport);
             return executionReport;
         } catch (FieldNotFound e) {
