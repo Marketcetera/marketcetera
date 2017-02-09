@@ -51,9 +51,10 @@ public class FIXMessageAugmentor_41 extends FIXMessageAugmentor_40 {
                 inMessage.setField(new LeavesQty(initial.subtract(cumQty)));
                 break;
         }
-
         // set the execType to be same as OrdStatus
-        inMessage.setField(new ExecType(ordStatus));
+        if(!inMessage.isSetField(quickfix.field.ExecType.FIELD)) {
+            inMessage.setField(new ExecType(ordStatus));
+        }
         return inMessage;
     }
 }

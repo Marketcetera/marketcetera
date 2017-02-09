@@ -39,7 +39,9 @@ public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
     }
 
     public Message executionReportAugment(Message inMessage) throws FieldNotFound {
-        inMessage.setField(new ExecTransType(ExecTransType.NEW));
+        if(!inMessage.isSetField(quickfix.field.ExecTransType.FIELD)) {
+            inMessage.setField(new ExecTransType(ExecTransType.NEW));
+        }
         return inMessage;
     }
 
