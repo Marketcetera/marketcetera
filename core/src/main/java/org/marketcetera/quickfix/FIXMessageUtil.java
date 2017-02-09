@@ -198,6 +198,21 @@ public class FIXMessageUtil {
         }
     }
     /**
+     * Log the given message.
+     *
+     * @param inSessionId a <code>SessionID</code> value
+     * @param inMessage a <code>Message</code> value
+     */
+    public static void logMessage(SessionID inSessionId,
+                                  Message inMessage)
+    {
+        if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
+            SLF4JLoggerProxy.debug(FIXMessageUtil.prettyPrintCategory,
+                                   new AnalyzedMessage(FIXMessageUtil.getDataDictionary(FIXVersion.getFIXVersion(inSessionId)),
+                                                       inMessage).toString());
+        }
+    }
+    /**
      * Get the data dictionary for the given message.
      *
      * @param inMessage a <code>Message</code> value

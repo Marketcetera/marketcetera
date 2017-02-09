@@ -419,28 +419,28 @@ public class ExsimFeedModule
             orderBooksByInstrument.invalidateAll();
             SLF4JLoggerProxy.debug(this,
                                    "Feed is available, resubmitting data requests");
-            for(RequestData requestData : requestsByRequestId.values()) {
-                try {
-                    try {
-                        SLF4JLoggerProxy.debug(this,
-                                               "Canceling {}",
-                                               requestData);
-                        requestData.resubmitting = true;
-                        cancelMarketDataRequest(requestData);
-                    } catch (Exception e) {
-                        SLF4JLoggerProxy.warn(this,
-                                              e);
-                    }
-                    SLF4JLoggerProxy.debug(this,
-                                           "Resubmitting {}",
-                                           requestData.getRequestMessage());
-                    Session.sendToTarget(requestData.getRequestMessage(),
-                                         sessionId);
-                } catch (SessionNotFound e) {
-                    SLF4JLoggerProxy.warn(this,
-                                          e);
-                }
-            }
+//            for(RequestData requestData : requestsByRequestId.values()) {
+//                try {
+//                    try {
+//                        SLF4JLoggerProxy.debug(this,
+//                                               "Canceling {}",
+//                                               requestData);
+//                        requestData.resubmitting = true;
+//                        cancelMarketDataRequest(requestData);
+//                    } catch (Exception e) {
+//                        SLF4JLoggerProxy.warn(this,
+//                                              e);
+//                    }
+//                    SLF4JLoggerProxy.debug(this,
+//                                           "Resubmitting {}",
+//                                           requestData.getRequestMessage());
+//                    Session.sendToTarget(requestData.getRequestMessage(),
+//                                         sessionId);
+//                } catch (SessionNotFound e) {
+//                    SLF4JLoggerProxy.warn(this,
+//                                          e);
+//                }
+//            }
         }
     }
     /**
@@ -489,13 +489,16 @@ public class ExsimFeedModule
                                         exchange);
             orderbook.clear();
         }
+        BigDecimal volume = null;
+        if(message.isSetField(quickfix.field.TotalVolumeTraded.FIELD)) {
+            volume = message.getDecimal(quickfix.field.TotalVolumeTraded.FIELD);
+        }
         for(Group mdEntry : mdEntries) {
             SLF4JLoggerProxy.debug(this,
                                    "Examining group {}", //$NON-NLS-1$
                                    mdEntry);
             BigDecimal closingPrice = null;
             BigDecimal openPrice = null;
-            BigDecimal volume = null;
             BigDecimal highPrice = null;
             BigDecimal lowPrice = null;
             BigDecimal vwap = null;
@@ -1038,7 +1041,8 @@ public class ExsimFeedModule
                                    inSessionId,
                                    inMessage);
             if(SLF4JLoggerProxy.isTraceEnabled(ExsimFeedModule.this)) {
-                FIXMessageUtil.logMessage(inMessage);
+                FIXMessageUtil.logMessage(inSessionId,
+                                          inMessage);
             }
         }
         /* (non-Javadoc)
@@ -1054,7 +1058,8 @@ public class ExsimFeedModule
                                    inSessionId,
                                    inMessage);
             if(SLF4JLoggerProxy.isTraceEnabled(ExsimFeedModule.this)) {
-                FIXMessageUtil.logMessage(inMessage);
+                FIXMessageUtil.logMessage(inSessionId,
+                                          inMessage);
             }
             if(fixMessageProcessor == null) {
                 
