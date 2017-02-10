@@ -114,7 +114,7 @@ public enum FIXVersion
         SessionID sessionId = MessageUtils.getSessionID(inMessage);
         if(sessionId.isFIXT()) {
             if(inMessage.getHeader().isSetField(quickfix.field.ApplVerID.FIELD)) {
-                return doFixVersionLookup(inMessage.getHeader().getString(quickfix.field.ApplVerID.FIELD));
+                return doFixApplicationVersionLookup(inMessage.getHeader().getString(quickfix.field.ApplVerID.FIELD));
             }
             // this is a FIXT message _and_ ApplVerID is _not_ set, we need to know something about the session
             Session session = Session.lookupSession(sessionId);
@@ -275,6 +275,7 @@ public enum FIXVersion
      * @param inVersionString a <code>String</code> value
      * @return a <code>FIXVersion</code> value
      * @throws FieldNotFound if the version could not be determined
+     * @throws IllegalArgumentException if the version cannot be found
      */
     private static FIXVersion doFixVersionLookup(String inVersionString)
             throws FieldNotFound
@@ -282,6 +283,21 @@ public enum FIXVersion
         FIXVersion fixVersion = versionMap.get(inVersionString);
         if(fixVersion == null) {
             throw new IllegalArgumentException(Messages.FIX_VERSION_UNSUPPORTED.getText(inVersionString));
+        }
+        return fixVersion;
+    }
+    /**
+     * Perform a FIX version lookup using the given application version string.
+     *
+     * @param inApplicationVersionString a <code>String</code> value
+     * @return a <code>FIXVersion</code> value
+     * @throws IllegalArgumentException if the version cannot be found
+     */
+    private static FIXVersion doFixApplicationVersionLookup(String inApplicationVersionString)
+    {
+        FIXVersion fixVersion = applicationVersionMap.get(inApplicationVersionString);
+        if(fixVersion == null) {
+            throw new IllegalArgumentException(Messages.FIX_VERSION_UNSUPPORTED.getText(inApplicationVersionString));
         }
         return fixVersion;
     }
@@ -306,6 +322,10 @@ public enum FIXVersion
      */
     private static final HashMap<String,FIXVersion> versionMap;
     /**
+     * stores FIXVersion values by application version identifier
+     */
+    private static final HashMap<String,FIXVersion> applicationVersionMap;
+    /**
      * collection of FIX versions that use FIXT
      */
     private static final Set<FIXVersion> fixtVersions = EnumSet.of(FIX50,FIX50SP1,FIX50SP2);
@@ -315,9 +335,14 @@ public enum FIXVersion
     static
     {
         versionMap = new HashMap<String,FIXVersion>();
+        applicationVersionMap = new HashMap<String,FIXVersion>();
         for(FIXVersion fixVersion : FIXVersion.values()) {
-            versionMap.put(fixVersion.toString(),
+            versionMap.put(fixVersion.getVersion(),
                            fixVersion);
+            if(fixVersion.getApplicationVersion() != null) {
+                applicationVersionMap.put(fixVersion.getApplicationVersion(),
+                                          fixVersion);
+            }
         }
     }
 }

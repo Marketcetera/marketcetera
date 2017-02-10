@@ -42,8 +42,13 @@ public class FixUtilTest extends FIXVersionedTestCase{
         message2.setField(new LeavesQty(190.0));
         
         execType = FIXUtil.getExecOrExecTransType(message2);
-        assertEquals(ExecutionType.PartialFill, execType);
-        
+        if(version43orAbove()) {
+            assertEquals(ExecutionType.Trade,
+                         execType);
+        } else {
+            assertEquals(ExecutionType.PartialFill,
+                         execType);
+        }
         Message message3 = msgFactory.newExecutionReport("clordid1",
                 "clordid1", "execido1", OrdStatus.FILLED, Side.BUY,
                 new BigDecimal(300), new BigDecimal(55), new BigDecimal(190), new BigDecimal(55),
@@ -53,8 +58,13 @@ public class FixUtilTest extends FIXVersionedTestCase{
         message3.setField(new MaxFloor(30));
         
         execType = FIXUtil.getExecOrExecTransType(message3);
-        assertEquals(ExecutionType.Fill, execType);
-        assertEquals(new BigDecimal(30), FIXUtil.getOrderDisplayQuantity(message3));        
+        if(version43orAbove()) {
+            assertEquals(ExecutionType.Trade,
+                         execType);
+        } else {
+            assertEquals(ExecutionType.Fill,
+                         execType);
+        }
+        assertEquals(new BigDecimal(30), FIXUtil.getOrderDisplayQuantity(message3));
     }
-   
 }
