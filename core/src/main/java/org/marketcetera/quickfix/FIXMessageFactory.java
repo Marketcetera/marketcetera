@@ -200,16 +200,19 @@ public class FIXMessageFactory {
                                          Instrument inInstrument)
             throws FieldNotFound
     {
-        Message request = msgFactory.create(beginString,
-                                            MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH);
-        DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(request);
+        Message snapshot = msgFactory.create(beginString,
+                                             MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH);
+        DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(snapshot);
         InstrumentToMessage<?> instrumentFunction = InstrumentToMessage.SELECTOR.forInstrument(inInstrument);
         instrumentFunction.set(inInstrument,
                                fixDictionary,
                                quickfix.field.MsgType.ORDER_SINGLE,
-                               request);
-        request.setField(new quickfix.field.MDReqID(inRequestId));
-        return request;
+                               snapshot);
+        // some weirdness for currencies
+        snapshot.removeField(quickfix.field.Currency.FIELD);
+        snapshot.removeField(quickfix.field.OrdType.FIELD);
+        snapshot.setField(new quickfix.field.MDReqID(inRequestId));
+        return snapshot;
     }
     /**
      * Create a new market data incremental refresh (35=X) message.
@@ -421,6 +424,9 @@ public class FIXMessageFactory {
                                            fixDictionary,
                                            quickfix.field.MsgType.ORDER_SINGLE,
                                            symbolGroup);
+                    // some weirdness for currencies
+                    symbolGroup.removeField(quickfix.field.Currency.FIELD);
+                    symbolGroup.removeField(quickfix.field.OrdType.FIELD);
                     if(inExchange != null && !inExchange.isEmpty()) {
                         symbolGroup.setField(new quickfix.field.SecurityExchange(inExchange));
                     }
