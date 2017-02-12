@@ -16,6 +16,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang.StringUtils;
+import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.HashMultimap;
@@ -205,5 +206,5 @@ public class EmailNotificationExecutorMethod
     /**
      * contains the name of the mail server configuration file
      */
-    private String configurationFileName = "conf" + File.separator + "mail.properties"; //$NON-NLS-1$ //$NON-NLS-2$
+    private String configurationFileName = ApplicationBase.APP_DIR + File.separator + "conf" + File.separator + "mail.properties"; //$NON-NLS-1$ //$NON-NLS-2$
 }
