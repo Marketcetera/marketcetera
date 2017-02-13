@@ -1090,6 +1090,7 @@ public class ExsimFeedModule
          *
          * @return a <code>Message</code> value
          */
+        @SuppressWarnings("unused")
         private Message getRequestMessage()
         {
             return requestMessage;
