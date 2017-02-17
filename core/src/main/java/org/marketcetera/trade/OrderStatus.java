@@ -113,16 +113,30 @@ public enum OrderStatus {
      * holds status values that represent open orders
      */
     public static final Set<OrderStatus> openOrderStatuses;
-    private static final Set<OrderStatus> pendingOrderStatusValues = EnumSet.of(PendingCancel,PendingNew,PendingReplace);
+    /**
+     * holds status values that represent closed orders
+     */
+    public static final Set<OrderStatus> closedOrderStatuses;
+    /**
+     * status values that represent pending orders
+     */
+    public static final Set<OrderStatus> pendingOrderStatusValues = EnumSet.of(PendingCancel,PendingNew,PendingReplace);
+    /**
+     * Provides static initialization
+     */
     static {
         Map<Character, OrderStatus> table = new HashMap<Character, OrderStatus>();
         Set<OrderStatus> openOrderStatusValues = new HashSet<>();
+        Set<OrderStatus> closedOrderStatusValues = new HashSet<>();
         for(OrderStatus status: values()) {
             table.put(status.getFIXValue(), status);
             if(FIXMessageUtil.isCancellable(status.getFIXValue())) {
                 openOrderStatusValues.add(status);
+            } else {
+                closedOrderStatusValues.add(status);
             }
         }
+        closedOrderStatuses = Collections.unmodifiableSet(closedOrderStatusValues);
         openOrderStatuses = Collections.unmodifiableSet(openOrderStatusValues);
         mFIXValueTable = Collections.unmodifiableMap(table);
     }
