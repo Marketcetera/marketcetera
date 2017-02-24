@@ -336,7 +336,7 @@ public class ExsimFeedConfig
     /**
      * session end time
      */
-    private String endTime = "23:30:00";
+    private String endTime = "23:45:00";
     /**
      * session time zone
      */
