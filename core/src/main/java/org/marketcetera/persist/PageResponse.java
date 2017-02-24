@@ -124,6 +124,28 @@ public abstract class PageResponse
         sortOrder = inSortOrder;
     }
     /**
+     * Get the hasContent value.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean hasContent()
+    {
+        return hasContent;
+    }
+    /**
+     * Sets the hasContent value.
+     *
+     * @param inHasContent a <code>boolean</code> value
+     */
+    public void setHasContent(boolean inHasContent)
+    {
+        hasContent = inHasContent;
+    }
+    /**
+     * indicate if the response has content
+     */
+    private boolean hasContent;
+    /**
      * optional sort order
      */
     private List<Sort> sortOrder = Lists.newArrayList();

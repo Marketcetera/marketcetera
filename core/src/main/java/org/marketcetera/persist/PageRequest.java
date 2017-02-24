@@ -70,6 +70,16 @@ public class PageRequest
         sortOrder = inSortOrder;
     }
     /**
+     * Get the next page request value.
+     *
+     * @return a <code>PageRequest</code> value
+     */
+    public PageRequest getNextPageRequest()
+    {
+        pageNumber += 1;
+        return this;
+    }
+    /**
      * optional sort directive
      */
     private List<Sort> sortOrder = Lists.newArrayList();
