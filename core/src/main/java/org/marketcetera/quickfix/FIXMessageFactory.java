@@ -405,8 +405,7 @@ public class FIXMessageFactory {
         request.setField(new quickfix.field.NoMDEntryTypes(contentCount));
         request.setChar(quickfix.field.SubscriptionRequestType.FIELD,
                         inSubscriptionType);
-        request.setInt(quickfix.field.MDUpdateType.FIELD,
-                       quickfix.field.MDUpdateType.INCREMENTAL_REFRESH);
+        request.setField(new quickfix.field.MDUpdateType(quickfix.field.MDUpdateType.FULL_REFRESH));
         int numSymbols = 0;
         if(inInstruments != null) {
             numSymbols = inInstruments.size();

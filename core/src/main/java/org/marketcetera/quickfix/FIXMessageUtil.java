@@ -346,16 +346,15 @@ public class FIXMessageUtil {
         throw new IllegalArgumentException();
     }
     /**
-     * 
+     * Create an order cancel reject based on the given attributes.
      *
-     *
-     * @param inSessionId
-     * @param inMessage
-     * @param inText
-     * @param inCancelRejResponseTo
-     * @param inCancelRejReason
-     * @return
-     * @throws FieldNotFound
+     * @param inSessionId a <code>SessionID</code> value
+     * @param inMessage a <code>Message</code> value
+     * @param inText a <code>String</code> value
+     * @param inCancelRejResponseTo a <code>char</code> value
+     * @param inCancelRejReason an <code>int</code> value
+     * @return a <code>Message</code> value
+     * @throws FieldNotFound if the message cannot be built
      */
     public static Message createOrderCancelReject(SessionID inSessionId,
                                                   Message inMessage,
