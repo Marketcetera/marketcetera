@@ -290,7 +290,7 @@ public abstract class QueueProcessor<Clazz>
                              BlockingQueue<Clazz> inQueue)
     {
         if(inThreadDescriptor == null) {
-            inThreadDescriptor = "Unknown Queue Processor";
+            inThreadDescriptor = getClass().getSimpleName();
         }
         queue = inQueue;
         threadDescriptor = inThreadDescriptor;

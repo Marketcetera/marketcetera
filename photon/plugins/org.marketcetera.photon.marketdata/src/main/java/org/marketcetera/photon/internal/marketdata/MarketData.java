@@ -802,7 +802,7 @@ public class MarketData
                                 quoteItem.setPrice(ask.getPrice());
                                 quoteItem.setSize(ask.getSize());
                                 quoteItem.setSource(ask.getExchange());
-                                quoteItem.setTime(ask.getTimeMillis());
+                                quoteItem.setTime(ask.getQuoteDate().getTime());
                                 inItem.getAsks().add(quoteItem);
                             }
                             return null;
@@ -820,7 +820,7 @@ public class MarketData
                                 quoteItem.setPrice(bid.getPrice());
                                 quoteItem.setSize(bid.getSize());
                                 quoteItem.setSource(bid.getExchange());
-                                quoteItem.setTime(bid.getTimeMillis());
+                                quoteItem.setTime(bid.getQuoteDate().getTime());
                                 inItem.getBids().add(quoteItem);
                             }
                             return null;

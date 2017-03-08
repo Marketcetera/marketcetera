@@ -498,6 +498,7 @@ public class ExsimFeedModule
                                    "Examining group {}", //$NON-NLS-1$
                                    mdEntry);
             BigDecimal closingPrice = null;
+            BigDecimal prevClosingPrice = null;
             BigDecimal openPrice = null;
             BigDecimal highPrice = null;
             BigDecimal lowPrice = null;
@@ -621,6 +622,10 @@ public class ExsimFeedModule
                         volume = mdEntry.getDecimal(quickfix.field.TotalVolumeTraded.FIELD);
                     }
                     break;
+                case quickfix.field.MDEntryType.PRIOR_SETTLE_PRICE:
+                    marketstat = true;
+                    prevClosingPrice = mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD);
+                    break;
                 case quickfix.field.MDEntryType.CLOSING_PRICE:
                     marketstat = true;
                     closingPrice = mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD);
@@ -654,7 +659,6 @@ public class ExsimFeedModule
                 case quickfix.field.MDEntryType.MARGIN_RATE:
                 case quickfix.field.MDEntryType.MID_PRICE:
                 case quickfix.field.MDEntryType.OPEN_INTEREST:
-                case quickfix.field.MDEntryType.PRIOR_SETTLE_PRICE:
                 case quickfix.field.MDEntryType.SESSION_HIGH_BID:
                 case quickfix.field.MDEntryType.SESSION_LOW_OFFER:
                 case quickfix.field.MDEntryType.SETTLE_HIGH_PRICE:
@@ -674,6 +678,9 @@ public class ExsimFeedModule
                 if(closingPrice != null) {
                     marketstatBuilder.withClosePrice(closingPrice);
                     marketstatBuilder.withPreviousClosePrice(closingPrice);
+                }
+                if(prevClosingPrice != null) {
+                    marketstatBuilder.withPreviousClosePrice(prevClosingPrice);
                 }
                 if(volume != null) {
                     marketstatBuilder.withVolume(volume);
