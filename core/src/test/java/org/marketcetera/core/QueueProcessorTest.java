@@ -254,7 +254,7 @@ public class QueueProcessorTest
      * @version $Id$
      * @since $Release$
      */
-    private class MockData
+    private static class MockData
     {
         /**
          * nano timestamp when the data was submitted
@@ -269,7 +269,10 @@ public class QueueProcessorTest
          */
         private long elementCounter = idSource.incrementAndGet();
     }
-    private final AtomicLong idSource = new AtomicLong(0);
+    /**
+     * provides unique identifies for data
+     */
+    private static final AtomicLong idSource = new AtomicLong(0);
     /**
      * counts the number of data items processed
      */

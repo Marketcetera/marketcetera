@@ -675,6 +675,11 @@ public class ExsimFeedModule
                     marketstatBuilder = MarketstatEventBuilder.marketstat(instrument);
                 }
                 marketstatBuilder.withExchangeCode(exchange);
+                if(openPrice != null) {
+                    marketstatBuilder.withOpenPrice(openPrice);
+                    marketstatBuilder.withClosePrice(openPrice);
+                    marketstatBuilder.withPreviousClosePrice(openPrice);
+                }
                 if(closingPrice != null) {
                     marketstatBuilder.withClosePrice(closingPrice);
                     marketstatBuilder.withPreviousClosePrice(closingPrice);
@@ -687,9 +692,6 @@ public class ExsimFeedModule
                 }
                 if(highPrice != null) {
                     marketstatBuilder.withHighPrice(highPrice);
-                }
-                if(openPrice != null) {
-                    marketstatBuilder.withOpenPrice(openPrice);
                 }
                 if(lowPrice != null) {
                     marketstatBuilder.withLowPrice(lowPrice);
