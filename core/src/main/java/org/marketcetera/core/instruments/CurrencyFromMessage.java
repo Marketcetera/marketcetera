@@ -1,5 +1,7 @@
 package org.marketcetera.core.instruments;
 
+import java.util.regex.Pattern;
+
 import org.marketcetera.core.Messages;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Instrument;
@@ -28,33 +30,39 @@ public class CurrencyFromMessage
     @Override
     public Instrument extract(FieldMap inMessage)
     {
-        Currency instrument=null;
-        
-        try{
+        Currency instrument = null;
+        try {
             String symbol = inMessage.getString(Symbol.FIELD);
-            String baseCCY = symbol.substring(0, 3);
-            String plCCY = symbol.substring(symbol.length()-3,symbol.length());
+            if(!symbolPattern.matcher(symbol).matches()) {
+                throw new IllegalArgumentException();
+            }
+            String[] components = symbol.split("/");
+            String baseCCY = components[0];
+            String plCCY = components[1];
             String nearTenor = "SP";
-            if(inMessage.isSetField(FutSettDate.FIELD)){
-                nearTenor = inMessage.getString(FutSettDate.FIELD);     
+            if(inMessage.isSetField(FutSettDate.FIELD)) {
+                nearTenor = inMessage.getString(FutSettDate.FIELD);
             }
-            
-            if(inMessage.isSetField(FutSettDate2.FIELD)){
+            if(inMessage.isSetField(FutSettDate2.FIELD)) {
                 String farTenor = inMessage.getString(FutSettDate2.FIELD);
-                instrument = new Currency(baseCCY, plCCY, nearTenor, farTenor);
-            }else{
-                instrument = new Currency(baseCCY, plCCY, nearTenor);
+                instrument = new Currency(baseCCY,
+                                          plCCY,
+                                          nearTenor,
+                                          farTenor);
+            } else {
+                instrument = new Currency(baseCCY,
+                                          plCCY,
+                                          nearTenor);
             }
-            
-            if(inMessage.isSetField(quickfix.field.Currency.FIELD)){
+            if(inMessage.isSetField(quickfix.field.Currency.FIELD)) {
                 String tradedCCY = inMessage.getString(quickfix.field.Currency.FIELD);
                 instrument.setTradedCCY(tradedCCY);
             }
-        }catch(Exception e){
-            Messages.ERROR_CURRENCY_FROM_MESSAGE.getText(e.toString());
+        } catch(Exception e) {
+            String message = Messages.ERROR_CURRENCY_FROM_MESSAGE.getText(e.toString());
+            throw new IllegalArgumentException(message);
         }
         return instrument;
-        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.instruments.DynamicInstrumentHandler#isHandled(java.lang.Object)
@@ -70,4 +78,8 @@ public class CurrencyFromMessage
             return false;
         }
     }
+    /**
+     * represents a valid currency pattern
+     */
+    private static final Pattern symbolPattern = Pattern.compile("^[\\w]{1,}/[\\w]{1,}$");
 }

@@ -101,9 +101,6 @@ public class CurrencyToMessage
             if (currencyInstrument.isSwap()) {
                 message.setString(FutSettDate2.FIELD,currencyInstrument.getFarTenor());
                 message.setChar(quickfix.field.OrdType.FIELD,quickfix.field.OrdType.FOREX_SWAP);
-            } else {
-                // potentially a broker dependent element
-                message.setChar(quickfix.field.OrdType.FIELD,quickfix.field.OrdType.PREVIOUSLY_QUOTED);
             }
         }
     }
