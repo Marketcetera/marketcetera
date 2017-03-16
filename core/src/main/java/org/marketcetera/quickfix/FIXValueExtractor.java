@@ -1,9 +1,7 @@
 package org.marketcetera.quickfix;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
 import org.marketcetera.core.NumericStringSortable;
-import org.marketcetera.core.time.TimeFactoryImpl;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
@@ -126,14 +124,9 @@ public class FIXValueExtractor {
                 } else if(fieldType.equals(FieldType.UTCTIMEONLY)) {
                     value = inFieldMap.getUtcTimeOnly(inFieldId); //i18n_time
                 } else if(fieldType.equals(FieldType.UTCTIMESTAMP)){
-                    DateTime actualValue = new DateTime(inFieldMap.getUtcTimeStamp(inFieldId));
-                    if(actualValue.isAfter(LocalTime.MIDNIGHT.toDateTimeToday())) {
-                        value = TimeFactoryImpl.WALLCLOCK_MILLISECONDS_LOCAL.print(actualValue);
-                    } else {
-                        value = TimeFactoryImpl.FULL_MILLISECONDS_LOCAL.print(actualValue);
-                    }
+                    value = new DateTime(inFieldMap.getUtcTimeStamp(inFieldId));
                 } else if(fieldType.equals(FieldType.UTCDATEONLY) ||fieldType.equals(FieldType.UTCDATE)){
-                    value = inFieldMap.getUtcDateOnly(inFieldId); //i18n_date
+                    value = inFieldMap.getUtcDateOnly(inFieldId);
                 } else if(Number.class.isAssignableFrom(fieldType.getJavaType())){
                     value = inFieldMap.getDecimal(inFieldId);
                 } else if (inFieldId == ClOrdID.FIELD) {

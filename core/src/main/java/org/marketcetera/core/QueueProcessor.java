@@ -124,8 +124,8 @@ public abstract class QueueProcessor<Clazz>
         try {
             lastException = null;
             interrupted.set(false);
-            Messages.STARTED.info(this,
-                                  threadDescriptor);
+            Messages.STARTED.debug(this,
+                                   threadDescriptor);
             while(keepAlive.get()) {
                 try {
                     Clazz dataObject = queue.take();
@@ -147,8 +147,8 @@ public abstract class QueueProcessor<Clazz>
             }
         } catch (InterruptedException | HazelcastInstanceNotActiveException e) {
             interrupted.set(true);
-            Messages.INTERRUPTED.info(this,
-                                      threadDescriptor);
+            Messages.INTERRUPTED.debug(this,
+                                       threadDescriptor);
         } catch (Exception e) {
             lastException = e;
             Messages.SHUTTING_DOWN_FROM_ERROR.warn(this,
@@ -158,8 +158,8 @@ public abstract class QueueProcessor<Clazz>
         } finally {
             keepAlive.set(false);
             running.set(false);
-            Messages.STOPPED.info(this,
-                                  threadDescriptor);
+            Messages.STOPPED.debug(this,
+                                   threadDescriptor);
         }
     }
     /* (non-Javadoc)

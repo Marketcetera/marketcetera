@@ -1005,8 +1005,7 @@
         <!-- mvn assembly:* -->
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <!-- Version 2.2-beta-2 throws NPE under dependency management. -->
-          <version>2.3</version>
+          <version>3.0.0</version>
           <configuration>
             <finalName>${project.artifactId}</finalName>
             <appendAssemblyId>false</appendAssemblyId>
