@@ -119,16 +119,55 @@
   <build>
     <plugins>
       <plugin>
-	<artifactId>maven-surefire-plugin</artifactId>
-	<configuration>
-	  <disableXmlReport>false</disableXmlReport>
-	  <forkCount>1</forkCount>
-	  <reuseForks>false</reuseForks>
-	  <argLine>${mvn.test.options}</argLine>
-	  <systemPropertyVariables>
-	    <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
-	  </systemPropertyVariables>
-	</configuration>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <finalName>strategyengine</finalName>
+          <descriptors>
+            <descriptor>assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/output</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+              <includeScope>runtime</includeScope>
+              <excludeScope>test</excludeScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <disableXmlReport>false</disableXmlReport>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
+          <argLine>${mvn.test.options}</argLine>
+          <systemPropertyVariables>
+            <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
+          </systemPropertyVariables>
+        </configuration>
       </plugin>
     </plugins>
     <resources>
