@@ -92,6 +92,11 @@
       <outputDirectory>strategyengine/modules/conf</outputDirectory>
     </fileSet>
     <fileSet>
+      <fileMode>0644</fileMode>
+      <directory>src/main/sample_data/modules/jars</directory>
+      <outputDirectory>strategyengine/modules/jars</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>src/main/sample_data/src</directory>
       <outputDirectory>strategyengine/src</outputDirectory>
     </fileSet>
