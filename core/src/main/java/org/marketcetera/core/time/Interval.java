@@ -13,11 +13,12 @@ import org.apache.commons.lang.Validate;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
 /**
- *
+ * Interval with a begin and end.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -62,24 +63,28 @@ public class Interval
         end = inEnd;
     }
     /**
-     * Get the interval value.
+     * Indicate if the interval contains the given point in time.
      *
-     * @return a <code>org.joda.time.Interval</code> value
-     */
-    public org.joda.time.Interval getInterval()
-    {
-        return interval;
-    }
-    /**
-     *
-     *
-     * @param inTime
-     * @return
+     * @param inTime a <code>DateTime</code> value
+     * @return a <code>boolean</code> value
      */
     public boolean contains(DateTime inTime)
     {
-        return interval.contains(inTime);
+        DateTime expectedIntervalStart = inTime.withTimeAtStartOfDay().plus(WALLCLOCK_SECONDS_LOCAL.parseLocalDateTime(begin).getMillisOfDay());
+        DateTime expectedIntervalEnd = inTime.withTimeAtStartOfDay().plus(WALLCLOCK_SECONDS_LOCAL.parseLocalDateTime(end).getMillisOfDay());
+        org.joda.time.Interval interval = new org.joda.time.Interval(expectedIntervalStart,
+                                                                     expectedIntervalEnd);
+        boolean result = interval.contains(inTime);
+        SLF4JLoggerProxy.debug(this,
+                               "{} contains {}: {}",
+                               this,
+                               inTime,
+                               result);
+        return result;
     }
+    /**
+     * Validate and start the object.
+     */
     @PostConstruct
     public void start()
     {
@@ -87,20 +92,32 @@ public class Interval
                         "Begin must be of pattern 00:00:00");
         Validate.isTrue(wallclockPattern.matcher(end).matches(),
                         "End must be of pattern 00:00:00");
-        DateTime expectedIntervalStart = new DateTime().withTimeAtStartOfDay().plus(WALLCLOCK_SECONDS_LOCAL.parseLocalDateTime(begin).getMillisOfDay());
-        DateTime expectedIntervalEnd = new DateTime().withTimeAtStartOfDay().plus(WALLCLOCK_SECONDS_LOCAL.parseLocalDateTime(end).getMillisOfDay());
-        Validate.isTrue(expectedIntervalEnd.isAfter(expectedIntervalStart),
-                        "End must be after start");
-        interval = new org.joda.time.Interval(expectedIntervalStart,
-                                              expectedIntervalEnd);
     }
-    private static final Pattern wallclockPattern = Pattern.compile("^[0-9]{2}:[0-9]{2}:[0-9]{2}$");
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Interval [begin=").append(begin).append(", end=").append(end).append("]");
+        return builder.toString();
+    }
+    /**
+     * interval begin pattern
+     */
     private String begin;
+    /**
+     * interval end pattern
+     */
     private String end;
-    private org.joda.time.Interval interval;
     /**
      * parses offline start and end intervals
      */
     private final DateTimeFormatter WALLCLOCK_SECONDS_LOCAL = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE)
             .append(COLON).append(SECOND).toFormatter();
+    /**
+     * regex for validating wallclock begin and end points
+     */
+    private static final Pattern wallclockPattern = Pattern.compile("^[0-9]{2}:[0-9]{2}:[0-9]{2}$");
 }
