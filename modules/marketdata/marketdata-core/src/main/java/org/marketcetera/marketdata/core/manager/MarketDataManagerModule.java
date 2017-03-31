@@ -107,8 +107,10 @@ public class MarketDataManagerModule
                     Collection<Content> requestContent = contentByDataFlowId.get(inFlowId);
                     if(requestContent != null) {
                         for(Content content : requestContent) {
-                            marketdataCache.update(content,
-                                                   event);
+                            if(content.isRelevantTo(event.getClass())) {
+                                marketdataCache.update(content,
+                                                       event);
+                            }
                         }
                     }
                     if(subscriber.isInteresting(event)) {
