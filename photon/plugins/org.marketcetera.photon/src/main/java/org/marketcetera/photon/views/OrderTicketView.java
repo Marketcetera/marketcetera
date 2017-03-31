@@ -405,6 +405,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                 topOfBookReference = null;
                 topOfBook = null;
             }
+            getModel().getOrderObservable().getTypedValue().setPegToMidpoint(false);
             return false;
         }
     }
@@ -1134,8 +1135,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
             // TODO: this logic should probably be in the controller
             PhotonPlugin plugin = PhotonPlugin.getDefault();
             mModel.completeMessage();
-            NewOrReplaceOrder orderMessage = mModel.getOrderObservable()
-                    .getTypedValue();
+            NewOrReplaceOrder orderMessage = mModel.getOrderObservable().getTypedValue();
             plugin.getPhotonController().sendOrderChecked(orderMessage);
             mModel.clearOrderMessage();
         } catch (Exception e) {

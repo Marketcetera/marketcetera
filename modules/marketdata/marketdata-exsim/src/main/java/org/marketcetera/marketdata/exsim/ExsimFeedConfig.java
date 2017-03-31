@@ -96,20 +96,56 @@ public class ExsimFeedConfig
     /**
      * Get the fixVersion value.
      *
-     * @return a <code>FIXVersion</code> value
+     * @return a <code>String</code> value
      */
-    public FIXVersion getFixVersion()
+    public String getFixVersion()
     {
         return fixVersion;
     }
     /**
      * Sets the fixVersion value.
      *
-     * @param inFixVersion a <code>FIXVersion</code> value
+     * @param inFixVersion a <code>String</code> value
      */
-    public void setFixVersion(FIXVersion inFixVersion)
+    public void setFixVersion(String inFixVersion)
     {
         fixVersion = inFixVersion;
+    }
+    /**
+     * Get the fixAplVersion value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getFixAplVersion()
+    {
+        return fixAplVersion;
+    }
+    /**
+     * Sets the fixAplVersion value.
+     *
+     * @param inFixAplVersion a <code>String</code> value
+     */
+    public void setFixAplVersion(String inFixAplVersion)
+    {
+        fixAplVersion = inFixAplVersion;
+    }
+    /**
+     * Get the appDataDictionary value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getAppDataDictionary()
+    {
+        return appDataDictionary;
+    }
+    /**
+     * Sets the appDataDictionary value.
+     *
+     * @param inAppDataDictionary a <code>String</code> value
+     */
+    public void setAppDataDictionary(String inAppDataDictionary)
+    {
+        appDataDictionary = inAppDataDictionary;
     }
     /**
      * Get the reconnectInterval value.
@@ -237,7 +273,7 @@ public class ExsimFeedConfig
         if(senderCompId == null) {
             throw new CoreException(Messages.SENDER_COMPID_REQURED);
         }
-        sessionId = new SessionID(fixVersion.toString(),
+        sessionId = new SessionID(fixVersion,
                                   senderCompId,
                                   targetCompId);
     }
@@ -296,6 +332,16 @@ public class ExsimFeedConfig
         inSessionSettings.setString(sessionId,
                                     Session.SETTING_PERSIST_MESSAGES,
                                     "N");
+        if(appDataDictionary != null) {
+            inSessionSettings.setString(sessionId,
+                                        Session.SETTING_APP_DATA_DICTIONARY,
+                                        appDataDictionary);
+        }
+        if(fixAplVersion != null) {
+            inSessionSettings.setString(sessionId,
+                                        Session.SETTING_DEFAULT_APPL_VER_ID,
+                                        fixAplVersion);
+        }
     }
     /**
      * session id value
@@ -320,7 +366,11 @@ public class ExsimFeedConfig
     /**
      * FIX version to use for exchange traffic
      */
-    private FIXVersion fixVersion = FIXVersion.FIX42;
+    private String fixVersion = FIXVersion.FIX44.getVersion();
+    /**
+     * FIX application version if using FIXT11 for the {{@link #fixVersion}}
+     */
+    private String fixAplVersion = null;
     /**
      * interval at which to connect to the exchange
      */
@@ -344,5 +394,9 @@ public class ExsimFeedConfig
     /**
      * session FIX dictionary
      */
-    private String dataDictionary = "FIX42.xml";
+    private String dataDictionary = "FIX44.xml";
+    /**
+     * session FIX application data dictionary
+     */
+    private String appDataDictionary = null;
 }

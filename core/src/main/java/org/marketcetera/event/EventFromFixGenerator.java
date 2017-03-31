@@ -174,6 +174,9 @@ public class EventFromFixGenerator
                             bidBuilder.withMessageId(idCounter.incrementAndGet());
                             break;
                     }
+                    if(inIsSnapshot && level == 0) {
+                        bidBuilder.isEmpty(true);
+                    }
                     BidEvent bid = bidBuilder.create();
                     orderbook.process(bid);
                     events.add(bid);
@@ -206,6 +209,9 @@ public class EventFromFixGenerator
                         case ADD:
                             askBuilder.withMessageId(idCounter.incrementAndGet());
                             break;
+                    }
+                    if(inIsSnapshot && level == 0) {
+                        askBuilder.isEmpty(true);
                     }
                     AskEvent ask = askBuilder.create();
                     orderbook.process(ask);
@@ -242,7 +248,7 @@ public class EventFromFixGenerator
                     break;
                 case quickfix.field.MDEntryType.TRADE_VOLUME:
                     marketstat = true;
-                    volume = mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD);
+                    volume = mdEntry.getDecimal(quickfix.field.MDEntrySize.FIELD);
                     break;
                 case quickfix.field.MDEntryType.TRADING_SESSION_HIGH_PRICE:
                     marketstat = true;

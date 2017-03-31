@@ -31,6 +31,9 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -100,19 +103,12 @@ public class MarketDataManagerModule
                                                 inFlowId,
                                                 inData);
                 } else {
-                    MarketdataCacheElement marketdataCache = cachedMarketdata.get(eventInstrument);
-                    if(marketdataCache == null) {
-                        marketdataCache = new MarketdataCacheElement(eventInstrument);
-                        cachedMarketdata.put(eventInstrument,
-                                             marketdataCache);
-                    }
+                    MarketdataCacheElement marketdataCache = cachedMarketdata.getUnchecked(eventInstrument);
                     Collection<Content> requestContent = contentByDataFlowId.get(inFlowId);
                     if(requestContent != null) {
                         for(Content content : requestContent) {
-                            if(content.isRelevantTo(event.getClass())) {
-                                marketdataCache.update(content,
-                                                       event);
-                            }
+                            marketdataCache.update(content,
+                                                   event);
                         }
                     }
                     if(subscriber.isInteresting(event)) {
@@ -265,9 +261,10 @@ public class MarketDataManagerModule
                                            Content inContent,
                                            String inProvider)
     {
-        MarketdataCacheElement cachedData = cachedMarketdata.get(inInstrument);
+        MarketdataCacheElement cachedData = cachedMarketdata.getIfPresent(inInstrument);
         if(cachedData != null) {
-            return cachedData.getSnapshot(inContent);
+            Event event = cachedData.getSnapshot(inContent);
+            return event;
         }
         return null;
     }
@@ -324,6 +321,13 @@ public class MarketDataManagerModule
         super(inURN,
               true);
         instance = this;
+        cachedMarketdata = CacheBuilder.newBuilder().build(new CacheLoader<Instrument,MarketdataCacheElement>() {
+            @Override
+            public MarketdataCacheElement load(Instrument inKey)
+                    throws Exception
+            {
+                return new MarketdataCacheElement(inKey);
+            }});
     }
     /**
      * Get the instance URN for the given market data provider name.
@@ -434,5 +438,5 @@ public class MarketDataManagerModule
     /**
      * tracks cached market data by the instrument
      */
-    private final Map<Instrument,MarketdataCacheElement> cachedMarketdata = new HashMap<Instrument,MarketdataCacheElement>();
+    private LoadingCache<Instrument,MarketdataCacheElement> cachedMarketdata;
 }

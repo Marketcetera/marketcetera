@@ -254,7 +254,13 @@ public class ExsimFeedModule
             CapabilityCollection.reportCapability(getCapabilities());
             fixMessageProcessor = new FixMessageProcessor();
             fixMessageProcessor.start();
-            FIXVersion version = exsimFeedConfig.getFixVersion();
+            String aplVersion = exsimFeedConfig.getFixAplVersion();
+            FIXVersion version;
+            if(aplVersion == null) {
+                version = FIXVersion.getFIXVersion(exsimFeedConfig.getFixVersion());
+            } else {
+                version = FIXVersion.getFIXVersion(aplVersion);
+            }
             messageFactory = version.getMessageFactory();
             application = new FixApplication();
             sessionId = exsimFeedConfig.getSessionId();
@@ -404,13 +410,13 @@ public class ExsimFeedModule
      */
     private void updateFeedStatus(FeedStatus inNewStatus)
     {
+        if(inNewStatus == feedStatus) {
+            return;
+        }
         SLF4JLoggerProxy.debug(this,
                                "Updating feed status from {} to {}",
                                feedStatus,
                                inNewStatus);
-        if(inNewStatus == feedStatus) {
-            return;
-        }
         feedStatus = inNewStatus;
         Messages.FEED_STATUS_UPDATE.info(this,
                                          ExsimFeedModuleFactory.IDENTIFIER.toUpperCase(),
@@ -564,6 +570,9 @@ public class ExsimFeedModule
                             bidBuilder.withMessageId(idCounter.incrementAndGet());
                             break;
                     }
+                    if(inIsSnapshot && level == 0) {
+                        bidBuilder.isEmpty(true);
+                    }
                     BidEvent bid = bidBuilder.create();
                     orderbook.process(bid);
                     events.add(bid);
@@ -596,6 +605,9 @@ public class ExsimFeedModule
                         case ADD:
                             askBuilder.withMessageId(idCounter.incrementAndGet());
                             break;
+                    }
+                    if(inIsSnapshot && level == 0) {
+                        askBuilder.isEmpty(true);
                     }
                     AskEvent ask = askBuilder.create();
                     orderbook.process(ask);
@@ -636,7 +648,7 @@ public class ExsimFeedModule
                     break;
                 case quickfix.field.MDEntryType.TRADE_VOLUME:
                     marketstat = true;
-                    volume = mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD);
+                    volume = mdEntry.getDecimal(quickfix.field.MDEntrySize.FIELD);
                     break;
                 case quickfix.field.MDEntryType.TRADING_SESSION_HIGH_PRICE:
                     marketstat = true;

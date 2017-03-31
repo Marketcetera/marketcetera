@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -17,15 +16,11 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
-import org.marketcetera.event.HasEventType;
 import org.marketcetera.event.HasInstrument;
 import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Content;
@@ -35,7 +30,6 @@ import org.marketcetera.marketdata.core.manager.MarketDataProviderNotAvailable;
 import org.marketcetera.marketdata.core.manager.MarketDataRequestFailed;
 import org.marketcetera.marketdata.core.manager.MarketDataRequestTimedOut;
 import org.marketcetera.marketdata.core.manager.NoMarketDataProvidersAvailable;
-import org.marketcetera.marketdata.core.provider.MarketdataCacheElement;
 import org.marketcetera.marketdata.core.webservice.ConnectionException;
 import org.marketcetera.marketdata.core.webservice.UnknownRequestException;
 import org.marketcetera.photon.marketdata.IMarketData;
@@ -56,8 +50,6 @@ import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
@@ -255,18 +247,6 @@ public class MarketData
         return newMarketDataDetails.getReference();
     }
     /**
-     * Get the cached market data element for the given instrument.
-     *
-     * @param inInstrument an <code>Instrument</code> value
-     * @return a <code>MarketdataCacheElement</code> value
-     * @throws ExecutionException if the cache element cannot be created as needed
-     */
-    private MarketdataCacheElement getCacheElementFor(Instrument inInstrument)
-            throws ExecutionException
-    {
-        return marketDataCache.get(inInstrument);
-    }
-    /**
      * Manages refreshing all subscription data.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -345,7 +325,10 @@ public class MarketData
                     cancel();
                     return;
                 }
-                Deque<Event> events = marketDataClientProvider.getMarketDataClient().getEvents(id);
+                Deque<Event> events = marketDataClientProvider.getMarketDataClient().getSnapshot(instrument,
+                                                                                                 content,
+                                                                                                 null);
+                updater.clear(item);
                 if(events != null) {
                     updater.update(item,
                                    events);
@@ -523,7 +506,7 @@ public class MarketData
             }
             try {
                 requestId = marketDataClientProvider.getMarketDataClient().request(request,
-                                                                                   true);
+                                                                                   false);
             } catch (NoMarketDataProvidersAvailable | MarketDataProviderNotAvailable | MarketDataRequestTimedOut e) {
                 SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
                                        "Request for {} - {} failed because no market data providers are available that can honor the request",
@@ -755,82 +738,58 @@ public class MarketData
             if(inEvents.isEmpty()) {
                 return;
             }
-            clear(inItem);
-            try {
-                Event firstEvent = inEvents.getFirst();
-                HasInstrument hasInstrument = (HasInstrument)firstEvent;
-                Instrument instrument = hasInstrument.getInstrument();
-                MarketdataCacheElement marketDataCache = getCacheElementFor(instrument);
-                if(firstEvent instanceof HasEventType) {
-                    HasEventType hasEventType = (HasEventType)firstEvent;
-                    if(hasEventType.getEventType().isSnapshot()) {
-                        marketDataCache.invalidate(getContent());
-                    }
+            Event firstEvent = inEvents.getFirst();
+            HasInstrument hasInstrument = (HasInstrument)firstEvent;
+            Instrument instrument = hasInstrument.getInstrument();
+            inItem.setInstrument(instrument);
+            inItem.setProduct(getContent());
+            final List<AskEvent> newAsks = Lists.newArrayList();
+            final List<BidEvent> newBids = Lists.newArrayList();
+            for(Event event : inEvents) {
+                if(event instanceof BidEvent) {
+                    newBids.add((BidEvent)event);
+                } else if(event instanceof AskEvent) {
+                    newAsks.add((AskEvent)event);
+                } else {
+                    throw new UnsupportedOperationException();
                 }
-                List<Event> reversedEvents = Lists.reverse(Lists.newArrayList(inEvents));
-                marketDataCache.update(getContent(),
-                                       reversedEvents.toArray(new Event[reversedEvents.size()]));
-                Event snapshot = marketDataCache.getSnapshot(getContent());
-                if(snapshot != null) {
-                    inItem.setInstrument(instrument);
-                    inItem.setProduct(getContent());
-                    final List<AskEvent> newAsks = Lists.newArrayList();
-                    final List<BidEvent> newBids = Lists.newArrayList();
-                    SLF4JLoggerProxy.debug(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
-                                           "{} snapshot is {}",
-                                           getContent(),
-                                           snapshot);
-                    AggregateEvent events = (AggregateEvent)snapshot;
-                    for(QuoteEvent event : events.decompose()) {
-                        if(event instanceof BidEvent) {
-                            newBids.add((BidEvent)event);
-                        } else if(event instanceof AskEvent) {
-                            newAsks.add((AskEvent)event);
-                        } else {
-                            throw new UnsupportedOperationException();
-                        }
-                    }
-                    inItem.getAsks().doWriteOperation(new Callable<Void>() {
-                        @Override
-                        public Void call()
-                                throws Exception
-                        {
-                            inItem.getAsks().clear();
-                            for(AskEvent ask : newAsks) {
-                                MDQuoteImpl quoteItem = new MDQuoteImpl();
-                                quoteItem.setInstrument(ask.getInstrument());
-                                quoteItem.setPrice(ask.getPrice());
-                                quoteItem.setSize(ask.getSize());
-                                quoteItem.setSource(ask.getExchange());
-                                quoteItem.setTime(ask.getQuoteDate().getTime());
-                                inItem.getAsks().add(quoteItem);
-                            }
-                            return null;
-                        }
-                    });
-                    inItem.getBids().doWriteOperation(new Callable<Void>() {
-                        @Override
-                        public Void call()
-                                throws Exception
-                        {
-                            inItem.getBids().clear();
-                            for(BidEvent bid : newBids) {
-                                MDQuoteImpl quoteItem = new MDQuoteImpl();
-                                quoteItem.setInstrument(bid.getInstrument());
-                                quoteItem.setPrice(bid.getPrice());
-                                quoteItem.setSize(bid.getSize());
-                                quoteItem.setSource(bid.getExchange());
-                                quoteItem.setTime(bid.getQuoteDate().getTime());
-                                inItem.getBids().add(quoteItem);
-                            }
-                            return null;
-                        }
-                    });
-                }
-            } catch (ExecutionException e) {
-                SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
-                                      e);
             }
+            inItem.getAsks().doWriteOperation(new Callable<Void>() {
+                @Override
+                public Void call()
+                        throws Exception
+                {
+                    inItem.getAsks().clear();
+                    for(AskEvent ask : newAsks) {
+                        MDQuoteImpl quoteItem = new MDQuoteImpl();
+                        quoteItem.setInstrument(ask.getInstrument());
+                        quoteItem.setPrice(ask.getPrice());
+                        quoteItem.setSize(ask.getSize());
+                        quoteItem.setSource(ask.getExchange());
+                        quoteItem.setTime(ask.getQuoteDate().getTime());
+                        inItem.getAsks().add(quoteItem);
+                    }
+                    return null;
+                }
+            });
+            inItem.getBids().doWriteOperation(new Callable<Void>() {
+                @Override
+                public Void call()
+                        throws Exception
+                {
+                    inItem.getBids().clear();
+                    for(BidEvent bid : newBids) {
+                        MDQuoteImpl quoteItem = new MDQuoteImpl();
+                        quoteItem.setInstrument(bid.getInstrument());
+                        quoteItem.setPrice(bid.getPrice());
+                        quoteItem.setSize(bid.getSize());
+                        quoteItem.setSource(bid.getExchange());
+                        quoteItem.setTime(bid.getQuoteDate().getTime());
+                        inItem.getBids().add(quoteItem);
+                    }
+                    return null;
+                }
+            });
         }
         /* (non-Javadoc)
          * @see org.marketcetera.photon.internal.marketdata.MarketData.ItemUpdater#clear(org.marketcetera.photon.model.marketdata.MDItem)
@@ -904,32 +863,13 @@ public class MarketData
             if(inEvents.isEmpty()) {
                 return;
             }
-            clear(inItem);
-            try {
-                Event firstEvent = inEvents.getFirst();
-                HasInstrument hasInstrument = (HasInstrument)firstEvent;
-                Instrument instrument = hasInstrument.getInstrument();
-                MarketdataCacheElement marketDataCache = getCacheElementFor(instrument);
-                if(firstEvent instanceof HasEventType) {
-                    HasEventType hasEventType = (HasEventType)firstEvent;
-                    if(hasEventType.getEventType().isSnapshot()) {
-                        marketDataCache.invalidate(Content.LATEST_TICK);
-                    }
-                }
-                marketDataCache.update(Content.LATEST_TICK,
-                                       inEvents.toArray(new Event[inEvents.size()]));
-                marketDataCache.update(Content.MARKET_STAT,
-                                       inEvents.toArray(new Event[inEvents.size()]));
-                Event snapshot = marketDataCache.getSnapshot(Content.LATEST_TICK);
-                if(snapshot != null) {
-                    TradeEvent trade = (TradeEvent)snapshot;
+            for(Event event : inEvents) {
+                if(event instanceof TradeEvent) {
+                    TradeEvent trade = (TradeEvent)event;
                     inItem.setInstrument(trade.getInstrument());
                     inItem.setPrice(trade.getPrice());
                     inItem.setSize(trade.getSize());
                 }
-            } catch (ExecutionException e) {
-                SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
-                                      e);
             }
         }
         @Override
@@ -953,41 +893,18 @@ public class MarketData
             if(inEvents.isEmpty()) {
                 return;
             }
-            clear(inItem);
-            try {
-                Event firstEvent = inEvents.getFirst();
-                HasInstrument hasInstrument = (HasInstrument)firstEvent;
-                Instrument instrument = hasInstrument.getInstrument();
-                MarketdataCacheElement marketDataCache = getCacheElementFor(instrument);
-                if(firstEvent instanceof HasEventType) {
-                    HasEventType hasEventType = (HasEventType)firstEvent;
-                    if(hasEventType.getEventType().isSnapshot()) {
-                        marketDataCache.invalidate(Content.TOP_OF_BOOK);
-                    }
+            for(Event quote : inEvents) {
+                if(quote instanceof AskEvent) {
+                    AskEvent ask = (AskEvent)quote;
+                    inItem.setInstrument(ask.getInstrument());
+                    inItem.setAskPrice(ask.getPrice());
+                    inItem.setAskSize(ask.getSize());
+                } else if(quote instanceof BidEvent) {
+                    BidEvent bid = (BidEvent)quote;
+                    inItem.setInstrument(bid.getInstrument());
+                    inItem.setBidPrice(bid.getPrice());
+                    inItem.setBidSize(bid.getSize());
                 }
-                marketDataCache.update(Content.TOP_OF_BOOK,
-                                       inEvents.toArray(new Event[inEvents.size()]));
-                Event snapshot = marketDataCache.getSnapshot(Content.TOP_OF_BOOK);
-                if(snapshot != null) {
-                    TopOfBookEvent newTop = (TopOfBookEvent)snapshot;
-                    List<QuoteEvent> newTopEvents = newTop.decompose();
-                    for(QuoteEvent quote : newTopEvents) {
-                        if(quote instanceof AskEvent) {
-                            AskEvent ask = (AskEvent)quote;
-                            inItem.setInstrument(ask.getInstrument());
-                            inItem.setAskPrice(ask.getPrice());
-                            inItem.setAskSize(ask.getSize());
-                        } else if(quote instanceof BidEvent) {
-                            BidEvent bid = (BidEvent)quote;
-                            inItem.setInstrument(bid.getInstrument());
-                            inItem.setBidPrice(bid.getPrice());
-                            inItem.setBidSize(bid.getSize());
-                        }
-                    }
-                }
-            } catch (ExecutionException e) {
-                SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
-                                      e);
             }
         }
         @Override
@@ -1013,23 +930,9 @@ public class MarketData
             if(inEvents.isEmpty()) {
                 return;
             }
-            clear(inItem);
-            try {
-                Event firstEvent = inEvents.getFirst();
-                HasInstrument hasInstrument = (HasInstrument)firstEvent;
-                Instrument instrument = hasInstrument.getInstrument();
-                MarketdataCacheElement marketDataCache = getCacheElementFor(instrument);
-                if(firstEvent instanceof HasEventType) {
-                    HasEventType hasEventType = (HasEventType)firstEvent;
-                    if(hasEventType.getEventType().isSnapshot()) {
-                        marketDataCache.invalidate(Content.MARKET_STAT);
-                    }
-                }
-                marketDataCache.update(Content.MARKET_STAT,
-                                       inEvents.toArray(new Event[inEvents.size()]));
-                Event snapshot = marketDataCache.getSnapshot(Content.MARKET_STAT);
-                if(snapshot != null) {
-                    MarketstatEvent statEvent = (MarketstatEvent)snapshot;
+            for(Event event : inEvents) {
+                if(event instanceof MarketstatEvent) {
+                    MarketstatEvent statEvent = (MarketstatEvent)event;
                     inItem.setInstrument(statEvent.getInstrument());
                     inItem.setLowPrice(statEvent.getHigh()); // this is high price
                     inItem.setHighPrice(statEvent.getOpen()); // this is open/close
@@ -1037,9 +940,6 @@ public class MarketData
                     inItem.setVolumeTraded(statEvent.getLow()); // this is actually low price
                     inItem.setPreviousClosePrice(statEvent.getPreviousClose()); // this is right!
                 }
-            } catch (ExecutionException e) {
-                SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
-                                      e);
             }
         }
         @Override
@@ -1115,17 +1015,6 @@ public class MarketData
             return Content.TOTAL_VIEW;
         }
     };
-    /**
-     * caches market data
-     */
-    private final LoadingCache<Instrument,MarketdataCacheElement> marketDataCache = CacheBuilder.newBuilder().build(new CacheLoader<Instrument,MarketdataCacheElement>() {
-        @Override
-        public MarketdataCacheElement load(Instrument inInstrument)
-                throws Exception
-        {
-            return new MarketdataCacheElement(inInstrument);
-        }
-    });
     /**
      * holds current market data refresh jobs
      */
