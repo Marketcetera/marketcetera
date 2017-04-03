@@ -1,6 +1,7 @@
 package org.marketcetera.photon.internal.marketdata;
 
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -21,6 +22,7 @@ import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.HasInstrument;
 import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Content;
@@ -38,6 +40,7 @@ import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
+import org.marketcetera.photon.model.marketdata.MDQuote;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl;
 import org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl;
@@ -328,11 +331,8 @@ public class MarketData
                 Deque<Event> events = marketDataClientProvider.getMarketDataClient().getSnapshot(instrument,
                                                                                                  content,
                                                                                                  null);
-                updater.clear(item);
-                if(events != null) {
-                    updater.update(item,
-                                   events);
-                }
+                updater.update(item,
+                               events);
             } catch (UnknownRequestException e) {
                 // this is likely a transient problem, which will sort itself out shortly
                 SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
@@ -732,10 +732,8 @@ public class MarketData
         public void update(final MDDepthOfBookImpl inItem,
                            final Deque<Event> inEvents)
         {
-            if(inEvents == null) {
-                return;
-            }
-            if(inEvents.isEmpty()) {
+            if(inEvents == null || inEvents.isEmpty()) {
+                clear(inItem);
                 return;
             }
             Event firstEvent = inEvents.getFirst();
@@ -759,16 +757,8 @@ public class MarketData
                 public Void call()
                         throws Exception
                 {
-                    inItem.getAsks().clear();
-                    for(AskEvent ask : newAsks) {
-                        MDQuoteImpl quoteItem = new MDQuoteImpl();
-                        quoteItem.setInstrument(ask.getInstrument());
-                        quoteItem.setPrice(ask.getPrice());
-                        quoteItem.setSize(ask.getSize());
-                        quoteItem.setSource(ask.getExchange());
-                        quoteItem.setTime(ask.getQuoteDate().getTime());
-                        inItem.getAsks().add(quoteItem);
-                    }
+                    doListUpdate(inItem.getAsks(),
+                                 newAsks);
                     return null;
                 }
             });
@@ -777,16 +767,8 @@ public class MarketData
                 public Void call()
                         throws Exception
                 {
-                    inItem.getBids().clear();
-                    for(BidEvent bid : newBids) {
-                        MDQuoteImpl quoteItem = new MDQuoteImpl();
-                        quoteItem.setInstrument(bid.getInstrument());
-                        quoteItem.setPrice(bid.getPrice());
-                        quoteItem.setSize(bid.getSize());
-                        quoteItem.setSource(bid.getExchange());
-                        quoteItem.setTime(bid.getQuoteDate().getTime());
-                        inItem.getBids().add(quoteItem);
-                    }
+                    doListUpdate(inItem.getBids(),
+                                 newBids);
                     return null;
                 }
             });
@@ -799,6 +781,76 @@ public class MarketData
         {
             inItem.getBids().clear();
             inItem.getAsks().clear();
+        }
+        /**
+         * Update the given current list with the contents of the given new list.
+         *
+         * @param inCurrentList a <code>LockableEList&lt;MDQuote&gt;</code> value
+         * @param inNewList a <code>List&lt;? extends QuoteEvent&gt;</code> value
+         */
+        private void doListUpdate(LockableEList<MDQuote> inCurrentList,
+                                  List<? extends QuoteEvent> inNewList)
+        {
+            Iterator<MDQuote> currentEventIterator = inCurrentList.iterator();
+            Iterator<? extends QuoteEvent> newEventIterator = inNewList.iterator();
+            List<MDQuote> quotesToRemove = Lists.newArrayList();
+            while(currentEventIterator.hasNext()) {
+                MDQuote currentEvent = currentEventIterator.next();
+                QuoteEvent newEvent = null;
+                if(newEventIterator.hasNext()) {
+                    newEvent = newEventIterator.next();
+                }
+                // currentEvent is non-null, newEvent may or may not be null
+                if(newEvent == null) {
+                    // current has no match in the new list
+                    quotesToRemove.add(currentEvent);
+                } else {
+                    // there is an entry in both the new list and the old list, compare them to see if they're the same
+                    if(!isEqual(currentEvent,newEvent)) {
+                        ((MDQuoteImpl)currentEvent).setPrice(newEvent.getPrice());
+                        ((MDQuoteImpl)currentEvent).setSize(newEvent.getSize());
+                        ((MDQuoteImpl)currentEvent).setSource(newEvent.getExchange());
+                        ((MDQuoteImpl)currentEvent).setTime(newEvent.getQuoteDate().getTime());
+                    }
+                }
+            }
+            inCurrentList.removeAll(quotesToRemove);
+            // anything left in the new event iterator is new
+            if(newEventIterator.hasNext()) {
+                List<MDQuote> newItems = Lists.newArrayList();
+                while(newEventIterator.hasNext()) {
+                    QuoteEvent newQuote = newEventIterator.next();
+                    MDQuoteImpl quoteItem = new MDQuoteImpl();
+                    quoteItem.setInstrument(newQuote.getInstrument());
+                    quoteItem.setPrice(newQuote.getPrice());
+                    quoteItem.setSize(newQuote.getSize());
+                    quoteItem.setSource(newQuote.getExchange());
+                    quoteItem.setTime(newQuote.getQuoteDate().getTime());
+                    newItems.add(quoteItem);
+                }
+                inCurrentList.addAll(newItems);
+            }
+        }
+        /**
+         * Determine if the two quote objects are effectively equal.
+         *
+         * @param inMdQuote an <code>MDQuote</code> value
+         * @param inQuote a <code>QuoteEvent</code> value
+         * @return a <code>boolean</code> value
+         */
+        private boolean isEqual(MDQuote inMdQuote,
+                                QuoteEvent inQuote)
+        {
+            if(inMdQuote.getTime() != inQuote.getQuoteDate().getTime()) {
+                return false;
+            }
+            if(inMdQuote.getPrice().compareTo(inQuote.getPrice()) != 0) {
+                return false;
+            }
+            if(inMdQuote.getSize().compareTo(inQuote.getSize()) != 0) {
+                return false;
+            }
+            return true;
         }
         /**
          * Gets the content type of this market data updater.
@@ -857,10 +909,8 @@ public class MarketData
         public void update(MDLatestTickImpl inItem,
                            Deque<Event> inEvents)
         {
-            if(inEvents == null) {
-                return;
-            }
-            if(inEvents.isEmpty()) {
+            if(inEvents == null || inEvents.isEmpty()) {
+                clear(inItem);
                 return;
             }
             for(Event event : inEvents) {
@@ -887,33 +937,59 @@ public class MarketData
         public void update(MDTopOfBookImpl inItem,
                            Deque<Event> inEvents)
         {
-            if(inEvents == null) {
+            if(inEvents == null || inEvents.isEmpty()) {
+                clear(inItem);
                 return;
             }
-            if(inEvents.isEmpty()) {
-                return;
-            }
+            boolean askFound = false;
+            boolean bidFound = false;
             for(Event quote : inEvents) {
                 if(quote instanceof AskEvent) {
                     AskEvent ask = (AskEvent)quote;
                     inItem.setInstrument(ask.getInstrument());
                     inItem.setAskPrice(ask.getPrice());
                     inItem.setAskSize(ask.getSize());
+                    askFound = true;
                 } else if(quote instanceof BidEvent) {
                     BidEvent bid = (BidEvent)quote;
                     inItem.setInstrument(bid.getInstrument());
                     inItem.setBidPrice(bid.getPrice());
                     inItem.setBidSize(bid.getSize());
+                    bidFound = true;
                 }
+            }
+            if(!bidFound) {
+                clearBid(inItem);
+            }
+            if(!askFound) {
+                clearAsk(inItem);
             }
         }
         @Override
         public void clear(MDTopOfBookImpl inItem)
         {
-            inItem.setAskPrice(null);
-            inItem.setAskSize(null);
+            clearAsk(inItem);
+            clearBid(inItem);
+        }
+        /**
+         * Clear the bid price.
+         *
+         * @param inItem an <code>MDTopOfBookImpl</code> value
+         */
+        private void clearBid(MDTopOfBookImpl inItem)
+        {
             inItem.setBidPrice(null);
             inItem.setBidSize(null);
+        }
+        /**
+         * Clear the ask price.
+         *
+         * @param inItem an <code>MDTopOfBookImpl</code> value
+         */
+        private void clearAsk(MDTopOfBookImpl inItem)
+        {
+            inItem.setAskPrice(null);
+            inItem.setAskSize(null);
         }
     };
     /**
@@ -924,10 +1000,8 @@ public class MarketData
         public void update(MDMarketstatImpl inItem,
                            Deque<Event> inEvents)
         {
-            if(inEvents == null) {
-                return;
-            }
-            if(inEvents.isEmpty()) {
+            if(inEvents == null || inEvents.isEmpty()) {
+                clear(inItem);
                 return;
             }
             for(Event event : inEvents) {
