@@ -15,7 +15,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.FIXFieldLocalizer;
@@ -47,8 +46,7 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS"); //$NON-NLS-1$
 
 	// todo: This constant is duplicated from EnumTableFormat.
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
-			"yyyy-MM-dd"); //$NON-NLS-1$
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
 
 	private static final Class<?>[] NUMERIC_TYPES = { Number.class, Date.class,
 			Calendar.class };
@@ -339,11 +337,11 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
             }
             if(objValue instanceof DateTime) {
                 DateTime actualValue = (DateTime)objValue;
-                if(actualValue.isAfter(LocalTime.MIDNIGHT.toDateTimeToday())) {
-                    return TimeFactoryImpl.WALLCLOCK_MILLISECONDS_LOCAL.print(actualValue);
-                } else {
+//                if(actualValue.isAfter(LocalTime.MIDNIGHT.toDateTimeToday())) {
+//                    return TimeFactoryImpl.WALLCLOCK_MILLISECONDS_LOCAL.print(actualValue);
+//                } else {
                     return TimeFactoryImpl.FULL_MILLISECONDS_LOCAL.print(actualValue);
-                }
+//                }
             }
             /*
              * Exclude field 201 since it is PutOrCall, and we want to use the localizer below.
