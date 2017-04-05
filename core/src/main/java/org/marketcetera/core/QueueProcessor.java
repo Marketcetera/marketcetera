@@ -9,6 +9,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.marketcetera.metrics.MetricService;
@@ -47,6 +49,7 @@ public abstract class QueueProcessor<Clazz>
      * @see org.springframework.context.Lifecycle#start()
      */
     @Override
+    @PostConstruct
     public synchronized void start()
     {
         if(isRunning()) {
@@ -90,6 +93,7 @@ public abstract class QueueProcessor<Clazz>
      * @see org.springframework.context.Lifecycle#stop()
      */
     @Override
+    @PreDestroy
     public synchronized void stop()
     {
         if(!isRunning()) {
