@@ -6,8 +6,8 @@
 - $License$
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.sonatype.oss</groupId>
@@ -270,6 +270,11 @@
         </exclusions>
       </dependency>
       <!-- Compile: Other -->
+      <dependency>
+        <groupId>org.tensorflow</groupId>
+        <artifactId>tensorflow</artifactId>
+        <version>1.1.0-rc1</version>
+      </dependency>
       <dependency>
         <groupId>com.github.jnr</groupId>
         <artifactId>jnr-process</artifactId>
@@ -656,19 +661,6 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-	<groupId>com.cloudhopper.proxool</groupId>
-	<artifactId>proxool</artifactId>
-	<version>0.9.1</version>
-	<scope>runtime</scope>
-        <exclusions>
-          <!-- Exclude 1.3 version of javamail -->
-          <exclusion>
-            <groupId>geronimo-spec</groupId>
-            <artifactId>geronimo-spec-javamail</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>org.apache.geronimo.javamail</groupId>
         <artifactId>geronimo-javamail_1.4_mail</artifactId>
         <version>1.8.3</version>
@@ -836,25 +828,25 @@
     <!-- **** PLUGIN MANAGEMENT SECTION **** -->
     <pluginManagement>
       <plugins>
-      <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
-        <version>1.1.3</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>process</goal>
-            </goals>
-            <configuration>
-              <!-- Specifies the directory in which the query types are generated -->
-              <outputDirectory>target/generated-sources/java</outputDirectory>
-              <!-- States that the APT code generator should look for JPA annotations -->
-              <processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+        <plugin>
+          <groupId>com.mysema.maven</groupId>
+          <artifactId>apt-maven-plugin</artifactId>
+          <version>1.1.3</version>
+          <executions>
+            <execution>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>process</goal>
+              </goals>
+              <configuration>
+                <!-- Specifies the directory in which the query types are generated -->
+                <outputDirectory>target/generated-sources/java</outputDirectory>
+                <!-- States that the APT code generator should look for JPA annotations -->
+                <processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
