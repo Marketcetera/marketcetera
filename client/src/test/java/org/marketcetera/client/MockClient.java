@@ -8,6 +8,7 @@ import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.event.Event;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
 
@@ -417,6 +418,14 @@ public class MockClient
                           BrokerID inBrokerID,
                           Hierarchy inHierarchy)
             throws ConnectionException
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#sendEvent(org.marketcetera.event.Event)
+     */
+    @Override
+    public void sendEvent(Event inEvent)
     {
         throw new UnsupportedOperationException(); // TODO
     }

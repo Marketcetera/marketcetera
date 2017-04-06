@@ -85,10 +85,10 @@ public class MockServer {
              (ConnectionFactory)mContext.getBean
              ("metc_connection_factory_out"));
         try {
-            mOrderEnvelopeListener = jmsMgr.getIncomingJmsFactory().
+            mDataEnvelopeListener = jmsMgr.getIncomingJmsFactory().
                 registerHandlerOEX
                 (mHandler,Service.REQUEST_QUEUE,false);
-	    mOrderEnvelopeListener.start();
+	    mDataEnvelopeListener.start();
         } catch (JAXBException ex) {
             throw new IllegalStateException
                 ("Cannot initialize request queue listener",ex);
@@ -111,7 +111,7 @@ public class MockServer {
         mServiceInterface = mServer.publish(mServiceImpl,Service.class);
     }
     public void close() {
-        mOrderEnvelopeListener.shutdown();
+        mDataEnvelopeListener.shutdown();
         mContext.close();
         mServiceInterface.stop();
         mServer.stop();
@@ -234,6 +234,6 @@ public class MockServer {
     private ServiceInterface mServiceInterface;
     private MockServiceImpl mServiceImpl;
     private MockMessageHandler mHandler;
-    private SimpleMessageListenerContainer mOrderEnvelopeListener;
+    private SimpleMessageListenerContainer mDataEnvelopeListener;
     private JmsTemplate mStatusSender;
 }

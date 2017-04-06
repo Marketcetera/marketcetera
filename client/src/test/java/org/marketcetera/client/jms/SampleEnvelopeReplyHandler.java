@@ -14,7 +14,7 @@ import org.marketcetera.util.ws.tags.SessionId;
 /* $License$ */
 
 public class SampleEnvelopeReplyHandler
-    extends SampleReplyHandler<OrderEnvelope>
+    extends SampleReplyHandler<DataEnvelope>
 {
 
     // CLASS DATA.
@@ -25,25 +25,25 @@ public class SampleEnvelopeReplyHandler
     // SampleReplyHandler.
 
     @Override
-    OrderEnvelope create
+    DataEnvelope create
         (int i)
     {
         OrderSingle msg=Factory.getInstance().createOrderSingle();
         msg.setPrice(new BigDecimal(i));
-        return new OrderEnvelope(msg,SESSION_ID);
+        return new DataEnvelope(msg,SESSION_ID);
     }
 
     @Override
     boolean isEqual
         (int i,
-         OrderEnvelope msg)
+         DataEnvelope msg)
     {
         return (i==((OrderSingle)msg.getOrder()).getPrice().intValue());
     }
 
     @Override
-    protected OrderEnvelope getReply
-        (OrderEnvelope msg)
+    protected DataEnvelope getReply
+        (DataEnvelope msg)
     {
         return create(((OrderSingle)msg.getOrder()).getPrice().intValue()+1);
     }

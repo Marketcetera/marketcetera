@@ -69,6 +69,7 @@ import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.LogEventLevel;
@@ -1226,6 +1227,14 @@ public class StrategyTestBase
                               BrokerID inBrokerID,
                               Hierarchy inHierarchy)
                 throws ConnectionException
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#sendEvent(org.marketcetera.event.Event)
+         */
+        @Override
+        public void sendEvent(Event inEvent)
         {
             throw new UnsupportedOperationException(); // TODO
         }

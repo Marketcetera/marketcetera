@@ -5,7 +5,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.trade.*;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.client.jms.OrderEnvelope;
+import org.marketcetera.client.jms.DataEnvelope;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
 
 import org.springframework.jms.core.JmsOperations;
@@ -32,10 +32,10 @@ import quickfix.FieldNotFound;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MockMessageHandler
-    implements ReceiveOnlyHandler<OrderEnvelope>
+    implements ReceiveOnlyHandler<DataEnvelope>
 {
     @Override
-    public void receiveMessage(OrderEnvelope inObject) {
+    public void receiveMessage(DataEnvelope inObject) {
         Object send;
         if(inObject.getOrder() instanceof HasFIXMessage) {
             try {

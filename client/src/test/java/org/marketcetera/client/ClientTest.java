@@ -37,13 +37,15 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.client.jms.OrderEnvelope;
+import org.marketcetera.client.jms.DataEnvelope;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
@@ -54,6 +56,7 @@ import org.marketcetera.trade.ExecutionReportImpl;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.FIXResponse;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
@@ -562,10 +565,10 @@ public class ClientTest
             //Verify transmitted order
             Object received = sServer.getHandler().removeReceived();
             assertNotNull(received);
-            assertTrue(received instanceof OrderEnvelope);
+            assertTrue(received instanceof DataEnvelope);
             assertEquals(((ClientImpl)getClient()).getSessionId(),
-                         ((OrderEnvelope)received).getSessionId());
-            received = ((OrderEnvelope)received).getOrder();
+                         ((DataEnvelope)received).getSessionId());
+            received = ((DataEnvelope)received).getOrder();
             assertTrue(received instanceof OrderSingle);
             assertOrderSingleEquals(order, (OrderSingle)received);
             //Verify received report
@@ -599,10 +602,10 @@ public class ClientTest
             //Verify transmitted order
             Object received = sServer.getHandler().removeReceived();
             assertNotNull(received);
-            assertTrue(received instanceof OrderEnvelope);
+            assertTrue(received instanceof DataEnvelope);
             assertEquals(((ClientImpl)getClient()).getSessionId(),
-                         ((OrderEnvelope)received).getSessionId());
-            received = ((OrderEnvelope)received).getOrder();
+                         ((DataEnvelope)received).getSessionId());
+            received = ((DataEnvelope)received).getOrder();
             assertTrue(received instanceof OrderReplace);
             assertOrderReplaceEquals(order, (OrderReplace)received);
             //Verify received report
@@ -636,10 +639,10 @@ public class ClientTest
             //Verify transmitted order
             Object received = sServer.getHandler().removeReceived();
             assertNotNull(received);
-            assertTrue(received instanceof OrderEnvelope);
+            assertTrue(received instanceof DataEnvelope);
             assertEquals(((ClientImpl)getClient()).getSessionId(),
-                         ((OrderEnvelope)received).getSessionId());
-            received = ((OrderEnvelope)received).getOrder();
+                         ((DataEnvelope)received).getSessionId());
+            received = ((DataEnvelope)received).getOrder();
             assertTrue(received instanceof OrderCancel);
             assertOrderCancelEquals(order, (OrderCancel)received);
             //Verify received report
@@ -691,10 +694,10 @@ public class ClientTest
             //Verify transmitted order
             Object received = sServer.getHandler().removeReceived();
             assertNotNull(received);
-            assertTrue(received instanceof OrderEnvelope);
+            assertTrue(received instanceof DataEnvelope);
             assertEquals(((ClientImpl)getClient()).getSessionId(),
-                         ((OrderEnvelope)received).getSessionId());
-            received = ((OrderEnvelope)received).getOrder();
+                         ((DataEnvelope)received).getSessionId());
+            received = ((DataEnvelope)received).getOrder();
             assertTrue(received instanceof FIXOrder);
             assertOrderFIXEquals(order, (FIXOrder)received);
             //Verify received report
@@ -703,7 +706,40 @@ public class ClientTest
             assertExecReportEquals(report, (ExecutionReport) receivedReport);
         }
     }
-
+    /**
+     * Test sending of an event via JMS.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testSendEvent()
+            throws Exception
+    {
+        initClient();
+        Instrument instrument = new Equity("METC");
+        QuoteEventBuilder<BidEvent> eventBuilder = QuoteEventBuilder.bidEvent(instrument);
+        for(int i = 0; i < NUM_REPEAT; i++) {
+            eventBuilder.withPrice(BigDecimal.TEN).withSize(new BigDecimal(100)).withQuoteDate(new Date()).withExchange("Q");
+            BidEvent bidEvent = eventBuilder.create();
+            getClient().sendEvent(bidEvent);
+            // verify we got no exception when sending the order
+            if(mListener.getException() != null) {
+                SLF4JLoggerProxy.error(this,
+                                       "Unexpected exception",
+                                       mListener.getException());
+            }
+            // verify no errors
+            assertNull(mListener.getException());
+            // verify transmitted order
+            Object received = sServer.getHandler().removeReceived();
+            assertNotNull(received);
+            assertTrue(received instanceof DataEnvelope);
+            received = ((DataEnvelope)received).getEvent();
+            assertTrue(received instanceof BidEvent);
+            assertEquals(bidEvent,
+                         received);
+        }
+    }
     @Test
     public void reportListening() throws Exception {
         initClient();

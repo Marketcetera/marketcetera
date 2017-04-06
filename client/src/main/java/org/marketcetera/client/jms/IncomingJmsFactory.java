@@ -368,7 +368,7 @@ public class IncomingJmsFactory
      */
 
     public SimpleMessageListenerContainer registerHandlerOEX
-        (ReceiveOnlyHandler<OrderEnvelope> handler,
+        (ReceiveOnlyHandler<DataEnvelope> handler,
          String inDstName,
          boolean isInDstTopic)
         throws JAXBException
@@ -399,7 +399,7 @@ public class IncomingJmsFactory
      */
 
     public SimpleMessageListenerContainer registerHandlerOEX
-        (ReplyHandler<OrderEnvelope> handler,
+        (ReplyHandler<DataEnvelope> handler,
          String inDstName,
          boolean isInDstTopic,
          String replyDstName,

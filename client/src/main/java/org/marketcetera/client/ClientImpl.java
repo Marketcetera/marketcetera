@@ -21,13 +21,14 @@ import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.config.SpringConfig;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.JmsUtils;
-import org.marketcetera.client.jms.OrderEnvelope;
+import org.marketcetera.client.jms.DataEnvelope;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.event.Event;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Currency;
@@ -82,7 +83,9 @@ import org.springframework.jms.listener.SimpleMessageListenerContainer;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public class ClientImpl implements Client, javax.jms.ExceptionListener {
+public class ClientImpl
+        implements Client,javax.jms.ExceptionListener
+{
 
     @Override
     public void sendOrder(OrderSingle inOrderSingle)
@@ -114,7 +117,15 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
         Validations.validate(inFIXOrder);
         convertAndSend(inFIXOrder);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#sendEvent(org.marketcetera.event.Event)
+     */
+    @Override
+    public void sendEvent(Event inEvent)
+            throws ConnectionException
+    {
+        convertAndSend(inEvent);
+    }
     @Override
     public void addReportListener(ReportListener inListener) {
         failIfClosed();
@@ -1108,7 +1119,7 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
             for(OrderModifier modifier : orderModifiers) {
                 modifier.modify(inOrder);
             }
-            mToServer.convertAndSend(new OrderEnvelope(inOrder,
+            mToServer.convertAndSend(new DataEnvelope(inOrder,
                                                        getSessionId()));
         } catch (Exception e) {
             ConnectionException exception;
@@ -1121,7 +1132,40 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
             throw exception;
         }
     }
-
+    /**
+     * Convert the given event and send it to the server.
+     *
+     * @param inEvent an <code>Event</code> value
+     * @throws ConnectionException if the client is closed
+     */
+    private void convertAndSend(Event inEvent)
+            throws ConnectionException
+    {
+        ThreadedMetric.event("client-OUT",  //$NON-NLS-1$ 
+                             inEvent.getMessageId());
+        failIfClosed();
+        SLF4JLoggerProxy.debug(TRAFFIC,
+                               "Sending: {}",  //$NON-NLS-1$
+                               inEvent);
+        try {
+            if(mToServer == null) {
+                throw new ClientInitException(Messages.NOT_CONNECTED_TO_SERVER);
+            }
+            failIfDisconnected();
+            mToServer.convertAndSend(new DataEnvelope(inEvent,
+                                                       getSessionId()));
+        } catch (Exception e) {
+            ConnectionException exception;
+            exception = new ConnectionException(e, new I18NBoundMessage1P(Messages.ERROR_SEND_MESSAGE,
+                                                                          ObjectUtils.toString(inEvent)));
+            Messages.LOG_ERROR_SEND_EXCEPTION.warn(this,
+                                                   exception,
+                                                   ObjectUtils.toString(inEvent));
+            ExceptUtils.interrupt(e);
+            exceptionThrown(exception);
+            throw exception;
+        }
+    }
     /**
      * Checks to see if the client is closed and fails if the client
      * is closed.
