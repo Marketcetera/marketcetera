@@ -60,6 +60,7 @@ import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.MarketDataRequestListener;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.ReportListener;
 import org.marketcetera.client.brokers.BrokerStatus;
@@ -1235,6 +1236,22 @@ public class StrategyTestBase
          */
         @Override
         public void sendEvent(Event inEvent)
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#addMarketDataRequestListener(org.marketcetera.client.MarketDataRequestListener)
+         */
+        @Override
+        public void addMarketDataRequestListener(MarketDataRequestListener inListener)
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#removeMarketDataRequestListener(org.marketcetera.client.MarketDataRequestListener)
+         */
+        @Override
+        public void removeMarketDataRequestListener(MarketDataRequestListener inListener)
         {
             throw new UnsupportedOperationException(); // TODO
         }

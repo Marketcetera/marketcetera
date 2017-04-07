@@ -3,13 +3,16 @@ package org.marketcetera.client.jms;
 import javax.jms.ConnectionFactory;
 import javax.jms.ExceptionListener;
 import javax.xml.bind.JAXBException;
+
 import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.SimpleMessageConverter;
+
 import quickfix.Message;
 
 /**
@@ -470,5 +473,24 @@ public class IncomingJmsFactory
     {
         return registerHandler
             (handler,inDstName,isInDstTopic,new JMSXMLMessageConverter());
+    }
+    /**
+     * Register the given message handler for messages that are received of the given type.
+     *
+     * @param inHandler a <code>ReceiveOnlyHandler&lt;MarketDataRequest&gt;</code> value
+     * @param inDstName a <code>String</code> value
+     * @param inIsDstTopic a <code>boolean</code> value
+     * @return a <code>SimpleMessageListenerContainer</code> value
+     * @throws JAXBException if an error occurs in creating the JMS/XML converter
+     */
+    public SimpleMessageListenerContainer registerHandlerMDRX(ReceiveOnlyHandler<MarketDataRequest> inHandler,
+                                                              String inDstName,
+                                                              boolean inIsDstTopic)
+            throws JAXBException
+    {
+        return registerHandler(inHandler,
+                               inDstName,
+                               inIsDstTopic,
+                               new JMSXMLMessageConverter());
     }
 }

@@ -108,9 +108,25 @@ public class MockEvent
         }
         return event.getTimestamp().getTime();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#getRequestId()
+     */
+    @Override
+    public long getRequestId()
+    {
+        return event.getRequestId();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#setRequestId(long)
+     */
+    @Override
+    public void setRequestId(long inRequestId)
+    {
+        event.setRequestId(inRequestId);
+    }
     /**
-     * 
+     * holds event attributes
      */
     private final EventBean event = new EventBean();
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1725629179784791105L;
 }

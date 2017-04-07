@@ -2,7 +2,13 @@ package org.marketcetera.marketdata.core.manager.impl;
 
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.lang.Validate;
+import org.marketcetera.client.Client;
+import org.marketcetera.client.ClientManager;
+import org.marketcetera.client.MarketDataRequestListener;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
@@ -12,6 +18,7 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.manager.MarketDataManager;
 import org.marketcetera.marketdata.core.manager.MarketDataManagerModule;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -23,8 +30,25 @@ import org.marketcetera.trade.Instrument;
  * @since $Release$
  */
 public class MarketDataManagerImpl
-        implements MarketDataManager
+        implements MarketDataManager,MarketDataRequestListener
 {
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        client = ClientManager.getInstance();
+        client.addMarketDataRequestListener(this);
+    }
+    /**
+     * Stop the object.
+     */
+    @PreDestroy
+    public void stop()
+    {
+        client.removeMarketDataRequestListener(this);
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.manager.MarketDataManager#requestMarketData(org.marketcetera.marketdata.MarketDataRequest, org.marketcetera.core.publisher.ISubscriber)
      */
@@ -66,6 +90,36 @@ public class MarketDataManagerImpl
     {
         return CapabilityCollection.getReportedCapabilities();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.MarketDataRequestListener#receiveMarketDataRequest(org.marketcetera.marketdata.MarketDataRequest)
+     */
+    @Override
+    public void receiveMarketDataRequest(final MarketDataRequest inMarketDataRequest)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Received server market data request: {}",
+                               inMarketDataRequest);
+        ISubscriber subscriber = new ISubscriber() {
+            @Override
+            public boolean isInteresting(Object inData)
+            {
+                return inData instanceof Event;
+            }
+            @Override
+            public void publishTo(Object inData)
+            {
+                Event event = (Event)inData;
+                SLF4JLoggerProxy.trace(MarketDataManagerImpl.this,
+                                       "Sending MDR {}: {}",
+                                       inMarketDataRequest.getRequestId(),
+                                       event);
+                client.sendEvent(event);
+            }
+        };
+        // TODO need to be able to handle cancels, too
+        requestMarketData(inMarketDataRequest,
+                          subscriber);
+    }
     /**
      * Get the subscriberTimeout value.
      *
@@ -95,6 +149,10 @@ public class MarketDataManagerImpl
             marketDataManagerModule.setSubscriberTimeout(subscriberTimeout);
         }
     }
+    /**
+     * provides access to the trading client
+     */
+    private Client client;
     /**
      * time to wait for a subscriber to become available before timing out
      */

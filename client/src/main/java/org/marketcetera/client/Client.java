@@ -370,9 +370,7 @@ public interface Client
      * @param listener The listener which should be supplied the
      * broker status changes.
      */
-    public void addBrokerStatusListener
-        (BrokerStatusListener listener);
-
+    public void addBrokerStatusListener(BrokerStatusListener listener);
     /**
      * Removes a broker status listener that was previously added
      * via {@link
@@ -386,7 +384,24 @@ public interface Client
      */
     public void removeBrokerStatusListener
         (BrokerStatusListener listener);
-
+    /**
+     * Add the given market data request listener.
+     *
+     * <p>If the same listener is added more than once, it will receive notifications as many times as it has been added.</p>
+     *
+     * <p>The listeners are notified in the reverse order of their addition.</p>
+     * 
+     * @param inListener a <code>MarketDataRequestListener</code> value
+     */
+    void addMarketDataRequestListener(MarketDataRequestListener inListener);
+    /**
+     *  Remove the given market data request listener.
+     *
+     * <p>If the listener was added more than once, only its most recently added instance will be removed.</p>
+     * 
+     * @param inListener a <code>MarketDataRequestListener</code> value
+     */
+    void removeMarketDataRequestListener(MarketDataRequestListener inListener);
     /**
      * Adds a server connection status listener, which receives all
      * the server connection status changes.

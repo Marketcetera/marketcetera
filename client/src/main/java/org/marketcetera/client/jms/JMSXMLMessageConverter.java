@@ -40,6 +40,7 @@ import org.marketcetera.event.impl.OptionBidEventImpl;
 import org.marketcetera.event.impl.OptionImbalanceEvent;
 import org.marketcetera.event.impl.OptionMarketstatEventImpl;
 import org.marketcetera.event.impl.OptionTradeEventImpl;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.trade.FIXResponseImpl;
@@ -270,5 +271,5 @@ public class JMSXMLMessageConverter
                 EquityAskEventImpl.class,EquityBidEventImpl.class,EquityMarketstatEventImpl.class,EquityTradeEventImpl.class,EquityImbalanceEvent.class,
                 FutureAskEventImpl.class,FutureBidEventImpl.class,FutureMarketstatEventImpl.class,FutureTradeEventImpl.class,FutureImbalanceEvent.class,
                 OptionAskEventImpl.class,OptionBidEventImpl.class,OptionMarketstatEventImpl.class,OptionTradeEventImpl.class,OptionImbalanceEvent.class,
-                DividendEventImpl.class,RequestID.class,DataFlowID.class };
+                DividendEventImpl.class,RequestID.class,DataFlowID.class,MarketDataRequest.class };
 }

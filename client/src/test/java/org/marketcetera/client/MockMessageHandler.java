@@ -32,7 +32,7 @@ import quickfix.FieldNotFound;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MockMessageHandler
-    implements ReceiveOnlyHandler<DataEnvelope>
+        implements ReceiveOnlyHandler<DataEnvelope>
 {
     @Override
     public void receiveMessage(DataEnvelope inObject) {

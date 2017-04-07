@@ -46,6 +46,8 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.impl.QuoteEventBuilder;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
@@ -775,9 +777,51 @@ public class ClientTest
         } finally {
             getClient().removeReportListener(chitChat);
         }
-
     }
-
+    /**
+     * Test that market date requests can be handled properly.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testMarketDataRequestListening()
+            throws Exception
+    {
+        initClient();
+        // create our own report listener
+        MdrListener chitChat = new MdrListener();
+        // add it to the client
+        getClient().addMarketDataRequestListener(chitChat);
+        try {
+            // generate a market data request
+            MarketDataRequest request = sendMarketDataRequest();
+            // verify our listener got it
+            MarketDataRequest receivedRequest = chitChat.getRequest();
+            assertTrue(receivedRequest instanceof MarketDataRequest);
+            assertEquals(request.getRequestId(),
+                         receivedRequest.getRequestId());
+            // now set our reply listener to fail
+            chitChat.setFail(true);
+            // send the order and verify that the main test listener got it
+            // this verifies that exceptions from listener do not impact
+            // notifications to other listeners
+            request = sendMarketDataRequest();
+            // verify our listener got it
+            receivedRequest = chitChat.getRequest();
+            assertEquals(request.getRequestId(),
+                         receivedRequest.getRequestId());
+            // now remove our listener
+            getClient().removeMarketDataRequestListener(chitChat);
+            chitChat.clear();
+            assertNull(chitChat.peekRequest());
+            // send another order
+            sendMarketDataRequest();
+            // verify our listener didn't get it
+            assertNull(chitChat.peekRequest());
+        } finally {
+            getClient().removeMarketDataRequestListener(chitChat);
+        }
+    }
     @Test
     public void statusListening() throws Exception {
         initClient();
@@ -994,7 +1038,25 @@ public class ClientTest
         //we can call close again
         client.close();
     }
-
+    /**
+     * Triggers a market data request to be sent.
+     *
+     * @return a <code>MarketDataRequest</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private MarketDataRequest sendMarketDataRequest()
+            throws Exception
+    {
+        clearAll();
+        MarketDataRequest mdr = MarketDataRequestBuilder.newRequest().withSymbols("METC").create();
+        if(sServer != null) {
+            sServer.getMarketDataRequestSender().convertAndSend(mdr);
+        }
+        MarketDataRequest receivedRequest = mdrListener.getRequest();
+        assertEquals(mdr.getRequestId(),
+                     receivedRequest.getRequestId());
+        return mdr;
+    }
     private ExecutionReport sendVanillaOrder() throws Exception {
         //Clean up any dirty state from previous failures
         clearAll();
@@ -1349,6 +1411,7 @@ public class ClientTest
     private void clearAll() {
         mListener.clear();
         mReplies.clear();
+        mdrListener.clear();
         mBrokerStatusReplies.clear();
         mServerStatusReplies.clear();
         if (sServer != null) {
@@ -1373,6 +1436,7 @@ public class ClientTest
         mClient = ClientManager.getInstance();
         mClient.addExceptionListener(mListener);
         mClient.addReportListener(mReplies);
+        mClient.addMarketDataRequestListener(mdrListener);
         mClient.addBrokerStatusListener(mBrokerStatusReplies);
         mClient.addServerStatusListener(mServerStatusReplies);
         assertCPEquals(parameters, mClient.getParameters());
@@ -1391,10 +1455,9 @@ public class ClientTest
     }
     private final ErrorListener mListener = new ErrorListener();
     private final ReplyListener mReplies = new ReplyListener();
-    private final BrokerStatusReplyListener mBrokerStatusReplies =
-        new BrokerStatusReplyListener();
-    private final ServerStatusReplyListener mServerStatusReplies =
-        new ServerStatusReplyListener();
+    private final MdrListener mdrListener = new MdrListener();
+    private final BrokerStatusReplyListener mBrokerStatusReplies = new BrokerStatusReplyListener();
+    private final ServerStatusReplyListener mServerStatusReplies = new ServerStatusReplyListener();
     private static MockServer sServer;
     private Client mClient;
     private static final AtomicLong sCounter = new AtomicLong();
@@ -1420,6 +1483,75 @@ public class ClientTest
 
         private boolean mFail = false;
         private Exception mException;
+    }
+    /**
+     * Listens for market data requests from the server.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class MdrListener
+            implements MarketDataRequestListener
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.MarketDataRequestListener#receiveMarketDataRequest(org.marketcetera.marketdata.MarketDataRequest)
+         */
+        @Override
+        public void receiveMarketDataRequest(MarketDataRequest inMarketDataRequest)
+        {
+            requests.add(inMarketDataRequest);
+            if(fail) {
+                throw new IllegalArgumentException("Test Failure");
+            }
+        }
+        /**
+         * Remove and return the most recently received market data request.
+         *
+         * <p>This method will block until a request is available.
+         * 
+         * @return a <code>MarketDataRequest</code> value
+         * @throws InterruptedException if the method is interrupted while waiting for a request to be received
+         */
+        private MarketDataRequest getRequest()
+                throws InterruptedException
+        {
+            return requests.take();
+        }
+        /**
+         * Returns and does not remove the most received received market data request, if available.
+         *
+         * @return a <code>MarketDataRequest</code> value or <code>null</code>
+         */
+        private MarketDataRequest peekRequest()
+        {
+            return requests.peek();
+        }
+        /**
+         * Set the fail value for the listener.
+         *
+         * @param inIsFail a <code>boolean</code> value
+         */
+        private void setFail(boolean inIsFail)
+        {
+            fail = inIsFail;
+        }
+        /**
+         * Clear and reset the listener.
+         */
+        private void clear()
+        {
+            requests.clear();
+            fail = false;
+        }
+        /**
+         * indicates if the listener should throw an exception when the next request is received
+         */
+        private boolean fail = false;
+        /**
+         * holds incoming requests
+         */
+        private BlockingQueue<MarketDataRequest> requests = new LinkedBlockingQueue<>();
     }
     private static class ReplyListener implements ReportListener {
 

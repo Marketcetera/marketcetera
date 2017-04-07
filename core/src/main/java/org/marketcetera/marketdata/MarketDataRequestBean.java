@@ -4,13 +4,30 @@ import static org.marketcetera.core.Util.ESCAPED_KEY_VALUE_DELIMITER;
 import static org.marketcetera.core.Util.ESCAPED_KEY_VALUE_SEPARATOR;
 import static org.marketcetera.core.Util.KEY_VALUE_DELIMITER;
 import static org.marketcetera.core.Util.KEY_VALUE_SEPARATOR;
-import static org.marketcetera.marketdata.MarketDataRequestBuilder.*;
+import static org.marketcetera.marketdata.MarketDataRequestBuilder.ASSETCLASS_KEY;
+import static org.marketcetera.marketdata.MarketDataRequestBuilder.CONTENT_KEY;
+import static org.marketcetera.marketdata.MarketDataRequestBuilder.EXCHANGE_KEY;
+import static org.marketcetera.marketdata.MarketDataRequestBuilder.PARAMETERS_KEY;
+import static org.marketcetera.marketdata.MarketDataRequestBuilder.PROVIDER_KEY;
+import static org.marketcetera.marketdata.MarketDataRequestBuilder.SYMBOLS_KEY;
+import static org.marketcetera.marketdata.MarketDataRequestBuilder.SYMBOL_DELIMITER;
+import static org.marketcetera.marketdata.MarketDataRequestBuilder.UNDERLYINGSYMBOLS_KEY;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.concurrent.ThreadSafe;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -224,6 +241,7 @@ public final class MarketDataRequestBean
         newBean.setParameters(parameters);
         newBean.setSymbols(symbols);
         newBean.setUnderlyingSymbols(underlyingSymbols);
+        newBean.requestId = requestId;
         return newBean;
     }
     /* (non-Javadoc)
@@ -279,6 +297,7 @@ public final class MarketDataRequestBean
     public String toString()
     {
         StringBuilder output = new StringBuilder();
+        output.append('[').append(requestId).append("] ");
         boolean delimiterNeeded = false;
         Set<String> symbols = getSymbols();
         if(symbols != null &&
@@ -360,6 +379,15 @@ public final class MarketDataRequestBean
         return output.toString();
     }
     /**
+     * Get the request id value.
+     *
+     * @return a <code>long</code> value
+     */
+    public long getId()
+    {
+        return requestId;
+    }
+    /**
      * the symbols for which to request data
      */
     @XmlElementWrapper(name="symbolList")
@@ -394,5 +422,14 @@ public final class MarketDataRequestBean
      */
     @XmlAttribute
     private volatile AssetClass assetClass;
-    private static final long serialVersionUID = 1L;
+    /**
+     * request id value
+     */
+    @XmlAttribute
+    private volatile long requestId = requestIdCounter.incrementAndGet();
+    /**
+     * provides unique request id values
+     */
+    private static final AtomicLong requestIdCounter = new AtomicLong(0);
+    private static final long serialVersionUID = -3112127556063598129L;
 }

@@ -179,6 +179,24 @@ public class EventBean
             timestamp = new Date();
         }
     }
+    /**
+     * Get the requestId value.
+     *
+     * @return a <code>long</code> value
+     */
+    public long getRequestId()
+    {
+        return requestId;
+    }
+    /**
+     * Sets the requestId value.
+     *
+     * @param inRequestId a <code>long</code> value
+     */
+    public void setRequestId(long inRequestId)
+    {
+        requestId = inRequestId;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -230,6 +248,7 @@ public class EventBean
         inRecipient.setSource(inDonor.getSource());
         inRecipient.setTimestamp(inDonor.getTimestamp());
         inRecipient.setProvider(inDonor.getProvider());
+        inRecipient.setRequestId(inDonor.getRequestId());
     }
     /**
      * the event messageId
@@ -251,8 +270,13 @@ public class EventBean
     @XmlAttribute
     private String provider;
     /**
+     * market data request id
+     */
+    @XmlAttribute
+    private long requestId;
+    /**
      * counter used to assign default values
      */
     private static final AtomicLong counter = new AtomicLong(0);
-    private static final long serialVersionUID = -1463953196194132003L;
+    private static final long serialVersionUID = -2978682648622935478L;
 }

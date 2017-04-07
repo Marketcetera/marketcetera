@@ -19,9 +19,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.config.SpringConfig;
+import org.marketcetera.client.jms.DataEnvelope;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.JmsUtils;
-import org.marketcetera.client.jms.DataEnvelope;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.ApplicationBase;
@@ -29,6 +29,7 @@ import org.marketcetera.core.Util;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.Event;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Currency;
@@ -73,6 +74,8 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 /**
@@ -182,7 +185,28 @@ public class ClientImpl
             mServerStatusListeners.removeFirstOccurrence(listener);
         }
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#addMarketDataRequestListener(org.marketcetera.client.MarketDataRequestListener)
+     */
+    @Override
+    public void addMarketDataRequestListener(MarketDataRequestListener inListener)
+    {
+        failIfClosed();
+        synchronized(marketDataRequestListeners) {
+            marketDataRequestListeners.addFirst(inListener);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#removeMarketDataRequestListener(org.marketcetera.client.MarketDataRequestListener)
+     */
+    @Override
+    public void removeMarketDataRequestListener(MarketDataRequestListener inListener)
+    {
+        failIfClosed();
+        synchronized(marketDataRequestListeners) {
+            marketDataRequestListeners.removeFirstOccurrence(inListener);
+        }
+    }
     @Override
     public ReportBase[] getReportsSince
         (Date inDate)
@@ -622,27 +646,29 @@ public class ClientImpl
         setParameters(inParameters);
         connect();
     }
-
-    // TradeMessage reception; public scope required by Spring.
-
-    public class TradeMessageReceiver
-        implements ReceiveOnlyHandler<TradeMessage>
+    /**
+     * Notify subscribers that a market data request has been received.
+     *
+     * @param inMarketDataRequest a <code>MarketDataRequest</code> value
+     */
+    void notifyMarketDataRequest(MarketDataRequest inMarketDataRequest)
     {
-        @Override
-        public void receiveMessage
-            (TradeMessage inReport)
-        {
-            if (inReport instanceof ExecutionReport) {
-                notifyExecutionReport((ExecutionReport)inReport);
-            } else if (inReport instanceof OrderCancelReject) {
-                notifyCancelReject((OrderCancelReject)inReport);
-            } else {
-                Messages.LOG_RECEIVED_FIX_REPORT.warn
-                    (this,ObjectUtils.toString(inReport));
+        SLF4JLoggerProxy.debug(TRAFFIC,
+                               "Received Market data request: {}",  //$NON-NLS-1$
+                               inMarketDataRequest);
+        synchronized(marketDataRequestListeners) {
+            for(MarketDataRequestListener listener: marketDataRequestListeners) {
+                try {
+                    listener.receiveMarketDataRequest(inMarketDataRequest);
+                } catch (Throwable t) {
+                    Messages.LOG_ERROR_RECEIVE_EXEC_REPORT.warn(this,
+                                                                t,
+                                                                ObjectUtils.toString(inMarketDataRequest));
+                    ExceptUtils.interrupt(t);
+                }
             }
         }
     }
-
     void notifyExecutionReport(ExecutionReport inReport) {
         SLF4JLoggerProxy.debug(TRAFFIC, "Received Exec Report:{}", inReport);  //$NON-NLS-1$
         synchronized (mReportListeners) {
@@ -1017,6 +1043,16 @@ public class ClientImpl
                                                                                    Service.BROKER_STATUS_TOPIC,
                                                                                    true);
         mBrokerStatusListener.start();
+        if(marketDataRequestListener != null && marketDataRequestListener.isRunning()) {
+            try {
+                marketDataRequestListener.stop();
+                marketDataRequestListener = null;
+            } catch (Exception ignored) {}
+        }
+        marketDataRequestListener = mJmsMgr.getIncomingJmsFactory().registerHandlerMDRX(new MarketDataRequestReceiver(),
+                                                                                        Service.MARKET_DATA_REQUEST_TOPIC,
+                                                                                        true);
+        marketDataRequestListener.start();
         mToServer = mJmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.REQUEST_QUEUE,
                                                                        false);
     }
@@ -1206,33 +1242,51 @@ public class ClientImpl
         }
         mParameters = inParameters;
     }
-
+    /**
+     * Stop JMSoperations.
+     */
     private void stopJms()
     {
-        if (mToServer==null) {
+        if(mToServer==null) {
             return;
         }
-        try {
-            if (mTradeMessageListener!=null) {
-                mTradeMessageListener.shutdown();
-            }
-        } catch (Exception ex) {
-            SLF4JLoggerProxy.debug
-                (this,"Error when closing trade message listener",ex); //$NON-NLS-1$
-            ExceptUtils.interrupt(ex);
-        } finally {
+        if(mTradeMessageListener != null) {
             try {
-                if (mBrokerStatusListener!=null) {
-                    mBrokerStatusListener.shutdown();
-                }
+                mTradeMessageListener.shutdown();
             } catch (Exception ex) {
-                SLF4JLoggerProxy.debug
-                    (this,"Error when closing broker status listener",ex); //$NON-NLS-1$
+                SLF4JLoggerProxy.debug(this,
+                                       ex,
+                                       "Error when closing trade message listener"); //$NON-NLS-1$
                 ExceptUtils.interrupt(ex);
             } finally {
-                mToServer = null;
+                mTradeMessageListener = null;
             }
         }
+        if(mBrokerStatusListener != null) {
+            try {
+                mBrokerStatusListener.shutdown();
+            } catch (Exception ex) {
+                SLF4JLoggerProxy.debug(this,
+                                       ex,
+                                       "Error when closing broker status listener"); //$NON-NLS-1$
+                ExceptUtils.interrupt(ex);
+            } finally {
+                mBrokerStatusListener = null;
+            }
+        }
+        if(marketDataRequestListener != null) {
+            try {
+                marketDataRequestListener.shutdown();
+            } catch (Exception ex) {
+                SLF4JLoggerProxy.debug(this,
+                                       ex,
+                                       "Error when closing market data request listener"); //$NON-NLS-1$
+                ExceptUtils.interrupt(ex);
+            } finally {
+                marketDataRequestListener = null;
+            }
+        }
+        mToServer = null;
     }
     /**
      * Sets the server connection status. If the status changed, the
@@ -1259,11 +1313,58 @@ public class ClientImpl
         mServerAlive=serverAlive;
         notifyServerStatus(isServerAlive());
     }
-
+    // TradeMessage and MarketDataRequest reception; public scope required by Spring.
+    /**
+     * Receives <code>TradeMessage</code> objects from the server.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    public class TradeMessageReceiver
+            implements ReceiveOnlyHandler<TradeMessage>
+    {
+        @Override
+        public void receiveMessage
+            (TradeMessage inReport)
+        {
+            if (inReport instanceof ExecutionReport) {
+                notifyExecutionReport((ExecutionReport)inReport);
+            } else if (inReport instanceof OrderCancelReject) {
+                notifyCancelReject((OrderCancelReject)inReport);
+            } else {
+                Messages.LOG_RECEIVED_FIX_REPORT.warn
+                    (this,ObjectUtils.toString(inReport));
+            }
+        }
+    }
+    /**
+     * Receives <code>MarketDataRequest</code> objects from the server.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    public class MarketDataRequestReceiver
+            implements ReceiveOnlyHandler<MarketDataRequest>
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.jms.ReceiveOnlyHandler#receiveMessage(java.lang.Object)
+         */
+        @Override
+        public void receiveMessage(MarketDataRequest inMarketDataRequest)
+        {
+            notifyMarketDataRequest(inMarketDataRequest);
+        }
+    }
     private volatile AbstractApplicationContext mContext;
     private volatile JmsManager mJmsMgr;
     private volatile SimpleMessageListenerContainer mTradeMessageListener;
     private volatile SimpleMessageListenerContainer mBrokerStatusListener;
+    /**
+     * manages market data request messages
+     */
+    private volatile SimpleMessageListenerContainer marketDataRequestListener;
     private volatile JmsOperations mToServer;
     protected volatile ClientParameters mParameters;
     private volatile boolean mClosed = false;
@@ -1276,6 +1377,10 @@ public class ClientImpl
         new LinkedList<ServerStatusListener>();
     private final Deque<ExceptionListener> mExceptionListeners =
             new LinkedList<ExceptionListener>();
+    /**
+     * holds subscribed market data listeners
+     */
+    private final Deque<MarketDataRequestListener> marketDataRequestListeners = Lists.newLinkedList();
     private Date mLastConnectTime;
     private final Map<UserID,UserInfo> mUserInfoCache=
         new HashMap<UserID,UserInfo>();

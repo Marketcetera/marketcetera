@@ -70,45 +70,48 @@ public class MockServer {
         }
         ms.close();
     }
+    /**
+     * Create a new MockServer instance.
+     */
     public MockServer()
     {
-        mContext = new ClassPathXmlApplicationContext
-            ("mock_server.xml"); //$NON-NLS-1$
+        mContext = new ClassPathXmlApplicationContext("mock_server.xml"); //$NON-NLS-1$
         mContext.registerShutdownHook();
         mContext.start();
-
         mHandler = new MockMessageHandler();
-
-        JmsManager jmsMgr=new JmsManager
-            ((ConnectionFactory)mContext.getBean
-             ("metc_connection_factory_in"),
-             (ConnectionFactory)mContext.getBean
-             ("metc_connection_factory_out"));
+        JmsManager jmsMgr = new JmsManager((ConnectionFactory)mContext.getBean("metc_connection_factory_in"),
+                                           (ConnectionFactory)mContext.getBean("metc_connection_factory_out"));
         try {
-            mDataEnvelopeListener = jmsMgr.getIncomingJmsFactory().
-                registerHandlerOEX
-                (mHandler,Service.REQUEST_QUEUE,false);
-	    mDataEnvelopeListener.start();
+            mDataEnvelopeListener = jmsMgr.getIncomingJmsFactory().registerHandlerOEX(mHandler,
+                                                                                      Service.REQUEST_QUEUE,
+                                                                                      false);
+            mDataEnvelopeListener.start();
         } catch (JAXBException ex) {
-            throw new IllegalStateException
-                ("Cannot initialize request queue listener",ex);
+            throw new IllegalStateException("Cannot initialize request queue listener",
+                                            ex);
         }
         try {
-            mStatusSender = jmsMgr.getOutgoingJmsFactory().
-                createJmsTemplateX
-                (Service.BROKER_STATUS_TOPIC,true);
+            mStatusSender = jmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.BROKER_STATUS_TOPIC,
+                                                                              true);
         } catch (JAXBException ex) {
-            throw new IllegalStateException
-                ("Cannot initialize broker status sender",ex);
+            throw new IllegalStateException("Cannot initialize broker status sender",
+                                            ex);
         }
-
+        try {
+            marketDataRequestSender = jmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.MARKET_DATA_REQUEST_TOPIC,
+                                                                                        true);
+        } catch (JAXBException ex) {
+            throw new IllegalStateException("Cannot initialize market data request sender",
+                                            ex);
+        }
         // Use default Server host and port 
-        SessionManager<Object> sessionManager=new SessionManager<Object>
-            (new MockSessionFactory(jmsMgr,mHandler));
-        mServer=new Server<Object>
-            (new MockAuthenticator(),sessionManager);
+        SessionManager<Object> sessionManager=new SessionManager<Object>(new MockSessionFactory(jmsMgr,
+                                                                                                mHandler));
+        mServer = new Server<Object>(new MockAuthenticator(),
+                                     sessionManager);
         mServiceImpl = new MockServiceImpl(sessionManager);
-        mServiceInterface = mServer.publish(mServiceImpl,Service.class);
+        mServiceInterface = mServer.publish(mServiceImpl,
+                                            Service.class);
     }
     public void close() {
         mDataEnvelopeListener.shutdown();
@@ -130,6 +133,15 @@ public class MockServer {
     }
     public JmsTemplate getStatusSender() {
         return mStatusSender;
+    }
+    /**
+     * Get the market data request sender.
+     *
+     * @return a <code>JmsTemplate</code> value
+     */
+    public JmsTemplate getMarketDataRequestSender()
+    {
+        return marketDataRequestSender;
     }
     private void readMessagesFromFile(File inFile) {
         BufferedReader reader = null;
@@ -236,4 +248,5 @@ public class MockServer {
     private MockMessageHandler mHandler;
     private SimpleMessageListenerContainer mDataEnvelopeListener;
     private JmsTemplate mStatusSender;
+    private JmsTemplate marketDataRequestSender;
 }

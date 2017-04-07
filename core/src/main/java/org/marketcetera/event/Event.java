@@ -71,4 +71,16 @@ public interface Event
      * @param inProvider a <code>String</code> value
      */
     public void setProvider(String inProvider);
+    /**
+     * Get the request id value.
+     *
+     * @return a <code>long</code> value
+     */
+    long getRequestId();
+    /**
+     * Get the request id value.
+     *
+     * @param inRequestId a <code>long</code> value
+     */
+    void setRequestId(long inRequestId);
 }
