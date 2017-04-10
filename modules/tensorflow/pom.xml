@@ -16,10 +16,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
+    <!-- compile -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.tensorflow</groupId>
       <artifactId>tensorflow</artifactId>
-      <version>1.1.0-rc1</version>
     </dependency>
   </dependencies>
 </project>
