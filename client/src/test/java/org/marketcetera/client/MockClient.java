@@ -435,7 +435,6 @@ public class MockClient
     @Override
     public void addMarketDataRequestListener(MarketDataRequestListener inListener)
     {
-        throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)
      * @see org.marketcetera.client.Client#removeMarketDataRequestListener(org.marketcetera.client.MarketDataRequestListener)
@@ -443,7 +442,6 @@ public class MockClient
     @Override
     public void removeMarketDataRequestListener(MarketDataRequestListener inListener)
     {
-        throw new UnsupportedOperationException(); // TODO
     }
     /**
      * Gets the <code>ClientParameters</code> value used to initialize the client.
