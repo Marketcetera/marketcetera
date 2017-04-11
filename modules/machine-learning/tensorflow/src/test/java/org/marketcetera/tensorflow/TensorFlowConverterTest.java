@@ -21,6 +21,8 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.modules.headwater.HeadwaterModuleFactory;
 import org.marketcetera.modules.publisher.PublisherModuleFactory;
+import org.marketcetera.tensorflow.converter.TensorFlowConverterModule;
+import org.marketcetera.tensorflow.converter.TensorFlowConverterModuleFactory;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderSingle;

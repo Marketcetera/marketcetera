@@ -1,4 +1,4 @@
-package org.marketcetera.tensorflow;
+package org.marketcetera.tensorflow.converter;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;

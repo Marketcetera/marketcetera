@@ -1,2 +1,2 @@
 #Names of module factory implementations
-org.marketcetera.tensorflow.TensorFlowConverterModuleFactory
+org.marketcetera.tensorflow.converter.TensorFlowConverterModuleFactory

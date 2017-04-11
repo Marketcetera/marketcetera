@@ -1,4 +1,4 @@
-package org.marketcetera.tensorflow;
+package org.marketcetera.tensorflow.converter;
 
 import java.util.HashSet;
 import java.util.Map;
