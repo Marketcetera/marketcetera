@@ -1,8 +1,11 @@
 package org.marketcetera.tensorflow;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 
@@ -18,6 +21,11 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.modules.headwater.HeadwaterModuleFactory;
 import org.marketcetera.modules.publisher.PublisherModuleFactory;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Side;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -71,11 +79,47 @@ public class TensorFlowConverterTest
     public void testNoConverter()
             throws Exception
     {
-        DataFlowID dataFlow1 = moduleManager.createDataFlow(getDataRequest());
+        DataFlowID dataFlow = startDataFlow();
         // no converter for type of TensorFlowConverterTest
         HeadwaterModule.getInstance(headwaterInstance).emit(this,
-                                                            dataFlow1);
+                                                            dataFlow);
         assertTrue(receivedTensors.isEmpty());
+    }
+    /**
+     * Test creating a conversion data flow of orders.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testOrder()
+            throws Exception
+    {
+        DataFlowID dataFlow = startDataFlow();
+        // test a market data event
+        assertTrue(receivedTensors.isEmpty());
+        OrderSingle order = Factory.getInstance().createOrderSingle();
+        order.setInstrument(new Equity("METC"));
+        order.setQuantity(new BigDecimal(1000));
+        order.setPrice(new BigDecimal(100));
+        order.setOrderType(OrderType.Limit);
+        order.setSide(Side.Buy);
+        HeadwaterModule.getInstance(headwaterInstance).emit(order,
+                                                            dataFlow);
+        Tensor receivedTensor = waitForTensor();
+        assertNotNull(receivedTensor);
+    }
+    /**
+     * Start a test data flow.
+     *
+     * @return a <code>DataFlowID</code> value
+     */
+    private DataFlowID startDataFlow()
+    {
+        DataFlowID dataFlow = moduleManager.createDataFlow(getDataRequest());
+        synchronized(dataFlows) {
+            dataFlows.add(dataFlow);
+        }
+        return dataFlow;
     }
     /**
      * Build a standard data request.
@@ -140,6 +184,11 @@ public class TensorFlowConverterTest
      */
     private void reset()
     {
+        synchronized(dataFlows) {
+            for(DataFlowID dataFlow : dataFlows) {
+                moduleManager.cancel(dataFlow);
+            }
+        }
         synchronized(receivedTensors) {
             receivedTensors.clear();
         }
@@ -150,7 +199,6 @@ public class TensorFlowConverterTest
      * @return a <code>Tensor</code> value
      * @throws Exception if an unexpected error occurs
      */
-    @SuppressWarnings("unused")
     private Tensor waitForTensor()
                 throws Exception
     {
@@ -167,6 +215,7 @@ public class TensorFlowConverterTest
         fail("No tensor received in 10s");
         return null;
     }
+    private final Collection<DataFlowID> dataFlows = Lists.newArrayList();
     /**
      * stores received tensors
      */

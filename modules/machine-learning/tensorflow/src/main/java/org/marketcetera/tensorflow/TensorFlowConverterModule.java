@@ -125,7 +125,7 @@ public class TensorFlowConverterModule
                     for(TensorConverter<?> converter : converters) {
                         Class<?> converterClass = converter.getType();
                         // TODO this could be improved by doing an initial pass to find a converter for the exact type followed by a pass for an assignable type
-                        if(inKey.isAssignableFrom(converterClass)) {
+                        if(converterClass.isAssignableFrom(inKey)) {
                             return converter;
                         }
                     }
