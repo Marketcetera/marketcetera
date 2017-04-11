@@ -297,7 +297,6 @@ public final class MarketDataRequestBean
     public String toString()
     {
         StringBuilder output = new StringBuilder();
-        output.append('[').append(requestId).append("] ");
         boolean delimiterNeeded = false;
         Set<String> symbols = getSymbols();
         if(symbols != null &&
