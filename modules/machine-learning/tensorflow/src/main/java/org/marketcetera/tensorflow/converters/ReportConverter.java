@@ -1,20 +1,19 @@
 package org.marketcetera.tensorflow.converters;
 
-import org.marketcetera.tensorflow.TensorConverter;
 import org.marketcetera.trade.ReportBase;
 import org.tensorflow.Tensor;
 
 /* $License$ */
 
 /**
- *
+ * Translates {@link ReportBase} objects to tensors. 
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public class ReportConverter
-        implements TensorConverter<ReportBase>
+        extends AbstractTensorConverter<ReportBase>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.tensorflow.TensorConverter#convert(java.lang.Object)

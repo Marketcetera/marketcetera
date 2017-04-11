@@ -1,4 +1,4 @@
-package org.marketcetera.tensorflow;
+package org.marketcetera.tensorflow.converters;
 
 import org.tensorflow.Tensor;
 

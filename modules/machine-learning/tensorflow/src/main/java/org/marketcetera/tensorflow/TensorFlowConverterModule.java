@@ -1,6 +1,7 @@
 package org.marketcetera.tensorflow;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.marketcetera.module.AutowiredModule;
@@ -15,51 +16,51 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.module.RequestDataException;
 import org.marketcetera.module.RequestID;
+import org.marketcetera.tensorflow.converters.TensorConverter;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tensorflow.Graph;
-import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /* $License$ */
 
 /**
- *
- *
+ * Converts conventional data types to {@link Tensor} objects.
+ * 
+ * <p>Module Features
+ * <table>
+ * <tr><th>Capabilities</th><td>Data Emitter, Data Receiver</td></tr>
+ * <tr><th>DataFlow Request Parameters</th><td>none</td></tr>
+ * <tr><th>Stops data flows</th><td>n/a</td></tr>
+ * <tr><th>Start Operation</th><td>n/a</td></tr>
+ * <tr><th>Stop Operation</th><td>n/a</td></tr>
+ * <tr><th>Management Interface</th>n/a</td></tr>
+ * <tr><th>Factory</th><td>{@link TensorFlowConverterModuleFactory}</td></tr>
+ * </table>
+ * </p>
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @AutowiredModule
-public class TensorFlowModule
+public class TensorFlowConverterModule
         extends Module
         implements DataReceiver,DataEmitter
 {
     /**
      * Create a new TensorFlowModule instance.
      *
-     * @param inURN
+     * @param inURN a <code>ModuleURN</code> value
      */
-    public TensorFlowModule(ModuleURN inURN)
+    public TensorFlowConverterModule(ModuleURN inURN)
     {
         super(inURN,
               true);
-    }
-    /**
-     * Create a new TensorFlowModule instance.
-     *
-     * @param inURN
-     * @param inAutoStart
-     */
-    public TensorFlowModule(ModuleURN inURN,
-                            boolean inAutoStart)
-    {
-        super(inURN,
-              inAutoStart);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
@@ -69,14 +70,17 @@ public class TensorFlowModule
                             DataEmitterSupport inSupport)
             throws RequestDataException
     {
+        dataRequests.put(inSupport.getFlowID(),
+                         inSupport);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.DataFlowID, org.marketcetera.module.RequestID)
      */
     @Override
-    public void cancel(DataFlowID inFlowID,
-                       RequestID inRequestID)
+    public void cancel(DataFlowID inFlowId,
+                       RequestID inRequestId)
     {
+        dataRequests.remove(inFlowId);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataReceiver#receiveData(org.marketcetera.module.DataFlowID, java.lang.Object)
@@ -86,7 +90,6 @@ public class TensorFlowModule
                             Object inData)
             throws ReceiveDataException
     {
-        // convert incoming data to tensor
         try {
             Tensor tensor = getTensorConverter(inData).convert(inData);
             SLF4JLoggerProxy.trace(this,
@@ -95,8 +98,9 @@ public class TensorFlowModule
                                    inFlowId,
                                    inData,
                                    tensor);
-            // TODO process tensor?
-        } catch (UnsupportedOperationException e) {
+            emitData(inFlowId,
+                     tensor);
+        } catch (UncheckedExecutionException e) {
             SLF4JLoggerProxy.warn(this,
                                   "{} unable to process data flow {} object {} because no tensor converter exists for {}",
                                   getURN(),
@@ -120,6 +124,7 @@ public class TensorFlowModule
                 {
                     for(TensorConverter<?> converter : converters) {
                         Class<?> converterClass = converter.getType();
+                        // TODO this could be improved by doing an initial pass to find a converter for the exact type followed by a pass for an assignable type
                         if(inKey.isAssignableFrom(converterClass)) {
                             return converter;
                         }
@@ -130,11 +135,9 @@ public class TensorFlowModule
             converterCache.invalidateAll();
             converterCache = null;
         }
-        logConverters();
-        graph = new Graph();
-//        graph.toGraphDef()
-//        graph.importGraphDef(graphDef);
-        session = new Session(graph);
+        SLF4JLoggerProxy.info(this,
+                              "Available tensor converters: {}",
+                              converters);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -143,54 +146,48 @@ public class TensorFlowModule
     protected void preStop()
             throws ModuleException
     {
-        if(session != null) {
-            try {
-                session.close();
-            } catch (Exception ignored) {}
-            session = null;
-        }
-        if(graph != null) {
-            try {
-                graph.close();
-            } catch (Exception ignored) {}
-            graph = null;
-        }
         if(converterCache != null) {
             converterCache.invalidateAll();
             converterCache = null;
         }
     }
     /**
+     * Emits the given tensor to data requesters.
      * 
-     *
-     *
+     * @param inFlowId a <code>DataFlowID</code> value
+     * @param inTensor a <code>Tensor</code> value
      */
-    private void logConverters()
+    private void emitData(DataFlowID inFlowId,
+                          Tensor inTensor)
     {
-        SLF4JLoggerProxy.info(this,
-                              "Available tensor converters: {}",
-                              converters);
+        DataEmitterSupport dataEmitterSupport = dataRequests.get(inFlowId);
+        if(dataEmitterSupport != null) {
+            dataEmitterSupport.send(inTensor);
+        }
     }
+    /**
+     * Get the appropriate tensor converter for the given data type.
+     *
+     * @param inData a <code>T</code> value
+     * @return a <code>TensorConverter&lt;T&gt;</code> value
+     * @throws UnsupportedOperationException if no converter exists for the given data type
+     */
     @SuppressWarnings("unchecked")
     private <T> TensorConverter<T> getTensorConverter(T inData)
     {
         return (TensorConverter<T>)converterCache.getUnchecked(inData.getClass());
     }
     /**
-     * 
+     * holds data requests
+     */
+    private final Map<DataFlowID,DataEmitterSupport> dataRequests = Maps.newConcurrentMap();
+    /**
+     * caches available tensor converters
      */
     private LoadingCache<Class<?>,TensorConverter<?>> converterCache;
     /**
-     * 
+     * provides available tensor converters
      */
     @Autowired(required=false)
     private Set<TensorConverter<?>> converters = new HashSet<>();
-    /**
-     * 
-     */
-    private Graph graph;
-    /**
-     * 
-     */
-    private Session session;
 }
