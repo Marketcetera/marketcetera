@@ -15,4 +15,12 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 public interface GraphContainerDao
         extends JpaRepository<PersistentGraphContainer,Long>,QueryDslPredicateExecutor<PersistentGraphContainer>
 {
+    /**
+     * 
+     *
+     *
+     * @param inName
+     * @return
+     */
+    PersistentGraphContainer findByName(String inName);
 }

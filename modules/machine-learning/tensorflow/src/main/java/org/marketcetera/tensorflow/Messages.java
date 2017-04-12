@@ -1,4 +1,4 @@
-package org.marketcetera.tensorflow.converter;
+package org.marketcetera.tensorflow;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
@@ -8,7 +8,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
 /* $License$ */
 
 /**
- *
+ * Provides messages for the tensorflow package.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -20,7 +20,8 @@ public interface Messages
                                                                         Messages.class.getClassLoader());
     static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
 
-    static final I18NMessage0P PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,"provider_description"); //$NON-NLS-1$
-    static final I18NMessage1P FEED_NOT_AVAILABLE = new I18NMessage1P(LOGGER,"feed_not_available"); //$NON-NLS-1$
-    static final I18NMessage1P DATA_PROCESSING_ERROR = new I18NMessage1P(LOGGER,"data_processing_error"); //$NON-NLS-1$
+    static final I18NMessage0P CONVERTER_PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,"converter_provider_description"); //$NON-NLS-1$
+    static final I18NMessage1P NO_MODEL_ERROR = new I18NMessage1P(LOGGER,"no_model_error"); //$NON-NLS-1$
+    static final I18NMessage1P UNKNOWN_REQUEST_TYPE = new I18NMessage1P(LOGGER,"unknown_request_type"); //$NON-NLS-1$
+    static final I18NMessage0P MODEL_PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,"model_provider_description"); //$NON-NLS-1$
 }

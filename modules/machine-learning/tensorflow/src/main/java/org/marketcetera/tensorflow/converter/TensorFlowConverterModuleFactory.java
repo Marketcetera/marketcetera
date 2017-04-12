@@ -4,6 +4,7 @@ import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.tensorflow.Messages;
 import org.tensorflow.Tensor;
 
 /* $License$ */
@@ -13,7 +14,7 @@ import org.tensorflow.Tensor;
  *
  * <p>The factory has the following characteristics.
  * <table>
- * <tr><th>Provider URN:</th><td><code>metc:ml:tensorflow</code></td></tr>
+ * <tr><th>Provider URN:</th><td><code>metc:tensorflow:converter</code></td></tr>
  * <tr><th>Cardinality:</th><td>Single Instance</td></tr>
  * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>
  * <tr><th>Auto-Started:</th><td>Yes</td></tr>
@@ -34,7 +35,7 @@ public class TensorFlowConverterModuleFactory
     public TensorFlowConverterModuleFactory()
     {
         super(PROVIDER_URN,
-              Messages.PROVIDER_DESCRIPTION,
+              Messages.CONVERTER_PROVIDER_DESCRIPTION,
               false,
               true);
     }
@@ -48,15 +49,11 @@ public class TensorFlowConverterModuleFactory
         return new TensorFlowConverterModule(INSTANCE_URN);
     }
     /**
-     * instance provider name
-     */
-    public static final String IDENTIFIER = "tensorflow";  //$NON-NLS-1$
-    /**
      * tensor flow module provider URN
      */
-    public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:ml:" + IDENTIFIER);  //$NON-NLS-1$
+    public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:tensorflow:converter");  //$NON-NLS-1$
     /**
      * tensor flow module instance URN
      */
-    public static final ModuleURN INSTANCE_URN = new ModuleURN("metc:ml:" + IDENTIFIER+":converter");  //$NON-NLS-1$
+    public static final ModuleURN INSTANCE_URN = new ModuleURN("metc:tensorflow:converter:single");  //$NON-NLS-1$
 }
