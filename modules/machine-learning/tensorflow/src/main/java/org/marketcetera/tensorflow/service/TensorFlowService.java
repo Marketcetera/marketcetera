@@ -1,6 +1,7 @@
 package org.marketcetera.tensorflow.service;
 
 import org.marketcetera.tensorflow.GraphContainer;
+import org.tensorflow.Graph;
 
 /* $License$ */
 
@@ -20,4 +21,16 @@ public interface TensorFlowService
      * @return a <code>GraphContainer</code> value or <code>null</code>
      */
     GraphContainer findByName(String inModelName);
+    /**
+     * 
+     *
+     *
+     * @param inGraph
+     * @param inModelName
+     * @param inDescription
+     * @return
+     */
+    GraphContainer createContainer(Graph inGraph,
+                                   String inModelName,
+                                   String inDescription);
 }
