@@ -12,8 +12,8 @@ import org.tensorflow.Tensor;
  * @version $Id$
  * @since $Release$
  */
-public class ReportConverter
-        extends AbstractTensorConverter<ReportBase>
+public class TensorFromReportConverter
+        extends AbstractTensorFromObjectConverter<ReportBase>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.tensorflow.TensorConverter#convert(java.lang.Object)

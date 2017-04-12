@@ -9,8 +9,8 @@ package org.marketcetera.tensorflow.converters;
  * @version $Id$
  * @since $Release$
  */
-public abstract class AbstractTensorConverter<T>
-        implements TensorConverter<T>
+public abstract class AbstractTensorFromObjectConverter<T>
+        implements TensorFromObjectConverter<T>
 {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

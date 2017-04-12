@@ -16,7 +16,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.module.RequestDataException;
 import org.marketcetera.module.RequestID;
-import org.marketcetera.tensorflow.converters.TensorConverter;
+import org.marketcetera.tensorflow.converters.TensorFromObjectConverter;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tensorflow.Tensor;
@@ -117,12 +117,12 @@ public class TensorFlowConverterModule
             throws ModuleException
     {
         if(converterCache == null) {
-            converterCache = CacheBuilder.newBuilder().build(new CacheLoader<Class<?>,TensorConverter<?>>(){
+            converterCache = CacheBuilder.newBuilder().build(new CacheLoader<Class<?>,TensorFromObjectConverter<?>>(){
                 @Override
-                public TensorConverter<?> load(Class<?> inKey)
+                public TensorFromObjectConverter<?> load(Class<?> inKey)
                         throws Exception
                 {
-                    for(TensorConverter<?> converter : converters) {
+                    for(TensorFromObjectConverter<?> converter : converters) {
                         Class<?> converterClass = converter.getType();
                         // TODO this could be improved by doing an initial pass to find a converter for the exact type followed by a pass for an assignable type
                         if(converterClass.isAssignableFrom(inKey)) {
@@ -173,9 +173,9 @@ public class TensorFlowConverterModule
      * @throws UnsupportedOperationException if no converter exists for the given data type
      */
     @SuppressWarnings("unchecked")
-    private <T> TensorConverter<T> getTensorConverter(T inData)
+    private <T> TensorFromObjectConverter<T> getTensorConverter(T inData)
     {
-        return (TensorConverter<T>)converterCache.getUnchecked(inData.getClass());
+        return (TensorFromObjectConverter<T>)converterCache.getUnchecked(inData.getClass());
     }
     /**
      * holds data requests
@@ -184,10 +184,10 @@ public class TensorFlowConverterModule
     /**
      * caches available tensor converters
      */
-    private LoadingCache<Class<?>,TensorConverter<?>> converterCache;
+    private LoadingCache<Class<?>,TensorFromObjectConverter<?>> converterCache;
     /**
      * provides available tensor converters
      */
     @Autowired(required=false)
-    private Set<TensorConverter<?>> converters = new HashSet<>();
+    private Set<TensorFromObjectConverter<?>> converters = new HashSet<>();
 }

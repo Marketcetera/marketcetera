@@ -17,8 +17,8 @@ import com.google.common.collect.Lists;
  * @version $Id$
  * @since $Release$
  */
-public class OrderConverter
-        extends AbstractTensorConverter<Order>
+public class TensorFromOrderConverter
+        extends AbstractTensorFromObjectConverter<Order>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.tensorflow.TensorConverter#convert(java.lang.Object)

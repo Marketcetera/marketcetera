@@ -12,8 +12,8 @@ import org.tensorflow.Tensor;
  * @version $Id$
  * @since $Release$
  */
-public class EventConverter
-        extends AbstractTensorConverter<Event>
+public class TensorFromEventConverter
+        extends AbstractTensorFromObjectConverter<Event>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.tensorflow.TensorConverter#convert(java.lang.Object)

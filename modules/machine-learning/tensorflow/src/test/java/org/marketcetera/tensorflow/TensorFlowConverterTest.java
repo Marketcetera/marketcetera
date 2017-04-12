@@ -47,7 +47,7 @@ import com.google.common.collect.Lists;
  * @since $Release$
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/test.xml"})
+@ContextConfiguration(locations={"classpath:/test_converters.xml"})
 public class TensorFlowConverterTest
 {
     /**
