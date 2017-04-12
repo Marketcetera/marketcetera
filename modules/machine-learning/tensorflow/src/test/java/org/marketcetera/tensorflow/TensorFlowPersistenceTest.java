@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @since $Release$
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/test.xml"})
+@ContextConfiguration(locations={"classpath:/test_persistence.xml"})
 public class TensorFlowPersistenceTest
 {
     @Test
