@@ -1,6 +1,11 @@
 package org.marketcetera.client;
 
+import java.util.Set;
+
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.collect.Sets;
 
 
 /* $License$ */
@@ -30,6 +35,7 @@ public final class ClientManager
     {
         if(!isInitialized()) {
             mClient = mClientFactory.getClient(inParameter);
+            notifyClientInitListeners();
         } else {
             throw new ClientInitException(Messages.CLIENT_ALREADY_INITIALIZED);
         }
@@ -72,7 +78,32 @@ public final class ClientManager
     public static boolean isInitialized() {
         return mClient != null;
     }
-
+    /**
+     * Add the given client listener.
+     *
+     * @param inClientInitListener a <code>ClientInitListener</code> value
+     */
+    public static void addClientInitListener(ClientInitListener inClientInitListener)
+    {
+        if(isInitialized()) {
+            notifyClientInitListener(inClientInitListener);
+        } else {
+            synchronized(clientInitListeners) {
+                clientInitListeners.add(inClientInitListener);
+            }
+        }
+    }
+    /**
+     * Remove the given client listener.
+     *
+     * @param inClientInitListener a <code>ClientInitListener</code> value
+     */
+    public static void removeClientInitListener(ClientInitListener inClientInitListener)
+    {
+        synchronized(clientInitListeners) {
+            clientInitListeners.remove(inClientInitListener);
+        }
+    }
     /**
      * Resets the client to the uninitialized state. This method is invoked
      * by the client implementation when it's {@link Client#close() closed}.
@@ -81,7 +112,31 @@ public final class ClientManager
     synchronized static void reset() {
         mClient = null;
     }
-
+    /**
+     * Notify all client listeners that the client has been initialized.
+     */
+    private static void notifyClientInitListeners()
+    {
+        synchronized(clientInitListeners) {
+            for(ClientInitListener clientInitListener : clientInitListeners) {
+                notifyClientInitListener(clientInitListener);
+            }
+        }
+    }
+    /**
+     * Notify the given listener that the client has been initialized.
+     *
+     * @param inClientInitListener a <code>ClientInitListener</code> value
+     */
+    private static void notifyClientInitListener(ClientInitListener inClientInitListener)
+    {
+        try {
+            inClientInitListener.receiveClient(mClient);
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(ClientManager.class,
+                                  e);
+        }
+    }
     /**
      * Do not allow any instances to be created.
      */
@@ -103,4 +158,8 @@ public final class ClientManager
      * the <code>Client</code> object
      */
     private volatile static Client mClient;
+    /**
+     * holds subscribed client init listeners
+     */
+    private final static Set<ClientInitListener> clientInitListeners = Sets.newLinkedHashSet();
 }

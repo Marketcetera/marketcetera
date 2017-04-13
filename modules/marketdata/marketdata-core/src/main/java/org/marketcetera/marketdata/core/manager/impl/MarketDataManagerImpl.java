@@ -7,6 +7,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.client.Client;
+import org.marketcetera.client.ClientInitListener;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.MarketDataRequestListener;
 import org.marketcetera.core.publisher.ISubscriber;
@@ -30,7 +31,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * @since $Release$
  */
 public class MarketDataManagerImpl
-        implements MarketDataManager,MarketDataRequestListener
+        implements MarketDataManager,MarketDataRequestListener,ClientInitListener
 {
     /**
      * Validate and start the object.
@@ -38,8 +39,7 @@ public class MarketDataManagerImpl
     @PostConstruct
     public void start()
     {
-        client = ClientManager.getInstance();
-        client.addMarketDataRequestListener(this);
+        ClientManager.addClientInitListener(this);
     }
     /**
      * Stop the object.
@@ -119,6 +119,16 @@ public class MarketDataManagerImpl
         // TODO need to be able to handle cancels, too
         requestMarketData(inMarketDataRequest,
                           subscriber);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.ClientInitListener#receiveClient(org.marketcetera.client.Client)
+     */
+    @Override
+    public void receiveClient(Client inClient)
+    {
+        client = inClient;
+        client.addMarketDataRequestListener(this);
+        ClientManager.removeClientInitListener(this);
     }
     /**
      * Get the subscriberTimeout value.
