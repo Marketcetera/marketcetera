@@ -16,11 +16,10 @@ public interface GraphContainerDao
         extends JpaRepository<PersistentGraphContainer,Long>,QueryDslPredicateExecutor<PersistentGraphContainer>
 {
     /**
-     * 
+     * Find the graph with the given name.
      *
-     *
-     * @param inName
-     * @return
+     * @param inName a <code>String</code> value
+     * @return a <code>PersistentGraphContainer</code> value or <code>null</code>
      */
     PersistentGraphContainer findByName(String inName);
 }

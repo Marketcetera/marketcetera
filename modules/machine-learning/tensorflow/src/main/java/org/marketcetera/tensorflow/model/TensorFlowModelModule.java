@@ -7,15 +7,12 @@ import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataReceiver;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.Module;
-import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.module.RequestDataException;
 import org.marketcetera.module.RequestID;
-import org.marketcetera.tensorflow.GraphContainer;
 import org.marketcetera.tensorflow.Messages;
-import org.marketcetera.tensorflow.service.TensorFlowService;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,21 +34,8 @@ import com.google.common.cache.CacheBuilder;
 @AutowiredModule
 public class TensorFlowModelModule
         extends Module
-        implements DataEmitter, DataReceiver
+        implements DataEmitter,DataReceiver
 {
-    /**
-     * Create a new TensorFlowModelModule instance.
-     *
-     * @param inURN
-     * @param inModelName
-     */
-    public TensorFlowModelModule(ModuleURN inURN,
-                                 String inModelName)
-    {
-        super(inURN,
-              true);
-        modelName = inModelName;
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataReceiver#receiveData(org.marketcetera.module.DataFlowID, java.lang.Object)
      */
@@ -116,16 +100,6 @@ public class TensorFlowModelModule
     protected void preStart()
             throws ModuleException
     {
-        /*
-         * note that this implies the following:
-         * - graphs are read only (the persistent implementation is not updated by the execution of this module)
-         * - graphs are not updated from persistence during the lifetime of this module
-         */
-        GraphContainer graphContainer = tensorFlowService.findByName(modelName);
-        if(graphContainer == null) {
-            throw new ModuleCreationException(new I18NBoundMessage1P(Messages.NO_MODEL_ERROR,
-                                                                     modelName));
-        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -136,28 +110,50 @@ public class TensorFlowModelModule
     {
         dataRequestsByDataFlowId.invalidateAll();
     }
+    /**
+     * Create a new TensorFlowModelModule instance.
+     *
+     * @param inURN a <code>ModuleURN</code> value
+     */
+    TensorFlowModelModule(ModuleURN inURN)
+    {
+        super(inURN,
+              true);
+    }
+    /**
+     * Manages the data for a data flow request.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
     private class RequestMetaData
     {
+        /**
+         * Fetch the output data from the given tensor input.
+         *
+         * @param inInput a <code>Tensor</code> value
+         * @return an <code>Object</code> value
+         */
         private Object fetch(Tensor inInput)
         {
             return runner.fetch(request,
                                 inInput);
         }
         /**
-         * 
+         * Send the given output to the data flow.
          *
-         *
-         * @param inTensor
+         * @param inOutput an <code>Object</code> value
          */
-        private void send(Object inTensor)
+        private void send(Object inOutput)
         {
-            dataEmitterSupport.send(inTensor);
+            dataEmitterSupport.send(inOutput);
         }
         /**
          * Create a new RequestMetaData instance.
          *
-         * @param inDataRequest
-         * @param inDataEmitterSupport
+         * @param inDataRequest a <code>DataRequest</code> value
+         * @param inDataEmitterSupport a <code>DataEmitterSupport</code> value
          */
         private RequestMetaData(DataRequest inDataRequest,
                                 DataEmitterSupport inDataEmitterSupport)
@@ -175,8 +171,17 @@ public class TensorFlowModelModule
                                                                       inDataRequest.getClass().getSimpleName()));
             }
         }
+        /**
+         * data request value used to initiate the request
+         */
         private final DataRequest request;
+        /**
+         * runner used for the request to convert tensors to output values
+         */
         private final TensorFlowRunner runner;
+        /**
+         * data emitter support value for data flows
+         */
         private final DataEmitterSupport dataEmitterSupport;
     }
     /**
@@ -185,16 +190,7 @@ public class TensorFlowModelModule
     @Autowired
     private ApplicationContext applicationContext;
     /**
-     * provides access to Tensor Flow services
-     */
-    @Autowired
-    private TensorFlowService tensorFlowService;
-    /**
-     * name of the model for this
-     */
-    private final String modelName;
-    /**
-     * 
+     * holds request data by data flow id
      */
     private final Cache<DataFlowID,RequestMetaData> dataRequestsByDataFlowId = CacheBuilder.newBuilder().build();
 }

@@ -14,10 +14,10 @@ import org.marketcetera.tensorflow.Messages;
  * <p>The factory has the following characteristics.
  * <table>
  * <tr><th>Provider URN:</th><td><code>metc:tensorflow:model</code></td></tr>
- * <tr><th>Cardinality:</th><td>Multi-Instance</td></tr>
- * <tr><th>Auto-Instantiated:</th><td>No</td></tr>
+ * <tr><th>Cardinality:</th><td>Single Instance</td></tr>
+ * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>
  * <tr><th>Auto-Started:</th><td>Yes</td></tr>
- * <tr><th>Instantiation Arguments:</th><td>String: the name of an existing model</td></tr>
+ * <tr><th>Instantiation Arguments:</th>n/a</tr>
  * <tr><th>Module Type:</th><td>{@link TensorFlowModelModule}</td></tr>
  * </table></p>
  *
@@ -35,9 +35,8 @@ public class TensorFlowModelModuleFactory
     {
         super(PROVIDER_URN,
               Messages.MODEL_PROVIDER_DESCRIPTION,
-              true,
               false,
-              String.class);
+              true);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
@@ -46,16 +45,14 @@ public class TensorFlowModelModuleFactory
     public Module create(Object... inParameters)
             throws ModuleCreationException
     {
-        if(inParameters == null || inParameters.length != 1) {
-            
-        }
-        String modelName = String.valueOf(inParameters[0]);
-        return new TensorFlowModelModule(new ModuleURN(PROVIDER_URN,
-                                                       modelName),
-                                         modelName);
+        return new TensorFlowModelModule(INSTANCE_URN);
     }
     /**
      * tensor flow module provider URN
      */
     public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:tensorflow:model");  //$NON-NLS-1$
+    /**
+     * tensor flow module instance URN
+     */
+    public static final ModuleURN INSTANCE_URN = new ModuleURN("metc:tensorflow:model:single");  //$NON-NLS-1$
 }

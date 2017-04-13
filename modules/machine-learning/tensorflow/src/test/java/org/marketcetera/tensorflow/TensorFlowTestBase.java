@@ -74,12 +74,6 @@ public class TensorFlowTestBase
             }
             dataFlows.clear();
         }
-        synchronized(modelModules) {
-            for(ModuleURN modelUrn : modelModules) {
-                moduleManager.stop(modelUrn);
-            }
-            modelModules.clear();
-        }
         synchronized(receivedData) {
             receivedData.clear();
         }
@@ -127,11 +121,9 @@ public class TensorFlowTestBase
      * @param inRunner a <code>TensorFlowRunner</code> value
      * @return a <code>DataFlowID</code> value
      */
-    protected DataFlowID startModelDataFlow(String inModelName,
-                                            TensorFlowRunner inRunner)
+    protected DataFlowID startModelDataFlow(TensorFlowRunner inRunner)
     {
-        DataFlowID dataFlow = moduleManager.createDataFlow(getModelDataRequest(inModelName,
-                                                                               inRunner));
+        DataFlowID dataFlow = moduleManager.createDataFlow(getModelDataRequest(inRunner));
         synchronized(dataFlows) {
             dataFlows.add(dataFlow);
         }
@@ -155,20 +147,17 @@ public class TensorFlowTestBase
     /**
      * Build a data request for the given TensorFlow module with the given runner.
      *
-     * @param inModelName
      * @param inRunner
      * @return a <code>DataRequest[]</code> value
      */
-    protected DataRequest[] getModelDataRequest(String inModelName,
-                                                TensorFlowRunner inRunner)
+    protected DataRequest[] getModelDataRequest(TensorFlowRunner inRunner)
     {
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
         createHeadwaterModule();
-        createModelModule(inModelName);
         createPublisherModule();
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
         dataRequestBuilder.add(new DataRequest(TensorFlowConverterModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(TensorFlowModelModuleFactory.PROVIDER_URN,
+        dataRequestBuilder.add(new DataRequest(TensorFlowModelModuleFactory.INSTANCE_URN,
                                                inRunner));
         dataRequestBuilder.add(new DataRequest(publisherUrn));
         return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
@@ -176,34 +165,19 @@ public class TensorFlowTestBase
     /**
      * Build a data request for the given TensorFlow module with the given runner.
      *
-     * @param inModelName
      * @param inRunnerId
      * @return a <code>DataRequest[]</code> value
      */
-    protected DataRequest[] getModelDataRequest(String inModelName,
-                                                String inRunnerId)
+    protected DataRequest[] getModelDataRequest(String inRunnerId)
     {
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
         createHeadwaterModule();
-        createModelModule(inModelName);
         createPublisherModule();
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
-        dataRequestBuilder.add(new DataRequest(TensorFlowModelModuleFactory.PROVIDER_URN,
+        dataRequestBuilder.add(new DataRequest(TensorFlowModelModuleFactory.INSTANCE_URN,
                                                inRunnerId));
         dataRequestBuilder.add(new DataRequest(publisherUrn));
         return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
-    }
-    /**
-     * Create the model module.
-     *
-     * @return a <code>ModuleURN</code> value
-     */
-    protected ModuleURN createModelModule(String inModelName)
-    {
-        ModuleURN modelUrn = moduleManager.createModule(TensorFlowModelModuleFactory.PROVIDER_URN,
-                                                        inModelName);
-        modelModules.add(modelUrn);
-        return modelUrn;
     }
     /**
      * Create the headwater module, if necessary.
@@ -248,10 +222,6 @@ public class TensorFlowTestBase
         }
         return publisherUrn;
     }
-    /**
-     * tensor flow model modules created during the test
-     */
-    protected final List<ModuleURN> modelModules = Lists.newArrayList();
     /**
      * data flows created during the test
      */

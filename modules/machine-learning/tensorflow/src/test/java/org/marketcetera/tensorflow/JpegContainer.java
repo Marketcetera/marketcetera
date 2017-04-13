@@ -3,7 +3,7 @@ package org.marketcetera.tensorflow;
 /* $License$ */
 
 /**
- *
+ * Encapsulates the raw data of a JPG image.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -14,7 +14,7 @@ public class JpegContainer
     /**
      * Create a new JpegContainer instance.
      *
-     * @param inRawData
+     * @param inRawData a <code>byte[]</code> value
      */
     public JpegContainer(byte[] inRawData)
     {

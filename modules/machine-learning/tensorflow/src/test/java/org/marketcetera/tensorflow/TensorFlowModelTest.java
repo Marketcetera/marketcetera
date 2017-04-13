@@ -1,6 +1,8 @@
 package org.marketcetera.tensorflow;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -31,23 +33,67 @@ public class TensorFlowModelTest
     public void testGraphPersistence()
             throws Exception
     {
-        byte[] graphDef = Files.readAllBytes(Paths.get("src/test/sample_data",
-                                                       "tensorflow_inception_graph.pb"));
+        byte[] graphDef = ImageLabelGraphDefReader.readGraphDef();
         String modelName = "TestModel" + System.nanoTime();
         try(Graph graph = new Graph()) {
             graph.importGraphDef(graphDef);
             tensorFlowService.createContainer(graph,
                                               modelName,
                                               "This is a test model");
-            JpegContainer image = new JpegContainer(Files.readAllBytes(Paths.get("src/test/sample_data",
-                                                                                 "giant-schnauzer.jpg")));
-            // set up a data flow that converts the image to a tensor and sends it to the model
-            DataFlowID dataFlow = startModelDataFlow(modelName,
-                                                     new ImageLabelTensorFlowRunner());
-            HeadwaterModule.getInstance(headwaterInstance).emit(image,
-                                                                dataFlow);
         }
         GraphContainer graphContainer = tensorFlowService.findByName(modelName);
         assertNotNull(graphContainer);
+    }
+    /**
+     * Test the baseline effectiveness of an non-persisted model.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testModelExecutionNoPersistence()
+            throws Exception
+    {
+        JpegContainer image = new JpegContainer(Files.readAllBytes(Paths.get("src/test/sample_data",
+                                                                             "giant-schnauzer.jpg")));
+        // set up a data flow that converts the image to a tensor and sends it to the model
+        DataFlowID dataFlow = startModelDataFlow(new ImageLabelTensorFlowRunner(ImageLabelGraphDefReader.readGraphDef()));
+        HeadwaterModule.getInstance(headwaterInstance).emit(image,
+                                                            dataFlow);
+        Object output = waitForData();
+        assertNotNull(output);
+        assertTrue(output instanceof String);
+        assertEquals("standard schnauzer",
+                     output);
+    }
+    /**
+     * Test the effectiveness of a persisted and restored model.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testModelExecutionPersistence()
+            throws Exception
+    {
+        byte[] graphDef = ImageLabelGraphDefReader.readGraphDef();
+        String modelName = "TestModel" + System.nanoTime();
+        try(Graph graph = new Graph()) {
+            graph.importGraphDef(graphDef);
+            tensorFlowService.createContainer(graph,
+                                              modelName,
+                                              "This is a test model");
+        }
+        GraphContainer graphContainer = tensorFlowService.findByName(modelName);
+        assertNotNull(graphContainer);
+        JpegContainer image = new JpegContainer(Files.readAllBytes(Paths.get("src/test/sample_data",
+                                                                             "giant-schnauzer.jpg")));
+        // set up a data flow that converts the image to a tensor and sends it to the model
+        DataFlowID dataFlow = startModelDataFlow(new ImageLabelTensorFlowRunner(graphContainer.readGraph().toGraphDef()));
+        HeadwaterModule.getInstance(headwaterInstance).emit(image,
+                                                            dataFlow);
+        Object output = waitForData();
+        assertNotNull(output);
+        assertTrue(output instanceof String);
+        assertEquals("standard schnauzer",
+                     output);
     }
 }
