@@ -22,6 +22,7 @@
   <bean id="orderConverter" class="org.marketcetera.tensorflow.converters.TensorFromOrderConverter"/>
   <bean id="eventConverter" class="org.marketcetera.tensorflow.converters.TensorFromEventConverter"/>
   <bean id="reportConverter" class="org.marketcetera.tensorflow.converters.TensorFromReportConverter"/>
+  <bean id="jpegConverter" class="org.marketcetera.tensorflow.TensorFromJpegConverter"/>
   <bean id="systemInformationLogger" class="org.marketcetera.core.SystemInformationLogger"/>
   <!-- market data adapter settings -->
   <bean id="moduleManager" class="org.marketcetera.module.ModuleManager" destroy-method="stop" init-method="init"/>

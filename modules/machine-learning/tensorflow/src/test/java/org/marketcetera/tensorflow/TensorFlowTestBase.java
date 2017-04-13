@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.tensorflow.Tensor;
 
 import com.google.common.collect.Lists;
 
@@ -81,28 +80,28 @@ public class TensorFlowTestBase
             }
             modelModules.clear();
         }
-        synchronized(receivedTensors) {
-            receivedTensors.clear();
+        synchronized(receivedData) {
+            receivedData.clear();
         }
         graphContainerDao.deleteAll();
     }
     /**
-     * Wait for an remove the next tensor in the received tensor queue.
+     * Wait for an remove the next object in the received data queue.
      *
-     * @return a <code>Tensor</code> value
+     * @return an <code>Object</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected Tensor waitForTensor()
+    protected Object waitForData()
                 throws Exception
     {
         long start = System.currentTimeMillis();
         while(System.currentTimeMillis() < start+10000) {
-            synchronized(receivedTensors) {
-                Tensor tensor = receivedTensors.poll();
-                if(tensor != null) {
-                    return tensor;
+            synchronized(receivedData) {
+                Object data = receivedData.poll();
+                if(data != null) {
+                    return data;
                 }
-                receivedTensors.wait(100);
+                receivedData.wait(100);
             }
         }
         fail("No tensor received in 10s");
@@ -168,6 +167,7 @@ public class TensorFlowTestBase
         createModelModule(inModelName);
         createPublisherModule();
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
+        dataRequestBuilder.add(new DataRequest(TensorFlowConverterModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(TensorFlowModelModuleFactory.PROVIDER_URN,
                                                inRunner));
         dataRequestBuilder.add(new DataRequest(publisherUrn));
@@ -232,7 +232,7 @@ public class TensorFlowTestBase
                 @Override
                 public boolean isInteresting(Object inData)
                 {
-                    return inData instanceof Tensor;
+                    return true;
                 }
                 @Override
                 public void publishTo(Object inData)
@@ -240,9 +240,9 @@ public class TensorFlowTestBase
                     SLF4JLoggerProxy.debug(TensorFlowTestBase.this,
                                            "Received {}",
                                            inData);
-                    synchronized(receivedTensors) {
-                        receivedTensors.add((Tensor)inData);
-                        receivedTensors.notifyAll();
+                    synchronized(receivedData) {
+                        receivedData.add(inData);
+                        receivedData.notifyAll();
                     }
                 }});
         }
@@ -257,9 +257,9 @@ public class TensorFlowTestBase
      */
     protected final Collection<DataFlowID> dataFlows = Lists.newArrayList();
     /**
-     * stores received tensors
+     * stores received data
      */
-    protected final Deque<Tensor> receivedTensors = Lists.newLinkedList();
+    protected final Deque<Object> receivedData = Lists.newLinkedList();
     /**
      * provides an entry point to a data flow
      */

@@ -20,8 +20,6 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.tensorflow.Graph;
-import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 
 import com.google.common.cache.Cache;
@@ -62,7 +60,7 @@ public class TensorFlowModelModule
                             Object inData)
             throws ReceiveDataException
     {
-        if(!(inData instanceof Tensor)) {
+        if(inData == null || !(inData instanceof Tensor)) {
             SLF4JLoggerProxy.warn(this,
                                   "{} ignored {} from {} because it is not a tensor",
                                   getURN(),
@@ -70,24 +68,25 @@ public class TensorFlowModelModule
                                   inFlowId);
             return;
         }
-        RequestMetaData request = dataRequestsByDataFlowId.getIfPresent(inFlowId);
-        if(request == null) {
-            SLF4JLoggerProxy.warn(this,
-                                  "{} ignored {} from {} because the data flow no longer exists",
-                                  getURN(),
-                                  inData,
-                                  inFlowId);
-            return;
+        // the lifecycle of the input tensor is owned by this module
+        try(Tensor input = (Tensor)inData) {
+            RequestMetaData request = dataRequestsByDataFlowId.getIfPresent(inFlowId);
+            if(request == null) {
+                SLF4JLoggerProxy.warn(this,
+                                      "{} ignored {} from {} because the data flow no longer exists",
+                                      getURN(),
+                                      inData,
+                                      inFlowId);
+                return;
+            }
+            Object output = request.fetch(input);
+            SLF4JLoggerProxy.trace(this,
+                                   "{} sending {} to {}",
+                                   getURN(),
+                                   output,
+                                   inFlowId);
+            request.send(output);
         }
-        Tensor tensor = (Tensor)inData;
-        Tensor result = request.fetch(session,
-                                      tensor);
-        SLF4JLoggerProxy.trace(this,
-                               "{} sending {} via {}",
-                               getURN(),
-                               result,
-                               inFlowId);
-        request.send(result);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
@@ -98,7 +97,8 @@ public class TensorFlowModelModule
             throws RequestDataException
     {
         dataRequestsByDataFlowId.put(inSupport.getFlowID(),
-                                     new RequestMetaData(inRequest, inSupport));
+                                     new RequestMetaData(inRequest,
+                                                         inSupport));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.DataFlowID, org.marketcetera.module.RequestID)
@@ -126,8 +126,6 @@ public class TensorFlowModelModule
             throw new ModuleCreationException(new I18NBoundMessage1P(Messages.NO_MODEL_ERROR,
                                                                      modelName));
         }
-        graph = graphContainer.readGraph();
-        session = new Session(graph);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -137,39 +135,21 @@ public class TensorFlowModelModule
             throws ModuleException
     {
         dataRequestsByDataFlowId.invalidateAll();
-        if(session != null) {
-            try {
-                session.close();
-            } catch(Exception e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e);
-            }
-            session = null;
-        }
-        if(graph != null) {
-            try {
-                graph.close();
-            } catch(Exception e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e);
-            }
-            graph = null;
-        }
     }
     private class RequestMetaData
-            implements TensorFlowRunner
     {
-        /* (non-Javadoc)
-         * @see org.marketcetera.tensorflow.model.TensorFlowRunner#fetch(org.tensorflow.Session, org.tensorflow.Tensor)
-         */
-        @Override
-        public Tensor fetch(Session inSession,
-                            Tensor inInput)
+        private Object fetch(Tensor inInput)
         {
-            return runner.fetch(inSession,
+            return runner.fetch(request,
                                 inInput);
         }
-        private void send(Tensor inTensor)
+        /**
+         * 
+         *
+         *
+         * @param inTensor
+         */
+        private void send(Object inTensor)
         {
             dataEmitterSupport.send(inTensor);
         }
@@ -195,31 +175,22 @@ public class TensorFlowModelModule
                                                                       inDataRequest.getClass().getSimpleName()));
             }
         }
-        @SuppressWarnings("unused")
         private final DataRequest request;
         private final TensorFlowRunner runner;
         private final DataEmitterSupport dataEmitterSupport;
     }
     /**
-     * 
-     */
-    private Session session;
-    /**
-     * 
-     */
-    private Graph graph;
-    /**
-     * 
+     * provides access to the Spring context of the application
      */
     @Autowired
     private ApplicationContext applicationContext;
     /**
-     * 
+     * provides access to Tensor Flow services
      */
     @Autowired
     private TensorFlowService tensorFlowService;
     /**
-     * 
+     * name of the model for this
      */
     private final String modelName;
     /**

@@ -1,6 +1,6 @@
 package org.marketcetera.tensorflow.model;
 
-import org.tensorflow.Session;
+import org.marketcetera.module.DataRequest;
 import org.tensorflow.Tensor;
 
 /* $License$ */
@@ -14,6 +14,6 @@ import org.tensorflow.Tensor;
  */
 public interface TensorFlowRunner
 {
-    Tensor fetch(Session inSession,
+    Object fetch(DataRequest inDataRequest,
                  Tensor inInput);
 }

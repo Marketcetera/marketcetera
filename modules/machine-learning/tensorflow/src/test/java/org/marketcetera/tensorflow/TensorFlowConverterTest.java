@@ -41,7 +41,7 @@ public class TensorFlowConverterTest
         // no converter for type of TensorFlowConverterTest
         HeadwaterModule.getInstance(headwaterInstance).emit(this,
                                                             dataFlow);
-        assertTrue(receivedTensors.isEmpty());
+        assertTrue(receivedData.isEmpty());
     }
     /**
      * Test creating a conversion data flow of orders.
@@ -54,7 +54,7 @@ public class TensorFlowConverterTest
     {
         DataFlowID dataFlow = startConverterDataFlow();
         // test a market data event
-        assertTrue(receivedTensors.isEmpty());
+        assertTrue(receivedData.isEmpty());
         OrderSingle order = Factory.getInstance().createOrderSingle();
         order.setInstrument(new Equity("METC"));
         order.setQuantity(new BigDecimal(1000));
@@ -63,7 +63,8 @@ public class TensorFlowConverterTest
         order.setSide(Side.Buy);
         HeadwaterModule.getInstance(headwaterInstance).emit(order,
                                                             dataFlow);
-        Tensor receivedTensor = waitForTensor();
+        Object receivedTensor = waitForData();
         assertNotNull(receivedTensor);
+        assertTrue(receivedTensor instanceof Tensor);
     }
 }

@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.junit.Test;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.tensorflow.Graph;
 
 /* $License$ */
@@ -31,12 +33,19 @@ public class TensorFlowModelTest
     {
         byte[] graphDef = Files.readAllBytes(Paths.get("src/test/sample_data",
                                                        "tensorflow_inception_graph.pb"));
-        String modelName = "TestModel-" + System.nanoTime();
+        String modelName = "TestModel" + System.nanoTime();
         try(Graph graph = new Graph()) {
             graph.importGraphDef(graphDef);
             tensorFlowService.createContainer(graph,
                                               modelName,
                                               "This is a test model");
+            JpegContainer image = new JpegContainer(Files.readAllBytes(Paths.get("src/test/sample_data",
+                                                                                 "giant-schnauzer.jpg")));
+            // set up a data flow that converts the image to a tensor and sends it to the model
+            DataFlowID dataFlow = startModelDataFlow(modelName,
+                                                     new ImageLabelTensorFlowRunner());
+            HeadwaterModule.getInstance(headwaterInstance).emit(image,
+                                                                dataFlow);
         }
         GraphContainer graphContainer = tensorFlowService.findByName(modelName);
         assertNotNull(graphContainer);
