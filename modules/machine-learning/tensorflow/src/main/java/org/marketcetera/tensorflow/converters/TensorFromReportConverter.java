@@ -16,19 +16,20 @@ public class TensorFromReportConverter
         extends AbstractTensorFromObjectConverter<ReportBase>
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.tensorflow.TensorConverter#convert(java.lang.Object)
-     */
-    @Override
-    public Tensor convert(ReportBase inType)
-    {
-        throw new UnsupportedOperationException(); // TODO
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.tensorflow.TensorConverter#getType()
      */
     @Override
     public Class<ReportBase> getType()
     {
         return ReportBase.class;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.tensorflow.converters.AbstractTensorFromObjectConverter#doConvert(java.lang.Object)
+     */
+    @Override
+    protected Tensor doConvert(ReportBase inData)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
     }
 }

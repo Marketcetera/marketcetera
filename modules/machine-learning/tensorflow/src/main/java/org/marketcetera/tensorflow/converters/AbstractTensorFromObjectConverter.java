@@ -1,5 +1,10 @@
 package org.marketcetera.tensorflow.converters;
 
+import org.marketcetera.module.StopDataFlowException;
+import org.marketcetera.tensorflow.Messages;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.tensorflow.Tensor;
+
 /* $License$ */
 
 /**
@@ -20,4 +25,25 @@ public abstract class AbstractTensorFromObjectConverter<T>
     {
         return getType().getSimpleName();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.tensorflow.converters.TensorFromObjectConverter#convert(java.lang.Object)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public Tensor convert(Object inData)
+    {
+        if(getType().isAssignableFrom(inData.getClass())) {
+            return doConvert((T)inData);
+        }
+        throw new StopDataFlowException(new I18NBoundMessage2P(Messages.INVALID_DATA_TYPE,
+                                                               inData.getClass().getSimpleName(),
+                                                               toString()));
+    }
+    /**
+     * Perform the conversion from the given input to a tensor.
+     *
+     * @param inData a <code>T</code> value
+     * @return a <code>Tensor</code> value
+     */
+    protected abstract Tensor doConvert(T inData);
 }

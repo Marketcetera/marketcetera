@@ -34,20 +34,20 @@ public class TensorFromJpegConverter
         extends AbstractTensorFromObjectConverter<JpegContainer>
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.tensorflow.converters.TensorFromObjectConverter#convert(java.lang.Object)
-     */
-    @Override
-    public Tensor convert(JpegContainer inType)
-    {
-        return constructAndExecuteGraphToNormalizeImage(inType.getRawData());
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.tensorflow.converters.TensorFromObjectConverter#getType()
      */
     @Override
     public Class<JpegContainer> getType()
     {
         return JpegContainer.class;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.tensorflow.converters.AbstractTensorFromObjectConverter#doConvert(java.lang.Object)
+     */
+    @Override
+    protected Tensor doConvert(JpegContainer inType)
+    {
+        return constructAndExecuteGraphToNormalizeImage(inType.getRawData());
     }
     /**
      * Construct a tensor from the given image.

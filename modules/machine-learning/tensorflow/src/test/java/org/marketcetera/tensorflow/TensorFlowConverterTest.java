@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.tensorflow.converter.TensorFlowConverterModule;
+import org.marketcetera.tensorflow.converters.TensorFromOrderConverter;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderSingle;
@@ -37,7 +38,7 @@ public class TensorFlowConverterTest
     public void testNoConverter()
             throws Exception
     {
-        DataFlowID dataFlow = startConverterDataFlow();
+        DataFlowID dataFlow = startConverterDataFlow(new TensorFromOrderConverter());
         // no converter for type of TensorFlowConverterTest
         HeadwaterModule.getInstance(headwaterInstance).emit(this,
                                                             dataFlow);
@@ -52,7 +53,7 @@ public class TensorFlowConverterTest
     public void testOrder()
             throws Exception
     {
-        DataFlowID dataFlow = startConverterDataFlow();
+        DataFlowID dataFlow = startConverterDataFlow(new TensorFromOrderConverter());
         // test a market data event
         assertTrue(receivedData.isEmpty());
         OrderSingle order = Factory.getInstance().createOrderSingle();

@@ -56,7 +56,8 @@ public class TensorFlowModelTest
         JpegContainer image = new JpegContainer(Files.readAllBytes(Paths.get("src/test/sample_data",
                                                                              "giant-schnauzer.jpg")));
         // set up a data flow that converts the image to a tensor and sends it to the model
-        DataFlowID dataFlow = startModelDataFlow(new ImageLabelTensorFlowRunner(ImageLabelGraphDefReader.readGraphDef()));
+        DataFlowID dataFlow = startModelDataFlow(new TensorFromJpegConverter(),
+                                                 new ImageLabelTensorFlowRunner(ImageLabelGraphDefReader.readGraphDef()));
         HeadwaterModule.getInstance(headwaterInstance).emit(image,
                                                             dataFlow);
         Object output = waitForData();
@@ -87,7 +88,8 @@ public class TensorFlowModelTest
         JpegContainer image = new JpegContainer(Files.readAllBytes(Paths.get("src/test/sample_data",
                                                                              "giant-schnauzer.jpg")));
         // set up a data flow that converts the image to a tensor and sends it to the model
-        DataFlowID dataFlow = startModelDataFlow(new ImageLabelTensorFlowRunner(graphContainer.readGraph().toGraphDef()));
+        DataFlowID dataFlow = startModelDataFlow(new TensorFromJpegConverter(),
+                                                 new ImageLabelTensorFlowRunner(graphContainer.readGraph().toGraphDef()));
         HeadwaterModule.getInstance(headwaterInstance).emit(image,
                                                             dataFlow);
         Object output = waitForData();

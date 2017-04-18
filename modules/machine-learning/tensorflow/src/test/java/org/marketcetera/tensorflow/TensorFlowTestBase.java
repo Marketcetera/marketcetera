@@ -17,6 +17,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.modules.headwater.HeadwaterModuleFactory;
 import org.marketcetera.modules.publisher.PublisherModuleFactory;
 import org.marketcetera.tensorflow.converter.TensorFlowConverterModuleFactory;
+import org.marketcetera.tensorflow.converters.TensorFromObjectConverter;
 import org.marketcetera.tensorflow.dao.GraphContainerDao;
 import org.marketcetera.tensorflow.model.TensorFlowModelModuleFactory;
 import org.marketcetera.tensorflow.model.TensorFlowRunner;
@@ -70,7 +71,9 @@ public class TensorFlowTestBase
     {
         synchronized(dataFlows) {
             for(DataFlowID dataFlow : dataFlows) {
-                moduleManager.cancel(dataFlow);
+                try {
+                    moduleManager.cancel(dataFlow);
+                } catch (Exception ignored) {}
             }
             dataFlows.clear();
         }
@@ -104,11 +107,12 @@ public class TensorFlowTestBase
     /**
      * Start a test data flow.
      *
+     * @param inConverter a <code>TensorFromObjectConverter&lt;?&gt;</code> value
      * @return a <code>DataFlowID</code> value
      */
-    protected DataFlowID startConverterDataFlow()
+    protected DataFlowID startConverterDataFlow(TensorFromObjectConverter<?> inConverter)
     {
-        DataFlowID dataFlow = moduleManager.createDataFlow(getConverterDataRequest());
+        DataFlowID dataFlow = moduleManager.createDataFlow(getConverterDataRequest(inConverter));
         synchronized(dataFlows) {
             dataFlows.add(dataFlow);
         }
@@ -117,13 +121,15 @@ public class TensorFlowTestBase
     /**
      * Start a model data flow.
      *
-     * @param inModelName a <code>String</code> value
+     * @param inConverter a <code>TensorFromObjectConverter&lt;?&gt;</code> value
      * @param inRunner a <code>TensorFlowRunner</code> value
      * @return a <code>DataFlowID</code> value
      */
-    protected DataFlowID startModelDataFlow(TensorFlowRunner inRunner)
+    protected DataFlowID startModelDataFlow(TensorFromObjectConverter<?> inConverter,
+                                            TensorFlowRunner inRunner)
     {
-        DataFlowID dataFlow = moduleManager.createDataFlow(getModelDataRequest(inRunner));
+        DataFlowID dataFlow = moduleManager.createDataFlow(getModelDataRequest(inConverter,
+                                                                               inRunner));
         synchronized(dataFlows) {
             dataFlows.add(dataFlow);
         }
@@ -132,31 +138,36 @@ public class TensorFlowTestBase
     /**
      * Build a standard data request.
      *
+     * @param inConverter a <code>TensorFromObjectConverter&lt;?&gt;</code> value
      * @return a <code>DataRequest[]</code> value
      */
-    protected DataRequest[] getConverterDataRequest()
+    protected DataRequest[] getConverterDataRequest(TensorFromObjectConverter<?> inConverter)
     {
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
         createHeadwaterModule();
         createPublisherModule();
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
-        dataRequestBuilder.add(new DataRequest(TensorFlowConverterModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TensorFlowConverterModuleFactory.INSTANCE_URN,
+                                               inConverter));
         dataRequestBuilder.add(new DataRequest(publisherUrn));
         return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
     }
     /**
      * Build a data request for the given TensorFlow module with the given runner.
      *
-     * @param inRunner
+     * @param inConverter a <code>TensorFromObjectConverter&lt;?&gt;</code> value
+     * @param inRunner a <code>TensorFlowRunner</code> value
      * @return a <code>DataRequest[]</code> value
      */
-    protected DataRequest[] getModelDataRequest(TensorFlowRunner inRunner)
+    protected DataRequest[] getModelDataRequest(TensorFromObjectConverter<?> inConverter,
+                                                TensorFlowRunner inRunner)
     {
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
         createHeadwaterModule();
         createPublisherModule();
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
-        dataRequestBuilder.add(new DataRequest(TensorFlowConverterModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TensorFlowConverterModuleFactory.INSTANCE_URN,
+                                               inConverter));
         dataRequestBuilder.add(new DataRequest(TensorFlowModelModuleFactory.INSTANCE_URN,
                                                inRunner));
         dataRequestBuilder.add(new DataRequest(publisherUrn));
@@ -165,7 +176,7 @@ public class TensorFlowTestBase
     /**
      * Build a data request for the given TensorFlow module with the given runner.
      *
-     * @param inRunnerId
+     * @param inRunnerId a <code>String</code> value
      * @return a <code>DataRequest[]</code> value
      */
     protected DataRequest[] getModelDataRequest(String inRunnerId)

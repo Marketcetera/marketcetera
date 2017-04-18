@@ -14,16 +14,16 @@ import org.tensorflow.Tensor;
 public interface TensorFromObjectConverter<T>
 {
     /**
-     * Convert the given object to a <code>Tensor</code>.
-     *
-     * @param inType a <code>T</code> value
-     * @return a <code>Tensor</code> value
-     */
-    Tensor convert(T inType);
-    /**
      * Get the type of object this converter can handle.
      *
      * @return a <code>Class&lt;T&gt</code> value
      */
     Class<T> getType();
+    /**
+     * Convert the given object to a <code>Tensor</code>.
+     *
+     * @param inData an <code>Object</code> value
+     * @return a <code>Tensor</code> value
+     */
+    Tensor convert(Object inData);
 }

@@ -21,10 +21,18 @@ public class TensorFromOrderConverter
         extends AbstractTensorFromObjectConverter<Order>
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.tensorflow.TensorConverter#convert(java.lang.Object)
+     * @see org.marketcetera.tensorflow.TensorConverter#getType()
      */
     @Override
-    public Tensor convert(Order inType)
+    public Class<Order> getType()
+    {
+        return Order.class;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.tensorflow.converters.AbstractTensorFromObjectConverter#doConvert(java.lang.Object)
+     */
+    @Override
+    protected Tensor doConvert(Order inType)
     {
         List<Float> primatives = Lists.newArrayList();
         if(inType instanceof OrderSingle) {
@@ -39,13 +47,5 @@ public class TensorFromOrderConverter
             throw new UnsupportedOperationException();
         }
         return Tensor.create(primatives.toArray(new Float[primatives.size()]));
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.tensorflow.TensorConverter#getType()
-     */
-    @Override
-    public Class<Order> getType()
-    {
-        return Order.class;
     }
 }

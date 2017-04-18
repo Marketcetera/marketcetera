@@ -16,19 +16,19 @@ public class TensorFromEventConverter
         extends AbstractTensorFromObjectConverter<Event>
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.tensorflow.TensorConverter#convert(java.lang.Object)
-     */
-    @Override
-    public Tensor convert(Event inType)
-    {
-        throw new UnsupportedOperationException(); // TODO
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.tensorflow.TensorConverter#getType()
      */
     @Override
     public Class<Event> getType()
     {
         return Event.class;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.tensorflow.converters.AbstractTensorFromObjectConverter#doConvert(java.lang.Object)
+     */
+    @Override
+    protected Tensor doConvert(Event inData)
+    {
+        throw new UnsupportedOperationException(); // TODO
     }
 }
