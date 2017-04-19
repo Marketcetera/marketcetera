@@ -52,10 +52,10 @@ public final class DataRequest
     /**
      * Create a new DataRequest instance.
      *
-     * @param inRequestUrn
-     * @param inCoupling
-     * @param inExceptionHandler
-     * @param inData
+     * @param inRequestUrn a <code>ModuleURN</code> value
+     * @param inCoupling a <code>DataCoupling</code> value
+     * @param inExceptionHandler a <code>DataFlowExceptionHandler</code> value
+     * @param inData an <code>Object</code> value
      */
     public DataRequest(ModuleURN inRequestUrn,
                        DataCoupling inCoupling,
@@ -70,9 +70,9 @@ public final class DataRequest
     /**
      * Create a new DataRequest instance.
      *
-     * @param inRequestUrn
-     * @param inExceptionHandler
-     * @param inData
+     * @param inRequestUrn a <code>ModuleURN</code> value
+     * @param inExceptionHandler a <code>DataFlowExceptionHandler</code> value
+     * @param inData an <code>Object</code> value
      */
     public DataRequest(ModuleURN inRequestUrn,
                        DataFlowExceptionHandler inExceptionHandler,
