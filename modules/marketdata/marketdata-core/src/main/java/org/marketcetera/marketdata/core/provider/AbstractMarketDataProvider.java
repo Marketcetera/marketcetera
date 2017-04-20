@@ -43,6 +43,7 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.Lifecycle;
 
 import com.google.common.collect.HashMultimap;
@@ -715,7 +716,8 @@ public abstract class AbstractMarketDataProvider
     /**
      * provider registry value with which to register/unregister or <code>null</code>
      */
-    private volatile MarketDataProviderRegistry providerRegistry;
+    @Autowired(required=false)
+    private MarketDataProviderRegistry providerRegistry;
     /**
      * total number of requests submitted
      */
