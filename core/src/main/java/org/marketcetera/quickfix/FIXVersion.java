@@ -141,7 +141,10 @@ public enum FIXVersion
             if(session == null) {
                 throw new UnsupportedOperationException(Messages.APPL_VERID_REQUIRED.getText());
             }
-            quickfix.field.ApplVerID defaultAppVerId = session.getTargetDefaultApplicationVersionID();
+            quickfix.field.ApplVerID defaultAppVerId = session.getSenderDefaultApplicationVersionID();
+            if(defaultAppVerId == null) {
+                throw new UnsupportedOperationException(Messages.APPL_VERID_REQUIRED.getText());
+            }
             return getFIXVersion(defaultAppVerId);
         } else {
             return getFIXVersion(inSessionId.getBeginString());
