@@ -69,6 +69,7 @@ import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.LogEventLevel;
@@ -123,13 +124,13 @@ import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.I18NMessage;
 import org.marketcetera.util.ws.tags.SessionId;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+
 import quickfix.Message;
 import quickfix.field.OrdStatus;
 import quickfix.field.Side;
 import quickfix.field.TransactTime;
-
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 
 /* $License$ */
 
@@ -1235,6 +1236,14 @@ public class StrategyTestBase
          */
         @Override
         public SessionId getSessionId()
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#sendEvent(org.marketcetera.event.Event)
+         */
+        @Override
+        public void sendEvent(Event inEvent)
         {
             throw new UnsupportedOperationException(); // TODO
         }

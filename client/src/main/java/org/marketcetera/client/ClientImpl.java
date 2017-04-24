@@ -22,9 +22,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.config.SpringConfig;
+import org.marketcetera.client.jms.DataEnvelope;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.JmsUtils;
-import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.ApplicationBase;
@@ -94,7 +94,9 @@ import org.springframework.jms.listener.SimpleMessageListenerContainer;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public class ClientImpl implements Client, javax.jms.ExceptionListener {
+public class ClientImpl
+        implements Client,javax.jms.ExceptionListener
+{
 
     @Override
     public void sendOrder(OrderSingle inOrderSingle)
@@ -126,7 +128,15 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
         Validations.validate(inFIXOrder);
         convertAndSend(inFIXOrder);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#sendEvent(org.marketcetera.event.Event)
+     */
+    @Override
+    public void sendEvent(Event inEvent)
+            throws ConnectionException
+    {
+        convertAndSend(inEvent);
+    }
     @Override
     public void addReportListener(ReportListener inListener) {
         failIfClosed();
@@ -183,7 +193,6 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
             mServerStatusListeners.removeFirstOccurrence(listener);
         }
     }
-
     @Override
     public ReportBase[] getReportsSince
         (Date inDate)
@@ -631,27 +640,6 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
         setParameters(inParameters);
         connect();
     }
-
-    // TradeMessage reception; public scope required by Spring.
-
-    public class TradeMessageReceiver
-        implements ReceiveOnlyHandler<TradeMessage>
-    {
-        @Override
-        public void receiveMessage
-            (TradeMessage inReport)
-        {
-            if (inReport instanceof ExecutionReport) {
-                notifyExecutionReport((ExecutionReport)inReport);
-            } else if (inReport instanceof OrderCancelReject) {
-                notifyCancelReject((OrderCancelReject)inReport);
-            } else {
-                Messages.LOG_RECEIVED_FIX_REPORT.warn
-                    (this,ObjectUtils.toString(inReport));
-            }
-        }
-    }
-
     void notifyExecutionReport(ExecutionReport inReport) {
         SLF4JLoggerProxy.debug(TRAFFIC, "Received Exec Report:{}", inReport);  //$NON-NLS-1$
         synchronized (mReportListeners) {
@@ -1177,7 +1165,7 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
             for(OrderModifier modifier : orderModifiers) {
                 modifier.modify(inOrder);
             }
-            mToServer.convertAndSend(new OrderEnvelope(inOrder,
+            mToServer.convertAndSend(new DataEnvelope(inOrder,
                                                        getSessionId()));
         } catch (Exception e) {
             ConnectionException exception;
@@ -1190,7 +1178,40 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
             throw exception;
         }
     }
-
+    /**
+     * Convert the given event and send it to the server.
+     *
+     * @param inEvent an <code>Event</code> value
+     * @throws ConnectionException if the client is closed
+     */
+    private void convertAndSend(Event inEvent)
+            throws ConnectionException
+    {
+        ThreadedMetric.event("client-OUT",  //$NON-NLS-1$ 
+                             inEvent.getMessageId());
+        failIfClosed();
+        SLF4JLoggerProxy.debug(TRAFFIC,
+                               "Sending: {}",  //$NON-NLS-1$
+                               inEvent);
+        try {
+            if(mToServer == null) {
+                throw new ClientInitException(Messages.NOT_CONNECTED_TO_SERVER);
+            }
+            failIfDisconnected();
+            mToServer.convertAndSend(new DataEnvelope(inEvent,
+                                                       getSessionId()));
+        } catch (Exception e) {
+            ConnectionException exception;
+            exception = new ConnectionException(e, new I18NBoundMessage1P(Messages.ERROR_SEND_MESSAGE,
+                                                                          ObjectUtils.toString(inEvent)));
+            Messages.LOG_ERROR_SEND_EXCEPTION.warn(this,
+                                                   exception,
+                                                   ObjectUtils.toString(inEvent));
+            ExceptUtils.interrupt(e);
+            exceptionThrown(exception);
+            throw exception;
+        }
+    }
     /**
      * Checks to see if the client is closed and fails if the client
      * is closed.
@@ -1231,33 +1252,39 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
         }
         mParameters = inParameters;
     }
-
+    /**
+     * Stop JMSoperations.
+     */
     private void stopJms()
     {
-        if (mToServer==null) {
+        if(mToServer==null) {
             return;
         }
-        try {
-            if (mTradeMessageListener!=null) {
-                mTradeMessageListener.shutdown();
-            }
-        } catch (Exception ex) {
-            SLF4JLoggerProxy.debug
-                (this,"Error when closing trade message listener",ex); //$NON-NLS-1$
-            ExceptUtils.interrupt(ex);
-        } finally {
+        if(mTradeMessageListener != null) {
             try {
-                if (mBrokerStatusListener!=null) {
-                    mBrokerStatusListener.shutdown();
-                }
+                mTradeMessageListener.shutdown();
             } catch (Exception ex) {
-                SLF4JLoggerProxy.debug
-                    (this,"Error when closing broker status listener",ex); //$NON-NLS-1$
+                SLF4JLoggerProxy.debug(this,
+                                       ex,
+                                       "Error when closing trade message listener"); //$NON-NLS-1$
                 ExceptUtils.interrupt(ex);
             } finally {
-                mToServer = null;
+                mTradeMessageListener = null;
             }
         }
+        if(mBrokerStatusListener != null) {
+            try {
+                mBrokerStatusListener.shutdown();
+            } catch (Exception ex) {
+                SLF4JLoggerProxy.debug(this,
+                                       ex,
+                                       "Error when closing broker status listener"); //$NON-NLS-1$
+                ExceptUtils.interrupt(ex);
+            } finally {
+                mBrokerStatusListener = null;
+            }
+        }
+        mToServer = null;
     }
     /**
      * Sets the server connection status. If the status changed, the
@@ -1283,6 +1310,31 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
         }
         mServerAlive=serverAlive;
         notifyServerStatus(isServerAlive());
+    }
+    // TradeMessage and MarketDataRequest reception; public scope required by Spring.
+    /**
+     * Receives <code>TradeMessage</code> objects from the server.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    public class TradeMessageReceiver
+            implements ReceiveOnlyHandler<TradeMessage>
+    {
+        @Override
+        public void receiveMessage
+            (TradeMessage inReport)
+        {
+            if (inReport instanceof ExecutionReport) {
+                notifyExecutionReport((ExecutionReport)inReport);
+            } else if (inReport instanceof OrderCancelReject) {
+                notifyCancelReject((OrderCancelReject)inReport);
+            } else {
+                Messages.LOG_RECEIVED_FIX_REPORT.warn
+                    (this,ObjectUtils.toString(inReport));
+            }
+        }
     }
     /**
      * provides access to market data, optional, and accessed by {@link #getMarketDataManager()}

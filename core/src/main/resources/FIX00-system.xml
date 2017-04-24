@@ -140,6 +140,7 @@
     <field name="MoneyLaunderingStatus" required="N"/>
     <field name="RegistID" required="N"/>
     <field name="Designation" required="N"/>
+    <field name="PutOrCall" required="N"/>
   </message>
   <message name="ExecutionReport" msgtype="8" msgcat="app">
     <field name="OrderID" required="Y"/>

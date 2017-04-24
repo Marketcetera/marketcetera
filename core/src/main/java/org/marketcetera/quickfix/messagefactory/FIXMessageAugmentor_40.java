@@ -35,6 +35,9 @@ public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
 
     public Message newOrderSingleAugment(Message inMessage) {
         inMessage = super.newOrderSingleAugment(inMessage);
+        if(inMessage.isSetField(quickfix.field.TransactTime.FIELD)) {
+            inMessage.removeField(quickfix.field.TransactTime.FIELD);
+        }
         return handleOnCloseBehaviour(inMessage);
     }
 

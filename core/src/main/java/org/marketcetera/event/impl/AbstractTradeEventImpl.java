@@ -206,6 +206,22 @@ public abstract class AbstractTradeEventImpl
         tradeData.setReceivedTimestamp(inTimestamp);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#getRequestId()
+     */
+    @Override
+    public long getRequestId()
+    {
+        return tradeData.getRequestId();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#setRequestId(long)
+     */
+    @Override
+    public void setRequestId(long inRequestId)
+    {
+        tradeData.setRequestId(inRequestId);
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override

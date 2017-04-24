@@ -3,13 +3,13 @@ package org.marketcetera.marketdata.core.manager;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.HasInstrument;
+import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.Messages;
@@ -77,7 +77,7 @@ public class MarketDataManagerModule
                             Object inData)
             throws ReceiveDataException
     {
-        ISubscriber subscriber = subscribersByDataFlowId.get(inFlowId);
+        RequestWrapper subscriber = subscribersByDataFlowId.get(inFlowId);
         long timestamp = System.currentTimeMillis();
         try {
             while(subscriber == null && System.currentTimeMillis() < (timestamp+subscriberTimeout)) {
@@ -97,6 +97,9 @@ public class MarketDataManagerModule
                 }
                 if(inData instanceof Event) {
                     event = (Event)inData;
+                    if(inData instanceof MarketDataEvent) {
+                        ((MarketDataEvent)event).setRequestId(subscriber.request.getRequestId());
+                    }
                 }
                 if(eventInstrument == null || event == null) {
                     Messages.NO_INSTRUMENT.warn(this,
@@ -192,7 +195,6 @@ public class MarketDataManagerModule
                                   ISubscriber inSubscriber)
     {
         try {
-            long requestId = counter.incrementAndGet();
             String provider = inRequest.getProvider();
             SLF4JLoggerProxy.debug(this,
                                    "Requesting market data: {} from {}",
@@ -212,8 +214,7 @@ public class MarketDataManagerModule
                             try {
                                 doDataRequest(inRequest,
                                               instanceUrn,
-                                              inSubscriber,
-                                              requestId);
+                                              inSubscriber);
                             } catch (Exception e) {
                                 SLF4JLoggerProxy.warn(this,
                                                       "Unable to request market data from {}: {}",
@@ -227,10 +228,9 @@ public class MarketDataManagerModule
                 ModuleURN sourceUrn = getInstanceUrn(provider);
                 doDataRequest(inRequest,
                               sourceUrn,
-                              inSubscriber,
-                              requestId);
+                              inSubscriber);
             }
-            return requestId;
+            return inRequest.getRequestId();
         } catch (Exception e) {
             if(SLF4JLoggerProxy.isDebugEnabled(this)) {
                 SLF4JLoggerProxy.warn(this,
@@ -353,12 +353,10 @@ public class MarketDataManagerModule
      * @param inMarketDataRequest a <code>MarketDataRequest</code> value
      * @param inSourceUrn a <code>ModuleURN</code> value
      * @param inSubscriber an <code>ISubscriber</code> value
-     * @param inRequestId a <code>long</code> value
      */
     private void doDataRequest(MarketDataRequest inMarketDataRequest,
                                ModuleURN inSourceUrn,
-                               ISubscriber inSubscriber,
-                               long inRequestId)
+                               ISubscriber inSubscriber)
     {
         startProviderIfNecessary(inSourceUrn);
         DataRequest sourceRequest = new DataRequest(inSourceUrn,
@@ -371,10 +369,11 @@ public class MarketDataManagerModule
                                inMarketDataRequest,
                                inSourceUrn,
                                dataFlowId);
-        dataFlowsByRequestId.put(inRequestId, 
+        dataFlowsByRequestId.put(inMarketDataRequest.getRequestId(), 
                                  dataFlowId);
         subscribersByDataFlowId.put(dataFlowId,
-                                    inSubscriber);
+                                    new RequestWrapper(inMarketDataRequest,
+                                                       inSubscriber));
         contentByDataFlowId.putAll(dataFlowId,
                                    inMarketDataRequest.getContent());
         synchronized(dataFlowsByRequestId) {
@@ -402,6 +401,53 @@ public class MarketDataManagerModule
         }
     }
     /**
+     * Contains the information for a market data request.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class RequestWrapper
+            implements ISubscriber
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
+         */
+        @Override
+        public boolean isInteresting(Object inData)
+        {
+            return subscriber.isInteresting(inData);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
+         */
+        @Override
+        public void publishTo(Object inData)
+        {
+            subscriber.publishTo(inData);
+        }
+        /**
+         * Create a new RequestWrapper instance.
+         *
+         * @param inRequest a <code>MarketDataRequest</code> value
+         * @param inSubscriber an <code>ISubscriber</code> value
+         */
+        private RequestWrapper(MarketDataRequest inRequest,
+                               ISubscriber inSubscriber)
+        {
+            request = inRequest;
+            subscriber = inSubscriber;
+        }
+        /**
+         * request value
+         */
+        private final MarketDataRequest request;
+        /**
+         * subscriber value
+         */
+        private final ISubscriber subscriber;
+    }
+    /**
      * default market data provider
      */
     private String defaultProvider = "exsim";
@@ -414,17 +460,13 @@ public class MarketDataManagerModule
      */
     private static MarketDataManagerModule instance;
     /**
-     * uniquely identifies market data requests
-     */
-    private final AtomicLong counter = new AtomicLong(0);
-    /**
      * time to wait for a subscriber to become available before timing out
      */
     private long subscriberTimeout = 500;
     /**
      * holds active subscribers by data flow id
      */
-    private final Map<DataFlowID,ISubscriber> subscribersByDataFlowId = new HashMap<>();
+    private final Map<DataFlowID,RequestWrapper> subscribersByDataFlowId = new HashMap<>();
     /**
      * holds active data flows by request id
      */

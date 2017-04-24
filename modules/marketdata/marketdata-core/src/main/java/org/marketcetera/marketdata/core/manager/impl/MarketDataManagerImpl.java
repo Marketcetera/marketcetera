@@ -234,7 +234,7 @@ public class MarketDataManagerImpl
         }
     }
     /**
-     *
+     * Holds information for a market data request.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -280,8 +280,8 @@ public class MarketDataManagerImpl
         /**
          * Create a new Token instance.
          *
-         * @param inMarketDataRequest
-         * @param inSubscriber
+         * @param inMarketDataRequest a <code>MarketDataRequest</code> value
+         * @param inSubscriber an <code>ISubscriber</code> value
          */
         private Token(MarketDataRequest inMarketDataRequest,
                       ISubscriber inSubscriber)
@@ -290,29 +290,26 @@ public class MarketDataManagerImpl
             subscriber = inSubscriber;
         }
         /**
-         * 
+         * market data providers subscribed to
          */
         private final Set<MarketDataProvider> marketDataProviders = Sets.newHashSet();
         /**
-         * 
+         * market data request
          */
         private final MarketDataRequest marketDataRequest;
         /**
-         * 
+         * subscriber object used to return results
          */
         private final ISubscriber subscriber;
         /**
-         * 
+         * id of this token
          */
         private final long id = counter.incrementAndGet();
         /**
-         * 
-         */
-        private static final long serialVersionUID = 622142012940134611L;
-        /**
-         * 
+         * used to generate unique token ids
          */
         private static final AtomicLong counter = new AtomicLong(0);
+        private static final long serialVersionUID = 622142012940134611L;
     }
     /**
      * indicate whether the service should use the module framework or the provider framework
@@ -331,11 +328,11 @@ public class MarketDataManagerImpl
      */
     private String defaultMarketDataProvider = "exsim";
     /**
-     * 
+     * caches provider status by provider
      */
     private final Cache<MarketDataProvider,ProviderStatus> providerStatus = CacheBuilder.newBuilder().build();
     /**
-     * 
+     * caches market data requests by token id
      */
     private final Cache<Long,Token> marketDataRequests = CacheBuilder.newBuilder().build();
 }

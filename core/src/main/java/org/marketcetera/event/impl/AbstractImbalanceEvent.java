@@ -215,6 +215,22 @@ abstract class AbstractImbalanceEvent
         return imbalance.getShortSaleRestricted();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#getRequestId()
+     */
+    @Override
+    public long getRequestId()
+    {
+        return imbalance.getRequestId();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#setRequestId(long)
+     */
+    @Override
+    public void setRequestId(long inRequestId)
+    {
+        imbalance.setRequestId(inRequestId);
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

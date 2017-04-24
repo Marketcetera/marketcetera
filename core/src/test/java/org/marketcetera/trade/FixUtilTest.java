@@ -25,22 +25,39 @@ public class FixUtilTest extends FIXVersionedTestCase{
     
     public void testAllFixExecutionReport()throws Exception{
         
-        Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
-                "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(300), null,
-                new BigDecimal(0), new BigDecimal(0), new BigDecimal(0),
-                new BigDecimal(0), new Equity("IBM"), "account", "text");
+        Message message = msgFactory.newExecutionReport("clordid1",
+                                                        "clordid1",
+                                                        "execido1",
+                                                        OrdStatus.NEW,
+                                                        Side.BUY,
+                                                        new BigDecimal(300),
+                                                        null,
+                                                        new BigDecimal(0),
+                                                        new BigDecimal(0),
+                                                        new BigDecimal(0),
+                                                        new BigDecimal(0),
+                                                        new Equity("IBM"),
+                                                        "account",
+                                                        "text");
         message.setField(new LeavesQty(90.0));
-       
         ExecutionType execType = FIXUtil.getExecOrExecTransType(message);
-        assertEquals(ExecutionType.New, execType);
-       
+        assertEquals(ExecutionType.New,
+                     execType);
         Message message2 = msgFactory.newExecutionReport("clordid1",
-                "clordid1", "execido1", OrdStatus.PARTIALLY_FILLED, Side.BUY,
-                new BigDecimal(300), new BigDecimal(111),null, new BigDecimal(
-                        111), new BigDecimal(110), new BigDecimal(111),
-                new Equity("IBM"), "account", "text");
+                                                         "clordid1",
+                                                         "execido1",
+                                                         OrdStatus.PARTIALLY_FILLED,
+                                                         Side.BUY,
+                                                         new BigDecimal(300),
+                                                         new BigDecimal(111),
+                                                         null,
+                                                         new BigDecimal(111),
+                                                         new BigDecimal(110),
+                                                         new BigDecimal(111),
+                                                         new Equity("IBM"),
+                                                         "account",
+                                                         "text");
         message2.setField(new LeavesQty(190.0));
-        
         execType = FIXUtil.getExecOrExecTransType(message2);
         if(version43orAbove()) {
             assertEquals(ExecutionType.Trade,
@@ -50,13 +67,22 @@ public class FixUtilTest extends FIXVersionedTestCase{
                          execType);
         }
         Message message3 = msgFactory.newExecutionReport("clordid1",
-                "clordid1", "execido1", OrdStatus.FILLED, Side.BUY,
-                new BigDecimal(300), new BigDecimal(55), new BigDecimal(190), new BigDecimal(55),
-                new BigDecimal(300), new BigDecimal(55), new Equity("IBM"),
-                "account", "text");
-        assertEquals(null, FIXUtil.getOrderDisplayQuantity(message3));  
+                                                         "clordid1",
+                                                         "execido1",
+                                                         OrdStatus.FILLED,
+                                                         Side.BUY,
+                                                         new BigDecimal(300),
+                                                         new BigDecimal(55),
+                                                         new BigDecimal(190),
+                                                         new BigDecimal(55),
+                                                         new BigDecimal(300),
+                                                         new BigDecimal(55),
+                                                         new Equity("IBM"),
+                                                         "account",
+                                                         "text");
+        assertEquals(null,
+                     FIXUtil.getOrderDisplayQuantity(message3));
         message3.setField(new MaxFloor(30));
-        
         execType = FIXUtil.getExecOrExecTransType(message3);
         if(version43orAbove()) {
             assertEquals(ExecutionType.Trade,

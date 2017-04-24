@@ -39,10 +39,10 @@
   <properties>
     <mvn.javase.version>7</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
-    <mvn.spring.version>4.0.2.RELEASE</mvn.spring.version>
-    <mvn.cxf.version>2.7.10</mvn.cxf.version>
+    <mvn.spring.version>4.2.0.RELEASE</mvn.spring.version>
+    <mvn.cxf.version>3.1.11</mvn.cxf.version>
     <mvn.querydsl.version>3.3.1</mvn.querydsl.version>
-    <mvn.springdatajpa.version>1.5.0.RELEASE</mvn.springdatajpa.version>
+    <mvn.springdatajpa.version>1.9.0.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>4.2.8.Final</mvn.hibernate.version>
     <mvn.hazelcast.version>3.6.2</mvn.hazelcast.version>
@@ -284,6 +284,11 @@
         <groupId>com.github.jnr</groupId>
         <artifactId>jnr-process</artifactId>
         <version>0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>javax.mail</artifactId>
+        <version>1.5.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -795,6 +800,12 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.11</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>pl.pragmatists</groupId>
+        <artifactId>JUnitParams</artifactId>
+        <version>1.0.4</version>
         <scope>test</scope>
       </dependency>
       <dependency>
