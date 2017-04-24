@@ -35,11 +35,16 @@ public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
 
     public Message newOrderSingleAugment(Message inMessage) {
         inMessage = super.newOrderSingleAugment(inMessage);
+        if(inMessage.isSetField(quickfix.field.TransactTime.FIELD)) {
+            inMessage.removeField(quickfix.field.TransactTime.FIELD);
+        }
         return handleOnCloseBehaviour(inMessage);
     }
 
     public Message executionReportAugment(Message inMessage) throws FieldNotFound {
-        inMessage.setField(new ExecTransType(ExecTransType.NEW));
+        if(!inMessage.isSetField(quickfix.field.ExecTransType.FIELD)) {
+            inMessage.setField(new ExecTransType(ExecTransType.NEW));
+        }
         return inMessage;
     }
 

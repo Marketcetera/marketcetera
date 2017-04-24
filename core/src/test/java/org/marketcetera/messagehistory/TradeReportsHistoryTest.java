@@ -122,9 +122,14 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
             assertEquals(orderID1, historyMessage.getString(OrderID.FIELD));
             assertEquals(clOrderID1, historyMessage.getString(ClOrdID.FIELD));
             assertEquals(execID, historyMessage.getString(ExecID.FIELD));
-            if (historyMessage.isSetField(ExecType.FIELD)) { // in case of FIX 4.0 where ExecType doesn't exist
-                assertEquals(
-                        "" + execType, historyMessage.getString(ExecType.FIELD)); //$NON-NLS-1$
+            if(historyMessage.isSetField(ExecType.FIELD)) { // in case of FIX 4.0 where ExecType doesn't exist
+                if(fixVersion.ordinal() >= FIXVersion.FIX43.ordinal()) {
+                    assertEquals(String.valueOf(ExecType.TRADE),
+                                 historyMessage.getString(ExecType.FIELD)); //$NON-NLS-1$
+                } else {
+                    assertEquals(String.valueOf(execType),
+                                 historyMessage.getString(ExecType.FIELD)); //$NON-NLS-1$
+                }
             }
             assertEquals(
                     "" + ordStatus, historyMessage.getString(OrdStatus.FIELD)); //$NON-NLS-1$
@@ -152,9 +157,14 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
             assertEquals(orderID2, historyMessage.getString(OrderID.FIELD));
             assertEquals(clOrderID2, historyMessage.getString(ClOrdID.FIELD));
             assertEquals(execID, historyMessage.getString(ExecID.FIELD));
-            if (historyMessage.isSetField(ExecType.FIELD)) { // in case of FIX 4.0 where ExecType doesn't exist
-                assertEquals(
-                        "" + execType, historyMessage.getString(ExecType.FIELD)); //$NON-NLS-1$
+            if(historyMessage.isSetField(ExecType.FIELD)) { // in case of FIX 4.0 where ExecType doesn't exist
+                if(fixVersion.ordinal() >= FIXVersion.FIX43.ordinal()) {
+                    assertEquals(String.valueOf(ExecType.TRADE),
+                                 historyMessage.getString(ExecType.FIELD)); //$NON-NLS-1$
+                } else {
+                    assertEquals(String.valueOf(execType),
+                                 historyMessage.getString(ExecType.FIELD)); //$NON-NLS-1$
+                }
             }
             assertEquals(
                     "" + ordStatus, historyMessage.getString(OrdStatus.FIELD)); //$NON-NLS-1$

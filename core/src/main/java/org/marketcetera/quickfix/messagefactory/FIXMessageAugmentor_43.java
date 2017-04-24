@@ -53,6 +53,20 @@ public class FIXMessageAugmentor_43 extends FIXMessageAugmentor_42 {
         super.executionReportAugment(inMessage);
         // remove the ExecTransType field
         inMessage.removeField(ExecTransType.FIELD);
+        // exec types no longer have 'fill' and 'partial fill' 
+        if(inMessage.isSetField(quickfix.field.ExecType.FIELD)) {
+            quickfix.field.ExecType execType = new quickfix.field.ExecType();
+            inMessage.getField(execType);
+            switch(execType.getValue()) {
+                case quickfix.field.ExecType.FILL:
+                case quickfix.field.ExecType.PARTIAL_FILL:
+                    execType.setValue(quickfix.field.ExecType.TRADE);
+                    inMessage.setField(execType);
+                    break;
+                default:
+                    // do nothing
+            }
+        }
         return inMessage;
     }
 

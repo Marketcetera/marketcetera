@@ -39,10 +39,10 @@
   <properties>
     <mvn.javase.version>7</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
-    <mvn.spring.version>4.0.2.RELEASE</mvn.spring.version>
-    <mvn.cxf.version>2.7.10</mvn.cxf.version>
+    <mvn.spring.version>4.2.0.RELEASE</mvn.spring.version>
+    <mvn.cxf.version>3.1.11</mvn.cxf.version>
     <mvn.querydsl.version>3.3.1</mvn.querydsl.version>
-    <mvn.springdatajpa.version>1.5.0.RELEASE</mvn.springdatajpa.version>
+    <mvn.springdatajpa.version>1.7.0.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>4.2.8.Final</mvn.hibernate.version>
     <mvn.slf4j.version>1.7.10</mvn.slf4j.version>
@@ -263,6 +263,11 @@
         </exclusions>
       </dependency>
       <!-- Compile: Other -->
+      <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>javax.mail</artifactId>
+        <version>1.5.4</version>
+      </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
@@ -772,6 +777,12 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>pl.pragmatists</groupId>
+        <artifactId>JUnitParams</artifactId>
+        <version>1.0.4</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymockclassextension</artifactId>
         <version>3.2</version>
@@ -801,6 +812,25 @@
     <!-- **** PLUGIN MANAGEMENT SECTION **** -->
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>com.mysema.maven</groupId>
+          <artifactId>apt-maven-plugin</artifactId>
+          <version>1.1.1</version>
+          <executions>
+            <execution>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>process</goal>
+              </goals>
+              <configuration>
+                <!-- Specifies the directory in which the query types are generated -->
+                <outputDirectory>target/generated-sources/java</outputDirectory>
+                <!-- States that the APT code generator should look for JPA annotations -->
+                <processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>properties-maven-plugin</artifactId>
