@@ -46,7 +46,7 @@
     <property name="testConnectionOnCheckout" value="true"/>
     <property name="checkoutTimeout" value="10000"/>
   </bean>
-  <bean id="metc_emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+  <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
     <property name="dataSource" ref="metc_sql_pool"/>
     <property name="persistenceUnitName" value="test"/>
     <property name="jpaVendorAdapter">
@@ -67,6 +67,6 @@
     </property>
   </bean>
   <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-    <property name="entityManagerFactory" ref="metc_emf" />
+    <property name="entityManagerFactory" ref="entityManagerFactory" />
   </bean>
 </beans>
