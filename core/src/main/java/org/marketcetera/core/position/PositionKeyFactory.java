@@ -58,7 +58,6 @@ public class PositionKeyFactory {
             @Nullable String account, @Nullable String traderId) {
         return createKey(new Currency(symbol), account, traderId);
     }
-    
     /**
      * Creates a future position key. Note that account and traderId are converted to <code>null</code> if they only contain whitespace.
      * 
@@ -75,6 +74,22 @@ public class PositionKeyFactory {
     {
         return createKey(new Future(inSymbol,
                                     inExpiry),
+                         inAccount,
+                         inTraderId);
+    }
+    /**
+     * Creates a convertible bond position key. Note that account and traderId are converted to <code>null</code> if they only contain whitespace.
+     * 
+     * @param inSymbol a <code>String</code> value
+     * @param inAccount a <code>String</code> value
+     * @param inTraderId a <code>String</code> value
+     * @throws IllegalArgumentException if one of the given parameters are invalid
+     */
+    public static PositionKey<ConvertibleBond> createConvertibleBondKey(String inSymbol,
+                                                                        @Nullable String inAccount,
+                                                                        @Nullable String inTraderId)
+    {
+        return createKey(new ConvertibleBond(inSymbol),
                          inAccount,
                          inTraderId);
     }

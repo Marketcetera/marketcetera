@@ -1,6 +1,8 @@
 package org.marketcetera.quickfix.messagefactory;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.quickfix.FIXVersion;
+
 import quickfix.field.MsgType;
 
 import java.util.Arrays;
@@ -33,5 +35,12 @@ public class FIXMessageAugmentor_44 extends FIXMessageAugmentor_43 {
     public FIXMessageAugmentor_44() {
         applicableMsgTypes.addAll(Arrays.asList(TT_APPLICABLE_MESSAGE_CODES));
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.quickfix.messagefactory.NoOpFIXMessageAugmentor#getFixVersion()
+     */
+    @Override
+    protected FIXVersion getFixVersion()
+    {
+        return FIXVersion.FIX44;
+    }
 }

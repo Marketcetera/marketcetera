@@ -2,6 +2,8 @@ package org.marketcetera.quickfix.messagefactory;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
+import org.marketcetera.quickfix.FIXVersion;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.DataDictionary;
@@ -45,6 +47,31 @@ public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
         if(!inMessage.isSetField(quickfix.field.ExecTransType.FIELD)) {
             inMessage.setField(new ExecTransType(ExecTransType.NEW));
         }
+        // some fields need to be removed if the version is 4.0
+        if(getFixVersion() == FIXVersion.FIX40) {
+            if(inMessage.isSetField(quickfix.field.ExecID.FIELD)) {
+                String rawValue = inMessage.getString(quickfix.field.ExecID.FIELD);
+                String newRawValue = rawValue.replaceAll("[^0-9]","");
+                try {
+                    inMessage.setInt(quickfix.field.ExecID.FIELD,
+                                     Integer.parseInt(newRawValue));
+                } catch (NumberFormatException e) {
+                    inMessage.setInt(quickfix.field.ExecID.FIELD,
+                                     rawValue.hashCode());
+                }
+            }
+            if(inMessage.isSetField(quickfix.field.ExecType.FIELD)) {
+                inMessage.removeField(quickfix.field.ExecType.FIELD);
+            }
+            if(inMessage.isSetField(quickfix.field.LeavesQty.FIELD)) {
+                inMessage.removeField(quickfix.field.LeavesQty.FIELD);
+            }
+        }
+        if(getFixVersion().ordinal() <= FIXVersion.FIX41.ordinal()) {
+            if(inMessage.isSetField(quickfix.field.HandlInst.FIELD)) {
+                inMessage.removeField(quickfix.field.HandlInst.FIELD);
+            }
+        }
         return inMessage;
     }
 
@@ -74,7 +101,14 @@ public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
 
         return applicableMsgTypes.contains(theType);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.quickfix.messagefactory.NoOpFIXMessageAugmentor#getFixVersion()
+     */
+    @Override
+    protected FIXVersion getFixVersion()
+    {
+        return FIXVersion.FIX40;
+    }
     protected Set<String> getApplicableMsgTypes() {
         return applicableMsgTypes;
     }
