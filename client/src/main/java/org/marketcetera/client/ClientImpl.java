@@ -2,7 +2,6 @@ package org.marketcetera.client;
 
 import java.beans.ExceptionListener;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -12,9 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.concurrent.GuardedBy;
 import javax.jms.JMSException;
 import javax.xml.bind.JAXBException;
 
@@ -28,16 +25,10 @@ import org.marketcetera.client.jms.JmsUtils;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.ApplicationBase;
-import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
-import org.marketcetera.event.TopOfBookEvent;
-import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.core.manager.MarketDataManager;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Currency;
@@ -50,7 +41,6 @@ import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderBase;
@@ -77,7 +67,6 @@ import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.util.ws.wrappers.RemoteProxyException;
 import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -1090,28 +1079,6 @@ public class ClientImpl
         mContext = inContext;
     }
     /**
-     * Retrieve the market data manager service.
-     *
-     * @return a <code>MarketDataManager</code> value or <code>null</code>
-     */
-    private MarketDataManager getMarketDataManager()
-    {
-        if(!marketDataManagerChecked.get()) {
-            synchronized(marketDataManagerChecked) {
-                try {
-                    ApplicationContext applicationContext = ApplicationContainer.getInstance().getAppCtx();
-                    marketDataManager = applicationContext.getBean(MarketDataManager.class);
-                } catch (Exception e) {
-                    SLF4JLoggerProxy.debug(this,
-                                           "No market data manager defined in the client space");
-                    marketDataManager = null;
-                }
-                marketDataManagerChecked.set(true);
-            }
-        }
-        return marketDataManager;
-    }
-    /**
      * Convert the given order and send it to the server.
      *
      * @param inOrder an <code>Order</code> value
@@ -1132,41 +1099,12 @@ public class ClientImpl
             }
             failIfDisconnected();
             SpringConfig cfg = SpringConfig.getSingleton();
-            if(inOrder instanceof NewOrReplaceOrder) {
-                NewOrReplaceOrder newOrReplaceOrder = (NewOrReplaceOrder)inOrder;
-                // optionally reprice
-                if(newOrReplaceOrder.getPegToMidpoint()) {
-                    MarketDataManager marketDataManager = getMarketDataManager();
-                    if(marketDataManager != null) {
-                        Event marketData = marketDataManager.requestMarketDataSnapshot(newOrReplaceOrder.getInstrument(),
-                                                                                       Content.TOP_OF_BOOK,
-                                                                                       null);
-                        if(marketData == null) {
-                            throw new IllegalArgumentException("No market data available for " + newOrReplaceOrder.getInstrument().getFullSymbol());
-                        }
-                        TopOfBookEvent topOfBook = (TopOfBookEvent)marketData;
-                        BidEvent bid = topOfBook.getBid();
-                        AskEvent ask = topOfBook.getAsk();
-                        if(bid == null || ask == null) {
-                            throw new IllegalArgumentException("Insufficient liquidity to peg-to-midpoint for " + newOrReplaceOrder.getInstrument().getFullSymbol());
-                        }
-                        BigDecimal totalPrice = bid.getPrice().add(ask.getPrice());
-                        BigDecimal newPrice = totalPrice.divide(new BigDecimal(2)).setScale(6,RoundingMode.HALF_UP);
-                        newOrReplaceOrder.setPrice(newPrice);
-                        newOrReplaceOrder.setPegToMidpoint(false);
-                        SLF4JLoggerProxy.info(this,
-                                              "Repricing {} to {}",
-                                              newOrReplaceOrder.getOrderID(),
-                                              newPrice);
-                    }
-                }
-            }
             Collection<OrderModifier> orderModifiers = cfg.getOrderModifiers();
             for(OrderModifier modifier : orderModifiers) {
                 modifier.modify(inOrder);
             }
             mToServer.convertAndSend(new DataEnvelope(inOrder,
-                                                       getSessionId()));
+                                                      getSessionId()));
         } catch (Exception e) {
             ConnectionException exception;
             exception = new ConnectionException(e, new I18NBoundMessage1P(
@@ -1336,15 +1274,6 @@ public class ClientImpl
             }
         }
     }
-    /**
-     * provides access to market data, optional, and accessed by {@link #getMarketDataManager()}
-     */
-    @GuardedBy("marketDataManagerChecked")
-    private volatile MarketDataManager marketDataManager;
-    /**
-     * indicates if a search has been conducted for the market data manager
-     */
-    private final AtomicBoolean marketDataManagerChecked = new AtomicBoolean(false);
     private volatile AbstractApplicationContext mContext;
     private volatile JmsManager mJmsMgr;
     private volatile SimpleMessageListenerContainer mTradeMessageListener;
