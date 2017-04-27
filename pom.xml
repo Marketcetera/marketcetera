@@ -390,6 +390,12 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${mvn.hibernate.version}</version>
+	<exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+	</exclusions>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -711,6 +717,12 @@
         <artifactId>hibernate-entitymanager</artifactId>
         <version>${mvn.hibernate.version}</version>
         <scope>runtime</scope>
+	<exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+	</exclusions>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
