@@ -45,7 +45,7 @@
     <mvn.springdatajpa.version>1.11.3.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>5.1.5.Final</mvn.hibernate.version>
-    <mvn.hazelcast.version>3.6.2</mvn.hazelcast.version>
+    <mvn.hazelcast.version>3.8.1</mvn.hazelcast.version>
     <mvn.slf4j.version>1.7.21</mvn.slf4j.version>
     <mvn.log4j.version>2.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
@@ -562,8 +562,8 @@
       <!-- Runtime. -->
       <dependency>
         <groupId>com.hazelcast</groupId>
-        <artifactId>hazelcast-hibernate4</artifactId>
-        <version>${mvn.hazelcast.version}</version>
+        <artifactId>hazelcast-hibernate5</artifactId>
+        <version>1.2.1</version>
         <scope>runtime</scope>
       </dependency> 
       <dependency>
