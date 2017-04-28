@@ -614,6 +614,26 @@ public class ClientImpl
     {
         return getServiceContext().getSessionId();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#addOrderModifier(org.marketcetera.client.OrderModifier)
+     */
+    @Override
+    public void addOrderModifier(OrderModifier inOrderModifier)
+    {
+        synchronized(orderModifiers) {
+            orderModifiers.addLast(inOrderModifier);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#removeOrderModifier(org.marketcetera.client.OrderModifier)
+     */
+    @Override
+    public void removeOrderModifier(OrderModifier inOrderModifier)
+    {
+        synchronized(orderModifiers) {
+            orderModifiers.remove(inOrderModifier);
+        }
+    }
     /**
      * Creates an instance given the parameters and connects to the server.
      *
@@ -998,6 +1018,19 @@ public class ClientImpl
                                                                        false);
     }
     /**
+     * Modify the given order.
+     *
+     * @param inOrder an <code>Order</code> value
+     */
+    private void modifyOrder(Order inOrder)
+    {
+        synchronized(orderModifiers) {
+            for(OrderModifier orderModifier : orderModifiers) {
+                orderModifier.modify(inOrder);
+            }
+        }
+    }
+    /**
      * Connects the client to the server.
      *
      * @throws ConnectionException if an error occurs connecting to the server
@@ -1098,19 +1131,16 @@ public class ClientImpl
                 throw new ClientInitException(Messages.NOT_CONNECTED_TO_SERVER);
             }
             failIfDisconnected();
-            SpringConfig cfg = SpringConfig.getSingleton();
-            Collection<OrderModifier> orderModifiers = cfg.getOrderModifiers();
-            for(OrderModifier modifier : orderModifiers) {
-                modifier.modify(inOrder);
-            }
+            modifyOrder(inOrder);
             mToServer.convertAndSend(new DataEnvelope(inOrder,
                                                       getSessionId()));
         } catch (Exception e) {
             ConnectionException exception;
-            exception = new ConnectionException(e, new I18NBoundMessage1P(
-                    Messages.ERROR_SEND_MESSAGE, ObjectUtils.toString(inOrder)));
-            Messages.LOG_ERROR_SEND_EXCEPTION.warn(this, exception,
-                    ObjectUtils.toString(inOrder));
+            exception = new ConnectionException(e, new I18NBoundMessage1P(Messages.ERROR_SEND_MESSAGE,
+                                                                          ObjectUtils.toString(inOrder)));
+            Messages.LOG_ERROR_SEND_EXCEPTION.warn(this,
+                                                   exception,
+                                                   ObjectUtils.toString(inOrder));
             ExceptUtils.interrupt(e);
             exceptionThrown(exception);
             throw exception;
@@ -1282,20 +1312,15 @@ public class ClientImpl
     protected volatile ClientParameters mParameters;
     private volatile boolean mClosed = false;
     private volatile boolean mServerAlive = false;
-    private final Deque<ReportListener> mReportListeners =
-            new LinkedList<ReportListener>();
-    private final Deque<BrokerStatusListener> mBrokerStatusListeners=
-        new LinkedList<BrokerStatusListener>();
-    private final Deque<ServerStatusListener> mServerStatusListeners=
-        new LinkedList<ServerStatusListener>();
-    private final Deque<ExceptionListener> mExceptionListeners =
-            new LinkedList<ExceptionListener>();
+    private final Deque<ReportListener> mReportListeners = new LinkedList<ReportListener>();
+    private final Deque<BrokerStatusListener> mBrokerStatusListeners = new LinkedList<BrokerStatusListener>();
+    private final Deque<ServerStatusListener> mServerStatusListeners = new LinkedList<ServerStatusListener>();
+    private final Deque<ExceptionListener> mExceptionListeners = new LinkedList<ExceptionListener>();
+    private final Deque<OrderModifier> orderModifiers = new LinkedList<OrderModifier>();
     private Date mLastConnectTime;
-    private final Map<UserID,UserInfo> mUserInfoCache=
-        new HashMap<UserID,UserInfo>();
+    private final Map<UserID,UserInfo> mUserInfoCache = new HashMap<UserID,UserInfo>();
     private final Map<String,String> mUnderlyingToRootCache= new HashMap<String, String>();
-    private final Map<String,Collection<String>> mRootToUnderlyingCache=
-            new HashMap<String, Collection<String>>();
+    private final Map<String,Collection<String>> mRootToUnderlyingCache = new HashMap<String,Collection<String>>();
 
     private static final long RECONNECT_WAIT_INTERVAL = 10000;
 

@@ -570,4 +570,16 @@ public interface Client
      * @return a <code>SessionId</code> value
      */
     SessionId getSessionId();
+    /**
+     * Add the given order modifier.
+     *
+     * @param inOrderModifier an <code>OrderModifier</code> value
+     */
+    void addOrderModifier(OrderModifier inOrderModifier);
+    /**
+     * Remove the given order modifier.
+     *
+     * @param inOrderModifier an <code>OrderModifier</code> value
+     */
+    void removeOrderModifier(OrderModifier inOrderModifier);
 }

@@ -1,12 +1,24 @@
 package org.marketcetera.marketdata.core.manager.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.lang.Validate;
+import org.marketcetera.client.Client;
+import org.marketcetera.client.ClientInitListener;
+import org.marketcetera.client.ClientManager;
+import org.marketcetera.client.OrderModifier;
 import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
+import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.CapabilityCollection;
 import org.marketcetera.marketdata.Content;
@@ -19,6 +31,8 @@ import org.marketcetera.marketdata.core.manager.MarketDataProviderRegistry;
 import org.marketcetera.marketdata.core.manager.NoMarketDataProvidersAvailable;
 import org.marketcetera.marketdata.core.request.MarketDataRequestToken;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.NewOrReplaceOrder;
+import org.marketcetera.trade.Order;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.cache.Cache;
@@ -35,7 +49,7 @@ import com.google.common.collect.Sets;
  * @since $Release$
  */
 public class MarketDataManagerImpl
-        implements MarketDataManager,MarketDataProviderRegistry
+        implements MarketDataManager,MarketDataProviderRegistry,ClientInitListener
 {
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.manager.MarketDataManager#requestMarketData(org.marketcetera.marketdata.MarketDataRequest, org.marketcetera.core.publisher.ISubscriber)
@@ -146,6 +160,17 @@ public class MarketDataManagerImpl
         }
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.client.ClientInitListener#receiveClient(org.marketcetera.client.Client)
+     */
+    @Override
+    public void receiveClient(Client inClient)
+    {
+        client = inClient;
+        if(enablePegToMidpoint) {
+            client.addOrderModifier(new PegToMidpointOrderModifier());
+        }
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.manager.MarketDataManager#getAvailableCapability()
      */
     @Override
@@ -166,6 +191,22 @@ public class MarketDataManagerImpl
                               inStatus);
         providerStatus.put(inProvider,
                            inStatus);
+    }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        ClientManager.addClientInitListener(this);
+    }
+    /**
+     * Stop the object.
+     */
+    @PreDestroy
+    public void stop()
+    {
+        ClientManager.removeClientInitListener(this);
     }
     /**
      * Get the subscriberTimeout value.
@@ -220,6 +261,24 @@ public class MarketDataManagerImpl
     public void setUseModuleFramework(boolean inUseModuleFramework)
     {
         useModuleFramework = inUseModuleFramework;
+    }
+    /**
+     * Get the enablePegToMidpoint value.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean getEnablePegToMidpoint()
+    {
+        return enablePegToMidpoint;
+    }
+    /**
+     * Sets the enablePegToMidpoint value.
+     *
+     * @param inEnablePegToMidpoint a <code>boolean</code> value
+     */
+    public void setEnablePegToMidpoint(boolean inEnablePegToMidpoint)
+    {
+        enablePegToMidpoint = inEnablePegToMidpoint;
     }
     /**
      * Initialize the market data manager module, if necessary. 
@@ -311,6 +370,60 @@ public class MarketDataManagerImpl
         private static final AtomicLong counter = new AtomicLong(0);
         private static final long serialVersionUID = 622142012940134611L;
     }
+    /**
+     * Modifies outgoing orders to set peg-to-midpoint price, if necessary.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private class PegToMidpointOrderModifier
+            implements OrderModifier
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.OrderModifier#modify(org.marketcetera.trade.Order)
+         */
+        @Override
+        public boolean modify(Order inOrder)
+        {
+            boolean modified = false;
+            if(inOrder instanceof NewOrReplaceOrder) {
+                NewOrReplaceOrder newOrReplaceOrder = (NewOrReplaceOrder)inOrder;
+                if(newOrReplaceOrder.getPegToMidpoint()) {
+                    Event marketData = requestMarketDataSnapshot(newOrReplaceOrder.getInstrument(),
+                                                                 Content.TOP_OF_BOOK,
+                                                                 null);
+                    if(marketData == null) {
+                        throw new IllegalArgumentException("No market data available for " + newOrReplaceOrder.getInstrument().getFullSymbol());
+                    }
+                    TopOfBookEvent topOfBook = (TopOfBookEvent)marketData;
+                    BidEvent bid = topOfBook.getBid();
+                    AskEvent ask = topOfBook.getAsk();
+                    if(bid == null || ask == null) {
+                        throw new IllegalArgumentException("Insufficient liquidity to peg-to-midpoint for " + newOrReplaceOrder.getInstrument().getFullSymbol());
+                    }
+                    BigDecimal totalPrice = bid.getPrice().add(ask.getPrice());
+                    BigDecimal newPrice = totalPrice.divide(new BigDecimal(2)).setScale(6,RoundingMode.HALF_UP);
+                    newOrReplaceOrder.setPrice(newPrice);
+                    newOrReplaceOrder.setPegToMidpoint(false);
+                    modified = true;
+                    SLF4JLoggerProxy.info(MarketDataManagerImpl.this,
+                                          "Repricing {} to {}",
+                                          newOrReplaceOrder.getOrderID(),
+                                          newPrice);
+                }
+            }
+            return modified;
+        }
+    }
+    /**
+     * provides access to trading client services.
+     */
+    private Client client;
+    /**
+     * indicates if peg-to-midpoint should be enabled
+     */
+    private boolean enablePegToMidpoint = true;
     /**
      * indicate whether the service should use the module framework or the provider framework
      */

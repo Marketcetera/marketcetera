@@ -30,11 +30,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>marketdata-core</artifactId>
-    </dependency>
-
     <!-- Runtime. -->
     <dependency>
       <groupId>org.apache.activemq</groupId>

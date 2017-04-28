@@ -688,4 +688,22 @@ public class MockClient
      * if non-null, will be thrown during {@link #sendCancel(OrderCancel)
      */
     private volatile OrderValidationException sendOrderCancelValidationException = null;
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#addOrderModifier(org.marketcetera.client.OrderModifier)
+     */
+    @Override
+    public void addOrderModifier(OrderModifier inOrderModifier)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#removeOrderModifier(org.marketcetera.client.OrderModifier)
+     */
+    @Override
+    public void removeOrderModifier(OrderModifier inOrderModifier)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
 }
