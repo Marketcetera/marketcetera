@@ -48,7 +48,7 @@ public interface MarketDataManager
      * 
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
-     * @param inProvider a <code>String</code> value
+     * @param inProvider a <code>String</code> value or <code>null</code> for the most recently received venue
      * @return an <code>Event</code> value or <code>null</code> if market data for the given criteria is not available
      * @throws MarketDataRequestFailed if the request could not be executed
      */

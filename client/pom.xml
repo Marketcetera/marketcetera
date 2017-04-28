@@ -16,7 +16,7 @@
   <parent>
       <groupId>org.marketcetera</groupId>
       <artifactId>public-parent</artifactId>
-      <version>2.4.3</version>
+      <version>3.0.11</version>
   </parent>
   <artifactId>client</artifactId>
   <packaging>jar</packaging>
@@ -30,7 +30,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
     </dependency>
-
     <!-- Runtime. -->
     <dependency>
       <groupId>org.apache.activemq</groupId>

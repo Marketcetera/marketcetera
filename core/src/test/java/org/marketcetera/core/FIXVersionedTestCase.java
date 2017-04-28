@@ -27,7 +27,7 @@ public abstract class FIXVersionedTestCase extends TestCase {
         super.setUp();
         fixDD = FIXDataDictionaryManager.getFIXDataDictionary(fixVersion);
         if(fixDD == null) {
-            FIXDataDictionaryManager.initialize(fixVersion, fixVersion.getDataDictionaryURL());
+            FIXDataDictionaryManager.initialize(fixVersion, fixVersion.getDataDictionaryName());
             fixDD = FIXDataDictionaryManager.getFIXDataDictionary(fixVersion);
         }
         CurrentFIXDataDictionary.setCurrentFIXDataDictionary(fixDD);
@@ -44,6 +44,13 @@ public abstract class FIXVersionedTestCase extends TestCase {
            FIXVersion.FIX41.toString().equals(msgFactory.getBeginString()) ||
            FIXVersion.FIX42.toString().equals(msgFactory.getBeginString()));    
     }
-
-
+    /**
+     * Indicate if the version of the current test is version 4.3 or greater.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean version43orAbove()
+    {
+        return fixVersion.ordinal() >= FIXVersion.FIX43.ordinal();
+    }
 }

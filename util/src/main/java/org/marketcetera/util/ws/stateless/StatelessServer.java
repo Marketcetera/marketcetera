@@ -36,6 +36,7 @@ public class StatelessServer
         super(inHost,
               inPort);
         contextClassProvider = inContextClassProvider;
+        setNodeDescription(Messages.WEB_SERVICE_DESCRIPTION.getText());
     }
     /**
      * Creates a new server node with the given server host name and port.

@@ -20,6 +20,7 @@ import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.misc.ClassVersion;
 
+import quickfix.FieldMap;
 import quickfix.Message;
 import quickfix.field.OrdStatus;
 import quickfix.field.SecurityType;
@@ -42,7 +43,7 @@ public class DynamicInstrumentFunctionSelectorTest {
     @BeforeClass
     public static void logSetup() throws Exception {
         FIXDataDictionaryManager.initialize(FIXVersion.FIX42,
-                FIXVersion.FIX42.getDataDictionaryURL());
+                FIXVersion.FIX42.getDataDictionaryName());
     }
 
     /**
@@ -52,8 +53,7 @@ public class DynamicInstrumentFunctionSelectorTest {
      */
     @Test
     public void forValue() throws Exception {
-        final DynamicInstrumentFunctionSelector<Message, InstrumentFromMessage> selector =
-                InstrumentFromMessage.SELECTOR;
+        final DynamicInstrumentFunctionSelector<FieldMap,InstrumentFromMessage> selector = InstrumentFromMessage.SELECTOR;
         //null value
         new ExpectedFailure<IllegalArgumentException>("value"){
             @Override
@@ -117,8 +117,7 @@ public class DynamicInstrumentFunctionSelectorTest {
      */
     @Test
     public void getHandlers() throws Exception {
-        final DynamicInstrumentFunctionSelector<Message, InstrumentFromMessage> selector =
-                InstrumentFromMessage.SELECTOR;
+        final DynamicInstrumentFunctionSelector<FieldMap,InstrumentFromMessage> selector = InstrumentFromMessage.SELECTOR;
         List<InstrumentFromMessage> handlers = selector.getHandlers();
         assertEquals(5, handlers.size());
         assertThat(handlers.get(0), instanceOf(CurrencyFromMessage.class));

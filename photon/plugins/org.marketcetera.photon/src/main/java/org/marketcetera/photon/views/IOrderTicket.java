@@ -53,6 +53,12 @@ public interface IOrderTicket {
 	Combo getTifCombo();
 
 	Text getAccountText();
+	/**
+	 * Get the control corresponding to the execution destination.
+	 *
+	 * @return a <code>Text</code> value
+	 */
+	Text getExecutionDestinationText();
 
 	Label getErrorMessageLabel();
 	
@@ -67,5 +73,16 @@ public interface IOrderTicket {
 	Table getCustomFieldsTable();
 	
 	Text getMessageDebugText();
-	
+    /**
+     * Get the peg-to-midpoint control.
+     *
+     * @return a <code>Button</code> value
+     */
+    Button getPegToMidpoint();
+    /**
+     * Get the peg-to-midpoint (locked) control.
+     *
+     * @return a <code>Button</code> value
+     */
+    Button getPegToMidpointLocked();
 }

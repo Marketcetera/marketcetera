@@ -35,6 +35,18 @@ public abstract class BatchQueueProcessor<Clazz>
     {
         super(inThreadDescription);
     }
+    /**
+     * Create a new BatchQueueProcessor instance.
+     *
+     * @param inThreadDescription a <code>String</code> value
+     * @param inQueue a <code>BlockingQueue&lt;Clazz&gt;</code> value
+     */
+    public BatchQueueProcessor(String inThreadDescriptor,
+                               BlockingQueue<Clazz> inQueue)
+    {
+        super(inThreadDescriptor,
+              inQueue);
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.core.QueueProcessor#processData(java.lang.Object)
      */

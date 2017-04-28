@@ -89,7 +89,7 @@ public class OrderHistoryManagerTest
         FIXDataDictionary dataDictionary = FIXDataDictionaryManager.getFIXDataDictionary(fixVersion);
         if(dataDictionary == null) {
             FIXDataDictionaryManager.initialize(fixVersion, 
-                                                fixVersion.getDataDictionaryURL());
+                                                fixVersion.getDataDictionaryName());
             dataDictionary = FIXDataDictionaryManager.getFIXDataDictionary(fixVersion);
         }
     }

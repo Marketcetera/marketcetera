@@ -6,15 +6,30 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.event.*;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventType;
+import org.marketcetera.event.HasEventType;
+import org.marketcetera.event.ImbalanceEvent;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TopOfBookEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.util.MarketstatEventCache;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.OrderBook;
 import org.marketcetera.marketdata.core.Messages;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -40,10 +55,70 @@ public class MarketdataCacheElement
     {
         Validate.notNull(inInstrument);
         instrument = inInstrument;
-        marketstatCache = new MarketstatEventCache(inInstrument,
+        clear();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("MarketdataCacheElement [").append(instrument.getFullSymbol()).append("]").append(System.lineSeparator());
+        for(Map.Entry<Content,OrderBook> entry : orderbooks.entrySet()) {
+            builder.append(entry.getKey()).append(System.lineSeparator());
+            builder.append(entry.getValue()).append(System.lineSeparator());
+        }
+        builder.append("Latest trade: ").append(trade).append(System.lineSeparator());
+        builder.append("Stats: ").append(marketstatCache).append(System.lineSeparator());
+        builder.append("Imbalance: ").append(imbalance).append(System.lineSeparator());
+        builder.append("Dividends: ").append(dividends).append(System.lineSeparator());
+        return builder.toString();
+    }
+    /**
+     * Clear the cache.
+     */
+    public void clear()
+    {
+        marketstatCache = new MarketstatEventCache(instrument,
                                                    true);
         trade = null;
         imbalance = null;
+        orderbooks.clear();
+        dividends.clear();
+    }
+    /**
+     * Invalidate the given content type of the cache.
+     *
+     * @param inContent a <code>Content</code>value
+     */
+    public void invalidate(Content inContent)
+    {
+        switch(inContent) {
+            case NBBO:
+            case UNAGGREGATED_DEPTH:
+            case AGGREGATED_DEPTH:
+            case BBO10:
+            case TOP_OF_BOOK:
+            case LEVEL_2:
+            case OPEN_BOOK:
+            case TOTAL_VIEW:
+                getOrderBookFor(inContent).clear();
+                break;
+            case DIVIDEND:
+                dividends.clear();
+                break;
+            case LATEST_TICK:
+                trade = null;
+                break;
+            case IMBALANCE:
+                imbalance = null;
+            case MARKET_STAT:
+                marketstatCache = null;
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
     /**
      * Gets the latest snapshot for the given content.
@@ -102,10 +177,9 @@ public class MarketdataCacheElement
                 break;
             case DIVIDEND:
                 for(Event event : inEvents) {
+                    resetOnSnapshot(inContent,
+                                    event);
                     if(event instanceof DividendEvent) {
-                        if(dividends == null) {
-                            dividends = Lists.newArrayList();
-                        }
                         dividends.add((DividendEvent)event);
                         results.add(event);
                     } else {
@@ -115,6 +189,8 @@ public class MarketdataCacheElement
                 break;
             case LATEST_TICK:
                 for(Event event : inEvents) {
+                    resetOnSnapshot(inContent,
+                                    event);
                     if(event instanceof TradeEvent) {
                         trade = (TradeEvent)event;
                         results.add(event);
@@ -125,6 +201,8 @@ public class MarketdataCacheElement
                 break;
             case IMBALANCE:
                 for(Event event : inEvents) {
+                    resetOnSnapshot(inContent,
+                                    event);
                     if(event instanceof ImbalanceEvent) {
                         imbalance = (ImbalanceEvent)event;
                         results.add(event);
@@ -191,6 +269,8 @@ public class MarketdataCacheElement
                         }
                     }
                 }
+                resetOnSnapshot(inContent,
+                                event);
                 orderbook.process(quoteEvent);
                 latestTop = orderbook.getTopOfBook();
                 inoutResults.add(quoteEvent);
@@ -217,6 +297,44 @@ public class MarketdataCacheElement
         return book;
     }
     /**
+     * Reset the content cache if necessary.
+     *
+     * @param inContent a <code>Content</code> value
+     * @param inEvent an <code>Event</code> value
+     */
+    private void resetOnSnapshot(Content inContent,
+                                 Event inEvent)
+    {
+        if(inEvent instanceof HasEventType) {
+            HasEventType hasEventType = (HasEventType)inEvent;
+            EventType eventType = hasEventType.getEventType();
+            if(eventType.isSnapshot()) {
+                boolean resetOnSnapshot = resetOnSnapshotIndicator.getUnchecked(inContent);
+                if(resetOnSnapshot) {
+                    SLF4JLoggerProxy.debug(this,
+                                           "{} cache invalidating {} on {}",
+                                           instrument,
+                                           inContent,
+                                           inEvent);
+                    invalidate(inContent);
+                }
+            }
+            boolean resetFlag = eventType.isUpdate() || eventType.isComplete();
+            resetOnSnapshotIndicator.put(inContent,
+                                         resetFlag);
+        }
+    }
+    /**
+     * indicates whether to reset the given content on snapshot
+     */
+    private final LoadingCache<Content,Boolean> resetOnSnapshotIndicator = CacheBuilder.newBuilder().build(new CacheLoader<Content,Boolean>() {
+        @Override
+        public Boolean load(Content inKey)
+                throws Exception
+        {
+            return false;
+        }});
+    /**
      * instrument for which market data is cached
      */
     private final Instrument instrument;
@@ -227,7 +345,7 @@ public class MarketdataCacheElement
     /**
      * cached dividend data
      */
-    private Collection<DividendEvent> dividends;
+    private final List<DividendEvent> dividends = Lists.newArrayList();
     /**
      * cached marketstat data
      */

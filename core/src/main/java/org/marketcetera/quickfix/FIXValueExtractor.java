@@ -1,9 +1,7 @@
 package org.marketcetera.quickfix;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
 import org.marketcetera.core.NumericStringSortable;
-import org.marketcetera.core.time.TimeFactoryImpl;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
@@ -30,24 +28,47 @@ public class FIXValueExtractor {
 	public Object extractValue(FieldMap inMap, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue) {
 		return extractValue(inMap, fieldID, groupID, groupDiscriminatorID, groupDiscriminatorValue, false);
 	}
-	public Object extractValue(FieldMap inMap, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue, boolean humanReadable) {
-		Object value = null;
-		if (fieldID != null) {
-			FieldMap map;
-			if (inMap instanceof Message){
-				if (groupID != null && groupDiscriminatorID!=null &&
-						groupDiscriminatorValue!=null){
-					map = extractGroup((Message)inMap, groupID, groupDiscriminatorID, groupDiscriminatorValue);
-				} else {
-					map = extractMap(inMap, fieldID);
-				}
-			} else {
-				map = inMap;
-			}
-			value = fieldValueFromMap(map, fieldID, dataDictionary, humanReadable);
-		}
-		return value;
-	}
+    /**
+     * Extract a value from the given field map.
+     *
+     * @param inMap a <code>FieldMap</code> value
+     * @param inFieldId an <code>Integer</code> value
+     * @param inGroupId an <code>Integer</code> value
+     * @param inGroupDiscriminatorId an <code>Integer</code> value
+     * @param inGroupDiscriminatorValue an <code>Integer</code> value
+     * @param inHumanReadable a <code>boolean</code> value
+     * @return an <code>Object</code> value
+     */
+    public Object extractValue(FieldMap inMap,
+                               Integer inFieldId,
+                               Integer inGroupId,
+                               Integer inGroupDiscriminatorId,
+                               Object inGroupDiscriminatorValue,
+                               boolean inHumanReadable)
+    {
+        Object value = null;
+        if(inFieldId != null) {
+            FieldMap map;
+            if(inMap instanceof Message) {
+                if(inGroupId != null && inGroupDiscriminatorId != null && inGroupDiscriminatorValue != null) {
+                    map = extractGroup((Message)inMap,
+                                       inGroupId,
+                                       inGroupDiscriminatorId,
+                                       inGroupDiscriminatorValue);
+                } else {
+                    map = extractMap(inMap,
+                                     inFieldId);
+                }
+            } else {
+                map = inMap;
+            }
+            value = fieldValueFromMap(map,
+                                      inFieldId,
+                                      dataDictionary,
+                                      inHumanReadable);
+        }
+        return value;
+    }
 	
 	private FieldMap extractGroup(Message message, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue) {
 		FieldMap map = null;
@@ -88,7 +109,7 @@ public class FIXValueExtractor {
         Object value = null;
         if (inFieldMap != null) {
             try {
-                FieldType fieldType = inDataDictionary.getFieldTypeEnum(inFieldId);
+                FieldType fieldType = inDataDictionary.getFieldType(inFieldId);
                 if(fieldType == null){
                     value = inFieldMap.getString(inFieldId);
                 } else if (inHumanReadable && inDataDictionary.hasFieldValue(inFieldId)) {
@@ -100,17 +121,12 @@ public class FIXValueExtractor {
                     } catch (Exception ignored) {
                         // do nothing, use the string value
                     }
-                } else if(fieldType.equals(FieldType.UtcTimeOnly)) {
+                } else if(fieldType.equals(FieldType.UTCTIMEONLY)) {
                     value = inFieldMap.getUtcTimeOnly(inFieldId); //i18n_time
-                } else if(fieldType.equals(FieldType.UtcTimeStamp)){
-                    DateTime actualValue = new DateTime(inFieldMap.getUtcTimeStamp(inFieldId));
-                    if(actualValue.isAfter(LocalTime.MIDNIGHT.toDateTimeToday())) {
-                        value = TimeFactoryImpl.WALLCLOCK_MILLISECONDS_LOCAL.print(actualValue);
-                    } else {
-                        value = TimeFactoryImpl.FULL_MILLISECONDS_LOCAL.print(actualValue);
-                    }
-                } else if(fieldType.equals(FieldType.UtcDateOnly) ||fieldType.equals(FieldType.UtcDate)){
-                    value = inFieldMap.getUtcDateOnly(inFieldId); //i18n_date
+                } else if(fieldType.equals(FieldType.UTCTIMESTAMP)){
+                    value = new DateTime(inFieldMap.getUtcTimeStamp(inFieldId));
+                } else if(fieldType.equals(FieldType.UTCDATEONLY) ||fieldType.equals(FieldType.UTCDATE)){
+                    value = inFieldMap.getUtcDateOnly(inFieldId);
                 } else if(Number.class.isAssignableFrom(fieldType.getJavaType())){
                     value = inFieldMap.getDecimal(inFieldId);
                 } else if (inFieldId == ClOrdID.FIELD) {

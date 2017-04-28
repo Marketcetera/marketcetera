@@ -321,7 +321,7 @@ public class OrderReplaceTest extends TypesTestBase {
     @BeforeClass
     public static void setupCurrentFIXDictionary() throws Exception {
         FIXDataDictionaryManager.initialize(FIXVersion.FIX44,
-                FIXVersion.FIX44.getDataDictionaryURL());
+                FIXVersion.FIX44.getDataDictionaryName());
         CurrentFIXDataDictionary.setCurrentFIXDataDictionary(
                 FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX44));
     }

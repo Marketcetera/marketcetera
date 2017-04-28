@@ -1,5 +1,7 @@
 package org.marketcetera.metrics;
 
+import org.springframework.stereotype.Service;
+
 import com.codahale.metrics.MetricRegistry;
 
 /* $License$ */
@@ -11,6 +13,7 @@ import com.codahale.metrics.MetricRegistry;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class MetricService
 {
     /**

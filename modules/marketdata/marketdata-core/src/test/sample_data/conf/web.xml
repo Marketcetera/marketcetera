@@ -26,7 +26,9 @@
     <property name="contextClassProvider" ref="marketDataContextProvider"/>
   </bean>
   <!-- The market data manager instance -->
-  <bean id="marketDataManager" class="org.marketcetera.marketdata.core.manager.impl.MarketDataManagerImpl"/>
+  <bean id="marketDataManager" class="org.marketcetera.marketdata.core.manager.impl.MarketDataManagerImpl">
+    <property name="defaultMarketDataProvider" value="bogus"/>
+  </bean>
   <!-- market data web service -->
   <bean id="marketdataService" class="org.marketcetera.marketdata.core.webservice.impl.MarketDataServiceImpl" init-method="start" destroy-method="stop">
     <constructor-arg ref="sessionManager"/>

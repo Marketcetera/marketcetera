@@ -29,7 +29,6 @@ import org.marketcetera.core.Util;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.Event;
-import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Currency;
@@ -74,8 +73,6 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
-
-import com.google.common.collect.Lists;
 
 /* $License$ */
 /**
@@ -183,28 +180,6 @@ public class ClientImpl
         failIfClosed();
         synchronized (mServerStatusListeners) {
             mServerStatusListeners.removeFirstOccurrence(listener);
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.client.Client#addMarketDataRequestListener(org.marketcetera.client.MarketDataRequestListener)
-     */
-    @Override
-    public void addMarketDataRequestListener(MarketDataRequestListener inListener)
-    {
-        failIfClosed();
-        synchronized(marketDataRequestListeners) {
-            marketDataRequestListeners.addFirst(inListener);
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.client.Client#removeMarketDataRequestListener(org.marketcetera.client.MarketDataRequestListener)
-     */
-    @Override
-    public void removeMarketDataRequestListener(MarketDataRequestListener inListener)
-    {
-        failIfClosed();
-        synchronized(marketDataRequestListeners) {
-            marketDataRequestListeners.removeFirstOccurrence(inListener);
         }
     }
     @Override
@@ -631,6 +606,34 @@ public class ClientImpl
                                           Messages.ERROR_REMOTE_EXECUTION);
         }
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#getSessionId()
+     */
+    @Override
+    public SessionId getSessionId()
+    {
+        return getServiceContext().getSessionId();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#addOrderModifier(org.marketcetera.client.OrderModifier)
+     */
+    @Override
+    public void addOrderModifier(OrderModifier inOrderModifier)
+    {
+        synchronized(orderModifiers) {
+            orderModifiers.addLast(inOrderModifier);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#removeOrderModifier(org.marketcetera.client.OrderModifier)
+     */
+    @Override
+    public void removeOrderModifier(OrderModifier inOrderModifier)
+    {
+        synchronized(orderModifiers) {
+            orderModifiers.remove(inOrderModifier);
+        }
+    }
     /**
      * Creates an instance given the parameters and connects to the server.
      *
@@ -645,29 +648,6 @@ public class ClientImpl
     {
         setParameters(inParameters);
         connect();
-    }
-    /**
-     * Notify subscribers that a market data request has been received.
-     *
-     * @param inMarketDataRequest a <code>MarketDataRequest</code> value
-     */
-    void notifyMarketDataRequest(MarketDataRequest inMarketDataRequest)
-    {
-        SLF4JLoggerProxy.debug(TRAFFIC,
-                               "Received Market data request: {}",  //$NON-NLS-1$
-                               inMarketDataRequest);
-        synchronized(marketDataRequestListeners) {
-            for(MarketDataRequestListener listener: marketDataRequestListeners) {
-                try {
-                    listener.receiveMarketDataRequest(inMarketDataRequest);
-                } catch (Throwable t) {
-                    Messages.LOG_ERROR_RECEIVE_EXEC_REPORT.warn(this,
-                                                                t,
-                                                                ObjectUtils.toString(inMarketDataRequest));
-                    ExceptUtils.interrupt(t);
-                }
-            }
-        }
     }
     void notifyExecutionReport(ExecutionReport inReport) {
         SLF4JLoggerProxy.debug(TRAFFIC, "Received Exec Report:{}", inReport);  //$NON-NLS-1$
@@ -1004,15 +984,6 @@ public class ClientImpl
         mService.heartbeat(getServiceContext());
     }
     /**
-     * Gets the session ID value.
-     *
-     * @return a <code>SessionId</code> value
-     */
-    protected SessionId getSessionId()
-    {
-        return getServiceContext().getSessionId();
-    }
-    /**
      * Starts the JMS connection.
      *
      * @throws JAXBException if an error occurs starting the JMS connection
@@ -1043,18 +1014,21 @@ public class ClientImpl
                                                                                    Service.BROKER_STATUS_TOPIC,
                                                                                    true);
         mBrokerStatusListener.start();
-        if(marketDataRequestListener != null && marketDataRequestListener.isRunning()) {
-            try {
-                marketDataRequestListener.stop();
-                marketDataRequestListener = null;
-            } catch (Exception ignored) {}
-        }
-        marketDataRequestListener = mJmsMgr.getIncomingJmsFactory().registerHandlerMDRX(new MarketDataRequestReceiver(),
-                                                                                        Service.MARKET_DATA_REQUEST_TOPIC,
-                                                                                        true);
-        marketDataRequestListener.start();
         mToServer = mJmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.REQUEST_QUEUE,
                                                                        false);
+    }
+    /**
+     * Modify the given order.
+     *
+     * @param inOrder an <code>Order</code> value
+     */
+    private void modifyOrder(Order inOrder)
+    {
+        synchronized(orderModifiers) {
+            for(OrderModifier orderModifier : orderModifiers) {
+                orderModifier.modify(inOrder);
+            }
+        }
     }
     /**
      * Connects the client to the server.
@@ -1137,8 +1111,15 @@ public class ClientImpl
     private void setContext(AbstractApplicationContext inContext) {
         mContext = inContext;
     }
-
-    private void convertAndSend(Order inOrder) throws ConnectionException {
+    /**
+     * Convert the given order and send it to the server.
+     *
+     * @param inOrder an <code>Order</code> value
+     * @throws ConnectionException if the order could not be sent to the server
+     */
+    private void convertAndSend(Order inOrder)
+            throws ConnectionException
+    {
         ThreadedMetric.event("client-OUT",  //$NON-NLS-1$ 
                 inOrder instanceof OrderBase
                         ? ((OrderBase) inOrder).getOrderID()
@@ -1150,19 +1131,16 @@ public class ClientImpl
                 throw new ClientInitException(Messages.NOT_CONNECTED_TO_SERVER);
             }
             failIfDisconnected();
-            SpringConfig cfg = SpringConfig.getSingleton();
-            Collection<OrderModifier> orderModifiers = cfg.getOrderModifiers();
-            for(OrderModifier modifier : orderModifiers) {
-                modifier.modify(inOrder);
-            }
+            modifyOrder(inOrder);
             mToServer.convertAndSend(new DataEnvelope(inOrder,
-                                                       getSessionId()));
+                                                      getSessionId()));
         } catch (Exception e) {
             ConnectionException exception;
-            exception = new ConnectionException(e, new I18NBoundMessage1P(
-                    Messages.ERROR_SEND_MESSAGE, ObjectUtils.toString(inOrder)));
-            Messages.LOG_ERROR_SEND_EXCEPTION.warn(this, exception,
-                    ObjectUtils.toString(inOrder));
+            exception = new ConnectionException(e, new I18NBoundMessage1P(Messages.ERROR_SEND_MESSAGE,
+                                                                          ObjectUtils.toString(inOrder)));
+            Messages.LOG_ERROR_SEND_EXCEPTION.warn(this,
+                                                   exception,
+                                                   ObjectUtils.toString(inOrder));
             ExceptUtils.interrupt(e);
             exceptionThrown(exception);
             throw exception;
@@ -1274,18 +1252,6 @@ public class ClientImpl
                 mBrokerStatusListener = null;
             }
         }
-        if(marketDataRequestListener != null) {
-            try {
-                marketDataRequestListener.shutdown();
-            } catch (Exception ex) {
-                SLF4JLoggerProxy.debug(this,
-                                       ex,
-                                       "Error when closing market data request listener"); //$NON-NLS-1$
-                ExceptUtils.interrupt(ex);
-            } finally {
-                marketDataRequestListener = null;
-            }
-        }
         mToServer = null;
     }
     /**
@@ -1338,55 +1304,23 @@ public class ClientImpl
             }
         }
     }
-    /**
-     * Receives <code>MarketDataRequest</code> objects from the server.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    public class MarketDataRequestReceiver
-            implements ReceiveOnlyHandler<MarketDataRequest>
-    {
-        /* (non-Javadoc)
-         * @see org.marketcetera.client.jms.ReceiveOnlyHandler#receiveMessage(java.lang.Object)
-         */
-        @Override
-        public void receiveMessage(MarketDataRequest inMarketDataRequest)
-        {
-            notifyMarketDataRequest(inMarketDataRequest);
-        }
-    }
     private volatile AbstractApplicationContext mContext;
     private volatile JmsManager mJmsMgr;
     private volatile SimpleMessageListenerContainer mTradeMessageListener;
     private volatile SimpleMessageListenerContainer mBrokerStatusListener;
-    /**
-     * manages market data request messages
-     */
-    private volatile SimpleMessageListenerContainer marketDataRequestListener;
     private volatile JmsOperations mToServer;
     protected volatile ClientParameters mParameters;
     private volatile boolean mClosed = false;
     private volatile boolean mServerAlive = false;
-    private final Deque<ReportListener> mReportListeners =
-            new LinkedList<ReportListener>();
-    private final Deque<BrokerStatusListener> mBrokerStatusListeners=
-        new LinkedList<BrokerStatusListener>();
-    private final Deque<ServerStatusListener> mServerStatusListeners=
-        new LinkedList<ServerStatusListener>();
-    private final Deque<ExceptionListener> mExceptionListeners =
-            new LinkedList<ExceptionListener>();
-    /**
-     * holds subscribed market data listeners
-     */
-    private final Deque<MarketDataRequestListener> marketDataRequestListeners = Lists.newLinkedList();
+    private final Deque<ReportListener> mReportListeners = new LinkedList<ReportListener>();
+    private final Deque<BrokerStatusListener> mBrokerStatusListeners = new LinkedList<BrokerStatusListener>();
+    private final Deque<ServerStatusListener> mServerStatusListeners = new LinkedList<ServerStatusListener>();
+    private final Deque<ExceptionListener> mExceptionListeners = new LinkedList<ExceptionListener>();
+    private final Deque<OrderModifier> orderModifiers = new LinkedList<OrderModifier>();
     private Date mLastConnectTime;
-    private final Map<UserID,UserInfo> mUserInfoCache=
-        new HashMap<UserID,UserInfo>();
+    private final Map<UserID,UserInfo> mUserInfoCache = new HashMap<UserID,UserInfo>();
     private final Map<String,String> mUnderlyingToRootCache= new HashMap<String, String>();
-    private final Map<String,Collection<String>> mRootToUnderlyingCache=
-            new HashMap<String, Collection<String>>();
+    private final Map<String,Collection<String>> mRootToUnderlyingCache = new HashMap<String,Collection<String>>();
 
     private static final long RECONNECT_WAIT_INTERVAL = 10000;
 

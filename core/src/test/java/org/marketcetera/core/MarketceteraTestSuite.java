@@ -23,6 +23,6 @@ public class MarketceteraTestSuite extends TestSuite {
 
     public void init()
     {
-        FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
+        FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryName());
     }
 }

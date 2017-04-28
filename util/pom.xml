@@ -18,7 +18,7 @@
   <parent>
       <groupId>org.marketcetera</groupId>
       <artifactId>public-parent</artifactId>
-      <version>2.4.3</version>
+      <version>3.0.11</version>
   </parent>
   <artifactId>util</artifactId>
   <packaging>jar</packaging>
@@ -29,7 +29,7 @@
 
     <!-- Compile. -->
     <dependency>
-      <groupId>quickfixj</groupId>
+      <groupId>org.quickfixj</groupId>
       <artifactId>quickfixj-all</artifactId>
     </dependency>
     <dependency>
@@ -43,6 +43,10 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
@@ -82,7 +86,7 @@
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
-      <artifactId>netty</artifactId>
+      <artifactId>netty-all</artifactId>
     </dependency>
     <dependency>
       <groupId>com.jcraft</groupId>

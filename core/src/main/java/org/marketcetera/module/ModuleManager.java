@@ -2031,7 +2031,7 @@ public final class ModuleManager
             Messages.LOG_MODULE_STARTED.info(this, inModule.getURN());
         } catch(ModuleException e) {
             inModule.setLastStartFailure(e.getLocalizedDetail());
-            Messages.LOG_START_MODULE_FAILED.warn(this,e,inModule.getURN());
+            Messages.LOG_START_MODULE_FAILED.warn(this,inModule.getURN(),e.getI18NBoundMessage().getText());
             throw e;
         } finally {
             //Acquire the lock for module state changes.

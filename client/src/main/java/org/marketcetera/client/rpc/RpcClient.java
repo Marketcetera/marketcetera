@@ -9453,6 +9453,43 @@ public final class RpcClient {
      */
     com.google.protobuf.ByteString
         getOptionsBytes();
+
+    /**
+     * <code>required bool readOnly = 7;</code>
+     */
+    boolean hasReadOnly();
+    /**
+     * <code>required bool readOnly = 7;</code>
+     */
+    boolean getReadOnly();
+
+    /**
+     * <code>optional string defaultValue = 8;</code>
+     */
+    boolean hasDefaultValue();
+    /**
+     * <code>optional string defaultValue = 8;</code>
+     */
+    java.lang.String getDefaultValue();
+    /**
+     * <code>optional string defaultValue = 8;</code>
+     */
+    com.google.protobuf.ByteString
+        getDefaultValueBytes();
+
+    /**
+     * <code>optional string advice = 9;</code>
+     */
+    boolean hasAdvice();
+    /**
+     * <code>optional string advice = 9;</code>
+     */
+    java.lang.String getAdvice();
+    /**
+     * <code>optional string advice = 9;</code>
+     */
+    com.google.protobuf.ByteString
+        getAdviceBytes();
   }
   /**
    * Protobuf type {@code BrokerAlgoTagSpec}
@@ -9538,6 +9575,23 @@ public final class RpcClient {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000020;
               options_ = bs;
+              break;
+            }
+            case 56: {
+              bitField0_ |= 0x00000040;
+              readOnly_ = input.readBool();
+              break;
+            }
+            case 66: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000080;
+              defaultValue_ = bs;
+              break;
+            }
+            case 74: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000100;
+              advice_ = bs;
               break;
             }
           }
@@ -9778,6 +9832,105 @@ public final class RpcClient {
       }
     }
 
+    public static final int READONLY_FIELD_NUMBER = 7;
+    private boolean readOnly_;
+    /**
+     * <code>required bool readOnly = 7;</code>
+     */
+    public boolean hasReadOnly() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>required bool readOnly = 7;</code>
+     */
+    public boolean getReadOnly() {
+      return readOnly_;
+    }
+
+    public static final int DEFAULTVALUE_FIELD_NUMBER = 8;
+    private java.lang.Object defaultValue_;
+    /**
+     * <code>optional string defaultValue = 8;</code>
+     */
+    public boolean hasDefaultValue() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    /**
+     * <code>optional string defaultValue = 8;</code>
+     */
+    public java.lang.String getDefaultValue() {
+      java.lang.Object ref = defaultValue_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          defaultValue_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string defaultValue = 8;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDefaultValueBytes() {
+      java.lang.Object ref = defaultValue_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        defaultValue_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int ADVICE_FIELD_NUMBER = 9;
+    private java.lang.Object advice_;
+    /**
+     * <code>optional string advice = 9;</code>
+     */
+    public boolean hasAdvice() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    /**
+     * <code>optional string advice = 9;</code>
+     */
+    public java.lang.String getAdvice() {
+      java.lang.Object ref = advice_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          advice_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string advice = 9;</code>
+     */
+    public com.google.protobuf.ByteString
+        getAdviceBytes() {
+      java.lang.Object ref = advice_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        advice_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private void initFields() {
       tag_ = 0;
       label_ = "";
@@ -9785,6 +9938,9 @@ public final class RpcClient {
       mandatory_ = false;
       pattern_ = "";
       options_ = "";
+      readOnly_ = false;
+      defaultValue_ = "";
+      advice_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -9801,6 +9957,10 @@ public final class RpcClient {
         return false;
       }
       if (!hasMandatory()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasReadOnly()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -9828,6 +9988,15 @@ public final class RpcClient {
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeBytes(6, getOptionsBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBool(7, readOnly_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeBytes(8, getDefaultValueBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeBytes(9, getAdviceBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -9861,6 +10030,18 @@ public final class RpcClient {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(6, getOptionsBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(7, readOnly_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(8, getDefaultValueBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(9, getAdviceBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -9991,6 +10172,12 @@ public final class RpcClient {
         bitField0_ = (bitField0_ & ~0x00000010);
         options_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
+        readOnly_ = false;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        defaultValue_ = "";
+        bitField0_ = (bitField0_ & ~0x00000080);
+        advice_ = "";
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
 
@@ -10043,6 +10230,18 @@ public final class RpcClient {
           to_bitField0_ |= 0x00000020;
         }
         result.options_ = options_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.readOnly_ = readOnly_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.defaultValue_ = defaultValue_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.advice_ = advice_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -10085,6 +10284,19 @@ public final class RpcClient {
           options_ = other.options_;
           onChanged();
         }
+        if (other.hasReadOnly()) {
+          setReadOnly(other.getReadOnly());
+        }
+        if (other.hasDefaultValue()) {
+          bitField0_ |= 0x00000080;
+          defaultValue_ = other.defaultValue_;
+          onChanged();
+        }
+        if (other.hasAdvice()) {
+          bitField0_ |= 0x00000100;
+          advice_ = other.advice_;
+          onChanged();
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -10099,6 +10311,10 @@ public final class RpcClient {
           return false;
         }
         if (!hasMandatory()) {
+          
+          return false;
+        }
+        if (!hasReadOnly()) {
           
           return false;
         }
@@ -10488,6 +10704,190 @@ public final class RpcClient {
   }
   bitField0_ |= 0x00000020;
         options_ = value;
+        onChanged();
+        return this;
+      }
+
+      private boolean readOnly_ ;
+      /**
+       * <code>required bool readOnly = 7;</code>
+       */
+      public boolean hasReadOnly() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>required bool readOnly = 7;</code>
+       */
+      public boolean getReadOnly() {
+        return readOnly_;
+      }
+      /**
+       * <code>required bool readOnly = 7;</code>
+       */
+      public Builder setReadOnly(boolean value) {
+        bitField0_ |= 0x00000040;
+        readOnly_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required bool readOnly = 7;</code>
+       */
+      public Builder clearReadOnly() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        readOnly_ = false;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object defaultValue_ = "";
+      /**
+       * <code>optional string defaultValue = 8;</code>
+       */
+      public boolean hasDefaultValue() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional string defaultValue = 8;</code>
+       */
+      public java.lang.String getDefaultValue() {
+        java.lang.Object ref = defaultValue_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            defaultValue_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string defaultValue = 8;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDefaultValueBytes() {
+        java.lang.Object ref = defaultValue_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          defaultValue_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string defaultValue = 8;</code>
+       */
+      public Builder setDefaultValue(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        defaultValue_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string defaultValue = 8;</code>
+       */
+      public Builder clearDefaultValue() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        defaultValue_ = getDefaultInstance().getDefaultValue();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string defaultValue = 8;</code>
+       */
+      public Builder setDefaultValueBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        defaultValue_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object advice_ = "";
+      /**
+       * <code>optional string advice = 9;</code>
+       */
+      public boolean hasAdvice() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>optional string advice = 9;</code>
+       */
+      public java.lang.String getAdvice() {
+        java.lang.Object ref = advice_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            advice_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string advice = 9;</code>
+       */
+      public com.google.protobuf.ByteString
+          getAdviceBytes() {
+        java.lang.Object ref = advice_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          advice_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string advice = 9;</code>
+       */
+      public Builder setAdvice(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000100;
+        advice_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string advice = 9;</code>
+       */
+      public Builder clearAdvice() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        advice_ = getDefaultInstance().getAdvice();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string advice = 9;</code>
+       */
+      public Builder setAdviceBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000100;
+        advice_ = value;
         onChanged();
         return this;
       }
@@ -30350,81 +30750,82 @@ public final class RpcClient {
       "ssionSetting\",\n\016SessionSetting\022\013\n\003key\030\001 " +
       "\002(\t\022\r\n\005value\030\002 \002(\t\"H\n\016BrokerAlgoSpec\022\014\n\004" +
       "name\030\001 \002(\t\022(\n\014algoTagSpecs\030\002 \003(\0132\022.Broke",
-      "rAlgoTagSpec\"y\n\021BrokerAlgoTagSpec\022\013\n\003tag" +
-      "\030\001 \002(\005\022\r\n\005label\030\002 \002(\t\022\023\n\013description\030\003 \001" +
-      "(\t\022\021\n\tmandatory\030\004 \002(\010\022\017\n\007pattern\030\005 \001(\t\022\017" +
-      "\n\007options\030\006 \001(\t\"&\n\021OpenOrdersRequest\022\021\n\t" +
-      "sessionId\030\001 \002(\t\"2\n\022OpenOrdersResponse\022\034\n" +
-      "\007reports\030\001 \002(\0132\013.ReportList\"8\n\023ReportsSi" +
-      "nceRequest\022\021\n\tsessionId\030\001 \002(\t\022\016\n\006origin\030" +
-      "\002 \002(\003\"4\n\024ReportsSinceResponse\022\034\n\007reports" +
-      "\030\001 \002(\0132\013.ReportList\"\035\n\nReportList\022\017\n\007rep" +
-      "orts\030\001 \003(\t\"\220\001\n\017PositionRequest\022\021\n\tsessio",
-      "nId\030\001 \002(\t\022\'\n\016instrumentType\030\002 \001(\0162\017.Inst" +
-      "rumentType\022\037\n\ninstrument\030\003 \001(\0132\013.Instrum" +
-      "ent\022\022\n\006origin\030\004 \002(\003:\002-1\022\014\n\004root\030\005 \003(\t\">\n" +
-      "\020PositionResponse\022\032\n\004keys\030\001 \003(\0132\014.Positi" +
-      "onKey\022\016\n\006values\030\002 \003(\t\"\036\n\020HeartbeatReques" +
-      "t\022\n\n\002id\030\001 \002(\003\"\037\n\021HeartbeatResponse\022\n\n\002id" +
-      "\030\001 \002(\003\"=\n\010Position\022\037\n\ninstrument\030\001 \002(\0132\013" +
-      ".Instrument\022\020\n\010position\030\002 \002(\t\"Q\n\013Positio" +
-      "nKey\022\037\n\ninstrument\030\001 \002(\0132\013.Instrument\022\017\n" +
-      "\007account\030\002 \001(\t\022\020\n\010traderId\030\003 \001(\t\"\035\n\nInst",
-      "rument\022\017\n\007payload\030\001 \002(\t\"0\n\017UserInfoReque" +
-      "st\022\021\n\tsessionId\030\001 \002(\t\022\n\n\002id\030\002 \002(\003\"/\n\020Use" +
-      "rInfoResponse\022\033\n\010userInfo\030\001 \002(\0132\t.UserIn" +
-      "fo\"Y\n\010UserInfo\022\014\n\004name\030\001 \002(\t\022\n\n\002id\030\002 \002(\003" +
-      "\022\016\n\006active\030\003 \002(\010\022\021\n\tsuperuser\030\004 \002(\010\022\020\n\010u" +
-      "serdata\030\005 \001(\t\"6\n\021UnderlyingRequest\022\021\n\tse" +
-      "ssionId\030\001 \002(\t\022\016\n\006symbol\030\002 \002(\t\"$\n\022Underly" +
-      "ingResponse\022\016\n\006symbol\030\001 \001(\t\"7\n\022OptionRoo" +
-      "tsRequest\022\021\n\tsessionId\030\001 \002(\t\022\016\n\006symbol\030\002" +
-      " \002(\t\"%\n\023OptionRootsResponse\022\016\n\006symbol\030\001 ",
-      "\003(\t\"9\n\024ResolveSymbolRequest\022\021\n\tsessionId" +
-      "\030\001 \002(\t\022\016\n\006symbol\030\002 \002(\t\"8\n\025ResolveSymbolR" +
-      "esponse\022\037\n\ninstrument\030\001 \001(\0132\013.Instrument" +
-      "\"8\n\022RootOrderIdRequest\022\021\n\tsessionId\030\001 \002(" +
-      "\t\022\017\n\007orderId\030\002 \002(\t\"&\n\023RootOrderIdRespons" +
-      "e\022\017\n\007orderId\030\001 \001(\t\"\'\n\022GetUserDataRequest" +
-      "\022\021\n\tsessionId\030\001 \002(\t\"\'\n\023GetUserDataRespon" +
-      "se\022\020\n\010userData\030\001 \001(\t\"9\n\022SetUserDataReque" +
-      "st\022\021\n\tsessionId\030\001 \002(\t\022\020\n\010userData\030\002 \001(\t\"" +
-      "\025\n\023SetUserDataResponse\"g\n\020AddReportReque",
-      "st\022\021\n\tsessionId\030\001 \002(\t\022\020\n\010brokerId\030\002 \002(\t\022" +
-      "\017\n\007message\030\003 \002(\t\022\035\n\thierarchy\030\004 \002(\0162\n.Hi" +
-      "erarchy\"4\n\021AddReportResponse\022\016\n\006status\030\001" +
-      " \002(\010\022\017\n\007message\030\002 \001(\t\"9\n\023DeleteReportReq" +
-      "uest\022\021\n\tsessionId\030\001 \002(\t\022\017\n\007message\030\002 \002(\t" +
-      "\"\026\n\024DeleteReportResponse*B\n\016InstrumentTy" +
-      "pe\022\n\n\006EQUITY\020\000\022\n\n\006OPTION\020\001\022\n\n\006FUTURE\020\002\022\014" +
-      "\n\010CURRENCY\020\003*,\n\tHierarchy\022\n\n\006Parent\020\000\022\t\n" +
-      "\005Child\020\001\022\010\n\004Flat\020\0022\330\007\n\020RpcClientService\022" +
-      "&\n\005login\022\r.LoginRequest\032\016.LoginResponse\022",
-      ")\n\006logout\022\016.LogoutRequest\032\017.LogoutRespon" +
-      "se\022;\n\016getNextOrderID\022\023.NextOrderIdReques" +
-      "t\032\024.NextOrderIdResponse\022A\n\020getBrokersSta" +
-      "tus\022\025.BrokersStatusRequest\032\026.BrokersStat" +
-      "usResponse\0228\n\rgetOpenOrders\022\022.OpenOrders" +
-      "Request\032\023.OpenOrdersResponse\022>\n\017getRepor" +
-      "tsSince\022\024.ReportsSinceRequest\032\025.ReportsS" +
-      "inceResponse\0223\n\014getPositions\022\020.PositionR" +
-      "equest\032\021.PositionResponse\0222\n\theartbeat\022\021" +
-      ".HeartbeatRequest\032\022.HeartbeatResponse\0222\n",
-      "\013getUserInfo\022\020.UserInfoRequest\032\021.UserInf" +
-      "oResponse\0228\n\rgetUnderlying\022\022.UnderlyingR" +
-      "equest\032\023.UnderlyingResponse\022;\n\016getOption" +
-      "Roots\022\023.OptionRootsRequest\032\024.OptionRoots" +
-      "Response\022>\n\rresolveSymbol\022\025.ResolveSymbo" +
-      "lRequest\032\026.ResolveSymbolResponse\022>\n\021getR" +
-      "ootOrderIdFor\022\023.RootOrderIdRequest\032\024.Roo" +
-      "tOrderIdResponse\0228\n\013getUserData\022\023.GetUse" +
-      "rDataRequest\032\024.GetUserDataResponse\0228\n\013se" +
-      "tUserData\022\023.SetUserDataRequest\032\024.SetUser",
-      "DataResponse\0222\n\taddReport\022\021.AddReportReq" +
-      "uest\032\022.AddReportResponse\022;\n\014deleteReport" +
-      "\022\024.DeleteReportRequest\032\025.DeleteReportRes" +
-      "ponseB+\n\033org.marketcetera.client.rpcB\tRp" +
-      "cClient\210\001\001"
+      "rAlgoTagSpec\"\261\001\n\021BrokerAlgoTagSpec\022\013\n\003ta" +
+      "g\030\001 \002(\005\022\r\n\005label\030\002 \002(\t\022\023\n\013description\030\003 " +
+      "\001(\t\022\021\n\tmandatory\030\004 \002(\010\022\017\n\007pattern\030\005 \001(\t\022" +
+      "\017\n\007options\030\006 \001(\t\022\020\n\010readOnly\030\007 \002(\010\022\024\n\014de" +
+      "faultValue\030\010 \001(\t\022\016\n\006advice\030\t \001(\t\"&\n\021Open" +
+      "OrdersRequest\022\021\n\tsessionId\030\001 \002(\t\"2\n\022Open" +
+      "OrdersResponse\022\034\n\007reports\030\001 \002(\0132\013.Report" +
+      "List\"8\n\023ReportsSinceRequest\022\021\n\tsessionId" +
+      "\030\001 \002(\t\022\016\n\006origin\030\002 \002(\003\"4\n\024ReportsSinceRe" +
+      "sponse\022\034\n\007reports\030\001 \002(\0132\013.ReportList\"\035\n\n",
+      "ReportList\022\017\n\007reports\030\001 \003(\t\"\220\001\n\017Position" +
+      "Request\022\021\n\tsessionId\030\001 \002(\t\022\'\n\016instrument" +
+      "Type\030\002 \001(\0162\017.InstrumentType\022\037\n\ninstrumen" +
+      "t\030\003 \001(\0132\013.Instrument\022\022\n\006origin\030\004 \002(\003:\002-1" +
+      "\022\014\n\004root\030\005 \003(\t\">\n\020PositionResponse\022\032\n\004ke" +
+      "ys\030\001 \003(\0132\014.PositionKey\022\016\n\006values\030\002 \003(\t\"\036" +
+      "\n\020HeartbeatRequest\022\n\n\002id\030\001 \002(\003\"\037\n\021Heartb" +
+      "eatResponse\022\n\n\002id\030\001 \002(\003\"=\n\010Position\022\037\n\ni" +
+      "nstrument\030\001 \002(\0132\013.Instrument\022\020\n\010position" +
+      "\030\002 \002(\t\"Q\n\013PositionKey\022\037\n\ninstrument\030\001 \002(",
+      "\0132\013.Instrument\022\017\n\007account\030\002 \001(\t\022\020\n\010trade" +
+      "rId\030\003 \001(\t\"\035\n\nInstrument\022\017\n\007payload\030\001 \002(\t" +
+      "\"0\n\017UserInfoRequest\022\021\n\tsessionId\030\001 \002(\t\022\n" +
+      "\n\002id\030\002 \002(\003\"/\n\020UserInfoResponse\022\033\n\010userIn" +
+      "fo\030\001 \002(\0132\t.UserInfo\"Y\n\010UserInfo\022\014\n\004name\030" +
+      "\001 \002(\t\022\n\n\002id\030\002 \002(\003\022\016\n\006active\030\003 \002(\010\022\021\n\tsup" +
+      "eruser\030\004 \002(\010\022\020\n\010userdata\030\005 \001(\t\"6\n\021Underl" +
+      "yingRequest\022\021\n\tsessionId\030\001 \002(\t\022\016\n\006symbol" +
+      "\030\002 \002(\t\"$\n\022UnderlyingResponse\022\016\n\006symbol\030\001" +
+      " \001(\t\"7\n\022OptionRootsRequest\022\021\n\tsessionId\030",
+      "\001 \002(\t\022\016\n\006symbol\030\002 \002(\t\"%\n\023OptionRootsResp" +
+      "onse\022\016\n\006symbol\030\001 \003(\t\"9\n\024ResolveSymbolReq" +
+      "uest\022\021\n\tsessionId\030\001 \002(\t\022\016\n\006symbol\030\002 \002(\t\"" +
+      "8\n\025ResolveSymbolResponse\022\037\n\ninstrument\030\001" +
+      " \001(\0132\013.Instrument\"8\n\022RootOrderIdRequest\022" +
+      "\021\n\tsessionId\030\001 \002(\t\022\017\n\007orderId\030\002 \002(\t\"&\n\023R" +
+      "ootOrderIdResponse\022\017\n\007orderId\030\001 \001(\t\"\'\n\022G" +
+      "etUserDataRequest\022\021\n\tsessionId\030\001 \002(\t\"\'\n\023" +
+      "GetUserDataResponse\022\020\n\010userData\030\001 \001(\t\"9\n" +
+      "\022SetUserDataRequest\022\021\n\tsessionId\030\001 \002(\t\022\020",
+      "\n\010userData\030\002 \001(\t\"\025\n\023SetUserDataResponse\"" +
+      "g\n\020AddReportRequest\022\021\n\tsessionId\030\001 \002(\t\022\020" +
+      "\n\010brokerId\030\002 \002(\t\022\017\n\007message\030\003 \002(\t\022\035\n\thie" +
+      "rarchy\030\004 \002(\0162\n.Hierarchy\"4\n\021AddReportRes" +
+      "ponse\022\016\n\006status\030\001 \002(\010\022\017\n\007message\030\002 \001(\t\"9" +
+      "\n\023DeleteReportRequest\022\021\n\tsessionId\030\001 \002(\t" +
+      "\022\017\n\007message\030\002 \002(\t\"\026\n\024DeleteReportRespons" +
+      "e*B\n\016InstrumentType\022\n\n\006EQUITY\020\000\022\n\n\006OPTIO" +
+      "N\020\001\022\n\n\006FUTURE\020\002\022\014\n\010CURRENCY\020\003*,\n\tHierarc" +
+      "hy\022\n\n\006Parent\020\000\022\t\n\005Child\020\001\022\010\n\004Flat\020\0022\330\007\n\020",
+      "RpcClientService\022&\n\005login\022\r.LoginRequest" +
+      "\032\016.LoginResponse\022)\n\006logout\022\016.LogoutReque" +
+      "st\032\017.LogoutResponse\022;\n\016getNextOrderID\022\023." +
+      "NextOrderIdRequest\032\024.NextOrderIdResponse" +
+      "\022A\n\020getBrokersStatus\022\025.BrokersStatusRequ" +
+      "est\032\026.BrokersStatusResponse\0228\n\rgetOpenOr" +
+      "ders\022\022.OpenOrdersRequest\032\023.OpenOrdersRes" +
+      "ponse\022>\n\017getReportsSince\022\024.ReportsSinceR" +
+      "equest\032\025.ReportsSinceResponse\0223\n\014getPosi" +
+      "tions\022\020.PositionRequest\032\021.PositionRespon",
+      "se\0222\n\theartbeat\022\021.HeartbeatRequest\032\022.Hea" +
+      "rtbeatResponse\0222\n\013getUserInfo\022\020.UserInfo" +
+      "Request\032\021.UserInfoResponse\0228\n\rgetUnderly" +
+      "ing\022\022.UnderlyingRequest\032\023.UnderlyingResp" +
+      "onse\022;\n\016getOptionRoots\022\023.OptionRootsRequ" +
+      "est\032\024.OptionRootsResponse\022>\n\rresolveSymb" +
+      "ol\022\025.ResolveSymbolRequest\032\026.ResolveSymbo" +
+      "lResponse\022>\n\021getRootOrderIdFor\022\023.RootOrd" +
+      "erIdRequest\032\024.RootOrderIdResponse\0228\n\013get" +
+      "UserData\022\023.GetUserDataRequest\032\024.GetUserD",
+      "ataResponse\0228\n\013setUserData\022\023.SetUserData" +
+      "Request\032\024.SetUserDataResponse\0222\n\taddRepo" +
+      "rt\022\021.AddReportRequest\032\022.AddReportRespons" +
+      "e\022;\n\014deleteReport\022\024.DeleteReportRequest\032" +
+      "\025.DeleteReportResponseB+\n\033org.marketcete" +
+      "ra.client.rpcB\tRpcClient\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -30521,7 +30922,7 @@ public final class RpcClient {
     internal_static_BrokerAlgoTagSpec_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_BrokerAlgoTagSpec_descriptor,
-        new java.lang.String[] { "Tag", "Label", "Description", "Mandatory", "Pattern", "Options", });
+        new java.lang.String[] { "Tag", "Label", "Description", "Mandatory", "Pattern", "Options", "ReadOnly", "DefaultValue", "Advice", });
     internal_static_OpenOrdersRequest_descriptor =
       getDescriptor().getMessageTypes().get(14);
     internal_static_OpenOrdersRequest_fieldAccessorTable = new

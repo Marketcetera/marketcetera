@@ -98,14 +98,35 @@ public class MarketDataFeedTestBase
     public static void wait(Callable<Boolean> inBlock)
         throws Exception
     {
+        wait(inBlock,
+             60);
+    }
+    /**
+     * Waits for the given block to return true.
+     *
+     * <p>This method is guaranteed to wait for the passed block
+     * to evaluate to true.  It is also guaranteed to wait in a
+     * fashion that allows other threads to receive sufficient
+     * cycles to work.  The block will wait for a maximum of
+     * the given number of seconds before throwing an exception.
+     * 
+     * @param inBlock a <code>Callable&lt;Boolean&gt;</code> value containing the condition to be evaluated.  If the block evaluates to true, the wait method returns immediately.
+     * @param inTimeout an <code>int</code> value
+     * @throws Exception if the block throws an exception
+     */
+    public static void wait(Callable<Boolean> inBlock,
+                            int inTimeout)
+        throws Exception
+    {
         int iterationCount = 0;
-        while(iterationCount++ < 600) {
+        int maxIterations = inTimeout*10;
+        while(iterationCount++ < maxIterations) {
             if(inBlock.call()) {
                 return;
             }
             Thread.sleep(100);
         }
-        fail("Condition not reached in 60s"); //$NON-NLS-1$
+        fail("Condition not reached in " + inTimeout +"s"); //$NON-NLS-1$
     }
     /**
      * Waits until the given subscriber receives a publication.

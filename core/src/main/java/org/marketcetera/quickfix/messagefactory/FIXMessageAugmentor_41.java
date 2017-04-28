@@ -2,6 +2,8 @@ package org.marketcetera.quickfix.messagefactory;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.util.misc.ClassVersion;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -67,5 +69,13 @@ public class FIXMessageAugmentor_41 extends FIXMessageAugmentor_40 {
             inMessage.setField(new ExecType(ordStatus));
         }
         return inMessage;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.quickfix.messagefactory.NoOpFIXMessageAugmentor#getFixVersion()
+     */
+    @Override
+    protected FIXVersion getFixVersion()
+    {
+        return FIXVersion.FIX41;
     }
 }

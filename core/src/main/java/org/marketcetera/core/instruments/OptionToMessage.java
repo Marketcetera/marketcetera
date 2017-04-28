@@ -1,14 +1,22 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
+import java.util.regex.Pattern;
+
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
-import org.marketcetera.quickfix.FIXVersion;
-import quickfix.Message;
-import quickfix.DataDictionary;
-import quickfix.field.*;
+import org.marketcetera.util.misc.ClassVersion;
 
-import java.util.regex.Pattern;
+import quickfix.DataDictionary;
+import quickfix.FieldMap;
+import quickfix.field.CFICode;
+import quickfix.field.MaturityDate;
+import quickfix.field.MaturityDay;
+import quickfix.field.MaturityMonthYear;
+import quickfix.field.PutOrCall;
+import quickfix.field.SecurityType;
+import quickfix.field.StrikePrice;
+import quickfix.field.Symbol;
 
 /* $License$ */
 /**
@@ -19,7 +27,9 @@ import java.util.regex.Pattern;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class OptionToMessage extends InstrumentToMessage<Option> {
+public class OptionToMessage
+        extends InstrumentToMessage<Option>
+{
     /**
      * Creates an instance that handles options.
      */
@@ -28,7 +38,7 @@ public class OptionToMessage extends InstrumentToMessage<Option> {
     }
 
     @Override
-    public void set(Instrument inInstrument, String inBeginString, Message inMessage) {
+    public void set(Instrument inInstrument, String inBeginString, FieldMap inMessage) {
         if(FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(inBeginString))) {
             throw new IllegalArgumentException(
                     Messages.OPTION_NOT_SUPPORTED_FOR_FIX_VERSION.getText(inBeginString));
@@ -79,10 +89,9 @@ public class OptionToMessage extends InstrumentToMessage<Option> {
                 (inDictionary.isMsgField(inMsgType,MaturityDate.FIELD) ||
                         inDictionary.isMsgField(inMsgType,MaturityMonthYear.FIELD));
     }
-
     @Override
     public void set(Instrument inInstrument, DataDictionary inDictionary,
-                    String inMsgType, Message inMessage) {
+                    String inMsgType, FieldMap inMessage) {
         setSecurityType(inInstrument, inDictionary, inMsgType, inMessage);
         setSymbol(inInstrument, inDictionary, inMsgType, inMessage);
         Option option = (Option) inInstrument;
@@ -114,13 +123,12 @@ public class OptionToMessage extends InstrumentToMessage<Option> {
      * @param inMessage the message
      * @param inOption the option
      */
-    private static void setCFICode(Message inMessage, Option inOption) {
+    private static void setCFICode(FieldMap inMessage, Option inOption) {
         String cfiCode = CFICodeUtils.getOptionCFICode(inOption.getType());
         if(cfiCode != null) {
             inMessage.setField(new CFICode(cfiCode));
         }
     }
-
     /**
      * Returns true if the option expiry includes the day.
      *

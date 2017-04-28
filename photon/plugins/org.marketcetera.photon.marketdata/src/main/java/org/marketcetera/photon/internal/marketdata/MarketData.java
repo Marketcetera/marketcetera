@@ -1,23 +1,28 @@
 package org.marketcetera.photon.internal.marketdata;
 
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
+import org.marketcetera.event.HasInstrument;
 import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Content;
@@ -28,7 +33,6 @@ import org.marketcetera.marketdata.core.manager.MarketDataRequestFailed;
 import org.marketcetera.marketdata.core.manager.MarketDataRequestTimedOut;
 import org.marketcetera.marketdata.core.manager.NoMarketDataProvidersAvailable;
 import org.marketcetera.marketdata.core.webservice.ConnectionException;
-import org.marketcetera.marketdata.core.webservice.PageRequest;
 import org.marketcetera.marketdata.core.webservice.UnknownRequestException;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
@@ -36,6 +40,7 @@ import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
+import org.marketcetera.photon.model.marketdata.MDQuote;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl;
 import org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl;
@@ -46,8 +51,10 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
 /* $License$ */
@@ -85,11 +92,11 @@ public class MarketData
     @Override
     public void reset()
     {
-//        requests.clear();
-        if(marketDataRefreshExecutor != null) {
-            marketDataRefreshExecutor.shutdownNow();
+        if(refreshJobToken != null) {
+            refreshJobToken.cancel(true);
+            refreshJobToken = null;
         }
-        marketDataRefreshExecutor = Executors.newScheduledThreadPool(10);
+        scheduleRefreshJob();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.marketdata.IMarketData#resubmit()
@@ -98,7 +105,7 @@ public class MarketData
     public void resubmit()
     {
         // TODO don't do anything if the reconnect button was pressed but no connection was lost to the server
-        for(Entry<MarketDataReferenceKey,MarketDataDetails<?,?>> entry : requests.entrySet()) {
+        for(Entry<MarketDataReferenceKey,MarketDataDetails<?,?>> entry : requests.asMap().entrySet()) {
             MarketDataDetails<?,?> marketDataDetails = entry.getValue();
             marketDataDetails.disconnect();
             marketDataDetails.connect();
@@ -113,8 +120,7 @@ public class MarketData
         return getMarketDataReference(inInstrument,
                                       Content.LATEST_TICK,
                                       latestTickFactory,
-                                      latestTickUpdater,
-                                      TOP_UPDATE_FREQUENCY);
+                                      latestTickUpdater);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.marketdata.IMarketData#getTopOfBook(org.marketcetera.trade.Instrument)
@@ -125,8 +131,7 @@ public class MarketData
         return getMarketDataReference(inInstrument,
                                       Content.TOP_OF_BOOK,
                                       topOfBookFactory,
-                                      topOfBookUpdater,
-                                      TOP_UPDATE_FREQUENCY);
+                                      topOfBookUpdater);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.marketdata.IMarketData#getMarketstat(org.marketcetera.trade.Instrument)
@@ -137,8 +142,7 @@ public class MarketData
         return getMarketDataReference(inInstrument,
                                       Content.MARKET_STAT,
                                       marketstatFactory,
-                                      marketstatUpdater,
-                                      TOP_UPDATE_FREQUENCY);
+                                      marketstatUpdater);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.marketdata.IMarketData#getDepthOfBook(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content)
@@ -152,38 +156,32 @@ public class MarketData
                 return getMarketDataReference(inInstrument,
                                               Content.AGGREGATED_DEPTH,
                                               depthOfBookFactory,
-                                              aggregatedDepthUpdater,
-                                              DEPTH_UPDATE_FREQUENCY);
+                                              aggregatedDepthUpdater);
             case BBO10:
                 return getMarketDataReference(inInstrument,
                                               Content.BBO10,
                                               depthOfBookFactory,
-                                              bbo10DepthUpdater,
-                                              DEPTH_UPDATE_FREQUENCY);
+                                              bbo10DepthUpdater);
             case LEVEL_2:
                 return getMarketDataReference(inInstrument,
                                               Content.LEVEL_2,
                                               depthOfBookFactory,
-                                              level2DepthUpdater,
-                                              DEPTH_UPDATE_FREQUENCY);
+                                              level2DepthUpdater);
             case OPEN_BOOK:
                 return getMarketDataReference(inInstrument,
                                               Content.OPEN_BOOK,
                                               depthOfBookFactory,
-                                              openBookDepthUpdater,
-                                              DEPTH_UPDATE_FREQUENCY);
+                                              openBookDepthUpdater);
             case TOTAL_VIEW:
                 return getMarketDataReference(inInstrument,
                                               Content.TOTAL_VIEW,
                                               depthOfBookFactory,
-                                              totalViewDepthUpdater,
-                                              DEPTH_UPDATE_FREQUENCY);
+                                              totalViewDepthUpdater);
             case UNAGGREGATED_DEPTH:
                 return getMarketDataReference(inInstrument,
                                               Content.UNAGGREGATED_DEPTH,
                                               depthOfBookFactory,
-                                              unaggregatedDepthUpdater,
-                                              DEPTH_UPDATE_FREQUENCY);
+                                              unaggregatedDepthUpdater);
             case MARKET_STAT:
             case NBBO:
             case TOP_OF_BOOK:
@@ -194,27 +192,39 @@ public class MarketData
         }
     }
     /**
+     * Schedule the market data refresh job, if necessary.
+     */
+    private void scheduleRefreshJob()
+    {
+        synchronized(refreshJobLock) {
+            if(refreshJobToken == null) {
+                refreshJobToken = marketDataRefreshExecutor.scheduleAtFixedRate(new MetaRefreshJob(),
+                                                                                UPDATE_FREQUENCY,
+                                                                                UPDATE_FREQUENCY,
+                                                                                TimeUnit.MILLISECONDS);
+            }
+        }
+    }
+    /**
      * Gets a market data reference for the given attributes.
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
      * @param inFactory an <code>ItemFactory&lt;MDMutableType&gt;</code> value
      * @param inUpdater an <code>ItemUpdated&lt;MDMutableType&gt;</code> value
-     * @param inUpdateFrequency a <code>long</code> value
      * @return an <code>IMarketDataReference&lt;MDType&gt;</code> value
      */
     @SuppressWarnings("unchecked")
     private <MDType extends MDItem,MDMutableType extends MDType> IMarketDataReference<MDType> getMarketDataReference(final Instrument inInstrument,
                                                                                                                      final Content inContent,
                                                                                                                      ItemFactory<MDMutableType> inFactory,
-                                                                                                                     final ItemUpdater<MDMutableType> inUpdater,
-                                                                                                                     final long inUpdateFrequency)
+                                                                                                                     final ItemUpdater<MDMutableType> inUpdater)
     {
         Validate.notNull(inInstrument);
         Validate.notNull(inContent);
         final MarketDataReferenceKey key = new MarketDataReferenceKey(inInstrument,
                                                                       inContent);
-        MarketDataDetails<?,?> existingMarketDataDetails = requests.get(key);
+        MarketDataDetails<?,?> existingMarketDataDetails = requests.getIfPresent(key);
         if(existingMarketDataDetails != null) {
             // somebody has already asked for this data, simply return the existing reference
             existingMarketDataDetails.incrementReferenceCount();
@@ -232,13 +242,47 @@ public class MarketData
                                                                                                request,
                                                                                                item,
                                                                                                key,
-                                                                                               inUpdater,
-                                                                                               inUpdateFrequency);
+                                                                                               inUpdater);
         newMarketDataDetails.incrementReferenceCount();
         requests.put(key,
                      newMarketDataDetails);
         newMarketDataDetails.connect();
         return newMarketDataDetails.getReference();
+    }
+    /**
+     * Manages refreshing all subscription data.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private class MetaRefreshJob
+            implements Runnable
+    {
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run()
+        {
+            try {
+                for(SubscriptionRefreshJob<?,?> refreshJob : refreshJobs) {
+                    try {
+                        refreshJob.refreshJobToken = marketDataRefreshExecutor.submit(refreshJob);
+                    } catch (Exception e) {
+                        SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                              e,
+                                              "A problem occurred updating market data for {} {} [{}]",
+                                              refreshJob.content,
+                                              refreshJob.instrument,
+                                              refreshJob.id);
+                    }
+                }
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                      e);
+            }
+        }
     }
     /**
      * Manages a market data subscription and applies updates.
@@ -284,43 +328,32 @@ public class MarketData
                     cancel();
                     return;
                 }
-                long updateTimestamp = marketDataClientProvider.getMarketDataClient().getLastUpdate(id);
-                if(updateTimestamp > lastUpdate) {
-                    // TODO switch to get snapshot page
-                    PageRequest page = new PageRequest(1,
-                                                       Integer.MAX_VALUE);
-                    Deque<Event> events = marketDataClientProvider.getMarketDataClient().getSnapshotPage(instrument,
-                                                                                                         content,
-                                                                                                         null,
-                                                                                                         page);
-                    if(events == null || events.isEmpty()) {
-                        return;
-                    }
-                    updater.update(item,
-                                   events);
-                    lastUpdate = updateTimestamp;
-                }
+                Deque<Event> events = marketDataClientProvider.getMarketDataClient().getSnapshot(instrument,
+                                                                                                 content,
+                                                                                                 null);
+                updater.update(item,
+                               events);
             } catch (UnknownRequestException e) {
                 // this is likely a transient problem, which will sort itself out shortly
-                SLF4JLoggerProxy.warn(MarketData.this,
+                SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
                                       e);
                 cancel();
             } catch (ConnectionException e) {
                 // exception caused by a lost connection - cancel this request
-                SLF4JLoggerProxy.error(MarketData.this,
-                                       e);
+                SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                       "Market Data Nexus {}",
+                                       ExceptionUtils.getRootCauseMessage(e));
                 updater.clear(item);
                 cancel();
             } catch (Exception e) {
                 // this is an exception that occurred during update - must be caught or it kills the scheduled executor - log it and report a problem to the user
                 updater.clear(item);
                 SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
-                                       "A problem occurred updating market data for {} {} [{}]",
+                                       "A problem occurred updating market data for {} {} [{}]: {}",
                                        content,
                                        instrument,
-                                       id);
-                SLF4JLoggerProxy.error(MarketData.this,
-                                       e);
+                                       id,
+                                       ExceptionUtils.getRootCauseMessage(e));
             }
         }
         /**
@@ -357,10 +390,6 @@ public class MarketData
          * reference token for the scheduled market data refresh job, if <code>null</code>, no job is scheduled
          */
         private Future<?> refreshJobToken;
-        /**
-         * tracks the last update time
-         */
-        private long lastUpdate = 0;
     }
     /**
      * Uniquely identifies the contents of a market data request.
@@ -447,6 +476,7 @@ public class MarketData
         {
             updater.clear(item);
             if(refreshJob != null) {
+                refreshJobs.remove(refreshJob);
                 refreshJob.cancel();
                 refreshJob = null;
             }
@@ -461,7 +491,8 @@ public class MarketData
          */
         private void dispose()
         {
-            requests.remove(key);
+            requests.invalidate(key);
+            refreshJobs.remove(refreshJob);
             disconnect();
         }
         /**
@@ -515,10 +546,8 @@ public class MarketData
                                                       requestId,
                                                       updater,
                                                       item);
-            refreshJob.refreshJobToken = marketDataRefreshExecutor.scheduleAtFixedRate(refreshJob,
-                                                                                       1000,
-                                                                                       updateFrequency,
-                                                                                       TimeUnit.MILLISECONDS);
+            refreshJobs.add(refreshJob);
+            scheduleRefreshJob();
         }
         /**
          * Increments and returns the reference count.
@@ -562,22 +591,19 @@ public class MarketData
          * @param inItem an <code>MDMutableItemType</code> value
          * @param inKey a <code>MarketDataReferenceKey</code> value
          * @param inUpdater an <code>ItemUpdated&lt;MDMutableItemType&gt;</code> value
-         * @param inUpdateFrequency a <code>long</code> value
          */
         private MarketDataDetails(Instrument inInstrument,
                                   Content inContent,
                                   MarketDataRequest inRequest,
                                   final MDMutableItemType inItem,
                                   final MarketDataReferenceKey inKey,
-                                  ItemUpdater<MDMutableItemType> inUpdater,
-                                  long inUpdateFrequency)
+                                  ItemUpdater<MDMutableItemType> inUpdater)
         {
             instrument = inInstrument;
             content = inContent;
             request = inRequest;
             item = inItem;
             updater = inUpdater;
-            updateFrequency = inUpdateFrequency;
             key = inKey;
             reference = new IMarketDataReference<MDType>() {
                 @Override
@@ -605,10 +631,6 @@ public class MarketData
                 private long id = System.nanoTime();
             };
         }
-        /**
-         * indicates how frequently (in ms) to check for updates
-         */
-        private final long updateFrequency;
         /**
          * updates {@link #item} when new events arrive
          */
@@ -700,7 +722,7 @@ public class MarketData
      * @since 2.4.0
      */
     @ClassVersion("$Id$")
-    private abstract static class AbstractDepthUpdater
+    private abstract class AbstractDepthUpdater
             implements ItemUpdater<MDDepthOfBookImpl>
     {
         /* (non-Javadoc)
@@ -710,7 +732,14 @@ public class MarketData
         public void update(final MDDepthOfBookImpl inItem,
                            final Deque<Event> inEvents)
         {
-            inItem.setInstrument(inItem.getInstrument());
+            if(inEvents == null || inEvents.isEmpty()) {
+                clear(inItem);
+                return;
+            }
+            Event firstEvent = inEvents.getFirst();
+            HasInstrument hasInstrument = (HasInstrument)firstEvent;
+            Instrument instrument = hasInstrument.getInstrument();
+            inItem.setInstrument(instrument);
             inItem.setProduct(getContent());
             final List<AskEvent> newAsks = Lists.newArrayList();
             final List<BidEvent> newBids = Lists.newArrayList();
@@ -723,47 +752,26 @@ public class MarketData
                     throw new UnsupportedOperationException();
                 }
             }
-            // TODO measure difference only
-            if(!newAsks.isEmpty()) {
-                inItem.getAsks().doWriteOperation(new Callable<Void>() {
-                    @Override
-                    public Void call()
-                            throws Exception
-                    {
-                        inItem.getAsks().clear();
-                        for(AskEvent ask : newAsks) {
-                            MDQuoteImpl quoteItem = new MDQuoteImpl();
-                            quoteItem.setInstrument(ask.getInstrument());
-                            quoteItem.setPrice(ask.getPrice());
-                            quoteItem.setSize(ask.getSize());
-                            quoteItem.setSource(String.valueOf(ask.getSource()));
-                            quoteItem.setTime(ask.getTimeMillis());
-                            inItem.getAsks().add(quoteItem);
-                        }
-                        return null;
-                    }
-                });
-            }
-            if(!newBids.isEmpty()) {
-                inItem.getBids().doWriteOperation(new Callable<Void>() {
-                    @Override
-                    public Void call()
-                            throws Exception
-                    {
-                        inItem.getBids().clear();
-                        for(BidEvent bid : newBids) {
-                            MDQuoteImpl quoteItem = new MDQuoteImpl();
-                            quoteItem.setInstrument(bid.getInstrument());
-                            quoteItem.setPrice(bid.getPrice());
-                            quoteItem.setSize(bid.getSize());
-                            quoteItem.setSource(String.valueOf(bid.getSource()));
-                            quoteItem.setTime(bid.getTimeMillis());
-                            inItem.getBids().add(quoteItem);
-                        }
-                        return null;
-                    }
-                });
-            }
+            inItem.getAsks().doWriteOperation(new Callable<Void>() {
+                @Override
+                public Void call()
+                        throws Exception
+                {
+                    doListUpdate(inItem.getAsks(),
+                                 newAsks);
+                    return null;
+                }
+            });
+            inItem.getBids().doWriteOperation(new Callable<Void>() {
+                @Override
+                public Void call()
+                        throws Exception
+                {
+                    doListUpdate(inItem.getBids(),
+                                 newBids);
+                    return null;
+                }
+            });
         }
         /* (non-Javadoc)
          * @see org.marketcetera.photon.internal.marketdata.MarketData.ItemUpdater#clear(org.marketcetera.photon.model.marketdata.MDItem)
@@ -773,6 +781,76 @@ public class MarketData
         {
             inItem.getBids().clear();
             inItem.getAsks().clear();
+        }
+        /**
+         * Update the given current list with the contents of the given new list.
+         *
+         * @param inCurrentList a <code>LockableEList&lt;MDQuote&gt;</code> value
+         * @param inNewList a <code>List&lt;? extends QuoteEvent&gt;</code> value
+         */
+        private void doListUpdate(LockableEList<MDQuote> inCurrentList,
+                                  List<? extends QuoteEvent> inNewList)
+        {
+            Iterator<MDQuote> currentEventIterator = inCurrentList.iterator();
+            Iterator<? extends QuoteEvent> newEventIterator = inNewList.iterator();
+            List<MDQuote> quotesToRemove = Lists.newArrayList();
+            while(currentEventIterator.hasNext()) {
+                MDQuote currentEvent = currentEventIterator.next();
+                QuoteEvent newEvent = null;
+                if(newEventIterator.hasNext()) {
+                    newEvent = newEventIterator.next();
+                }
+                // currentEvent is non-null, newEvent may or may not be null
+                if(newEvent == null) {
+                    // current has no match in the new list
+                    quotesToRemove.add(currentEvent);
+                } else {
+                    // there is an entry in both the new list and the old list, compare them to see if they're the same
+                    if(!isEqual(currentEvent,newEvent)) {
+                        ((MDQuoteImpl)currentEvent).setPrice(newEvent.getPrice());
+                        ((MDQuoteImpl)currentEvent).setSize(newEvent.getSize());
+                        ((MDQuoteImpl)currentEvent).setSource(newEvent.getExchange());
+                        ((MDQuoteImpl)currentEvent).setTime(newEvent.getQuoteDate().getTime());
+                    }
+                }
+            }
+            inCurrentList.removeAll(quotesToRemove);
+            // anything left in the new event iterator is new
+            if(newEventIterator.hasNext()) {
+                List<MDQuote> newItems = Lists.newArrayList();
+                while(newEventIterator.hasNext()) {
+                    QuoteEvent newQuote = newEventIterator.next();
+                    MDQuoteImpl quoteItem = new MDQuoteImpl();
+                    quoteItem.setInstrument(newQuote.getInstrument());
+                    quoteItem.setPrice(newQuote.getPrice());
+                    quoteItem.setSize(newQuote.getSize());
+                    quoteItem.setSource(newQuote.getExchange());
+                    quoteItem.setTime(newQuote.getQuoteDate().getTime());
+                    newItems.add(quoteItem);
+                }
+                inCurrentList.addAll(newItems);
+            }
+        }
+        /**
+         * Determine if the two quote objects are effectively equal.
+         *
+         * @param inMdQuote an <code>MDQuote</code> value
+         * @param inQuote a <code>QuoteEvent</code> value
+         * @return a <code>boolean</code> value
+         */
+        private boolean isEqual(MDQuote inMdQuote,
+                                QuoteEvent inQuote)
+        {
+            if(inMdQuote.getTime() != inQuote.getQuoteDate().getTime()) {
+                return false;
+            }
+            if(inMdQuote.getPrice().compareTo(inQuote.getPrice()) != 0) {
+                return false;
+            }
+            if(inMdQuote.getSize().compareTo(inQuote.getSize()) != 0) {
+                return false;
+            }
+            return true;
         }
         /**
          * Gets the content type of this market data updater.
@@ -831,12 +909,17 @@ public class MarketData
         public void update(MDLatestTickImpl inItem,
                            Deque<Event> inEvents)
         {
-            Event mostRecentEvent = inEvents.getFirst();
-            if(mostRecentEvent instanceof TradeEvent) {
-                TradeEvent trade = (TradeEvent)mostRecentEvent;
-                inItem.setInstrument(trade.getInstrument());
-                inItem.setPrice(trade.getPrice());
-                inItem.setSize(trade.getSize());
+            if(inEvents == null || inEvents.isEmpty()) {
+                clear(inItem);
+                return;
+            }
+            for(Event event : inEvents) {
+                if(event instanceof TradeEvent) {
+                    TradeEvent trade = (TradeEvent)event;
+                    inItem.setInstrument(trade.getInstrument());
+                    inItem.setPrice(trade.getPrice());
+                    inItem.setSize(trade.getSize());
+                }
             }
         }
         @Override
@@ -854,35 +937,59 @@ public class MarketData
         public void update(MDTopOfBookImpl inItem,
                            Deque<Event> inEvents)
         {
-            // traverse the list from front to back, stopping when we have one each of bid and ask
+            if(inEvents == null || inEvents.isEmpty()) {
+                clear(inItem);
+                return;
+            }
             boolean askFound = false;
             boolean bidFound = false;
-            for(Event event : inEvents) {
-                if(event instanceof AskEvent) {
-                    AskEvent ask = (AskEvent)event;
-                    askFound = true;
+            for(Event quote : inEvents) {
+                if(quote instanceof AskEvent) {
+                    AskEvent ask = (AskEvent)quote;
                     inItem.setInstrument(ask.getInstrument());
                     inItem.setAskPrice(ask.getPrice());
                     inItem.setAskSize(ask.getSize());
-                } else if(event instanceof BidEvent) {
-                    BidEvent bid = (BidEvent)event;
-                    bidFound = true;
+                    askFound = true;
+                } else if(quote instanceof BidEvent) {
+                    BidEvent bid = (BidEvent)quote;
                     inItem.setInstrument(bid.getInstrument());
                     inItem.setBidPrice(bid.getPrice());
                     inItem.setBidSize(bid.getSize());
+                    bidFound = true;
                 }
-                if(askFound && bidFound) {
-                    break;
-                }
+            }
+            if(!bidFound) {
+                clearBid(inItem);
+            }
+            if(!askFound) {
+                clearAsk(inItem);
             }
         }
         @Override
         public void clear(MDTopOfBookImpl inItem)
         {
-            inItem.setAskPrice(null);
-            inItem.setAskSize(null);
+            clearAsk(inItem);
+            clearBid(inItem);
+        }
+        /**
+         * Clear the bid price.
+         *
+         * @param inItem an <code>MDTopOfBookImpl</code> value
+         */
+        private void clearBid(MDTopOfBookImpl inItem)
+        {
             inItem.setBidPrice(null);
             inItem.setBidSize(null);
+        }
+        /**
+         * Clear the ask price.
+         *
+         * @param inItem an <code>MDTopOfBookImpl</code> value
+         */
+        private void clearAsk(MDTopOfBookImpl inItem)
+        {
+            inItem.setAskPrice(null);
+            inItem.setAskSize(null);
         }
     };
     /**
@@ -893,18 +1000,20 @@ public class MarketData
         public void update(MDMarketstatImpl inItem,
                            Deque<Event> inEvents)
         {
-            Event mostRecentEvent = inEvents.getFirst();
-            if(mostRecentEvent instanceof MarketstatEvent) {
-                MarketstatEvent statEvent = (MarketstatEvent)mostRecentEvent;
-                inItem.setInstrument(statEvent.getInstrument());
-                inItem.setCloseDate(statEvent.getCloseDate());
-                inItem.setClosePrice(statEvent.getClose());
-                inItem.setHighPrice(statEvent.getHigh());
-                inItem.setLowPrice(statEvent.getLow());
-                inItem.setOpenPrice(statEvent.getOpen());
-                inItem.setPreviousCloseDate(statEvent.getPreviousCloseDate());
-                inItem.setPreviousClosePrice(statEvent.getPreviousClose());
-                inItem.setVolumeTraded(statEvent.getVolume());
+            if(inEvents == null || inEvents.isEmpty()) {
+                clear(inItem);
+                return;
+            }
+            for(Event event : inEvents) {
+                if(event instanceof MarketstatEvent) {
+                    MarketstatEvent statEvent = (MarketstatEvent)event;
+                    inItem.setInstrument(statEvent.getInstrument());
+                    inItem.setLowPrice(statEvent.getHigh()); // this is high price
+                    inItem.setHighPrice(statEvent.getOpen()); // this is open/close
+                    inItem.setOpenPrice(statEvent.getVolume()); // this is actually trade volume
+                    inItem.setVolumeTraded(statEvent.getLow()); // this is actually low price
+                    inItem.setPreviousClosePrice(statEvent.getPreviousClose()); // this is right!
+                }
             }
         }
         @Override
@@ -981,23 +1090,31 @@ public class MarketData
         }
     };
     /**
+     * holds current market data refresh jobs
+     */
+    private final Set<SubscriptionRefreshJob<?,?>> refreshJobs = Sets.newHashSet();
+    /**
      * contains market data active requests by reference key (for reuse)
      */
-    private final Map<MarketDataReferenceKey,MarketDataDetails<?,?>> requests = Maps.newHashMap();
+    private final Cache<MarketDataReferenceKey,MarketDataDetails<?,?>> requests = CacheBuilder.newBuilder().build();
     /**
      * schedules market data refresh jobs
      */
-    private ScheduledExecutorService marketDataRefreshExecutor = Executors.newScheduledThreadPool(10);
+    private final ScheduledExecutorService marketDataRefreshExecutor = Executors.newScheduledThreadPool(10);
     /**
      * provides access to the market data client
      */
     private final IMarketDataClientProvider marketDataClientProvider;
     /**
-     * indicates how frequently to check for top-of-book market data updates (in ms)
+     * indicates how frequently to check for market data updates (in ms)
      */
-    private static final long TOP_UPDATE_FREQUENCY = 1000;
+    private static final long UPDATE_FREQUENCY = 1000;
     /**
-     * indicates how frequently to check for market data depth updates (in ms)
+     * guards access to {@link #refreshJobToken}
      */
-    private static final long DEPTH_UPDATE_FREQUENCY = 3000;
+    private final Object refreshJobLock = new Object();
+    /**
+     * tracks the market data refresh job
+     */
+    private volatile ScheduledFuture<?> refreshJobToken = null;
 }

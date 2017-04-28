@@ -266,10 +266,9 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
          *             if column is not in the expected range
          */
         public Object getColumnValue(PositionRow baseObject, int column) {
-            // TODO: instrument specific functionality that can be abstraced
+            // TODO: instrument specific functionality that can be abstracted
             Instrument instrument = baseObject.getInstrument();
-            Option option = (instrument instanceof Option) ? (Option) instrument
-                    : null;
+            Option option = (instrument instanceof Option) ? (Option) instrument : null;
             Future future = (instrument instanceof Future) ? (Future)instrument : null;
             PositionMetrics metrics = baseObject.getPositionMetrics();
             switch (column - mOffset) {

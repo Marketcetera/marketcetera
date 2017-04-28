@@ -16,15 +16,14 @@ import org.marketcetera.util.ws.ContextClassProvider;
 public interface MarketDataServiceClientFactory
 {
     /**
-     * 
+     * Create a MarketDataServiceClientFactory instance.
      *
-     *
-     * @param inUsername
-     * @param inPassword
-     * @param inHostname
-     * @param inPort
-     * @param inContextClassProvider
-     * @return
+     * @param inUsername a <code>String</code> value
+     * @param inPassword a <code>String</code> value
+     * @param inHostname a <code>String</code> value
+     * @param inPort an <code>int</code> value
+     * @param inContextClassProvider a <code>ContextClassProvider</code> value
+     * @return a <code>MarketDataServiceClient</code> value
      */
     MarketDataServiceClient create(String inUsername,
                                    String inPassword,
@@ -32,14 +31,13 @@ public interface MarketDataServiceClientFactory
                                    int inPort,
                                    ContextClassProvider inContextClassProvider);
     /**
-     * 
+     * Create a MarketDataServiceClientFactory instance.
      *
-     *
-     * @param inUsername
-     * @param inPassword
-     * @param inHostname
-     * @param inPort
-     * @return
+     * @param inUsername a <code>String</code> value
+     * @param inPassword a <code>String</code> value
+     * @param inHostname a <code>String</code> value
+     * @param inPort an <code>int</code> value
+     * @return a <code>MarketDataServiceClient</code> value
      */
     MarketDataServiceClient create(String inUsername,
                                    String inPassword,

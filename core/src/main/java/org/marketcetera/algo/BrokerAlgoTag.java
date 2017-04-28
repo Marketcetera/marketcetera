@@ -1,12 +1,13 @@
 package org.marketcetera.algo;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
-import javax.persistence.Transient;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -15,7 +16,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.Validator;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -45,6 +46,7 @@ public class BrokerAlgoTag
     public BrokerAlgoTag(BrokerAlgoTagSpec inTagSpec)
     {
         setTagSpec(inTagSpec);
+        setValue(inTagSpec.getDefaultValue());
     }
     /**
      * Create a new BrokerAlgoTag instance.
@@ -92,17 +94,7 @@ public class BrokerAlgoTag
      */
     public final void setValue(String inValue)
     {
-    	String oldValue = value;
         value = StringUtils.trimToNull(inValue);
-        if(oldValue != null){
-        	if(!oldValue.equals(value)){
-        		propertyChangeSupport.firePropertyChange("value", oldValue, value);
-        	}
-        }else{
-            if(value != null)
-            	propertyChangeSupport.firePropertyChange("value", oldValue, value);
-        }
-        	
     }
     /**
      * Gets the underlying tag spec label.
@@ -125,12 +117,13 @@ public class BrokerAlgoTag
     {
         String pattern = tagSpec.getPattern();
         if(pattern != null) {
-        	//Allow validation of empty string
-        	String valueToCompare = (value == null)? "" : value;
+            //Allow validation of empty string
+            String valueToCompare = (value == null)? "" : value;
             if(!Pattern.compile(pattern).matcher(valueToCompare).matches()) {
-                throw new CoreException(new I18NBoundMessage2P(Messages.ALGO_TAG_VALUE_PATTERN_MISMATCH,
+                throw new CoreException(new I18NBoundMessage3P(Messages.ALGO_TAG_VALUE_PATTERN_MISMATCH,
                                                                tagSpec.getLabel(),
-                                                               valueToCompare));
+                                                               valueToCompare,
+                                                               tagSpec.getAdvice()));
             }
         }
         if(tagSpec.getIsMandatory() && value == null) {
@@ -142,15 +135,6 @@ public class BrokerAlgoTag
             tagValidator.validate(this);
         }
     }
-    
-    public void addPropertyChangeListener(PropertyChangeListener listener){
-    	propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-    
-    public void removePropertyChangeListener(PropertyChangeListener listener){
-    	propertyChangeSupport.removePropertyChangeListener(listener);
-    }
-    
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -197,9 +181,6 @@ public class BrokerAlgoTag
      */
     @XmlElement
     private BrokerAlgoTagSpec tagSpec;
-    
-    @Transient
-    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     /**
      * contains the value to apply to the given tag spec
      */

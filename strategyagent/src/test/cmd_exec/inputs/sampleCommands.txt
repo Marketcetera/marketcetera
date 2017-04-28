@@ -20,7 +20,7 @@ createModule;metc:cep:system;metc:cep:system:myinstance
 # Syntax: startModule;module_instance_urn
 #
 #
-startModule;metc:mdata:bogus:single
+startModule;metc:mdata:exsim:single
 #
 # Create Data Flow Command
 #
@@ -34,4 +34,4 @@ startModule;metc:mdata:bogus:single
 #           request_parameter: is the request parameter for requesting
 #           data from the module instance.
 #
-createDataFlow;metc:mdata:bogus:single;type=marketdata:symbols=AAPL^metc:sink:system
+createDataFlow;metc:mdata:exsim:single;type=marketdata:symbols=AAPL^metc:sink:system

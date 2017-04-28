@@ -59,7 +59,7 @@ public class FixUtilTest extends FIXVersionedTestCase{
                                                          "text");
         message2.setField(new LeavesQty(190.0));
         execType = FIXUtil.getExecOrExecTransType(message2);
-        if(fixVersion.ordinal() >= FIXVersion.FIX43.ordinal()) {
+        if(version43orAbove()) {
             assertEquals(ExecutionType.Trade,
                          execType);
         } else {
@@ -84,7 +84,7 @@ public class FixUtilTest extends FIXVersionedTestCase{
                      FIXUtil.getOrderDisplayQuantity(message3));
         message3.setField(new MaxFloor(30));
         execType = FIXUtil.getExecOrExecTransType(message3);
-        if(fixVersion.ordinal() >= FIXVersion.FIX43.ordinal()) {
+        if(version43orAbove()) {
             assertEquals(ExecutionType.Trade,
                          execType);
         } else {
@@ -93,5 +93,4 @@ public class FixUtilTest extends FIXVersionedTestCase{
         }
         assertEquals(new BigDecimal(30), FIXUtil.getOrderDisplayQuantity(message3));
     }
-   
 }

@@ -67,7 +67,7 @@ public class InstrumentToMessageTest {
         //Initialize all fix dictionaries.
         for (FIXVersion version : FIXVersion.values()) {
             FIXDataDictionaryManager.initialize(version,
-                    version.getDataDictionaryURL());
+                    version.getDataDictionaryName());
         }
     }
 
@@ -108,7 +108,109 @@ public class InstrumentToMessageTest {
         //Test equivalence with InstrumentFromMessage
         assertEquals(TEST_EQUITY, InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
-    
+    /**
+     * Tests equity instrument handling with dictionary.
+     *
+     * @throws Exception if there were unexpected errors.
+     */
+    @Test
+    public void equityDictionary() throws Exception {
+        Message msg = mCurrentVersion.getMessageFactory().newBasicOrder();
+        String msgType = msg.getHeader().getString(MsgType.FIELD);
+        DataDictionary dictionary = FIXDataDictionaryManager.getFIXDataDictionary(mCurrentVersion).getDictionary();
+        assertTrue(InstrumentToMessage.SELECTOR.forInstrument(TEST_EQUITY).isSupported(dictionary, msgType));
+        InstrumentToMessage.SELECTOR.forInstrument(TEST_EQUITY).set(TEST_EQUITY, dictionary, msgType, msg);
+        //verify security type
+        if (isFieldPresent(dictionary, msg, msgType, SecurityType.FIELD)) {
+            assertEquals(TEST_EQUITY.getSecurityType().getFIXValue(),
+                    msg.getString(SecurityType.FIELD));
+        }
+        //verify symbol
+        if (isFieldPresent(dictionary, msg, msgType, Symbol.FIELD)) {
+            assertEquals(TEST_EQUITY.getSymbol(), msg.getString(Symbol.FIELD));
+        }
+        //Test equivalence with InstrumentFromMessage
+        assertEquals(TEST_EQUITY, InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+    }
+    /**
+     * Test equity sfx instrument handling without dictionary.
+     *
+     * @throws Exception if there were unexpected errors.
+     */
+    @Test
+    public void equitySfx()
+            throws Exception
+    {
+        Message msg = mCurrentVersion.getMessageFactory().newBasicOrder();
+        InstrumentToMessage.SELECTOR.forInstrument(TEST_EQUITY_SFX).set(TEST_EQUITY_SFX,
+                                                                        mCurrentVersion.toString(),
+                                                                        msg);
+        //verify security type
+        if(FIXVersion.FIX40.equals(mCurrentVersion)) {
+            assertFalse(msg.isSetField(SecurityType.FIELD));
+        } else {
+            assertTrue(msg.isSetField(SecurityType.FIELD));
+            assertEquals(TEST_EQUITY_SFX.getSecurityType().getFIXValue(),
+                         msg.getString(SecurityType.FIELD));
+        }
+        // verify symbol
+        assertTrue(msg.isSetField(Symbol.FIELD));
+        assertEquals(TEST_EQUITY_SFX.getSymbol(),
+                     msg.getString(Symbol.FIELD));
+        // verify symbol sfx
+        assertTrue(msg.isSetField(quickfix.field.SymbolSfx.FIELD));
+        assertEquals(TEST_EQUITY_SFX.getSymbolSfx(),
+                     msg.getString(quickfix.field.SymbolSfx.FIELD));
+        // test equivalence with InstrumentFromMessage
+        assertEquals(TEST_EQUITY_SFX,
+                     InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+    }
+    /**
+     * Tests equity sfx instrument handling with dictionary.
+     *
+     * @throws Exception if there were unexpected errors.
+     */
+    @Test
+    public void equitySfxDictionary()
+            throws Exception
+    {
+        Message msg = mCurrentVersion.getMessageFactory().newBasicOrder();
+        String msgType = msg.getHeader().getString(MsgType.FIELD);
+        DataDictionary dictionary = FIXDataDictionaryManager.getFIXDataDictionary(mCurrentVersion).getDictionary();
+        assertTrue(InstrumentToMessage.SELECTOR.forInstrument(TEST_EQUITY_SFX).isSupported(dictionary,
+                                                                                           msgType));
+        InstrumentToMessage.SELECTOR.forInstrument(TEST_EQUITY_SFX).set(TEST_EQUITY_SFX,
+                                                                        dictionary,
+                                                                        msgType,
+                                                                        msg);
+        // verify security type
+        if(isFieldPresent(dictionary,
+                          msg,
+                          msgType,
+                          SecurityType.FIELD)) {
+            assertEquals(TEST_EQUITY_SFX.getSecurityType().getFIXValue(),
+                         msg.getString(SecurityType.FIELD));
+        }
+        // verify symbol
+        if(isFieldPresent(dictionary,
+                          msg,
+                          msgType,
+                          Symbol.FIELD)) {
+            assertEquals(TEST_EQUITY_SFX.getSymbol(),
+                         msg.getString(Symbol.FIELD));
+        }
+        // verify symbol sfx
+        if(isFieldPresent(dictionary,
+                          msg,
+                          msgType,
+                          quickfix.field.SymbolSfx.FIELD)) {
+            assertEquals(TEST_EQUITY_SFX.getSymbolSfx(),
+                         msg.getString(quickfix.field.SymbolSfx.FIELD));
+        }
+        // test equivalence with InstrumentFromMessage
+        assertEquals(TEST_EQUITY_SFX,
+                     InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+    }
     /**
      * Tests currency instrument handling without dictionary.
      *
@@ -134,32 +236,6 @@ public class InstrumentToMessageTest {
         //Test equivalence with InstrumentFromMessage
         assertEquals(TEST_CURRENCY, InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
-
-    /**
-     * Tests equity instrument handling with dictionary.
-     *
-     * @throws Exception if there were unexpected errors.
-     */
-    @Test
-    public void equityDictionary() throws Exception {
-        Message msg = mCurrentVersion.getMessageFactory().newBasicOrder();
-        String msgType = msg.getHeader().getString(MsgType.FIELD);
-        DataDictionary dictionary = FIXDataDictionaryManager.getFIXDataDictionary(mCurrentVersion).getDictionary();
-        assertTrue(InstrumentToMessage.SELECTOR.forInstrument(TEST_EQUITY).isSupported(dictionary, msgType));
-        InstrumentToMessage.SELECTOR.forInstrument(TEST_EQUITY).set(TEST_EQUITY, dictionary, msgType, msg);
-        //verify security type
-        if (isFieldPresent(dictionary, msg, msgType, SecurityType.FIELD)) {
-            assertEquals(TEST_EQUITY.getSecurityType().getFIXValue(),
-                    msg.getString(SecurityType.FIELD));
-        }
-        //verify symbol
-        if (isFieldPresent(dictionary, msg, msgType, Symbol.FIELD)) {
-            assertEquals(TEST_EQUITY.getSymbol(), msg.getString(Symbol.FIELD));
-        }
-        //Test equivalence with InstrumentFromMessage
-        assertEquals(TEST_EQUITY, InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
-    }
-    
     /**
      * Tests currency instrument handling with dictionary.
      *
@@ -613,6 +689,7 @@ public class InstrumentToMessageTest {
 
     private final FIXVersion mCurrentVersion;
     private static final Equity TEST_EQUITY = new Equity("YBM");
+    private static final Equity TEST_EQUITY_SFX = new Equity("YBM","PRE");
     private static final Currency TEST_CURRENCY = new Currency("GBP/USD");
     private static final Option [] TEST_OPTIONS = {
             new Option("LBZ", "20101010", BigDecimal.TEN, OptionType.Call),

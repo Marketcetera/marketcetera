@@ -52,7 +52,8 @@ public interface Messages
         new I18NMessage1P(LOGGER,"fix_fnf_nomsg"); //$NON-NLS-1$
     static final I18NMessage2P FIX_FNF_MSG = 
         new I18NMessage2P(LOGGER,"fix_fnf_msg"); //$NON-NLS-1$
-
+    static final I18NMessage0P APPL_VERID_REQUIRED = new I18NMessage0P(LOGGER,"appl_verid_required"); //$NON-NLS-1$
+    static final I18NMessage1P MISSING_SESSION = new I18NMessage1P(LOGGER,"missing_session"); //$NON-NLS-1$
     static final I18NMessage0P ERROR_WRITING_EVENT_TO_LOG = 
         new I18NMessage0P(LOGGER,"error_writing_event_to_log"); //$NON-NLS-1$
     static final I18NMessage1P ERROR_COULD_NOT_CLEAR_LOG = 

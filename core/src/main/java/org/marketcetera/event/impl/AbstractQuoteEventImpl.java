@@ -232,6 +232,14 @@ public abstract class AbstractQuoteEventImpl
         return quote.getCount();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.QuoteEvent#isEmpty()
+     */
+    @Override
+    public boolean isEmpty()
+    {
+        return quote.isEmpty();
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.event.MarketDataEvent#getRequestId()
      */
     @Override

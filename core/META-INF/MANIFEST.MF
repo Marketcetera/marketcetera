@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.marketcetera.core;singleton:=true
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Name: Marketcetera Core Library
-Bundle-Version: 2.4.3
+Bundle-Version: 3.0.11
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.marketcetera.util;visibility:=reexport,
  org.marketcetera.util-test;resolution:=optional,
@@ -29,6 +29,7 @@ Export-Package: org.marketcetera.algo,
  org.marketcetera.module,
  org.marketcetera.options,
  org.marketcetera.persist,
+ org.marketcetera.pool,
  org.marketcetera.quickfix,
  org.marketcetera.quickfix.cficode,
  org.marketcetera.quickfix.customfields,

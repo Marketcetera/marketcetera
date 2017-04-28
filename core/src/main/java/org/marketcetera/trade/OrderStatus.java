@@ -3,11 +3,15 @@ package org.marketcetera.trade;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.util.misc.ClassVersion;
+
+import quickfix.FieldNotFound;
+import quickfix.Message;
 
 /* $License$ */
 /**
@@ -80,7 +84,21 @@ public enum OrderStatus {
                 ? Unknown
                 : status;
     }
-
+    /**
+     * Return the OrderStatus instance on the supplied FIX message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @return an <code>OrderStatus</code> value
+     * @throws IllegalArgumentException if the message does not contain an OrdStatus value
+     */
+    public static OrderStatus getInstanceForFIXMessage(Message inMessage)
+    {
+        try {
+            return getInstanceForFIXValue(inMessage.getChar(quickfix.field.OrdStatus.FIELD));
+        } catch (FieldNotFound e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
     /**
      * Creates an instance.
      *
@@ -91,12 +109,35 @@ public enum OrderStatus {
     }
     private final char mFIXValue;
     private static final Map<Character, OrderStatus> mFIXValueTable;
-    private static final Set<OrderStatus> pendingOrderStatusValues = EnumSet.of(PendingCancel,PendingNew,PendingReplace);
+    /**
+     * holds status values that represent open orders
+     */
+    public static final Set<OrderStatus> openOrderStatuses;
+    /**
+     * holds status values that represent closed orders
+     */
+    public static final Set<OrderStatus> closedOrderStatuses;
+    /**
+     * status values that represent pending orders
+     */
+    public static final Set<OrderStatus> pendingOrderStatusValues = EnumSet.of(PendingCancel,PendingNew,PendingReplace);
+    /**
+     * Provides static initialization
+     */
     static {
         Map<Character, OrderStatus> table = new HashMap<Character, OrderStatus>();
+        Set<OrderStatus> openOrderStatusValues = new HashSet<>();
+        Set<OrderStatus> closedOrderStatusValues = new HashSet<>();
         for(OrderStatus status: values()) {
             table.put(status.getFIXValue(), status);
+            if(FIXMessageUtil.isCancellable(status.getFIXValue())) {
+                openOrderStatusValues.add(status);
+            } else {
+                closedOrderStatusValues.add(status);
+            }
         }
+        closedOrderStatuses = Collections.unmodifiableSet(closedOrderStatusValues);
+        openOrderStatuses = Collections.unmodifiableSet(openOrderStatusValues);
         mFIXValueTable = Collections.unmodifiableMap(table);
     }
 }

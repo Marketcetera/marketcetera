@@ -14,6 +14,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.joda.time.DateTime;
+import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.PhotonPlugin;
@@ -44,8 +46,7 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS"); //$NON-NLS-1$
 
 	// todo: This constant is duplicated from EnumTableFormat.
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
-			"yyyy-MM-dd"); //$NON-NLS-1$
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
 
 	private static final Class<?>[] NUMERIC_TYPES = { Number.class, Date.class,
 			Calendar.class };
@@ -193,7 +194,7 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 			return false;
 		}
 		try {
-			FieldType fieldTypeEnum = dict.getFieldTypeEnum(fieldNum);
+			FieldType fieldTypeEnum = dict.getFieldType(fieldNum);
 			Class<?> javaType;
 			if (fieldTypeEnum == null){
 				javaType = String.class;
@@ -310,47 +311,60 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		}
 		return columnText;
 	}
-
-	protected String convertColumnValueToText(T baseObject, int columnIndex) {
-		Object objValue = getColumnValue(baseObject, columnIndex);
-		String textValue = null;
-		if (objValue != null) {
-			DataDictionary dictionary = getDataDictionary();
-			int fieldNum = columnTracker.getFieldNumber(columnIndex);
-			FieldType fieldType = dictionary.getFieldTypeEnum(fieldNum);
-			if (objValue instanceof Date) {
-				if (fieldType.equals(FieldType.UtcTimeOnly)
-						|| fieldType.equals(FieldType.UtcTimeStamp)) {
-					textValue = TIME_FORMAT.format((Date) objValue);
-				} else if (fieldType.equals(FieldType.UtcDateOnly)
-						|| fieldType.equals(FieldType.UtcDate)) {
-					textValue = DATE_FORMAT.format((Date) objValue);
-				}
-			}
-			/*
-			 * Exclude field 201 since it is PutOrCall, and we want to use the localizer below.
-			 */
-			else if (objValue instanceof BigDecimal && fieldNum != 201) {
-				BigDecimal n = (BigDecimal)objValue;
-				if (n.scale() <= NUM_DIGITS) {
-					return n.toPlainString();
-				} else {
-					return n.setScale(NUM_DIGITS, BigDecimal.ROUND_DOWN).toPlainString() + "..."; //$NON-NLS-1$
-				}
-			}
-
-			if (textValue == null) {
-				textValue = objValue.toString();
-				
-				String fieldName = dictionary.getFieldName(fieldNum);
-				textValue = FIXFieldLocalizer.getLocalizedFIXValueName(fieldName, textValue);
-			}
-		}
-		if (textValue == null) {
-			textValue = ""; //$NON-NLS-1$
-		}
-		return textValue;
-	}
+    /**
+     * Get a string representation of the given column.
+     *
+     * @param inBaseObject a <code>T</code> value
+     * @param inColumnIndex an <code>int</code> value
+     * @return a <code>String</code> value
+     */
+    protected String convertColumnValueToText(T inBaseObject,
+                                              int inColumnIndex)
+    {
+        Object objValue = getColumnValue(inBaseObject,
+                                         inColumnIndex);
+        String textValue = null;
+        if(objValue != null) {
+            DataDictionary dictionary = getDataDictionary();
+            int fieldNum = columnTracker.getFieldNumber(inColumnIndex);
+            FieldType fieldType = dictionary.getFieldType(fieldNum);
+            if(objValue instanceof Date) {
+                if (fieldType.equals(FieldType.UTCTIMEONLY) || fieldType.equals(FieldType.UTCTIMESTAMP)) {
+                    textValue = TIME_FORMAT.format((Date) objValue);
+                } else if (fieldType.equals(FieldType.UTCDATEONLY) || fieldType.equals(FieldType.UTCDATE)) {
+                    textValue = DATE_FORMAT.format((Date) objValue);
+                }
+            }
+            if(objValue instanceof DateTime) {
+                DateTime actualValue = (DateTime)objValue;
+//                if(actualValue.isAfter(LocalTime.MIDNIGHT.toDateTimeToday())) {
+//                    return TimeFactoryImpl.WALLCLOCK_MILLISECONDS_LOCAL.print(actualValue);
+//                } else {
+                    return TimeFactoryImpl.FULL_MILLISECONDS_LOCAL.print(actualValue);
+//                }
+            }
+            /*
+             * Exclude field 201 since it is PutOrCall, and we want to use the localizer below.
+             */
+            else if(objValue instanceof BigDecimal && fieldNum != 201) {
+                BigDecimal n = (BigDecimal)objValue;
+                if(n.scale() <= NUM_DIGITS) {
+                    return n.toPlainString();
+                } else {
+                    return n.setScale(NUM_DIGITS, BigDecimal.ROUND_DOWN).toPlainString() + "..."; //$NON-NLS-1$
+                }
+            }
+            if(textValue == null) {
+                textValue = objValue.toString();
+                String fieldName = dictionary.getFieldName(fieldNum);
+                textValue = FIXFieldLocalizer.getLocalizedFIXValueName(fieldName, textValue);
+            }
+        }
+        if(textValue == null) {
+            textValue = ""; //$NON-NLS-1$
+        }
+        return textValue;
+    }
 
 	public FieldMap getFieldMap(T element, int columnIndex) {
 		FieldMap fieldMap = null;

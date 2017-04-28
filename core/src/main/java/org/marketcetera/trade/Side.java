@@ -33,7 +33,27 @@ public enum Side {
     /**
      * A Sell Short Exempt Order.
      */
-    SellShortExempt(quickfix.field.Side.SELL_SHORT_EXEMPT);
+    SellShortExempt(quickfix.field.Side.SELL_SHORT_EXEMPT),
+    /**
+     * A Buy Minus Order
+     */
+    BuyMinus(quickfix.field.Side.BUY_MINUS),
+    /**
+     * A Cross Order
+     */
+    Cross(quickfix.field.Side.CROSS),
+    /**
+     * A Cross Short Order
+     */
+    CrossShort(quickfix.field.Side.CROSS_SHORT),
+    /**
+     * A Sell Plus Order
+     */
+    SellPlus(quickfix.field.Side.SELL_PLUS),
+    /**
+     * An Undisclosed Order
+     */
+    Undisclosed(quickfix.field.Side.UNDISCLOSED);
     /**
      * Indicates if this is a buy side.
      *
@@ -41,7 +61,7 @@ public enum Side {
      */
     public boolean isBuy()
     {
-        return equals(Buy);
+        return BUY_SIDES.contains(this);
     }
     /**
      * Indicates if this is a sell side.
@@ -88,7 +108,11 @@ public enum Side {
     /**
      * sell side values
      */
-    private static final Set<Side> SELL_SIDES = EnumSet.of(Sell,SellShort,SellShortExempt);
+    public static final Set<Side> SELL_SIDES = EnumSet.of(Sell,SellShort,SellShortExempt,SellPlus);
+    /**
+     * buy side values
+     */
+    public static final Set<Side> BUY_SIDES = EnumSet.of(Buy,BuyMinus);
     /**
      * side values by FIX value
      */

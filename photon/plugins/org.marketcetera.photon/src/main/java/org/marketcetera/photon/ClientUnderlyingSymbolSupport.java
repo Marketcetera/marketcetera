@@ -40,6 +40,6 @@ public final class ClientUnderlyingSymbolSupport
         } else if(instrument instanceof Future) {
             return ((Future)instrument).getSymbol();
         }
-        return instrument.getSymbol();
+        return instrument.getFullSymbol();
     }
 }

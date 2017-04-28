@@ -9,9 +9,11 @@ import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.photon.internal.marketdata.EObjectLockableCopyOnReadContainmentEList;
@@ -35,10 +37,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * </p>
  *
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
+public class MDDepthOfBookImpl
+        extends MDItemImpl
+        implements MDDepthOfBook
+{
     /**
      * The default value of the '{@link #getProduct() <em>Product</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -84,7 +89,8 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDDepthOfBookImpl() {
+    public MDDepthOfBookImpl()
+    {
         super();
     }
 
@@ -94,7 +100,8 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * @generated
      */
     @Override
-    protected EClass eStaticClass() {
+    protected EClass eStaticClass()
+    {
         return MDPackage.Literals.MD_DEPTH_OF_BOOK;
     }
 
@@ -103,7 +110,8 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public Content getProduct() {
+    public Content getProduct()
+    {
         return product;
     }
 
@@ -112,12 +120,16 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setProduct(Content newProduct) {
+    public void setProduct(Content newProduct)
+    {
         Content oldProduct = product;
         product = newProduct;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    MDPackage.MD_DEPTH_OF_BOOK__PRODUCT, oldProduct, product));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_DEPTH_OF_BOOK__PRODUCT,
+                                          oldProduct,
+                                          product));
     }
 
     /**
@@ -125,7 +137,8 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public LockableEList<MDQuote> getBids() {
+    public LockableEList<MDQuote> getBids()
+    {
         if (bids == null) {
             bids = new EObjectLockableCopyOnReadContainmentEList<MDQuote>(MDQuote.class,
                                                                           this,
@@ -139,7 +152,8 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public LockableEList<MDQuote> getAsks() {
+    public LockableEList<MDQuote> getAsks()
+    {
         if (asks == null) {
             asks = new EObjectLockableCopyOnReadContainmentEList<MDQuote>(MDQuote.class,
                                                                           this,
@@ -155,14 +169,20 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      */
     @Override
     public NotificationChain eInverseRemove(InternalEObject otherEnd,
-            int featureID, NotificationChain msgs) {
+                                            int featureID,
+                                            NotificationChain msgs)
+    {
         switch (featureID) {
-        case MDPackage.MD_DEPTH_OF_BOOK__BIDS:
-            return ((InternalEList<?>) getBids()).basicRemove(otherEnd, msgs);
-        case MDPackage.MD_DEPTH_OF_BOOK__ASKS:
-            return ((InternalEList<?>) getAsks()).basicRemove(otherEnd, msgs);
+            case MDPackage.MD_DEPTH_OF_BOOK__BIDS:
+                return ((InternalEList<?>) getBids()).basicRemove(otherEnd,
+                                                                  msgs);
+            case MDPackage.MD_DEPTH_OF_BOOK__ASKS:
+                return ((InternalEList<?>) getAsks()).basicRemove(otherEnd,
+                                                                  msgs);
         }
-        return super.eInverseRemove(otherEnd, featureID, msgs);
+        return super.eInverseRemove(otherEnd,
+                                    featureID,
+                                    msgs);
     }
 
     /**
@@ -171,16 +191,21 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * @generated
      */
     @Override
-    public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    public Object eGet(int featureID,
+                       boolean resolve,
+                       boolean coreType)
+    {
         switch (featureID) {
-        case MDPackage.MD_DEPTH_OF_BOOK__PRODUCT:
-            return getProduct();
-        case MDPackage.MD_DEPTH_OF_BOOK__BIDS:
-            return getBids();
-        case MDPackage.MD_DEPTH_OF_BOOK__ASKS:
-            return getAsks();
+            case MDPackage.MD_DEPTH_OF_BOOK__PRODUCT:
+                return getProduct();
+            case MDPackage.MD_DEPTH_OF_BOOK__BIDS:
+                return getBids();
+            case MDPackage.MD_DEPTH_OF_BOOK__ASKS:
+                return getAsks();
         }
-        return super.eGet(featureID, resolve, coreType);
+        return super.eGet(featureID,
+                          resolve,
+                          coreType);
     }
 
     /**
@@ -190,21 +215,24 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void eSet(int featureID, Object newValue) {
+    public void eSet(int featureID,
+                     Object newValue)
+    {
         switch (featureID) {
-        case MDPackage.MD_DEPTH_OF_BOOK__PRODUCT:
-            setProduct((Content) newValue);
-            return;
-        case MDPackage.MD_DEPTH_OF_BOOK__BIDS:
-            getBids().clear();
-            getBids().addAll((Collection<? extends MDQuote>) newValue);
-            return;
-        case MDPackage.MD_DEPTH_OF_BOOK__ASKS:
-            getAsks().clear();
-            getAsks().addAll((Collection<? extends MDQuote>) newValue);
-            return;
+            case MDPackage.MD_DEPTH_OF_BOOK__PRODUCT:
+                setProduct((Content) newValue);
+                return;
+            case MDPackage.MD_DEPTH_OF_BOOK__BIDS:
+                getBids().clear();
+                getBids().addAll((Collection<? extends MDQuote>) newValue);
+                return;
+            case MDPackage.MD_DEPTH_OF_BOOK__ASKS:
+                getAsks().clear();
+                getAsks().addAll((Collection<? extends MDQuote>) newValue);
+                return;
         }
-        super.eSet(featureID, newValue);
+        super.eSet(featureID,
+                   newValue);
     }
 
     /**
@@ -213,17 +241,18 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * @generated
      */
     @Override
-    public void eUnset(int featureID) {
+    public void eUnset(int featureID)
+    {
         switch (featureID) {
-        case MDPackage.MD_DEPTH_OF_BOOK__PRODUCT:
-            setProduct(PRODUCT_EDEFAULT);
-            return;
-        case MDPackage.MD_DEPTH_OF_BOOK__BIDS:
-            getBids().clear();
-            return;
-        case MDPackage.MD_DEPTH_OF_BOOK__ASKS:
-            getAsks().clear();
-            return;
+            case MDPackage.MD_DEPTH_OF_BOOK__PRODUCT:
+                setProduct(PRODUCT_EDEFAULT);
+                return;
+            case MDPackage.MD_DEPTH_OF_BOOK__BIDS:
+                getBids().clear();
+                return;
+            case MDPackage.MD_DEPTH_OF_BOOK__ASKS:
+                getAsks().clear();
+                return;
         }
         super.eUnset(featureID);
     }
@@ -234,15 +263,15 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * @generated
      */
     @Override
-    public boolean eIsSet(int featureID) {
+    public boolean eIsSet(int featureID)
+    {
         switch (featureID) {
-        case MDPackage.MD_DEPTH_OF_BOOK__PRODUCT:
-            return PRODUCT_EDEFAULT == null ? product != null
-                    : !PRODUCT_EDEFAULT.equals(product);
-        case MDPackage.MD_DEPTH_OF_BOOK__BIDS:
-            return bids != null && !bids.isEmpty();
-        case MDPackage.MD_DEPTH_OF_BOOK__ASKS:
-            return asks != null && !asks.isEmpty();
+            case MDPackage.MD_DEPTH_OF_BOOK__PRODUCT:
+                return PRODUCT_EDEFAULT == null ? product != null : !PRODUCT_EDEFAULT.equals(product);
+            case MDPackage.MD_DEPTH_OF_BOOK__BIDS:
+                return bids != null && !bids.isEmpty();
+            case MDPackage.MD_DEPTH_OF_BOOK__ASKS:
+                return asks != null && !asks.isEmpty();
         }
         return super.eIsSet(featureID);
     }
@@ -253,7 +282,8 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * @generated
      */
     @Override
-    public String toString() {
+    public String toString()
+    {
         if (eIsProxy())
             return super.toString();
 

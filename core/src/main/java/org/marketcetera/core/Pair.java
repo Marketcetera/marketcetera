@@ -106,6 +106,12 @@ public class Pair<T1, T2>
             return false;
         return true;
     }
+    /**
+     * first member of the pair
+     */
     private final T1 firstMember;
+    /**
+     * second member of the pair
+     */
     private final T2 secondMember;
 }

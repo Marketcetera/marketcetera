@@ -4,9 +4,15 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.annotation.*;
+import javax.annotation.PostConstruct;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -28,6 +34,17 @@ import org.marketcetera.util.misc.ClassVersion;
 public class BrokerAlgoTagSpec
         implements Serializable, Comparable<BrokerAlgoTagSpec>
 {
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        if(isReadOnly) {
+            Validate.notNull(defaultValue,
+                             "Default value required for read-only tags");
+        }
+    }
     /**
      * Get the tag value.
      *
@@ -158,6 +175,60 @@ public class BrokerAlgoTagSpec
     {
         options = inOptions;
     }
+    /**
+     * Get the defaultValue value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getDefaultValue()
+    {
+        return defaultValue;
+    }
+    /**
+     * Sets the defaultValue value.
+     *
+     * @param a <code>String</code> value
+     */
+    public void setDefaultValue(String inDefaultValue)
+    {
+        defaultValue = inDefaultValue;
+    }
+    /**
+     * Get the isReadOnly value.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isReadOnly()
+    {
+        return isReadOnly;
+    }
+    /**
+     * Sets the isReadOnly value.
+     *
+     * @param a <code>boolean</code> value
+     */
+    public void setIsReadOnly(boolean inIsReadOnly)
+    {
+        isReadOnly = inIsReadOnly;
+    }
+    /**
+     * Get the advice value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getAdvice()
+    {
+        return advice;
+    }
+    /**
+     * Sets the advice value.
+     *
+     * @param a <code>String</code> value
+     */
+    public void setAdvice(String inAdvice)
+    {
+        advice = inAdvice;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -217,10 +288,25 @@ public class BrokerAlgoTagSpec
     @XmlAttribute
     private String description;
     /**
+     * optional default value
+     */
+    @XmlAttribute
+    private String defaultValue;
+    /**
      * indicates if this tag is mandatory or not
      */
     @XmlAttribute
     private boolean mandatory = false;
+    /**
+     * indicates if this tag is readonly or not
+     */
+    @XmlAttribute
+    private boolean isReadOnly = false;
+    /**
+     * advice if validation fails
+     */
+    @XmlAttribute
+    private String advice;
     /**
      * optional regular expression used to validate algo tag value
      */
@@ -235,5 +321,5 @@ public class BrokerAlgoTagSpec
      * optional validator used to validate algo tag value
      */
     private transient Validator<BrokerAlgoTag> validator;
-    private static final long serialVersionUID = 3711535397610380635L;
+    private static final long serialVersionUID = 6777767631444656325L;
 }

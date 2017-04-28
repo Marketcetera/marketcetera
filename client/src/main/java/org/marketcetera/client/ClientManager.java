@@ -2,6 +2,9 @@ package org.marketcetera.client;
 
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang.Validate;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -21,6 +24,53 @@ import com.google.common.collect.Sets;
 public final class ClientManager
 {
     /**
+     * Validates and starts the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        Validate.isTrue(parameters != null || client != null);
+        if(!isInitialized()) {
+            init(parameters);
+        }
+    }
+    /**
+     * Get the parameters value.
+     *
+     * @return a <code>ClientParameters</code> value
+     */
+    public ClientParameters getParameters()
+    {
+        return parameters;
+    }
+    /**
+     * Sets the parameters value.
+     *
+     * @param inParameters a <code>ClientParameters</code> value
+     */
+    public void setParameters(ClientParameters inParameters)
+    {
+        parameters = inParameters;
+    }
+    /**
+     * Get the Client value.
+     *
+     * @return a <code>Client</code> value
+     */
+    public Client getClient()
+    {
+        return client;
+    }
+    /**
+     * Sets the Client value.
+     *
+     * @param inClient a <code>Client</code> value
+     */
+    public void setClient(Client inClient)
+    {
+        client = inClient;
+    }
+    /**
      * Initializes the connection to the server. The handle to communicate
      * with the server can be obtained via {@link #getInstance()}.
      *
@@ -34,7 +84,7 @@ public final class ClientManager
             throws ConnectionException, ClientInitException
     {
         if(!isInitialized()) {
-            mClient = mClientFactory.getClient(inParameter);
+            client = mClientFactory.getClient(inParameter);
             notifyClientInitListeners();
         } else {
             throw new ClientInitException(Messages.CLIENT_ALREADY_INITIALIZED);
@@ -64,7 +114,7 @@ public final class ClientManager
      */
     public static Client getInstance() throws ClientInitException {
         if (isInitialized()) {
-            return mClient;
+            return client;
         } else {
             throw new ClientInitException(Messages.CLIENT_NOT_INITIALIZED);
         }
@@ -76,7 +126,7 @@ public final class ClientManager
      * @return if the client is initialized.
      */
     public static boolean isInitialized() {
-        return mClient != null;
+        return client != null;
     }
     /**
      * Add the given client listener.
@@ -110,7 +160,7 @@ public final class ClientManager
      * This method is not meant to be used by clients. 
      */
     synchronized static void reset() {
-        mClient = null;
+        client = null;
     }
     /**
      * Notify all client listeners that the client has been initialized.
@@ -131,16 +181,11 @@ public final class ClientManager
     private static void notifyClientInitListener(ClientInitListener inClientInitListener)
     {
         try {
-            inClientInitListener.receiveClient(mClient);
+            inClientInitListener.receiveClient(client);
         } catch (Exception e) {
             SLF4JLoggerProxy.warn(ClientManager.class,
                                   e);
         }
-    }
-    /**
-     * Do not allow any instances to be created.
-     */
-    private ClientManager() {
     }
     /**
      * the <code>ClientFactory</code> to use to create the <code>Client</code> object 
@@ -157,7 +202,11 @@ public final class ClientManager
     /**
      * the <code>Client</code> object
      */
-    private volatile static Client mClient;
+    private volatile static Client client;
+    /**
+     * indicates how to conenct to the client
+     */
+    private ClientParameters parameters;
     /**
      * holds subscribed client init listeners
      */

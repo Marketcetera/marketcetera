@@ -327,16 +327,6 @@ public class MDPackageImpl
         return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(4);
     }
 
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public EAttribute getMDMarketstat_Volume()
-    {
-        return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(8);
-    }
-
     @Override
     public EAttribute getMDMarketstat_HighPrice()
     {
@@ -535,8 +525,6 @@ public class MDPackageImpl
                          MD_MARKETSTAT__VOLUME_TRADED);
         createEAttribute(mdMarketstatEClass,
                          MD_MARKETSTAT__OPEN_PRICE);
-        createEAttribute(mdMarketstatEClass,
-                         MD_MARKETSTAT__VOLUME);
 
         mdDepthOfBookEClass = createEClass(MD_DEPTH_OF_BOOK);
         createEAttribute(mdDepthOfBookEClass,
@@ -651,7 +639,7 @@ public class MDPackageImpl
                        "previousCloseDate", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
         initEAttribute(getMDMarketstat_HighPrice(),
                        ecorePackage.getEBigDecimal(),
-                       "highPrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+                       "highPrice", "0", 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$ //$NON-NLS-2$
         initEAttribute(getMDMarketstat_LowPrice(),
                        ecorePackage.getEBigDecimal(),
                        "lowPrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
@@ -661,9 +649,6 @@ public class MDPackageImpl
         initEAttribute(getMDMarketstat_OpenPrice(),
                        ecorePackage.getEBigDecimal(),
                        "openPrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDMarketstat_Volume(),
-                       ecorePackage.getEBigDecimal(),
-                       "volume", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
         initEClass(mdDepthOfBookEClass,
                    MDDepthOfBook.class,

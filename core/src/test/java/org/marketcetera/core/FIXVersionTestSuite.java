@@ -92,7 +92,7 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
     {
         HashMap<FIXVersion, String> map = new HashMap<FIXVersion, String>();
         for (FIXVersion version : inVersions) {
-            map.put(version, version.getDataDictionaryURL());
+            map.put(version, version.getDataDictionaryName());
         }
         FIXDataDictionaryManager.initialize(map);
     }

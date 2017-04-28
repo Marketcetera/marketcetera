@@ -11,7 +11,14 @@ import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.NewOrReplaceOrder;
+import org.marketcetera.trade.OrderCapacity;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.PositionEffect;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -129,7 +136,16 @@ public class NewOrReplaceOrderObservable extends
     public ITypedObservableValue<String> observeAccount() {
         return observeDetail("account", String.class); //$NON-NLS-1$
     }
-
+    /**
+     * Get a detail observable value for the execution destination field on the underlying order.
+     *
+     * @return an <code>ITypedObservableValue&lt;String&gt;</code> value
+     */
+    public ITypedObservableValue<String> observeExecutionDestination()
+    {
+        return observeDetail("executionDestination",
+                             String.class);
+    }
     /**
      * Provides a detail observable value for the time in force field on the
      * underlying order. The created observable will be disposed with this
@@ -174,10 +190,9 @@ public class NewOrReplaceOrderObservable extends
         return observeDetail("brokerID", BrokerID.class); //$NON-NLS-1$
     }
     /**
-     * 
+     * Provide a detail observable value for the given field on the underlying order.
      *
-     *
-     * @return
+     * @return an <code>ITypedObservableValue&lt;BrokerAlgo&gt;</code> value
      */
     public ITypedObservableValue<BrokerAlgo> observeBrokerAlgo()
     {

@@ -23,7 +23,14 @@ import org.marketcetera.photon.BrokerManager.Broker;
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator;
 import org.marketcetera.photon.ui.databinding.NewOrReplaceOrderObservable;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.NewOrReplaceOrder;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -44,6 +51,7 @@ public abstract class OrderTicketModel {
 
     protected static final Object BLANK = new NullSentinel(""); //$NON-NLS-1$
     private final NewOrReplaceOrderObservable mOrderObservable = new NewOrReplaceOrderObservable();
+    private final ITypedObservableValue<Instrument> instrument;
     private final ITypedObservableValue<BrokerID> mBrokerId;
     private final ITypedObservableValue<Side> mSide;
     private final ITypedObservableValue<BigDecimal> mQuantity;
@@ -51,6 +59,7 @@ public abstract class OrderTicketModel {
     private final ITypedObservableValue<BigDecimal> mPrice;
     private final ITypedObservableValue<TimeInForce> mTimeInForce;
     private final ITypedObservableValue<String> mAccount;
+    private final ITypedObservableValue<String> executionDestination;
     private final ITypedObservableValue<OrderType> mOrderType;
     private final ITypedObservableValue<Boolean> mIsLimitOrder;
     private final ITypedObservableValue<BrokerAlgo> mBrokerAlgo;
@@ -74,21 +83,25 @@ public abstract class OrderTicketModel {
         mPrice = mOrderObservable.observePrice();
         mTimeInForce = mOrderObservable.observeTimeInForce();
         mAccount = mOrderObservable.observeAccount();
+        executionDestination = mOrderObservable.observeExecutionDestination();
         mBrokerId = mOrderObservable.observeBrokerId();
+        instrument = mOrderObservable.observeInstrument();
         mBrokerAlgo = mOrderObservable.observeBrokerAlgo();
-
-        mIsLimitOrder = TypedObservableValueDecorator.decorate(
-                new ComputedValue(Boolean.class) {
-                    @Override
-                    protected Object calculate() {
-                        return mOrderType.getValue() == OrderType.Limit;
-                    }
-                }, true, Boolean.class);
-
+        mIsLimitOrder = TypedObservableValueDecorator.decorate(new ComputedValue(Boolean.class) {
+            @Override
+            protected Object calculate()
+            {
+                OrderType orderTypeValue = mOrderType.getTypedValue();
+                if(orderTypeValue == null) {
+                    return false;
+                }
+                return !orderTypeValue.isMarketOrder();
+            }
+        },true,Boolean.class);
         mIsLimitOrder.addValueChangeListener(new IValueChangeListener() {
             @Override
             public void handleValueChange(ValueChangeEvent event) {
-                if (!mIsLimitOrder.getTypedValue()) {
+                if(!mIsLimitOrder.getTypedValue()) {
                     mPrice.setValue(null);
                 }
             }
@@ -132,13 +145,13 @@ public abstract class OrderTicketModel {
     public void updateAlgoTags()
     {
         // find selected algo and populate the algo table
-        for(int i = 0; i < mAlgoTagsList.size(); i ++){
-            ((BrokerAlgoTag)mAlgoTagsList.get(i)).removePropertyChangeListener(null);
+        for(Object element : mAlgoTagsList) {
+            ((ObservableAlgoTag)element).removePropertyChangeListener(null);
         }
         mAlgoTagsList.clear();
         if(selectedAlgo != null && selectedAlgo.getAlgoTags() != null) {
             for(BrokerAlgoTag tag : selectedAlgo.getAlgoTags()) {
-                mAlgoTagsList.add(tag);
+                mAlgoTagsList.add(new ObservableAlgoTag(tag));
             }
         }
     }
@@ -186,7 +199,15 @@ public abstract class OrderTicketModel {
     public final NewOrReplaceOrderObservable getOrderObservable() {
         return mOrderObservable;
     }
-
+    /**
+     * Get the instrument of the ticket being edited.
+     *
+     * @return an <code>ITypedObservableValue&lt;Instrument&gt;</code> value
+     */
+    public final ITypedObservableValue<Instrument> getInstrument()
+    {
+        return instrument;
+    }
     /**
      * Returns the broker of the ticket being edited.
      * 
@@ -255,7 +276,6 @@ public abstract class OrderTicketModel {
     public final ITypedObservableValue<Boolean> isLimitOrder() {
         return mIsLimitOrder;
     }
-
     /**
      * Returns an observable that tracks the price of the current order.
      * 
@@ -282,14 +302,21 @@ public abstract class OrderTicketModel {
     public final ITypedObservableValue<String> getAccount() {
         return mAccount;
     }
-
+    /**
+     * Get and observable that tracks the execution destination of the current order.
+     *
+     * @return an <code>ITypedObservableValue&lt;String&gt;</code> value
+     */
+    public final ITypedObservableValue<String> getExecutionDestination()
+    {
+        return executionDestination;
+    }
     /**
      * Clear the existing order message and replace it with a new empty one.
      */
     public final void clearOrderMessage() {
         mOrderObservable.setValue(createNewOrder());
     }
-
     /**
      * Creates a new empty order.
      * 
@@ -305,6 +332,7 @@ public abstract class OrderTicketModel {
             order.setBrokerID(currentOrder.getBrokerID());
             order.setCustomFields(currentOrder.getCustomFields());
             order.setDisplayQuantity(currentOrder.getDisplayQuantity());
+            order.setExecutionDestination(currentOrder.getExecutionDestination());
             order.setInstrument(currentOrder.getInstrument());
             order.setOrderCapacity(currentOrder.getOrderCapacity());
             // do not set order id
@@ -315,6 +343,7 @@ public abstract class OrderTicketModel {
             order.setSide(currentOrder.getSide());
             order.setText(currentOrder.getText());
             order.setTimeInForce(currentOrder.getTimeInForce());
+            order.setPegToMidpoint(currentOrder.getPegToMidpoint());
         }
         return order;
     }
@@ -347,7 +376,6 @@ public abstract class OrderTicketModel {
     public void completeMessage() {
         addCustomFields();
     }
-
     /**
      * Loops through the list of custom fields and adds the enabled fields to
      * the message.
@@ -363,7 +391,9 @@ public abstract class OrderTicketModel {
                 map.put(key, value);
             }
         }
-        if (!map.isEmpty()) {
+        if(map.isEmpty()) {
+            order.setCustomFields(null);
+        } else {
             order.setCustomFields(map);
         }
     }

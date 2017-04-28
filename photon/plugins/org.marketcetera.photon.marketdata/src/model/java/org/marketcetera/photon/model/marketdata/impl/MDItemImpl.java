@@ -30,10 +30,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * </p>
  *
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public abstract class MDItemImpl extends EObjectImpl implements MDItem {
+public abstract class MDItemImpl
+        extends EObjectImpl
+        implements MDItem
+{
     /**
      * The default value of the '{@link #getInstrument() <em>Instrument</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -59,7 +62,8 @@ public abstract class MDItemImpl extends EObjectImpl implements MDItem {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDItemImpl() {
+    public MDItemImpl()
+    {
         super();
     }
 
@@ -69,7 +73,8 @@ public abstract class MDItemImpl extends EObjectImpl implements MDItem {
      * @generated
      */
     @Override
-    protected EClass eStaticClass() {
+    protected EClass eStaticClass()
+    {
         return MDPackage.Literals.MD_ITEM;
     }
 
@@ -78,7 +83,8 @@ public abstract class MDItemImpl extends EObjectImpl implements MDItem {
      * <!-- end-user-doc -->
      * @generated
      */
-    public Instrument getInstrument() {
+    public Instrument getInstrument()
+    {
         return instrument;
     }
 
@@ -87,12 +93,16 @@ public abstract class MDItemImpl extends EObjectImpl implements MDItem {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setInstrument(Instrument newInstrument) {
+    public void setInstrument(Instrument newInstrument)
+    {
         Instrument oldInstrument = instrument;
         instrument = newInstrument;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    MDPackage.MD_ITEM__INSTRUMENT, oldInstrument, instrument));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_ITEM__INSTRUMENT,
+                                          oldInstrument,
+                                          instrument));
     }
 
     /**
@@ -101,12 +111,17 @@ public abstract class MDItemImpl extends EObjectImpl implements MDItem {
      * @generated
      */
     @Override
-    public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    public Object eGet(int featureID,
+                       boolean resolve,
+                       boolean coreType)
+    {
         switch (featureID) {
-        case MDPackage.MD_ITEM__INSTRUMENT:
-            return getInstrument();
+            case MDPackage.MD_ITEM__INSTRUMENT:
+                return getInstrument();
         }
-        return super.eGet(featureID, resolve, coreType);
+        return super.eGet(featureID,
+                          resolve,
+                          coreType);
     }
 
     /**
@@ -115,13 +130,16 @@ public abstract class MDItemImpl extends EObjectImpl implements MDItem {
      * @generated
      */
     @Override
-    public void eSet(int featureID, Object newValue) {
+    public void eSet(int featureID,
+                     Object newValue)
+    {
         switch (featureID) {
-        case MDPackage.MD_ITEM__INSTRUMENT:
-            setInstrument((Instrument) newValue);
-            return;
+            case MDPackage.MD_ITEM__INSTRUMENT:
+                setInstrument((Instrument) newValue);
+                return;
         }
-        super.eSet(featureID, newValue);
+        super.eSet(featureID,
+                   newValue);
     }
 
     /**
@@ -130,11 +148,12 @@ public abstract class MDItemImpl extends EObjectImpl implements MDItem {
      * @generated
      */
     @Override
-    public void eUnset(int featureID) {
+    public void eUnset(int featureID)
+    {
         switch (featureID) {
-        case MDPackage.MD_ITEM__INSTRUMENT:
-            setInstrument(INSTRUMENT_EDEFAULT);
-            return;
+            case MDPackage.MD_ITEM__INSTRUMENT:
+                setInstrument(INSTRUMENT_EDEFAULT);
+                return;
         }
         super.eUnset(featureID);
     }
@@ -145,11 +164,11 @@ public abstract class MDItemImpl extends EObjectImpl implements MDItem {
      * @generated
      */
     @Override
-    public boolean eIsSet(int featureID) {
+    public boolean eIsSet(int featureID)
+    {
         switch (featureID) {
-        case MDPackage.MD_ITEM__INSTRUMENT:
-            return INSTRUMENT_EDEFAULT == null ? instrument != null
-                    : !INSTRUMENT_EDEFAULT.equals(instrument);
+            case MDPackage.MD_ITEM__INSTRUMENT:
+                return INSTRUMENT_EDEFAULT == null ? instrument != null : !INSTRUMENT_EDEFAULT.equals(instrument);
         }
         return super.eIsSet(featureID);
     }
@@ -160,7 +179,8 @@ public abstract class MDItemImpl extends EObjectImpl implements MDItem {
      * @generated
      */
     @Override
-    public String toString() {
+    public String toString()
+    {
         if (eIsProxy())
             return super.toString();
 

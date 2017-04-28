@@ -75,18 +75,25 @@ public class SpringSessionDescriptor
      * Initialization.
      */ 
 
-    static
-    {
-        DATA_DICTIONARY_MAP.put
-            (FixVersions.BEGINSTRING_FIX40,"FIX40.xml"); //$NON-NLS-1$
-        DATA_DICTIONARY_MAP.put
-            (FixVersions.BEGINSTRING_FIX41,"FIX41.xml"); //$NON-NLS-1$
-        DATA_DICTIONARY_MAP.put
-            (FixVersions.BEGINSTRING_FIX42,"FIX42.xml"); //$NON-NLS-1$
-        DATA_DICTIONARY_MAP.put
-            (FixVersions.BEGINSTRING_FIX43,"FIX43.xml"); //$NON-NLS-1$
-        DATA_DICTIONARY_MAP.put
-            (FixVersions.BEGINSTRING_FIX44,"FIX44.xml"); //$NON-NLS-1$
+    static {
+        DATA_DICTIONARY_MAP.put(FixVersions.BEGINSTRING_FIX40,
+                                "FIX40.xml"); //$NON-NLS-1$
+        DATA_DICTIONARY_MAP.put(FixVersions.BEGINSTRING_FIX41,
+                                "FIX41.xml"); //$NON-NLS-1$
+        DATA_DICTIONARY_MAP.put(FixVersions.BEGINSTRING_FIX42,
+                                "FIX42.xml"); //$NON-NLS-1$
+        DATA_DICTIONARY_MAP.put(FixVersions.BEGINSTRING_FIX43,
+                                "FIX43.xml"); //$NON-NLS-1$
+        DATA_DICTIONARY_MAP.put(FixVersions.BEGINSTRING_FIX44,
+                                "FIX44.xml"); //$NON-NLS-1$
+        DATA_DICTIONARY_MAP.put(FixVersions.BEGINSTRING_FIXT11,
+                                "FIXT11.xml"); //$NON-NLS-1$
+        DATA_DICTIONARY_MAP.put(FixVersions.FIX50,
+                                "FIX50.xml"); //$NON-NLS-1$
+        DATA_DICTIONARY_MAP.put(FixVersions.FIX50SP1,
+                                "FIX50SP1.xml"); //$NON-NLS-1$
+        DATA_DICTIONARY_MAP.put(FixVersions.FIX50SP2,
+                                "FIX50SP2.xml"); //$NON-NLS-1$
     }
 
 
@@ -222,7 +229,7 @@ public class SpringSessionDescriptor
     protected void process()
     {
         if (getSettings()==null) {
-            Messages.MISSING_SETTINGS.warn(this);
+            Messages.MISSING_SETTINGS.debug(this);
         }
         String beginString=getKeyValue(SessionSettings.BEGINSTRING);
         assertValueSet(SessionSettings.BEGINSTRING,beginString);

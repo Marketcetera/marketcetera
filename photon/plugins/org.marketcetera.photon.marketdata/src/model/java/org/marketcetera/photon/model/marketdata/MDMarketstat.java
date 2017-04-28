@@ -25,7 +25,6 @@ import org.marketcetera.util.misc.ClassVersion;
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getLowPrice <em>Low Price</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getVolumeTraded <em>Volume Traded</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getOpenPrice <em>Open Price</em>}</li>
- *   <li>{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getVolume <em>Volume</em>}</li>
  * </ul>
  * </p>
  *
@@ -84,12 +83,13 @@ public interface MDMarketstat
 
     /**
      * Returns the value of the '<em><b>High Price</b></em>' attribute.
+     * The default value is <code>"0"</code>.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @return the value of the '<em>High Price</em>' attribute.
      * @see #setHighPrice(BigDecimal)
      * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDMarketstat_HighPrice()
-     * @model
+     * @model default="0"
      * @generated
      */
     BigDecimal getHighPrice();
@@ -169,30 +169,4 @@ public interface MDMarketstat
      * @generated
      */
     void setOpenPrice(BigDecimal value);
-
-    /**
-     * Returns the value of the '<em><b>Volume</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <p>
-     * If the meaning of the '<em>Volume</em>' attribute isn't clear,
-     * there really should be more of a description here...
-     * </p>
-     * <!-- end-user-doc -->
-     * @return the value of the '<em>Volume</em>' attribute.
-     * @see #setVolume(BigDecimal)
-     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDMarketstat_Volume()
-     * @model
-     * @generated
-     */
-    BigDecimal getVolume();
-
-    /**
-     * Sets the value of the '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getVolume <em>Volume</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @param value the new value of the '<em>Volume</em>' attribute.
-     * @see #getVolume()
-     * @generated
-     */
-    void setVolume(BigDecimal value);
 } // MDMarketstat

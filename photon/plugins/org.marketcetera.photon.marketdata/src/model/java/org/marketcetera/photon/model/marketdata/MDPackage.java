@@ -306,15 +306,6 @@ public interface MDPackage
     int MD_MARKETSTAT__OPEN_PRICE = MD_ITEM_FEATURE_COUNT + 7;
 
     /**
-     * The feature id for the '<em><b>Volume</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int MD_MARKETSTAT__VOLUME = MD_ITEM_FEATURE_COUNT + 8;
-
-    /**
      * The number of structural features of the '<em>Marketstat</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -322,7 +313,7 @@ public interface MDPackage
      * @ordered
      */
 
-    int MD_MARKETSTAT_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 9;
+    int MD_MARKETSTAT_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 8;
 
     /**
      * The meta object id for the '{@link org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl <em>Depth Of Book</em>}' class.
@@ -680,17 +671,6 @@ public interface MDPackage
     EAttribute getMDMarketstat_OpenPrice();
 
     /**
-     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getVolume <em>Volume</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for the attribute '<em>Volume</em>'.
-     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getVolume()
-     * @see #getMDMarketstat()
-     * @generated
-     */
-    EAttribute getMDMarketstat_Volume();
-
-    /**
      * Returns the meta object for class '{@link org.marketcetera.photon.model.marketdata.MDDepthOfBook <em>Depth Of Book</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -959,14 +939,6 @@ public interface MDPackage
          * @generated
          */
         EAttribute MD_MARKETSTAT__OPEN_PRICE = eINSTANCE.getMDMarketstat_OpenPrice();
-
-        /**
-         * The meta object literal for the '<em><b>Volume</b></em>' attribute feature.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @generated
-         */
-        EAttribute MD_MARKETSTAT__VOLUME = eINSTANCE.getMDMarketstat_Volume();
 
         /**
          * The meta object literal for the '<em><b>Low Price</b></em>' attribute feature.

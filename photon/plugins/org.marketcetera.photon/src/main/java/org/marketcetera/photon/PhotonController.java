@@ -1,5 +1,7 @@
 package org.marketcetera.photon;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -162,6 +164,11 @@ public class PhotonController
              * which is an invalid value.
              */
             cancel.setBrokerOrderID(null);
+            if(cancel.getCustomFields() != null) {
+                Map<String,String> newCustomFields = new HashMap<>(cancel.getCustomFields());
+                newCustomFields.remove(String.valueOf(quickfix.field.StopPx.FIELD));
+                cancel.setCustomFields(newCustomFields);
+            }
             sendOrder(cancel);
         } else {
             internalMainLogger.error(CANNOT_SEND_CANCEL.getText(clOrdID));

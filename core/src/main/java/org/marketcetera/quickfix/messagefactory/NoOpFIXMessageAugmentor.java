@@ -1,6 +1,8 @@
 package org.marketcetera.quickfix.messagefactory;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.quickfix.FIXVersion;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 
@@ -10,8 +12,10 @@ import quickfix.Message;
  * @version $Id$
  */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class NoOpFIXMessageAugmentor implements FIXMessageAugmentor{
+@ClassVersion("$Id$")
+public class NoOpFIXMessageAugmentor
+        implements FIXMessageAugmentor
+{
     public Message newOrderSingleAugment(Message inMessage) {
         return inMessage;
     }
@@ -37,6 +41,13 @@ public class NoOpFIXMessageAugmentor implements FIXMessageAugmentor{
     {
         return false;
     }
-
-
+    /**
+     * Get the FIX Version of this augmentor.
+     *
+     * @return a <code>FIXVersion</code> value
+     */
+    protected FIXVersion getFixVersion()
+    {
+        throw new UnsupportedOperationException();
+    }
 }

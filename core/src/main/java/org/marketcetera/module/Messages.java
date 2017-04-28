@@ -134,8 +134,8 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "log_created_module_instance");   //$NON-NLS-1$
     static final I18NMessage2P LOG_REGISTERED_MODULE_BEAN =
             new I18NMessage2P(LOGGER, "log_registered_module_bean");   //$NON-NLS-1$
-    static final I18NMessage1P LOG_START_MODULE_FAILED =
-            new I18NMessage1P(LOGGER, "log_start_module_failed");   //$NON-NLS-1$
+    static final I18NMessage2P LOG_START_MODULE_FAILED =
+            new I18NMessage2P(LOGGER, "log_start_module_failed");   //$NON-NLS-1$
     static final I18NMessage1P LOG_MODULE_STARTED =
             new I18NMessage1P(LOGGER, "log_module_started");   //$NON-NLS-1$
     static final I18NMessage1P LOG_MODULE_STOPPED =

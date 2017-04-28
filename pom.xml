@@ -16,7 +16,7 @@
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>public-parent</artifactId>
-  <version>2.4.3</version>
+  <version>3.0.11</version>
   <packaging>pom</packaging>
   <name>Marketcetera Public Sources Parent POM</name>
   <description>The root of Marketcetera public sources.</description>
@@ -39,15 +39,17 @@
   <properties>
     <mvn.javase.version>7</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
-    <mvn.spring.version>4.2.0.RELEASE</mvn.spring.version>
+    <mvn.spring.version>4.3.8.RELEASE</mvn.spring.version>
     <mvn.cxf.version>3.1.11</mvn.cxf.version>
-    <mvn.querydsl.version>3.3.1</mvn.querydsl.version>
-    <mvn.springdatajpa.version>1.7.0.RELEASE</mvn.springdatajpa.version>
+    <mvn.querydsl.version>4.1.4</mvn.querydsl.version>
+    <mvn.springdatajpa.version>1.11.3.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
-    <mvn.hibernate.version>4.2.8.Final</mvn.hibernate.version>
-    <mvn.slf4j.version>1.7.10</mvn.slf4j.version>
+    <mvn.hibernate.version>5.1.5.Final</mvn.hibernate.version>
+    <mvn.hazelcast.version>3.8.1</mvn.hazelcast.version>
+    <mvn.slf4j.version>1.7.21</mvn.slf4j.version>
     <mvn.log4j.version>2.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
   </properties>
   <!-- Marketcetera uses the following versions of some common libraries:
        jaxb:  2.2.6 (provided by Java7, not CXF)
@@ -59,87 +61,92 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>client</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>migration</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>orderloader</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategyagent</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-csv</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-bogus</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-exsim</artifactId>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-recorder</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-core</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-marketcetera</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-yahoo</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-csv</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>misc</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategy</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-esper</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
         <exclusions>
           <exclusion>
             <groupId>log4j</groupId>
@@ -149,24 +156,29 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>tensorflow</artifactId>
+        <version>3.0.11</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>remote-receiver</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>remote-emitter</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>saclient</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <!-- Compile: QuickFIX/J -->
       <dependency>
-        <groupId>quickfixj</groupId>
+        <groupId>org.quickfixj</groupId>
         <artifactId>quickfixj-all</artifactId>
-        <version>1.5.3-bd</version>
+        <version>1.6.3-bd</version>
       </dependency>
       <!-- Compile: CXF -->
       <dependency>
@@ -264,6 +276,16 @@
       </dependency>
       <!-- Compile: Other -->
       <dependency>
+        <groupId>org.tensorflow</groupId>
+        <artifactId>tensorflow</artifactId>
+        <version>1.1.0-rc1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.jnr</groupId>
+        <artifactId>jnr-process</artifactId>
+        <version>0.2</version>
+      </dependency>
+      <dependency>
         <groupId>com.sun.mail</groupId>
         <artifactId>javax.mail</artifactId>
         <version>1.5.4</version>
@@ -287,12 +309,12 @@
       <dependency>
         <groupId>com.hazelcast</groupId>
         <artifactId>hazelcast</artifactId>
-        <version>3.3</version>
+        <version>${mvn.hazelcast.version}</version>
       </dependency> 
       <dependency>
         <groupId>com.hazelcast</groupId>
         <artifactId>hazelcast-spring</artifactId>
-        <version>3.3</version>
+        <version>${mvn.hazelcast.version}</version>
       </dependency> 
       <dependency>
         <groupId>org.ow2.asm</groupId>
@@ -330,6 +352,11 @@
         <version>2.6</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.4</version>
+      </dependency>
+      <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>1.9</version>
@@ -347,7 +374,7 @@
       <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-i18n</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
@@ -356,13 +383,19 @@
       </dependency>
       <dependency>
         <groupId>org.hibernate.javax.persistence</groupId>
-        <artifactId>hibernate-jpa-2.0-api</artifactId>
-        <version>1.0.1.Final</version>
+        <artifactId>hibernate-jpa-2.1-api</artifactId>
+        <version>1.0.0.Final</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${mvn.hibernate.version}</version>
+	<exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+	</exclusions>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -482,6 +515,12 @@
         <groupId>com.googlecode.protobuf-rpc-pro</groupId>
         <artifactId>protobuf-streamer-pro</artifactId>
         <version>1.2.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>io.netty</groupId>
+            <artifactId>netty</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.googlecode.protobuf-rpc-pro</groupId>
@@ -490,8 +529,8 @@
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
-        <artifactId>netty</artifactId>
-        <version>3.8.1.Final</version>
+        <artifactId>netty-all</artifactId>
+        <version>4.0.15.Final</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -501,7 +540,7 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>com.mysema.querydsl</groupId>
+        <groupId>com.querydsl</groupId>
         <artifactId>querydsl-core</artifactId>
         <version>${mvn.querydsl.version}</version>
         <exclusions>
@@ -512,25 +551,25 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>com.mysema.querydsl</groupId>
+        <groupId>com.querydsl</groupId>
         <artifactId>querydsl-apt</artifactId>
         <version>${mvn.querydsl.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.mysema.querydsl</groupId>
+        <groupId>com.querydsl</groupId>
         <artifactId>querydsl-jpa</artifactId>
         <version>${mvn.querydsl.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.mysema.querydsl</groupId>
+        <groupId>com.querydsl</groupId>
         <artifactId>querydsl-sql</artifactId>
         <version>${mvn.querydsl.version}</version>
       </dependency>
       <!-- Runtime. -->
       <dependency>
         <groupId>com.hazelcast</groupId>
-        <artifactId>hazelcast-hibernate4</artifactId>
-        <version>3.3</version>
+        <artifactId>hazelcast-hibernate5</artifactId>
+        <version>1.2.1</version>
         <scope>runtime</scope>
       </dependency> 
       <dependency>
@@ -638,19 +677,6 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>com.cloudhopper.proxool</groupId>
-        <artifactId>proxool</artifactId>
-        <version>0.9.1</version>
-        <scope>runtime</scope>
-        <exclusions>
-          <!-- Exclude 1.3 version of javamail -->
-          <exclusion>
-            <groupId>geronimo-spec</groupId>
-            <artifactId>geronimo-spec-javamail</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>org.apache.geronimo.javamail</groupId>
         <artifactId>geronimo-javamail_1.4_mail</artifactId>
         <version>1.8.3</version>
@@ -691,6 +717,12 @@
         <artifactId>hibernate-entitymanager</artifactId>
         <version>${mvn.hibernate.version}</version>
         <scope>runtime</scope>
+	<exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+	</exclusions>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
@@ -713,41 +745,47 @@
       <dependency>
         <groupId>org.apache.mina</groupId>
         <artifactId>mina-core</artifactId>
-        <version>1.1.7</version> <!-- 2.0.7 held up by QFJ -->
+        <version>2.0.16</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.mina</groupId>
+        <artifactId>mina-filter-ssl</artifactId>
+        <version>1.1.7</version>
         <scope>runtime</scope>
       </dependency>
       <!-- Testing: local modules. -->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-core</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util-test</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>client</artifactId>
-        <version>2.4.3</version>
+        <version>3.0.11</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
@@ -773,7 +811,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.11</version>
+        <version>4.12</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -806,6 +844,12 @@
         <version>1.3</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-core</artifactId>
+        <version>1.3</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
@@ -815,7 +859,7 @@
         <plugin>
           <groupId>com.mysema.maven</groupId>
           <artifactId>apt-maven-plugin</artifactId>
-          <version>1.1.1</version>
+          <version>1.1.3</version>
           <executions>
             <execution>
               <phase>generate-sources</phase>
@@ -826,7 +870,28 @@
                 <!-- Specifies the directory in which the query types are generated -->
                 <outputDirectory>target/generated-sources/java</outputDirectory>
                 <!-- States that the APT code generator should look for JPA annotations -->
-                <processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+                <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.12</version>
+          <executions>
+            <execution>
+              <id>add-source</id>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>add-source</goal>
+                <goal>add-test-source</goal>
+              </goals>
+              <configuration>
+                <sources>
+                  <source>target/generated-sources/java</source>
+                  <source>src/main/java</source>
+                </sources>
               </configuration>
             </execution>
           </executions>
@@ -973,8 +1038,7 @@
         <!-- mvn assembly:* -->
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <!-- Version 2.2-beta-2 throws NPE under dependency management. -->
-          <version>2.3</version>
+          <version>3.0.0</version>
           <configuration>
             <finalName>${project.artifactId}</finalName>
             <appendAssemblyId>false</appendAssemblyId>
@@ -1197,7 +1261,7 @@
       <id>internal</id>
       <url>http://repo.marketcetera.org/maven</url>
       <snapshots>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
@@ -1217,6 +1281,25 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
+          <docletArtifact>
+            <groupId>org.umlgraph</groupId>
+            <artifactId>umlgraph</artifactId>
+            <version>5.6</version>
+          </docletArtifact>
+          <additionalparam>-views -all</additionalparam>
+          <useStandardDocletOptions>true</useStandardDocletOptions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
   <scm>
     <url>http://source.marketcetera.org/root/trunk</url>
     <connection>scm:svn:http://source.marketcetera.org/root/trunk</connection>

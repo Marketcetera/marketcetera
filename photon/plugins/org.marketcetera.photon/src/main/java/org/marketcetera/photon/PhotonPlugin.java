@@ -121,6 +121,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     private ServiceTracker<?,?> mSymbolResolverServiceTracker;
     
     private Job mReconnectMarketDataFeedJob;
+    private String currentUser;
 
     /**
      * The constructor.
@@ -134,6 +135,8 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
      */
     public void start(BundleContext context) throws Exception {
         super.start(context);
+        System.setProperty("log4j.configurationFile",
+                           getBundle().getResource("log4j2.xml").getPath());
         bundleContext = context;
 
         configureLogs();
@@ -189,7 +192,24 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         futureOrderTicketController = new FutureOrderTicketController(futureOrderTicketModel);
         currencyOrderTicketController = new CurrencyOrderTicketController(currencyOrderTicketModel);
     }
-
+    /**
+     * Get the currentUser value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getCurrentUser()
+    {
+        return currentUser;
+    }
+    /**
+     * Sets the currentUser value.
+     *
+     * @param a <code>String</code> value
+     */
+    public void setCurrentUser(String inCurrentUser)
+    {
+        currentUser = inCurrentUser;
+    }
     private void initPhotonController() {
         photonController = new PhotonController();
         photonController.setMessageHistory(mTradeReportsHistory);
@@ -274,7 +294,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         CurrentFIXDataDictionary
                 .setCurrentFIXDataDictionary(FIXDataDictionaryManager
                         .initialize(fixVersion, fixVersion
-                                .getDataDictionaryURL()));
+                                .getDataDictionaryName()));
     }
 
     /**

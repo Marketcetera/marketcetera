@@ -294,9 +294,10 @@ public final class PositionEngineImpl implements PositionEngine {
         Instrument instrument = key.getInstrument();
         String underlying = mUnderlyingSymbolSupport.getUnderlying(instrument);
         PositionRowImpl positionRow = new PositionRowImpl(instrument,
-                underlying,
-                key.getAccount(), key.getTraderId(), mIncomingPositionSupport
-                        .getIncomingPositionFor(key));
+                                                          underlying,
+                                                          key.getAccount(),
+                                                          key.getTraderId(),
+                                                          mIncomingPositionSupport.getIncomingPositionFor(key));
         PositionRowUpdater updater = new PositionRowUpdater(positionRow,
                 trades, mMarketDataSupport);
         mPositions.put(key, updater);

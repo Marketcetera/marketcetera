@@ -46,8 +46,7 @@ public class CurrencyValidationHandler extends InstrumentValidationHandler<Curre
         }
 		try {
 			String[] currencyPair = symbol.split("/");
-			if (currencyPair==null ||  currencyPair.length !=2 || currencyPair[0].length()!=3 || 
-					currencyPair[1].length()!=3 || currencyPair[0].equalsIgnoreCase(currencyPair[1])) 
+			if (currencyPair==null ||  currencyPair.length !=2 || currencyPair[0].equalsIgnoreCase(currencyPair[1])) 
 			{
 				throw new OrderValidationException(new I18NBoundMessage1P
 					(Messages.INVALID_CURRENCY_SYMBOL_FORMAT,symbol));

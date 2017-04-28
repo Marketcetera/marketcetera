@@ -79,11 +79,17 @@
                             <layoutData x:class="gridData" verticalAlignment="BEGINNING"
                                 horizontalAlignment="FILL"/>
                         </text>
+                        <label text="Ex Destination:"/>
+                        <text x:style="BORDER" x:id="ExecutionDestinationText" text="">
+                            <layoutData x:class="gridData" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="FILL" horizontalSpan="1" />
+                        </text>
                         <label text="Iceberg:"/>
                         <text x:style="BORDER" x:id="DisplayQuantityText" text="">
                             <layoutData x:class="gridData" verticalAlignment="BEGINNING"
                                 horizontalAlignment="FILL"/>
                         </text>
+                        <button x:id="PegToMidpoint" x:style="SWT.CHECK" text="Peg to Midpoint" enabled="false"/>
+                        <button x:id="PegToMidpointLocked" x:style="SWT.CHECK" text="Locked" enabled="false"/>
                     </composite>
                 </section>
                 <section x:id="AlgoExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Broker Algos" expanded="true" client="_algo_composite">
@@ -95,9 +101,10 @@
                             <layoutData x:class="gridData" horizontalSpan="1" verticalAlignment="BEGINNING" widthHint="200"/>
                         </combo>
                         <table x:id="AlgoTagsTable" x:style="BORDER|FULL_SELECTION" headerVisible="true">
-                            <layoutData x:class="gridData" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="FILL" horizontalSpan="2" />
-                            <tableColumn text="Tag" width="100"/>
-                            <tableColumn text="Value" width="120"/>
+                            <layoutData x:class="gridData" verticalAlignment="FILL" grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="FILL" horizontalSpan="2" widthHint="440" />
+                            <tableColumn text="Tag" width="120"/>
+                            <tableColumn text="Value" width="60"/>
+                            <tableColumn text="Description" width="260"/>
                         </table>
                     </composite>
                 </section>

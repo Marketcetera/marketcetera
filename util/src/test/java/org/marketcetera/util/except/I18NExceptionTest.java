@@ -96,13 +96,13 @@ public class I18NExceptionTest
     @Test
     public void myMessageAndCauseWithMessage()
     {
-        CloneNotSupportedException nested=
-            new CloneNotSupportedException(TEST_MSG_2);
-        myMessageAndCauseWithMessage
-            (nested,new Exception(TEST_MSG_1,nested),
-             new I18NException
-             (nested,new I18NBoundMessage1P
-              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),ALL,6);
+        CloneNotSupportedException nested = new CloneNotSupportedException(TEST_MSG_2);
+        myMessageAndCauseWithMessage(nested,
+                                     new Exception(TEST_MSG_1,nested),
+                                     new I18NException(nested,
+                                                       new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+                                     ALL,
+                                     6);
     }
 
     @Test

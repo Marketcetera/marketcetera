@@ -19,6 +19,7 @@ import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
@@ -65,6 +66,8 @@ import quickfix.field.SymbolSfx;
 import quickfix.field.Text;
 import quickfix.field.TimeInForce;
 import quickfix.field.TransactTime;
+
+import com.google.common.collect.Lists;
 /* $License$ */
 /**
  * @author Graham Miller
@@ -261,11 +264,11 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 
 
     public void testMarketDataRequst_ALL() throws Exception {
-        Message req = msgFactory.newMarketDataRequest("toliID", new ArrayList<Equity>(0)); //$NON-NLS-1$
+        Message req = msgFactory.newMarketDataRequest("toliID", new ArrayList<Instrument>()); //$NON-NLS-1$
         assertEquals("sending 0 numSymbols doesn't work", 0, req.getInt(NoRelatedSym.FIELD)); //$NON-NLS-1$
         assertEquals("toliID", req.getString(MDReqID.FIELD)); //$NON-NLS-1$
-        assertEquals(SubscriptionRequestType.SNAPSHOT, req.getChar(SubscriptionRequestType.FIELD));
-        assertEquals(2, req.getInt(NoMDEntryTypes.FIELD));
+        assertEquals(SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES, req.getChar(SubscriptionRequestType.FIELD));
+        assertEquals(3, req.getInt(NoMDEntryTypes.FIELD));
         Group entryTypeGroup =  msgFactory.createGroup(MsgType.MARKET_DATA_REQUEST, NoMDEntryTypes.FIELD);
         req.getGroup(1, entryTypeGroup);
         assertEquals(MDEntryType.BID, entryTypeGroup.getChar(MDEntryType.FIELD));
@@ -324,7 +327,8 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     public void testMDR_oneSymbol()
         throws Exception
     {
-        List<Equity> list = Arrays.asList(new Equity("TOLI"));
+        List<Instrument> list = Lists.newArrayList();
+        list.add(new Equity("TOLI"));
         verifyMDR(msgFactory.newMarketDataRequest("toliID",
                                                   list),
                   list,
@@ -339,10 +343,11 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     public void testMDR_ManySymbols()
         throws Exception
     {
-        List<Equity> list = Arrays.asList(new Equity("TOLI"),
-                                          new Equity("GRAHAM"),
-                                          new Equity("LENA"),
-                                          new Equity("COLIN"));
+        List<Instrument> list = Lists.newArrayList();
+        list.add(new Equity("TOLI"));
+        list.add(new Equity("GRAHAM"));
+        list.add(new Equity("LENA"));
+        list.add(new Equity("COLIN"));
         verifyMDR(msgFactory.newMarketDataRequest("toliID",
                                                   list),
                   list,
@@ -358,12 +363,12 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
      * Verifies that the given <code>Message</code> represents the given symbols and exchange.
      *
      * @param inActualMessage a <code>Message</code> containing the message to test
-     * @param inExpectedSymbols a list of expected <code>&lt;Equity&gt;</code> values
+     * @param inExpectedSymbols a list of expected <code>&lt;Instrument&gt;</code> values
      * @param inExpectedExchange a <code>String</code> value containing the expected exchange or null for no exchange 
      * @throws Exception if an error occurs
      */
     private void verifyMDR(Message inActualMessage,
-                           List<Equity> inExpectedSymbols,
+                           List<Instrument> inExpectedSymbols,
                            String inExpectedExchange)
         throws Exception
     {

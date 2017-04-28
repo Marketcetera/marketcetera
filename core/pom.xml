@@ -16,12 +16,17 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>public-parent</artifactId>
-    <version>2.4.3</version>
+    <version>3.0.11</version>
   </parent>
   <artifactId>core</artifactId>
   <packaging>jar</packaging>
 
   <name>Core</name>
+
+  <properties>
+    <version.template.file>src/main/resources/version.java.template</version.template.file>
+    <version.file>src/main/java/org/marketcetera/core/Version.java</version.file>
+  </properties>
 
   <dependencies>
 
@@ -48,7 +53,7 @@
     </dependency>
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
-      <artifactId>hibernate-jpa-2.0-api</artifactId>
+      <artifactId>hibernate-jpa-2.1-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -101,18 +106,26 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>com.hazelcast</groupId>
+      <artifactId>hazelcast</artifactId>
+    </dependency> 
+    <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-c3p0</artifactId>
+      <scope>compile</scope>
+     </dependency>       
+    <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-c3p0</artifactId>
-      <scope>compile</scope>
+      <groupId>com.github.jnr</groupId>
+      <artifactId>jnr-process</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -149,34 +162,58 @@
       <artifactId>spring-orm</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.mysema.querydsl</groupId>
+      <groupId>com.querydsl</groupId>
       <artifactId>querydsl-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.mysema.querydsl</groupId>
+      <groupId>com.querydsl</groupId>
       <artifactId>querydsl-apt</artifactId>
     </dependency>
   </dependencies>
   <build>
     <plugins>
       <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
-        <version>1.1.1</version>
-        <executions>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>maven-replacer-plugin</artifactId>
+        <version>1.4.0</version>
+        <executions>                
           <execution>
-            <phase>generate-sources</phase>
+            <phase>process-sources</phase>
             <goals>
-              <goal>process</goal>
+              <goal>replace</goal>
             </goals>
-            <configuration>
-              <!-- Specifies the directory in which the query types are generated -->
-              <outputDirectory>target/generated-sources</outputDirectory>
-              <!-- States that the APT code generator should look for JPA annotations -->
-              <processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
-            </configuration>
           </execution>
         </executions>
+        <configuration>
+          <file>${version.template.file}</file>
+          <outputFile>${version.file}</outputFile>
+          <replacements>
+            <replacement>
+              <token>@buildnumber@</token>
+              <value>${svn.revision}</value>
+            </replacement>
+            <replacement>
+              <token>@buildrepository@</token>
+              <value>${svn.repository}</value>
+            </replacement>
+            <replacement>
+              <token>@buildpath@</token>
+              <value>${svn.path}</value>
+            </replacement>
+            <replacement>
+              <token>@buildtime@</token>
+              <value>${maven.build.timestamp}</value>
+            </replacement>
+            <replacement>
+              <token>@pomversion@</token>
+              <value>${project.version}</value>
+            </replacement>
+          </replacements>                        
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.mysema.maven</groupId>
+        <artifactId>apt-maven-plugin</artifactId>
       </plugin>
       <!-- Place tests into a jar for use during testing of other packages. -->
       <plugin>

@@ -23,13 +23,13 @@ public class FIXDataDictionaryManagerTest extends TestCase {
     }
 
     public void testDictionaryInit() throws Exception {
-        FIXDataDictionary fdd = FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
+        FIXDataDictionary fdd = FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryName());
 
         // lookup some fields
         assertEquals("OrderID", fdd.getHumanFieldName(37)); //$NON-NLS-1$
         assertEquals("OrderID", fdd.getHumanFieldName(37)); //$NON-NLS-1$
 
-        fdd = FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX44.getDataDictionaryURL());
+        fdd = FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX44.getDataDictionaryName());
         assertEquals("OrderID", fdd.getHumanFieldName(37)); //$NON-NLS-1$
         assertEquals("CollAction", fdd.getHumanFieldName(944)); //$NON-NLS-1$
 
@@ -37,7 +37,7 @@ public class FIXDataDictionaryManagerTest extends TestCase {
     }
 
     public void testValueGetting() throws Exception {
-        FIXDataDictionary fdd = FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
+        FIXDataDictionary fdd = FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryName());
 
         assertEquals("BUY", fdd.getHumanFieldValue(Side.FIELD, ""+Side.BUY)); //$NON-NLS-1$ //$NON-NLS-2$
         assertEquals("SELL", fdd.getHumanFieldValue(Side.FIELD, ""+Side.SELL)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -48,23 +48,23 @@ public class FIXDataDictionaryManagerTest extends TestCase {
     }
 
     public void testWhenValueNotFound() throws Exception {
-        FIXDataDictionary fdd = FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
+        FIXDataDictionary fdd = FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryName());
         assertEquals("non-existing value", null, fdd.getHumanFieldValue(Side.FIELD, "37")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 
     public void testGetDataDictionary() throws Exception {
         assertEquals(FIXDataDictionary.FIX_4_0_BEGIN_STRING,
-                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX40.getDataDictionaryURL()).getDictionary().getVersion());
+                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX40.getDataDictionaryName()).getDictionary().getVersion());
         assertEquals(FIXDataDictionary.FIX_4_1_BEGIN_STRING,
-                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX41.getDataDictionaryURL()).getDictionary().getVersion());
+                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX41.getDataDictionaryName()).getDictionary().getVersion());
         assertEquals(FIXDataDictionary.FIX_4_2_BEGIN_STRING,
-                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryURL()).getDictionary().getVersion());
+                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryName()).getDictionary().getVersion());
         assertEquals(FIXDataDictionary.FIX_4_3_BEGIN_STRING,
-                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX43.getDataDictionaryURL()).getDictionary().getVersion());
+                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX43.getDataDictionaryName()).getDictionary().getVersion());
         assertEquals(FIXDataDictionary.FIX_4_4_BEGIN_STRING,
-                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX44.getDataDictionaryURL()).getDictionary().getVersion());
+                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX44.getDataDictionaryName()).getDictionary().getVersion());
         assertEquals(FIXDataDictionary.FIX_SYSTEM_BEGIN_STRING,
-                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryURL()).getDictionary().getVersion());
+                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryName()).getDictionary().getVersion());
     }
 }

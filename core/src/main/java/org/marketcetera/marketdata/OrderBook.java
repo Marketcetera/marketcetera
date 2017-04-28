@@ -118,6 +118,14 @@ public class OrderBook
         return mMaxDepth;
     }
     /**
+     * Clear the order book.
+     */
+    public void clear()
+    {
+        mAskBook.clear();
+        mBidBook.clear();
+    }
+    /**
      * Gets the {@link TopOfBookEvent} view of the order book.
      * 
      * @return a <code>TopOfBook</code> value
@@ -195,23 +203,35 @@ public class OrderBook
                                inEvent,
                                this);
         QuoteEvent eventToReturn = null;
-        switch(inEvent.getAction()) {
-            case ADD :
-                eventToReturn = addEvent(inEvent);
-                break;
-            case DELETE :
-                removeEvent(inEvent);
-                break;
-            case CHANGE :
-                changeEvent(inEvent);
-                break;
-            default:
-                throw new UnsupportedOperationException();
-        }
-        if(inEvent instanceof BidEvent) {
-            mBidBook.updateLevels();
-        } else if(inEvent instanceof AskEvent) {
-            mAskBook.updateLevels();
+        if(inEvent.isEmpty()) {
+            SLF4JLoggerProxy.debug(this,
+                                   "{} order book received empty event: {}", //$NON-NLS-1$
+                                   getInstrument(),
+                                   inEvent);
+            if(inEvent instanceof BidEvent) {
+                mBidBook.clear();
+            } else if(inEvent instanceof AskEvent) {
+                mAskBook.clear();
+            }
+        } else {
+            switch(inEvent.getAction()) {
+                case ADD :
+                    eventToReturn = addEvent(inEvent);
+                    break;
+                case DELETE :
+                    removeEvent(inEvent);
+                    break;
+                case CHANGE :
+                    changeEvent(inEvent);
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+            if(inEvent instanceof BidEvent) {
+                mBidBook.updateLevels();
+            } else if(inEvent instanceof AskEvent) {
+                mAskBook.updateLevels();
+            }
         }
         SLF4JLoggerProxy.debug(this,
                                "Book is now\n{}", //$NON-NLS-1$
@@ -355,7 +375,6 @@ public class OrderBook
                 break;
             }
         }
-
         return finalBook.toString();
     }
     /**
@@ -606,6 +625,16 @@ public class OrderBook
             Collections.sort(events,
                              inComparator);
             return Collections.unmodifiableList(events);
+        }
+        /**
+         * Clear the book.
+         */
+        private synchronized void clear()
+        {
+            mBook.clear();
+            if(mBookOrder != null) {
+                mBookOrder.clear();
+            }
         }
     }
     /**

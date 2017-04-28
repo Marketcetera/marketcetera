@@ -57,7 +57,9 @@ public class OrderReplaceImpl extends NewOrReplaceOrderImpl implements OrderRepl
                 String.valueOf(getTimeInForce()),
                 String.valueOf(getBrokerOrderID()),
                 String.valueOf(getText()),
-                String.valueOf(getBrokerAlgo())
+                String.valueOf(getPegToMidpoint()),
+                String.valueOf(getBrokerAlgo()),
+                String.valueOf(getExecutionDestination())
         );
     }
 

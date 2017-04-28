@@ -37,7 +37,7 @@ public class SinkDataManager implements SinkDataListener, ISinkDataManager {
 			new AtomicReference<ISinkDataHandler>();
 
 	@Override
-	public void register(ISinkDataHandler handler, Class<?>... classes) {
+	public void register(ISinkDataHandler handler, Class... classes) {
 		Validate.notNull(handler);
 		Validate.noNullElements(classes);
 		for (Class<?> clazz : classes) {

@@ -4,6 +4,7 @@ import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.I18NMessageNP;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -121,6 +122,7 @@ public interface Messages
     static final I18NMessage1P IGNORING_EXCEPTION = new I18NMessage1P(LOGGER,"ignoring_exception"); //$NON-NLS-1$
     static final I18NMessage1P INTERRUPTED = new I18NMessage1P(LOGGER,"interrupted"); //$NON-NLS-1$
     static final I18NMessage1P SHUTTING_DOWN_FROM_ERROR = new I18NMessage1P(LOGGER,"shutting_down_from_error"); //$NON-NLS-1$
+    static final I18NMessageNP THREAD_POOL_MONITOR = new I18NMessageNP(LOGGER,"thread_pool_monitor"); //$NON-NLS-1$
     // Application Container
     static final I18NMessage0P APP_COPYRIGHT = new I18NMessage0P(LOGGER,"app_copyright"); //$NON-NLS-1$
     static final I18NMessage2P APP_VERSION_BUILD = new I18NMessage2P(LOGGER,"app_version_build");   //$NON-NLS-1$
@@ -134,4 +136,8 @@ public interface Messages
     static final I18NMessage0P APP_MISSING_CREDENTIALS = new I18NMessage0P(LOGGER,"app_missing_credentials"); //$NON-NLS-1$
     static final I18NMessage0P APP_NO_ARGS_ALLOWED = new I18NMessage0P(LOGGER,"app_no_args_allowed"); //$NON-NLS-1$
     static final I18NMessage0P APP_NO_CONFIGURATION = new I18NMessage0P(LOGGER,"app_no_configuration"); //$NON-NLS-1$
+    // System Information Logger
+    static final I18NMessage0P PORTS_IN_USE = new I18NMessage0P(LOGGER,"ports_in_use"); //$NON-NLS-1$
+    static final I18NMessage0P PORT = new I18NMessage0P(LOGGER,"port"); //$NON-NLS-1$
+    static final I18NMessage0P DESCRIPTION = new I18NMessage0P(LOGGER,"description"); //$NON-NLS-1$
 }

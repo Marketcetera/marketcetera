@@ -9,6 +9,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.marketcetera.metrics.MetricService;
@@ -19,6 +21,7 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
 
 /* $License$ */
 
@@ -46,6 +49,7 @@ public abstract class QueueProcessor<Clazz>
      * @see org.springframework.context.Lifecycle#start()
      */
     @Override
+    @PostConstruct
     public synchronized void start()
     {
         if(isRunning()) {
@@ -89,6 +93,7 @@ public abstract class QueueProcessor<Clazz>
      * @see org.springframework.context.Lifecycle#stop()
      */
     @Override
+    @PreDestroy
     public synchronized void stop()
     {
         if(!isRunning()) {
@@ -123,8 +128,8 @@ public abstract class QueueProcessor<Clazz>
         try {
             lastException = null;
             interrupted.set(false);
-            Messages.STARTED.info(this,
-                                  threadDescriptor);
+            Messages.STARTED.debug(this,
+                                   threadDescriptor);
             while(keepAlive.get()) {
                 try {
                     Clazz dataObject = queue.take();
@@ -144,10 +149,10 @@ public abstract class QueueProcessor<Clazz>
                                                      threadDescriptor);
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | HazelcastInstanceNotActiveException e) {
             interrupted.set(true);
-            Messages.INTERRUPTED.info(this,
-                                      threadDescriptor);
+            Messages.INTERRUPTED.debug(this,
+                                       threadDescriptor);
         } catch (Exception e) {
             lastException = e;
             Messages.SHUTTING_DOWN_FROM_ERROR.warn(this,
@@ -157,9 +162,17 @@ public abstract class QueueProcessor<Clazz>
         } finally {
             keepAlive.set(false);
             running.set(false);
-            Messages.STOPPED.info(this,
-                                  threadDescriptor);
+            Messages.STOPPED.debug(this,
+                                   threadDescriptor);
         }
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return threadDescriptor;
     }
     /**
      * Adds the given object to the processing queue.
@@ -183,6 +196,15 @@ public abstract class QueueProcessor<Clazz>
         addToQueueMetric.mark(size);
         queueCounterMetric.inc(size);
         queue.addAll(inData);
+    }
+    /**
+     * Gets the queue size.
+     *
+     * @return an <code>int</code> value
+     */
+    protected int size()
+    {
+        return new Long(queueCounterMetric.getCount()).intValue();
     }
     /**
      * Gets the queue to process.
@@ -258,7 +280,7 @@ public abstract class QueueProcessor<Clazz>
      */
     protected QueueProcessor()
     {
-        this("Unknown Queue Processor");
+        this(null);
     }
     /**
      * Create a new QueueProcessor instance.
@@ -267,10 +289,22 @@ public abstract class QueueProcessor<Clazz>
      */
     protected QueueProcessor(String inThreadDescriptor)
     {
+        this(inThreadDescriptor,
+             new LinkedBlockingDeque<Clazz>());
+    }
+    /**
+     * Create a new QueueProcessor instance.
+     *
+     * @param inThreadDescriptor a <code>String</code> value describing the processor
+     * @param inQueue a <code>BlockingQueue&lt;Clazz&gt;</code> value
+     */
+    protected QueueProcessor(String inThreadDescriptor,
+                             BlockingQueue<Clazz> inQueue)
+    {
         if(inThreadDescriptor == null) {
-            throw new NullPointerException();
+            inThreadDescriptor = getClass().getSimpleName();
         }
-        queue = new LinkedBlockingDeque<Clazz>();
+        queue = inQueue;
         threadDescriptor = inThreadDescriptor;
         metrics = MetricService.getInstance().getMetrics();
     }

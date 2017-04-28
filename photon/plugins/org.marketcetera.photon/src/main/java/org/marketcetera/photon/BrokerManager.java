@@ -16,6 +16,8 @@ import org.marketcetera.photon.commons.Validate;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.misc.ClassVersion;
 
+import quickfix.SessionFactory;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -76,7 +78,11 @@ public final class BrokerManager implements IBrokerIdValidator {
         List<Broker> availableBrokers = Lists.newArrayList();
         availableBrokers.add(AUTO_SELECT_BROKER);
         for (BrokerStatus status : statuses.getBrokers()) {
-            if (status.getLoggedOn()) {
+            if(status.getLoggedOn()) {
+                String connectionType = status.getSettings().get(SessionFactory.SETTING_CONNECTION_TYPE);
+                if(SessionFactory.ACCEPTOR_CONNECTION_TYPE.equals(connectionType)) {
+                    continue;
+                }
                 Broker broker = new Broker(status.getName(),
                                            status.getId(),
                                            status.getBrokerAlgos());

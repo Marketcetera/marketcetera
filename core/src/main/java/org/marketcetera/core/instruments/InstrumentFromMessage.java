@@ -1,8 +1,9 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.Instrument;
-import quickfix.Message;
+import org.marketcetera.util.misc.ClassVersion;
+
+import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.field.Symbol;
 
@@ -22,7 +23,9 @@ import quickfix.field.Symbol;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public abstract class InstrumentFromMessage extends DynamicInstrumentHandler<Message> {
+public abstract class InstrumentFromMessage
+        extends DynamicInstrumentHandler<FieldMap>
+{
 
     /**
      * Extracts the instrument from the supplied message.
@@ -33,8 +36,7 @@ public abstract class InstrumentFromMessage extends DynamicInstrumentHandler<Mes
      *
      * @return the instrument value, if available, null otherwise.
      */
-    public abstract Instrument extract(Message inMessage);
-
+    public abstract Instrument extract(FieldMap inMessage);
     /**
      * Fetches the symbol field value from the supplied FIX message.
      *
@@ -42,7 +44,7 @@ public abstract class InstrumentFromMessage extends DynamicInstrumentHandler<Mes
      *
      * @return the symbol field value.
      */
-    protected static String getSymbol(Message inMessage) {
+    protected static String getSymbol(FieldMap inMessage) {
         if(inMessage.isSetField(Symbol.FIELD)) {
             try {
                 return inMessage.getString(Symbol.FIELD);
@@ -51,11 +53,9 @@ public abstract class InstrumentFromMessage extends DynamicInstrumentHandler<Mes
         }
         return null;
     }
-
     /**
      * The selector that can be used to obtain the appropriate instance of
      * this class given an instrument instance. 
      */
-    public static final DynamicInstrumentFunctionSelector<Message, InstrumentFromMessage> SELECTOR =
-            new DynamicInstrumentFunctionSelector<Message, InstrumentFromMessage>(InstrumentFromMessage.class);
+    public static final DynamicInstrumentFunctionSelector<FieldMap,InstrumentFromMessage> SELECTOR = new DynamicInstrumentFunctionSelector<FieldMap,InstrumentFromMessage>(InstrumentFromMessage.class);
 }

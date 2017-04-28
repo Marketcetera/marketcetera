@@ -11,6 +11,9 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.Lifecycle;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -27,7 +30,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 @ClassVersion("$Id$")
 public class ApplicationContainer
         extends ApplicationBase
-        implements ApplicationInfoProvider, Lifecycle
+        implements ApplicationInfoProvider, Lifecycle, ApplicationContextAware
 {
     /* (non-Javadoc)
      * @see org.marketcetera.core.ApplicationInfoProvider#getAppDir()
@@ -84,9 +87,9 @@ public class ApplicationContainer
                                         ApplicationVersion.getBuildNumber());
         Messages.APP_START.info(ApplicationContainer.class);
         // check to see if we're using a different starting context file than the default
-        String rawContextFilename = StringUtils.trimToNull(System.getProperty(CONTEXT_FILE_PROP));
-        if(rawContextFilename != null) {
-            contextFilename = rawContextFilename;
+        String rawValue = StringUtils.trimToNull(System.getProperty(CONTEXT_FILE_PROP));
+        if(rawValue != null) {
+            contextFilename = rawValue;
         }
         final ApplicationContainer application;
         try {
@@ -208,9 +211,30 @@ public class ApplicationContainer
     public synchronized void start()
     {
         instance = this;
-        context = generateContext();
+        context = null;
+        try {
+            context = generateContext();
+        } catch (Exception e) {
+            SLF4JLoggerProxy.error(this,
+                                   e,
+                                   "Encountered startup problem");
+            if(e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
         context.registerShutdownHook();
         running.set(true);
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext inContext)
+            throws BeansException
+    {
+        parentContext = inContext;
     }
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#stop()
@@ -261,7 +285,7 @@ public class ApplicationContainer
     protected ConfigurableApplicationContext generateContext()
     {
         return new FileSystemXmlApplicationContext(new String[] { "file:"+CONF_DIR+contextFilename }, //$NON-NLS-1$
-                                                   null);
+                                                   parentContext);
     }
     /**
      * indicates if the app is running or not
@@ -295,4 +319,8 @@ public class ApplicationContainer
      * exit code to return on exit
      */
     protected static int exitCode = 0;
+    /**
+     * parent application context value
+     */
+    private ApplicationContext parentContext;
 }

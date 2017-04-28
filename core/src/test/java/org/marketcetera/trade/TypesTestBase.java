@@ -45,7 +45,7 @@ public class TypesTestBase {
     @BeforeClass
     public static void before() throws Exception {
         FIXDataDictionaryManager.initialize(FIXVersion.FIX_SYSTEM,
-                FIXVersion.FIX_SYSTEM.getDataDictionaryURL());
+                FIXVersion.FIX_SYSTEM.getDataDictionaryName());
     }
 
     /**
