@@ -419,7 +419,13 @@ public class MockClient
                           Hierarchy inHierarchy)
             throws ConnectionException
     {
-        throw new UnsupportedOperationException(); // TODO
+        for(ReportListener reportListener : reportListeners) {
+            if(inReport instanceof ExecutionReport) {
+                reportListener.receiveExecutionReport((ExecutionReport)inReport);
+            } else if(inReport instanceof OrderCancelReject) {
+                reportListener.receiveCancelReject((OrderCancelReject)inReport);
+            }
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.client.Client#sendEvent(org.marketcetera.event.Event)
