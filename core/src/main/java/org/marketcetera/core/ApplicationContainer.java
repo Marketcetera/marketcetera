@@ -120,6 +120,12 @@ public class ApplicationContainer
             public void run() {
                 application.stop();
                 Messages.APP_STOP.info(ApplicationContainer.class);
+                try {
+                    Thread.sleep(30000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("COLIN: executing logging shutdown");
                 if(LogManager.getContext() instanceof LoggerContext) {
                     Configurator.shutdown((LoggerContext)LogManager.getContext());
                 }
