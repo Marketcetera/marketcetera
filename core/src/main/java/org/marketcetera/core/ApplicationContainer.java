@@ -119,6 +119,15 @@ public class ApplicationContainer
             @Override
             public void run() {
                 application.stop();
+                String rawValue = StringUtils.trimToNull(System.getProperty(SHUTDOWN_DELAY));
+                if(rawValue != null) {
+                    try {
+                        long delay = Long.parseLong(rawValue);
+                        Thread.sleep(delay);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 Messages.APP_STOP.info(ApplicationContainer.class);
                 if(LogManager.getContext() instanceof LoggerContext) {
                     Configurator.shutdown((LoggerContext)LogManager.getContext());
@@ -311,6 +320,10 @@ public class ApplicationContainer
      * optional command-line parameter that indicates a different context file to use
      */
     public static final String CONTEXT_FILE_PROP = "org.marketcetera.contextFile"; //$NON-NLS-1$
+    /**
+     * optional command-line parameters that indicates how long to wait before shutting down the logging system after the context is halted
+     */
+    public static final String SHUTDOWN_DELAY = "org.marketcetera.shutdownDelay"; //$NON-NLS-1$
     /**
      * indicates the name of the context file to use
      */
