@@ -99,4 +99,6 @@ public interface Messages
     static final I18NMessage0P VALIDATION_CURRENCY_REQUIRED = new I18NMessage0P(LOGGER,
                                                                                 "validation_currency_required"); //$NON-NLS-1$
     static final I18NMessage0P VALIDATION_BOND_REQUIRED = new I18NMessage0P(LOGGER,"validation_bond_required"); //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_SPREAD_REQUIRED = new I18NMessage0P(LOGGER,
+                                                                              "validation_spread_required"); //$NON-NLS-1$
 }
