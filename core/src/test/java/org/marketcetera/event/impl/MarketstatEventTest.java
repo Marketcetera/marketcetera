@@ -1266,6 +1266,9 @@ public class MarketstatEventTest
     private final Future future = new Future("AAPL",
                                              FutureExpirationMonth.APRIL,
                                              12);
+    /**
+     * test spread value
+     */
     private final Spread spread = new Spread(new Future("AAPL",
                                                         FutureExpirationMonth.APRIL,
                                                         12),
