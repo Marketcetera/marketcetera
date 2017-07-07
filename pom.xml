@@ -16,7 +16,7 @@
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>public-parent</artifactId>
-  <version>3.1.0</version>
+  <version>3.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Marketcetera Public Sources Parent POM</name>
   <description>The root of Marketcetera public sources.</description>
@@ -38,7 +38,7 @@
   </developers>
   <properties>
     <mvn.javase.version>8</mvn.javase.version>
-    <mvn.javaee.version>5</mvn.javaee.version>
+    <mvn.javaee.version>8</mvn.javaee.version>
     <mvn.spring.version>4.3.8.RELEASE</mvn.spring.version>
     <mvn.cxf.version>3.1.11</mvn.cxf.version>
     <mvn.querydsl.version>4.1.4</mvn.querydsl.version>
@@ -61,92 +61,92 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>client</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>migration</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>orderloader</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategyagent</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-csv</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-bogus</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-exsim</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-recorder</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-core</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-marketcetera</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-yahoo</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-csv</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>misc</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategy</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-esper</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
         <exclusions>
           <exclusion>
             <groupId>log4j</groupId>
@@ -157,22 +157,22 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>tensorflow</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>remote-receiver</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>remote-emitter</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>saclient</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <!-- Compile: QuickFIX/J -->
       <dependency>
@@ -374,7 +374,7 @@
       <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-i18n</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
@@ -758,34 +758,34 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-core</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util-test</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>client</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
