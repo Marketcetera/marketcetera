@@ -16,8 +16,8 @@ import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.misc.ClassVersion;
 
+import quickfix.FieldMap;
 import quickfix.FieldNotFound;
-import quickfix.Message;
 import quickfix.field.CFICode;
 import quickfix.field.MaturityDate;
 import quickfix.field.MaturityDay;
@@ -37,10 +37,15 @@ import quickfix.field.StrikePrice;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class OptionFromMessage extends InstrumentFromMessage {
-
+public class OptionFromMessage
+        extends InstrumentFromMessage
+{
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.instruments.InstrumentFromMessage#extract(quickfix.FieldMap)
+     */
     @Override
-    public Instrument extract(Message inMessage) {
+    public Instrument extract(FieldMap inMessage)
+    {
         String symbol = getSymbol(inMessage);
         OptionType type = getOptionType(inMessage);
         BigDecimal strike = getStrikePrice(inMessage);
@@ -50,9 +55,12 @@ public class OptionFromMessage extends InstrumentFromMessage {
         }
         return new Option(symbol, expiry, strike, type);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.instruments.DynamicInstrumentHandler#isHandled(java.lang.Object)
+     */
     @Override
-    protected boolean isHandled(Message inValue) {
+    protected boolean isHandled(FieldMap inValue)
+    {
         try {
             return (inValue.isSetField(SecurityType.FIELD) &&
                     SecurityType.OPTION.equals(inValue.getString(SecurityType.FIELD))) ||
@@ -62,7 +70,6 @@ public class OptionFromMessage extends InstrumentFromMessage {
             return false;
         }
     }
-
     /**
      * Returns the option type value from the specified FIX message.
      * <p>
@@ -74,7 +81,7 @@ public class OptionFromMessage extends InstrumentFromMessage {
      *
      * @return the option type value, if available, null otherwise.
      */
-    private static OptionType getOptionType(Message inMessage) {
+    private static OptionType getOptionType(FieldMap inMessage) {
         //Check the value from PutOrCall field
         if (inMessage.isSetField(quickfix.field.PutOrCall.FIELD)) {
             try {
@@ -94,7 +101,6 @@ public class OptionFromMessage extends InstrumentFromMessage {
         }
         return null;
     }
-
     /**
      * Returns the strike price value for the specified FIX message.
      *
@@ -102,7 +108,7 @@ public class OptionFromMessage extends InstrumentFromMessage {
      *
      * @return the strike price value, if available, null otherwise.
      */
-    private static BigDecimal getStrikePrice(Message inMessage) {
+    private static BigDecimal getStrikePrice(FieldMap inMessage) {
         if (inMessage.isSetField(StrikePrice.FIELD)) {
             try {
                 return inMessage.getDecimal(StrikePrice.FIELD);
@@ -111,7 +117,6 @@ public class OptionFromMessage extends InstrumentFromMessage {
         }
         return null;
     }
-
     /**
      * Returns the expiry value for the specified FIX message.
      *
@@ -119,7 +124,7 @@ public class OptionFromMessage extends InstrumentFromMessage {
      *
      * @return the expiry value, if available, null otherwise.
      */
-    static String getExpiry(Message inMessage) {
+    static String getExpiry(FieldMap inMessage) {
         //FIX versions 4.1, 4.2, 4.3 use MaturityMonthYear
         if (inMessage.isSetField(MaturityMonthYear.FIELD)) {
             try {

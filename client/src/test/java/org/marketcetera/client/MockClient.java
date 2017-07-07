@@ -8,8 +8,10 @@ import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.event.Event;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.util.ws.tags.SessionId;
 
 import com.google.common.collect.Lists;
 
@@ -45,6 +47,14 @@ public class MockClient
     public MockClient()
     {
         this(null);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#getSessionId()
+     */
+    @Override
+    public SessionId getSessionId()
+    {
+        throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)
      * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderSingle)
@@ -420,6 +430,14 @@ public class MockClient
     {
         throw new UnsupportedOperationException(); // TODO
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#sendEvent(org.marketcetera.event.Event)
+     */
+    @Override
+    public void sendEvent(Event inEvent)
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
     /**
      * Gets the <code>ClientParameters</code> value used to initialize the client.
      *
@@ -670,4 +688,22 @@ public class MockClient
      * if non-null, will be thrown during {@link #sendCancel(OrderCancel)
      */
     private volatile OrderValidationException sendOrderCancelValidationException = null;
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#addOrderModifier(org.marketcetera.client.OrderModifier)
+     */
+    @Override
+    public void addOrderModifier(OrderModifier inOrderModifier)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#removeOrderModifier(org.marketcetera.client.OrderModifier)
+     */
+    @Override
+    public void removeOrderModifier(OrderModifier inOrderModifier)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
 }

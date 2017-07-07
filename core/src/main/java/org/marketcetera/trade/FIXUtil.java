@@ -1,12 +1,33 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.core.instruments.InstrumentFromMessage;
-import quickfix.field.*;
-import quickfix.FieldNotFound;
-import quickfix.Message;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import org.marketcetera.core.instruments.InstrumentFromMessage;
+import org.marketcetera.util.misc.ClassVersion;
+
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.field.Account;
+import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.ExecID;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
+import quickfix.field.LastMkt;
+import quickfix.field.LastPx;
+import quickfix.field.LastShares;
+import quickfix.field.LeavesQty;
+import quickfix.field.MaxFloor;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
+import quickfix.field.OrderQty;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Price;
+import quickfix.field.SendingTime;
+import quickfix.field.Text;
+import quickfix.field.TransactTime;
 
 /* $License$ */
 /**
@@ -22,6 +43,15 @@ class FIXUtil {
         if (inMessage.isSetField(Account.FIELD)) {
             try {
                 return inMessage.getString(Account.FIELD);
+            } catch (FieldNotFound ignore) {
+            }
+        }
+        return null;
+    }
+    static String getExecutionDestination(Message inMessage) {
+        if (inMessage.isSetField(quickfix.field.ExDestination.FIELD)) {
+            try {
+                return inMessage.getString(quickfix.field.ExDestination.FIELD);
             } catch (FieldNotFound ignore) {
             }
         }

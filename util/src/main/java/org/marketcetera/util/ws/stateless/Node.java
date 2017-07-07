@@ -1,11 +1,16 @@
 package org.marketcetera.util.ws.stateless;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 
 import javax.jws.WebService;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.stateful.PortDescriptor;
+import org.marketcetera.util.ws.stateful.UsesPort;
 import org.marketcetera.util.ws.tags.NodeId;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -18,6 +23,7 @@ import org.marketcetera.util.ws.tags.NodeId;
  */
 @ClassVersion("$Id$")
 public class Node
+        implements UsesPort
 {
     /**
      * Sets the receiver's host name to the given one.
@@ -65,6 +71,33 @@ public class Node
         return nodeId;
     }
     /**
+     * Get the nodeDescription value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getNodeDescription()
+    {
+        return nodeDescription;
+    }
+    /**
+     * Sets the nodeDescription value.
+     *
+     * @param inNodeDescription a <code>String</code> value
+     */
+    public void setNodeDescription(String inNodeDescription)
+    {
+        nodeDescription = inNodeDescription;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.util.ws.stateful.UsesPort#getPortDescriptors()
+     */
+    @Override
+    public Collection<PortDescriptor> getPortDescriptors()
+    {
+        return Lists.newArrayList(new PortDescriptor(port,
+                                                     getNodeDescription()));
+    }
+    /**
      * Creates a new communication node with the given host name and port.
      *
      * @param inHost a <code>String</code> value
@@ -75,6 +108,7 @@ public class Node
     {
         host = inHost;
         port = inPort;
+        nodeDescription = nodeId.getValue();
     }
     /**
      * Creates a new communication node with the default host name and port.
@@ -126,6 +160,10 @@ public class Node
      * node id for this node
      */
     private final NodeId nodeId = NodeId.generate();
+    /**
+     * node description value
+     */
+    private String nodeDescription;
     /**
      * The default port on which the server listens and to which the client connects.
      */

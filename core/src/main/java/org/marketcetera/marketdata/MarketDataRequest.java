@@ -3,10 +3,23 @@ package org.marketcetera.marketdata;
 import static org.marketcetera.marketdata.AssetClass.EQUITY;
 import static org.marketcetera.marketdata.Content.DIVIDEND;
 import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
-import static org.marketcetera.marketdata.Messages.*;
+import static org.marketcetera.marketdata.Messages.BOTH_SYMBOLS_AND_UNDERLYING_SYMBOLS_SPECIFIED;
+import static org.marketcetera.marketdata.Messages.DIVIDEND_REQUIRES_SYMBOLS;
+import static org.marketcetera.marketdata.Messages.INVALID_CONTENT;
+import static org.marketcetera.marketdata.Messages.INVALID_SYMBOLS;
+import static org.marketcetera.marketdata.Messages.INVALID_UNDERLYING_SYMBOLS;
+import static org.marketcetera.marketdata.Messages.MISSING_ASSET_CLASS;
+import static org.marketcetera.marketdata.Messages.MISSING_CONTENT;
+import static org.marketcetera.marketdata.Messages.NEITHER_SYMBOLS_NOR_UNDERLYING_SYMBOLS_SPECIFIED;
+import static org.marketcetera.marketdata.Messages.VALID_UNDERLYING_ASSET_CLASS_REQUIRED;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -111,6 +124,15 @@ public class MarketDataRequest
         Set<Content> results = new HashSet<Content>(request.getContent());
         results.removeAll(Arrays.asList(inCapabilities));
         return results.isEmpty();
+    }
+    /**
+     * Get the request id value.
+     *
+     * @return a <code>long</code> value
+     */
+    public long getRequestId()
+    {
+        return request.getId();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -341,5 +363,5 @@ public class MarketDataRequest
      */
     @XmlElement(name="requestBody")
     private final MarketDataRequestBean request;
-    private static final long serialVersionUID = 3L;
+    private static final long serialVersionUID = -1541092871609463604L;
 }

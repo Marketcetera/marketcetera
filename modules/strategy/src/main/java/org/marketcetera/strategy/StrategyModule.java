@@ -1179,7 +1179,8 @@ final class StrategyModule
      */
     private static ModuleURN constructMarketDataUrn(String inSource)
     {
-        return coreMarketDataUrn;
+        return new ModuleURN(String.format("metc:mdata:%s", //$NON-NLS-1$
+                                           inSource));
     }
     /**
      * Create a new StrategyModule instance.
@@ -1843,8 +1844,4 @@ final class StrategyModule
      */
     @GuardedBy("dataFlowLock")
     private final Map<Integer,RequestContainer> requestsByInternalId = Maps.newHashMap();
-    /**
-     * Module URN of the market data manager
-     */
-    private static final ModuleURN coreMarketDataUrn = new ModuleURN("metc:mdata:core"); //$NON-NLS-1$
 }

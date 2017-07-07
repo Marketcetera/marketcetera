@@ -59,7 +59,10 @@ public interface Service
 
     public static final String REQUEST_QUEUE=
         "ors-commands"; //$NON-NLS-1$
-
+    /**
+     * the queue on which the client receives server market data requests
+     */
+    public static final String MARKET_DATA_REQUEST_TOPIC = "market-data-requests"; //$NON-NLS-1$
     /**
      * Returns the server's broker status to the client with the
      * given context.

@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>public-parent</artifactId>
-    <version>3.1.0</version>
+    <version>3.0.11</version>
   </parent>
   <artifactId>core</artifactId>
   <packaging>jar</packaging>
@@ -44,7 +44,7 @@
       <artifactId>glazedlists_java15</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
+      <groupId>${project.groupId}.fork</groupId>
       <artifactId>commons-i18n</artifactId>
     </dependency>
     <dependency>
@@ -53,7 +53,7 @@
     </dependency>
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
-      <artifactId>hibernate-jpa-2.0-api</artifactId>
+      <artifactId>hibernate-jpa-2.1-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -124,8 +124,8 @@
       <artifactId>metrics-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.outr.javasysmon</groupId>
-      <artifactId>javasysmon_2.10</artifactId>
+      <groupId>com.github.jnr</groupId>
+      <artifactId>jnr-process</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -134,6 +134,10 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>javax.mail</artifactId>
     </dependency>
     <!-- runtime -->
     <dependency>
@@ -158,11 +162,11 @@
       <artifactId>spring-orm</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.mysema.querydsl</groupId>
+      <groupId>com.querydsl</groupId>
       <artifactId>querydsl-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.mysema.querydsl</groupId>
+      <groupId>com.querydsl</groupId>
       <artifactId>querydsl-apt</artifactId>
     </dependency>
   </dependencies>
@@ -210,21 +214,6 @@
       <plugin>
         <groupId>com.mysema.maven</groupId>
         <artifactId>apt-maven-plugin</artifactId>
-	<version>1.1.1</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>process</goal>
-            </goals>
-            <configuration>
-              <!-- Specifies the directory in which the query types are generated -->
-              <outputDirectory>target/generated-sources</outputDirectory>
-              <!-- States that the APT code generator should look for JPA annotations -->
-              <processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <!-- Place tests into a jar for use during testing of other packages. -->
       <plugin>
@@ -242,9 +231,9 @@
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
-	  <buildOutputDirectory>target/classes</buildOutputDirectory>
-	  <downloadSources>true</downloadSources>
-	  <downloadJavadocs>true</downloadJavadocs>
+          <buildOutputDirectory>target/classes</buildOutputDirectory>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
           <pde>true</pde>
           <manifest>null</manifest>
           <resolveDependencies>false</resolveDependencies>
@@ -290,24 +279,24 @@
         </executions>
       </plugin>
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-compiler-plugin</artifactId>
-	<version>3.1</version>
-	<executions>
-	  <execution>
-	    <id>log4j-plugin-processor</id>
-	    <goals>
-	      <goal>compile</goal>
-	    </goals>
-	    <phase>process-classes</phase>
-	    <configuration>
-	      <proc>only</proc>
-	      <annotationProcessors>
-		<annotationProcessor>org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor</annotationProcessor>
-	      </annotationProcessors>
-	    </configuration>
-	  </execution>
-	</executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <executions>
+          <execution>
+            <id>log4j-plugin-processor</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <phase>process-classes</phase>
+            <configuration>
+              <proc>only</proc>
+              <annotationProcessors>
+                <annotationProcessor>org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor</annotationProcessor>
+              </annotationProcessors>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

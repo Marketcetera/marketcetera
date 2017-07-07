@@ -62,7 +62,7 @@ public abstract class CEPTestBase extends ModuleTestBase {
         sManager = new ModuleManager();
         sManager.init();
         sManager.addSinkListener(sSink);
-        CurrentFIXDataDictionary.setCurrentFIXDataDictionary(new FIXDataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryURL()));
+        CurrentFIXDataDictionary.setCurrentFIXDataDictionary(new FIXDataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryName()));
 
         //  pre-create and pre-specify all events
         ask1 = EventTestBase.generateEquityAskEvent(1, 2, new Equity("ABC"), "nyse", new BigDecimal("23"), new BigDecimal("23"));

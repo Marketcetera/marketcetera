@@ -1,10 +1,11 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
-import quickfix.Message;
+import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.DataDictionary;
+import quickfix.FieldMap;
 import quickfix.field.Symbol;
 
 /* $License$ */
@@ -16,7 +17,9 @@ import quickfix.field.Symbol;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class EquityToMessage extends InstrumentToMessage<Equity> {
+public class EquityToMessage
+        extends InstrumentToMessage<Equity>
+{
     /**
      * Creates an instance.
      */
@@ -25,9 +28,15 @@ public class EquityToMessage extends InstrumentToMessage<Equity> {
     }
 
     @Override
-    public void set(Instrument inInstrument, String inBeginString, Message inMessage) {
+    public void set(Instrument inInstrument, String inBeginString, FieldMap inMessage) {
         setSecurityType(inInstrument, inBeginString, inMessage);
         inMessage.setField(new Symbol(inInstrument.getSymbol()));
+        if(inInstrument instanceof Equity) {
+            Equity equity = (Equity)inInstrument;
+            if(equity.getSymbolSfx() != null) {
+                inMessage.setField(new quickfix.field.SymbolSfx(equity.getSymbolSfx()));
+            }
+        }
     }
 
     @Override
@@ -37,8 +46,33 @@ public class EquityToMessage extends InstrumentToMessage<Equity> {
 
     @Override
     public void set(Instrument inInstrument, DataDictionary inDictionary,
-                    String inMsgType, Message inMessage) {
+                    String inMsgType, FieldMap inMessage) {
         setSecurityType(inInstrument, inDictionary, inMsgType, inMessage);
         setSymbol(inInstrument, inDictionary, inMsgType, inMessage);
+        setSymbolSfx(inInstrument,
+                     inDictionary,
+                     inMsgType,
+                     inMessage);
+    }
+    /**
+     * Sets the symbol sfx field on the instrument if the FIX dictionary supports the symbol field and the instrument has a non-null value.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inDictionary a <code>DataDictionary</code> value
+     * @param inMsgType a <code>String</code> value
+     * @param inMessage a <code>FieldMap</code> value
+     */
+    protected static void setSymbolSfx(Instrument inInstrument,
+                                       DataDictionary inDictionary,
+                                       String inMsgType,
+                                       FieldMap inMessage)
+    {
+        if(inDictionary.isMsgField(inMsgType,
+                                   quickfix.field.SymbolSfx.FIELD)) {
+            Equity equity = (Equity)inInstrument;
+            if(equity.getSymbolSfx() != null) {
+                inMessage.setField(new quickfix.field.SymbolSfx(equity.getSymbolSfx()));
+            }
+        }
     }
 }

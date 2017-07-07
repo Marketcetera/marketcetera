@@ -56,6 +56,17 @@ abstract class AbstractEventBuilderImpl<E extends Event>
         return this;
     }
     /**
+     * Sets the request id value to use with the new event.
+     *
+     * @param inRequest a <code>long</code> value
+     * @return an <code>AbstractEventBuilderImpl</code> value
+     */
+    public AbstractEventBuilderImpl<E> withRequestId(long inRequestId)
+    {
+        event.setRequestId(inRequestId);
+        return this;
+    }
+    /**
      * Get the event value.
      *
      * @return an <code>EventBean</code> value

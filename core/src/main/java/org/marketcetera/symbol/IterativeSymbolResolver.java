@@ -1,16 +1,16 @@
 package org.marketcetera.symbol;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 /* $License$ */
@@ -32,7 +32,7 @@ public class IterativeSymbolResolver
     @PostConstruct
     public void start()
     {
-        cachedSymbols = new LRUMap<>(cacheSize);
+        cachedSymbols = CacheBuilder.newBuilder().maximumSize(cacheSize).build();
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.symbol.SymbolResolverServices#resolveSymbol(java.lang.String)
@@ -40,7 +40,7 @@ public class IterativeSymbolResolver
     @Override
     public Instrument resolveSymbol(String inSymbol)
     {
-        Instrument instrument = cachedSymbols.get(inSymbol);
+        Instrument instrument = cachedSymbols.getIfPresent(inSymbol);
         if(instrument != null) {
             return instrument;
         }
@@ -137,5 +137,5 @@ public class IterativeSymbolResolver
     /**
      * cache for symbols
      */
-    private Map<String,Instrument> cachedSymbols;
+    private Cache<String,Instrument> cachedSymbols;
 }

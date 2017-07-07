@@ -1,10 +1,12 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.Instrument;
 import org.marketcetera.quickfix.FIXVersion;
-import quickfix.Message;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.DataDictionary;
+import quickfix.FieldMap;
+import quickfix.Message;
 import quickfix.field.SecurityType;
 import quickfix.field.Symbol;
 
@@ -51,7 +53,7 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
      */
     public abstract void set(Instrument inInstrument,
                              String inBeginString,
-                             Message inMessage);
+                             FieldMap inMessage);
 
     /**
      * Returns true if the instrument represented by this function is supported
@@ -77,8 +79,7 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
     public abstract void set(Instrument inInstrument,
                              DataDictionary inDictionary,
                              String inMsgType,
-                             Message inMessage);
-    
+                             FieldMap inMessage);
     /**
      * Creates an instance that handles the specified instrument subclass.
      *
@@ -98,7 +99,7 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
      */
     protected static void setSecurityType(Instrument inInstrument,
                                           String inBeginString,
-                                          Message inMessage) {
+                                          FieldMap inMessage) {
         if((!FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(inBeginString))) &&
                 inInstrument.getSecurityType() != null &&
                 org.marketcetera.trade.SecurityType.Unknown != inInstrument.getSecurityType()) {
@@ -118,7 +119,9 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
      */
     protected static void setSecurityType(Instrument inInstrument,
                                           DataDictionary inDictionary,
-                                          String inMsgType, Message inMessage) {
+                                          String inMsgType,
+                                          FieldMap inMessage)
+    {
         if(inInstrument.getSecurityType() != null &&
                 inDictionary.isMsgField(inMsgType,SecurityType.FIELD)) {
             String fixValue = inInstrument.getSecurityType().getFIXValue();
@@ -127,7 +130,6 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
             }
         }
     }
-
     /**
      * Sets the symbol field on the instrument if the FIX dictionary
      * supports the symbol field.
@@ -139,12 +141,13 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
      */
     protected static void setSymbol(Instrument inInstrument,
                                     DataDictionary inDictionary,
-                                    String inMsgType, Message inMessage) {
+                                    String inMsgType,
+                                    FieldMap inMessage)
+    {
         if(inDictionary.isMsgField(inMsgType, Symbol.FIELD)) {
             inMessage.setField(new Symbol(inInstrument.getSymbol()));
         }
     }
-
     /**
      * The factory that provides the handler instance for the specified
      * instrument. 

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<document>
+
+ <properties>
+  <title>Examples</title>
+  <author email="dev@commons.apache.org">Commons Documentation Team</author>
+ </properties>
+
+ <body>
+ 
+<section name="Examples">
+<p>This page contains some examples showing the capabilities of the i18n-compoenent.
+Most of the examples can be found in the components sources in the example-package.</p>
+</section>
+
+<section name="Using localized exceptions">
+<p>
+The following example shows how to take advantage of detailed error information
+provided by localized exceptions. In the real world it is no good idea to create
+LocalizedExceptions directly, but to create your own subclasses of LocalizedException.</p>
+<source>
+public class LocalizedExceptionExample {
+    private static final Logger logger = Logger
+            .getLogger(LocalizedExceptionExample.class.getName());
+
+    public static void main(String[] args) {
+        // Install the file providing the required messages for this example
+        MessageManager.addMessageProvider("org.apache.commons-i18n.examples",
+                new XMLMessageProvider(Thread.currentThread().getContextClassLoader().getResourceAsStream(
+                        "exampleMessages.xml")));
+
+        // Simulate the locale of the current user in a multi-user environment
+        // such as a web application
+        Locale currentUsersLocale = Locale.GERMAN;
+
+        // This is the real part dealing with localized exceptions
+        try {
+            someMethodThrowingAnException();
+        } catch (LocalizedException exception) {
+            // Retrieve the detailed localized error message
+            ErrorBundle errorMessage = exception.getErrorMessage();
+
+            // Print the summary of this error to the log with level SEVERE
+            // using the VM default locale:
+            logger.log(Level.SEVERE, errorMessage.getSummary(Locale
+                    .getDefault()));
+
+            // Print the details of this error to the log with level FINE
+            // using the VM default locale:
+            logger
+                    .log(Level.FINE, errorMessage.getDetails(Locale
+                            .getDefault()));
+
+            // Provide the title of this error to the user in a highly visible
+            // way
+            // using the current users locale:
+            System.out.println("#### "
+                    + errorMessage.getTitle(currentUsersLocale) + " ####");
+
+            // Provide the text of this error to the user
+            // using the current users locale:
+            System.out.println(errorMessage.getText(currentUsersLocale));
+        }
+    }
+
+    /**
+     * @throws LocalizedException
+     *             is thrown just to show the capabilities of
+     *             LocalizedExceptions
+     */
+    private static void someMethodThrowingAnException()
+            throws LocalizedException {
+        String userCausingTheException = "Daniel";
+        throw new LocalizedException(new ErrorBundle("theCauseOfThisException",
+                new String[]{userCausingTheException}));
+    }
+}
+</source>
+</section>
+
+<section name="Using JDBC provider and qualifying message source">
+<p>
+This example shows how to use qualified message providers, instead of searching
+through all available providers and how to use i18n for messages stored in databases.
+For the sake of the example, we will create an in memory database holding the i18n
+messages using HSQLDB.
+</p>
+<source>
+public class QualifiedJdbcExample {
+    public static void main(String[] args) throws Exception {
+        /////////////////////////////////////////////////////
+        // Prepare example
+        /////////////////////////////////////////////////////
+
+        // Set up in-memory data for the sake of the example
+        prepareTables();
+
+        /////////////////////////////////////////////////////
+        // Example of initialization
+        /////////////////////////////////////////////////////
+
+        // We can initialize JDBC message provider using a properties file
+        Properties props = new Properties();
+        props.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("i18n-jdbc.properties"));
+        MessageManager.addMessageProvider("messages", new JdbcMessageProvider(props));
+
+        // We can also initialize JDBC message provider by providing connection (or DataSource)
+        Connection conn = getNewConnection();
+        MessageManager.addMessageProvider("errors", new JdbcMessageProvider(conn, "errors", "id", "language"));
+        conn.close();
+
+        /////////////////////////////////////////////////////
+        // Example of usage
+        /////////////////////////////////////////////////////
+
+        // Simulate the locale of the current user in a multi-user environment
+        // such as a web application
+        Locale currentUsersLocale = new Locale("sv"); // Assume Swedish
+
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+            // Get i18n text qualifying the message source (i.e. the MessageProvider) to use; messages
+            TextBundle textBundle = new TextBundle("messages", "enterFirstName");
+            System.out.println(textBundle.getText(currentUsersLocale) + ":");
+            String firstName = reader.readLine();
+
+            textBundle = new TextBundle("messages", "enterLastName");
+            System.out.println(textBundle.getText(currentUsersLocale) + ":");
+            String lastName = reader.readLine();
+
+            validateNames(firstName, lastName);
+        }
+        catch(LocalizedRuntimeException lrex) {
+            // Retrieve the detailed localized error message
+            ErrorBundle errorMessage = lrex.getErrorMessage();
+
+            // Print summary and details using the current users locale
+            System.out.println("-- " + errorMessage.getSummary(currentUsersLocale) + " --");
+            System.out.println(errorMessage.getDetails(currentUsersLocale));
+        }
+    }
+
+    private static void validateNames(String firstname, String lastname) {
+        if(firstname.equals(lastname))
+            throw new LocalizedRuntimeException(new ErrorBundle("errors", "identicalNames"));
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    // Utility methods for the example
+    ///////////////////////////////////////////////////////////////////////
+
+    /**
+     * Create connection to in-memory HSQLDB database
+     * @return
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
+    private static Connection getNewConnection() throws ClassNotFoundException, SQLException {
+        Class.forName("org.hsqldb.jdbcDriver"); // Load HSQLDB database driver
+        return DriverManager.getConnection("jdbc:hsqldb:.", "sa", ""); // Connect to in-memory database
+    }
+
+    /**
+     * Create tables and insert messages
+     */
+    private static void prepareTables() throws ClassNotFoundException, SQLException {
+        Connection conn = getNewConnection();
+        Statement stmt = conn.createStatement();
+        stmt.execute(
+                "CREATE TABLE messages ( " +
+                "  'id' VARCHAR(30), " +
+                "  'language' VARCHAR(2), " +
+                "  'text' VARCHAR(100)" +
+                ")");
+        stmt.execute("INSERT INTO messages VALUES ('enterFirstName', 'en', 'Please enter your first name')");
+        stmt.execute("INSERT INTO messages VALUES ('enterLastName', 'en', 'Please enter your last name')");
+        stmt.execute("INSERT INTO messages VALUES ('enterFirstName', 'sv', 'Vänligen ange ditt förnamn')");
+        stmt.execute("INSERT INTO messages VALUES ('enterLastName', 'sv', 'Vänligen ange ditt efternamn')");
+        stmt.execute(
+                "CREATE TABLE errors ( " +
+                "  'id' VARCHAR(30), " +
+                "  'language' VARCHAR(2), " +
+                "  'summary' VARCHAR(100), " +
+                "  'details' VARCHAR(100) " +
+                ")");
+        stmt.execute("INSERT INTO errors VALUES (" +
+                "  'identicalNames', 'en', " +
+                "  'Error! Identical names.', 'You entered the same name as both first name and last name'" +
+                ")");
+        stmt.execute("INSERT INTO errors VALUES (" +
+                "  'identicalNames', 'sv', " +
+                "  'Fel! Identiska namn.', 'Du angav samma namn som både förnamn och efternamn'" +
+                ")");
+        stmt.close();
+        conn.close();
+    }
+}
+</source>
+</section>
+
+<section name="Custom message bundles">
+<p></p>
+</section>
+
+<section name="Implementing a custom message provider">
+<p></p>
+</section>
+
+</body>
+</document>

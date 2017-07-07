@@ -1,18 +1,35 @@
 package org.marketcetera.quickfix;
 
-import junit.framework.Test;
-import org.marketcetera.core.FIXVersionTestSuite;
-import org.marketcetera.core.FIXVersionedTestCase;
-import org.marketcetera.trade.Equity;
-
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.field.*;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashSet;
+
+import org.marketcetera.core.FIXVersionTestSuite;
+import org.marketcetera.core.FIXVersionedTestCase;
+import org.marketcetera.trade.Equity;
+
+import junit.framework.Test;
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.field.Account;
+import quickfix.field.BeginSeqNo;
+import quickfix.field.BusinessRejectReason;
+import quickfix.field.ClOrdID;
+import quickfix.field.CxlRejReason;
+import quickfix.field.EndSeqNo;
+import quickfix.field.MsgType;
+import quickfix.field.OrdType;
+import quickfix.field.OrderID;
+import quickfix.field.OrderQty;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Price;
+import quickfix.field.SecurityType;
+import quickfix.field.Side;
+import quickfix.field.Symbol;
+import quickfix.field.Text;
+import quickfix.field.TimeInForce;
+import quickfix.field.TransactTime;
 
 public class FIXMessageFactoryTest extends FIXVersionedTestCase {
 
@@ -108,6 +125,10 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
     }
     
     public void testNewResendRequest() throws Exception {
+        FIXVersion fixVersion = FIXVersion.getFIXVersion(msgFactory.getBeginString());
+        if(fixVersion.isFixT()) {
+            return;
+        }
     	Message rr;
     	rr = msgFactory.newResendRequest(null, null);
     	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));

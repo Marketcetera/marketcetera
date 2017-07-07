@@ -34,6 +34,6 @@ public class EquityPositionKeyComparator extends InstrumentPositionKeyComparator
     @Override
     public int compare(Equity o1, Equity o2) {
         return new CompareToBuilder().
-                append(o1.getSymbol(), o2.getSymbol()).toComparison();
+                append(o1.getFullSymbol(), o2.getFullSymbol()).toComparison();
     }
 }

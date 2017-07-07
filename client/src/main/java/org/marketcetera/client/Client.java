@@ -2,15 +2,36 @@ package org.marketcetera.client;
 
 import java.beans.ExceptionListener;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.trade.*;
+import org.marketcetera.event.Event;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReportImpl;
+import org.marketcetera.trade.FIXMessageWrapper;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Hierarchy;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.tags.SessionId;
 
 /* $License$ */
 
@@ -67,7 +88,6 @@ public interface Client
      */
     public void sendOrder(OrderSingle inOrderSingle)
             throws ConnectionException, OrderValidationException;
-
     /**
      * Sends the supplied order to the server.
      *
@@ -81,7 +101,6 @@ public interface Client
      */
     public void sendOrder(OrderReplace inOrderReplace)
             throws ConnectionException, OrderValidationException;
-
     /**
      * Sends the supplied order to the server.
      *
@@ -95,7 +114,6 @@ public interface Client
      */
     public void sendOrder(OrderCancel inOrderCancel)
             throws ConnectionException, OrderValidationException;
-
     /**
      * Sends the supplied FIX Message Order to the server.
      * <p>
@@ -111,7 +129,14 @@ public interface Client
      */
     public void sendOrderRaw(FIXOrder inFIXOrder)
             throws ConnectionException, OrderValidationException;
-
+    /**
+     * Send the supplied Event to the server.
+     *
+     * @param inEvent an <code>Event</code> value
+     * @throws ConnectionException if there were connection errors sending the event to the server
+     */
+    public void sendEvent(Event inEvent)
+                throws ConnectionException;
     /**
      * Returns all the reports (execution report and order cancel rejects)
      * generated and received by the server since the supplied date in UTC.
@@ -539,4 +564,22 @@ public interface Client
      * @return an <code>OrderID</code> value
      */
     public OrderID findRootOrderIdFor(OrderID inOrderID);
+    /**
+     * Get the session id for the current session.
+     *
+     * @return a <code>SessionId</code> value
+     */
+    SessionId getSessionId();
+    /**
+     * Add the given order modifier.
+     *
+     * @param inOrderModifier an <code>OrderModifier</code> value
+     */
+    void addOrderModifier(OrderModifier inOrderModifier);
+    /**
+     * Remove the given order modifier.
+     *
+     * @param inOrderModifier an <code>OrderModifier</code> value
+     */
+    void removeOrderModifier(OrderModifier inOrderModifier);
 }

@@ -84,22 +84,16 @@ public abstract class AbstractSAClient
         }
     }
     /**
-     * 
-     *
-     *
+     * Execute on start.
      */
     protected void doStart()
     {
-        
     }
     /**
-     * 
-     *
-     *
+     * Execute on stop.
      */
     protected void doStop()
     {
-        
     }
     /**
      * Create a new AbstractSAClient instance.

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import org.marketcetera.algo.BrokerAlgo;
+import org.marketcetera.algo.HasBrokerAlgo;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -18,7 +19,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public interface NewOrReplaceOrder
-        extends OrderBase, Serializable
+        extends OrderBase, HasBrokerAlgo, Serializable
 {
     /**
      * Gets the OrderType for the Order.
@@ -121,4 +122,28 @@ public interface NewOrReplaceOrder
      * @param inBrokerAlgo a <code>BrokerAlgo</code> value
      */
     void setBrokerAlgo(BrokerAlgo inBrokerAlgo);
+    /**
+     * Set the peg-to-midpoint indicator value.
+     *
+     * @param inPegToMidpoint a <code>boolean</code> value
+     */
+    void setPegToMidpoint(boolean inPegToMidpoint);
+    /**
+     * Get the pet-to-midpoint indicator value.
+     *
+     * @return a <code>boolean</code> value
+     */
+    boolean getPegToMidpoint();
+    /**
+     * Get the execution destination for the order.
+     *
+     * @return a <code>String</code> value
+     */
+    String getExecutionDestination();
+    /**
+     * Set the execution destination for the order.
+     *
+     * @param inExecutionDestination a <code>String</code> value
+     */
+    void setExecutionDestination(String inExecutionDestination);
 }

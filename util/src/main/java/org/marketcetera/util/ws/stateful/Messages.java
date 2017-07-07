@@ -53,4 +53,5 @@ public interface Messages
         new I18NMessage2P(LOGGER,"reaper_expired_session"); //$NON-NLS-1$
     static final I18NMessage1P REAPER_TERMINATED=
         new I18NMessage1P(LOGGER,"reaper_terminated"); //$NON-NLS-1$
+    static final I18NMessage0P JMX_REMOTE_SERVICE_DESCRIPTION = new I18NMessage0P(LOGGER,"jmx_remote_service_description"); //$NON-NLS-1$
 }

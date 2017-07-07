@@ -60,6 +60,7 @@ import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.OrderModifier;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.ReportListener;
 import org.marketcetera.client.brokers.BrokerStatus;
@@ -69,6 +70,7 @@ import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.LogEventLevel;
@@ -121,14 +123,15 @@ import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.util.ws.tags.SessionId;
+
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 
 import quickfix.Message;
 import quickfix.field.OrdStatus;
 import quickfix.field.Side;
 import quickfix.field.TransactTime;
-
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 
 /* $License$ */
 
@@ -1228,6 +1231,40 @@ public class StrategyTestBase
                 throws ConnectionException
         {
             throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getSessionId()
+         */
+        @Override
+        public SessionId getSessionId()
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#sendEvent(org.marketcetera.event.Event)
+         */
+        @Override
+        public void sendEvent(Event inEvent)
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#addOrderModifier(org.marketcetera.client.OrderModifier)
+         */
+        @Override
+        public void addOrderModifier(OrderModifier inOrderModifier)
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#removeOrderModifier(org.marketcetera.client.OrderModifier)
+         */
+        @Override
+        public void removeOrderModifier(OrderModifier inOrderModifier)
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
         }
     }
     /**

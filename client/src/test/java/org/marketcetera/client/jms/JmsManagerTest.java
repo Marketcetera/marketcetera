@@ -211,8 +211,8 @@ public class JmsManagerTest
         // Queues.
         SampleEnvelopeReplyHandler replyOEX=
             new SampleEnvelopeReplyHandler();
-        SampleReceiveOnlyHandler<OrderEnvelope> receiveOnlyOEX=
-            new SampleReceiveOnlyHandler<OrderEnvelope>();
+        SampleReceiveOnlyHandler<DataEnvelope> receiveOnlyOEX=
+            new SampleReceiveOnlyHandler<DataEnvelope>();
         mgr.getIncomingJmsFactory().registerHandlerOEX
             (replyOEX,senderName,false,replyName,false);
         mgr.getIncomingJmsFactory().registerHandlerOEX
@@ -226,8 +226,8 @@ public class JmsManagerTest
             new SampleEnvelopeReplyHandler(),
             new SampleEnvelopeReplyHandler()};
         SampleReceiveOnlyHandler[] receiversOEX=new SampleReceiveOnlyHandler[] {
-            new SampleReceiveOnlyHandler<OrderEnvelope>(),
-            new SampleReceiveOnlyHandler<OrderEnvelope>()};            
+            new SampleReceiveOnlyHandler<DataEnvelope>(),
+            new SampleReceiveOnlyHandler<DataEnvelope>()};            
         mgr.getIncomingJmsFactory().registerHandlerOEX
             (repliesOEX[0],senderName,true,replyName,true);
         mgr.getIncomingJmsFactory().registerHandlerOEX

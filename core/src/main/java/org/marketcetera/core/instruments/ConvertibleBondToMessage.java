@@ -8,7 +8,7 @@ import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Instrument;
 
 import quickfix.DataDictionary;
-import quickfix.Message;
+import quickfix.FieldMap;
 import quickfix.field.Symbol;
 
 /* $License$ */
@@ -35,7 +35,7 @@ public class ConvertibleBondToMessage
     @Override
     public void set(Instrument inInstrument,
                     String inBeginString,
-                    Message inMessage)
+                    FieldMap inMessage)
     {
         if(UNSUPPORTED_VERSIONS.contains(FIXVersion.getFIXVersion(inBeginString))) {
             throw new IllegalArgumentException(Messages.CONVERTIBLE_BONDS_NOT_SUPPORTED_FOR_FIX_VERSION.getText(inBeginString));
@@ -62,7 +62,7 @@ public class ConvertibleBondToMessage
     public void set(Instrument inInstrument,
                     DataDictionary inDictionary,
                     String inMsgType,
-                    Message inMessage)
+                    FieldMap inMessage)
     {
         setSecurityType(inInstrument,
                         inDictionary,

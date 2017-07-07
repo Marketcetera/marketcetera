@@ -1,7 +1,11 @@
 package org.marketcetera.algo;
 
+import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.I18NMessage3P;
+import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.*;
 
 /* $License$ */
 /**
@@ -22,7 +26,7 @@ public interface Messages
      * The message logger.
      */
     static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
-    static final I18NMessage2P ALGO_TAG_VALUE_PATTERN_MISMATCH = new I18NMessage2P(LOGGER,"algo_tag_value_pattern_mismatch"); //$NON-NLS-1$
+    static final I18NMessage3P ALGO_TAG_VALUE_PATTERN_MISMATCH = new I18NMessage3P(LOGGER,"algo_tag_value_pattern_mismatch"); //$NON-NLS-1$
     static final I18NMessage1P ALGO_TAG_VALUE_REQUIRED = new I18NMessage1P(LOGGER,"algo_tag_value_required"); //$NON-NLS-1$
     static final I18NMessage2P ALGO_SPEC_MISMATCH = new I18NMessage2P(LOGGER,"algo_spec_mismatch"); //$NON-NLS-1$
 }

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+  <util:list id="propertiesFiles">
+    <value>file:${org.marketcetera.appDir}/conf/default.properties</value>
+    <value>file:${org.marketcetera.appDir}/conf/user.properties</value>
+  </util:list>
+  <bean class= "org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+    <property name="locations" ref="propertiesFiles">
+    </property>
+  </bean>
+  <context:component-scan base-package="org.marketcetera,com.marketcetera"/>
+  <!-- symbol resolvers: add additional resolvers as necessary in precedence order -->
+  <bean id="symbolResolverService" class="org.marketcetera.symbol.IterativeSymbolResolver">
+    <property name="symbolResolvers">
+      <list>
+        <bean class="org.marketcetera.symbol.PatternSymbolResolver"/>
+      </list>
+    </property>
+  </bean>
+  <!-- Main Strategy Agent Object -->
+  <bean id="sa" class="org.marketcetera.strategyagent.StrategyAgent" init-method="start" destroy-method="stop">
+    <property name="moduleManager" ref="moduleManager"/>
+    <property name="loader" ref="moduleLoader"/>
+    <property name="dataPublisher" ref="saDataPublisher"/>
+    <property name="authenticator" ref="saAuthenticator"/>
+  </bean>
+  <!-- This bean is instantiated to get to the class loader instance -->
+  <bean id="class" class="java.lang.Class" factory-method="forName">
+    <constructor-arg value="org.marketcetera.strategyagent.JarClassLoader"/>
+  </bean>
+  <!-- The current classloader -->
+  <bean id="currentLoader" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="class"/>
+    <property name="targetMethod" value="getClassLoader"/>
+  </bean>
+  <!-- info provider that contains info about the running application -->
+  <bean id="saInfoProvider" class="org.marketcetera.strategyagent.StaticStrategyAgentApplicationInfoProvider"/>
+  <!-- The jar class loader to use for loading modules & their configurations -->
+  <bean id="moduleLoader" class="org.marketcetera.strategyagent.JarClassLoader">
+    <constructor-arg ref="saInfoProvider"/>
+    <constructor-arg ref="currentLoader"/>
+  </bean>
+  <!-- The default configuration provider -->
+  <bean id="propertyConfig" class="org.marketcetera.strategyagent.AgentConfigurationProvider">
+    <constructor-arg ref="moduleLoader"/>
+    <!-- load receiver properties-->
+    <property name="receiverProperties">
+      <util:map>
+        <entry key="URL" value="${metc.sa.recv.url}"/>
+        <entry key="LogLevel" value="${metc.sa.recv.logLevel}"/>
+        <entry key="SkipJAASConfiguration" value="${metc.sa.recv.skipJAASConfiguration}"/>
+      </util:map>
+    </property>
+    <!-- load client properties-->
+    <property name="clientProperties">
+      <util:map>
+        <entry key="URL" value="${metc.sa.client.URL}"/>
+        <entry key="Username" value="${metc.sa.client.username}"/>
+        <entry key="Password" value="${metc.sa.client.password}"/>
+        <entry key="Hostname" value="${metc.sa.client.hostname}"/>
+        <entry key="Port" value="${metc.sa.client.port}"/>
+        <entry key="IDPrefix" value="${metc.sa.client.idPrefix}"/>
+      </util:map>
+    </property>
+  </bean>
+  <!-- SA Data Publisher -->
+  <bean id="saDataPublisher" class="org.marketcetera.core.publisher.PublisherEngine"/>
+  <!-- SA Authenticator -->
+  <bean id="saAuthenticator" class="org.marketcetera.strategyagent.DefaultAuthenticator"/>
+  <!-- SA Web Services -->
+  <!-- SA Session Manager -->
+  <bean id="saSessionManager" class="org.marketcetera.util.ws.stateful.SessionManager">
+    <constructor-arg ref="saClientSessionFactory"/>
+    <constructor-arg value="-1"/> <!-- Session life in ms, -1 for unlimited -->
+  </bean>
+  <!-- SA WS client session factory -->
+  <bean id="saClientSessionFactory" class="org.marketcetera.strategyagent.ClientSessionFactory"/>
+  <!-- SA Web Services Provider -->
+  <bean id="saWebServicesProvider" class="org.marketcetera.strategyagent.SAServiceImpl">
+    <constructor-arg ref="saSessionManager"/>
+    <constructor-arg ref="moduleManager"/>
+    <constructor-arg ref="saDataPublisher"/>
+  </bean>
+  <!-- SA WS Server/Services -->
+  <bean id="saWebServicesServer" class="org.marketcetera.strategyagent.StrategyAgentWebServicesProvider" depends-on="sa" init-method="start" destroy-method="stop">
+    <property name="hostname" value="${metc.sa.ws.host}"/>
+    <property name="port" value="${metc.sa.ws.port}"/>
+    <property name="authenticator" ref="saAuthenticator"/>
+    <property name="sessionManager" ref="saSessionManager"/>
+    <property name="serviceProvider" ref="saWebServicesProvider"/>
+    <property name="contextClasses">
+      <bean class="org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider"/>
+    </property>
+  </bean>
+  <!--  SA RPC Service -->
+  <bean id="rpcService" class="org.marketcetera.util.rpc.RpcServer">
+    <property name="contextClassProvider">
+      <bean class="org.marketcetera.core.ContextClassAggregator">
+        <property name="contextClassProviders">
+          <list>
+            <bean class="org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider"/>
+            <bean class="org.marketcetera.saclient.rpc.SAClientContextClassProvider"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="hostname" value="${metc.sa.ws.host}"/>
+    <property name="port" value ="${metc.sa.rpc.port}"/>
+    <property name="authenticator" ref="saAuthenticator"/>
+    <property name="sessionManager" ref="saSessionManager"/>
+    <property name="serviceSpecs">
+      <list>
+        <!-- Market Data RPC Service -->
+        <bean id="mdataRpcService" class="org.marketcetera.marketdata.core.rpc.MarketDataRpcService">
+            <property name="serviceAdapter" ref="marketdataWebService"/>
+        </bean>
+        <!-- SA Client RPC Service -->
+        <bean id="saclientRpcService" class="org.marketcetera.saclient.rpc.SAClientRpcService">
+            <property name="serviceAdapter" ref="saWebServicesProvider"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  <!-- The market data manager instance -->
+  <bean id="marketDataManager" class="org.marketcetera.marketdata.core.manager.impl.MarketDataManagerImpl"/>
+  <!-- market data web service -->
+  <bean id="marketdataWebService" class="org.marketcetera.marketdata.core.webservice.impl.MarketDataServiceImpl" init-method="start" destroy-method="stop" depends-on="saWebServicesServer">
+    <constructor-arg ref="saSessionManager"/>
+  </bean>
+  <!-- The module manager instance -->
+  <bean id="moduleManager" class="org.marketcetera.module.ModuleManager" destroy-method="stop">
+    <constructor-arg ref="moduleLoader"/>
+    <property name="configurationProvider" ref="propertyConfig"/>
+    <property name="refreshListener" ref="moduleLoader"/>
+  </bean>
+  <bean id="wsServerHost" class="java.lang.String">
+    <constructor-arg value="${metc.sa.ws.host}"/>
+  </bean>
+  <bean id="wsServerPort" class="java.lang.Integer">
+    <constructor-arg value="${metc.sa.ws.port}"/>
+  </bean>
+</beans>

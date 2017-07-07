@@ -1,6 +1,8 @@
 package org.marketcetera.quickfix.messagefactory;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.quickfix.FIXVersion;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ExecTransType;
@@ -53,6 +55,41 @@ public class FIXMessageAugmentor_43 extends FIXMessageAugmentor_42 {
         super.executionReportAugment(inMessage);
         // remove the ExecTransType field
         inMessage.removeField(ExecTransType.FIELD);
+        // exec types no longer have 'fill' and 'partial fill' 
+        if(inMessage.isSetField(quickfix.field.ExecType.FIELD)) {
+            quickfix.field.ExecType execType = new quickfix.field.ExecType();
+            inMessage.getField(execType);
+            switch(execType.getValue()) {
+                case quickfix.field.ExecType.FILL:
+                case quickfix.field.ExecType.PARTIAL_FILL:
+                    execType.setValue(quickfix.field.ExecType.TRADE);
+                    inMessage.setField(execType);
+                    break;
+                default:
+                    // do nothing
+            }
+        }
+        if(inMessage.isSetField(quickfix.field.ExecTransType.FIELD)) {
+            quickfix.field.ExecTransType execTransType = new quickfix.field.ExecTransType();
+            inMessage.getField(execTransType);
+            inMessage.removeField(quickfix.field.ExecTransType.FIELD);
+            switch(execTransType.getValue()) {
+                case quickfix.field.ExecTransType.CANCEL:
+                    inMessage.setField(new quickfix.field.ExecType(quickfix.field.ExecType.TRADE_CANCEL));
+                    break;
+                case quickfix.field.ExecTransType.CORRECT:
+                    inMessage.setField(new quickfix.field.ExecType(quickfix.field.ExecType.TRADE_CORRECT));
+                    break;
+                case quickfix.field.ExecTransType.NEW:
+                    // do nothing
+                    break;
+                case quickfix.field.ExecTransType.STATUS:
+                    inMessage.setField(new quickfix.field.ExecType(quickfix.field.ExecType.ORDER_STATUS));
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }
         return inMessage;
     }
 
@@ -77,5 +114,13 @@ public class FIXMessageAugmentor_43 extends FIXMessageAugmentor_42 {
             return inMessage;
         }
         return inMessage;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.quickfix.messagefactory.NoOpFIXMessageAugmentor#getFixVersion()
+     */
+    @Override
+    protected FIXVersion getFixVersion()
+    {
+        return FIXVersion.FIX43;
     }
 }

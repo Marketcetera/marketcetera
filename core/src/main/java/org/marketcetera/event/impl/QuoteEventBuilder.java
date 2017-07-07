@@ -613,7 +613,18 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         };
     }
     /**
-     * Sets the message id to use with the new event. 
+     * Set the book empty flag to use with the new event.
+     *
+     * @param inIsEmpty a <code>boolean</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public QuoteEventBuilder<E> isEmpty(boolean inIsEmpty)
+    {
+        quote.setIsEmpty(inIsEmpty);
+        return this;
+    }
+    /**
+     * Sets the message id to use with the new event.
      *
      * @param inMessageId a <code>long</code> value
      * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value

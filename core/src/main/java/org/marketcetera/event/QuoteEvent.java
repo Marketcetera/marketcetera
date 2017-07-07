@@ -58,4 +58,10 @@ public interface QuoteEvent
      * @return an <code>int</code> value
      */
     int getCount();
+    /**
+     * Indicate if this side of the book is empty.
+     *
+     * @return a <code>boolean</code> value
+     */
+    boolean isEmpty();
 }

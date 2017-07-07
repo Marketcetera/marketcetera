@@ -108,11 +108,11 @@ public enum Side {
     /**
      * sell side values
      */
-    private static final Set<Side> SELL_SIDES = EnumSet.of(Sell,SellShort,SellShortExempt,SellPlus);
+    public static final Set<Side> SELL_SIDES = EnumSet.of(Sell,SellShort,SellShortExempt,SellPlus);
     /**
      * buy side values
      */
-    private static final Set<Side> BUY_SIDES = EnumSet.of(Buy,BuyMinus);
+    public static final Set<Side> BUY_SIDES = EnumSet.of(Buy,BuyMinus);
     /**
      * side values by FIX value
      */

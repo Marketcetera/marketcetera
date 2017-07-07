@@ -23,8 +23,12 @@ import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.core.MarketDataProviderMBean;
 import org.marketcetera.marketdata.core.Messages;
 import org.marketcetera.marketdata.core.ProviderStatus;
+import org.marketcetera.module.ModuleInfo;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */
 
@@ -152,6 +156,24 @@ public class MarketDataProviderWatcher
         return lastStatus;
     }
     /**
+     * Get the moduleManager value.
+     *
+     * @return a <code>ModuleManager</code> value
+     */
+    public ModuleManager getModuleManager()
+    {
+        return moduleManager;
+    }
+    /**
+     * Sets the moduleManager value.
+     *
+     * @param inModuleManager a <code>ModuleManager</code> value
+     */
+    public void setModuleManager(ModuleManager inModuleManager)
+    {
+        moduleManager = inModuleManager;
+    }
+    /**
      * Gets the admin bean for the given session.
      *
      * @return an <code>AbstractMarketDataModuleMXBean</code> value
@@ -263,6 +285,11 @@ public class MarketDataProviderWatcher
                                                   status);
                     try {
                         if(useModule) {
+                            ModuleURN instanceUrn = new ModuleURN("metc:mdata:" + moduleName+":single");
+                            ModuleInfo moduleInfo = moduleManager.getModuleInfo(instanceUrn);
+                            if(!moduleInfo.getState().isStarted()) {
+                                moduleManager.start(instanceUrn);
+                            }
                             moduleBean.reconnect();
                         } else {
                             providerBean.stop();
@@ -298,6 +325,11 @@ public class MarketDataProviderWatcher
          */
         private boolean useModule = true;
     }
+    /**
+     * manages system modules
+     */
+    @Autowired
+    private ModuleManager moduleManager;
     /**
      * indicates the last know status for the provider
      */
