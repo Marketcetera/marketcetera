@@ -43,7 +43,6 @@
     <mvn.cxf.version>3.1.11</mvn.cxf.version>
     <mvn.querydsl.version>4.1.4</mvn.querydsl.version>
     <mvn.springdatajpa.version>1.11.3.RELEASE</mvn.springdatajpa.version>
-    <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>5.1.5.Final</mvn.hibernate.version>
     <mvn.hazelcast.version>3.8.1</mvn.hazelcast.version>
     <mvn.slf4j.version>1.7.21</mvn.slf4j.version>
@@ -409,17 +408,6 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>taglibs</groupId>
-        <artifactId>standard</artifactId>
-        <version>1.1.2</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.ccil.cowan.tagsoup</groupId>
-        <artifactId>tagsoup</artifactId>
-        <version>1.2.1</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.bsf</groupId>
         <artifactId>com.springsource.org.apache.bsf</artifactId>
         <version>2.4.0</version>
@@ -451,29 +439,9 @@
         <version>2.9.9</version>
       </dependency>
       <dependency>
-        <groupId>org.joda</groupId>
-        <artifactId>joda-primitives</artifactId>
-        <version>1.0</version>
-      </dependency>
-      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>20.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j</groupId>
-        <artifactId>peaberry</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j</groupId>
-        <artifactId>peaberry.eclipse</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.inject</groupId>
-        <artifactId>guice</artifactId>
-        <version>2.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
@@ -488,21 +456,6 @@
           <exclusion>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>jparsec</groupId>
-        <artifactId>jparsec</artifactId>
-        <version>2.0.1</version>
-        <exclusions>
-          <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -737,12 +690,6 @@
         <scope>runtime</scope>
       </dependency>       
       <dependency>
-        <groupId>colt</groupId>
-        <artifactId>colt</artifactId>
-        <version>1.2.0</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
         <groupId>org.apache.mina</groupId>
         <artifactId>mina-core</artifactId>
         <version>2.0.16</version>
@@ -818,12 +765,6 @@
         <groupId>pl.pragmatists</groupId>
         <artifactId>JUnitParams</artifactId>
         <version>1.0.4</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.easymock</groupId>
-        <artifactId>easymockclassextension</artifactId>
-        <version>3.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
