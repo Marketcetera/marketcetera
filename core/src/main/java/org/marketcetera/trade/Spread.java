@@ -25,7 +25,7 @@ public class Spread
             return symbol;
         }
         StringBuilder builder = new StringBuilder();
-        builder.append(leg1.getSymbol()).append('/').append(leg2.getSymbol());
+        builder.append(leg1.getSymbol()).append('-').append(leg2.getSymbol());
         symbol = builder.toString();
         return symbol;
     }
@@ -47,9 +47,19 @@ public class Spread
             return fullSymbol;
         }
         StringBuilder builder = new StringBuilder();
-        builder.append(leg1.getFullSymbol()).append('/').append(leg2.getFullSymbol());
+        builder.append(leg1.getFullSymbol()).append('-').append(leg2.getFullSymbol());
         fullSymbol = builder.toString();
         return fullSymbol;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Spread [").append(getFullSymbol()).append("]");
+        return builder.toString();
     }
     /**
      * Get the leg1 value.
