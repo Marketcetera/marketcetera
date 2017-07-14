@@ -1,13 +1,12 @@
-package com.marketcetera.admin.impl;
+package org.marketcetera.admin.impl;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.marketcetera.admin.User;
 import org.marketcetera.persist.NDEntityBase;
-
-import com.marketcetera.admin.User;
 
 /* $License$ */
 

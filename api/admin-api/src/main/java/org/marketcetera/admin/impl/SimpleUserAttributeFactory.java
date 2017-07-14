@@ -1,9 +1,9 @@
-package com.marketcetera.admin.impl;
+package org.marketcetera.admin.impl;
 
-import com.marketcetera.admin.User;
-import com.marketcetera.admin.UserAttribute;
-import com.marketcetera.admin.UserAttributeFactory;
-import com.marketcetera.admin.UserAttributeType;
+import org.marketcetera.admin.User;
+import org.marketcetera.admin.UserAttribute;
+import org.marketcetera.admin.UserAttributeFactory;
+import org.marketcetera.admin.UserAttributeType;
 
 /* $License$ */
 

@@ -1,13 +1,12 @@
-package com.marketcetera.admin.impl;
+package org.marketcetera.admin.impl;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import org.marketcetera.admin.Permission;
+import org.marketcetera.admin.Role;
+import org.marketcetera.admin.User;
 import org.marketcetera.persist.NDEntityBase;
-
-import com.marketcetera.admin.Permission;
-import com.marketcetera.admin.Role;
-import com.marketcetera.admin.User;
 
 /* $License$ */
 

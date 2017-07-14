@@ -1,4 +1,4 @@
-package com.marketcetera.admin;
+package org.marketcetera.admin;
 
 /* $License$ */
 

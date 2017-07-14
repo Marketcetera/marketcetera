@@ -1,4 +1,4 @@
-package com.marketcetera.admin.impl;
+package org.marketcetera.admin.impl;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -6,11 +6,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.marketcetera.admin.User;
+import org.marketcetera.admin.UserAttribute;
+import org.marketcetera.admin.UserAttributeType;
 import org.marketcetera.persist.EntityBase;
-
-import com.marketcetera.admin.User;
-import com.marketcetera.admin.UserAttribute;
-import com.marketcetera.admin.UserAttributeType;
 
 /* $License$ */
 

@@ -1,7 +1,7 @@
-package com.marketcetera.admin.impl;
+package org.marketcetera.admin.impl;
 
-import com.marketcetera.admin.Role;
-import com.marketcetera.admin.RoleFactory;
+import org.marketcetera.admin.Role;
+import org.marketcetera.admin.RoleFactory;
 
 /* $License$ */
 

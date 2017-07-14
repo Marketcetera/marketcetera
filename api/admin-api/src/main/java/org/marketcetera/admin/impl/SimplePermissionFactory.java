@@ -1,7 +1,7 @@
-package com.marketcetera.admin.impl;
+package org.marketcetera.admin.impl;
 
-import com.marketcetera.admin.Permission;
-import com.marketcetera.admin.PermissionFactory;
+import org.marketcetera.admin.Permission;
+import org.marketcetera.admin.PermissionFactory;
 
 /* $License$ */
 
