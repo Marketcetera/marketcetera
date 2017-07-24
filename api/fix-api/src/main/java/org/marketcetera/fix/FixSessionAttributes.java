@@ -1,6 +1,13 @@
 package org.marketcetera.fix;
 
 import java.io.Serializable;
+import java.util.Properties;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.marketcetera.core.Util;
 
 import quickfix.SessionID;
 
@@ -13,6 +20,8 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class FixSessionAttributes
         implements Serializable
 {
@@ -29,7 +38,7 @@ public class FixSessionAttributes
                                 int inNextTargetSeqNum,
                                 int inAcceptorPort)
     {
-        sessionId = inSessionId;
+        sessionId = inSessionId.toString();
         nextSenderSeqNum = inNextSenderSeqNum;
         nextTargetSeqNum = inNextTargetSeqNum;
         acceptorPort = inAcceptorPort;
@@ -107,12 +116,48 @@ public class FixSessionAttributes
      */
     public SessionID getSessionId()
     {
-        return sessionId;
+        return new SessionID(sessionId);
+    }
+    /**
+     * Get the object rendered as a string.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getAsString()
+    {
+        Properties properties = new Properties();
+        properties.setProperty("sessionId",
+                               sessionId.toString());
+        properties.setProperty("nextSenderSeqNum",
+                               String.valueOf(nextSenderSeqNum));
+        properties.setProperty("nextTargetSeqNum",
+                               String.valueOf(nextTargetSeqNum));
+        properties.setProperty("acceptorPort",
+                               String.valueOf(acceptorPort));
+        return Util.propertiesToString(properties);
+    }
+    /**
+     * Generate a <code>FixSessionAttributes</code> value from the given string.
+     *
+     * @param inValue a <code>String</code> value
+     * @return a <code>FixSessionAttributes</code> value
+     */
+    public static FixSessionAttributes getFromString(String inValue)
+    {
+        Properties properties = Util.propertiesFromString(inValue);
+        SessionID sessionId = new SessionID(properties.getProperty("sessionId"));
+        int nextSenderSeqNum = Integer.parseInt(properties.getProperty("nextSenderSeqNum"));
+        int nextTargetSeqNum = Integer.parseInt(properties.getProperty("nextTargetSeqNum"));
+        int acceptorPort = Integer.parseInt(properties.getProperty("acceptorPort"));
+        return new FixSessionAttributes(sessionId,
+                                        nextSenderSeqNum,
+                                        nextTargetSeqNum,
+                                        acceptorPort);
     }
     /**
      * session id value
      */
-    private SessionID sessionId;
+    private String sessionId;
     /**
      * next sender sequence number value
      */

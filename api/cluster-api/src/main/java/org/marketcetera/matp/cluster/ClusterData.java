@@ -6,9 +6,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /* $License$ */
 
@@ -24,11 +24,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class ClusterData
         implements Serializable,Comparable<ClusterData>
 {
-    /**
-     * Create a new ClusterData instance.
-     */
-    public ClusterData() {}
-    
     /**
      * Create a new ClusterData instance.
      *
@@ -171,7 +166,7 @@ public class ClusterData
         if (!(obj instanceof ClusterData)) {
             return false;
         }
-        ClusterData other = (ClusterData) obj;
+        ClusterData other = (ClusterData)obj;
         return new EqualsBuilder().append(hostId,other.hostId).append(instanceNumber,other.instanceNumber).isEquals();
     }
     /* (non-Javadoc)
@@ -183,24 +178,29 @@ public class ClusterData
         return new CompareToBuilder().append(hostNumber,inO.getHostNumber()).append(instanceNumber,inO.getInstanceNumber()).toComparison();
     }
     /**
-     * instance number value
+     * Create a new ClusterData instance.
+     */
+    @SuppressWarnings("unused")
+    private ClusterData() {}
+    /**
+     * the instance number of this member
      */
     private int instanceNumber;
     /**
-     * host number value
+     * the host number of this member
      */
     private int hostNumber;
     /**
-     * host id value
+     * the host id of this member
      */
     private String hostId;
     /**
-     * total instances value
+     * the total expected number of instances in the cluster
      */
     private int totalInstances;
     /**
-     * uuid value
+     * the unique identified of this instance in the cluster
      */
     private String uuid;
-    private static final long serialVersionUID = -6037562825938330054L;
+    private static final long serialVersionUID = -8742803205412217859L;
 }
