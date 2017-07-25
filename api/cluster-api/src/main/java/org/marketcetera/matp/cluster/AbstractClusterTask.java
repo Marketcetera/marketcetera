@@ -5,8 +5,6 @@ import java.io.Serializable;
 import org.marketcetera.matp.cluster.service.ClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.hazelcast.spring.context.SpringAware;
-
 /* $License$ */
 
 /**
@@ -16,7 +14,6 @@ import com.hazelcast.spring.context.SpringAware;
  * @version $Id: AbstractClusterTask.java 17134 2017-01-27 16:41:54Z colin $
  * @since 2.5.0
  */
-@SpringAware
 public class AbstractClusterTask
         implements Serializable
 {
