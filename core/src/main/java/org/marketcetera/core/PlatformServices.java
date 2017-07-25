@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
 
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
 
@@ -92,6 +94,28 @@ public abstract class PlatformServices
     public static String generateId()
     {
         return UUID.randomUUID().toString();
+    }
+    /**
+     * Autowires the given object.
+     * 
+     * @param inTarget an <code>Object</code> value
+     * @param inApplicationContext an <code>ApplicationContext</code> value
+     * @throws RuntimeException if the object cannot be autowired
+     */
+    public static void autowire(Object inTarget,
+                                ApplicationContext inApplicationContext)
+    {
+        AutowireCapableBeanFactory beanFactory = inApplicationContext.getAutowireCapableBeanFactory();
+        SLF4JLoggerProxy.debug(PlatformServices.class,
+                               "Autowiring {}",
+                               inTarget);
+        beanFactory.autowireBeanProperties(inTarget,
+                                           AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE,
+                                           false);
+        beanFactory.autowireBean(inTarget);
+        SLF4JLoggerProxy.debug(PlatformServices.class,
+                               "Autowiring {} complete",
+                               inTarget);
     }
     /**
      * Create a new EnterprisePlatformServices instance.
