@@ -16,6 +16,7 @@
   <packaging>pom</packaging>
   <name>Cluster Parent</name>
   <modules>
+    <module>cluster-api</module>
     <module>cluster-core</module>
     <module>simple-cluster</module>
   </modules>
