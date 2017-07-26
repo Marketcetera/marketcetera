@@ -21,6 +21,12 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>cluster-api</artifactId>
     </dependency>
+    <!-- test: marketcetera -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
     <!-- test: other -->
     <dependency>
       <groupId>junit</groupId>
