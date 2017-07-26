@@ -1,4 +1,4 @@
-package org.marketcetera.matp.cluster.service;
+package org.marketcetera.cluster.service;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -12,8 +12,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.marketcetera.matp.cluster.ClusterData;
-import org.marketcetera.matp.cluster.ClusterWorkUnitDescriptor;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.ClusterWorkUnitDescriptor;
 
 /**
  * Holds data about each cluster member.

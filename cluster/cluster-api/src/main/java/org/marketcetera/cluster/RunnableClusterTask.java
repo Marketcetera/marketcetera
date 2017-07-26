@@ -1,4 +1,4 @@
-package org.marketcetera.matp.cluster;
+package org.marketcetera.cluster;
 
 /* $License$ */
 

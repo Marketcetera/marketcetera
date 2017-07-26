@@ -96,6 +96,17 @@ public abstract class PlatformServices
         return UUID.randomUUID().toString();
     }
     /**
+     * Autowires the given object with the default application context.
+     * 
+     * @param inTarget an <code>Object</code> value
+     * @throws RuntimeException if the object cannot be autowired
+     */
+    public static void autowire(Object inTarget)
+    {
+        autowire(inTarget,
+                 ApplicationContextProvider.getInstance().getApplicationContext());
+    }
+    /**
      * Autowires the given object.
      * 
      * @param inTarget an <code>Object</code> value
@@ -105,6 +116,9 @@ public abstract class PlatformServices
     public static void autowire(Object inTarget,
                                 ApplicationContext inApplicationContext)
     {
+        if(inApplicationContext == null) {
+            throw new IllegalArgumentException("No application context");
+        }
         AutowireCapableBeanFactory beanFactory = inApplicationContext.getAutowireCapableBeanFactory();
         SLF4JLoggerProxy.debug(PlatformServices.class,
                                "Autowiring {}",

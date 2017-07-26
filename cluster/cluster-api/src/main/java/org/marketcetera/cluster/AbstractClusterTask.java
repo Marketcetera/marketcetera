@@ -1,8 +1,8 @@
-package org.marketcetera.matp.cluster;
+package org.marketcetera.cluster;
 
 import java.io.Serializable;
 
-import org.marketcetera.matp.cluster.service.ClusterService;
+import org.marketcetera.cluster.service.ClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */

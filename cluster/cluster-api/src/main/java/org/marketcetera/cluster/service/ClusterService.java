@@ -1,4 +1,4 @@
-package org.marketcetera.matp.cluster.service;
+package org.marketcetera.cluster.service;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -6,10 +6,10 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
 
-import org.marketcetera.matp.cluster.CallableClusterTask;
-import org.marketcetera.matp.cluster.ClusterData;
-import org.marketcetera.matp.cluster.QueueDescriptor;
-import org.marketcetera.matp.cluster.RunnableClusterTask;
+import org.marketcetera.cluster.CallableClusterTask;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.QueueDescriptor;
+import org.marketcetera.cluster.RunnableClusterTask;
 
 /* $License$ */
 

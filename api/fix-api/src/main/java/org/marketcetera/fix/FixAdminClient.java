@@ -3,7 +3,7 @@ package org.marketcetera.fix;
 import java.util.Collection;
 import java.util.List;
 
-import org.marketcetera.matp.cluster.InstanceData;
+import org.marketcetera.cluster.InstanceData;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.util.rpc.BaseClient;

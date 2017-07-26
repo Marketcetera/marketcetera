@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.marketcetera.matp.cluster.InstanceData;
+import org.marketcetera.cluster.InstanceData;
 
 /* $License$ */
 

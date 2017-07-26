@@ -5,11 +5,11 @@ import java.io.File;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.file.DirectoryWatcherImpl;
 import org.marketcetera.core.file.DirectoryWatcherSubscriber;
-import org.marketcetera.matp.cluster.ClusterData;
-import org.marketcetera.matp.cluster.service.ClusterService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

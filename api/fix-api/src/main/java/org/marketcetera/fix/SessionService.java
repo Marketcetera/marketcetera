@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.marketcetera.matp.cluster.ClusterData;
+import org.marketcetera.cluster.ClusterData;
 
 import quickfix.SessionID;
 import quickfix.SessionSettings;

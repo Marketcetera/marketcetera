@@ -8,8 +8,8 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.matp.cluster.ClusterData;
-import org.marketcetera.matp.cluster.HasClusterData;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.HasClusterData;
 import org.marketcetera.trade.BrokerID;
 
 /* $License$ */

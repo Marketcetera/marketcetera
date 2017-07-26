@@ -1,6 +1,6 @@
 package org.marketcetera.cluster;
 
-import org.marketcetera.matp.cluster.service.ClusterMember;
+import org.marketcetera.cluster.service.ClusterMember;
 
 /* $License$ */
 

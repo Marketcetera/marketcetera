@@ -1,4 +1,4 @@
-package org.marketcetera.matp.cluster;
+package org.marketcetera.cluster;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
