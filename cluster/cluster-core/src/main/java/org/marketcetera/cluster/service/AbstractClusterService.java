@@ -40,7 +40,6 @@ import org.marketcetera.cluster.ClusterWorkUnitDescriptor;
 import org.marketcetera.cluster.ClusterWorkUnitSpec;
 import org.marketcetera.cluster.ClusterWorkUnitType;
 import org.marketcetera.cluster.ClusterWorkUnitUid;
-import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
@@ -52,7 +51,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import com.google.common.collect.Sets;
-import com.hazelcast.core.HazelcastInstanceNotActiveException;
 
 /* $License$ */
 
@@ -602,7 +600,7 @@ public abstract class AbstractClusterService
         }
         activateWorkUnit(candidate);
         setAttribute(inWorkUnitSpec.getWorkUnitId(),
-                       String.valueOf(true));
+                     String.valueOf(true));
         return candidate;
     }
     /**
@@ -974,7 +972,7 @@ public abstract class AbstractClusterService
                                                abandonedLockTimeout);
                     }
                 }
-            } catch (NullPointerException | HazelcastInstanceNotActiveException ignored) {
+            } catch (NullPointerException ignored) {
                 // occurs on shutdown, can be safely ignored
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
@@ -998,7 +996,7 @@ public abstract class AbstractClusterService
         private long workUnitLockAttempt;
     }
     /**
-     * 
+     * uniquely identifies a cluster member
      */
     private String memberUuid;
     /**
@@ -1006,7 +1004,7 @@ public abstract class AbstractClusterService
      */
     private ClusterData clusterData;
     /**
-     * hazelcast instance name to use instead of creating a new one
+     * cluster instance name to use instead of creating a new one
      */
     private String instanceName = "matp";
     /**

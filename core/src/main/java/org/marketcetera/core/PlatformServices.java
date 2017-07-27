@@ -12,8 +12,6 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
-import com.hazelcast.core.HazelcastInstanceNotActiveException;
-
 /* $License$ */
 
 /**
@@ -33,16 +31,10 @@ public abstract class PlatformServices
      */
     public static boolean isShutdown(Throwable inThrowable)
     {
-        if(inThrowable instanceof HazelcastInstanceNotActiveException) {
-            return true;
-        }
         if(inThrowable instanceof InterruptedException) {
             return true;
         }
-        if(ExceptionUtils.getRootCause(inThrowable) instanceof HazelcastInstanceNotActiveException) {
-            return true;
-        }
-        return ExceptionUtils.getFullStackTrace(inThrowable).contains(hazelcastInstanceIsNotActive);
+        return false;
     }
     /**
      * Get a human-readable message describing the root cause of the given exception.
@@ -138,10 +130,6 @@ public abstract class PlatformServices
     {
         throw new UnsupportedOperationException();
     }
-    /**
-     * indicates that hazelcast is not active
-     */
-    private static final String hazelcastInstanceIsNotActive = "Hazelcast instance is not active"; //$NON-NLS-1$
     /**
      * describes the style of the table cell
      */

@@ -15,11 +15,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.marketcetera.cluster.service.ClusterListener;
+import org.marketcetera.cluster.service.AbstractClusterService;
 import org.marketcetera.cluster.service.ClusterMember;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.PlatformServices;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -40,6 +39,7 @@ import com.google.common.collect.Sets;
  * @since $Release$
  */
 public class SimpleClusterService
+        extends AbstractClusterService
         implements ClusterService
 {
     /**
@@ -48,20 +48,16 @@ public class SimpleClusterService
     @PostConstruct
     public void start()
     {
-        SLF4JLoggerProxy.info(this,
-                              "Starting {}",
-                              this.getClass().getSimpleName());
-        instanceData = new ClusterData(1,
-                                                   "host1-1",
-                                                   1,
-                                                   1,
-                                                   UUID.randomUUID().toString());
-        clusterMembers = Collections.unmodifiableSet(Sets.newHashSet(new ClusterMember() {
+        thisClusterMember = new ClusterMember() {
             @Override
             public String getUuid()
             {
-                return instanceData.getUuid();
-            }}));
+                return memberUUID;
+            }};
+        clusterMembers = Collections.unmodifiableSet(Sets.newHashSet(thisClusterMember));
+        super.start();
+        active = true;
+        memberAdded(thisClusterMember);
     }
     /**
      * Stop the object.
@@ -69,9 +65,32 @@ public class SimpleClusterService
     @PreDestroy
     public void stop()
     {
-        SLF4JLoggerProxy.info(this,
-                              "Stopping {}",
-                              this.getClass().getSimpleName());
+        super.stop();
+        active = false;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.cluster.service.AbstractClusterService#getMemberUuid()
+     */
+    @Override
+    protected String getMemberUuid()
+    {
+        return memberUUID;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.cluster.service.AbstractClusterService#getHostNumber(java.lang.String)
+     */
+    @Override
+    protected int getHostNumber(String inHostId)
+    {
+        return hostNumber;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.cluster.service.AbstractClusterService#isActive()
+     */
+    @Override
+    protected boolean isActive()
+    {
+        return active;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.matp.cluster.service.ClusterService#addToQueue(org.marketcetera.matp.cluster.QueueDescriptor, java.io.Serializable)
@@ -120,7 +139,7 @@ public class SimpleClusterService
                                   applicationContext);
         Future<Clazz> token = getExecutorService(inTask.getPoolName()).submit(inTask);
         Map<Object,Future<Clazz>> results = Maps.newHashMap();
-        results.put(instanceData,
+        results.put(memberUUID,
                     token);
         return Collections.unmodifiableMap(results);
     }
@@ -152,14 +171,6 @@ public class SimpleClusterService
         return getPrivateMap(inMapName).remove(inKey);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.matp.cluster.service.ClusterService#getInstanceData()
-     */
-    @Override
-    public ClusterData getInstanceData()
-    {
-        return instanceData;
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.matp.cluster.service.ClusterService#setAttribute(java.lang.String, java.lang.String)
      */
     @Override
@@ -168,6 +179,7 @@ public class SimpleClusterService
     {
         getPrivateMap(attributeMapName).put(inKey,
                                             inValue);
+        notifyMemberChanged(thisClusterMember);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.matp.cluster.service.ClusterService#getAttribute(java.lang.String)
@@ -183,7 +195,7 @@ public class SimpleClusterService
     @Override
     public Map<String,String> getAttributes(String inUuid)
     {
-        if(instanceData.getUuid().equals(inUuid)) {
+        if(memberUUID.equals(inUuid)) {
             return Collections.unmodifiableMap(getPrivateMap(attributeMapName));
         } else {
             return Collections.emptyMap();
@@ -196,7 +208,7 @@ public class SimpleClusterService
     public Map<String,Map<String,String>> getAttributes()
     {
         Map<String,Map<String,String>> allAttributes = Maps.newHashMap();
-        allAttributes.put(instanceData.getUuid(),
+        allAttributes.put(memberUUID,
                           Collections.unmodifiableMap(getPrivateMap(attributeMapName)));
         return Collections.unmodifiableMap(allAttributes);
     }
@@ -207,6 +219,7 @@ public class SimpleClusterService
     public void removeAttribute(String inKey)
     {
         getPrivateMap(attributeMapName).remove(inKey);
+        notifyMemberChanged(thisClusterMember);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.matp.cluster.service.ClusterService#removeAttribute(java.lang.String, java.lang.String)
@@ -215,23 +228,10 @@ public class SimpleClusterService
     public void removeAttribute(String inUuid,
                                 String inKey)
     {
-        if(instanceData.getUuid().equals(inUuid)) {
+        if(memberUUID.equals(inUuid)) {
             getPrivateMap(attributeMapName).remove(inKey);
+            notifyMemberChanged(thisClusterMember);
         }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.matp.cluster.service.ClusterService#addClusterListener(org.marketcetera.matp.cluster.service.ClusterListener)
-     */
-    @Override
-    public void addClusterListener(ClusterListener inClusterListener)
-    {
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.matp.cluster.service.ClusterService#removeClusterListener(org.marketcetera.matp.cluster.service.ClusterListener)
-     */
-    @Override
-    public void removeClusterListener(ClusterListener inClusterListener)
-    {
     }
     /* (non-Javadoc)
      * @see org.marketcetera.matp.cluster.service.ClusterService#getLock(java.lang.String)
@@ -291,13 +291,25 @@ public class SimpleClusterService
         return locks.getUnchecked(inLockName);
     }
     /**
+     * static host number
+     */
+    private final int hostNumber = 1;
+    /**
+     * uniquely identifies this member
+     */
+    private final String memberUUID = UUID.randomUUID().toString();
+    /**
+     * indicates if the cluster service is active or not
+     */
+    private volatile boolean active = false;
+    /**
      * static cluster member collection
      */
     private Set<ClusterMember> clusterMembers;
     /**
-     * identifies the local cluster instance
+     * identifies the local cluster member
      */
-    private ClusterData instanceData;
+    private ClusterMember thisClusterMember;
     /**
      * provides access to the application context
      */

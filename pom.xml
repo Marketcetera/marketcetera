@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-- Author: tlerios@marketcetera.com
-- Since: 0.5.0
-- Version: $Id$
-- $License$
---><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.sonatype.oss</groupId>
@@ -41,10 +37,9 @@
     <mvn.querydsl.version>4.1.4</mvn.querydsl.version>
     <mvn.springdatajpa.version>1.11.3.RELEASE</mvn.springdatajpa.version>
     <mvn.hibernate.version>5.1.5.Final</mvn.hibernate.version>
-    <mvn.hazelcast.version>3.8.1</mvn.hazelcast.version>
     <mvn.slf4j.version>1.7.21</mvn.slf4j.version>
     <mvn.log4j.version>2.1</mvn.log4j.version>
-    <mvn.test.options>-Xmx2048m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
+    <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
   </properties>
   <!-- Marketcetera uses the following versions of some common libraries:
@@ -323,16 +318,6 @@
         <version>3.2.2</version>
       </dependency>
       <dependency>
-        <groupId>com.hazelcast</groupId>
-        <artifactId>hazelcast</artifactId>
-        <version>${mvn.hazelcast.version}</version>
-      </dependency> 
-      <dependency>
-        <groupId>com.hazelcast</groupId>
-        <artifactId>hazelcast-spring</artifactId>
-        <version>${mvn.hazelcast.version}</version>
-      </dependency> 
-      <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
         <version>4.0</version>
@@ -536,12 +521,6 @@
         <version>${mvn.querydsl.version}</version>
       </dependency>
       <!-- Runtime. -->
-      <dependency>
-        <groupId>com.hazelcast</groupId>
-        <artifactId>hazelcast-hibernate5</artifactId>
-        <version>1.2.1</version>
-        <scope>runtime</scope>
-      </dependency> 
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-pool</artifactId>
