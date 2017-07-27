@@ -31,6 +31,11 @@
       <artifactId>cluster-core</artifactId>
       <type>test-jar</type>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
     <!-- test: spring -->
     <dependency>
       <groupId>org.springframework</groupId>
