@@ -17,6 +17,5 @@
   <name>API Parent</name>
   <modules>
     <module>admin-api</module>
-    <module>fix-api</module>
   </modules>
 </project>

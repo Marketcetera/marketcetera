@@ -19,6 +19,7 @@ import java.util.concurrent.locks.Lock;
 import org.apache.commons.lang.Validate;
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.cluster.service.ClusterListener;
 import org.marketcetera.cluster.service.ClusterMember;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
@@ -222,6 +223,53 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
         assertNull(instanceAttributes.get(key1));
         assertEquals(value2,
                      instanceAttributes.get(key2));
+    }
+    /**
+     * Test that a change in attributes is detected.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testAttributeChangeDetected()
+            throws Exception
+    {
+        final ClusterMember[] changedMember = new ClusterMember[1];
+        final ClusterMember[] removedMember = new ClusterMember[1];
+        final ClusterMember[] addedMember = new ClusterMember[1];
+        assertNull(changedMember[0]);
+        assertNull(removedMember[0]);
+        assertNull(addedMember[0]);
+        clusterService.addClusterListener(new ClusterListener() {
+            @Override
+            public void memberAdded(ClusterMember inAddedMember)
+            {
+                addedMember[0] = inAddedMember;
+            }
+            @Override
+            public void memberRemoved(ClusterMember inRemovedMember)
+            {
+                removedMember[0] = inRemovedMember;
+            }
+            @Override
+            public void memberChanged(ClusterMember inChangedMember)
+            {
+                changedMember[0] = inChangedMember;
+            }}
+        );
+        String key1 = "key1";
+        String value1 = "value1";
+        clusterService.setAttribute(key1,
+                                    value1);
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return changedMember[0] != null;
+            }}
+        );
+        assertNull(removedMember[0]);
+        assertNull(addedMember[0]);
     }
     /**
      * Test lock operations.
