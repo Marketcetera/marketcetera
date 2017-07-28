@@ -1,7 +1,9 @@
-package org.marketcetera.core.fix;
+package org.marketcetera.fix;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+
+import org.marketcetera.fix.FixSettingsProvider;
 
 import quickfix.LogFactory;
 import quickfix.MessageFactory;

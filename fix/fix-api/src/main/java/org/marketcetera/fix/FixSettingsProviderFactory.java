@@ -1,4 +1,4 @@
-package org.marketcetera.core.fix;
+package org.marketcetera.fix;
 
 /* $License$ */
 

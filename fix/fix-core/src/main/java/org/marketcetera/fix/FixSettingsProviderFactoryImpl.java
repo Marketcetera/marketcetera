@@ -1,4 +1,7 @@
-package org.marketcetera.core.fix;
+package org.marketcetera.fix;
+
+import org.marketcetera.fix.FixSettingsProvider;
+import org.marketcetera.fix.FixSettingsProviderFactory;
 
 import quickfix.LogFactory;
 import quickfix.MessageFactory;
