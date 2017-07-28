@@ -1,6 +1,12 @@
 package org.marketcetera.modules.fix;
 
+import java.util.Collection;
+import java.util.Set;
+
+import org.marketcetera.fix.FixSettingsProvider;
+import org.marketcetera.fix.FixSettingsProviderFactory;
 import org.marketcetera.fix.SessionSettingsProvider;
+import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
@@ -12,26 +18,41 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.module.RequestDataException;
 import org.marketcetera.module.RequestID;
+import org.marketcetera.quickfix.FIXMessageUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Sets;
+
+import quickfix.Application;
 import quickfix.ApplicationExtended;
+import quickfix.ConfigError;
 import quickfix.DoNotSend;
 import quickfix.FieldNotFound;
 import quickfix.IncorrectDataFormat;
 import quickfix.IncorrectTagValue;
 import quickfix.Message;
 import quickfix.RejectLogon;
+import quickfix.RuntimeError;
+import quickfix.Session;
 import quickfix.SessionID;
+import quickfix.SessionNotFound;
 import quickfix.UnsupportedMessageType;
+import quickfix.mina.SessionConnector;
 
 /* $License$ */
 
 /**
- *
+ * Provides common behavior for FIX modules.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@AutowiredModule
 public abstract class AbstractFixModule
         extends Module
         implements DataReceiver,DataEmitter,ApplicationExtended
@@ -44,6 +65,22 @@ public abstract class AbstractFixModule
                             DataEmitterSupport inSupport)
             throws RequestDataException
     {
+        DataRequester dataRequester = new DataRequester(inRequest,
+                                                        inSupport);
+        if(dataRequester.isForAllSessionIds()) {
+            if(dataRequester.getFixDataRequest().getIsMessageRequest()) {
+                requestsForAllSessionMessages.add(dataRequester);
+            }
+            if(dataRequester.getFixDataRequest().getIsStatusRequest()) {
+                requestsForAllSessionStatus.add(dataRequester);
+            }
+        } else {
+            for(SessionID sessionId : dataRequester.getFixDataRequest().getRequestedSessionIds()) {
+                requestsBySessionId.getUnchecked(sessionId).add(dataRequester);
+            }
+        }
+        requestsByDataFlowId.put(inSupport.getFlowID(),
+                                 dataRequester);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.DataFlowID, org.marketcetera.module.RequestID)
@@ -52,6 +89,22 @@ public abstract class AbstractFixModule
     public void cancel(DataFlowID inFlowID,
                        RequestID inRequestID)
     {
+        DataRequester dataRequester = requestsByDataFlowId.getIfPresent(inFlowID);
+        requestsByDataFlowId.invalidate(inFlowID);
+        if(dataRequester != null) {
+            if(dataRequester.isForAllSessionIds()) {
+                if(dataRequester.getFixDataRequest().getIsMessageRequest()) {
+                    requestsForAllSessionMessages.remove(dataRequester);
+                }
+                if(dataRequester.getFixDataRequest().getIsStatusRequest()) {
+                    requestsForAllSessionStatus.remove(dataRequester);
+                }
+            } else {
+                for(SessionID sessionId : dataRequester.getFixDataRequest().getRequestedSessionIds()) {
+                    requestsBySessionId.getUnchecked(sessionId).remove(dataRequester);
+                }
+            }
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataReceiver#receiveData(org.marketcetera.module.DataFlowID, java.lang.Object)
@@ -61,6 +114,20 @@ public abstract class AbstractFixModule
                             Object inData)
             throws ReceiveDataException
     {
+        if(!(inData instanceof Message)) {
+            throw new ReceiveDataException(new IllegalArgumentException("Data flow message types must be of type Message")); // TODO message
+        }
+        Message message = (Message)inData;
+        try {
+            SessionID targetSessionId = FIXMessageUtil.getSessionId(message);
+            boolean messageSent = Session.sendToTarget(message,
+                                                       targetSessionId);
+            if(!messageSent) {
+                throw new ReceiveDataException(new IllegalArgumentException("Message not sent: " + message));
+            }
+        } catch (FieldNotFound | SessionNotFound e) {
+            throw new ReceiveDataException(e);
+        }
     }
     /* (non-Javadoc)
      * @see quickfix.Application#onCreate(quickfix.SessionID)
@@ -68,6 +135,9 @@ public abstract class AbstractFixModule
     @Override
     public void onCreate(SessionID inSessionId)
     {
+        sendStatus(inSessionId,
+                   true,
+                   false);
     }
     /* (non-Javadoc)
      * @see quickfix.Application#onLogon(quickfix.SessionID)
@@ -75,6 +145,9 @@ public abstract class AbstractFixModule
     @Override
     public void onLogon(SessionID inSessionId)
     {
+        sendStatus(inSessionId,
+                   true,
+                   true);
     }
     /* (non-Javadoc)
      * @see quickfix.Application#onLogout(quickfix.SessionID)
@@ -82,6 +155,9 @@ public abstract class AbstractFixModule
     @Override
     public void onLogout(SessionID inSessionId)
     {
+        sendStatus(inSessionId,
+                   false,
+                   false);
     }
     /* (non-Javadoc)
      * @see quickfix.Application#toAdmin(quickfix.Message, quickfix.SessionID)
@@ -99,6 +175,9 @@ public abstract class AbstractFixModule
                           SessionID inSessionId)
             throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, RejectLogon
     {
+        sendMessageIfNecessary(inMessage,
+                               inSessionId,
+                               true);
     }
     /* (non-Javadoc)
      * @see quickfix.Application#toApp(quickfix.Message, quickfix.SessionID)
@@ -117,6 +196,9 @@ public abstract class AbstractFixModule
                         SessionID inSessionId)
             throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType
     {
+        sendMessageIfNecessary(inMessage,
+                               inSessionId,
+                               false);
     }
     /* (non-Javadoc)
      * @see quickfix.ApplicationExtended#canLogon(quickfix.SessionID)
@@ -140,6 +222,14 @@ public abstract class AbstractFixModule
     protected void preStart()
             throws ModuleException
     {
+        try {
+            engine = createEngine(this,
+                                  fixSettingsProviderFactory.create(),
+                                  sessionSettingsProvider);
+            engine.start();
+        } catch (RuntimeError | ConfigError e) {
+            throw new ModuleException(e);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -148,31 +238,250 @@ public abstract class AbstractFixModule
     protected void preStop()
             throws ModuleException
     {
+        if(engine != null) {
+            engine.stop();
+        }
+        engine = null;
     }
     /**
      * Create a new AbstractFixModule instance.
      *
      * @param inURN a <code>ModuleURN</code> value
-     * @param inSessionSettingsProvider a <code>SessionSettingsProvider</code> value
      */
-    protected AbstractFixModule(ModuleURN inURN,
-                                SessionSettingsProvider inSessionSettingsProvider)
+    protected AbstractFixModule(ModuleURN inURN)
     {
         super(inURN,
-              false);
-        sessionSettingsProvider = inSessionSettingsProvider;
+              true);
     }
     /**
-     * Get the sessionSettingsProvider value.
+     * Create the underlying engine with the given attributes.
      *
-     * @return a <code>SessionSettingsProvider</code> value
+     * @param inApplication an <code>Application</code> value
+     * @param inFixSettingsProvider a <code>FixSettingsProvider</code> value
+     * @param inSessionSettingsProvider a <code>SessionSettingsProvider</code> value
+     * @return a <code>SessionConnector</code> value
+     * @throws ConfigError if the engine cannot be created
      */
-    protected SessionSettingsProvider getSessionSettingsProvider()
+    protected abstract SessionConnector createEngine(Application inApplication,
+                                                     FixSettingsProvider inFixSettingsProvider,
+                                                     SessionSettingsProvider inSessionSettingsProvider)
+            throws ConfigError;
+    /**
+     * Sends status for the given session.
+     *
+     * @param inSessionId a <code>SessionID</code> value
+     * @param inCreated a <code>boolean</code> value
+     * @param inLoggedOn a <code>boolean</code> value
+     */
+    private void sendStatus(SessionID inSessionId,
+                            boolean inCreated,
+                            boolean inLoggedOn)
     {
-        return sessionSettingsProvider;
+        FixModuleSessionStatus sessionStatus = new FixModuleSessionStatus(inSessionId,
+                                                                          inCreated,
+                                                                          inLoggedOn);
+        for(DataRequester requester : requestsForAllSessionStatus) {
+            if(requester.getFixDataRequest().getIsStatusRequest()) {
+                requester.getDataEmitterSupport().send(sessionStatus);
+            }
+        }
+        Set<DataRequester> requestersForSession = requestsBySessionId.getIfPresent(inSessionId);
+        for(DataRequester requester : requestersForSession) {
+            if(requester.getFixDataRequest().getIsStatusRequest()) {
+                requester.getDataEmitterSupport().send(sessionStatus);
+            }
+        }
     }
+    /**
+     * Send the given message with the given attributes, to all interested data flows.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inSessionId a <code>SessionID</code> value
+     * @param inIsAdmin a <code>boolean</code> value
+     * @throws FieldNotFound if the message cannot be processed
+     */
+    private void sendMessageIfNecessary(Message inMessage,
+                                        SessionID inSessionId,
+                                        boolean inIsAdmin)
+            throws FieldNotFound
+    {
+        for(DataRequester requester : requestsForAllSessionMessages) {
+            if(requesterIsInterested(requester,
+                                     inSessionId,
+                                     inMessage,
+                                     inIsAdmin)) {
+                requester.getDataEmitterSupport().send(inMessage);
+            }
+        }
+        Set<DataRequester> requestersForSession = requestsBySessionId.getIfPresent(inSessionId);
+        for(DataRequester requester : requestersForSession) {
+            if(requesterIsInterested(requester,
+                                     inSessionId,
+                                     inMessage,
+                                     inIsAdmin)) {
+                requester.getDataEmitterSupport().send(inMessage);
+            }
+        }
+    }
+    /**
+     * Determine if the given requester is interested in the given message.
+     *
+     * @param inRequester a <code>DataRequester</code> value
+     * @param inSessionId a <code>SessionID</code> value
+     * @param inMessage a <code>Message</code> value
+     * @param isAdmin a <code>boolean</code> value
+     * @return a <code>boolean</code> value
+     * @throws FieldNotFound if the message cannot be processed
+     */
+    private boolean requesterIsInterested(DataRequester inRequester,
+                                          SessionID inSessionId,
+                                          Message inMessage,
+                                          boolean isAdmin)
+            throws FieldNotFound
+    {
+        return ((isAdmin && inRequester.getFixDataRequest().getIncludeAdmin()) || (!isAdmin && inRequester.getFixDataRequest().getIncludeApp())) &&
+                isAcceptedByWhiteList(inRequester.getFixDataRequest(),inMessage) &&
+                isAcceptedByBlackList(inRequester.getFixDataRequest(),inMessage);
+    }
+    /**
+     * Determine if the given message is accepted by the data request whitelist.
+     *
+     * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inMessage a <code>Message</code> value
+     * @return a <code>boolean</code> value
+     * @throws FieldNotFound if the message cannot be processed
+     */
+    private boolean isAcceptedByWhiteList(FixDataRequest inFixDataRequest,
+                                          Message inMessage)
+            throws FieldNotFound
+    {
+        return (inFixDataRequest.getMessageWhiteList().isEmpty() || inFixDataRequest.getMessageWhiteList().contains(inMessage.getHeader().getString(quickfix.field.MsgType.FIELD)));
+    }
+    /**
+     * Determine if the given message is accepted by the data request blacklist.
+     *
+     * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inMessage a <code>Message</code> value
+     * @return a <code>boolean</code> value
+     * @throws FieldNotFound if the message cannot be processed
+     */
+    private boolean isAcceptedByBlackList(FixDataRequest inFixDataRequest,
+                                          Message inMessage)
+            throws FieldNotFound
+    {
+        return (inFixDataRequest.getMessageBlackList().isEmpty() || !inFixDataRequest.getMessageBlackList().contains(inMessage.getHeader().getString(quickfix.field.MsgType.FIELD)));
+    }
+    /**
+     * Tracks data for each data flow request
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class DataRequester
+    {
+        /**
+         * Indicates if this request applies to all sessions or not.
+         *
+         * @return a <code>boolean</code> value
+         */
+        private boolean isForAllSessionIds()
+        {
+            return fixDataRequest.getRequestedSessionIds().isEmpty();
+        }
+        /**
+         * Get the fixDataRequest value.
+         *
+         * @return a <code>FixDataRequest</code> value
+         */
+        private FixDataRequest getFixDataRequest()
+        {
+            return fixDataRequest;
+        }
+        /**
+         * Get the dataRequest value.
+         *
+         * @return a <code>DataRequest</code> value
+         */
+        @SuppressWarnings("unused")
+        private DataRequest getDataRequest()
+        {
+            return dataRequest;
+        }
+        /**
+         * Get the dataEmitterSupport value.
+         *
+         * @return a <code>DataEmitterSupport</code> value
+         */
+        private DataEmitterSupport getDataEmitterSupport()
+        {
+            return dataEmitterSupport;
+        }
+        /**
+         * Create a new DataRequester instance.
+         *
+         * @param inRequest a <code>DataRequest</code> value
+         * @param inDataEmitterSupport a <code>DataEmitterSupport</code> value
+         */
+        private DataRequester(DataRequest inRequest,
+                              DataEmitterSupport inDataEmitterSupport)
+        {
+            dataRequest = inRequest;
+            dataEmitterSupport = inDataEmitterSupport;
+            if(!(inRequest.getData() instanceof FixDataRequest)) {
+                throw new RequestDataException(new IllegalArgumentException("Request data must be instance of FixDataRequest")); // TODO message
+            }
+            fixDataRequest = (FixDataRequest)inRequest.getData();
+        }
+        /**
+         * underlying data flow request value
+         */
+        private final FixDataRequest fixDataRequest;
+        /**
+         * data flow request value
+         */
+        private final DataRequest dataRequest;
+        /**
+         * data emitter support value
+         */
+        private final DataEmitterSupport dataEmitterSupport;
+    }
+    /**
+     * underlying FIX engine
+     */
+    private SessionConnector engine;
+    // TODO these probable can't be autowired, at least session settings provider can't be - there will be different sessions for acceptor and initiator, typically
+    /**
+     * 
+     */
+    @Autowired
+    private FixSettingsProviderFactory fixSettingsProviderFactory;
     /**
      * provide session settings
      */
-    private final SessionSettingsProvider sessionSettingsProvider;
+    @Autowired
+    private SessionSettingsProvider sessionSettingsProvider;
+    /**
+     * data requests that request data for all sessions
+     */
+    private final Collection<DataRequester> requestsForAllSessionMessages = Sets.newConcurrentHashSet();
+    /**
+     * data requests that request status for all sessions
+     */
+    private final Collection<DataRequester> requestsForAllSessionStatus = Sets.newConcurrentHashSet();
+    /**
+     * data requests by session id
+     */
+    private final LoadingCache<SessionID,Set<DataRequester>> requestsBySessionId = CacheBuilder.newBuilder().build(new CacheLoader<SessionID,Set<DataRequester>>() {
+        @Override
+        public Set<DataRequester> load(SessionID inKey)
+                throws Exception
+        {
+            return Sets.newConcurrentHashSet();
+        }}
+    );
+    /**
+     * data requests by data flow id
+     */
+    private final Cache<DataFlowID,DataRequester> requestsByDataFlowId = CacheBuilder.newBuilder().build();
 }

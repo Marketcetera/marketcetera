@@ -1,6 +1,5 @@
 package org.marketcetera.modules.fix;
 
-import org.marketcetera.fix.SessionSettingsProvider;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
@@ -8,7 +7,18 @@ import org.marketcetera.module.ModuleURN;
 /* $License$ */
 
 /**
- *
+ * <code>ModuleFactory</code> implementation for FIX acceptor sessions.
+ * <p>
+ * The factory has the following characteristics.
+ * <table>
+ * <tr><th>Provider URN:</th><td><code>metc:fix:acceptor</code></td></tr>
+ * <tr><th>Cardinality:</th><td>Singleton</td></tr>
+ * <tr><th>Instance URN:</th><td><code>metc:fix:acceptor:single</code></td></tr>
+ * <tr><th>Auto-Instantiated:</th><td>No</td></tr>
+ * <tr><th>Auto-Started:</th><td>No</td></tr>
+ * <tr><th>Instantiation Arguments:</th><td>None</td></tr>
+ * <tr><th>Module Type:</th><td>{@link FixAcceptorModule}</td></tr>
+ * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -24,27 +34,29 @@ public class FixAcceptorModuleFactory
     {
         super(PROVIDER_URN,
               Messages.ACCEPTOR_PROVIDER_DESCRIPTION,
-              true,
               false,
-              String.class,
-              SessionSettingsProvider.class);
+              false);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
      */
     @Override
-    public FixAcceptor create(Object... inParameters)
+    public FixAcceptorModule create(Object... inParameters)
             throws ModuleCreationException
     {
-        String identifier = String.valueOf(inParameters[0]);
-        SessionSettingsProvider settingsProvider = (SessionSettingsProvider)inParameters[1];
-        ModuleURN instanceUrn = new ModuleURN(PROVIDER_URN,
-                                              identifier);
-        return new FixAcceptor(instanceUrn,
-                                settingsProvider);
+        return new FixAcceptorModule(INSTANCE_URN);
     }
+    /**
+     * identifier for this URN
+     */
+    public static final String IDENTIFIER = "acceptor";
     /**
      * provider URN value
      */
-    public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:fix:acceptor");  //$NON-NLS-1$
+    public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:fix:"+IDENTIFIER);  //$NON-NLS-1$
+    /**
+     * instance URN value
+     */
+    public static final ModuleURN INSTANCE_URN = new ModuleURN(PROVIDER_URN,
+                                                               "single");  //$NON-NLS-1$
 }
