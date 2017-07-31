@@ -32,7 +32,7 @@
   <properties>
     <mvn.javase.version>8</mvn.javase.version>
     <mvn.javaee.version>8</mvn.javaee.version>
-    <mvn.spring.version>4.3.8.RELEASE</mvn.spring.version>
+    <mvn.spring.version>4.3.10.RELEASE</mvn.spring.version>
     <mvn.cxf.version>3.1.11</mvn.cxf.version>
     <mvn.querydsl.version>4.1.4</mvn.querydsl.version>
     <mvn.springdatajpa.version>1.11.3.RELEASE</mvn.springdatajpa.version>

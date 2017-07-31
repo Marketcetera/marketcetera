@@ -3,6 +3,7 @@ package org.marketcetera.modules.fix;
 import java.util.Collection;
 import java.util.Set;
 
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
 import org.marketcetera.fix.SessionSettingsProvider;
@@ -19,6 +20,7 @@ import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.module.RequestDataException;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.cache.Cache;
@@ -40,6 +42,7 @@ import quickfix.RuntimeError;
 import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.SessionNotFound;
+import quickfix.SessionSettings;
 import quickfix.UnsupportedMessageType;
 import quickfix.mina.SessionConnector;
 
@@ -223,11 +226,18 @@ public abstract class AbstractFixModule
             throws ModuleException
     {
         try {
+            SessionSettings sessionSettings = sessionSettingsProvider.create();
+            SLF4JLoggerProxy.debug(this,
+                                   "Starting FIX module with session settings: {}",
+                                   sessionSettings);
             engine = createEngine(this,
                                   fixSettingsProviderFactory.create(),
-                                  sessionSettingsProvider);
+                                  sessionSettings);
             engine.start();
         } catch (RuntimeError | ConfigError e) {
+            PlatformServices.handleException(this,
+                                             "Unable to start " + getURN(),
+                                             e);
             throw new ModuleException(e);
         }
     }
@@ -247,24 +257,27 @@ public abstract class AbstractFixModule
      * Create a new AbstractFixModule instance.
      *
      * @param inURN a <code>ModuleURN</code> value
+     * @param inSessionSettingsProvider a <code>SessionSettingsProvider</code> value
      */
-    protected AbstractFixModule(ModuleURN inURN)
+    protected AbstractFixModule(ModuleURN inURN,
+                                SessionSettingsProvider inSessionSettingsProvider)
     {
         super(inURN,
-              true);
+              false);
+        sessionSettingsProvider = inSessionSettingsProvider;
     }
     /**
      * Create the underlying engine with the given attributes.
      *
      * @param inApplication an <code>Application</code> value
      * @param inFixSettingsProvider a <code>FixSettingsProvider</code> value
-     * @param inSessionSettingsProvider a <code>SessionSettingsProvider</code> value
+     * @param inSessionSettings a <code>SessionSettings</code> value
      * @return a <code>SessionConnector</code> value
      * @throws ConfigError if the engine cannot be created
      */
     protected abstract SessionConnector createEngine(Application inApplication,
                                                      FixSettingsProvider inFixSettingsProvider,
-                                                     SessionSettingsProvider inSessionSettingsProvider)
+                                                     SessionSettings inSessionSettings)
             throws ConfigError;
     /**
      * Sends status for the given session.
@@ -286,9 +299,11 @@ public abstract class AbstractFixModule
             }
         }
         Set<DataRequester> requestersForSession = requestsBySessionId.getIfPresent(inSessionId);
-        for(DataRequester requester : requestersForSession) {
-            if(requester.getFixDataRequest().getIsStatusRequest()) {
-                requester.getDataEmitterSupport().send(sessionStatus);
+        if(requestersForSession != null) {
+            for(DataRequester requester : requestersForSession) {
+                if(requester.getFixDataRequest().getIsStatusRequest()) {
+                    requester.getDataEmitterSupport().send(sessionStatus);
+                }
             }
         }
     }
@@ -450,17 +465,15 @@ public abstract class AbstractFixModule
      * underlying FIX engine
      */
     private SessionConnector engine;
-    // TODO these probable can't be autowired, at least session settings provider can't be - there will be different sessions for acceptor and initiator, typically
     /**
-     * 
+     * provides static settings for all FIX sessions (log factory, message store factory, etc)
      */
     @Autowired
     private FixSettingsProviderFactory fixSettingsProviderFactory;
     /**
-     * provide session settings
+     * provides session settings (different for acceptor and initiator, provided when the module is created)
      */
-    @Autowired
-    private SessionSettingsProvider sessionSettingsProvider;
+    private final SessionSettingsProvider sessionSettingsProvider;
     /**
      * data requests that request data for all sessions
      */

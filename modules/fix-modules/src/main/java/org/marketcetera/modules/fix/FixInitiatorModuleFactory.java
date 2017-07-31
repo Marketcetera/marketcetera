@@ -1,5 +1,6 @@
 package org.marketcetera.modules.fix;
 
+import org.marketcetera.fix.SessionSettingsProvider;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
@@ -16,7 +17,7 @@ import org.marketcetera.module.ModuleURN;
  * <tr><th>Instance URN:</th><td><code>metc:fix:initiator:single</code></td></tr>
  * <tr><th>Auto-Instantiated:</th><td>No</td></tr>
  * <tr><th>Auto-Started:</th><td>No</td></tr>
- * <tr><th>Instantiation Arguments:</th><td>None</td></tr>
+ * <tr><th>Instantiation Arguments:</th><td>SessionSettingsProvider</td></tr>
  * <tr><th>Module Type:</th><td>{@link FixInitiatorModule}</td></tr>
  * </table>
  *
@@ -30,12 +31,13 @@ public class FixInitiatorModuleFactory
     /**
      * Create a new FixInitiatorModuleFactory instance.
      */
-    protected FixInitiatorModuleFactory()
+    public FixInitiatorModuleFactory()
     {
         super(PROVIDER_URN,
               Messages.INITIATOR_PROVIDER_DESCRIPTION,
               false,
-              false);
+              false,
+              SessionSettingsProvider.class);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
@@ -44,7 +46,9 @@ public class FixInitiatorModuleFactory
     public FixInitiatorModule create(Object... inParameters)
             throws ModuleCreationException
     {
-        return new FixInitiatorModule(INSTANCE_URN);
+        SessionSettingsProvider sessionSettingsProvider = (SessionSettingsProvider)inParameters[0];
+        return new FixInitiatorModule(INSTANCE_URN,
+                                      sessionSettingsProvider);
     }
     /**
      * identifier for this URN

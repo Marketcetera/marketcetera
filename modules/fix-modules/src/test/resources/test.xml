@@ -1,0 +1,16 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+  <bean id="moduleManager" class="org.marketcetera.module.ModuleManager" init-method="init" destroy-method="stop"/>
+  <bean id="messageFactory" class="quickfix.DefaultMessageFactory"/>
+  <bean id="fixSessionFactory" class="org.marketcetera.fix.impl.SimpleFixSessionFactory"/>
+  <bean id="fixSettingsProviderFactory" class="org.marketcetera.fix.FixSettingsProviderFactoryImpl">
+    <property name="messageStoreFactoryClass" value="org.marketcetera.fix.store.NoopStoreFactory"/>
+    <property name="logFactoryClass" value="quickfix.SLF4JLogFactory"/>
+    <property name="messageFactory" ref="messageFactory"/>
+    <property name="acceptorHost" value="localhost"/>
+    <property name="acceptorPort" value="21345"/>
+  </bean>
+</beans>

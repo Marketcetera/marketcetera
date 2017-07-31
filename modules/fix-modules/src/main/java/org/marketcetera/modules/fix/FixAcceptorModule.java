@@ -7,7 +7,7 @@ import org.marketcetera.module.ModuleURN;
 import quickfix.Application;
 import quickfix.ConfigError;
 import quickfix.SessionSettings;
-import quickfix.ThreadedSocketAcceptor;
+import quickfix.SocketAcceptor;
 import quickfix.mina.SessionConnector;
 
 /* $License$ */
@@ -26,26 +26,28 @@ public class FixAcceptorModule
      * Create a new FixAcceptor instance.
      *
      * @param inURN a <code>ModuleURN</code> value
+     * @param inSessionSettingsProvider a <code>SessionSettingsProvider</code> value
      */
-    protected FixAcceptorModule(ModuleURN inURN)
+    protected FixAcceptorModule(ModuleURN inURN,
+                                SessionSettingsProvider inSessionSettingsProvider)
     {
-        super(inURN);
+        super(inURN,
+              inSessionSettingsProvider);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.modules.fix.AbstractFixModule#createEngine(quickfix.Application, org.marketcetera.fix.FixSettingsProvider, org.marketcetera.fix.SessionSettingsProvider)
+     * @see org.marketcetera.modules.fix.AbstractFixModule#createEngine(quickfix.Application, org.marketcetera.fix.FixSettingsProvider, quickfix.SessionSettings)
      */
     @Override
     protected SessionConnector createEngine(Application inApplication,
                                             FixSettingsProvider inFixSettingsProvider,
-                                            SessionSettingsProvider inSessionSettingsProvider)
+                                            SessionSettings inSessionSettings)
             throws ConfigError
     {
-        SessionSettings sessions = inSessionSettingsProvider.create();
-        ThreadedSocketAcceptor socketAcceptor = new ThreadedSocketAcceptor(inApplication,
-                                                                           inFixSettingsProvider.getMessageStoreFactory(sessions),
-                                                                           sessions,
-                                                                           inFixSettingsProvider.getLogFactory(sessions),
-                                                                           inFixSettingsProvider.getMessageFactory());
+        SocketAcceptor socketAcceptor = new SocketAcceptor(inApplication,
+                                                           inFixSettingsProvider.getMessageStoreFactory(inSessionSettings),
+                                                           inSessionSettings,
+                                                           inFixSettingsProvider.getLogFactory(inSessionSettings),
+                                                           inFixSettingsProvider.getMessageFactory());
         return socketAcceptor;
     }
 }
