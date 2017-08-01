@@ -41,6 +41,11 @@
       <artifactId>core</artifactId>
       <type>test-jar</type>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>misc</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- spring test -->
     <dependency>
       <groupId>org.springframework</groupId>

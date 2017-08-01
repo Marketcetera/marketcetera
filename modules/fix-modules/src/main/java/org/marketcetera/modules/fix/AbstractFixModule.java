@@ -138,6 +138,9 @@ public abstract class AbstractFixModule
     @Override
     public void onCreate(SessionID inSessionId)
     {
+        SLF4JLoggerProxy.info(this,
+                              "{} created",
+                              inSessionId);
         sendStatus(inSessionId,
                    true,
                    false);
@@ -148,6 +151,9 @@ public abstract class AbstractFixModule
     @Override
     public void onLogon(SessionID inSessionId)
     {
+        SLF4JLoggerProxy.info(this,
+                              "{} logged on",
+                              inSessionId);
         sendStatus(inSessionId,
                    true,
                    true);
@@ -158,6 +164,9 @@ public abstract class AbstractFixModule
     @Override
     public void onLogout(SessionID inSessionId)
     {
+        SLF4JLoggerProxy.info(this,
+                              "{} logged out",
+                              inSessionId);
         sendStatus(inSessionId,
                    false,
                    false);
@@ -169,6 +178,18 @@ public abstract class AbstractFixModule
     public void toAdmin(Message inMessage,
                         SessionID inSessionId)
     {
+        if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
+            SLF4JLoggerProxy.info(this,
+                                  "{} sending admin:",
+                                  inSessionId);
+            FIXMessageUtil.logMessage(inSessionId,
+                                      inMessage);
+        } else {
+            SLF4JLoggerProxy.info(this,
+                                  "{} sending admin: {}",
+                                  inSessionId,
+                                  inMessage);
+        }
     }
     /* (non-Javadoc)
      * @see quickfix.Application#fromAdmin(quickfix.Message, quickfix.SessionID)
@@ -178,6 +199,18 @@ public abstract class AbstractFixModule
                           SessionID inSessionId)
             throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, RejectLogon
     {
+        if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
+            SLF4JLoggerProxy.info(this,
+                                  "{} received admin:",
+                                  inSessionId);
+            FIXMessageUtil.logMessage(inSessionId,
+                                      inMessage);
+        } else {
+            SLF4JLoggerProxy.info(this,
+                                  "{} received admin: {}",
+                                  inSessionId,
+                                  inMessage);
+        }
         sendMessageIfNecessary(inMessage,
                                inSessionId,
                                true);
@@ -190,6 +223,18 @@ public abstract class AbstractFixModule
                       SessionID inSessionId)
             throws DoNotSend
     {
+        if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
+            SLF4JLoggerProxy.info(this,
+                                  "{} sending app:",
+                                  inSessionId);
+            FIXMessageUtil.logMessage(inSessionId,
+                                      inMessage);
+        } else {
+            SLF4JLoggerProxy.info(this,
+                                  "{} sending app: {}",
+                                  inSessionId,
+                                  inMessage);
+        }
     }
     /* (non-Javadoc)
      * @see quickfix.Application#fromApp(quickfix.Message, quickfix.SessionID)
@@ -199,6 +244,18 @@ public abstract class AbstractFixModule
                         SessionID inSessionId)
             throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType
     {
+        if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
+            SLF4JLoggerProxy.info(this,
+                                  "{} recevied app:",
+                                  inSessionId);
+            FIXMessageUtil.logMessage(inSessionId,
+                                      inMessage);
+        } else {
+            SLF4JLoggerProxy.info(this,
+                                  "{} received app: {}",
+                                  inSessionId,
+                                  inMessage);
+        }
         sendMessageIfNecessary(inMessage,
                                inSessionId,
                                false);
@@ -329,12 +386,14 @@ public abstract class AbstractFixModule
             }
         }
         Set<DataRequester> requestersForSession = requestsBySessionId.getIfPresent(inSessionId);
-        for(DataRequester requester : requestersForSession) {
-            if(requesterIsInterested(requester,
-                                     inSessionId,
-                                     inMessage,
-                                     inIsAdmin)) {
-                requester.getDataEmitterSupport().send(inMessage);
+        if(requestersForSession != null) {
+            for(DataRequester requester : requestersForSession) {
+                if(requesterIsInterested(requester,
+                                         inSessionId,
+                                         inMessage,
+                                         inIsAdmin)) {
+                    requester.getDataEmitterSupport().send(inMessage);
+                }
             }
         }
     }
