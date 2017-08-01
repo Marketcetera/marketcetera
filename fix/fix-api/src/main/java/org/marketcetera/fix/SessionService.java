@@ -78,4 +78,11 @@ public interface SessionService
      * @return a <code>Date</code> value or <code>null</code>
      */
     Date getSessionStart(SessionID inSessionId);
+    /**
+     * Indicate if the session with the given session ID is expected to be active now.
+     *
+     * @param inSessionId a <code>SessionID</code> value
+     * @return a <code>boolean</code> value
+     */
+    boolean isSessionTime(SessionID inSessionId);
 }
