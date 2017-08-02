@@ -1,7 +1,7 @@
 package org.marketcetera.module;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /* $License$ */
 
@@ -24,8 +24,10 @@ public abstract class AbstractDataReemitterModule
                             Object inData)
             throws ReceiveDataException
     {
-        DataEmitterSupport dataEmitterSupport = dataSupport.get(inFlowID);
+        DataEmitterSupport dataEmitterSupport = dataSupport.getIfPresent(inFlowID);
         if(dataEmitterSupport != null) {
+            inData = onReceiveData(inData,
+                                   dataEmitterSupport);
             dataEmitterSupport.send(inData);
         }
     }
@@ -47,7 +49,19 @@ public abstract class AbstractDataReemitterModule
     public void cancel(DataFlowID inFlowID,
                        RequestID inRequestID)
     {
-        dataSupport.remove(inFlowID);
+        dataSupport.invalidate(inFlowID);
+    }
+    /**
+     * Invoked when data is received as part of a data flow.
+     *
+     * @param inData an <code>Object</code> value
+     * @param inDataSupport a <code>DataEmitterSupport</code> value
+     * @return an <code>Object</code> value to re-emit
+     */
+    protected Object onReceiveData(Object inData,
+                                   DataEmitterSupport inDataSupport)
+    {
+        return inData;
     }
     /**
      * Create a new AbstractDataReemitterModule instance.
@@ -68,7 +82,7 @@ public abstract class AbstractDataReemitterModule
     protected void preStart()
             throws ModuleException
     {
-        dataSupport.clear();
+        dataSupport.invalidateAll();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -81,5 +95,5 @@ public abstract class AbstractDataReemitterModule
     /**
      * if wired into a multi-module flow, this object will assist in passing data to the next object in the flow
      */
-    private final Map<DataFlowID,DataEmitterSupport> dataSupport = new HashMap<>();
+    private final Cache<DataFlowID,DataEmitterSupport> dataSupport = CacheBuilder.newBuilder().build();
 }

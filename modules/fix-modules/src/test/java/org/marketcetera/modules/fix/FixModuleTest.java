@@ -116,6 +116,7 @@ public class FixModuleTest
         fixDataRequest.setIncludeApp(false);
         fixDataRequest.getMessageWhiteList().clear();
         fixDataRequest.getMessageBlackList().clear();
+        fixDataRequest.setIsStatusRequest(false);
         Deque<Object> receivedMessages = Lists.newLinkedList();
         // we only need a received data request since admin messages flow automatically
         dataFlows.add(moduleManager.createDataFlow(getInitiatorReceiveDataRequest(fixDataRequest,
@@ -138,6 +139,7 @@ public class FixModuleTest
         fixDataRequest.setIncludeApp(true);
         fixDataRequest.getMessageWhiteList().clear();
         fixDataRequest.getMessageBlackList().clear();
+        fixDataRequest.setIsStatusRequest(false);
         // this data flow is more complicated because we need to be able to inject messages on both sides
         // this data flow is to send messages via the initiator
         String initiatorHeadwaterInstance = generateHeadwaterInstanceName();
@@ -306,7 +308,7 @@ public class FixModuleTest
             @Override
             public boolean isInteresting(Object inData)
             {
-                return inData instanceof Message;
+                return true;
             }
             @Override
             public void publishTo(Object inData)

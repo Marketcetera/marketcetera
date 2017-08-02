@@ -13,4 +13,11 @@
     <property name="acceptorHost" value="localhost"/>
     <property name="acceptorPort" value="21345"/>
   </bean>
+  <bean id="brokerService" class="org.marketcetera.brokers.service.BrokerServiceImpl">
+    <property name="brokers">
+      <list>
+        
+      </list>
+    </property>
+  </bean>
 </beans>

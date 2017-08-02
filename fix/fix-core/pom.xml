@@ -25,5 +25,9 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>fix-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>admin-api</artifactId>
+    </dependency>
   </dependencies>
 </project>
