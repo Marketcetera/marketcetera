@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.instruments.InstrumentFromMessage;
@@ -22,6 +23,10 @@ import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 import quickfix.DataDictionary;
 import quickfix.Field;
@@ -72,10 +77,6 @@ import quickfix.field.Text;
 import quickfix.field.TradSesReqID;
 import quickfix.field.TradeRequestID;
 import quickfix.field.UserRequestID;
-
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 
 /**
  * Collection of utilities to create work with FIX messages
@@ -165,6 +166,31 @@ public class FIXMessageUtil {
             throws FieldNotFound
     {
         return MessageUtils.getSessionID(inMessage);
+    }
+    /**
+     * Set the session ID on the given message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inSessionId a <code>SessionID</code> value
+     */
+    public static void setSessionId(Message inMessage,
+                                    SessionID inSessionId)
+    {
+        inMessage.getHeader().setField(new quickfix.field.BeginString(inSessionId.getBeginString()));
+        inMessage.getHeader().setField(new quickfix.field.SenderCompID(inSessionId.getSenderCompID()));
+        inMessage.getHeader().setField(new quickfix.field.TargetCompID(inSessionId.getTargetCompID()));
+        if(StringUtils.trimToNull(inSessionId.getSenderLocationID()) != null) {
+            inMessage.getHeader().setField(new quickfix.field.SenderLocationID(inSessionId.getSenderLocationID()));
+        }
+        if(StringUtils.trimToNull(inSessionId.getSenderSubID()) != null) {
+            inMessage.getHeader().setField(new quickfix.field.SenderSubID(inSessionId.getSenderSubID()));
+        }
+        if(StringUtils.trimToNull(inSessionId.getTargetLocationID()) != null) {
+            inMessage.getHeader().setField(new quickfix.field.TargetLocationID(inSessionId.getTargetLocationID()));
+        }
+        if(StringUtils.trimToNull(inSessionId.getTargetSubID()) != null) {
+            inMessage.getHeader().setField(new quickfix.field.TargetSubID(inSessionId.getTargetSubID()));
+        }
     }
     /**
      * Get the mirror image of the given session id.
@@ -270,15 +296,14 @@ public class FIXMessageUtil {
         return reject;
     }
     /**
-     * 
+     * Create a business reject (35=j) with the given reason and text for the given message and session.
      *
-     *
-     * @param inSessionId
-     * @param inMessage
-     * @param inReason
-     * @param inText
-     * @return
-     * @throws FieldNotFound
+     * @param inSessionId a <code>SessionID</code> value
+     * @param inMessage a <code>Message</code> value
+     * @param inReason an <code>int</code> value
+     * @param inText a <code>String</code> value
+     * @return a <code>Message</code> value
+     * @throws FieldNotFound if the message could not be built
      */
     public static Message createBusinessReject(SessionID inSessionId,
                                                Message inMessage,

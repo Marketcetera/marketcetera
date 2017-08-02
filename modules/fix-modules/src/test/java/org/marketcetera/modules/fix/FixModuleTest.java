@@ -2,19 +2,19 @@ package org.marketcetera.modules.fix;
 
 import static org.junit.Assert.assertEquals;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionFactory;
@@ -31,13 +31,22 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.modules.headwater.HeadwaterModuleFactory;
 import org.marketcetera.modules.publisher.PublisherModuleFactory;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionTransType;
+import org.marketcetera.trade.ExecutionType;
+import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import quickfix.Initiator;
@@ -81,24 +90,6 @@ public class FixModuleTest
             throws Exception
     {
         reset();
-        if(acceptorModuleUrn != null) {
-            try {
-                moduleManager.stop(acceptorModuleUrn);
-            } catch (Exception e) {
-                PlatformServices.handleException(this,
-                                                 "Problem stopping acceptor module",
-                                                 e);
-            }
-        }
-        if(initiatorModuleUrn != null) {
-            try {
-                moduleManager.stop(initiatorModuleUrn);
-            } catch (Exception e) {
-                PlatformServices.handleException(this,
-                                                 "Problem stopping initiator module",
-                                                 e);
-            }
-        }
     }
     /**
      * Test starting and connecting the acceptors and initiators.
@@ -125,15 +116,19 @@ public class FixModuleTest
         fixDataRequest.setIncludeApp(false);
         fixDataRequest.getMessageWhiteList().clear();
         fixDataRequest.getMessageBlackList().clear();
-        dataFlows.add(moduleManager.createDataFlow(getInitiatorDataRequest(fixDataRequest)));
-        waitForMessages(5);
+        Deque<Object> receivedMessages = Lists.newLinkedList();
+        // we only need a received data request since admin messages flow automatically
+        dataFlows.add(moduleManager.createDataFlow(getInitiatorReceiveDataRequest(fixDataRequest,
+                                                                                  receivedMessages)));
+        waitForMessages(5,
+                        receivedMessages);
     }
     /**
      * Test that app messages can be received in a dataflow
      *
      * @throws Exception if an unexpected failure occurs
      */
-    @Ignore@Test
+    @Test
     public void testAppInitiatorMessageDataFlow()
             throws Exception
     {
@@ -143,12 +138,62 @@ public class FixModuleTest
         fixDataRequest.setIncludeApp(true);
         fixDataRequest.getMessageWhiteList().clear();
         fixDataRequest.getMessageBlackList().clear();
-        dataFlows.add(moduleManager.createDataFlow(getInitiatorDataRequest(fixDataRequest)));
-        // we'll also need to set up a data flow for the acceptor to get the data flowing (we can use the same fix data request)
-        dataFlows.add(moduleManager.createDataFlow(getAcceptorDataRequest(fixDataRequest)));
-        Message appMessage = new Message("8=FIX.4.2,9=217,34=467,35=D,11="+UUID.randomUUID().toString()+",15=USD,21=3,22=1,38=8974,40=1,48=35671D857,54=2,55=FCX,58=LCVC CP,59=0,60=20150619-12:15:45,207=N");
-        HeadwaterModule.getInstance(headwaterInstance).emit(appMessage);
-        waitForMessages(5);
+        // this data flow is more complicated because we need to be able to inject messages on both sides
+        // this data flow is to send messages via the initiator
+        String initiatorHeadwaterInstance = generateHeadwaterInstanceName();
+        dataFlows.add(moduleManager.createDataFlow(getInitiatorSendDataRequest(fixDataRequest,
+                                                                               initiatorHeadwaterInstance)));
+        HeadwaterModule initiatorSender = HeadwaterModule.getInstance(initiatorHeadwaterInstance);
+        // this data flow is to send messages via the acceptor
+        String acceptorHeadwaterInstance = generateHeadwaterInstanceName();
+        dataFlows.add(moduleManager.createDataFlow(getAcceptorSendDataRequest(fixDataRequest,
+                                                                              acceptorHeadwaterInstance)));
+        HeadwaterModule acceptorSender = HeadwaterModule.getInstance(acceptorHeadwaterInstance);
+        // this data flow is to receive messages from the initiator
+        Deque<Object> initiatorMessages = Lists.newLinkedList();
+        dataFlows.add(moduleManager.createDataFlow(getInitiatorReceiveDataRequest(fixDataRequest,
+                                                                                  initiatorMessages)));
+        // this data flow is to receive messages from the acceptor
+        Deque<Object> acceptorMessages = Lists.newLinkedList();
+        dataFlows.add(moduleManager.createDataFlow(getAcceptorReceiveDataRequest(fixDataRequest,
+                                                                                 acceptorMessages)));
+        FIXMessageFactory messageFactory = FIXVersion.FIX42.getMessageFactory();
+        Message order = messageFactory.newLimitOrder(UUID.randomUUID().toString(),
+                                                     Side.Buy.getFIXValue(),
+                                                     new BigDecimal(1000),
+                                                     new Equity("METC"),
+                                                     new BigDecimal(100),
+                                                     TimeInForce.GoodTillCancel.getFIXValue(),
+                                                     null);
+        messageFactory.addTransactionTimeIfNeeded(order);
+        // mark this fine message with a session id
+        FIXMessageUtil.setSessionId(order,
+                                    acceptorSessions.get(1));
+        acceptorSender.emit(order);
+        waitForMessages(1,
+                        initiatorMessages);
+        // respond with an ER
+        Message receivedOrder = (Message)initiatorMessages.getFirst();
+        Message receivedOrderAck = FIXMessageUtil.createExecutionReport(receivedOrder,
+                                                                        OrderStatus.New,
+                                                                        ExecutionType.New,
+                                                                        ExecutionTransType.New,
+                                                                        "Ack");
+        messageFactory.addTransactionTimeIfNeeded(receivedOrderAck);
+        FIXMessageUtil.setSessionId(receivedOrderAck,
+                                    initiatorSessions.get(1));
+        initiatorSender.emit(receivedOrderAck);
+        waitForMessages(1,
+                        acceptorMessages);
+    }
+    /**
+     * Generate a unique headwater instance name.
+     *
+     * @return a <code>String</code> value
+     */
+    private String generateHeadwaterInstanceName()
+    {
+        return "hw"+System.nanoTime();
     }
     /**
      * Wait for at least the given number of messages to be received.
@@ -156,7 +201,8 @@ public class FixModuleTest
      * @param inCount an <code>int</code> value
      * @throws Exception if an unexpected failure occurs
      */
-    private void waitForMessages(final int inCount)
+    private void waitForMessages(final int inCount,
+                                 Deque<Object> inReceivedData)
             throws Exception
     {
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
@@ -164,82 +210,116 @@ public class FixModuleTest
             public Boolean call()
                     throws Exception
             {
-                return receivedData.size() >= inCount;
+                return inReceivedData.size() >= inCount;
             }}
         );
     }
     /**
-     * Build a data request for the acceptor module with the given runner.
+     * Build a send data request for the acceptor module.
      *
      * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inHeadwaterInstance a <code>String</code> value
      * @return a <code>DataRequest[]</code> value
      */
-    private DataRequest[] getAcceptorDataRequest(FixDataRequest inFixDataRequest)
+    private DataRequest[] getAcceptorSendDataRequest(FixDataRequest inFixDataRequest,
+                                                     String inHeadwaterInstance)
     {
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
-        createHeadwaterModule();
+        ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
         dataRequestBuilder.add(new DataRequest(FixAcceptorModuleFactory.INSTANCE_URN,
                                                inFixDataRequest));
         return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
     }
     /**
-     * Build a data request for the acceptor module with the given runner.
+     * Build a receive data request for the acceptor module.
      *
      * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inReceivedData a <code>Deque&lt;Object&gt;</code> value
      * @return a <code>DataRequest[]</code> value
      */
-    private DataRequest[] getInitiatorDataRequest(FixDataRequest inFixDataRequest)
+    private DataRequest[] getAcceptorReceiveDataRequest(FixDataRequest inFixDataRequest,
+                                                        Deque<Object> inReceivedData)
     {
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
-        createPublisherModule();
         dataRequestBuilder.add(new DataRequest(FixAcceptorModuleFactory.INSTANCE_URN,
                                                inFixDataRequest));
+        ModuleURN publisherUrn = createPublisherModule(inReceivedData);
         dataRequestBuilder.add(new DataRequest(publisherUrn));
         return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
     }
     /**
-     * Create the headwater module, if necessary.
+     * Build a send data request for the initiator module.
      *
+     * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inHeadwaterInstance a <code>String</code> value
+     * @return a <code>DataRequest[]</code> value
+     */
+    private DataRequest[] getInitiatorSendDataRequest(FixDataRequest inFixDataRequest,
+                                                      String inHeadwaterInstance)
+     {
+         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+         ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
+         dataRequestBuilder.add(new DataRequest(headwaterUrn));
+         dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
+                                                inFixDataRequest));
+         return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
+     }
+    /**
+     * Build a receive data request for the initiator module.
+     *
+     * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inReceivedData a <code>Deque&lt;Object&gt;</code> value
+     * @return a <code>DataRequest[]</code> value
+     */
+    private DataRequest[] getInitiatorReceiveDataRequest(FixDataRequest inFixDataRequest,
+                                                         Deque<Object> inReceivedData)
+    {
+        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+        dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
+                                               inFixDataRequest));
+        ModuleURN publisherUrn = createPublisherModule(inReceivedData);
+        dataRequestBuilder.add(new DataRequest(publisherUrn));
+        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
+    }
+    /**
+     * Create a headwater module.
+     *
+     * @param inHeadwaterInstance a <code>String</code> value
      * @return a <code>ModuleURN</code> value
      */
-    private ModuleURN createHeadwaterModule()
+    private ModuleURN createHeadwaterModule(String inHeadwaterInstance)
     {
-        if(headwaterUrn == null) {
-            headwaterInstance = "hw"+System.nanoTime();
-            headwaterUrn = moduleManager.createModule(HeadwaterModuleFactory.PROVIDER_URN,
-                                                      headwaterInstance);
-        }
+        ModuleURN headwaterUrn = moduleManager.createModule(HeadwaterModuleFactory.PROVIDER_URN,
+                                                            inHeadwaterInstance);
         return headwaterUrn;
     }
     /**
-     * Create the publisher module, if necessary.
+     * Create a publisher module.
      *
      * @return a <code>ModuleURN</code> value
      */
-    private ModuleURN createPublisherModule()
+    private ModuleURN createPublisherModule(final Deque<Object> inDataContainer)
     {
-        if(publisherUrn == null) {
-            publisherUrn = moduleManager.createModule(PublisherModuleFactory.PROVIDER_URN,
-                                                      new ISubscriber(){
-                @Override
-                public boolean isInteresting(Object inData)
-                {
-                    return true;
+        ModuleURN publisherUrn = moduleManager.createModule(PublisherModuleFactory.PROVIDER_URN,
+                                                            new ISubscriber(){
+            @Override
+            public boolean isInteresting(Object inData)
+            {
+                return inData instanceof Message;
+            }
+            @Override
+            public void publishTo(Object inData)
+            {
+                SLF4JLoggerProxy.debug(FixModuleTest.this,
+                                       "Received {}",
+                                       inData);
+                synchronized(inDataContainer) {
+                    inDataContainer.add(inData);
+                    inDataContainer.notifyAll();
                 }
-                @Override
-                public void publishTo(Object inData)
-                {
-                    SLF4JLoggerProxy.debug(FixModuleTest.this,
-                                           "Received {}",
-                                           inData);
-                    synchronized(receivedData) {
-                        receivedData.add(inData);
-                        receivedData.notifyAll();
-                    }
-                }}
-            );
-        }
+            }}
+        );
         return publisherUrn;
     }
     /**
@@ -277,6 +357,11 @@ public class FixModuleTest
                                                 "1");
             fixSession.getSessionSettings().put(Initiator.SETTING_RECONNECT_INTERVAL,
                                                 "1");
+            initiatorSessions.put(inIndex,
+                                  sessionId);
+        } else {
+            acceptorSessions.put(inIndex,
+                                 sessionId);
         }
         return fixSession;
     }
@@ -362,30 +447,19 @@ public class FixModuleTest
             }
             dataFlows.clear();
         }
-        synchronized(receivedData) {
-            receivedData.clear();
-        }
     }
     /**
-     * publisher module URN
+     * 
      */
-    private ModuleURN publisherUrn;
+    private static final Map<Integer,SessionID> acceptorSessions = Maps.newHashMap();
     /**
-     * headwater module URN
+     * 
      */
-    private ModuleURN headwaterUrn;
-    /**
-     * stores received data
-     */
-    private final Deque<Object> receivedData = Lists.newLinkedList();
+    private static final Map<Integer,SessionID> initiatorSessions = Maps.newHashMap();
     /**
      * data flows created during the test
      */
     private final Collection<DataFlowID> dataFlows = Lists.newArrayList();
-    /**
-     * provides a handle to the headwater module used to initiate the data flow
-     */
-    private String headwaterInstance;
     /**
      * stores generated session ids
      */
