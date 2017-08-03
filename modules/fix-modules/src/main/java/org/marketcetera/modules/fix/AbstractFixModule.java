@@ -3,10 +3,15 @@ package org.marketcetera.modules.fix;
 import java.util.Collection;
 import java.util.Set;
 
+import org.marketcetera.brokers.Broker;
+import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.client.BrokerStatusListener;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
-import org.marketcetera.fix.SessionSettingsProvider;
+import org.marketcetera.fix.SessionSettingsGenerator;
 import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
@@ -27,6 +32,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import quickfix.Application;
@@ -283,14 +289,18 @@ public abstract class AbstractFixModule
             throws ModuleException
     {
         try {
-            SessionSettings sessionSettings = sessionSettingsProvider.create();
-            SLF4JLoggerProxy.debug(this,
-                                   "Starting FIX module with session settings: {}",
-                                   sessionSettings);
-            engine = createEngine(this,
-                                  fixSettingsProviderFactory.create(),
-                                  sessionSettings);
-            engine.start();
+            Collection<FixSession> fixSessions = getFixSessions();
+            if(!fixSessions.isEmpty()) {
+                SessionSettings sessionSettings = SessionSettingsGenerator.generateSessionSettings(getFixSessions(),
+                                                                                                   fixSettingsProviderFactory);
+                SLF4JLoggerProxy.debug(this,
+                                       "Starting FIX module with session settings: {}",
+                                       sessionSettings);
+                engine = createEngine(this,
+                                      fixSettingsProviderFactory.create(),
+                                      sessionSettings);
+                engine.start();
+            }
         } catch (RuntimeError | ConfigError e) {
             PlatformServices.handleException(this,
                                              "Unable to start " + getURN(),
@@ -314,14 +324,11 @@ public abstract class AbstractFixModule
      * Create a new AbstractFixModule instance.
      *
      * @param inURN a <code>ModuleURN</code> value
-     * @param inSessionSettingsProvider a <code>SessionSettingsProvider</code> value
      */
-    protected AbstractFixModule(ModuleURN inURN,
-                                SessionSettingsProvider inSessionSettingsProvider)
+    protected AbstractFixModule(ModuleURN inURN)
     {
         super(inURN,
               false);
-        sessionSettingsProvider = inSessionSettingsProvider;
     }
     /**
      * Create the underlying engine with the given attributes.
@@ -337,6 +344,21 @@ public abstract class AbstractFixModule
                                                      SessionSettings inSessionSettings)
             throws ConfigError;
     /**
+     * Get the FIX sessions for this module.
+     *
+     * @return a <code>Collection&lt;FixSession&gt;</code> value
+     */
+    protected abstract Collection<FixSession> getFixSessions();
+    /**
+     * Get the broker service value.
+     *
+     * @return a <code>BrokerService</code> value
+     */
+    protected BrokerService getBrokerService()
+    {
+        return brokerService;
+    }
+    /**
      * Sends status for the given session.
      *
      * @param inSessionId a <code>SessionID</code> value
@@ -347,19 +369,38 @@ public abstract class AbstractFixModule
                             boolean inCreated,
                             boolean inLoggedOn)
     {
-        FixModuleSessionStatus sessionStatus = new FixModuleSessionStatus(inSessionId,
-                                                                          inCreated,
-                                                                          inLoggedOn);
+        Broker broker = brokerService.getBroker(inSessionId);
+        if(broker == null) {
+            SLF4JLoggerProxy.warn(this,
+                                  "No broker for {}, cannot report status",
+                                  inSessionId);
+            return;
+        }
+        BrokerStatus brokerStatus = new BrokerStatus(broker.getFixSession().getName(),
+                                                     broker.getBrokerId(),
+                                                     inLoggedOn,
+                                                     broker.getBrokerAlgos());
+        synchronized(brokerStatusListenerLock) {
+            for(BrokerStatusListener brokerStatusListener : brokerStatusListeners) {
+                try {
+                    brokerStatusListener.receiveBrokerStatus(brokerStatus);
+                } catch (Exception e) {
+                    PlatformServices.handleException(this,
+                                                     "Problem reporting broker status",
+                                                     e);
+                }
+            }
+        }
         for(DataRequester requester : requestsForAllSessionStatus) {
             if(requester.getFixDataRequest().getIsStatusRequest()) {
-                requester.getDataEmitterSupport().send(sessionStatus);
+                requester.getDataEmitterSupport().send(brokerStatus);
             }
         }
         Set<DataRequester> requestersForSession = requestsBySessionId.getIfPresent(inSessionId);
         if(requestersForSession != null) {
             for(DataRequester requester : requestersForSession) {
                 if(requester.getFixDataRequest().getIsStatusRequest()) {
-                    requester.getDataEmitterSupport().send(sessionStatus);
+                    requester.getDataEmitterSupport().send(brokerStatus);
                 }
             }
         }
@@ -521,6 +562,20 @@ public abstract class AbstractFixModule
         private final DataEmitterSupport dataEmitterSupport;
     }
     /**
+     * guards access to {@link #brokerStatusListeners}
+     */
+    private final Object brokerStatusListenerLock = new Object();
+    /**
+     * provides access to broker services
+     */
+    @Autowired
+    private BrokerService brokerService;
+    /**
+     * broker status listeners
+     */
+    @Autowired
+    private Collection<BrokerStatusListener> brokerStatusListeners = Lists.newArrayList();
+    /**
      * underlying FIX engine
      */
     private SessionConnector engine;
@@ -529,10 +584,6 @@ public abstract class AbstractFixModule
      */
     @Autowired
     private FixSettingsProviderFactory fixSettingsProviderFactory;
-    /**
-     * provides session settings (different for acceptor and initiator, provided when the module is created)
-     */
-    private final SessionSettingsProvider sessionSettingsProvider;
     /**
      * data requests that request data for all sessions
      */

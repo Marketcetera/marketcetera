@@ -9,6 +9,7 @@ import org.marketcetera.trade.Order;
 import org.marketcetera.trade.TradeMessage;
 
 import quickfix.Message;
+import quickfix.SessionID;
 
 /* $License$ */
 
@@ -21,6 +22,14 @@ import quickfix.Message;
  */
 public interface BrokerService
 {
+    /**
+     * 
+     *
+     *
+     * @param inSessionId
+     * @return
+     */
+    Broker getBroker(SessionID inSessionId);
     /**
      * 
      *

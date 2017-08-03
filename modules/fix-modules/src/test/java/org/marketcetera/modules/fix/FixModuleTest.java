@@ -6,8 +6,6 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -15,13 +13,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.marketcetera.brokers.Broker;
+import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionFactory;
-import org.marketcetera.fix.FixSettingsProvider;
-import org.marketcetera.fix.FixSettingsProviderFactory;
-import org.marketcetera.fix.SessionSettingsGenerator;
-import org.marketcetera.fix.SessionSettingsProvider;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
@@ -46,14 +41,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import quickfix.Initiator;
 import quickfix.Message;
-import quickfix.Session;
 import quickfix.SessionID;
-import quickfix.SessionSettings;
 
 /* $License$ */
 
@@ -77,7 +68,16 @@ public class FixModuleTest
     public void setup()
             throws Exception
     {
-        createAndStartModulesIfNecessary();
+        acceptorSessions.clear();
+        initiatorSessions.clear();
+        for(Broker broker : brokerService.getBrokers()) {
+            if(broker.getFixSession().isAcceptor()) {
+                acceptorSessions.add(new SessionID(broker.getFixSession().getSessionId()));
+            } else {
+                initiatorSessions.add(new SessionID(broker.getFixSession().getSessionId()));
+            }
+        }
+        startModulesIfNecessary();
         verifySessionsConnected();
     }
     /**
@@ -170,7 +170,7 @@ public class FixModuleTest
         messageFactory.addTransactionTimeIfNeeded(order);
         // mark this fine message with a session id
         FIXMessageUtil.setSessionId(order,
-                                    acceptorSessions.get(1));
+                                    acceptorSessions.iterator().next());
         acceptorSender.emit(order);
         waitForMessages(1,
                         initiatorMessages);
@@ -183,7 +183,7 @@ public class FixModuleTest
                                                                         "Ack");
         messageFactory.addTransactionTimeIfNeeded(receivedOrderAck);
         FIXMessageUtil.setSessionId(receivedOrderAck,
-                                    initiatorSessions.get(1));
+                                    initiatorSessions.iterator().next());
         initiatorSender.emit(receivedOrderAck);
         waitForMessages(1,
                         acceptorMessages);
@@ -325,49 +325,6 @@ public class FixModuleTest
         return publisherUrn;
     }
     /**
-     * Generate a fix session with the given attributes.
-     *
-     * @param inIndex an <code>int</code> value
-     * @param inAcceptor a <code>boolean</code> value
-     * @return a <code>FixSession</code> value
-     */
-    private FixSession generateFixSession(int inIndex,
-                                          boolean inAcceptor)
-    {
-        String sender = inAcceptor?"TARGET"+inIndex:"MATP"+inIndex;
-        String target = inAcceptor?"MATP"+inIndex:"TARGET"+inIndex;
-        FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
-        FixSession fixSession = fixSessionFactory.create();
-        fixSession.setAffinity(1);
-        fixSession.setBrokerId("test-"+(inAcceptor?"acceptor":"initiator")+inIndex);
-        fixSession.setHost(fixSettingsProvider.getAcceptorHost());
-        fixSession.setIsAcceptor(inAcceptor);
-        fixSession.setIsEnabled(true);
-        fixSession.setName(fixSession.getBrokerId());
-        fixSession.setPort(fixSettingsProvider.getAcceptorPort());
-        SessionID sessionId = new SessionID(FIXVersion.FIX42.getVersion(),
-                                            sender,
-                                            target);
-        sessions.add(sessionId);
-        fixSession.setSessionId(sessionId.toString());
-        fixSession.getSessionSettings().put(Session.SETTING_START_TIME,
-                                            "00:00:00");
-        fixSession.getSessionSettings().put(Session.SETTING_END_TIME,
-                                            "00:00:00");
-        if(!inAcceptor) {
-            fixSession.getSessionSettings().put(Session.SETTING_HEARTBTINT,
-                                                "1");
-            fixSession.getSessionSettings().put(Initiator.SETTING_RECONNECT_INTERVAL,
-                                                "1");
-            initiatorSessions.put(inIndex,
-                                  sessionId);
-        } else {
-            acceptorSessions.put(inIndex,
-                                 sessionId);
-        }
-        return fixSession;
-    }
-    /**
      * Verify that all test sessions are connected.
      *
      * @throws Exception if an unexpected failure occurs
@@ -375,60 +332,33 @@ public class FixModuleTest
     private void verifySessionsConnected()
             throws Exception
     {
-        for(final SessionID sessionId : sessions) {
+        for(final Broker broker : brokerService.getBrokers()) {
             MarketDataFeedTestBase.wait(new Callable<Boolean>() {
                 @Override
                 public Boolean call()
                         throws Exception
                 {
-                    Session session = Session.lookupSession(sessionId);
-                    if(session == null) {
+                    BrokerStatus brokerStatus = brokerService.getBrokerStatus(broker.getBrokerId());
+                    if(brokerStatus == null) {
                         return false;
                     }
-                    return session.isLoggedOn();
+                    return brokerStatus.getLoggedOn();
                 }}
             );
         }
     }
     /**
-     * Create and start the test initiator and acceptor modules, if necessary.
+     * Start the initiator and acceptor modules, if necessary.
      *
      * @throws Exception if an unexpected error occurs
      */
-    private void createAndStartModulesIfNecessary()
+    private void startModulesIfNecessary()
             throws Exception
     {
-        if(acceptorModuleUrn == null) {
-            SessionSettingsProvider acceptorSessionSettingsProvider = new SessionSettingsProvider() {
-                @Override
-                public SessionSettings create()
-                {
-                    return SessionSettingsGenerator.generateSessionSettings(Lists.newArrayList(generateFixSession(1,true),generateFixSession(2,true),generateFixSession(3,true)),
-                                                                            fixSettingsProviderFactory);
-                }
-            };
-            acceptorModuleUrn = moduleManager.createModule(FixAcceptorModuleFactory.PROVIDER_URN,
-                                                           acceptorSessionSettingsProvider);
-        }
         if(!moduleManager.getModuleInfo(acceptorModuleUrn).getState().isStarted()) {
             moduleManager.start(acceptorModuleUrn);
             assertEquals(ModuleState.STARTED,
                          moduleManager.getModuleInfo(acceptorModuleUrn).getState());
-        }
-        if(initiatorModuleUrn == null) {
-            SessionSettingsProvider initiatorSessionSettingsProvider = new SessionSettingsProvider() {
-                @Override
-                public SessionSettings create()
-                {
-                    return SessionSettingsGenerator.generateSessionSettings(Lists.newArrayList(generateFixSession(1,false),generateFixSession(2,false),generateFixSession(3,false)),
-                                                                            fixSettingsProviderFactory);
-                }
-            };
-            initiatorModuleUrn = moduleManager.createModule(FixInitiatorModuleFactory.PROVIDER_URN,
-                                                            initiatorSessionSettingsProvider);
-            moduleManager.start(initiatorModuleUrn);
-            assertEquals(ModuleState.STARTED,
-                         moduleManager.getModuleInfo(initiatorModuleUrn).getState());
         }
         if(!moduleManager.getModuleInfo(initiatorModuleUrn).getState().isStarted()) {
             moduleManager.start(initiatorModuleUrn);
@@ -451,42 +381,33 @@ public class FixModuleTest
         }
     }
     /**
-     * 
+     * acceptor sessions
      */
-    private static final Map<Integer,SessionID> acceptorSessions = Maps.newHashMap();
+    private static final Collection<SessionID> acceptorSessions = Sets.newHashSet();
     /**
-     * 
+     * initiator sessions
      */
-    private static final Map<Integer,SessionID> initiatorSessions = Maps.newHashMap();
+    private static final Collection<SessionID> initiatorSessions = Sets.newHashSet();
     /**
      * data flows created during the test
      */
     private final Collection<DataFlowID> dataFlows = Lists.newArrayList();
     /**
-     * stores generated session ids
-     */
-    private final Set<SessionID> sessions = Sets.newHashSet();
-    /**
      * test acceptor module
      */
-    private static ModuleURN acceptorModuleUrn;
+    private static final ModuleURN acceptorModuleUrn = FixAcceptorModuleFactory.INSTANCE_URN;
     /**
      * test initiator module
      */
-    private static ModuleURN initiatorModuleUrn;
-    /**
-     * creates {@link FixSession} objects
-     */
-    @Autowired
-    private FixSessionFactory fixSessionFactory;
+    private static final ModuleURN initiatorModuleUrn = FixInitiatorModuleFactory.INSTANCE_URN;
     /**
      * provides access to the module framework
      */
     @Autowired
     private ModuleManager moduleManager;
     /**
-     * provides fix settings
+     * provides access to broker services
      */
     @Autowired
-    private FixSettingsProviderFactory fixSettingsProviderFactory;
+    private BrokerService brokerService;
 }

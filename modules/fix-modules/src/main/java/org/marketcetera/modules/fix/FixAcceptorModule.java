@@ -1,8 +1,13 @@
 package org.marketcetera.modules.fix;
 
+import java.util.Collection;
+
+import org.marketcetera.brokers.Broker;
+import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSettingsProvider;
-import org.marketcetera.fix.SessionSettingsProvider;
 import org.marketcetera.module.ModuleURN;
+
+import com.google.common.collect.Lists;
 
 import quickfix.Application;
 import quickfix.ConfigError;
@@ -26,13 +31,10 @@ public class FixAcceptorModule
      * Create a new FixAcceptor instance.
      *
      * @param inURN a <code>ModuleURN</code> value
-     * @param inSessionSettingsProvider a <code>SessionSettingsProvider</code> value
      */
-    protected FixAcceptorModule(ModuleURN inURN,
-                                SessionSettingsProvider inSessionSettingsProvider)
+    protected FixAcceptorModule(ModuleURN inURN)
     {
-        super(inURN,
-              inSessionSettingsProvider);
+        super(inURN);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.modules.fix.AbstractFixModule#createEngine(quickfix.Application, org.marketcetera.fix.FixSettingsProvider, quickfix.SessionSettings)
@@ -49,5 +51,19 @@ public class FixAcceptorModule
                                                            inFixSettingsProvider.getLogFactory(inSessionSettings),
                                                            inFixSettingsProvider.getMessageFactory());
         return socketAcceptor;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.modules.fix.AbstractFixModule#getFixSessions()
+     */
+    @Override
+    protected Collection<FixSession> getFixSessions()
+    {
+        Collection<FixSession> fixSessions = Lists.newArrayList();
+        for(Broker broker : getBrokerService().getBrokers()) {
+            if(broker.getFixSession().isAcceptor()) {
+                fixSessions.add(broker.getFixSession());
+            }
+        }
+        return fixSessions;
     }
 }

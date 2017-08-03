@@ -1,7 +1,9 @@
 package org.marketcetera.brokers;
 
 import java.util.List;
+import java.util.Set;
 
+import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
@@ -44,7 +46,7 @@ public interface Broker
      *
      * @return
      */
-    List<MessageModifier> getResoponseModifiers();
+    List<MessageModifier> getResponseModifiers();
     /**
      * 
      *
@@ -52,4 +54,10 @@ public interface Broker
      * @return
      */
     FIXVersion getFixVersion();
+    /**
+     *
+     *
+     * @return
+     */
+    Set<BrokerAlgoSpec> getBrokerAlgos();
 }

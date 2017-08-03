@@ -2,22 +2,37 @@ package org.marketcetera.brokers.service;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.brokers.Broker;
+import org.marketcetera.brokers.BrokerFactory;
 import org.marketcetera.brokers.MessageModifier;
+import org.marketcetera.brokers.config.BrokerDescriptor;
+import org.marketcetera.brokers.config.BrokersDescriptor;
+import org.marketcetera.client.BrokerStatusListener;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.fix.FixSession;
+import org.marketcetera.fix.FixSessionFactory;
+import org.marketcetera.fix.FixSettingsProvider;
+import org.marketcetera.fix.FixSettingsProviderFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Maps;
 
 import quickfix.Message;
+import quickfix.SessionFactory;
+import quickfix.SessionID;
+import quickfix.SessionSettings;
 
 /* $License$ */
 
@@ -29,15 +44,23 @@ import quickfix.Message;
  * @since $Release$
  */
 public class BrokerServiceImpl
-        implements BrokerService
+        implements BrokerService,BrokerStatusListener
 {
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.BrokerService#getBroker(quickfix.SessionID)
+     */
+    @Override
+    public Broker getBroker(SessionID inSessionId)
+    {
+        return brokersBySessionId.getIfPresent(inSessionId);
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getBrokers()
      */
     @Override
     public Collection<Broker> getBrokers()
     {
-        return Collections.unmodifiableCollection(brokers.asMap().values());
+        return Collections.unmodifiableCollection(brokersByBrokerId.asMap().values());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#selectBroker(org.marketcetera.trade.Order)
@@ -47,7 +70,7 @@ public class BrokerServiceImpl
     {
         Broker broker = null;
         if(inOrder.getBrokerID() != null) {
-            broker = brokers.getIfPresent(inOrder.getBrokerID());
+            broker = brokersByBrokerId.getIfPresent(inOrder.getBrokerID());
         }
         if(broker == null) {
             // TODO apply selector
@@ -103,25 +126,93 @@ public class BrokerServiceImpl
     @Override
     public BrokerStatus getBrokerStatus(BrokerID inBrokerId)
     {
-        throw new UnsupportedOperationException(); // TODO
+        return brokerStatusValues.getIfPresent(inBrokerId);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.client.brokers.BrokerStatus)
+     */
+    @Override
+    public void receiveBrokerStatus(BrokerStatus inStatus)
+    {
+        brokerStatusValues.put(inStatus.getId(),
+                               inStatus);
     }
     /**
-     * Sets the brokers value.
+     * Set the brokers value.
      *
-     * @param inBrokers a <code>Collection&lt;Broker&gt;</code> value
+     * @param inBrokerDescriptors a <code>Collection&lt;BrokersDescriptor&gt;</code> value
      */
-    public void setBrokers(Collection<Broker> inBrokers)
+    public void setBrokers(Collection<BrokersDescriptor> inBrokersDescriptors)
     {
-        brokers.invalidateAll();
-        if(inBrokers != null) {
-            for(Broker broker : inBrokers) {
-                brokers.put(broker.getBrokerId(),
-                            broker);
+        brokersByBrokerId.invalidateAll();
+        brokersBySessionId.invalidateAll();
+        FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
+        for(BrokersDescriptor brokersDescriptor : inBrokersDescriptors) {
+            for(BrokerDescriptor brokerDescriptor : brokersDescriptor.getBrokers()) {
+                Map<String,String> sessionSettings = Maps.newHashMap();
+                // add global default settings
+                sessionSettings.putAll(brokersDescriptor.getSessionSettings().getSessionSettings());
+                // add/override with local settings
+                sessionSettings.putAll(brokerDescriptor.getSessionSettings().getSessionSettings());
+                FixSession fixSession = fixSessionFactory.create();
+                fixSession.setAffinity(brokerDescriptor.getAffinity());
+                fixSession.setBrokerId(brokerDescriptor.getId().getValue());
+                fixSession.setDescription(brokerDescriptor.getDescription());
+                String connectionType = sessionSettings.get(SessionFactory.SETTING_CONNECTION_TYPE);
+                fixSession.setIsAcceptor(SessionFactory.ACCEPTOR_CONNECTION_TYPE.equals(connectionType));
+                fixSession.setIsEnabled(true);
+                if(fixSession.isAcceptor()) {
+                    fixSession.setHost(fixSettingsProvider.getAcceptorHost());
+                    fixSession.setPort(fixSettingsProvider.getAcceptorPort());
+                } else {
+                    fixSession.setHost(brokerDescriptor.getHost());
+                    fixSession.setPort(brokerDescriptor.getPort());
+                }
+                fixSession.setName(brokerDescriptor.getName());
+                SessionID sessionId = new SessionID(brokerDescriptor.getSessionSettings().getSessionSettings().get(SessionSettings.BEGINSTRING),
+                                                    brokerDescriptor.getSessionSettings().getSessionSettings().get(SessionSettings.SENDERCOMPID),
+                                                    brokerDescriptor.getSessionSettings().getSessionSettings().get(SessionSettings.TARGETCOMPID));
+                fixSession.setSessionId(sessionId.toString());
+                fixSession.getSessionSettings().putAll(sessionSettings);
+                Broker broker = brokerFactory.create(fixSession,
+                                                     brokerDescriptor.getOrderModifiers(),
+                                                     brokerDescriptor.getResponseModifiers(),
+                                                     brokerDescriptor.getBrokerAlgos());
+                brokersByBrokerId.put(brokerDescriptor.getId(),
+                                      broker);
+                brokersBySessionId.put(sessionId,
+                                       broker);
             }
         }
+        SLF4JLoggerProxy.debug(this,
+                               "Created brokers: {}",
+                               brokersByBrokerId.asMap());
     }
     /**
-     * 
+     * provides FIX settings
      */
-    private final Cache<BrokerID,Broker> brokers = CacheBuilder.newBuilder().build();
+    @Autowired
+    private FixSettingsProviderFactory fixSettingsProviderFactory;
+    /**
+     * creates {@link Broker} objects
+     */
+    @Autowired
+    private BrokerFactory brokerFactory;
+    /**
+     * creates {@link FixSession} objects
+     */
+    @Autowired
+    private FixSessionFactory fixSessionFactory;
+    /**
+     * stores brokers keyed by {@link BrokerID}
+     */
+    private final Cache<BrokerID,Broker> brokersByBrokerId = CacheBuilder.newBuilder().build();
+    /**
+     * stores brokers keyed by {@link SessionID}
+     */
+    private final Cache<SessionID,Broker> brokersBySessionId = CacheBuilder.newBuilder().build();
+    /**
+     * caches broker status values
+     */
+    private final Cache<BrokerID,BrokerStatus> brokerStatusValues = CacheBuilder.newBuilder().build();
 }
