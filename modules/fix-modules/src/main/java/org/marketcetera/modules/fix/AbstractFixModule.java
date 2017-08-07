@@ -44,7 +44,6 @@ import quickfix.IncorrectDataFormat;
 import quickfix.IncorrectTagValue;
 import quickfix.Message;
 import quickfix.RejectLogon;
-import quickfix.RuntimeError;
 import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.SessionNotFound;
@@ -282,35 +281,24 @@ public abstract class AbstractFixModule
     {
     }
     /**
-     * 
+     * Activate the module.
      *
-     *
-     * @throws Exception
+     * @throws Exception if the module could not be activated
      */
-    public void activate()
+    void activate()
             throws Exception
     {
-        SLF4JLoggerProxy.warn(this,
-                              "COLIN: activating {}",
-                              getClass().getSimpleName());
-        try {
-            Collection<FixSession> fixSessions = getFixSessions();
-            if(!fixSessions.isEmpty()) {
-                SessionSettings sessionSettings = SessionSettingsGenerator.generateSessionSettings(getFixSessions(),
-                                                                                                   fixSettingsProviderFactory);
-                SLF4JLoggerProxy.debug(this,
-                                       "Starting FIX module with session settings: {}",
-                                       sessionSettings);
-                engine = createEngine(this,
-                                      fixSettingsProviderFactory.create(),
-                                      sessionSettings);
-                engine.start();
-            }
-        } catch (RuntimeError | ConfigError e) {
-            PlatformServices.handleException(this,
-                                             "Unable to start " + getURN(),
-                                             e);
-            throw new ModuleException(e);
+        Collection<FixSession> fixSessions = getFixSessions();
+        if(!fixSessions.isEmpty()) {
+            SessionSettings sessionSettings = SessionSettingsGenerator.generateSessionSettings(getFixSessions(),
+                                                                                               fixSettingsProviderFactory);
+            SLF4JLoggerProxy.debug(this,
+                                   "Starting FIX module with session settings: {}",
+                                   sessionSettings);
+            engine = createEngine(this,
+                                  fixSettingsProviderFactory.create(),
+                                  sessionSettings);
+            engine.start();
         }
     }
     /* (non-Javadoc)
@@ -320,25 +308,6 @@ public abstract class AbstractFixModule
     protected void preStart()
             throws ModuleException
     {
-//        try {
-//            Collection<FixSession> fixSessions = getFixSessions();
-//            if(!fixSessions.isEmpty()) {
-//                SessionSettings sessionSettings = SessionSettingsGenerator.generateSessionSettings(getFixSessions(),
-//                                                                                                   fixSettingsProviderFactory);
-//                SLF4JLoggerProxy.debug(this,
-//                                       "Starting FIX module with session settings: {}",
-//                                       sessionSettings);
-//                engine = createEngine(this,
-//                                      fixSettingsProviderFactory.create(),
-//                                      sessionSettings);
-//                engine.start();
-//            }
-//        } catch (RuntimeError | ConfigError e) {
-//            PlatformServices.handleException(this,
-//                                             "Unable to start " + getURN(),
-//                                             e);
-//            throw new ModuleException(e);
-//        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()

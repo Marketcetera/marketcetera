@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 /* $License$ */
 
 /**
- *
+ * Provides a Spring interface to the cluster service for the {@link FixAcceptorModule FIX acceptor module}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -24,25 +24,23 @@ import org.springframework.stereotype.Component;
 public class FixAcceptorSpringStarter
 {
     /**
-     * 
+     * Active this module.
      *
-     *
-     * @throws Exception
+     * @throws Exception if an error occurs activating the module
      */
     @ClusterActivateWorkUnit
     public void activate()
             throws Exception
     {
-        SLF4JLoggerProxy.warn(this,
-                              "COLIN: activating {}",
+        SLF4JLoggerProxy.info(this,
+                              "Activating {}",
                               getClusterWorkUnitUid());
         FixAcceptorModule.instance.activate();
     }
     /**
-     * 
+     * Get the cluster work unit id value.
      *
-     *
-     * @return
+     * @return a <code>String</code> value
      */
     @ClusterWorkUnitUid
     public String getClusterWorkUnitUid()
@@ -60,7 +58,7 @@ public class FixAcceptorSpringStarter
     @Autowired
     private ClusterService clusterService;
     /**
-     * 
+     * uniquely identifies this cluster work unit
      */
     private String clusterWorkUnitUid;
 }
