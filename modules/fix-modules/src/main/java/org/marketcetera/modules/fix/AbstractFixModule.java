@@ -281,13 +281,18 @@ public abstract class AbstractFixModule
     public void onBeforeSessionReset(SessionID inSessionID)
     {
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.module.Module#preStart()
+    /**
+     * 
+     *
+     *
+     * @throws Exception
      */
-    @Override
-    protected void preStart()
-            throws ModuleException
+    public void activate()
+            throws Exception
     {
+        SLF4JLoggerProxy.warn(this,
+                              "COLIN: activating {}",
+                              getClass().getSimpleName());
         try {
             Collection<FixSession> fixSessions = getFixSessions();
             if(!fixSessions.isEmpty()) {
@@ -309,6 +314,33 @@ public abstract class AbstractFixModule
         }
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.module.Module#preStart()
+     */
+    @Override
+    protected void preStart()
+            throws ModuleException
+    {
+//        try {
+//            Collection<FixSession> fixSessions = getFixSessions();
+//            if(!fixSessions.isEmpty()) {
+//                SessionSettings sessionSettings = SessionSettingsGenerator.generateSessionSettings(getFixSessions(),
+//                                                                                                   fixSettingsProviderFactory);
+//                SLF4JLoggerProxy.debug(this,
+//                                       "Starting FIX module with session settings: {}",
+//                                       sessionSettings);
+//                engine = createEngine(this,
+//                                      fixSettingsProviderFactory.create(),
+//                                      sessionSettings);
+//                engine.start();
+//            }
+//        } catch (RuntimeError | ConfigError e) {
+//            PlatformServices.handleException(this,
+//                                             "Unable to start " + getURN(),
+//                                             e);
+//            throw new ModuleException(e);
+//        }
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
      */
     @Override
@@ -328,7 +360,7 @@ public abstract class AbstractFixModule
     protected AbstractFixModule(ModuleURN inURN)
     {
         super(inURN,
-              false);
+              true);
     }
     /**
      * Create the underlying engine with the given attributes.

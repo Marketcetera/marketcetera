@@ -35,6 +35,7 @@ public class FixAcceptorModule
     protected FixAcceptorModule(ModuleURN inURN)
     {
         super(inURN);
+        instance = this;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.modules.fix.AbstractFixModule#createEngine(quickfix.Application, org.marketcetera.fix.FixSettingsProvider, quickfix.SessionSettings)
@@ -66,4 +67,8 @@ public class FixAcceptorModule
         }
         return fixSessions;
     }
+    /**
+     * static reference to this singleton object
+     */
+    static FixAcceptorModule instance;
 }

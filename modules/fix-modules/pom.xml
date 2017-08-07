@@ -46,6 +46,11 @@
       <artifactId>misc</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>simple-cluster</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- spring test -->
     <dependency>
       <groupId>org.springframework</groupId>

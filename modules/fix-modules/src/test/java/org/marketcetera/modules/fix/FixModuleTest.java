@@ -68,6 +68,8 @@ public class FixModuleTest
     public void setup()
             throws Exception
     {
+        acceptorModuleUrn = FixAcceptorModuleFactory.INSTANCE_URN;
+        initiatorModuleUrn = FixInitiatorModuleFactory.INSTANCE_URN;
         acceptorSessions.clear();
         initiatorSessions.clear();
         for(Broker broker : brokerService.getBrokers()) {
@@ -395,11 +397,11 @@ public class FixModuleTest
     /**
      * test acceptor module
      */
-    private static final ModuleURN acceptorModuleUrn = FixAcceptorModuleFactory.INSTANCE_URN;
+    private ModuleURN acceptorModuleUrn;
     /**
      * test initiator module
      */
-    private static final ModuleURN initiatorModuleUrn = FixInitiatorModuleFactory.INSTANCE_URN;
+    private ModuleURN initiatorModuleUrn;
     /**
      * provides access to the module framework
      */

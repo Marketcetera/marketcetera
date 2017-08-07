@@ -3,7 +3,9 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+  <context:component-scan base-package="org.marketcetera"/>
   <bean id="moduleManager" class="org.marketcetera.module.ModuleManager" init-method="init" destroy-method="stop"/>
+  <bean id="simpleClusterService" class="org.marketcetera.cluster.SimpleClusterService"/>
   <bean id="messageFactory" class="quickfix.DefaultMessageFactory"/>
   <bean id="brokerFactory" class="org.marketcetera.fix.impl.SimpleBrokerFactory"/>
   <bean id="fixSessionFactory" class="org.marketcetera.fix.impl.SimpleFixSessionFactory"/>
