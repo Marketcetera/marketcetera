@@ -8,20 +8,24 @@ import org.apache.commons.lang.Validate;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerFactory;
 import org.marketcetera.brokers.MessageModifier;
+import org.marketcetera.brokers.Selector;
 import org.marketcetera.brokers.config.BrokerDescriptor;
 import org.marketcetera.brokers.config.BrokersDescriptor;
 import org.marketcetera.client.BrokerStatusListener;
 import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
+import org.marketcetera.fix.core.Messages;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -73,11 +77,23 @@ public class BrokerServiceImpl
             broker = brokersByBrokerId.getIfPresent(inOrder.getBrokerID());
         }
         if(broker == null) {
-            // TODO apply selector
+            BrokerID brokerId = brokerSelector.chooseBroker(inOrder);
+            if(brokerId != null) {
+                broker = brokersByBrokerId.getIfPresent(brokerId);
+            }
         }
         // TODO mapped/virtual broker stuff?
-        Validate.notNull(broker,
-                         "No broker for " + inOrder); // TODO
+        if(broker == null) {
+            Messages.NO_BROKER_SELECTED.warn(this,
+                                             inOrder);
+            throw new CoreException(new I18NBoundMessage1P(Messages.NO_BROKER_SELECTED,
+                                                           inOrder));
+        } else {
+            SLF4JLoggerProxy.debug(this,
+                                   "Selected {} for {}",
+                                   broker,
+                                   inOrder.getBrokerID());
+        }
         return broker;
     }
     /* (non-Javadoc)
@@ -188,6 +204,11 @@ public class BrokerServiceImpl
                                "Created brokers: {}",
                                brokersByBrokerId.asMap());
     }
+    /**
+     * optional broker selector
+     */
+    @Autowired(required=false)
+    private Selector brokerSelector;
     /**
      * provides FIX settings
      */

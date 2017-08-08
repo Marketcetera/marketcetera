@@ -1,0 +1,145 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+  <context:component-scan base-package="org.marketcetera"/>
+  <bean id="moduleManager" class="org.marketcetera.module.ModuleManager" init-method="init" destroy-method="stop"/>
+  <bean id="simpleClusterService" class="org.marketcetera.cluster.SimpleClusterService"/>
+  <bean id="messageFactory" class="quickfix.DefaultMessageFactory"/>
+  <bean id="brokerFactory" class="org.marketcetera.fix.impl.SimpleBrokerFactory"/>
+  <bean id="fixSessionFactory" class="org.marketcetera.fix.impl.SimpleFixSessionFactory"/>
+  <bean id="testSelector" class="org.marketcetera.brokers.service.TestBrokerSelector"/>
+  <bean id="fixSettingsProviderFactory" class="org.marketcetera.fix.FixSettingsProviderFactoryImpl">
+    <property name="messageStoreFactoryClass" value="org.marketcetera.fix.store.NoopStoreFactory"/>
+    <property name="logFactoryClass" value="quickfix.SLF4JLogFactory"/>
+    <property name="messageFactory" ref="messageFactory"/>
+    <property name="acceptorHost" value="localhost"/>
+    <property name="acceptorPort" value="21345"/>
+  </bean>
+  <bean id="brokerService" class="org.marketcetera.brokers.service.BrokerServiceImpl">
+    <property name="brokers">
+      <list>
+        <ref bean="initiators"/>
+        <ref bean="acceptors"/>
+      </list>
+    </property>
+  </bean>
+  <bean id="initiators" class="org.marketcetera.brokers.config.BrokersDescriptor">
+    <property name="sessionSettings" ref="initiatorSettings"/>
+    <property name="brokers">
+      <list>
+        <bean id="initiator1" class="org.marketcetera.brokers.config.BrokerDescriptor">
+          <property name="name" value="Initiator1"/>
+          <property name="id" value="initiator1"/>
+          <property name="description" value="Test initiator 1"/>
+          <property name="sessionSettings" ref="initiator1Settings"/>
+          <property name="host" value="localhost"/>
+          <property name="port" value="21345"/>
+        </bean>
+        <bean id="initiator2" class="org.marketcetera.brokers.config.BrokerDescriptor">
+          <property name="name" value="Initiator2"/>
+          <property name="id" value="initiator2"/>
+          <property name="description" value="Test initiator 2"/>
+          <property name="sessionSettings" ref="initiator2Settings"/>
+          <property name="host" value="localhost"/>
+          <property name="port" value="21345"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  <bean id="initiatorSettings" class="org.marketcetera.brokers.config.SessionSettingsDescriptor">
+    <property name="sessionSettings">
+      <map>
+        <entry key="ConnectionType" value="initiator"/>
+        <entry key="HeartBtInt" value="1"/>
+        <entry key="SLF4JLogHeartbeats" value="N"/>
+        <entry key="StartTime" value="00:00:00"/>
+        <entry key="EndTime" value="00:00:00"/>
+        <entry key="TimeZone" value="US/Pacific"/>
+        <entry key="UseDataDictionary" value="Y"/>
+        <entry key="ReconnectInterval" value="1"/>
+        <entry key="ResetOnLogon" value="Y"/>
+        <entry key="ResetOnLogout" value="Y"/>
+        <entry key="ResetOnDisconnect" value="Y"/>
+        <entry key="ResetOnError" value="Y"/>
+      </map>
+    </property>
+  </bean>
+  <bean id="initiator1Settings" class="org.marketcetera.brokers.config.SessionSettingsDescriptor">
+    <property name="sessionSettings">
+      <map>
+        <entry key="BeginString" value="FIX.4.2"/>
+        <entry key="DataDictionary" value="FIX42.xml"/>
+        <entry key="SenderCompID" value="MATP"/>
+        <entry key="TargetCompID" value="TARGET1"/>
+      </map>
+    </property>
+  </bean>
+  <bean id="initiator2Settings" class="org.marketcetera.brokers.config.SessionSettingsDescriptor">
+    <property name="sessionSettings">
+      <map>
+        <entry key="BeginString" value="FIX.4.2"/>
+        <entry key="DataDictionary" value="FIX42.xml"/>
+        <entry key="SenderCompID" value="MATP"/>
+        <entry key="TargetCompID" value="TARGET2"/>
+      </map>
+    </property>
+  </bean>
+  <bean id="acceptors" class="org.marketcetera.brokers.config.BrokersDescriptor">
+    <property name="sessionSettings" ref="acceptorSettings"/>
+    <property name="brokers">
+      <list>
+        <bean id="acceptor1" class="org.marketcetera.brokers.config.BrokerDescriptor">
+          <property name="name" value="Acceptor1"/>
+          <property name="id" value="acceptor1"/>
+          <property name="description" value="Test Acceptor 1"/>
+          <property name="sessionSettings" ref="acceptor1Settings"/>
+        </bean>
+        <bean id="acceptor2" class="org.marketcetera.brokers.config.BrokerDescriptor">
+          <property name="name" value="Acceptor2"/>
+          <property name="id" value="acceptor2"/>
+          <property name="description" value="Test Acceptor 2"/>
+          <property name="sessionSettings" ref="acceptor2Settings"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  <bean id="acceptorSettings" class="org.marketcetera.brokers.config.SessionSettingsDescriptor">
+    <property name="sessionSettings">
+      <map>
+        <entry key="ConnectionType" value="acceptor"/>
+        <entry key="SLF4JLogHeartbeats" value="N"/>
+        <entry key="StartTime" value="00:00:00"/>
+        <entry key="EndTime" value="00:00:00"/>
+        <entry key="TimeZone" value="US/Pacific"/>
+        <entry key="UseDataDictionary" value="Y"/>
+        <entry key="ReconnectInterval" value="1"/>
+        <entry key="ResetOnLogon" value="Y"/>
+        <entry key="ResetOnLogout" value="Y"/>
+        <entry key="ResetOnDisconnect" value="Y"/>
+        <entry key="ResetOnError" value="Y"/>
+      </map>
+    </property>
+  </bean>
+  <bean id="acceptor1Settings" class="org.marketcetera.brokers.config.SessionSettingsDescriptor">
+    <property name="sessionSettings">
+      <map>
+        <entry key="BeginString" value="FIX.4.2"/>
+        <entry key="DataDictionary" value="FIX42.xml"/>
+        <entry key="SenderCompID" value="TARGET1"/>
+        <entry key="TargetCompID" value="MATP"/>
+      </map>
+    </property>
+  </bean>
+  <bean id="acceptor2Settings" class="org.marketcetera.brokers.config.SessionSettingsDescriptor">
+    <property name="sessionSettings">
+      <map>
+        <entry key="BeginString" value="FIX.4.2"/>
+        <entry key="DataDictionary" value="FIX42.xml"/>
+        <entry key="SenderCompID" value="TARGET2"/>
+        <entry key="TargetCompID" value="MATP"/>
+      </map>
+    </property>
+  </bean>
+</beans>
