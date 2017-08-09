@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  - Author: anshul@marketcetera.com
-  - Since: 0.9.0
-  - Version: $Id: pom.xml 17432 2017-07-07 15:26:18Z colin $
-  - $License$
-  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-      <groupId>org.marketcetera</groupId>
-      <artifactId>public-parent</artifactId>
-      <version>3.1.0-SNAPSHOT</version>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>public-parent</artifactId>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>api-parent</artifactId>
+  <artifactId>admin-parent</artifactId>
   <packaging>pom</packaging>
-  <name>API Parent</name>
+  <name>Admin Parent</name>
   <modules>
+    <module>admin-api</module>
   </modules>
 </project>
