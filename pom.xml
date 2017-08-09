@@ -1155,7 +1155,6 @@
   </profiles>
   <modules>
     <module>admin</module>
-    <module>api</module>
     <module>client</module>
     <module>cluster</module>
     <module>core</module>
