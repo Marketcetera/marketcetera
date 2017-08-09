@@ -11,5 +11,6 @@
   <name>Admin Parent</name>
   <modules>
     <module>admin-api</module>
+    <module>admin-db</module>
   </modules>
 </project>
