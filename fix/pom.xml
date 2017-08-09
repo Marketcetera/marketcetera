@@ -12,5 +12,6 @@
   <modules>
     <module>fix-api</module>
     <module>fix-core</module>
+    <module>fix-server</module>
   </modules>
 </project>
