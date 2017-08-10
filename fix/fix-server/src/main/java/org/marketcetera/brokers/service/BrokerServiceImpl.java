@@ -2,9 +2,11 @@ package org.marketcetera.brokers.service;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
+import org.joda.time.DateTime;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerFactory;
 import org.marketcetera.brokers.MessageModifier;
@@ -19,6 +21,8 @@ import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
+import org.marketcetera.fix.SessionSchedule;
+import org.marketcetera.fix.SessionSettingsGenerator;
 import org.marketcetera.fix.core.Messages;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
@@ -31,8 +35,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import quickfix.ConfigError;
+import quickfix.FieldConvertError;
 import quickfix.Message;
 import quickfix.SessionFactory;
 import quickfix.SessionID;
@@ -152,6 +159,88 @@ public class BrokerServiceImpl
     {
         brokerStatusValues.put(inStatus.getId(),
                                inStatus);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.BrokerService#getSessionStart(quickfix.SessionID)
+     */
+    @Override
+    public Date getSessionStart(SessionID inSessionId)
+    {
+        FixSession fixSession = findFixSessionBySessionId(inSessionId);
+        Date returnValue = new DateTime().withTimeAtStartOfDay().toDate();
+        if(fixSession == null) {
+            SLF4JLoggerProxy.debug(this,
+                                   "No fix session for {}, using {} instead",
+                                   inSessionId,
+                                   returnValue);
+            return returnValue;
+        }
+        try {
+            SessionSettings settings = SessionSettingsGenerator.generateSessionSettings(Lists.newArrayList(fixSession),
+                                                                                        fixSettingsProviderFactory,
+                                                                                        true);
+            SessionSchedule sessionSchedule = new SessionSchedule(settings,
+                                                                  inSessionId);
+            returnValue = sessionSchedule.getMostRecentStartTime();
+        } catch (ConfigError | FieldConvertError e) {
+            SLF4JLoggerProxy.info(this,
+                                  e,
+                                  "Cannot calculate session start for {}, using {} instead",
+                                  inSessionId,
+                                  returnValue);
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "Session start for {} calculated as: {}",
+                               inSessionId,
+                               returnValue);
+        return returnValue;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.BrokerService#getNextSessionStart(quickfix.SessionID)
+     */
+    @Override
+    public Date getNextSessionStart(SessionID inSessionId)
+    {
+        FixSession fixSession = findFixSessionBySessionId(inSessionId);
+        Date returnValue = new DateTime().withTimeAtStartOfDay().plusDays(1).toDate();
+        if(fixSession == null) {
+            SLF4JLoggerProxy.debug(this,
+                                   "No fix session for {}, using {} instead",
+                                   inSessionId,
+                                   returnValue);
+            return returnValue;
+        }
+        try {
+            SessionSettings settings = SessionSettingsGenerator.generateSessionSettings(Lists.newArrayList(fixSession),
+                                                                                        fixSettingsProviderFactory,
+                                                                                        true);
+            SessionSchedule sessionSchedule = new SessionSchedule(settings,
+                                                                  inSessionId);
+            returnValue = sessionSchedule.getNextStartTime();
+        } catch (ConfigError | FieldConvertError e) {
+            SLF4JLoggerProxy.info(this,
+                                  e,
+                                  "Cannot calculate session start for {}, using {} instead",
+                                  inSessionId,
+                                  returnValue);
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "Session start for {} calculated as: {}",
+                               inSessionId,
+                               returnValue);
+        return returnValue;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.BrokerService#findFixSessionBySessionId(quickfix.SessionID)
+     */
+    @Override
+    public FixSession findFixSessionBySessionId(SessionID inSessionId)
+    {
+        Broker broker = getBroker(inSessionId);
+        if(broker == null) {
+            return null;
+        }
+        return broker.getFixSession();
     }
     /**
      * Set the brokers value.

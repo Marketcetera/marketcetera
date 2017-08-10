@@ -8,7 +8,7 @@ import org.marketcetera.fix.FixSession;
 /* $License$ */
 
 /**
- *
+ * Creates {@link Broker} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
