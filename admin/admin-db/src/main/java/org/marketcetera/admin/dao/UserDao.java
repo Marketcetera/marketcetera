@@ -1,4 +1,4 @@
-package org.marketcetera.admin.user.dao;
+package org.marketcetera.admin.dao;
 
 import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.util.misc.ClassVersion;
