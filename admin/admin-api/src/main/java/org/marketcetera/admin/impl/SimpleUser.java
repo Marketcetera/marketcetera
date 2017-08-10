@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.persist.NDEntityBase;
+import org.marketcetera.trade.UserID;
 
 /* $License$ */
 
@@ -74,6 +75,14 @@ public class SimpleUser
     public void setIsActive(boolean inIsActive)
     {
         isActive = inIsActive;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.User#getUserID()
+     */
+    @Override
+    public UserID getUserID()
+    {
+        return new UserID(getId());
     }
     /**
      * Create a new SimpleUser instance.
