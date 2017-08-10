@@ -1,4 +1,4 @@
-package org.marketcetera.trade.dao;
+package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
 

@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.marketcetera.trade.ReportID;
-import org.marketcetera.trade.dao.PersistentReport;
-import org.marketcetera.trade.dao.ReportType;
+import org.marketcetera.trade.ReportType;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

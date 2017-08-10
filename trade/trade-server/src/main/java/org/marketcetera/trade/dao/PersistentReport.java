@@ -30,9 +30,11 @@ import org.marketcetera.trade.Messages;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.ReportType;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -62,6 +64,7 @@ import quickfix.field.TargetCompID;
 @ClassVersion("$Id: PersistentReport.java 17338 2017-08-09 23:17:57Z colin $")
 public class PersistentReport
         extends EntityBase
+        implements Report
 {
     /**
      * Creates an instance, given a report.
@@ -152,11 +155,10 @@ public class PersistentReport
                     Messages.ERROR_RECONSTITUTE_FIX_MSG, fixMsgString));
         }
     }
-    /**
-     * Gets the actor id of the report.
-     *
-     * @return a <code>UserID</code> value or <code>null</code>
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getActorID()
      */
+    @Override
     public UserID getActorID()
     {
         if (getActor()==null) {
@@ -164,11 +166,10 @@ public class PersistentReport
         }
         return getActor().getUserID();
     }
-    /**
-     * Gets the viewer id of the report.
-     *
-     * @return a <code>UserID</code> value or <code>null</code>
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getViewerID()
      */
+    @Override
     public UserID getViewerID()
     {
         if (getViewer()==null) {
@@ -176,11 +177,10 @@ public class PersistentReport
         }
         return getViewer().getUserID();
     }
-    /**
-     * Get the orderID value.
-     *
-     * @return an <code>OrderID</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getOrderID()
      */
+    @Override
     public OrderID getOrderID()
     {
         return orderID;
@@ -194,11 +194,10 @@ public class PersistentReport
     {
         orderID = inOrderID;
     }
-    /**
-     * Get the actor value.
-     *
-     * @return a <code>SimpleUser</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getActor()
      */
+    @Override
     public PersistentUser getActor()
     {
         return mActor;
@@ -212,11 +211,10 @@ public class PersistentReport
     {
         mActor = inActor;
     }
-    /**
-     * Get the viewer value.
-     *
-     * @return a <code>SimpleUser</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getViewer()
      */
+    @Override
     public PersistentUser getViewer()
     {
         return viewer;
@@ -230,11 +228,10 @@ public class PersistentReport
     {
         viewer = inViewer;
     }
-    /**
-     * Get the fixMessage value.
-     *
-     * @return a <code>String</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getFixMessage()
      */
+    @Override
     public String getFixMessage()
     {
         return mFixMessage.getMessage();
@@ -259,11 +256,10 @@ public class PersistentReport
         }
         mFixMessage.setMessage(inFixMessage);
     }
-    /**
-     * Get the sessionId value.
-     *
-     * @return a <code>SessionID</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getSessionId()
      */
+    @Override
     public SessionID getSessionId()
     {
         if(sessionIdValue == null) {
@@ -280,11 +276,10 @@ public class PersistentReport
     {
         sessionIdValue = inSessionId.toString();
     }
-    /**
-     * Get the msgSeqNum value.
-     *
-     * @return an <code>int</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getMsgSeqNum()
      */
+    @Override
     public int getMsgSeqNum()
     {
         return msgSeqNum;
@@ -298,11 +293,10 @@ public class PersistentReport
     {
         msgSeqNum = inMsgSeqNum;
     }
-    /**
-     * Get the sendingTime value.
-     *
-     * @return a <code>Date</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getSendingTime()
      */
+    @Override
     public Date getSendingTime()
     {
         return sendingTime;
@@ -316,11 +310,10 @@ public class PersistentReport
     {
         sendingTime = inSendingTime;
     }
-    /**
-     * Get the reportType value.
-     *
-     * @return a <code>ReportType</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getReportType()
      */
+    @Override
     public ReportType getReportType()
     {
         return mReportType;
@@ -334,11 +327,10 @@ public class PersistentReport
     {
         mReportType = inReportType;
     }
-    /**
-     * Get the brokerID value.
-     *
-     * @return a <code>BrokerID</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getBrokerID()
      */
+    @Override
     public BrokerID getBrokerID()
     {
         return brokerID;
@@ -352,11 +344,10 @@ public class PersistentReport
     {
         brokerID = inBrokerID;
     }
-    /**
-     * Get the reportID value.
-     *
-     * @return a <code>ReportID</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getReportID()
      */
+    @Override
     public ReportID getReportID()
     {
         return reportID;
@@ -370,11 +361,10 @@ public class PersistentReport
     {
         reportID = inReportID;
     }
-    /**
-     * Get the originator value.
-     *
-     * @return an <code>Originator</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getOriginator()
      */
+    @Override
     public Originator getOriginator()
     {
         return mOriginator;
@@ -388,11 +378,10 @@ public class PersistentReport
     {
         mOriginator = inOriginator;
     }
-    /**
-     * Get the hierarchy value.
-     *
-     * @return a <code>Hierarchy</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.dao.Report#getHierarchy()
      */
+    @Override
     public Hierarchy getHierarchy()
     {
         return hierarchy;

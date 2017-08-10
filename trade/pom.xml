@@ -11,5 +11,6 @@
   <name>Trade Parent</name>
   <modules>
     <module>trade-server</module>
+    <module>trade-api</module>
   </modules>
 </project>
