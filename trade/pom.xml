@@ -12,5 +12,6 @@
   <modules>
     <module>trade-server</module>
     <module>trade-api</module>
+    <module>trade-core</module>
   </modules>
 </project>
