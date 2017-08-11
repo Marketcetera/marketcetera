@@ -1,6 +1,7 @@
 package org.marketcetera.client;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.marketcetera.core.IncompatibleComponentsException;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;

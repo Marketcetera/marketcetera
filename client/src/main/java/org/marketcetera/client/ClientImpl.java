@@ -25,6 +25,7 @@ import org.marketcetera.client.jms.JmsUtils;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.core.IncompatibleComponentsException;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;

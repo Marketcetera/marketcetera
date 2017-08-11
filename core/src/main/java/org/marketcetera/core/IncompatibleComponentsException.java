@@ -1,4 +1,4 @@
-package org.marketcetera.client;
+package org.marketcetera.core;
 
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage;
@@ -10,12 +10,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 2.1.0
- * @version $Id$
+ * @version $Id: IncompatibleComponentsException.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: IncompatibleComponentsException.java 16154 2012-07-14 16:34:05Z colin $")
 public class IncompatibleComponentsException
     extends I18NException
 {
