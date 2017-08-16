@@ -15,7 +15,6 @@ import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionListener;
 import org.marketcetera.fix.FixSessionStatus;
-import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
@@ -36,7 +35,6 @@ import quickfix.SessionSettings;
  * @since $Release$
  */
 public interface BrokerService
-        extends SessionNameProvider
 {
     /**
      * Get the broker for the given session id.

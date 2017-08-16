@@ -1,10 +1,10 @@
 package org.marketcetera.brokers.service;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.cluster.CallableClusterTask;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionListener;
+import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,7 +38,7 @@ public class EnableSessionTask
                 SLF4JLoggerProxy.warn(this,
                                       e,
                                       "Enable session listener failed for {}: {}",
-                                      brokerService.getSessionName(new SessionID(session.getSessionId())),
+                                      sessionNameProvider.getSessionName(new SessionID(session.getSessionId())),
                                       ExceptionUtils.getRootCauseMessage(e));
             }
         }
@@ -59,6 +59,11 @@ public class EnableSessionTask
      */
     @Autowired
     private transient BrokerService brokerService;
+    /**
+     * provides access to session names
+     */
+    @Autowired
+    private transient SessionNameProvider sessionNameProvider;
     /**
      * fix session to be enabled
      */

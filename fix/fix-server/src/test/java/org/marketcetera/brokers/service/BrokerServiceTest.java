@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -12,7 +13,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.fix.core.Messages;
+import org.marketcetera.fix.FixSession;
+import org.marketcetera.fix.Messages;
+import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
@@ -137,6 +140,26 @@ public class BrokerServiceTest
             }
         };
     }
+    /**
+     * Test the ability to resolve sessions into name aliases.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testBrokerServiceName()
+            throws Exception
+    {
+        List<FixSession> sessions = brokerService.findFixSessions();
+        for(FixSession session : sessions) {
+            assertEquals(session.getName(),
+                         sessionNameProvider.getSessionName(new SessionID(session.getSessionId())));
+        }
+    }
+    /**
+     * provides access to session names
+     */
+    @Autowired
+    private SessionNameProvider sessionNameProvider;
     /**
      * initiator brokers
      */

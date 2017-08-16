@@ -55,9 +55,10 @@ import org.marketcetera.fix.FixSessionListener;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
+import org.marketcetera.fix.Messages;
+import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.fix.SessionSchedule;
 import org.marketcetera.fix.SessionSettingsGenerator;
-import org.marketcetera.fix.core.Messages;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -96,7 +97,7 @@ import quickfix.SessionSettings;
  * @since $Release$
  */
 public class BrokerServiceImpl
-        implements BrokerService,BrokerStatusListener,ClusterListener
+        implements BrokerService,BrokerStatusListener,ClusterListener,SessionNameProvider
 {
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getBroker(quickfix.SessionID)
@@ -1051,7 +1052,7 @@ public class BrokerServiceImpl
     /**
      * caches session names by session id
      */
-    private final Cache<SessionID,String> sessionNamesBySessionId = CacheBuilder.newBuilder().build();
+    private final Cache<SessionID,String> sessionNamesBySessionId = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build();
     /**
      * caches constructed broker objects
      */

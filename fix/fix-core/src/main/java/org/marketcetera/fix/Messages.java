@@ -1,6 +1,7 @@
 package org.marketcetera.fix;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
@@ -26,4 +27,5 @@ public interface Messages
      */
     static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
     static final I18NMessage2P MODIFICATION_FAILED = new I18NMessage2P(LOGGER,"modification_failed"); //$NON-NLS-1$
+    static final I18NMessage1P NO_BROKER_SELECTED = new I18NMessage1P(LOGGER,"no_broker_selected");
 }
