@@ -30,6 +30,14 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fix-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fix-core</artifactId>
+    </dependency>
     <!-- Runtime. -->
     <dependency>
       <groupId>org.apache.activemq</groupId>
@@ -76,6 +84,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fix-core</artifactId>
       <type>test-jar</type>
     </dependency>
     <dependency>

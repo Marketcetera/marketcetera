@@ -8,11 +8,22 @@ import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.brokers.ClusteredBrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReportImpl;
+import org.marketcetera.trade.FIXMessageWrapper;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Hierarchy;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.stateful.ServiceBase;
@@ -75,7 +86,7 @@ public interface Service
      * completed.
      */
 
-    BrokersStatus getBrokersStatus
+    ClusteredBrokersStatus getBrokersStatus
         (@WebParam(name= "context") ClientContext context)
         throws RemoteException;
 

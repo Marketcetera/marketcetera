@@ -1,19 +1,24 @@
 package org.marketcetera.fix.impl;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.marketcetera.admin.User;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.MessageModifier;
+import org.marketcetera.brokers.SessionCustomization;
 import org.marketcetera.fix.FixSession;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import quickfix.DataDictionary;
 import quickfix.SessionID;
 
 /* $License$ */
@@ -31,30 +36,46 @@ public class SimpleBroker
     /**
      * Create a new SimpleBroker instance.
      *
-     * @param inFixSession a <code>FixSession</code> value
-     * @param inOrderModifiers a <code>Collection&lt;MessageModifier&gt;</code> value
-     * @param inResponseModifiers a <code>Collection&lt;MessageModifier&gt;</code> value
-     * @param inBrokerAlgos a <code>Collection&lt;BrokerAlgoSpec&gt;</code> value
+     * @param inFixSession
+     * @param inSessionCustomization
      */
     SimpleBroker(FixSession inFixSession,
-                 Collection<MessageModifier> inOrderModifiers,
-                 Collection<MessageModifier> inResponseModifiers,
-                 Collection<BrokerAlgoSpec> inBrokerAlgos)
+                 SessionCustomization inSessionCustomization)
     {
         fixSession = inFixSession;
-        if(inOrderModifiers != null) {
-            orderModifiers.addAll(inOrderModifiers);
-        }
-        if(inResponseModifiers != null) {
-            responseModifiers.addAll(inResponseModifiers);
-        }
-        if(inBrokerAlgos != null) {
-            brokerAlgos.addAll(inBrokerAlgos);
+        if(inSessionCustomization != null) {
+            if(inSessionCustomization.getOrderModifiers() != null) {
+                orderModifiers.addAll(inSessionCustomization.getOrderModifiers());
+            }
+            if(inSessionCustomization.getResponseModifiers() != null) {
+                responseModifiers.addAll(inSessionCustomization.getResponseModifiers());
+            }
+            if(inSessionCustomization.getBrokerAlgos() != null) {
+                brokerAlgos.addAll(inSessionCustomization.getBrokerAlgos());
+            }
         }
         brokerId = new BrokerID(inFixSession.getBrokerId());
-        SessionID sessionId = new SessionID(inFixSession.getSessionId());
+        sessionId = new SessionID(inFixSession.getSessionId());
         // TODO this won't work for FIXT.T
         fixVersion = FIXVersion.getFIXVersion(sessionId);
+        // TODO implement this
+        mappedBrokerId = null;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.Broker#getName()
+     */
+    @Override
+    public String getName()
+    {
+        return fixSession.getName();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.Broker#getSessionId()
+     */
+    @Override
+    public SessionID getSessionId()
+    {
+        return sessionId;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.Broker#getBrokerId()
@@ -92,7 +113,7 @@ public class SimpleBroker
      * @see org.marketcetera.brokers.Broker#getFixVersion()
      */
     @Override
-    public FIXVersion getFixVersion()
+    public FIXVersion getFIXVersion()
     {
         return fixVersion;
     }
@@ -105,6 +126,57 @@ public class SimpleBroker
         return brokerAlgos;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.brokers.Broker#getUserWhitelist()
+     */
+    @Override
+    public Set<User> getUserWhitelist()
+    {
+        return userWhitelist;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.Broker#getUserBlacklist()
+     */
+    @Override
+    public Set<User> getUserBlacklist()
+    {
+        return userBlacklist;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.Broker#getFIXMessageFactory()
+     */
+    @Override
+    public FIXMessageFactory getFIXMessageFactory()
+    {
+        return fixVersion.getMessageFactory();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.Broker#getDataDictionary()
+     */
+    @Override
+    public DataDictionary getDataDictionary()
+    {
+        return FIXMessageUtil.getDataDictionary(getFIXVersion());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.Broker#getFIXDataDictionary()
+     */
+    @Override
+    public synchronized FIXDataDictionary getFIXDataDictionary()
+    {
+        if(dataDictionary==null) {
+            dataDictionary=new FIXDataDictionary(getDataDictionary());
+        }
+        return dataDictionary;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.Broker#getMappedBrokerId()
+     */
+    @Override
+    public BrokerID getMappedBrokerId()
+    {
+        return mappedBrokerId;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -114,6 +186,14 @@ public class SimpleBroker
         builder.append("Broker [").append(fixSession.getName()).append("]");
         return builder.toString();
     }
+    /**
+     * data dictionary value
+     */
+    private transient volatile FIXDataDictionary dataDictionary;
+    /**
+     * session id value
+     */
+    private final SessionID sessionId;
     /**
      * broker algo values
      */
@@ -138,4 +218,16 @@ public class SimpleBroker
      * underlying broker id value
      */
     private final BrokerID brokerId;
+    /**
+     * virtual broker id value or <code>null</code>
+     */
+    private final BrokerID mappedBrokerId;
+    /**
+     * user whitelist value
+     */
+    private final Set<User> userWhitelist = Sets.newHashSet();
+    /**
+     * user blacklist value
+     */
+    private final Set<User> userBlacklist = Sets.newHashSet();
 }

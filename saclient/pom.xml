@@ -1,20 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
-<!--
-  - Author: anshul@marketcetera.com
-  - Since: 2.0.0
-  - Version: $Id$
-  - $License$
-  -->
-
-<project
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation=
-  "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
       <groupId>org.marketcetera</groupId>
       <artifactId>public-parent</artifactId>
@@ -22,11 +10,8 @@
   </parent>
   <artifactId>saclient</artifactId>
   <packaging>jar</packaging>
-
   <name>Strategy Agent Client Libraries</name>
-
   <dependencies>
-
     <!-- Compile. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -58,6 +43,11 @@
     </dependency>
 
     <!-- Testing. -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fix-core</artifactId>
+      <type>test-jar</type>
+    </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http-jetty</artifactId>
@@ -96,16 +86,16 @@
   <build>
     <plugins>
       <plugin>
-	<artifactId>maven-surefire-plugin</artifactId>
-	<configuration>
-	  <disableXmlReport>false</disableXmlReport>
-	  <forkCount>1</forkCount>
-	  <reuseForks>false</reuseForks>
-	  <argLine>${mvn.test.options}</argLine>
-	  <systemPropertyVariables>
-	    <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
-	  </systemPropertyVariables>
-	</configuration>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <disableXmlReport>false</disableXmlReport>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
+          <argLine>${mvn.test.options}</argLine>
+          <systemPropertyVariables>
+            <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
+          </systemPropertyVariables>
+        </configuration>
       </plugin>
       <!-- Place tests into a jar for use during testing of other packages. -->
       <plugin>

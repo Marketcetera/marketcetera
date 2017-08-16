@@ -1,8 +1,5 @@
 package org.marketcetera.brokers;
 
-import java.util.Collection;
-
-import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.fix.FixSession;
 
 /* $License$ */
@@ -20,13 +17,9 @@ public interface BrokerFactory
      * Create a <code>Broker</code> object.
      *
      * @param inFixSession a <code>FixSession</code> value
-     * @param inOrderModifiers a <code>Collection&lt;MessageModifier&gt;</code> value
-     * @param inResponseModifiers a <code>Collection&lt;MessageModifier&gt;</code> value
-     * @param inBrokerAlgos a <code>Collection&lt;BrokerAlgoSpec&gt;</code> value
-     * @return
+     * @param inSessionCustomization a <code>SessionCustomization</code> value
+     * @return a <code>Broker</code> value
      */
     Broker create(FixSession inFixSession,
-                  Collection<MessageModifier> inOrderModifiers,
-                  Collection<MessageModifier> inResponseModifiers,
-                  Collection<BrokerAlgoSpec> inBrokerAlgos);
+                  SessionCustomization inSessionCustomization);
 }

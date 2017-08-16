@@ -34,6 +34,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>fix-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>remote-receiver</artifactId>
     </dependency>
     <!-- Compile: log4j is invoked directly, not via slf4j. -->

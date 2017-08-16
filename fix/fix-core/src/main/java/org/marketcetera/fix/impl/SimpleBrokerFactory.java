@@ -1,10 +1,7 @@
 package org.marketcetera.fix.impl;
 
-import java.util.Collection;
-
-import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.brokers.BrokerFactory;
-import org.marketcetera.brokers.MessageModifier;
+import org.marketcetera.brokers.SessionCustomization;
 import org.marketcetera.fix.FixSession;
 
 /* $License$ */
@@ -20,17 +17,13 @@ public class SimpleBrokerFactory
         implements BrokerFactory
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.brokers.BrokerFactory#create(org.marketcetera.fix.FixSession, java.util.Collection, java.util.Collection, java.util.Collection)
+     * @see org.marketcetera.brokers.BrokerFactory#create(org.marketcetera.fix.FixSession, org.marketcetera.brokers.SessionCustomization)
      */
     @Override
     public SimpleBroker create(FixSession inFixSession,
-                               Collection<MessageModifier> inOrderModifiers,
-                               Collection<MessageModifier> inResponseModifiers,
-                               Collection<BrokerAlgoSpec> inBrokerAlgos)
+                               SessionCustomization inSessionCustomization)
     {
         return new SimpleBroker(inFixSession,
-                                inOrderModifiers,
-                                inResponseModifiers,
-                                inBrokerAlgos);
+                                inSessionCustomization);
     }
 }

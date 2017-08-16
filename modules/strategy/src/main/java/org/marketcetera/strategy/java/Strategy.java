@@ -1,6 +1,6 @@
 package org.marketcetera.strategy.java;
 
-import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.AskEvent;

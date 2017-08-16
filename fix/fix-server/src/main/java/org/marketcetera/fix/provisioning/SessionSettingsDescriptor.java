@@ -1,4 +1,4 @@
-package org.marketcetera.brokers.config;
+package org.marketcetera.fix.provisioning;
 
 import java.util.Map;
 
@@ -7,7 +7,7 @@ import com.google.common.collect.Maps;
 /* $License$ */
 
 /**
- * Describes session settings for one or more brokers.
+ * Holds session settings for one or more FIX sessions.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -26,9 +26,7 @@ public class SessionSettingsDescriptor
      */
     public SessionSettingsDescriptor(Map<String,String> inSessionSettings)
     {
-        if(inSessionSettings != null) {
-            sessionSettings.putAll(inSessionSettings);
-        }
+        sessionSettings = inSessionSettings;
     }
     /**
      * Get the sessionSettings value.
@@ -46,13 +44,10 @@ public class SessionSettingsDescriptor
      */
     public void setSessionSettings(Map<String,String> inSessionSettings)
     {
-        sessionSettings.clear();
-        if(inSessionSettings != null) {
-            sessionSettings.putAll(inSessionSettings);
-        }
+        sessionSettings = inSessionSettings;
     }
     /**
-     * session settings that apply to all brokers
+     * underlying session settings
      */
-    private final Map<String,String> sessionSettings = Maps.newHashMap();
+    private Map<String,String> sessionSettings = Maps.newHashMap();
 }

@@ -1,4 +1,4 @@
-package org.marketcetera.client.brokers;
+package org.marketcetera.fix;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.util.log.I18NBoundMessage;
@@ -6,50 +6,51 @@ import org.marketcetera.util.log.I18NBoundMessage;
 /* $License$ */
 
 /**
- * Indicates that a desired broker is unavailable.
+ * Indicates that an outgoing order was intercepted and should not be processed any further.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class BrokerUnavailable
+public class OrderIntercepted
         extends CoreException
 {
     /**
-     * Create a new BrokerUnavailable instance.
+     * Create a new OrderIntercepted instance.
      */
-    public BrokerUnavailable()
+    public OrderIntercepted()
     {
+        super();
     }
     /**
-     * Create a new BrokerUnavailable instance.
+     * Create a new OrderIntercepted instance.
      *
      * @param inNested a <code>Throwable</code> value
      */
-    public BrokerUnavailable(Throwable inNested)
+    public OrderIntercepted(Throwable inNested)
     {
         super(inNested);
     }
     /**
-     * Create a new BrokerUnavailable instance.
+     * Create a new OrderIntercepted instance.
      *
      * @param inMessage an <code>I18NBoundMessage</code> value
      */
-    public BrokerUnavailable(I18NBoundMessage inMessage)
+    public OrderIntercepted(I18NBoundMessage inMessage)
     {
         super(inMessage);
     }
     /**
-     * Create a new BrokerUnavailable instance.
+     * Create a new OrderIntercepted instance.
      *
      * @param inNested a <code>Throwable</code> value
      * @param inMessage an <code>I18NBoundMessage</code> value
      */
-    public BrokerUnavailable(Throwable inNested,
-                             I18NBoundMessage inMessage)
+    public OrderIntercepted(Throwable inNested,
+                            I18NBoundMessage inMessage)
     {
         super(inNested,
               inMessage);
     }
-    private static final long serialVersionUID = -7520912372924607229L;
+    private static final long serialVersionUID = -5703845005842514423L;
 }

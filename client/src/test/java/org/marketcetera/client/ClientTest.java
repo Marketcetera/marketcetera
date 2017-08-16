@@ -36,7 +36,9 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.brokers.MockBrokerStatusGenerator;
 import org.marketcetera.client.jms.DataEnvelope;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.Util;
@@ -1020,8 +1022,7 @@ public class ClientTest
         //Clean up any dirty state from previous failures
         clearAll();
         //Create a status for the mock server to send back
-        BrokerStatus status =
-            new BrokerStatus("me",new BrokerID("myID"),true);
+        BrokerStatus status = MockBrokerStatusGenerator.generateBrokerStatus("me",new BrokerID("myID"),true);
         sServer.getHandler().addToSendStatus(status);
         //Send the status
         sServer.getStatusSender().convertAndSend(status);

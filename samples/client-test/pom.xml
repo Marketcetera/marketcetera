@@ -31,6 +31,10 @@
       <groupId>org.marketcetera</groupId>
       <artifactId>strategy</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fix-core</artifactId>
+    </dependency>
   </dependencies>
   <profiles>
     <!-- Command-line execution. -->

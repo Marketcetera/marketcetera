@@ -11,8 +11,9 @@ import javax.xml.bind.UnmarshalException;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.MockBrokerStatusGenerator;
 import org.marketcetera.client.ClientTest;
-import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Currency;
@@ -117,7 +118,7 @@ public class JMSXMLConverterTest {
     }
     @Test
     public void verifyBrokerStatus() throws Exception {
-        BrokerStatus i = new BrokerStatus("me", new BrokerID("broke"), false);
+        BrokerStatus i = MockBrokerStatusGenerator.generateBrokerStatus("me", new BrokerID("broke"), false);
         BrokerStatus o = (BrokerStatus) roundTrip(i);
         assertEquals(i.getName(), o.getName());
         assertEquals(i.getId(), o.getId());

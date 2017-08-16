@@ -8,11 +8,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.Validations;
-import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.utils.LiveOrderHistoryManager;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;

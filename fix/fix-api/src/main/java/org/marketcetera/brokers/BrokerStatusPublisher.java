@@ -1,4 +1,4 @@
-package org.marketcetera.client;
+package org.marketcetera.brokers;
 
 import org.marketcetera.util.misc.ClassVersion;
 

@@ -28,14 +28,15 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.marketcetera.client.BrokerStatusListener;
+import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.brokers.MockBrokerStatusGenerator;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.Validations;
-import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.AskEvent;
@@ -593,7 +594,7 @@ public class AbstractRunningStrategyTest
     }
     
     private BrokerStatus createRandomBrokerStatus() {
-    	return new BrokerStatus("status-" + System.nanoTime(),new BrokerID("id-" + System.nanoTime()),true);
+    	return MockBrokerStatusGenerator.generateBrokerStatus("status-" + System.nanoTime(),new BrokerID("id-" + System.nanoTime()),true);
     }
     
     private void sendBrokerStatus (BrokerStatus brokerStatus) throws ClientInitException {

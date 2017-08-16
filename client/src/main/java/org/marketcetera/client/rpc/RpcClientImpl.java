@@ -1,10 +1,5 @@
 package org.marketcetera.client.rpc;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
-
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -28,14 +23,14 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTagSpec;
+import org.marketcetera.brokers.ClusteredBrokerStatus;
+import org.marketcetera.brokers.ClusteredBrokersStatus;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientImpl;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.ClientVersion;
 import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.Messages;
-import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.rpc.RpcClient.BrokersStatusRequest;
 import org.marketcetera.client.rpc.RpcClient.BrokersStatusResponse;
 import org.marketcetera.client.rpc.RpcClient.Locale;
@@ -84,6 +79,11 @@ import com.googlecode.protobuf.pro.duplex.client.DuplexTcpClientPipelineFactory;
 import com.googlecode.protobuf.pro.duplex.execute.RpcServerCallExecutor;
 import com.googlecode.protobuf.pro.duplex.execute.ThreadPoolCallExecutor;
 import com.googlecode.protobuf.pro.duplex.logging.CategoryPerServiceLogger;
+
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
 
 /* $License$ */
 
@@ -483,7 +483,7 @@ public class RpcClientImpl
      * @see org.marketcetera.client.ClientImpl#getBrokersStatus()
      */
     @Override
-    public BrokersStatus getBrokersStatus()
+    public ClusteredBrokersStatus getBrokersStatus()
             throws ConnectionException
     {
         BrokersStatusRequest brokersStatusRequest = BrokersStatusRequest.newBuilder().setSessionId(sessionId.getValue()).build();
@@ -491,7 +491,7 @@ public class RpcClientImpl
             BrokersStatusResponse brokersStatusResponse = clientService.getBrokersStatus(controller,
                                                                                          brokersStatusRequest);
             RpcClient.BrokersStatus rpcBrokersStatus = brokersStatusResponse.getBrokersStatus();
-            List<BrokerStatus> brokers = Lists.newArrayList();
+            List<ClusteredBrokerStatus> brokers = Lists.newArrayList();
             for(RpcClient.BrokerStatus rpcBrokerStatus : rpcBrokersStatus.getBrokersList()) {
                 Map<String,String> settings = new HashMap<>();
                 for(RpcClient.SessionSetting settingEntry : rpcBrokerStatus.getSettingsList()) {
@@ -530,14 +530,16 @@ public class RpcClientImpl
                     newAlgoSpec.setAlgoTagSpecs(newAlgoTagSpecs);
                     algos.add(newAlgoSpec);
                 }
-                BrokerStatus brokerStatus = new BrokerStatus(rpcBrokerStatus.getName(),
-                                                             new BrokerID(rpcBrokerStatus.getBrokerId()),
-                                                             rpcBrokerStatus.getLoggedOn(),
-                                                             settings,
-                                                             algos);
-                brokers.add(brokerStatus);
+                // TODO
+//                ClusterData clusterData = null;
+//                BrokerStatus brokerStatus = new ClusteredBrokerStatus(rpcBrokerStatus.getName(),
+//                                                                      new BrokerID(rpcBrokerStatus.getBrokerId()),
+//                                                                      rpcBrokerStatus.getLoggedOn(),
+//                                                                      settings,
+//                                                                      algos);
+//                brokers.add(brokerStatus);
             }
-            BrokersStatus brokersStatus = new BrokersStatus(brokers);
+            ClusteredBrokersStatus brokersStatus = new ClusteredBrokersStatus(brokers);
             return brokersStatus;
         } catch (ServiceException e) {
             throw new ConnectionException(e,

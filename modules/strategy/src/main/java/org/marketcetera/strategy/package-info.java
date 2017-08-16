@@ -211,7 +211,7 @@
  *            <em id="strategy_structure_api_services_getbrokers">getBrokers</em>
  *            <br>
  *            <pre>
- *                org.marketcetera.client.brokers.BrokerStatus[] getBrokers()
+ *                org.marketcetera.brokers.BrokerStatus[] getBrokers()
  *                get_brokers
  *            </pre>
  *            Retrieves the brokers known to the Marketcetera server.  The strategy must be connected 

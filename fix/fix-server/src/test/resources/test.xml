@@ -17,29 +17,30 @@
     <property name="acceptorHost" value="localhost"/>
     <property name="acceptorPort" value="21345"/>
   </bean>
-  <bean id="brokerService" class="org.marketcetera.brokers.service.BrokerServiceImpl">
-    <property name="brokers">
+  <bean id="brokerService" class="org.marketcetera.brokers.service.BrokerServiceImpl"/>
+  <bean id="fixSessionsProvider" class="org.marketcetera.brokers.service.InMemoryFixSessionProvider">
+    <property name="fixSessions">
       <list>
         <ref bean="initiators"/>
         <ref bean="acceptors"/>
       </list>
     </property>
   </bean>
-  <bean id="initiators" class="org.marketcetera.brokers.config.BrokersDescriptor">
+  <bean id="initiators" class="org.marketcetera.fix.provisioning.FixSessionsDescriptor">
     <property name="sessionSettings" ref="initiatorSettings"/>
-    <property name="brokers">
+    <property name="fixSessions">
       <list>
-        <bean id="initiator1" class="org.marketcetera.brokers.config.BrokerDescriptor">
+        <bean id="initiator1" class="org.marketcetera.fix.provisioning.FixSessionDescriptor">
           <property name="name" value="Initiator1"/>
-          <property name="id" value="initiator1"/>
+          <property name="brokerId" value="initiator1"/>
           <property name="description" value="Test initiator 1"/>
           <property name="sessionSettings" ref="initiator1Settings"/>
           <property name="host" value="localhost"/>
           <property name="port" value="21345"/>
         </bean>
-        <bean id="initiator2" class="org.marketcetera.brokers.config.BrokerDescriptor">
+        <bean id="initiator2" class="org.marketcetera.fix.provisioning.FixSessionDescriptor">
           <property name="name" value="Initiator2"/>
-          <property name="id" value="initiator2"/>
+          <property name="brokerId" value="initiator2"/>
           <property name="description" value="Test initiator 2"/>
           <property name="sessionSettings" ref="initiator2Settings"/>
           <property name="host" value="localhost"/>
@@ -48,7 +49,7 @@
       </list>
     </property>
   </bean>
-  <bean id="initiatorSettings" class="org.marketcetera.brokers.config.SessionSettingsDescriptor">
+  <bean id="initiatorSettings" class="org.marketcetera.fix.provisioning.SessionSettingsDescriptor">
     <property name="sessionSettings">
       <map>
         <entry key="ConnectionType" value="initiator"/>
@@ -66,7 +67,7 @@
       </map>
     </property>
   </bean>
-  <bean id="initiator1Settings" class="org.marketcetera.brokers.config.SessionSettingsDescriptor">
+  <bean id="initiator1Settings" class="org.marketcetera.fix.provisioning.SessionSettingsDescriptor">
     <property name="sessionSettings">
       <map>
         <entry key="BeginString" value="FIX.4.2"/>
@@ -76,7 +77,7 @@
       </map>
     </property>
   </bean>
-  <bean id="initiator2Settings" class="org.marketcetera.brokers.config.SessionSettingsDescriptor">
+  <bean id="initiator2Settings" class="org.marketcetera.fix.provisioning.SessionSettingsDescriptor">
     <property name="sessionSettings">
       <map>
         <entry key="BeginString" value="FIX.4.2"/>
@@ -86,26 +87,26 @@
       </map>
     </property>
   </bean>
-  <bean id="acceptors" class="org.marketcetera.brokers.config.BrokersDescriptor">
+  <bean id="acceptors" class="org.marketcetera.fix.provisioning.FixSessionsDescriptor">
     <property name="sessionSettings" ref="acceptorSettings"/>
-    <property name="brokers">
+    <property name="fixSessions">
       <list>
-        <bean id="acceptor1" class="org.marketcetera.brokers.config.BrokerDescriptor">
+        <bean id="acceptor1" class="org.marketcetera.fix.provisioning.FixSessionDescriptor">
           <property name="name" value="Acceptor1"/>
-          <property name="id" value="acceptor1"/>
+          <property name="brokerId" value="acceptor1"/>
           <property name="description" value="Test Acceptor 1"/>
           <property name="sessionSettings" ref="acceptor1Settings"/>
         </bean>
-        <bean id="acceptor2" class="org.marketcetera.brokers.config.BrokerDescriptor">
+        <bean id="acceptor2" class="org.marketcetera.fix.provisioning.FixSessionDescriptor">
           <property name="name" value="Acceptor2"/>
-          <property name="id" value="acceptor2"/>
+          <property name="brokerId" value="acceptor2"/>
           <property name="description" value="Test Acceptor 2"/>
           <property name="sessionSettings" ref="acceptor2Settings"/>
         </bean>
       </list>
     </property>
   </bean>
-  <bean id="acceptorSettings" class="org.marketcetera.brokers.config.SessionSettingsDescriptor">
+  <bean id="acceptorSettings" class="org.marketcetera.fix.provisioning.SessionSettingsDescriptor">
     <property name="sessionSettings">
       <map>
         <entry key="ConnectionType" value="acceptor"/>
@@ -122,7 +123,7 @@
       </map>
     </property>
   </bean>
-  <bean id="acceptor1Settings" class="org.marketcetera.brokers.config.SessionSettingsDescriptor">
+  <bean id="acceptor1Settings" class="org.marketcetera.fix.provisioning.SessionSettingsDescriptor">
     <property name="sessionSettings">
       <map>
         <entry key="BeginString" value="FIX.4.2"/>
@@ -132,7 +133,7 @@
       </map>
     </property>
   </bean>
-  <bean id="acceptor2Settings" class="org.marketcetera.brokers.config.SessionSettingsDescriptor">
+  <bean id="acceptor2Settings" class="org.marketcetera.fix.provisioning.SessionSettingsDescriptor">
     <property name="sessionSettings">
       <map>
         <entry key="BeginString" value="FIX.4.2"/>

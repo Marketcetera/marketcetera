@@ -2,7 +2,6 @@ package org.marketcetera.brokers.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -79,7 +78,7 @@ public class BrokerServiceTest
             protected void run()
                     throws Exception
             {
-                brokerService.getBroker(null);
+                brokerService.getBroker((SessionID)null);
             }
         };
         assertNull(brokerService.getBroker(new SessionID(FIXVersion.FIX42.getVersion(),
@@ -90,8 +89,8 @@ public class BrokerServiceTest
                      brokers.size());
         Broker sampleBroker = brokers.iterator().next();
         Broker sampleBrokerCopy = brokerService.getBroker(new SessionID(sampleBroker.getFixSession().getSessionId()));
-        assertSame(sampleBroker,
-                   sampleBrokerCopy);
+        assertEquals(sampleBroker.getBrokerId(),
+                     sampleBrokerCopy.getBrokerId());
     }
     /**
      * Test the ability to select a broker for an order.
@@ -110,8 +109,8 @@ public class BrokerServiceTest
         testOrder.setOrderType(OrderType.Market);
         testOrder.setQuantity(BigDecimal.TEN);
         testOrder.setSide(Side.Buy);
-        assertSame(initiator,
-                   brokerService.selectBroker(testOrder));
+        assertEquals(initiator.getBrokerId(),
+                     brokerService.selectBroker(testOrder).getBrokerId());
         // test with an invalid broker
         testOrder.setBrokerID(new BrokerID("not-a-real-broker"));
         new ExpectedFailure<CoreException>(Messages.NO_BROKER_SELECTED) {
@@ -125,8 +124,8 @@ public class BrokerServiceTest
         TestBrokerSelector testSelector = applicationContext.getBean(TestBrokerSelector.class);
         testSelector.setSelectedBrokerId(initiator.getBrokerId());
         testOrder.setBrokerID(null);
-        assertSame(initiator,
-                   brokerService.selectBroker(testOrder));
+        assertEquals(initiator.getBrokerId(),
+                     brokerService.selectBroker(testOrder).getBrokerId());
         // test when the selector throws an exception
         testSelector.setChooseBrokerException(new RuntimeException("This exception was expected"));
         new ExpectedFailure<RuntimeException>("This exception was expected") {

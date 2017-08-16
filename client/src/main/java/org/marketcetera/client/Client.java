@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.brokers.BrokerStatusPublisher;
+import org.marketcetera.brokers.ClusteredBrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
@@ -449,7 +451,7 @@ public interface Client
      * completed.
      */
 
-    BrokersStatus getBrokersStatus() throws ConnectionException;
+    ClusteredBrokersStatus getBrokersStatus() throws ConnectionException;
 
     /**
      * Returns the information of the user with the given ID. A local

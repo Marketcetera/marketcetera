@@ -11,7 +11,7 @@ import org.marketcetera.util.rpc.BaseClient;
 /* $License$ */
 
 /**
- *
+ * Provides a client implementation for FIX admin actions.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

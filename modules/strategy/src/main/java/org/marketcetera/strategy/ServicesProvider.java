@@ -3,9 +3,9 @@ package org.marketcetera.strategy;
 import java.math.BigDecimal;
 import java.util.*;
 
+import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.Event;

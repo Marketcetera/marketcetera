@@ -1,7 +1,7 @@
 package org.marketcetera.strategy;
 
-import org.marketcetera.client.BrokerStatusListener;
-import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;

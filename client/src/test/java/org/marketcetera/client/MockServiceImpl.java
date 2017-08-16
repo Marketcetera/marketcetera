@@ -1,19 +1,42 @@
 package org.marketcetera.client;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.jws.WebParam;
 
-import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.brokers.ClusteredBrokerStatus;
+import org.marketcetera.brokers.ClusteredBrokersStatus;
+import org.marketcetera.brokers.MockBrokerStatusGenerator;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReportImpl;
+import org.marketcetera.trade.FIXMessageWrapper;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Hierarchy;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateful.*;
+import org.marketcetera.util.ws.stateful.ClientContext;
+import org.marketcetera.util.ws.stateful.RemoteCaller;
+import org.marketcetera.util.ws.stateful.ServiceBaseImpl;
+import org.marketcetera.util.ws.stateful.SessionHolder;
+import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
@@ -51,12 +74,12 @@ public class MockServiceImpl
 
     // INSTANCE METHODS.
 
-    private BrokersStatus getBrokersStatusImpl()
+    private ClusteredBrokersStatus getBrokersStatusImpl()
     {
-        LinkedList<BrokerStatus> list=new LinkedList<BrokerStatus>();
-        list.add(new BrokerStatus("N1",new BrokerID("ID1"),true));
-        list.add(new BrokerStatus("N2",new BrokerID("ID2"),false));
-        return new BrokersStatus(list);
+        List<ClusteredBrokerStatus> list = new LinkedList<>();
+        list.add(MockBrokerStatusGenerator.generateBrokerStatus("N1",new BrokerID("ID1"),true));
+        list.add(MockBrokerStatusGenerator.generateBrokerStatus("N2",new BrokerID("ID2"),false));
+        return new ClusteredBrokersStatus(list);
     }
 
     private UserInfo getUserInfoImpl
@@ -176,14 +199,14 @@ public class MockServiceImpl
     // Service.
 
     @Override
-    public BrokersStatus getBrokersStatus
+    public ClusteredBrokersStatus getBrokersStatus
         (ClientContext context)
         throws RemoteException
     {
-        return (new RemoteCaller<Object,BrokersStatus>
+        return (new RemoteCaller<Object,ClusteredBrokersStatus>
                 (getSessionManager()) {
             @Override
-            protected BrokersStatus call
+            protected ClusteredBrokersStatus call
                 (ClientContext context,
                  SessionHolder<Object> sessionHolder)
             {

@@ -1,16 +1,26 @@
-package org.marketcetera.fix;
+package org.marketcetera.brokers;
+
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.HasClusterData;
+import org.marketcetera.fix.FixSession;
+import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.trade.BrokerID;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /* $License$ */
 
@@ -24,8 +34,7 @@ import org.marketcetera.trade.BrokerID;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ClusteredBrokerStatus
-        extends BrokerStatus
-        implements HasClusterData
+        implements BrokerStatus,Serializable,Comparable<ClusteredBrokerStatus>,HasClusterData
 {
     /**
      * Create a new ClusteredBrokerStatus instance.
@@ -40,10 +49,9 @@ public class ClusteredBrokerStatus
                                  FixSessionStatus inStatus,
                                  boolean inIsLoggedOn)
     {
-        super(inFixSession.getName(),
-              new BrokerID(inFixSession.getBrokerId()),
-              inIsLoggedOn,
-              inFixSession.getSessionSettings());
+        name = inFixSession.getName();
+        brokerId = new BrokerID(inFixSession.getBrokerId());
+        loggedOn = inIsLoggedOn;
         clusterData = inClusterData;
         status = inStatus;
         Validate.notNull(clusterData);
@@ -51,7 +59,50 @@ public class ClusteredBrokerStatus
         Validate.notNull(inFixSession);
         host = inFixSession.getHost();
         port = inFixSession.getPort();
-        Validate.notNull(host);
+        settings.putAll(inFixSession.getSessionSettings());
+        // TODO broker algo spec
+    }
+    
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.BrokerStatus#getName()
+     */
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.BrokerStatus#getId()
+     */
+    @Override
+    public BrokerID getId()
+    {
+        return brokerId;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.BrokerStatus#getLoggedOn()
+     */
+    @Override
+    public boolean getLoggedOn()
+    {
+        return loggedOn;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.BrokerStatus#getBrokerAlgos()
+     */
+    @Override
+    public Set<BrokerAlgoSpec> getBrokerAlgos()
+    {
+        return brokerAlgos;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.BrokerStatus#getSettings()
+     */
+    @Override
+    public Map<String,String> getSettings()
+    {
+        
+        return settings;
     }
     /**
      * Get the status value.
@@ -145,7 +196,7 @@ public class ClusteredBrokerStatus
         return new EqualsBuilder().append(getId(),other.getId()).append(clusterData,other.clusterData).isEquals();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.client.brokers.BrokerStatus#getHost()
+     * @see org.marketcetera.brokers.BrokerStatus#getHost()
      */
     @Override
     public String getHost()
@@ -153,12 +204,20 @@ public class ClusteredBrokerStatus
         return host;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.client.brokers.BrokerStatus#getPort()
+     * @see org.marketcetera.brokers.BrokerStatus#getPort()
      */
     @Override
     public int getPort()
     {
         return port;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(ClusteredBrokerStatus inO)
+    {
+        return new CompareToBuilder().append(brokerId,inO.brokerId).toComparison();
     }
     /**
      * Create a new ClusteredBrokerStatus instance.
@@ -170,6 +229,9 @@ public class ClusteredBrokerStatus
         status = null;
         host = null;
         port = 0;
+        name = null;
+        loggedOn = false;
+        brokerId = null;
     }
     /**
      * status value
@@ -187,5 +249,25 @@ public class ClusteredBrokerStatus
      * identifies the cluster
      */
     private final ClusterData clusterData;
+    /**
+     * name value
+     */
+    private final String name;
+    /**
+     * broker id value
+     */
+    private final BrokerID brokerId;
+    /**
+     * logged on value
+     */
+    private final boolean loggedOn;
+    /**
+     * broker algos value
+     */
+    private final Set<BrokerAlgoSpec> brokerAlgos = Sets.newHashSet();
+    /**
+     * broker settings value
+     */
+    private final Map<String,String> settings = Maps.newHashMap();
     private static final long serialVersionUID = -1837912946225621L;
 }

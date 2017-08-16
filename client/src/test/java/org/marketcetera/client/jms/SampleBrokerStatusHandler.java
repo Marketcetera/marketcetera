@@ -1,6 +1,7 @@
 package org.marketcetera.client.jms;
 
-import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.MockBrokerStatusGenerator;
 import org.marketcetera.trade.BrokerID;
 
 /**
@@ -21,7 +22,7 @@ public class SampleBrokerStatusHandler
     BrokerStatus create
         (int i)
     {
-        return new BrokerStatus(String.valueOf(i),new BrokerID("ID"),true);
+        return MockBrokerStatusGenerator.generateBrokerStatus(String.valueOf(i),new BrokerID("ID"),true);
     }
 
     @Override

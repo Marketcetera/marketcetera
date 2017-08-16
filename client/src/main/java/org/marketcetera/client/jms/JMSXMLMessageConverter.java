@@ -13,7 +13,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.brokers.ClusteredBrokerStatus;
 import org.marketcetera.event.impl.ConvertibleBondAskEventImpl;
 import org.marketcetera.event.impl.ConvertibleBondBidEventImpl;
 import org.marketcetera.event.impl.ConvertibleBondImbalanceEvent;
@@ -265,7 +265,7 @@ public class JMSXMLMessageConverter
     /**
      * holds supported context types
      */
-    private static final Class<?>[] contextTypes = new Class<?>[] { DataEnvelope.class,ReportBaseImpl.class,FIXResponseImpl.class,BrokerStatus.class,
+    private static final Class<?>[] contextTypes = new Class<?>[] { DataEnvelope.class,ReportBaseImpl.class,FIXResponseImpl.class,ClusteredBrokerStatus.class,
                 ConvertibleBondAskEventImpl.class,ConvertibleBondBidEventImpl.class,ConvertibleBondMarketstatEventImpl.class,ConvertibleBondTradeEventImpl.class,ConvertibleBondImbalanceEvent.class,
                 CurrencyAskEventImpl.class,CurrencyBidEventImpl.class,CurrencyMarketstatEventImpl.class,CurrencyTradeEventImpl.class,CurrencyImbalanceEvent.class,
                 EquityAskEventImpl.class,EquityBidEventImpl.class,EquityMarketstatEventImpl.class,EquityTradeEventImpl.class,EquityImbalanceEvent.class,

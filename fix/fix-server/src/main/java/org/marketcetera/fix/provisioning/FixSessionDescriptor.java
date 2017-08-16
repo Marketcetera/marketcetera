@@ -1,23 +1,18 @@
-package org.marketcetera.brokers.config;
+package org.marketcetera.fix.provisioning;
 
-import java.util.List;
-
-import org.marketcetera.algo.BrokerAlgoSpec;
-import org.marketcetera.brokers.MessageModifier;
+import org.marketcetera.fix.FixSession;
 import org.marketcetera.trade.BrokerID;
-
-import com.google.common.collect.Lists;
 
 /* $License$ */
 
 /**
- * Describes a {@link Broker} in a Spring-compatible POJO.
+ * Describes a {@link FixSession} in a Spring-compatible POJO.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class BrokerDescriptor
+public class FixSessionDescriptor
 {
     /**
      * Get the name value.
@@ -60,23 +55,23 @@ public class BrokerDescriptor
      *
      * @return a <code>BrokerID</code> value
      */
-    public BrokerID getId()
+    public BrokerID getBrokerId()
     {
-        return id;
+        return brokerId;
     }
     /**
      * Sets the id value.
      *
      * @param inId a <code>BrokerID</code> value
      */
-    public void setId(BrokerID inId)
+    public void setBrokerId(BrokerID inId)
     {
-        id = inId;
+        brokerId = inId;
     }
     /**
      * Get the affinity value.
      *
-     * @return a <code>int</code> value
+     * @return an <code>int</code> value
      */
     public int getAffinity()
     {
@@ -85,7 +80,7 @@ public class BrokerDescriptor
     /**
      * Sets the affinity value.
      *
-     * @param inAffinity a <code>int</code> value
+     * @param inAffinity an <code>int</code> value
      */
     public void setAffinity(int inAffinity)
     {
@@ -128,24 +123,6 @@ public class BrokerDescriptor
         port = inPort;
     }
     /**
-     * Get the brokerAlgos value.
-     *
-     * @return a <code>List&gt;BrokerAlgoSpec&gt;</code> value
-     */
-    public List<BrokerAlgoSpec> getBrokerAlgos()
-    {
-        return brokerAlgos;
-    }
-    /**
-     * Sets the brokerAlgos value.
-     *
-     * @param inBrokerAlgos a <code>List&gt;BrokerAlgoSpec&gt;</code> value
-     */
-    public void setBrokerAlgos(List<BrokerAlgoSpec> inBrokerAlgos)
-    {
-        brokerAlgos = inBrokerAlgos;
-    }
-    /**
      * Get the sessionSettings value.
      *
      * @return a <code>SessionSettingsDescriptor</code> value
@@ -162,42 +139,6 @@ public class BrokerDescriptor
     public void setSessionSettings(SessionSettingsDescriptor inSessionSettings)
     {
         sessionSettings = inSessionSettings;
-    }
-    /**
-     * Get the orderModifiers value.
-     *
-     * @return a <code>List&gt;MessageModifier&gt;</code> value
-     */
-    public List<MessageModifier> getOrderModifiers()
-    {
-        return orderModifiers;
-    }
-    /**
-     * Sets the orderModifiers value.
-     *
-     * @param inOrderModifiers a <code>List&gt;MessageModifier&gt;</code> value
-     */
-    public void setOrderModifiers(List<MessageModifier> inOrderModifiers)
-    {
-        orderModifiers = inOrderModifiers;
-    }
-    /**
-     * Get the responseModifiers value.
-     *
-     * @return a <code>List&gt;MessageModifier&gt;</code> value
-     */
-    public List<MessageModifier> getResponseModifiers()
-    {
-        return responseModifiers;
-    }
-    /**
-     * Sets the responseModifiers value.
-     *
-     * @param inResponseModifiers a <code>List&gt;MessageModifier&gt;</code> value
-     */
-    public void setResponseModifiers(List<MessageModifier> inResponseModifiers)
-    {
-        responseModifiers = inResponseModifiers;
     }
     /**
      * name value
@@ -218,25 +159,13 @@ public class BrokerDescriptor
     /**
      * broker id value
      */
-    private BrokerID id;
+    private BrokerID brokerId;
     /**
      * affinity value
      */
     private int affinity = 1;
     /**
-     * broker algos value
-     */
-    private List<BrokerAlgoSpec> brokerAlgos = Lists.newArrayList();
-    /**
-     * session settings value
+     * session settings
      */
     private SessionSettingsDescriptor sessionSettings;
-    /**
-     * order modifiers value
-     */
-    private List<MessageModifier> orderModifiers = Lists.newArrayList();
-    /**
-     * response modifiers value
-     */
-    private List<MessageModifier> responseModifiers = Lists.newArrayList();
 }

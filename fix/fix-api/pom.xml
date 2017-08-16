@@ -22,11 +22,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>client</artifactId>
+      <artifactId>cluster-api</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>cluster-api</artifactId>
+      <artifactId>admin-api</artifactId>
     </dependency>
   </dependencies>
 </project>

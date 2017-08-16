@@ -4,11 +4,14 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.marketcetera.brokers.Broker;
+import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.service.BrokerService;
-import org.marketcetera.client.BrokerStatusListener;
-import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.FixSession;
+import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
 import org.marketcetera.fix.SessionSettingsGenerator;
@@ -308,6 +311,7 @@ public abstract class AbstractFixModule
     protected void preStart()
             throws ModuleException
     {
+        instanceData = clusterService.getInstanceData();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -377,10 +381,35 @@ public abstract class AbstractFixModule
                                   inSessionId);
             return;
         }
-        BrokerStatus brokerStatus = new BrokerStatus(broker.getFixSession().getName(),
-                                                     broker.getBrokerId(),
-                                                     inLoggedOn,
-                                                     broker.getBrokerAlgos());
+        FixSession fixSession = broker.getFixSession();
+        FixSessionStatus status;
+        if(inLoggedOn) {
+            status = FixSessionStatus.CONNECTED;
+        } else {
+            Session session = Session.lookupSession(new SessionID(fixSession.getSessionId()));
+            if(session == null) {
+                if(fixSession.isEnabled()) {
+                    if(brokerService.isAffinityMatch(fixSession,
+                                                     instanceData)) {
+                        status = FixSessionStatus.BACKUP;
+                    } else {
+                        status = FixSessionStatus.AFFINITY_MISMATCH;
+                    }
+                } else {
+                    status = FixSessionStatus.DISABLED;
+                }
+            } else {
+                if(brokerService.isSessionTime(new SessionID(fixSession.getSessionId()))) {
+                    status = FixSessionStatus.NOT_CONNECTED;
+                } else {
+                    status = FixSessionStatus.DISCONNECTED;
+                }
+            }
+        }
+        BrokerStatus brokerStatus = brokerService.generateBrokerStatus(broker.getFixSession(),
+                                                                       instanceData,
+                                                                       status,
+                                                                       inLoggedOn);
         synchronized(brokerStatusListenerLock) {
             for(BrokerStatusListener brokerStatusListener : brokerStatusListeners) {
                 try {
@@ -562,6 +591,15 @@ public abstract class AbstractFixModule
          */
         private final DataEmitterSupport dataEmitterSupport;
     }
+    /**
+     * identifies this cluster instance
+     */
+    private ClusterData instanceData;
+    /**
+     * provides access to cluster services
+     */
+    @Autowired
+    private ClusterService clusterService;
     /**
      * guards access to {@link #brokerStatusListeners}
      */

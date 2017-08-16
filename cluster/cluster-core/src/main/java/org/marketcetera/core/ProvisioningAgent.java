@@ -46,8 +46,8 @@ public class ProvisioningAgent
             }
         } catch (Exception e) {
             PlatformServices.handleException(this,
-                                                       "Unable to read provisioning file: " + inOriginalFileName,
-                                                       e);
+                                             "Unable to read provisioning file: " + inOriginalFileName,
+                                             e);
         }
     }
     /**
@@ -69,8 +69,8 @@ public class ProvisioningAgent
                                   actualDirectory);
         } catch (Exception e) {
             PlatformServices.handleException(this,
-                                                       "Unable to watch for provisioning files",
-                                                       e);
+                                             "Unable to watch for provisioning files",
+                                             e);
         }
     }
     /**

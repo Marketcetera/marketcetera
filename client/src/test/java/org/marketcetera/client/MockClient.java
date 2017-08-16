@@ -2,15 +2,42 @@ package org.marketcetera.client;
 
 import java.beans.ExceptionListener;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
-import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.brokers.ClusteredBrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.Event;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionReportImpl;
+import org.marketcetera.trade.FIXMessageWrapper;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Hierarchy;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.ws.tags.SessionId;
 
 import com.google.common.collect.Lists;
@@ -322,7 +349,7 @@ public class MockClient
      * @see org.marketcetera.client.Client#getBrokersStatus()
      */
     @Override
-    public BrokersStatus getBrokersStatus()
+    public ClusteredBrokersStatus getBrokersStatus()
             throws ConnectionException
     {
         throw new UnsupportedOperationException(); // TODO

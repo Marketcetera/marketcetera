@@ -16,8 +16,9 @@ import javax.jms.JMSException;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.brokers.ClusteredBrokersStatus;
 import org.marketcetera.client.config.SpringConfig;
 import org.marketcetera.client.jms.DataEnvelope;
 import org.marketcetera.client.jms.JmsManager;
@@ -381,7 +382,7 @@ public class ClientImpl
     }
 
     @Override
-    public BrokersStatus getBrokersStatus()
+    public ClusteredBrokersStatus getBrokersStatus()
         throws ConnectionException
     {
         failIfClosed();

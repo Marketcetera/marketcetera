@@ -2,8 +2,8 @@ package org.marketcetera.client.jms;
 
 import javax.jms.ConnectionFactory;
 import org.junit.Test;
+import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.client.MockServer;
-import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.util.test.TestCaseBase;
 import org.springframework.jms.core.JmsTemplate;

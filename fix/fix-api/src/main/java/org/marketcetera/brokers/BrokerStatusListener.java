@@ -1,13 +1,9 @@
-package org.marketcetera.client;
+package org.marketcetera.brokers;
 
-import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
- * A receiver of broker status changes. Objects which need to
- * receive broker status changes must implement this interface,
- * as well as register themselves with a client via {@link
- * Client#addBrokerStatusListener(BrokerStatusListener)}.
+ * A receiver of broker status changes.
  *
  * <p>It's expected that listeners will take a short time to return
  * because all listeners are invoked sequentially.  If a listener
@@ -29,7 +25,5 @@ public interface BrokerStatusListener
      *
      * @param status The status.
      */
-
-    void receiveBrokerStatus
-        (BrokerStatus status);
+    void receiveBrokerStatus(BrokerStatus status);
 }

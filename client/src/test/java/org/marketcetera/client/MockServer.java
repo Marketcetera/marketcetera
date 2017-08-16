@@ -75,43 +75,49 @@ public class MockServer {
      */
     public MockServer()
     {
-        mContext = new ClassPathXmlApplicationContext("mock_server.xml"); //$NON-NLS-1$
-        mContext.registerShutdownHook();
-        mContext.start();
-        mHandler = new MockMessageHandler();
-        JmsManager jmsMgr = new JmsManager((ConnectionFactory)mContext.getBean("metc_connection_factory_in"),
-                                           (ConnectionFactory)mContext.getBean("metc_connection_factory_out"));
         try {
-            mDataEnvelopeListener = jmsMgr.getIncomingJmsFactory().registerHandlerOEX(mHandler,
-                                                                                      Service.REQUEST_QUEUE,
-                                                                                      false);
-            mDataEnvelopeListener.start();
-        } catch (JAXBException ex) {
-            throw new IllegalStateException("Cannot initialize request queue listener",
-                                            ex);
+            mContext = new ClassPathXmlApplicationContext("mock_server.xml"); //$NON-NLS-1$
+            mContext.registerShutdownHook();
+            mContext.start();
+            mHandler = new MockMessageHandler();
+            JmsManager jmsMgr = new JmsManager((ConnectionFactory)mContext.getBean("metc_connection_factory_in"),
+                                               (ConnectionFactory)mContext.getBean("metc_connection_factory_out"));
+            try {
+                mDataEnvelopeListener = jmsMgr.getIncomingJmsFactory().registerHandlerOEX(mHandler,
+                                                                                          Service.REQUEST_QUEUE,
+                                                                                          false);
+                mDataEnvelopeListener.start();
+            } catch (JAXBException ex) {
+                throw new IllegalStateException("Cannot initialize request queue listener",
+                                                ex);
+            }
+            try {
+                mStatusSender = jmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.BROKER_STATUS_TOPIC,
+                                                                                  true);
+            } catch (JAXBException ex) {
+                throw new IllegalStateException("Cannot initialize broker status sender",
+                                                ex);
+            }
+            try {
+                marketDataRequestSender = jmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.MARKET_DATA_REQUEST_TOPIC,
+                                                                                            true);
+            } catch (JAXBException ex) {
+                throw new IllegalStateException("Cannot initialize market data request sender",
+                                                ex);
+            }
+            // Use default Server host and port 
+            SessionManager<Object> sessionManager=new SessionManager<Object>(new MockSessionFactory(jmsMgr,
+                                                                                                    mHandler));
+            mServer = new Server<Object>(new MockAuthenticator(),
+                                         sessionManager);
+            mServiceImpl = new MockServiceImpl(sessionManager);
+            mServiceInterface = mServer.publish(mServiceImpl,
+                                                Service.class);
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e);
+            throw new RuntimeException(e);
         }
-        try {
-            mStatusSender = jmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.BROKER_STATUS_TOPIC,
-                                                                              true);
-        } catch (JAXBException ex) {
-            throw new IllegalStateException("Cannot initialize broker status sender",
-                                            ex);
-        }
-        try {
-            marketDataRequestSender = jmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.MARKET_DATA_REQUEST_TOPIC,
-                                                                                        true);
-        } catch (JAXBException ex) {
-            throw new IllegalStateException("Cannot initialize market data request sender",
-                                            ex);
-        }
-        // Use default Server host and port 
-        SessionManager<Object> sessionManager=new SessionManager<Object>(new MockSessionFactory(jmsMgr,
-                                                                                                mHandler));
-        mServer = new Server<Object>(new MockAuthenticator(),
-                                     sessionManager);
-        mServiceImpl = new MockServiceImpl(sessionManager);
-        mServiceInterface = mServer.publish(mServiceImpl,
-                                            Service.class);
     }
     public void close() {
         mDataEnvelopeListener.shutdown();

@@ -1,10 +1,13 @@
 package org.marketcetera.client.brokers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
+import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.MockBrokerStatusGenerator;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -26,10 +29,9 @@ public class BrokerStatusTest
     public void all()
         throws Exception
     {
-        BrokerStatus s=new BrokerStatus(TEST_NAME,TEST_BROKER_ID,true);
+        BrokerStatus s=MockBrokerStatusGenerator.generateBrokerStatus(TEST_NAME,TEST_BROKER_ID,true);
         assertEquals(TEST_NAME,s.getName());
         assertEquals(TEST_BROKER_ID,s.getId());
         assertTrue(s.getLoggedOn());
-        assertEquals("Broker: metc(bro,true)",s.toString());
     }
 }
