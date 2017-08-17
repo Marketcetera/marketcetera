@@ -1,7 +1,10 @@
 package org.marketcetera.trade.modules;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
@@ -12,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.brokers.Broker;
-import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
@@ -21,14 +23,24 @@ import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.modules.headwater.HeadwaterModuleFactory;
 import org.marketcetera.modules.publisher.PublisherModuleFactory;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.service.TestBrokerSelector;
+import org.marketcetera.trade.service.TradeTestBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.common.collect.Lists;
+
+import quickfix.Message;
 
 /* $License$ */
 
@@ -42,6 +54,7 @@ import com.google.common.collect.Lists;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:**/test.xml" })
 public class TradeModuleTest
+        extends TradeTestBase
 {
     /**
      * Run before each test.
@@ -54,7 +67,6 @@ public class TradeModuleTest
     {
         orderConverterModuleUrn = OrderConverterModuleFactory.INSTANCE_URN;
         startModulesIfNecessary();
-//        verifySessionsConnected();
     }
     /**
      * Run after each test.
@@ -68,14 +80,90 @@ public class TradeModuleTest
         reset();
     }
     /**
-     * Test starting and connecting the acceptors and initiators.
+     * Test the wrong data type.
      *
      * @throws Exception if an unexpected failure occurs
      */
     @Test
-    public void testStartAndConnect()
+    public void testWrongDataType()
             throws Exception
     {
+        String headwaterInstance = generateHeadwaterInstanceName();
+        Deque<Object> receivedData = Lists.newLinkedList();
+        DataFlowID dataFlow = moduleManager.createDataFlow(getDataRequest(headwaterInstance,
+                                                                          receivedData));
+        HeadwaterModule.getInstance(headwaterInstance).emit(this,
+                                                            dataFlow);
+        assertTrue(receivedData.isEmpty());
+    }
+    /**
+     * Test that an order can be targeted and converted for a specific broker.
+     *
+     * @throws Exception if an unexpected failure occurs
+     */
+    @Test
+    public void testSpecifiedBroker()
+            throws Exception
+    {
+        Broker target = null;
+        for(Broker broker : brokerService.getBrokers()) {
+            if(!broker.getFixSession().isAcceptor() && broker.getMappedBrokerId() == null) {
+                target = broker;
+                break;
+            }
+        }
+        makeBrokerAvailable(target.getBrokerId());
+        final OrderSingle testOrder = Factory.getInstance().createOrderSingle();
+        testOrder.setBrokerID(target.getBrokerId());
+        testOrder.setInstrument(new Equity("METC"));
+        testOrder.setOrderType(OrderType.Market);
+        testOrder.setQuantity(BigDecimal.TEN);
+        testOrder.setSide(Side.Buy);
+        String headwaterInstance = generateHeadwaterInstanceName();
+        Deque<Object> receivedData = Lists.newLinkedList();
+        DataFlowID dataFlow = moduleManager.createDataFlow(getDataRequest(headwaterInstance,
+                                                                          receivedData));
+        HeadwaterModule.getInstance(headwaterInstance).emit(testOrder,
+                                                            dataFlow);
+        waitForMessages(1,
+                        receivedData);
+        Message convertedMessage = (Message)receivedData.getFirst();
+        assertNotNull(convertedMessage);
+    }
+    /**
+     * Test that an order can be targeted and converted with no broker selected.
+     *
+     * @throws Exception if an unexpected failure occurs
+     */
+    @Test
+    public void testNoSpecifiedBroker()
+            throws Exception
+    {
+        Broker target = null;
+        for(Broker broker : brokerService.getBrokers()) {
+            if(!broker.getFixSession().isAcceptor() && broker.getMappedBrokerId() == null) {
+                target = broker;
+                break;
+            }
+        }
+        makeBrokerAvailable(target.getBrokerId());
+        TestBrokerSelector selector = applicationContext.getBean(TestBrokerSelector.class);
+        selector.setSelectedBrokerId(target.getBrokerId());
+        final OrderSingle testOrder = Factory.getInstance().createOrderSingle();
+        testOrder.setInstrument(new Equity("METC"));
+        testOrder.setOrderType(OrderType.Market);
+        testOrder.setQuantity(BigDecimal.TEN);
+        testOrder.setSide(Side.Buy);
+        String headwaterInstance = generateHeadwaterInstanceName();
+        Deque<Object> receivedData = Lists.newLinkedList();
+        DataFlowID dataFlow = moduleManager.createDataFlow(getDataRequest(headwaterInstance,
+                                                                          receivedData));
+        HeadwaterModule.getInstance(headwaterInstance).emit(testOrder,
+                                                            dataFlow);
+        waitForMessages(1,
+                        receivedData);
+        Message convertedMessage = (Message)receivedData.getFirst();
+        assertNotNull(convertedMessage);
     }
     /**
      * Generate a unique headwater instance name.
@@ -106,14 +194,14 @@ public class TradeModuleTest
         );
     }
     /**
-     * Build a send data request for the acceptor module.
+     * Build a data request for the order converter module.
      *
      * @param inFixDataRequest a <code>FixDataRequest</code> value
      * @param inHeadwaterInstance a <code>String</code> value
      * @return a <code>DataRequest[]</code> value
      */
-    private DataRequest[] getAcceptorSendDataRequest(String inHeadwaterInstance,
-                                                     Deque<Object> inReceivedData)
+    private DataRequest[] getDataRequest(String inHeadwaterInstance,
+                                         Deque<Object> inReceivedData)
     {
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
         ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
@@ -162,29 +250,6 @@ public class TradeModuleTest
             }}
         );
         return publisherUrn;
-    }
-    /**
-     * Verify that all test sessions are connected.
-     *
-     * @throws Exception if an unexpected failure occurs
-     */
-    private void verifySessionsConnected()
-            throws Exception
-    {
-        for(final Broker broker : brokerService.getBrokers()) {
-            MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-                @Override
-                public Boolean call()
-                        throws Exception
-                {
-                    BrokerStatus brokerStatus = brokerService.getBrokerStatus(broker.getBrokerId());
-                    if(brokerStatus == null) {
-                        return false;
-                    }
-                    return brokerStatus.getLoggedOn();
-                }}
-            );
-        }
     }
     /**
      * Start the initiator and acceptor modules, if necessary.

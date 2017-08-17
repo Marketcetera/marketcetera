@@ -43,6 +43,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>trade-server</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>simple-cluster</artifactId>
       <scope>test</scope>
     </dependency>

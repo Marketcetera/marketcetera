@@ -13,10 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.MessageModifier;
-import org.marketcetera.brokers.service.BrokerService;
-import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Equity;
@@ -27,9 +24,7 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.trade.service.FieldSetterMessageModifier;
 import org.marketcetera.trade.service.Messages;
 import org.marketcetera.trade.service.TestBrokerSelector;
-import org.marketcetera.trade.service.TradeService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.marketcetera.trade.service.TradeTestBase;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -49,6 +44,7 @@ import quickfix.Message;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:**/test.xml" })
 public class TradeServiceImplTest
+        extends TradeTestBase
 {
     /**
      * Test the ability to select a broker for an order.
@@ -236,57 +232,4 @@ public class TradeServiceImplTest
                          convertedOrder.getString(field));
         }
     }
-    /**
-     * Makes the given broker available.
-     *
-     * @param inBrokerId a <code>BrokerID</code> value
-     * @throws Exception if an unexpected error occurs
-     */
-    private void makeBrokerAvailable(BrokerID inBrokerId)
-            throws Exception
-    {
-        Broker broker = brokerService.getBroker(inBrokerId);
-        assertNotNull(broker);
-        reportBrokerStatus(broker,
-                           FixSessionStatus.CONNECTED,
-                           true);
-    }
-    /**
-     * Reports the broker status as indicated.
-     *
-     * @param inBroker a <code>Broker</code> value
-     * @param inFixSessionStatus a <code>FixSessionStatus</code> value
-     * @param inIsLoggedOn a <code>boolean</code> value
-     * @throws Exception if an unexpected error occurs
-     */
-    private void reportBrokerStatus(Broker inBroker,
-                                    FixSessionStatus inFixSessionStatus,
-                                    boolean inIsLoggedOn)
-            throws Exception
-    {
-        brokerService.reportBrokerStatus(brokerService.generateBrokerStatus(inBroker.getFixSession(),
-                                                                            clusterService.getInstanceData(),
-                                                                            FixSessionStatus.CONNECTED,
-                                                                            true));
-    }
-    /**
-     * test application context
-     */
-    @Autowired
-    private ApplicationContext applicationContext;
-    /**
-     * test broker service
-     */
-    @Autowired
-    private BrokerService brokerService;
-    /**
-     * test trade service
-     */
-    @Autowired
-    private TradeService tradeService;
-    /**
-     * provides access to cluster services
-     */
-    @Autowired
-    private ClusterService clusterService;
 }

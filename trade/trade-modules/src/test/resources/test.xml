@@ -9,6 +9,7 @@
   <bean id="messageFactory" class="quickfix.DefaultMessageFactory"/>
   <bean id="brokerFactory" class="org.marketcetera.fix.impl.SimpleBrokerFactory"/>
   <bean id="fixSessionFactory" class="org.marketcetera.fix.impl.SimpleFixSessionFactory"/>
+  <bean id="testSelector" class="org.marketcetera.trade.service.TestBrokerSelector"/>
   <bean id="fixSettingsProviderFactory" class="org.marketcetera.fix.FixSettingsProviderFactoryImpl">
     <property name="messageStoreFactoryClass" value="org.marketcetera.fix.store.NoopStoreFactory"/>
     <property name="logFactoryClass" value="quickfix.SLF4JLogFactory"/>

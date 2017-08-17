@@ -33,8 +33,8 @@ public class OrderConverterModule
      * @see org.marketcetera.module.AbstractDataReemitterModule#onReceiveData(java.lang.Object, org.marketcetera.module.DataEmitterSupport)
      */
     @Override
-    protected Object onReceiveData(Object inData,
-                                   DataEmitterSupport inDataSupport)
+    protected Message onReceiveData(Object inData,
+                                    DataEmitterSupport inDataSupport)
     {
         if(!(inData instanceof Order)) {
             throw new ReceiveDataException(new I18NBoundMessage1P(Messages.WRONG_DATA_TYPE,
