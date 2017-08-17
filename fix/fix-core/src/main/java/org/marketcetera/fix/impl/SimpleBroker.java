@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import quickfix.DataDictionary;
+import quickfix.Session;
 import quickfix.SessionID;
 
 /* $License$ */
@@ -56,8 +57,12 @@ public class SimpleBroker
         }
         brokerId = new BrokerID(inFixSession.getBrokerId());
         sessionId = new SessionID(inFixSession.getSessionId());
-        // TODO this won't work for FIXT.T
-        fixVersion = FIXVersion.getFIXVersion(sessionId);
+        if(inFixSession.getSessionSettings().containsKey(Session.SETTING_DEFAULT_APPL_VER_ID)) {
+            String applVerId = inFixSession.getSessionSettings().get(Session.SETTING_DEFAULT_APPL_VER_ID);
+            fixVersion = FIXVersion.getFIXVersion(applVerId);
+        } else {
+            fixVersion = FIXVersion.getFIXVersion(sessionId);
+        }
         // TODO implement this
         mappedBrokerId = null;
     }

@@ -9,9 +9,9 @@
     <version>3.1.0-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
-  <artifactId>trade-server</artifactId>
+  <artifactId>trade-modules</artifactId>
   <version>3.1.0-SNAPSHOT</version>
-  <name>Trade Server</name>
+  <name>Trade Modules</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,35 +28,18 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>trade-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>trade-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>fix-server</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>admin-db</artifactId>
-    </dependency>
-    <!-- other compile -->
-    <dependency>
-      <groupId>com.querydsl</groupId>
-      <artifactId>querydsl-jpa</artifactId>
+      <artifactId>trade-server</artifactId>
     </dependency>
     <!-- local test -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>core</artifactId>
-      <type>test-jar</type>
+      <artifactId>misc</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>simple-cluster</artifactId>
-      <scope>test</scope>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
     </dependency>
     <!-- other test -->
     <dependency>
@@ -68,12 +51,4 @@
       <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>

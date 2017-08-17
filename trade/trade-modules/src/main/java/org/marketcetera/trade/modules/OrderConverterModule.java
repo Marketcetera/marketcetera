@@ -1,7 +1,6 @@
-package org.marketcetera.modules.fix;
+package org.marketcetera.trade.modules;
 
 import org.marketcetera.brokers.Broker;
-import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitter;
@@ -10,6 +9,7 @@ import org.marketcetera.module.DataFlowException;
 import org.marketcetera.module.DataReceiver;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import quickfix.Message;
@@ -39,9 +39,9 @@ public class OrderConverterModule
             throw new DataFlowException(new RuntimeException("Data flow requires objects of type Order, not " + inData.getClass().getSimpleName()));
         }
         Order order = (Order)inData;
-        Broker broker = brokerService.selectBroker(order);
-        Message convertedOrder = brokerService.convertOrder(order,
-                                                            broker);
+        Broker broker = tradeService.selectBroker(order);
+        Message convertedOrder = tradeService.convertOrder(order,
+                                                           broker);
         return convertedOrder;
     }
     /**
@@ -55,8 +55,8 @@ public class OrderConverterModule
               true);
     }
     /**
-     * provides access to broker services
+     * provides access to trade services
      */
     @Autowired
-    private BrokerService brokerService;
+    private TradeService tradeService;
 }

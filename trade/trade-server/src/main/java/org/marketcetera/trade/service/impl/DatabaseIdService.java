@@ -3,7 +3,6 @@ package org.marketcetera.trade.service.impl;
 import org.marketcetera.trade.dao.DatabaseIdDao;
 import org.marketcetera.trade.dao.PersistentDatabaseID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @version $Id: DatabaseIdService.java 17266 2017-04-28 14:58:00Z colin $
  * @since 2.4.2
  */
-@Service
 public class DatabaseIdService
 {
     /**

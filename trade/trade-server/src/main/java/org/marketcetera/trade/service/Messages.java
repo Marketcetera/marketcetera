@@ -1,6 +1,7 @@
-package org.marketcetera.trade;
+package org.marketcetera.trade.service;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
@@ -25,4 +26,6 @@ public interface Messages {
      */
     static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
     static final I18NMessage1P ERROR_RECONSTITUTE_FIX_MSG = new I18NMessage1P(LOGGER, "error_reconstitute_fix_msg");   //$NON-NLS-1$
+    static final I18NMessage0P UNAVAILABLE_BROKER = new I18NMessage0P(LOGGER,"unavailable_broker"); //$NON-NLS-1$
+    static final I18NMessage1P NO_BROKER_SELECTED = new I18NMessage1P(LOGGER,"no_broker_selected");
 }

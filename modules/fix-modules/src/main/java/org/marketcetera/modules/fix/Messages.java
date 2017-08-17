@@ -19,5 +19,4 @@ public interface Messages
     static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
     static final I18NMessage0P INITIATOR_PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,"initiator_provider_description"); //$NON-NLS-1$
     static final I18NMessage0P ACCEPTOR_PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,"acceptor_provider_description"); //$NON-NLS-1$
-    static final I18NMessage0P ORDER_CONVERTER_PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,"order_converter_provider_description"); //$NON-NLS-1$
 }

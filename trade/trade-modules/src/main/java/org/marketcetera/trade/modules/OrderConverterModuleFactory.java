@@ -1,4 +1,4 @@
-package org.marketcetera.modules.fix;
+package org.marketcetera.trade.modules;
 
 import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleCreationException;

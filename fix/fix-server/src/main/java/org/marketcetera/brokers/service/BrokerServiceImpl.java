@@ -25,7 +25,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 
-import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.marketcetera.admin.User;
@@ -37,16 +36,12 @@ import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.brokers.ClusteredBrokerStatus;
 import org.marketcetera.brokers.ClusteredBrokersStatus;
-import org.marketcetera.brokers.MessageModifier;
-import org.marketcetera.brokers.Selector;
 import org.marketcetera.brokers.SessionCustomization;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterListener;
 import org.marketcetera.cluster.service.ClusterMember;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.ApplicationContextProvider;
-import org.marketcetera.core.CoreException;
-import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.AcceptorSessionAttributes;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
@@ -55,18 +50,12 @@ import org.marketcetera.fix.FixSessionListener;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
-import org.marketcetera.fix.Messages;
 import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.fix.SessionSchedule;
 import org.marketcetera.fix.SessionSettingsGenerator;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
-import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.FIXConverter;
-import org.marketcetera.trade.Order;
-import org.marketcetera.trade.TradeMessage;
-import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
@@ -82,7 +71,6 @@ import com.google.common.collect.Lists;
 
 import quickfix.ConfigError;
 import quickfix.FieldConvertError;
-import quickfix.Message;
 import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
@@ -122,82 +110,6 @@ public class BrokerServiceImpl
             brokers.add(generateBroker(underlyingFixSession));
         }
         return brokers;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.brokers.service.BrokerService#selectBroker(org.marketcetera.trade.Order)
-     */
-    @Override
-    public Broker selectBroker(Order inOrder)
-    {
-        Broker broker = null;
-        if(inOrder.getBrokerID() != null) {
-            FixSession underlyingFixSession = findFixSessionByBrokerId(inOrder.getBrokerID());
-            if(underlyingFixSession != null) {
-                broker = generateBroker(underlyingFixSession);
-            }
-        }
-        if(broker == null) {
-            BrokerID brokerId = brokerSelector.chooseBroker(inOrder);
-            if(brokerId != null) {
-                FixSession underlyingFixSession = findFixSessionByBrokerId(brokerId);
-                if(underlyingFixSession != null) {
-                    broker = generateBroker(underlyingFixSession);
-                }
-            }
-        }
-        // TODO mapped/virtual broker stuff?
-        if(broker == null) {
-            Messages.NO_BROKER_SELECTED.warn(this,
-                                             inOrder);
-            throw new CoreException(new I18NBoundMessage1P(Messages.NO_BROKER_SELECTED,
-                                                           inOrder));
-        } else {
-            SLF4JLoggerProxy.debug(this,
-                                   "Selected {} for {}",
-                                   broker,
-                                   inOrder.getBrokerID());
-        }
-        return broker;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.brokers.service.BrokerService#convertOrder(org.marketcetera.trade.Order, org.marketcetera.brokers.Broker)
-     */
-    @Override
-    public Message convertOrder(Order inOrder,
-                                Broker inBroker)
-    {
-        // verify the broker is available
-        BrokerStatus brokerStatus = getBrokerStatus(inBroker.getBrokerId());
-        Validate.isTrue(brokerStatus.getLoggedOn(),
-                        inBroker.getBrokerId() + " is not available"); // TODO
-        // TODO broker algos
-        // TODO reprice
-        // create the FIX message
-        Message message = FIXConverter.toQMessage(inBroker.getFIXVersion().getMessageFactory(),
-                                                  FIXMessageUtil.getDataDictionary(inBroker.getFIXVersion()),
-                                                  inOrder);
-        // apply modifiers
-        for(MessageModifier orderModifier : inBroker.getOrderModifiers()) {
-            try {
-                orderModifier.modify(inBroker,
-                                     message);
-                // TODO catch OrderIntercepted
-            } catch (Exception e) {
-                PlatformServices.handleException(this,
-                                                 "Unable to modify order",
-                                                 e);
-            }
-        }
-        return message;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.brokers.service.BrokerService#convertResponse(quickfix.Message, org.marketcetera.brokers.Broker)
-     */
-    @Override
-    public TradeMessage convertResponse(Message inMessage,
-                                        Broker inBroker)
-    {
-        throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getBrokerStatus(org.marketcetera.trade.BrokerID)
@@ -983,11 +895,6 @@ public class BrokerServiceImpl
      */
     @Autowired
     private FixSessionProvider fixSessionProvider;
-    /**
-     * optional broker selector
-     */
-    @Autowired(required=false)
-    private Selector brokerSelector;
     /**
      * creates {@link Broker} objects
      */

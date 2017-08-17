@@ -1,6 +1,8 @@
 package org.marketcetera.fix.provisioning;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.annotation.PostConstruct;
 
@@ -28,16 +30,22 @@ public abstract class AbstractFixSessionAgent
     @PostConstruct
     public void start()
     {
-        for(String sessionName : sessionNames) {
-            try {
-                FixSession fixSession = brokerService.findFixSessionByName(sessionName);
-                doSessionAction(fixSession);
-            } catch (Exception e) {
-                PlatformServices.handleException(this,
-                                                 "Unable to " + getSessionActionDescription() + " " + sessionName,
-                                                 e);
-            }
-        }
+        Timer invocationTimer = new Timer();
+        invocationTimer.schedule(new TimerTask() {
+            @Override
+            public void run()
+            {
+                for(String sessionName : sessionNames) {
+                    try {
+                        FixSession fixSession = brokerService.findFixSessionByName(sessionName);
+                        doSessionAction(fixSession);
+                    } catch (Exception e) {
+                        PlatformServices.handleException(this,
+                                                         "Unable to " + getSessionActionDescription() + " " + sessionName,
+                                                         e);
+                    }
+                }
+            }},startDelay);
     }
     /**
      * Get the sessionNames value.
@@ -76,6 +84,24 @@ public abstract class AbstractFixSessionAgent
         brokerService = inBrokerService;
     }
     /**
+     * Get the startDelay value.
+     *
+     * @return a <code>long</code> value
+     */
+    public long getStartDelay()
+    {
+        return startDelay;
+    }
+    /**
+     * Sets the startDelay value.
+     *
+     * @param inStartDelay a <code>long</code> value
+     */
+    public void setStartDelay(long inStartDelay)
+    {
+        startDelay = inStartDelay;
+    }
+    /**
      * Perform the desired action of the agent on the given session.
      *
      * @param inFixSession a <code>FixSession</code> value
@@ -89,6 +115,10 @@ public abstract class AbstractFixSessionAgent
      * @return a <code>String</code> value
      */
     protected abstract String getSessionActionDescription();
+    /**
+     * interval to wait before executing the action on start
+     */
+    private long startDelay = 10000;
     /**
      * provides access to broker services
      */

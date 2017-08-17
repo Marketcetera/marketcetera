@@ -3,7 +3,6 @@ package org.marketcetera.brokers.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -12,20 +11,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.brokers.Broker;
-import org.marketcetera.core.CoreException;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.Messages;
 import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Side;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -96,51 +87,6 @@ public class BrokerServiceTest
                      sampleBrokerCopy.getBrokerId());
     }
     /**
-     * Test the ability to select a broker for an order.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @Test
-    public void testSelectBroker()
-            throws Exception
-    {
-        // test order with a specified broker
-        Broker initiator = initiators.values().iterator().next();
-        final OrderSingle testOrder = Factory.getInstance().createOrderSingle();
-        testOrder.setBrokerID(initiator.getBrokerId());
-        testOrder.setInstrument(new Equity("METC"));
-        testOrder.setOrderType(OrderType.Market);
-        testOrder.setQuantity(BigDecimal.TEN);
-        testOrder.setSide(Side.Buy);
-        assertEquals(initiator.getBrokerId(),
-                     brokerService.selectBroker(testOrder).getBrokerId());
-        // test with an invalid broker
-        testOrder.setBrokerID(new BrokerID("not-a-real-broker"));
-        new ExpectedFailure<CoreException>(Messages.NO_BROKER_SELECTED) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                brokerService.selectBroker(testOrder);
-            }
-        };
-        TestBrokerSelector testSelector = applicationContext.getBean(TestBrokerSelector.class);
-        testSelector.setSelectedBrokerId(initiator.getBrokerId());
-        testOrder.setBrokerID(null);
-        assertEquals(initiator.getBrokerId(),
-                     brokerService.selectBroker(testOrder).getBrokerId());
-        // test when the selector throws an exception
-        testSelector.setChooseBrokerException(new RuntimeException("This exception was expected"));
-        new ExpectedFailure<RuntimeException>("This exception was expected") {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                brokerService.selectBroker(testOrder);
-            }
-        };
-    }
-    /**
      * Test the ability to resolve sessions into name aliases.
      *
      * @throws Exception if an unexpected error occurs
@@ -173,9 +119,4 @@ public class BrokerServiceTest
      */
     @Autowired
     private BrokerServiceImpl brokerService;
-    /**
-     * test application context
-     */
-    @Autowired
-    private ApplicationContext applicationContext;
 }

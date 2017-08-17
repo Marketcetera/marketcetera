@@ -1,4 +1,4 @@
-package org.marketcetera.brokers.service;
+package org.marketcetera.trade.service;
 
 import org.marketcetera.brokers.Selector;
 import org.marketcetera.trade.BrokerID;
