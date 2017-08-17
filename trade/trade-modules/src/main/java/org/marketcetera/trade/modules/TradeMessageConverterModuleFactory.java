@@ -8,33 +8,33 @@ import org.marketcetera.module.ModuleURN;
 /* $License$ */
 
 /**
- * <code>ModuleFactory</code> implementation for order to FIX message conversion.
+ * <code>ModuleFactory</code> implementation for FIX message to trade message conversion.
  * <p>
  * The factory has the following characteristics.
  * <table>
- * <tr><th>Provider URN:</th><td><code>metc:trade:orderconverter</code></td></tr>
+ * <tr><th>Provider URN:</th><td><code>metc:trade:trademessageconverter</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
- * <tr><th>Instance URN:</th><td><code>metc:trade:orderconverter:single</code></td></tr>
+ * <tr><th>Instance URN:</th><td><code>metc:trade:trademessageconverter:single</code></td></tr>
  * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>
  * <tr><th>Auto-Started:</th><td>Yes</td></tr>
  * <tr><th>Instantiation Arguments:</th><td>none</td></tr>
- * <tr><th>Module Type:</th><td>{@link OrderConverterModule}</td></tr>
+ * <tr><th>Module Type:</th><td>{@link TradeMessageConverterModule}</td></tr>
  * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class OrderConverterModuleFactory
+public class TradeMessageConverterModuleFactory
         extends ModuleFactory
 {
     /**
-     * Create a new OrderConverterModuleFactory instance.
+     * Create a new TradeMessageConverterModuleFactory instance.
      */
-    public OrderConverterModuleFactory()
+    public TradeMessageConverterModuleFactory()
     {
         super(PROVIDER_URN,
-              Messages.ORDER_CONVERTER_PROVIDER_DESCRIPTION,
+              Messages.TRADE_MESSAGE_CONVERTER_PROVIDER_DESCRIPTION,
               false,
               true);
     }
@@ -45,12 +45,12 @@ public class OrderConverterModuleFactory
     public Module create(Object... inParameters)
             throws ModuleCreationException
     {
-        return new OrderConverterModule(INSTANCE_URN);
+        return new TradeMessageConverterModule(INSTANCE_URN);
     }
     /**
      * identifier for this URN
      */
-    public static final String IDENTIFIER = "orderconverter";
+    public static final String IDENTIFIER = "trademessageconverter";
     /**
      * provider URN value
      */

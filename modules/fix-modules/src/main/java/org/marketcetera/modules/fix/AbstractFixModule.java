@@ -79,12 +79,7 @@ public abstract class AbstractFixModule
         DataRequester dataRequester = new DataRequester(inRequest,
                                                         inSupport);
         if(dataRequester.isForAllSessionIds()) {
-            if(dataRequester.getFixDataRequest().getIsMessageRequest()) {
-                requestsForAllSessionMessages.add(dataRequester);
-            }
-            if(dataRequester.getFixDataRequest().getIsStatusRequest()) {
-                requestsForAllSessionStatus.add(dataRequester);
-            }
+            requestsForAllSessionMessages.add(dataRequester);
         } else {
             for(SessionID sessionId : dataRequester.getFixDataRequest().getRequestedSessionIds()) {
                 requestsBySessionId.getUnchecked(sessionId).add(dataRequester);
@@ -104,12 +99,7 @@ public abstract class AbstractFixModule
         requestsByDataFlowId.invalidate(inFlowID);
         if(dataRequester != null) {
             if(dataRequester.isForAllSessionIds()) {
-                if(dataRequester.getFixDataRequest().getIsMessageRequest()) {
-                    requestsForAllSessionMessages.remove(dataRequester);
-                }
-                if(dataRequester.getFixDataRequest().getIsStatusRequest()) {
-                    requestsForAllSessionStatus.remove(dataRequester);
-                }
+                requestsForAllSessionMessages.remove(dataRequester);
             } else {
                 for(SessionID sessionId : dataRequester.getFixDataRequest().getRequestedSessionIds()) {
                     requestsBySessionId.getUnchecked(sessionId).remove(dataRequester);
@@ -421,19 +411,6 @@ public abstract class AbstractFixModule
                 }
             }
         }
-        for(DataRequester requester : requestsForAllSessionStatus) {
-            if(requester.getFixDataRequest().getIsStatusRequest()) {
-                requester.getDataEmitterSupport().send(brokerStatus);
-            }
-        }
-        Set<DataRequester> requestersForSession = requestsBySessionId.getIfPresent(inSessionId);
-        if(requestersForSession != null) {
-            for(DataRequester requester : requestersForSession) {
-                if(requester.getFixDataRequest().getIsStatusRequest()) {
-                    requester.getDataEmitterSupport().send(brokerStatus);
-                }
-            }
-        }
     }
     /**
      * Send the given message with the given attributes, to all interested data flows.
@@ -627,10 +604,6 @@ public abstract class AbstractFixModule
      * data requests that request data for all sessions
      */
     private final Collection<DataRequester> requestsForAllSessionMessages = Sets.newConcurrentHashSet();
-    /**
-     * data requests that request status for all sessions
-     */
-    private final Collection<DataRequester> requestsForAllSessionStatus = Sets.newConcurrentHashSet();
     /**
      * data requests by session id
      */

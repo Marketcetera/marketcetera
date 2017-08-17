@@ -81,50 +81,6 @@ public class FixDataRequest
         return messageBlackList;
     }
     /**
-     * Get the isStatusRequest value.
-     *
-     * @return a <code>boolean</code> value
-     */
-    public boolean getIsStatusRequest()
-    {
-        return isStatusRequest;
-    }
-    /**
-     * Sets the isStatusRequest value.
-     *
-     * @param inIsStatusRequest a <code>boolean</code> value
-     */
-    public void setIsStatusRequest(boolean inIsStatusRequest)
-    {
-        isStatusRequest = inIsStatusRequest;
-    }
-    /**
-     * Get the isMessageRequest value.
-     *
-     * @return a <code>boolean</code> value
-     */
-    public boolean getIsMessageRequest()
-    {
-        return isMessageRequest;
-    }
-    /**
-     * Sets the isMessageRequest value.
-     *
-     * @param inIsMessageRequest a <code>boolean</code> value
-     */
-    public void setIsMessageRequest(boolean inIsMessageRequest)
-    {
-        isMessageRequest = inIsMessageRequest;
-    }
-    /**
-     * indicates if the data flow request includes session status
-     */
-    private boolean isStatusRequest = true;
-    /**
-     * indicates if the data flow request includes messages
-     */
-    private boolean isMessageRequest = true;
-    /**
      * session ids 
      */
     private final Set<SessionID> requestedSessionIds = Sets.newHashSet();

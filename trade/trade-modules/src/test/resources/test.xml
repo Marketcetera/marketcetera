@@ -42,10 +42,49 @@
         <bean id="initiator2" class="org.marketcetera.fix.provisioning.FixSessionDescriptor">
           <property name="name" value="Initiator2"/>
           <property name="brokerId" value="initiator2"/>
+          <property name="mappedBrokerId" value="initiator1"/>
           <property name="description" value="Test initiator 2"/>
           <property name="sessionSettings" ref="initiator2Settings"/>
           <property name="host" value="localhost"/>
           <property name="port" value="21345"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  <bean id="sessionCustomization1" class="org.marketcetera.fix.provisioning.SimpleSessionCustomization">
+    <property name="name" value="sessionCustomization1"/>
+    <property name="orderModifiers">
+      <list>
+        <bean class="org.marketcetera.trade.service.FieldSetterMessageModifier">
+          <property name="field" value="10000"/>
+          <property name="value" value="bogus-value"/>
+        </bean>
+        <bean class="org.marketcetera.trade.service.FieldSetterMessageModifier">
+          <property name="field" value="10000"/>
+          <property name="value" value="10000-sessionCustomization1"/>
+        </bean>
+        <bean class="org.marketcetera.trade.service.FieldSetterMessageModifier">
+          <property name="field" value="10001"/>
+          <property name="value" value="10001-sessionCustomization1"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  <bean id="sessionCustomization2" class="org.marketcetera.fix.provisioning.SimpleSessionCustomization">
+    <property name="name" value="sessionCustomization2"/>
+    <property name="orderModifiers">
+      <list>
+        <bean class="org.marketcetera.trade.service.FieldSetterMessageModifier">
+          <property name="field" value="10001"/>
+          <property name="value" value="bogus-value"/>
+        </bean>
+        <bean class="org.marketcetera.trade.service.FieldSetterMessageModifier">
+          <property name="field" value="10001"/>
+          <property name="value" value="10001-sessionCustomization2"/>
+        </bean>
+        <bean class="org.marketcetera.trade.service.FieldSetterMessageModifier">
+          <property name="field" value="10002"/>
+          <property name="value" value="10002-sessionCustomization2"/>
         </bean>
       </list>
     </property>
@@ -65,6 +104,7 @@
         <entry key="ResetOnLogout" value="Y"/>
         <entry key="ResetOnDisconnect" value="Y"/>
         <entry key="ResetOnError" value="Y"/>
+        <entry key="ValidateUserDefinedFields" value="N"/>
       </map>
     </property>
   </bean>
@@ -75,6 +115,7 @@
         <entry key="DataDictionary" value="FIX42.xml"/>
         <entry key="SenderCompID" value="MATP"/>
         <entry key="TargetCompID" value="TARGET1"/>
+        <entry key="org.marketcetera.sessioncustomization" value="sessionCustomization1"/>
       </map>
     </property>
   </bean>
@@ -85,6 +126,7 @@
         <entry key="DataDictionary" value="FIX42.xml"/>
         <entry key="SenderCompID" value="MATP"/>
         <entry key="TargetCompID" value="TARGET2"/>
+        <entry key="org.marketcetera.sessioncustomization" value="sessionCustomization2"/>
       </map>
     </property>
   </bean>
@@ -121,6 +163,7 @@
         <entry key="ResetOnLogout" value="Y"/>
         <entry key="ResetOnDisconnect" value="Y"/>
         <entry key="ResetOnError" value="Y"/>
+        <entry key="ValidateUserDefinedFields" value="N"/>
       </map>
     </property>
   </bean>

@@ -28,9 +28,28 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>trade-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>trade-server</artifactId>
     </dependency>
     <!-- local test -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fix-server</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fix-modules</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fix-modules</artifactId>
+      <type>test-jar</type>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>misc</artifactId>
@@ -61,4 +80,20 @@
       <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <disableXmlReport>false</disableXmlReport>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
+          <argLine>${mvn.test.options}</argLine>
+          <systemPropertyVariables>
+            <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

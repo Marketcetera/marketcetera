@@ -72,6 +72,8 @@ public class TradeServiceImplTest
         assertEquals(initiator.getBrokerId(),
                      tradeService.selectBroker(testOrder).getBrokerId());
         // test with an invalid broker
+        selector.setChooseBrokerException(null);
+        selector.setSelectedBrokerId(null);
         testOrder.setBrokerID(new BrokerID("not-a-real-broker"));
         new ExpectedFailure<CoreException>(Messages.NO_BROKER_SELECTED) {
             @Override
