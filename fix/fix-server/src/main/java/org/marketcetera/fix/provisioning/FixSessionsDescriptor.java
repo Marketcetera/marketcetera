@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 /* $License$ */
 
 /**
- *
+ * Contains a collection of {@link FixSessionDescriptor} and global settings to apply to them.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

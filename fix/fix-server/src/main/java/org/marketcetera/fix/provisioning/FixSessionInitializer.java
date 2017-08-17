@@ -49,6 +49,9 @@ public class FixSessionInitializer
                 FixSession fixSession = fixSessionFactory.create();
                 fixSession.setAffinity(fixSessionDescriptor.getAffinity());
                 fixSession.setBrokerId(fixSessionDescriptor.getBrokerId().getValue());
+                if(fixSessionDescriptor.getMappedBrokerId() != null) {
+                    fixSession.setMappedBrokerId(fixSessionDescriptor.getMappedBrokerId().getValue());
+                }
                 fixSession.setDescription(fixSessionDescriptor.getDescription());
                 String connectionType = sessionSettings.get(SessionFactory.SETTING_CONNECTION_TYPE);
                 fixSession.setIsAcceptor(SessionFactory.ACCEPTOR_CONNECTION_TYPE.equals(connectionType));

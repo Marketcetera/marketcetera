@@ -5,7 +5,7 @@ import java.util.List;
 /* $License$ */
 
 /**
- *
+ * Contains the {@link BrokerStatus} for all brokers.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -14,10 +14,9 @@ import java.util.List;
 public interface BrokersStatus
 {
     /**
-     * 
+     * Get the broker status values for all brokers.
      *
-     *
-     * @return
+     * @return a <code>List&lt;BrokerStatus&gt;</code> value
      */
     List<BrokerStatus> getBrokers();
 }

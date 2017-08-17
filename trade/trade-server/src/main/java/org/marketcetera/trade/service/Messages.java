@@ -28,4 +28,5 @@ public interface Messages {
     static final I18NMessage1P ERROR_RECONSTITUTE_FIX_MSG = new I18NMessage1P(LOGGER, "error_reconstitute_fix_msg");   //$NON-NLS-1$
     static final I18NMessage0P UNAVAILABLE_BROKER = new I18NMessage0P(LOGGER,"unavailable_broker"); //$NON-NLS-1$
     static final I18NMessage1P NO_BROKER_SELECTED = new I18NMessage1P(LOGGER,"no_broker_selected");
+    static final I18NMessage1P UNKNOWN_BROKER_ID = new I18NMessage1P(LOGGER,"unknown_broker_id"); //$NON-NLS-1$
 }

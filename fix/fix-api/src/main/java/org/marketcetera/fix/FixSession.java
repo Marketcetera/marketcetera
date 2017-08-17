@@ -41,6 +41,18 @@ public interface FixSession
      */
     void setBrokerId(String inBrokerId);
     /**
+     * Get the optional mapped broker ID value.
+     *
+     * @return a <code>String</code> value
+     */
+    String getMappedBrokerId();
+    /**
+     * Set the mapped broker ID value. 
+     *
+     * @param inBrokerId a <code>String</code> value
+     */
+    void setMappedBrokerId(String inBrokerId);
+    /**
      * Get the session ID value.
      *
      * @return a <code>String</code> value

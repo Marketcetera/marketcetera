@@ -63,6 +63,22 @@ public class SimpleFixSession
         brokerId = inBrokerId;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSession#getMappedBrokerId()
+     */
+    @Override
+    public String getMappedBrokerId()
+    {
+        return mappedBrokerId;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSession#setMappedBrokerId(java.lang.String)
+     */
+    @Override
+    public void setMappedBrokerId(String inBrokerId)
+    {
+        mappedBrokerId = inBrokerId;
+    }
+    /* (non-Javadoc)
      * @see com.marketcetera.fix.FixSession#getSessionId()
      */
     @Override
@@ -253,7 +269,8 @@ public class SimpleFixSession
         StringBuilder builder = new StringBuilder();
         builder.append("SimpleFixSession [port=").append(port).append(", host=").append(host).append(", isEnabled=")
                 .append(isEnabled).append(", isDeleted=").append(isDeleted).append(", isAcceptor=").append(isAcceptor)
-                .append(", sessionId=").append(sessionId).append(", brokerId=").append(brokerId).append(", affinity=")
+                .append(", sessionId=").append(sessionId).append(", brokerId=").append(brokerId)
+                .append(", mappedBrokerId=").append(mappedBrokerId).append(", affinity=")
                 .append(affinity).append(", instance=").append(instance).append(", status=").append(status)
                 .append(", senderSequenceNumber=").append(senderSequenceNumber).append(", targetSequenceNumber=")
                 .append(targetSequenceNumber).append(", sessionSettings=").append(sessionSettings).append("]");
@@ -300,6 +317,11 @@ public class SimpleFixSession
     @XmlAttribute
     private String brokerId;
     /**
+     * mapped broker id value
+     */
+    @XmlAttribute
+    private String mappedBrokerId;
+    /**
      * affinity value
      */
     @XmlAttribute
@@ -324,5 +346,5 @@ public class SimpleFixSession
      */
     @XmlAttribute
     private int targetSequenceNumber;
-    private static final long serialVersionUID = -5894434230805959635L;
+    private static final long serialVersionUID = 3133259062821595992L;
 }

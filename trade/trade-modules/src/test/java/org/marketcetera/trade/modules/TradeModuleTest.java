@@ -29,14 +29,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
-import quickfix.SessionID;
 
 /* $License$ */
 
 /**
- * Test {@link FixAcceptorModule} and {@link FixInitiatorModule}.
+ * Test {@link OrderConverterModule}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -55,18 +52,9 @@ public class TradeModuleTest
     public void setup()
             throws Exception
     {
-        acceptorModuleUrn = OrderConverterModuleFactory.INSTANCE_URN;
-        acceptorSessions.clear();
-        initiatorSessions.clear();
-        for(Broker broker : brokerService.getBrokers()) {
-            if(broker.getFixSession().isAcceptor()) {
-                acceptorSessions.add(new SessionID(broker.getFixSession().getSessionId()));
-            } else {
-                initiatorSessions.add(new SessionID(broker.getFixSession().getSessionId()));
-            }
-        }
+        orderConverterModuleUrn = OrderConverterModuleFactory.INSTANCE_URN;
         startModulesIfNecessary();
-        verifySessionsConnected();
+//        verifySessionsConnected();
     }
     /**
      * Run after each test.
@@ -206,15 +194,10 @@ public class TradeModuleTest
     private void startModulesIfNecessary()
             throws Exception
     {
-        if(!moduleManager.getModuleInfo(acceptorModuleUrn).getState().isStarted()) {
-            moduleManager.start(acceptorModuleUrn);
+        if(!moduleManager.getModuleInfo(orderConverterModuleUrn).getState().isStarted()) {
+            moduleManager.start(orderConverterModuleUrn);
             assertEquals(ModuleState.STARTED,
-                         moduleManager.getModuleInfo(acceptorModuleUrn).getState());
-        }
-        if(!moduleManager.getModuleInfo(initiatorModuleUrn).getState().isStarted()) {
-            moduleManager.start(initiatorModuleUrn);
-            assertEquals(ModuleState.STARTED,
-                         moduleManager.getModuleInfo(initiatorModuleUrn).getState());
+                         moduleManager.getModuleInfo(orderConverterModuleUrn).getState());
         }
     }
     /**
@@ -232,25 +215,13 @@ public class TradeModuleTest
         }
     }
     /**
-     * acceptor sessions
-     */
-    private static final Collection<SessionID> acceptorSessions = Sets.newHashSet();
-    /**
-     * initiator sessions
-     */
-    private static final Collection<SessionID> initiatorSessions = Sets.newHashSet();
-    /**
      * data flows created during the test
      */
     private final Collection<DataFlowID> dataFlows = Lists.newArrayList();
     /**
      * test acceptor module
      */
-    private ModuleURN acceptorModuleUrn;
-    /**
-     * test initiator module
-     */
-    private ModuleURN initiatorModuleUrn;
+    private ModuleURN orderConverterModuleUrn;
     /**
      * provides access to the module framework
      */

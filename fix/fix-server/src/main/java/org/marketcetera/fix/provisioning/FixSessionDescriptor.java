@@ -69,6 +69,24 @@ public class FixSessionDescriptor
         brokerId = inId;
     }
     /**
+     * Get the mappedBrokerId value.
+     *
+     * @return a <code>BrokerID</code> value
+     */
+    public BrokerID getMappedBrokerId()
+    {
+        return mappedBrokerId;
+    }
+    /**
+     * Sets the mappedBrokerId value.
+     *
+     * @param inMappedBrokerId a <code>BrokerID</code> value
+     */
+    public void setMappedBrokerId(BrokerID inMappedBrokerId)
+    {
+        mappedBrokerId = inMappedBrokerId;
+    }
+    /**
      * Get the affinity value.
      *
      * @return an <code>int</code> value
@@ -160,6 +178,10 @@ public class FixSessionDescriptor
      * broker id value
      */
     private BrokerID brokerId;
+    /**
+     * optional mapped broker id value, may be <code>null</code>
+     */
+    private BrokerID mappedBrokerId;
     /**
      * affinity value
      */

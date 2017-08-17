@@ -37,8 +37,8 @@ public class SimpleBroker
     /**
      * Create a new SimpleBroker instance.
      *
-     * @param inFixSession
-     * @param inSessionCustomization
+     * @param inFixSession a <code>FixSession</code> value
+     * @param inSessionCustomization a <code>SessionCustomization</code> value
      */
     SimpleBroker(FixSession inFixSession,
                  SessionCustomization inSessionCustomization)
@@ -63,8 +63,7 @@ public class SimpleBroker
         } else {
             fixVersion = FIXVersion.getFIXVersion(sessionId);
         }
-        // TODO implement this
-        mappedBrokerId = null;
+        mappedBrokerId = inFixSession.getMappedBrokerId() == null ? null : new BrokerID(inFixSession.getMappedBrokerId());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.Broker#getName()

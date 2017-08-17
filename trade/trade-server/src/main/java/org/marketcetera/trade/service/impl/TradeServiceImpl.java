@@ -1,6 +1,7 @@
 package org.marketcetera.trade.service.impl;
 
-import org.apache.commons.lang.Validate;
+import java.util.List;
+
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerUnavailable;
@@ -19,6 +20,8 @@ import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Lists;
 
 import quickfix.Message;
 
@@ -43,14 +46,23 @@ public class TradeServiceImpl
         Broker broker = null;
         if(inOrder.getBrokerID() != null) {
             broker = brokerService.getBroker(inOrder.getBrokerID());
+            SLF4JLoggerProxy.debug(this,
+                                   "Order {} requsted broker id {} which resolves to {}",
+                                   inOrder,
+                                   inOrder.getBrokerID(),
+                                   broker);
         }
         if(broker == null) {
             BrokerID brokerId = brokerSelector.chooseBroker(inOrder);
             if(brokerId != null) {
                 broker = brokerService.getBroker(brokerId);
             }
+            SLF4JLoggerProxy.debug(this,
+                                   "No broker was initially selected for {}, the broker selector chose {} which resolves to {}",
+                                   inOrder,
+                                   brokerId,
+                                   broker);
         }
-        // TODO mapped/virtual broker stuff?
         if(broker == null) {
             Messages.NO_BROKER_SELECTED.warn(this,
                                              inOrder);
@@ -73,22 +85,41 @@ public class TradeServiceImpl
     {
         // verify the broker is available
         BrokerStatus brokerStatus = brokerService.getBrokerStatus(inBroker.getBrokerId());
-        if(brokerStatus == null || !brokerStatus.getLoggedOn()) {
+        if(brokerStatus == null) {
+            throw new BrokerUnavailable(new I18NBoundMessage1P(Messages.UNKNOWN_BROKER_ID,
+                                                               inBroker.getBrokerId()));
+        }
+        if(!brokerStatus.getLoggedOn()) {
             throw new BrokerUnavailable(Messages.UNAVAILABLE_BROKER);
         }
-        Validate.isTrue(brokerStatus.getLoggedOn(),
-                        inBroker.getBrokerId() + " is not available"); // TODO
         // TODO broker algos
         // TODO reprice
-        // create the FIX message
-        Message message = FIXConverter.toQMessage(inBroker.getFIXVersion().getMessageFactory(),
-                                                  FIXMessageUtil.getDataDictionary(inBroker.getFIXVersion()),
+        // construct the list of order modifiers to apply
+        List<MessageModifier> orderModifiers = Lists.newArrayList();
+        orderModifiers.addAll(inBroker.getOrderModifiers());
+        Broker mappedBroker = inBroker;
+        if(inBroker.getMappedBrokerId() != null) {
+            mappedBroker = brokerService.getBroker(inBroker.getMappedBrokerId());
+            if(mappedBroker == null) {
+                throw new BrokerUnavailable(new I18NBoundMessage1P(Messages.UNKNOWN_BROKER_ID,
+                                                                   inBroker.getMappedBrokerId()));
+            }
+            orderModifiers.addAll(mappedBroker.getOrderModifiers());
+        }
+        // create the FIX message (we can use only one message factory, so if the broker is a virtual broker, we defer to the mapped broker, otherwise the virtual broker would have to duplicate
+        //  the entire mapped broker dictionary, etc)
+        Message message = FIXConverter.toQMessage(mappedBroker.getFIXVersion().getMessageFactory(),
+                                                  FIXMessageUtil.getDataDictionary(mappedBroker.getFIXVersion()),
                                                   inOrder);
         // apply modifiers
-        for(MessageModifier orderModifier : inBroker.getOrderModifiers()) {
+        for(MessageModifier orderModifier : orderModifiers) {
             try {
-                orderModifier.modify(inBroker,
+                orderModifier.modify(mappedBroker,
                                      message);
+                SLF4JLoggerProxy.debug(this,
+                                       "Applied {} to {}",
+                                       orderModifier,
+                                       message);
                 // TODO catch OrderIntercepted
             } catch (Exception e) {
                 PlatformServices.handleException(this,
@@ -106,7 +137,6 @@ public class TradeServiceImpl
                                         Broker inBroker)
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /**
      * provides access to broker services

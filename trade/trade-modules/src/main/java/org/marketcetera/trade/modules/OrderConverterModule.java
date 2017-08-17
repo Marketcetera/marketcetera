@@ -5,11 +5,12 @@ import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
-import org.marketcetera.module.DataFlowException;
 import org.marketcetera.module.DataReceiver;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.service.TradeService;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import quickfix.Message;
@@ -36,7 +37,8 @@ public class OrderConverterModule
                                    DataEmitterSupport inDataSupport)
     {
         if(!(inData instanceof Order)) {
-            throw new DataFlowException(new RuntimeException("Data flow requires objects of type Order, not " + inData.getClass().getSimpleName()));
+            throw new ReceiveDataException(new I18NBoundMessage1P(Messages.WRONG_DATA_TYPE,
+                                                                  inData.getClass().getSimpleName()));
         }
         Order order = (Order)inData;
         Broker broker = tradeService.selectBroker(order);
