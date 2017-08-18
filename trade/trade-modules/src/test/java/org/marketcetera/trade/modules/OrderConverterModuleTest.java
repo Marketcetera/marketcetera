@@ -9,6 +9,7 @@ import java.util.Deque;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.brokers.Broker;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.trade.Equity;
@@ -82,11 +83,12 @@ public class OrderConverterModuleTest
         Deque<Object> receivedData = Lists.newLinkedList();
         DataFlowID dataFlow = moduleManager.createDataFlow(getOrderConverterDataRequest(headwaterInstance,
                                                                                         receivedData));
-        HeadwaterModule.getInstance(headwaterInstance).emit(testOrder,
+        HeadwaterModule.getInstance(headwaterInstance).emit(new OwnedOrder(generateUser(),
+                                                                           testOrder),
                                                             dataFlow);
         waitForMessages(1,
                         receivedData);
-        Message convertedMessage = (Message)receivedData.getFirst();
+        Message convertedMessage = ((HasFIXMessage)receivedData.getFirst()).getMessage();
         assertNotNull(convertedMessage);
     }
     /**
@@ -117,11 +119,12 @@ public class OrderConverterModuleTest
         Deque<Object> receivedData = Lists.newLinkedList();
         DataFlowID dataFlow = moduleManager.createDataFlow(getOrderConverterDataRequest(headwaterInstance,
                                                                                         receivedData));
-        HeadwaterModule.getInstance(headwaterInstance).emit(testOrder,
+        HeadwaterModule.getInstance(headwaterInstance).emit(new OwnedOrder(generateUser(),
+                                                                           testOrder),
                                                             dataFlow);
         waitForMessages(1,
                         receivedData);
-        Message convertedMessage = (Message)receivedData.getFirst();
+        Message convertedMessage = ((HasFIXMessage)receivedData.getFirst()).getMessage();
         assertNotNull(convertedMessage);
     }
     /**
@@ -153,7 +156,8 @@ public class OrderConverterModuleTest
         Deque<Object> receivedData = Lists.newLinkedList();
         DataFlowID dataFlow = moduleManager.createDataFlow(getOrderConverterDataRequest(headwaterInstance,
                                                                                         receivedData));
-        HeadwaterModule.getInstance(headwaterInstance).emit(testOrder,
+        HeadwaterModule.getInstance(headwaterInstance).emit(new OwnedOrder(generateUser(),
+                                                                           testOrder),
                                                             dataFlow);
         assertTrue(receivedData.isEmpty());
     }

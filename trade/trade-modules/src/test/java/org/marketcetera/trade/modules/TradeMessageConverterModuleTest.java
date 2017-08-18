@@ -5,11 +5,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Deque;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.module.DataFlowID;
+import org.marketcetera.modules.fix.FIXMessageHolder;
 import org.marketcetera.modules.fix.FixDataRequest;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -64,7 +64,7 @@ public class TradeMessageConverterModuleTest
      *
      * @throws Exception if an unexpected failure occurs
      */
-    @Ignore@Test
+    @Test
     public void testValidMessage()
             throws Exception
     {
@@ -91,7 +91,8 @@ public class TradeMessageConverterModuleTest
         dataFlows.add(moduleManager.createDataFlow(getFullInitiatorReceiveDataRequest(fixDataRequest,
                                                                                       initiatorIncomingMessages)));
         OrderSingle order = generateOrder();
-        HeadwaterModule.getInstance(initiatorHeadwaterInstance).emit(order);
+        HeadwaterModule.getInstance(initiatorHeadwaterInstance).emit(new OwnedOrder(generateUser(),
+                                                                                    order));
         waitForMessages(1,
                         acceptorIncomingMessages);
         Message receivedOrder = (Message)acceptorIncomingMessages.removeFirst();
@@ -102,9 +103,8 @@ public class TradeMessageConverterModuleTest
                                                                         "Ack");
         FIXMessageFactory messageFactory = FIXVersion.FIX42.getMessageFactory();
         messageFactory.addTransactionTimeIfNeeded(receivedOrderAck);
-        FIXMessageUtil.setSessionId(receivedOrderAck,
-                                    FIXMessageUtil.getReversedSessionId(target.getSessionId()));
-        HeadwaterModule.getInstance(acceptorHeadwaterInstance).emit(receivedOrderAck);
+        HeadwaterModule.getInstance(acceptorHeadwaterInstance).emit(new FIXMessageHolder(FIXMessageUtil.getReversedSessionId(target.getSessionId()),
+                                                                                         receivedOrderAck));
         waitForMessages(1,
                         initiatorIncomingMessages);
         TradeMessage receivedExecutionReport = (TradeMessage)initiatorIncomingMessages.removeFirst();

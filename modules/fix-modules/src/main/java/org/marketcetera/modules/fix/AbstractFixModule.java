@@ -10,10 +10,12 @@ import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
+import org.marketcetera.fix.HasSessionId;
 import org.marketcetera.fix.SessionSettingsGenerator;
 import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitter;
@@ -115,18 +117,21 @@ public abstract class AbstractFixModule
                             Object inData)
             throws ReceiveDataException
     {
-        if(!(inData instanceof Message)) {
-            throw new ReceiveDataException(new IllegalArgumentException("Data flow message types must be of type Message")); // TODO message
+        if(!(inData instanceof HasFIXMessage)) {
+            throw new ReceiveDataException(new IllegalArgumentException("Data flow message types must be of type HasFIXMessage")); // TODO message
         }
-        Message message = (Message)inData;
+        if(!(inData instanceof HasSessionId)) {
+            throw new ReceiveDataException(new IllegalArgumentException("Data flow message types must be of type HasSessionId")); // TODO message
+        }
+        Message message = ((HasFIXMessage)inData).getMessage();
+        SessionID targetSessionId = ((HasSessionId)inData).getSessionId();
         try {
-            SessionID targetSessionId = FIXMessageUtil.getSessionId(message);
             boolean messageSent = Session.sendToTarget(message,
                                                        targetSessionId);
             if(!messageSent) {
                 throw new ReceiveDataException(new IllegalArgumentException("Message not sent: " + message));
             }
-        } catch (FieldNotFound | SessionNotFound e) {
+        } catch (SessionNotFound e) {
             throw new ReceiveDataException(e);
         }
     }

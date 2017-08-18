@@ -1,7 +1,6 @@
 package org.marketcetera.trade.modules;
 
 import org.marketcetera.admin.HasUser;
-import org.marketcetera.brokers.Broker;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
@@ -10,27 +9,21 @@ import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataReceiver;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
-import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.trade.HasOrder;
-import org.marketcetera.trade.Order;
-import org.marketcetera.trade.service.TradeService;
+import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import quickfix.Message;
 
 /* $License$ */
 
 /**
- * Converts orders to FIX messages.
+ * Caches the owner of outgoing messages.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @AutowiredModule
-public class OrderConverterModule
+public class OutgoingMessageCachingModule
         extends AbstractDataReemitterModule
         implements DataEmitter,DataReceiver
 {
@@ -41,9 +34,9 @@ public class OrderConverterModule
     protected HasFIXMessage onReceiveData(Object inData,
                                           DataEmitterSupport inDataSupport)
     {
-        if(!(inData instanceof HasOrder)) {
+        if(!(inData instanceof HasFIXMessage)) {
             throw new ReceiveDataException(new I18NBoundMessage2P(Messages.WRONG_DATA_TYPE,
-                                                                  HasOrder.class.getSimpleName(),
+                                                                  HasFIXMessage.class.getSimpleName(),
                                                                   inData.getClass().getSimpleName()));
         }
         if(!(inData instanceof HasUser)) {
@@ -51,38 +44,24 @@ public class OrderConverterModule
                                                                   HasUser.class.getSimpleName(),
                                                                   inData.getClass().getSimpleName()));
         }
-        Order order = ((HasOrder)inData).getOrder();
-        Broker broker = tradeService.selectBroker(order);
-        SLF4JLoggerProxy.debug(this,
-                               "{} targeted to {}",
-                               order,
-                               broker);
-        Message convertedOrder = tradeService.convertOrder(order,
-                                                           broker);
-        FIXMessageUtil.setSessionId(convertedOrder,
-                                    broker.getSessionId());
-        SLF4JLoggerProxy.debug(this,
-                               "{} converted to {}",
-                               order,
-                               convertedOrder);
-        return new OwnedMessage(((HasUser)inData).getUser(),
-                                broker.getBrokerId(),
-                                broker.getSessionId(),
-                                convertedOrder);
+        OwnedMessage ownedMessage = (OwnedMessage)inData;
+        messageOwnerService.cacheMessageOwner(((HasFIXMessage)ownedMessage).getMessage(),
+                                              ((HasUser)ownedMessage).getUser().getUserID());
+        return ownedMessage;
     }
     /**
-     * Create a new MessageConverterModule instance.
+     * Create a new OrderPersisterModule instance.
      *
      * @param inURN a <code>ModuleURN</code> value
      */
-    protected OrderConverterModule(ModuleURN inURN)
+    OutgoingMessageCachingModule(ModuleURN inURN)
     {
         super(inURN,
               true);
     }
     /**
-     * provides access to trade services
+     * provides access to message owner services
      */
     @Autowired
-    private TradeService tradeService;
+    private MessageOwnerService messageOwnerService;
 }

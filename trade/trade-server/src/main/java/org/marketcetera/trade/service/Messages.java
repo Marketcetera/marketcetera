@@ -3,6 +3,8 @@ package org.marketcetera.trade.service;
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.I18NMessage3P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -29,4 +31,8 @@ public interface Messages {
     static final I18NMessage0P UNAVAILABLE_BROKER = new I18NMessage0P(LOGGER,"unavailable_broker"); //$NON-NLS-1$
     static final I18NMessage1P NO_BROKER_SELECTED = new I18NMessage1P(LOGGER,"no_broker_selected");
     static final I18NMessage1P UNKNOWN_BROKER_ID = new I18NMessage1P(LOGGER,"unknown_broker_id"); //$NON-NLS-1$
+    static final I18NMessage1P TRADE_SESSION_STATUS = new I18NMessage1P(LOGGER,"trade_session_status"); //$NON-NLS-1$
+    static final I18NMessage2P MODIFICATION_FAILED = new I18NMessage2P(LOGGER,"modification_failed"); //$NON-NLS-1$
+    static final I18NMessage2P REPORT_FAILED = new I18NMessage2P(LOGGER,"report_failed"); //$NON-NLS-1$
+    static final I18NMessage3P NO_OWNER = new I18NMessage3P(LOGGER,"no_owner"); //$NON-NLS-1$
 }

@@ -70,6 +70,11 @@
       <artifactId>simple-cluster</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>admin-db</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- other test -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -79,9 +84,39 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-jpa</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>write-project-properties</goal>
+            </goals>
+            <configuration>
+              <outputFile>${project.build.directory}/local.properties</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
@@ -91,6 +126,12 @@
           <argLine>${mvn.test.options}</argLine>
           <systemPropertyVariables>
             <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
+            <metc.jdbc.user>${metc.jdbc.user}</metc.jdbc.user>
+            <metc.jdbc.password>${metc.jdbc.password}</metc.jdbc.password>
+            <metc.jdbc.driver>${metc.jdbc.driver}</metc.jdbc.driver>
+            <metc.jdbc.url>${metc.jdbc.url}</metc.jdbc.url>
+            <metc.jdbc.testquery>${metc.jdbc.testquery}</metc.jdbc.testquery>
+            <metc.hibernate.dialect>${metc.hibernate.dialect}</metc.hibernate.dialect>
           </systemPropertyVariables>
         </configuration>
       </plugin>

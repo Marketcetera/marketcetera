@@ -1,6 +1,6 @@
 package org.marketcetera.trade.service.impl;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerStatus;
@@ -13,9 +13,14 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXConverter;
+import org.marketcetera.trade.Hierarchy;
+import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.trade.service.Messages;
+import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -23,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
 
+import quickfix.FieldNotFound;
 import quickfix.Message;
 
 /* $License$ */
@@ -95,17 +101,9 @@ public class TradeServiceImpl
         // TODO broker algos
         // TODO reprice
         // construct the list of order modifiers to apply
-        List<MessageModifier> orderModifiers = Lists.newArrayList();
-        orderModifiers.addAll(inBroker.getOrderModifiers());
-        Broker mappedBroker = inBroker;
-        if(inBroker.getMappedBrokerId() != null) {
-            mappedBroker = brokerService.getBroker(inBroker.getMappedBrokerId());
-            if(mappedBroker == null) {
-                throw new BrokerUnavailable(new I18NBoundMessage1P(Messages.UNKNOWN_BROKER_ID,
-                                                                   inBroker.getMappedBrokerId()));
-            }
-            orderModifiers.addAll(mappedBroker.getOrderModifiers());
-        }
+        Collection<MessageModifier> orderModifiers = getOrderMessageModifiers(inBroker);
+        // choose the broker to use
+        Broker mappedBroker = resolveVirtualBroker(inBroker);
         // create the FIX message (we can use only one message factory, so if the broker is a virtual broker, we defer to the mapped broker, otherwise the virtual broker would have to duplicate
         //  the entire mapped broker dictionary, etc)
         Message message = FIXConverter.toQMessage(mappedBroker.getFIXVersion().getMessageFactory(),
@@ -120,8 +118,8 @@ public class TradeServiceImpl
                                        "Applied {} to {}",
                                        orderModifier,
                                        message);
-                // TODO catch OrderIntercepted
             } catch (Exception e) {
+                // unable to modify the order, but the show must go on!
                 PlatformServices.handleException(this,
                                                  "Unable to modify order",
                                                  e);
@@ -136,8 +134,126 @@ public class TradeServiceImpl
     public TradeMessage convertResponse(Message inMessage,
                                         Broker inBroker)
     {
-        throw new UnsupportedOperationException(); // TODO
+        try {
+            if(FIXMessageUtil.isTradingSessionStatus(inMessage)) {
+                Messages.TRADE_SESSION_STATUS.info(this,
+                                                   inBroker.getFIXDataDictionary().getHumanFieldValue(quickfix.field.TradSesStatus.FIELD,
+                                                                                                      inMessage.getString(quickfix.field.TradSesStatus.FIELD)));
+            }
+        } catch (FieldNotFound e) {
+            PlatformServices.handleException(this,
+                                             "Unable to process trading session status message",
+                                             e);
+        }
+        Broker mappedBroker = resolveVirtualBroker(inBroker);
+        Collection<MessageModifier> responseModifiers = getReportMessageModifiers(inBroker);
+        for(MessageModifier responseModifier : responseModifiers) {
+            try {
+                responseModifier.modify(mappedBroker,
+                                        inMessage);
+                SLF4JLoggerProxy.debug(this,
+                                       "Applied {} to {}",
+                                       responseModifier,
+                                       inMessage);
+            } catch (Exception e) {
+                Messages.MODIFICATION_FAILED.warn(this,
+                                                  e,
+                                                  inMessage,
+                                                  inBroker);
+            }
+        }
+        TradeMessage reply;
+        try {
+            UserID actor = orderOwnerService.getMessageOwner(inMessage,
+                                                                  inBroker.getSessionId(),
+                                                                  inBroker.getBrokerId());
+            // TODO determine hierarchy - this might need the original order to resolve
+            reply = FIXConverter.fromQMessage(inMessage,
+                                              Originator.Broker,
+                                              inBroker.getBrokerId(),
+                                              Hierarchy.Flat,
+                                              actor,
+                                              actor);
+        } catch (MessageCreationException e) {
+            Messages.REPORT_FAILED.error(this,
+                                         e,
+                                         inMessage,
+                                         inBroker);
+            throw e;
+        }
+        return reply;
     }
+    /**
+     * Resolve the given broker into the appropriate virtual or physical broker.
+     *
+     * @param inBroker a <code>Broker</code> value
+     * @return a <code>Broker</code> value
+     */
+    private Broker resolveVirtualBroker(Broker inBroker)
+    {
+        Broker mappedBroker = inBroker;
+        if(inBroker.getMappedBrokerId() != null) {
+            mappedBroker = brokerService.getBroker(inBroker.getMappedBrokerId());
+            if(mappedBroker == null) {
+                throw new BrokerUnavailable(new I18NBoundMessage1P(Messages.UNKNOWN_BROKER_ID,
+                                                                   inBroker.getMappedBrokerId()));
+            }
+        }
+        return mappedBroker;
+    }
+    /**
+     * Get the complete collection of order modifiers for the given broker.
+     *
+     * @param inBroker a <code>Broker</code> value
+     * @return a <code>Collection&lt;MessageModifier&gt;</code> value
+     */
+    private Collection<MessageModifier> getOrderMessageModifiers(Broker inBroker)
+    {
+        return getMessageModifiers(inBroker,
+                                   true);
+    }
+    /**
+     * Get the complete collection of report modifiers for the given broker.
+     *
+     * @param inBroker a <code>Broker</code> value
+     * @return a <code>Collection&lt;MessageModifier&gt;</code> value
+     */
+    private Collection<MessageModifier> getReportMessageModifiers(Broker inBroker)
+    {
+        return getMessageModifiers(inBroker,
+                                   false);
+    }
+    /**
+     * Get the complete collection of message modifiers for the given broker.
+     *
+     * @param inBroker a <code>Broker</code> value
+     * @param inIsOrder a <code>boolean</code> value
+     * @return a <code>Collection&lt;MessageModifier&gt;</code> value
+     */
+    private Collection<MessageModifier> getMessageModifiers(Broker inBroker,
+                                                            boolean inIsOrder)
+    {
+        Collection<MessageModifier> modifiers = Lists.newArrayList();
+        if(inIsOrder) {
+            modifiers.addAll(inBroker.getOrderModifiers());
+        } else {
+            modifiers.addAll(inBroker.getResponseModifiers());
+        }
+        if(inBroker.getMappedBrokerId() != null) {
+            Broker mappedBroker = resolveVirtualBroker(inBroker);
+            if(inIsOrder) {
+                modifiers.addAll(mappedBroker.getOrderModifiers());
+            } else {
+                modifiers.addAll(mappedBroker.getResponseModifiers());
+            }
+        }
+        return modifiers;
+    }
+    /**
+     * provides access to outgoing message services
+     */
+    @Autowired
+    private MessageOwnerService orderOwnerService;
     /**
      * provides access to broker services
      */

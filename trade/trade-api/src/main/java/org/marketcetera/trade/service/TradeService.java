@@ -22,6 +22,7 @@ public interface TradeService
      *
      * @param inOrder an <code>Order</code> value
      * @return a <code>Broker</code> value
+     * @throws NoBrokerSelected if a broker could not be determined
      */
     Broker selectBroker(Order inOrder);
     /**
@@ -30,6 +31,8 @@ public interface TradeService
      * @param inOrder an <code>Order</code> value
      * @param inBroker a <code>Broker</code> value
      * @return a <code>Message</code> value
+     * @throws BrokerUnavailable if the broker is unavailable or unknown
+     * @throws OrderIntercepted if the order should not be sent on in the data flow
      */
     Message convertOrder(Order inOrder,
                          Broker inBroker);
@@ -39,6 +42,8 @@ public interface TradeService
      * @param inMessage a <code>Message</code> value
      * @param inBroker a <code>Broker</code> value
      * @return a <code>TradeMessage</code> value
+     * @throws OrderIntercepted if the message should not be sent on in the data flow
+     * @throws MessageCreationException if the message could not be converted
      */
     TradeMessage convertResponse(Message inMessage,
                                  Broker inBroker);

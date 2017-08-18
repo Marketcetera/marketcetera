@@ -6,12 +6,16 @@ import java.util.Deque;
 import java.util.List;
 
 import org.junit.Before;
+import org.marketcetera.admin.User;
+import org.marketcetera.admin.UserFactory;
+import org.marketcetera.admin.service.UserService;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.modules.fix.FixDataRequest;
 import org.marketcetera.modules.fix.FixInitiatorModuleFactory;
 import org.marketcetera.trade.service.TradeTestBase;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
 
@@ -54,6 +58,8 @@ public abstract class TradeModulesTestBase
         ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
         dataRequestBuilder.add(new DataRequest(OrderConverterModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(OutgoingMessageCachingModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(OutgoingMessagePersistenceModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
                                                inFixDataRequest));
         return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
@@ -133,6 +139,25 @@ public abstract class TradeModulesTestBase
         }
     }
     /**
+     * Generate a test user.
+     *
+     * @return a <code>User</code> value
+     */
+    protected User generateUser()
+    {
+        User user = userFactory.create("test-user-"+System.nanoTime(),
+                                  "password",
+                                  "Description of the test user",
+                                  true);
+        user = userService.save(user);
+        return user;
+    }
+    /**
+     * provides access to user services
+     */
+    @Autowired
+    protected UserService userService;
+    /**
      * test order converter module
      */
     protected ModuleURN orderConverterModuleUrn;
@@ -140,4 +165,9 @@ public abstract class TradeModulesTestBase
      * test trade message converter module
      */
     protected ModuleURN tradeMessageConverterModuleUrn;
+    /**
+     * creates user objects
+     */
+    @Autowired
+    protected UserFactory userFactory;
 }

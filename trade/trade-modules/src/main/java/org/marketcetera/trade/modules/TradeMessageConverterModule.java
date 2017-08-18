@@ -2,6 +2,7 @@ package org.marketcetera.trade.modules;
 
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.fix.OrderIntercepted;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitter;
@@ -68,6 +69,8 @@ public class TradeMessageConverterModule
                                    fixTradeMessage,
                                    tradeMessage);
             return tradeMessage;
+        } catch (OrderIntercepted e) {
+            throw new ReceiveDataException(e);
         } catch (Exception e) {
             throw new ReceiveDataException(e);
         }
