@@ -17,6 +17,8 @@
     <property name="acceptorHost" value="localhost"/>
     <property name="acceptorPort" value="21345"/>
   </bean>
+  <bean id="messageOwnerService" class="org.marketcetera.trade.service.impl.MessageOwnerServiceImpl"/>
+  <bean id="incomingMessageService" class="org.marketcetera.fix.service.IncomingMessageServiceImpl"/>
   <bean id="tradeService" class="org.marketcetera.trade.service.impl.TradeServiceImpl"/>
   <bean id="brokerService" class="org.marketcetera.brokers.service.BrokerServiceImpl"/>
   <bean id="fixSessionsProvider" class="org.marketcetera.brokers.service.InMemoryFixSessionProvider">

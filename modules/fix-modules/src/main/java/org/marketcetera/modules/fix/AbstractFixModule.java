@@ -17,19 +17,18 @@ import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
 import org.marketcetera.fix.HasSessionId;
 import org.marketcetera.fix.SessionSettingsGenerator;
+import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
-import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataReceiver;
 import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.module.RequestDataException;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -67,8 +66,8 @@ import quickfix.mina.SessionConnector;
  */
 @AutowiredModule
 public abstract class AbstractFixModule
-        extends Module
-        implements DataReceiver,DataEmitter,ApplicationExtended
+        extends AbstractDataReemitterModule
+        implements ApplicationExtended
 {
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
@@ -78,6 +77,8 @@ public abstract class AbstractFixModule
                             DataEmitterSupport inSupport)
             throws RequestDataException
     {
+        super.requestData(inRequest,
+                          inSupport);
         DataRequester dataRequester = new DataRequester(inRequest,
                                                         inSupport);
         if(dataRequester.isForAllSessionIds()) {
@@ -87,8 +88,6 @@ public abstract class AbstractFixModule
                 requestsBySessionId.getUnchecked(sessionId).add(dataRequester);
             }
         }
-        requestsByDataFlowId.put(inSupport.getFlowID(),
-                                 dataRequester);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.DataFlowID, org.marketcetera.module.RequestID)
@@ -97,6 +96,8 @@ public abstract class AbstractFixModule
     public void cancel(DataFlowID inFlowID,
                        RequestID inRequestID)
     {
+        super.cancel(inFlowID,
+                     inRequestID);
         DataRequester dataRequester = requestsByDataFlowId.getIfPresent(inFlowID);
         requestsByDataFlowId.invalidate(inFlowID);
         if(dataRequester != null) {
@@ -110,19 +111,23 @@ public abstract class AbstractFixModule
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.module.DataReceiver#receiveData(org.marketcetera.module.DataFlowID, java.lang.Object)
+     * @see org.marketcetera.module.AbstractDataReemitterModule#onReceiveData(java.lang.Object, org.marketcetera.module.DataEmitterSupport)
      */
     @Override
-    public void receiveData(DataFlowID inFlowID,
-                            Object inData)
-            throws ReceiveDataException
+    protected HasFIXMessage onReceiveData(Object inData,
+                                          DataEmitterSupport inDataSupport)
     {
         if(!(inData instanceof HasFIXMessage)) {
-            throw new ReceiveDataException(new IllegalArgumentException("Data flow message types must be of type HasFIXMessage")); // TODO message
+            throw new ReceiveDataException(new I18NBoundMessage2P(org.marketcetera.module.Messages.WRONG_DATA_TYPE,
+                                                                  HasFIXMessage.class.getSimpleName(),
+                                                                  inData.getClass().getSimpleName()));
         }
         if(!(inData instanceof HasSessionId)) {
-            throw new ReceiveDataException(new IllegalArgumentException("Data flow message types must be of type HasSessionId")); // TODO message
+            throw new ReceiveDataException(new I18NBoundMessage2P(org.marketcetera.module.Messages.WRONG_DATA_TYPE,
+                                                                  HasSessionId.class.getSimpleName(),
+                                                                  inData.getClass().getSimpleName()));
         }
+        HasFIXMessage messagePackage = (HasFIXMessage)inData;
         Message message = ((HasFIXMessage)inData).getMessage();
         SessionID targetSessionId = ((HasSessionId)inData).getSessionId();
         try {
@@ -134,6 +139,7 @@ public abstract class AbstractFixModule
         } catch (SessionNotFound e) {
             throw new ReceiveDataException(e);
         }
+        return messagePackage;
     }
     /* (non-Javadoc)
      * @see quickfix.Application#onCreate(quickfix.SessionID)
@@ -435,7 +441,8 @@ public abstract class AbstractFixModule
                                      inSessionId,
                                      inMessage,
                                      inIsAdmin)) {
-                requester.getDataEmitterSupport().send(inMessage);
+                requester.getDataEmitterSupport().send(new FIXMessageHolder(inSessionId,
+                                                                            inMessage));
             }
         }
         Set<DataRequester> requestersForSession = requestsBySessionId.getIfPresent(inSessionId);
@@ -445,7 +452,8 @@ public abstract class AbstractFixModule
                                          inSessionId,
                                          inMessage,
                                          inIsAdmin)) {
-                    requester.getDataEmitterSupport().send(inMessage);
+                    requester.getDataEmitterSupport().send(new FIXMessageHolder(inSessionId,
+                                                                                inMessage));
                 }
             }
         }

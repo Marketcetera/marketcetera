@@ -8,6 +8,7 @@
   <bean id="simpleClusterService" class="org.marketcetera.cluster.SimpleClusterService"/>
   <bean id="messageFactory" class="quickfix.DefaultMessageFactory"/>
   <bean id="brokerFactory" class="org.marketcetera.fix.impl.SimpleBrokerFactory"/>
+  <bean id="incomingMessageService" class="org.marketcetera.fix.service.IncomingMessageServiceImpl"/>
   <bean id="fixSessionFactory" class="org.marketcetera.fix.impl.SimpleFixSessionFactory"/>
   <bean id="fixSettingsProviderFactory" class="org.marketcetera.fix.FixSettingsProviderFactoryImpl">
     <property name="messageStoreFactoryClass" value="org.marketcetera.fix.store.NoopStoreFactory"/>

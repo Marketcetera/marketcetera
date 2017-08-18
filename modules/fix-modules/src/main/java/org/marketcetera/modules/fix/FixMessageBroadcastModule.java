@@ -1,27 +1,28 @@
-package org.marketcetera.trade.modules;
+package org.marketcetera.modules.fix;
 
-import org.marketcetera.admin.HasUser;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.fix.HasSessionId;
+import org.marketcetera.fix.IncomingMessagePublisher;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
-import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */
 
 /**
- * Caches the owner of outgoing messages.
+ * Facilitates the broadcast of trade messages.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @AutowiredModule
-public class OutgoingMessageCachingModule
+public class FixMessageBroadcastModule
         extends AbstractDataReemitterModule
 {
     /* (non-Javadoc)
@@ -36,29 +37,39 @@ public class OutgoingMessageCachingModule
                                                                   HasFIXMessage.class.getSimpleName(),
                                                                   inData.getClass().getSimpleName()));
         }
-        if(!(inData instanceof HasUser)) {
+        if(!(inData instanceof HasSessionId)) {
             throw new ReceiveDataException(new I18NBoundMessage2P(org.marketcetera.module.Messages.WRONG_DATA_TYPE,
-                                                                  HasUser.class.getSimpleName(),
+                                                                  HasSessionId.class.getSimpleName(),
                                                                   inData.getClass().getSimpleName()));
         }
-        OwnedMessage ownedMessage = (OwnedMessage)inData;
-        messageOwnerService.cacheMessageOwner(((HasFIXMessage)ownedMessage).getMessage(),
-                                              ((HasUser)ownedMessage).getUser().getUserID());
-        return ownedMessage;
+        if(incomingMessagePublisher == null) {
+            Messages.NO_FIX_MESSAGE_PUBLISHER.warn(this,
+                                                   inData);
+        } else {
+            try {
+                incomingMessagePublisher.reportMessage(((HasSessionId)inData).getSessionId(),
+                                                       ((HasFIXMessage)inData).getMessage());
+            } catch (Exception e) {
+                PlatformServices.handleException(this,
+                                                 "Error publishing FIX message",
+                                                 e);
+            }
+        }
+        return (HasFIXMessage)inData;
     }
     /**
-     * Create a new OrderPersisterModule instance.
+     * Create a new FixMessageBroadcastModule instance.
      *
      * @param inURN a <code>ModuleURN</code> value
      */
-    OutgoingMessageCachingModule(ModuleURN inURN)
+    protected FixMessageBroadcastModule(ModuleURN inURN)
     {
         super(inURN,
               true);
     }
     /**
-     * provides access to message owner services
+     * fix message listener
      */
-    @Autowired
-    private MessageOwnerService messageOwnerService;
+    @Autowired(required=false)
+    private IncomingMessagePublisher incomingMessagePublisher;
 }

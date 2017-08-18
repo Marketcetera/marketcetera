@@ -14,6 +14,8 @@ import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.fix.FixMessageHandler;
+import org.marketcetera.fix.IncomingMessagePublisher;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
@@ -29,6 +31,7 @@ import org.springframework.context.ApplicationContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import quickfix.Message;
 import quickfix.SessionID;
 
 /* $License$ */
@@ -129,13 +132,21 @@ public abstract class FixModuleTestBase
      * @return a <code>DataRequest[]</code> value
      */
     protected DataRequest[] getAcceptorReceiveDataRequest(FixDataRequest inFixDataRequest,
-                                                          Deque<Object> inReceivedData)
+                                                          final Deque<Object> inReceivedData)
     {
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
         dataRequestBuilder.add(new DataRequest(FixAcceptorModuleFactory.INSTANCE_URN,
                                                inFixDataRequest));
-        ModuleURN publisherUrn = createPublisherModule(inReceivedData);
-        dataRequestBuilder.add(new DataRequest(publisherUrn));
+        dataRequestBuilder.add(new DataRequest(FixMessageBroadcastModuleFactory.INSTANCE_URN));
+        incomingMessagePublisher.addMessageListener(new FixMessageHandler() {
+            @Override
+            public void handleMessage(SessionID inSessionId,
+                                      Message inMessage)
+                                              throws Exception
+            {
+                inReceivedData.add(inMessage);
+            }
+        });
         return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
     }
     /**
@@ -308,4 +319,9 @@ public abstract class FixModuleTestBase
      */
     @Autowired
     protected ClusterService clusterService;
+    /**
+     * provides access to incoming messages
+     */
+    @Autowired
+    private IncomingMessagePublisher incomingMessagePublisher;
 }

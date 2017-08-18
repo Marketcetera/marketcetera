@@ -5,9 +5,7 @@ import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.HasSessionId;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
-import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
-import org.marketcetera.module.DataReceiver;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.trade.HasBrokerID;
@@ -29,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @AutowiredModule
 public class OutgoingMessagePersistenceModule
         extends AbstractDataReemitterModule
-        implements DataEmitter,DataReceiver
 {
     /* (non-Javadoc)
      * @see org.marketcetera.module.AbstractDataReemitterModule#onReceiveData(java.lang.Object, org.marketcetera.module.DataEmitterSupport)
@@ -39,22 +36,22 @@ public class OutgoingMessagePersistenceModule
                                           DataEmitterSupport inDataSupport)
     {
         if(!(inData instanceof HasFIXMessage)) {
-            throw new ReceiveDataException(new I18NBoundMessage2P(Messages.WRONG_DATA_TYPE,
+            throw new ReceiveDataException(new I18NBoundMessage2P(org.marketcetera.module.Messages.WRONG_DATA_TYPE,
                                                                   HasFIXMessage.class.getSimpleName(),
                                                                   inData.getClass().getSimpleName()));
         }
         if(!(inData instanceof HasUser)) {
-            throw new ReceiveDataException(new I18NBoundMessage2P(Messages.WRONG_DATA_TYPE,
+            throw new ReceiveDataException(new I18NBoundMessage2P(org.marketcetera.module.Messages.WRONG_DATA_TYPE,
                                                                   HasUser.class.getSimpleName(),
                                                                   inData.getClass().getSimpleName()));
         }
         if(!(inData instanceof HasBrokerID)) {
-            throw new ReceiveDataException(new I18NBoundMessage2P(Messages.WRONG_DATA_TYPE,
+            throw new ReceiveDataException(new I18NBoundMessage2P(org.marketcetera.module.Messages.WRONG_DATA_TYPE,
                                                                   HasBrokerID.class.getSimpleName(),
                                                                   inData.getClass().getSimpleName()));
         }
         if(!(inData instanceof HasSessionId)) {
-            throw new ReceiveDataException(new I18NBoundMessage2P(Messages.WRONG_DATA_TYPE,
+            throw new ReceiveDataException(new I18NBoundMessage2P(org.marketcetera.module.Messages.WRONG_DATA_TYPE,
                                                                   HasSessionId.class.getSimpleName(),
                                                                   inData.getClass().getSimpleName()));
         }

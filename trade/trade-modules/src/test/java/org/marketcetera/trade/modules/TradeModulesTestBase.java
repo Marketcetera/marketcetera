@@ -2,6 +2,7 @@ package org.marketcetera.trade.modules;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 
@@ -14,6 +15,9 @@ import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.modules.fix.FixDataRequest;
 import org.marketcetera.modules.fix.FixInitiatorModuleFactory;
+import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.TradeMessageListener;
+import org.marketcetera.trade.TradeMessagePublisher;
 import org.marketcetera.trade.service.TradeTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -72,14 +76,22 @@ public abstract class TradeModulesTestBase
      * @return a <code>DataRequest[]</code> value
      */
     protected DataRequest[] getFullInitiatorReceiveDataRequest(FixDataRequest inFixDataRequest,
-                                                               Deque<Object> inReceivedData)
+                                                               final Deque<Object> inReceivedData)
     {
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
         dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
                                                inFixDataRequest));
         dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));
-        ModuleURN publisherUrn = createPublisherModule(inReceivedData);
-        dataRequestBuilder.add(new DataRequest(publisherUrn));
+        dataRequestBuilder.add(new DataRequest(TradeMessageBroadcastModuleFactory.INSTANCE_URN));
+        for(TradeMessagePublisher tradeMessagePublisher : tradeMessagePublishers) {
+            tradeMessagePublisher.addTradeMessageListener(new TradeMessageListener() {
+                @Override
+                public void receiveTradeMessage(TradeMessage inTradeMessage)
+                {
+                    inReceivedData.addLast(inTradeMessage);
+                }
+            });
+        }
         return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
     }
     /**
@@ -152,6 +164,11 @@ public abstract class TradeModulesTestBase
         user = userService.save(user);
         return user;
     }
+    /**
+     * trade message publishers value
+     */
+    @Autowired
+    protected Collection<TradeMessagePublisher> tradeMessagePublishers = Lists.newArrayList();
     /**
      * provides access to user services
      */

@@ -5,9 +5,7 @@ import org.marketcetera.brokers.Broker;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
-import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
-import org.marketcetera.module.DataReceiver;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -32,7 +30,6 @@ import quickfix.Message;
 @AutowiredModule
 public class OrderConverterModule
         extends AbstractDataReemitterModule
-        implements DataEmitter,DataReceiver
 {
     /* (non-Javadoc)
      * @see org.marketcetera.module.AbstractDataReemitterModule#onReceiveData(java.lang.Object, org.marketcetera.module.DataEmitterSupport)
@@ -42,12 +39,12 @@ public class OrderConverterModule
                                           DataEmitterSupport inDataSupport)
     {
         if(!(inData instanceof HasOrder)) {
-            throw new ReceiveDataException(new I18NBoundMessage2P(Messages.WRONG_DATA_TYPE,
+            throw new ReceiveDataException(new I18NBoundMessage2P(org.marketcetera.module.Messages.WRONG_DATA_TYPE,
                                                                   HasOrder.class.getSimpleName(),
                                                                   inData.getClass().getSimpleName()));
         }
         if(!(inData instanceof HasUser)) {
-            throw new ReceiveDataException(new I18NBoundMessage2P(Messages.WRONG_DATA_TYPE,
+            throw new ReceiveDataException(new I18NBoundMessage2P(org.marketcetera.module.Messages.WRONG_DATA_TYPE,
                                                                   HasUser.class.getSimpleName(),
                                                                   inData.getClass().getSimpleName()));
         }

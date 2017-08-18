@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -112,23 +113,20 @@ public class FixModuleTest
                                                      TimeInForce.GoodTillCancel.getFIXValue(),
                                                      null);
         messageFactory.addTransactionTimeIfNeeded(order);
-        // mark this fine message with a session id
-        FIXMessageUtil.setSessionId(order,
-                                    acceptorSessions.iterator().next());
-        acceptorSender.emit(order);
+        acceptorSender.emit(new FIXMessageHolder(acceptorSessions.iterator().next(),
+                                                 order));
         waitForMessages(1,
                         initiatorMessages);
         // respond with an ER
-        Message receivedOrder = (Message)initiatorMessages.getFirst();
+        Message receivedOrder = ((HasFIXMessage)initiatorMessages.getFirst()).getMessage();
         Message receivedOrderAck = FIXMessageUtil.createExecutionReport(receivedOrder,
                                                                         OrderStatus.New,
                                                                         ExecutionType.New,
                                                                         ExecutionTransType.New,
                                                                         "Ack");
         messageFactory.addTransactionTimeIfNeeded(receivedOrderAck);
-        FIXMessageUtil.setSessionId(receivedOrderAck,
-                                    initiatorSessions.iterator().next());
-        initiatorSender.emit(receivedOrderAck);
+        initiatorSender.emit(new FIXMessageHolder(initiatorSessions.iterator().next(),
+                                                  receivedOrderAck));
         waitForMessages(1,
                         acceptorMessages);
     }

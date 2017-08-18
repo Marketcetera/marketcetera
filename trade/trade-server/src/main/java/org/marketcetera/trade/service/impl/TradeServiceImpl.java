@@ -1,6 +1,7 @@
 package org.marketcetera.trade.service.impl;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerStatus;
@@ -18,15 +19,18 @@ import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.TradeMessageListener;
+import org.marketcetera.trade.TradeMessagePublisher;
 import org.marketcetera.trade.UserID;
-import org.marketcetera.trade.service.Messages;
 import org.marketcetera.trade.service.MessageOwnerService;
+import org.marketcetera.trade.service.Messages;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -41,7 +45,7 @@ import quickfix.Message;
  * @since $Release$
  */
 public class TradeServiceImpl
-        implements TradeService
+        implements TradeService,TradeMessagePublisher
 {
     /* (non-Javadoc)
      * @see org.marketcetera.trade.service.TradeService#selectBroker(org.marketcetera.trade.Order)
@@ -183,6 +187,38 @@ public class TradeServiceImpl
         }
         return reply;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.TradeMessagePublisher#addTradeMessageListener(org.marketcetera.trade.TradeMessageListener)
+     */
+    @Override
+    public void addTradeMessageListener(TradeMessageListener inTradeMessageListener)
+    {
+        tradeMessageListeners.add(inTradeMessageListener);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.TradeMessagePublisher#removeTradeMessageListener(org.marketcetera.trade.TradeMessageListener)
+     */
+    @Override
+    public void removeTradeMessageListener(TradeMessageListener inTradeMessageListener)
+    {
+        tradeMessageListeners.remove(inTradeMessageListener);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.TradeService#reportTradeMessage(org.marketcetera.trade.TradeMessage)
+     */
+    @Override
+    public void reportTradeMessage(TradeMessage inTradeMessage)
+    {
+        for(TradeMessageListener tradeMessageListener : tradeMessageListeners) {
+            try {
+                tradeMessageListener.receiveTradeMessage(inTradeMessage);
+            } catch (Exception e) {
+                PlatformServices.handleException(this,
+                                                 "Error broadcasting trade message",
+                                                 e);
+            }
+        }
+    }
     /**
      * Resolve the given broker into the appropriate virtual or physical broker.
      *
@@ -264,4 +300,8 @@ public class TradeServiceImpl
      */
     @Autowired(required=false)
     private Selector brokerSelector;
+    /**
+     * holds trade message listener subscribers
+     */
+    private final Set<TradeMessageListener> tradeMessageListeners = Sets.newConcurrentHashSet();
 }

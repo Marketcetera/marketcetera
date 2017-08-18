@@ -2,12 +2,11 @@ package org.marketcetera.trade.modules;
 
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.OrderIntercepted;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
-import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
-import org.marketcetera.module.DataReceiver;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -32,21 +31,20 @@ import quickfix.Message;
 @AutowiredModule
 public class TradeMessageConverterModule
         extends AbstractDataReemitterModule
-        implements DataEmitter,DataReceiver
 {
     /* (non-Javadoc)
      * @see org.marketcetera.module.AbstractDataReemitterModule#onReceiveData(java.lang.Object, org.marketcetera.module.DataEmitterSupport)
      */
     @Override
-    protected TradeMessage onReceiveData(Object inData,
-                                         DataEmitterSupport inDataSupport)
+    protected TradeMessagePackage onReceiveData(Object inData,
+                                                DataEmitterSupport inDataSupport)
     {
-        if(!(inData instanceof Message)) {
-            throw new ReceiveDataException(new I18NBoundMessage2P(Messages.WRONG_DATA_TYPE,
-                                                                  Message.class.getSimpleName(),
+        if(!(inData instanceof HasFIXMessage)) {
+            throw new ReceiveDataException(new I18NBoundMessage2P(org.marketcetera.module.Messages.WRONG_DATA_TYPE,
+                                                                  HasFIXMessage.class.getSimpleName(),
                                                                   inData.getClass().getSimpleName()));
         }
-        Message fixTradeMessage = (Message)inData;
+        Message fixTradeMessage = ((HasFIXMessage)inData).getMessage();
         Broker broker;
         try {
             broker = brokerService.getBroker(FIXMessageUtil.getReversedSessionId(FIXMessageUtil.getSessionId(fixTradeMessage)));
@@ -68,7 +66,8 @@ public class TradeMessageConverterModule
                                    "Converted {} to {}",
                                    fixTradeMessage,
                                    tradeMessage);
-            return tradeMessage;
+            return new TradeMessagePackage(broker,
+                                           tradeMessage);
         } catch (OrderIntercepted e) {
             throw new ReceiveDataException(e);
         } catch (Exception e) {
