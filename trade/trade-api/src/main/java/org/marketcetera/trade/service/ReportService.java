@@ -12,7 +12,9 @@ import org.marketcetera.fix.IncomingMessage;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.Future;
+import org.marketcetera.trade.HasMutableReportID;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
@@ -20,7 +22,6 @@ import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.ReportID;
-import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.domain.Page;
 
@@ -254,4 +255,10 @@ public interface ReportService
      */
     Page<? extends ExecutionReportSummary> getExecutions(int inPageNumber,
                                                          int inPageSize);
+    /**
+     * Assign a report id to the given report.
+     *
+     * @param inReport a <code>HasMutableReportID</code> value
+     */
+    void assignReportId(HasMutableReportID inReport);
 }

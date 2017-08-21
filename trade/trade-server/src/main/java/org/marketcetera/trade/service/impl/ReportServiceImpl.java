@@ -23,6 +23,8 @@ import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.LongIDFactory;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.fix.FixSession;
@@ -37,6 +39,7 @@ import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.Future;
+import org.marketcetera.trade.HasMutableReportID;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
@@ -104,6 +107,7 @@ public class ReportServiceImpl
     @PostConstruct
     public void start()
     {
+        reportIDFactory = new LongIDFactory(idFactory);
         timerService = new Timer();
         cachedSessionStart = CacheBuilder.newBuilder().build();
         Validate.isTrue(missingSeqNumBatchSize > 0,
@@ -753,6 +757,15 @@ public class ReportServiceImpl
         SessionID sessionId = new SessionID(inSession.getSessionId());
         cachedSessionStart.invalidate(sessionId);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.ReportService#assignReportId(org.marketcetera.trade.HasMutableReportID)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void assignReportId(HasMutableReportID inReport)
+    {
+        inReport.setReportID(new ReportID(reportIDFactory.getNext()));
+    }
     /**
      * Get the missingSeqNumBatchSize value.
      *
@@ -1124,6 +1137,15 @@ public class ReportServiceImpl
      */
     @Autowired
     private AuthorizationService authzService;
+    /**
+     * provides an interface to long-based ids
+     */
+    private LongIDFactory reportIDFactory;
+    /**
+     * provides access to unique IDs
+     */
+    @Autowired
+    private IDFactory idFactory;
     /**
      * provides scheduled services
      */

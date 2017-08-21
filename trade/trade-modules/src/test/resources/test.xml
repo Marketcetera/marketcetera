@@ -19,7 +19,7 @@
   <tx:annotation-driven/>
   <context:component-scan base-package="org.marketcetera"/>
   <bean id="moduleManager" class="org.marketcetera.module.ModuleManager" init-method="init" destroy-method="stop"/>
-  <bean id="simpleClusterService" class="org.marketcetera.cluster.SimpleClusterService"/>
+  <bean id="clusterService" class="org.marketcetera.cluster.SimpleClusterService"/>
   <bean id="messageFactory" class="quickfix.DefaultMessageFactory"/>
   <bean id="brokerFactory" class="org.marketcetera.fix.impl.SimpleBrokerFactory"/>
   <bean id="incomingMessageService" class="org.marketcetera.fix.service.IncomingMessageServiceImpl"/>
@@ -38,6 +38,12 @@
   <bean id="tradeService" class="org.marketcetera.trade.service.impl.TradeServiceImpl"/>
   <bean id="messageOwnerService" class="org.marketcetera.trade.service.impl.MessageOwnerServiceImpl"/>
   <bean id="outgoingMessageService" class="org.marketcetera.trade.service.impl.OutgoingMessageServiceImpl"/>
+  <bean id="orderSummaryService" class="org.marketcetera.trade.service.impl.OrderSummaryServiceImpl"/>
+  <bean id="authorizationService" class="org.marketcetera.admin.service.impl.AuthorizationServiceImpl"/>
+  <bean id="databaseIdService" class="org.marketcetera.trade.service.impl.DatabaseIdService"/>
+  <bean id="reportService" class="org.marketcetera.trade.service.impl.ReportServiceImpl"/>
+  <bean id="rootOrderIdFactory" class="org.marketcetera.trade.impl.BasicRootOrderIdFactory"/>
+  <bean id="idFactory" class="org.marketcetera.trade.dao.DatabaseIDFactory" init-method="init" depends-on="clusterService"/>
   <bean id="brokerService" class="org.marketcetera.brokers.service.BrokerServiceImpl"/>
   <bean id="fixSessionsProvider" class="org.marketcetera.brokers.service.InMemoryFixSessionProvider">
     <property name="fixSessions">

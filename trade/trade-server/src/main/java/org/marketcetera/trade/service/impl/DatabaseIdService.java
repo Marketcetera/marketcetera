@@ -3,6 +3,7 @@ package org.marketcetera.trade.service.impl;
 import org.marketcetera.trade.dao.DatabaseIdDao;
 import org.marketcetera.trade.dao.PersistentDatabaseID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
@@ -22,7 +23,7 @@ public class DatabaseIdService
      * @param inBlockSize a <code>long</code> value
      * @return a <code>PersistentDatabaseID</code> value
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public PersistentDatabaseID allocateIdBlock(long inBlockSize)
     {
         Iterable<PersistentDatabaseID> idIterator = databaseIdDao.findAll();

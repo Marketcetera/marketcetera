@@ -46,6 +46,7 @@ public abstract class TradeModulesTestBase
     {
         orderConverterModuleUrn = OrderConverterModuleFactory.INSTANCE_URN;
         tradeMessageConverterModuleUrn = TradeMessageConverterModuleFactory.INSTANCE_URN;
+        tradeMessagePersistenceModuleUrn = TradeMessagePersistenceModuleFactory.INSTANCE_URN;
         super.setup();
     }
     /**
@@ -82,6 +83,7 @@ public abstract class TradeModulesTestBase
         dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
                                                inFixDataRequest));
         dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TradeMessagePersistenceModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(TradeMessageBroadcastModuleFactory.INSTANCE_URN));
         for(TradeMessagePublisher tradeMessagePublisher : tradeMessagePublishers) {
             tradeMessagePublisher.addTradeMessageListener(new TradeMessageListener() {
@@ -127,6 +129,7 @@ public abstract class TradeModulesTestBase
         ModuleURN publisherUrn = createPublisherModule(inReceivedData);
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
         dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TradeMessagePersistenceModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(publisherUrn));
         return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
     }
@@ -148,6 +151,11 @@ public abstract class TradeModulesTestBase
             moduleManager.start(tradeMessageConverterModuleUrn);
             assertEquals(ModuleState.STARTED,
                          moduleManager.getModuleInfo(tradeMessageConverterModuleUrn).getState());
+        }
+        if(!moduleManager.getModuleInfo(tradeMessagePersistenceModuleUrn).getState().isStarted()) {
+            moduleManager.start(tradeMessagePersistenceModuleUrn);
+            assertEquals(ModuleState.STARTED,
+                         moduleManager.getModuleInfo(tradeMessagePersistenceModuleUrn).getState());
         }
     }
     /**
@@ -182,6 +190,10 @@ public abstract class TradeModulesTestBase
      * test trade message converter module
      */
     protected ModuleURN tradeMessageConverterModuleUrn;
+    /**
+     * test trade message persistence module
+     */
+    protected ModuleURN tradeMessagePersistenceModuleUrn;
     /**
      * creates user objects
      */
