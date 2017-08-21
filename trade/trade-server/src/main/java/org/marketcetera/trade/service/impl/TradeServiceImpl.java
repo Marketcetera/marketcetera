@@ -169,8 +169,8 @@ public class TradeServiceImpl
         TradeMessage reply;
         try {
             UserID actor = orderOwnerService.getMessageOwner(inMessage,
-                                                                  inBroker.getSessionId(),
-                                                                  inBroker.getBrokerId());
+                                                             inBroker.getSessionId(),
+                                                             inBroker.getBrokerId());
             // TODO determine hierarchy - this might need the original order to resolve
             reply = FIXConverter.fromQMessage(inMessage,
                                               Originator.Broker,

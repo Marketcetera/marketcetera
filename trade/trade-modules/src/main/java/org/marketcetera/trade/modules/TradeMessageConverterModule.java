@@ -54,7 +54,6 @@ public class TradeMessageConverterModule
         if(broker == null) {
             throw new ReceiveDataException(new RuntimeException("Message rejected because the broker is unknown for: " + fixTradeMessage)); // TODO
         }
-        // TODO check for null broker
         SLF4JLoggerProxy.debug(this,
                                "Received {} for {}",
                                fixTradeMessage,
@@ -69,7 +68,10 @@ public class TradeMessageConverterModule
             return new TradeMessagePackage(broker,
                                            tradeMessage);
         } catch (OrderIntercepted e) {
-            throw new ReceiveDataException(e);
+            SLF4JLoggerProxy.info(this,
+                                  "{} not re-emitted because it was intercepted",
+                                  fixTradeMessage);
+            return null;
         } catch (Exception e) {
             throw new ReceiveDataException(e);
         }

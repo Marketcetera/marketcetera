@@ -28,7 +28,9 @@ public abstract class AbstractDataReemitterModule
         if(dataEmitterSupport != null) {
             inData = onReceiveData(inData,
                                    dataEmitterSupport);
-            dataEmitterSupport.send(inData);
+            if(inData != null) {
+                dataEmitterSupport.send(inData);
+            }
         }
     }
     /* (non-Javadoc)
