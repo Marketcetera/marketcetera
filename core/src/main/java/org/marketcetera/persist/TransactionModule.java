@@ -112,7 +112,7 @@ public class TransactionModule
     TransactionModule(ModuleURN inURN)
     {
         super(inURN,
-              true);
+              false);
     }
     /**
      * transaction manager value
