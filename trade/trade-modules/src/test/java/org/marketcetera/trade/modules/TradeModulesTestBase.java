@@ -15,6 +15,7 @@ import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.modules.fix.FixDataRequest;
 import org.marketcetera.modules.fix.FixInitiatorModuleFactory;
+import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradeMessagePublisher;
@@ -62,6 +63,7 @@ public abstract class TradeModulesTestBase
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
         ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
+        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(OrderConverterModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(OutgoingMessageCachingModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(OutgoingMessagePersistenceModuleFactory.INSTANCE_URN));
@@ -82,6 +84,7 @@ public abstract class TradeModulesTestBase
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
         dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
                                                inFixDataRequest));
+        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(TradeMessagePersistenceModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(TradeMessageBroadcastModuleFactory.INSTANCE_URN));
@@ -110,6 +113,7 @@ public abstract class TradeModulesTestBase
         ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
         ModuleURN publisherUrn = createPublisherModule(inReceivedData);
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
+        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(OrderConverterModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(publisherUrn));
         return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
@@ -128,6 +132,7 @@ public abstract class TradeModulesTestBase
         ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
         ModuleURN publisherUrn = createPublisherModule(inReceivedData);
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
+        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(TradeMessagePersistenceModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(publisherUrn));
