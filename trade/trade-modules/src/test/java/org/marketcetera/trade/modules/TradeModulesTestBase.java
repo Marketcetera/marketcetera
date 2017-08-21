@@ -48,6 +48,7 @@ public abstract class TradeModulesTestBase
         orderConverterModuleUrn = OrderConverterModuleFactory.INSTANCE_URN;
         tradeMessageConverterModuleUrn = TradeMessageConverterModuleFactory.INSTANCE_URN;
         tradeMessagePersistenceModuleUrn = TradeMessagePersistenceModuleFactory.INSTANCE_URN;
+        transactionModuleUrn = TransactionModuleFactory.INSTANCE_URN;
         super.setup();
     }
     /**
@@ -162,6 +163,11 @@ public abstract class TradeModulesTestBase
             assertEquals(ModuleState.STARTED,
                          moduleManager.getModuleInfo(tradeMessagePersistenceModuleUrn).getState());
         }
+        if(!moduleManager.getModuleInfo(transactionModuleUrn).getState().isStarted()) {
+            moduleManager.start(transactionModuleUrn);
+            assertEquals(ModuleState.STARTED,
+                         moduleManager.getModuleInfo(transactionModuleUrn).getState());
+        }
     }
     /**
      * Generate a test user.
@@ -199,6 +205,10 @@ public abstract class TradeModulesTestBase
      * test trade message persistence module
      */
     protected ModuleURN tradeMessagePersistenceModuleUrn;
+    /**
+     * transaction module URN
+     */
+    protected ModuleURN transactionModuleUrn;
     /**
      * creates user objects
      */

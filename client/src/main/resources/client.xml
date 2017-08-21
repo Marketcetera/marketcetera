@@ -15,6 +15,7 @@
     <property name="brokerURL" ref="brokerURL"/>
     <property name="userName" ref="runtimeUsername"/>
     <property name="password" ref="runtimePassword"/>
+    <property name="trustAllPackages" value="true"/>
   </bean>
   <!--
     - The connection factory for outgoing connections.

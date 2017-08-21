@@ -42,6 +42,7 @@
     <property name="brokerURL" value="tcp://localhost:61616?wireFormat.maxInactivityDurationInitalDelay=30000"/>
     <property name="userName" value="whatever"/>
     <property name="password" value="whatever"/>
+    <property name="trustAllPackages" value="true"/>
   </bean>
   <bean id="metc_connection_factory_out" class="org.apache.activemq.pool.PooledConnectionFactory">
     <property name="connectionFactory" ref="metc_connection_factory_in"/>

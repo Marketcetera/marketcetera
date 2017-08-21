@@ -46,6 +46,7 @@
     <property name="brokerURL" value="vm://REMOTING-BROKER?create=false"/>
     <property name="userName" ref="userName"/>
     <property name="password" ref="password"/>
+    <property name="trustAllPackages" value="true"/>
   </bean>
   <bean id="pooledConnectionFactory"
         class="org.apache.activemq.pool.PooledConnectionFactory">
