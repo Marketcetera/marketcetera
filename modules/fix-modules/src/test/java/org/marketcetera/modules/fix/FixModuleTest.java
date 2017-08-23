@@ -17,8 +17,8 @@ import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.collect.Lists;
 
@@ -33,8 +33,8 @@ import quickfix.Message;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:**/test.xml" })
+@SpringBootTest(classes=FixModuleTestConfiguration.class)
+@RunWith(SpringRunner.class)
 public class FixModuleTest
         extends FixModuleTestBase
 {

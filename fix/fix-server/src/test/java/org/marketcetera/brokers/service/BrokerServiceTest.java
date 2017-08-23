@@ -17,8 +17,8 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.collect.Maps;
 
@@ -33,8 +33,8 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:**/test.xml" })
+@SpringBootTest
+@RunWith(SpringRunner.class)
 public class BrokerServiceTest
 {
     /**

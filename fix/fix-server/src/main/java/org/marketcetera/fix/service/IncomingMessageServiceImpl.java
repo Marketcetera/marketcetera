@@ -5,7 +5,7 @@ import java.util.Set;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.FixMessageHandler;
 import org.marketcetera.fix.IncomingMessagePublisher;
-import org.marketcetera.fix.service.IncomingMessageService;
+import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
 
@@ -21,6 +21,7 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class IncomingMessageServiceImpl
         implements IncomingMessageService,IncomingMessagePublisher
 {

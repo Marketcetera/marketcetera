@@ -44,11 +44,6 @@
       <artifactId>simple-cluster</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- spring test -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-    </dependency>
     <!-- other test -->
     <dependency>
       <groupId>junit</groupId>

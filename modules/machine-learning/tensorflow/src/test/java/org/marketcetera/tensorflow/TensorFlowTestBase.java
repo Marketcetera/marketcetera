@@ -24,9 +24,9 @@ import org.marketcetera.tensorflow.model.TensorFlowRunner;
 import org.marketcetera.tensorflow.service.TensorFlowService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.collect.Lists;
 
@@ -39,8 +39,8 @@ import com.google.common.collect.Lists;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/test.xml"})
+@SpringBootTest
+@RunWith(SpringRunner.class)
 public class TensorFlowTestBase
 {
     /**

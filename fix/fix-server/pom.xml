@@ -45,13 +45,14 @@
     </dependency>
     <!-- spring test -->
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-    </dependency>
-    <!-- other test -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <exclusions>
+	<exclusion>
+	  <groupId>com.vaadin.external.google</groupId>
+	  <artifactId>android-json</artifactId>
+	</exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <build>
