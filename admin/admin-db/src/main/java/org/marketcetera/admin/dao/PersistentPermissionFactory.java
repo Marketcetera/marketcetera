@@ -1,6 +1,7 @@
 package org.marketcetera.admin.dao;
 
 import org.marketcetera.admin.PermissionFactory;
+import org.springframework.stereotype.Service;
 
 /* $License$ */
 
@@ -11,6 +12,7 @@ import org.marketcetera.admin.PermissionFactory;
  * @version $Id: PersistentPermissionFactory.java 84382 2015-01-20 19:43:06Z colin $
  * @since 1.0.1
  */
+@Service
 public class PersistentPermissionFactory
         implements PermissionFactory
 {

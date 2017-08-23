@@ -13,7 +13,7 @@ import com.google.common.collect.Maps;
 /* $License$ */
 
 /**
- *
+ * Enables FIX session configuration from properties.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -43,7 +43,7 @@ public class FixSessionsConfiguration
         sessionDescriptors = inSessionDescriptors;
     }
     /**
-     *
+     * Describes a set of FIX sessions.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -99,11 +99,11 @@ public class FixSessionsConfiguration
             sessions = inSessions;
         }
         /**
-         * 
+         * settings for these sessions
          */
         private Map<String,String> settings = Maps.newHashMap();
         /**
-         * 
+         * sessions with these settings
          */
         private List<Session> sessions = Lists.newArrayList();
     }
@@ -118,7 +118,7 @@ public class FixSessionsConfiguration
         return builder.toString();
     }
     /**
-     *
+     * Describes a FIX session.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -312,7 +312,7 @@ public class FixSessionsConfiguration
          */
         private int affinity = 1;
         /**
-         * 
+         * settings for this session
          */
         private Map<String,String> settings = Maps.newHashMap();
     }

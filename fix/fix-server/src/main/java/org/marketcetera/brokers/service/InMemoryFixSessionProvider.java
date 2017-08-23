@@ -215,7 +215,6 @@ public class InMemoryFixSessionProvider
                 fixSession.setDescription(fixSessionDescriptor.getDescription());
                 String connectionType = sessionSettings.get(SessionFactory.SETTING_CONNECTION_TYPE);
                 fixSession.setIsAcceptor(SessionFactory.ACCEPTOR_CONNECTION_TYPE.equals(connectionType));
-                System.out.println("COLIN: session " + fixSessionDescriptor.getName() + " connection type: " + connectionType);
                 fixSession.setIsEnabled(true);
                 if(fixSession.isAcceptor()) {
                     fixSession.setHost(fixSettingsProvider.getAcceptorHost());

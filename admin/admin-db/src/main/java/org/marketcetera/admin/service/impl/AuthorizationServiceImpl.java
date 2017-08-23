@@ -12,8 +12,11 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.admin.NotAuthorizedException;
 import org.marketcetera.admin.Permission;
+import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.Role;
+import org.marketcetera.admin.RoleFactory;
 import org.marketcetera.admin.SupervisorPermission;
+import org.marketcetera.admin.SupervisorPermissionFactory;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.PersistentPermission;
 import org.marketcetera.admin.dao.PersistentPermissionDao;
@@ -24,7 +27,9 @@ import org.marketcetera.admin.dao.PersistentSupervisorPermissionDao;
 import org.marketcetera.admin.dao.QPersistentPermission;
 import org.marketcetera.admin.dao.QPersistentRole;
 import org.marketcetera.admin.dao.UserDao;
+import org.marketcetera.admin.provisioning.AdminConfiguration;
 import org.marketcetera.admin.service.AuthorizationService;
+import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.core.Pair;
 import org.marketcetera.persist.CollectionPageResponse;
@@ -336,6 +341,129 @@ public class AuthorizationServiceImpl
     {
         return permissionDao.findByName(inName);
     }
+    private void provision()
+    {
+        if(adminConfiguration == null) {
+            SLF4JLoggerProxy.debug(this,
+                                   "No provisioning to be done");
+            return;
+        }
+        SLF4JLoggerProxy.info(this,
+                              "Beginning provisioning");
+        for(AdminConfiguration.User userDescriptor : adminConfiguration.getUsers()) {
+            if(userService.findByName(userDescriptor.getName()) == null) {
+                SLF4JLoggerProxy.info(this,
+                                      "Adding user {}",
+                                      userDescriptor);
+                PersistentUser user = new PersistentUser();
+                user.setActive(userDescriptor.getIsActive());
+                user.setDescription(userDescriptor.getDescription());
+                user.setName(userDescriptor.getName());
+                user.setPassword(userDescriptor.getPassword().toCharArray());
+                user.setSuperuser(false);
+                userService.save(user);
+            } else {
+                SLF4JLoggerProxy.debug(this,
+                                       "Not adding user {} because a user by that name already exists",
+                                       userDescriptor);
+            }
+        }
+        for(AdminConfiguration.Permission permissionDescriptor : adminConfiguration.getPermissions()) {
+            if(authzService.findPermissionByName(permissionDescriptor.getName()) == null) {
+                SLF4JLoggerProxy.info(this,
+                                      "Adding permission {}",
+                                      permissionDescriptor);
+                authzService.save(permissionFactory.create(permissionDescriptor.getName(),
+                                                           permissionDescriptor.getDescription()));
+            } else {
+                SLF4JLoggerProxy.debug(this,
+                                       "Not adding permission {} because a permission by that name already exists",
+                                       permissionDescriptor);
+            }
+        }
+        for(AdminConfiguration.Role roleDescriptor : adminConfiguration.getRoles()) {
+            if(authzService.findRoleByName(roleDescriptor.getName()) == null) {
+                Role role = roleFactory.create(roleDescriptor.getName(),
+                                               roleDescriptor.getDescription());
+                for(String permissionName : roleDescriptor.getPermissions()) {
+                    Permission permission = authzService.findPermissionByName(permissionName);
+                    if(permission != null) {
+                        SLF4JLoggerProxy.info(this,
+                                              "Adding role {}",
+                                              roleDescriptor);
+                        role.getPermissions().add(permission);
+                    } else {
+                        SLF4JLoggerProxy.warn(this,
+                                              "Not adding {} to role {} because no permission by that name exists",
+                                              permissionName,
+                                              role);
+                    }
+                }
+                for(String username : roleDescriptor.getUsers()) {
+                    User user = userService.findByName(username);
+                    if(user != null) {
+                        role.getSubjects().add(user);
+                    } else {
+                        SLF4JLoggerProxy.warn(this,
+                                              "Not adding {} to role {} because no user by that name exists",
+                                              username,
+                                              role);
+                    }
+                }
+                authzService.save(role);
+            } else {
+                SLF4JLoggerProxy.debug(this,
+                                       "Not adding or modifying role {} because a role by that name already exists",
+                                       roleDescriptor);
+            }
+        }
+        for(AdminConfiguration.SupervisorPermission supervisorDescriptor: adminConfiguration.getSupervisorPermissions()) {
+            if(authzService.findSupervisorPermissionByName(supervisorDescriptor.getName()) == null) {
+                SupervisorPermission supervisorPermission = supervisorPermissionFactory.create(supervisorDescriptor.getName(),
+                                                                                               supervisorDescriptor.getDescription());
+                User supervisor = userService.findByName(supervisorDescriptor.getSupervisorName());
+                if(supervisor == null) {
+                    SLF4JLoggerProxy.warn(this,
+                                          "Not adding {} because no supervisor user by name {} exists",
+                                          supervisorDescriptor,
+                                          supervisorDescriptor.getSupervisorName());
+                    continue;
+                } else {
+                    supervisorPermission.setSupervisor(supervisor);
+                }
+                for(String permissionName : supervisorDescriptor.getPermissions()) {
+                    Permission permission = authzService.findPermissionByName(permissionName);
+                    if(permission != null) {
+                        SLF4JLoggerProxy.info(this,
+                                              "Adding supervisor permission {}",
+                                              supervisorDescriptor);
+                        supervisorPermission.getPermissions().add(permission);
+                    } else {
+                        SLF4JLoggerProxy.warn(this,
+                                              "Not adding {} to supervisor permission {} because no permission by that name exists",
+                                              permissionName,
+                                              supervisorPermission);
+                    }
+                }
+                for(String username : supervisorDescriptor.getSubjectNames()) {
+                    User user = userService.findByName(username);
+                    if(user != null) {
+                        supervisorPermission.getSubjects().add(user);
+                    } else {
+                        SLF4JLoggerProxy.warn(this,
+                                              "Not adding {} to supervisor permission {} because no user by that name exists",
+                                              username,
+                                              supervisorPermission);
+                    }
+                }
+                authzService.save(supervisorPermission);
+            } else {
+                SLF4JLoggerProxy.info(this,
+                                      "Not adding or modifying supervisor permission {} because a supervisor permission by that name already exists",
+                                      supervisorDescriptor);
+            }
+        }
+    }
     /**
      * Starts and validates object.
      */
@@ -344,6 +472,7 @@ public class AuthorizationServiceImpl
     {
         Validate.notNull(permissionDao);
         Validate.notNull(roleDao);
+        provision();
         if(roleAliases == null) {
             roleAliases = Maps.newHashMap();
             roleAliases.put("name",
@@ -680,10 +809,40 @@ public class AuthorizationServiceImpl
     @Autowired
     private UserDao userDao;
     /**
-     * 
+     * provides access to user services
+     */
+    @Autowired
+    private UserService userService;
+    /**
+     * provides access to authorization services
+     */
+    @Autowired
+    private AuthorizationService authzService;
+    /**
+     * creates <code>Permission</code> objects
+     */
+    @Autowired
+    private PermissionFactory permissionFactory;
+    /**
+     * creates <code>Role</code> objects
+     */
+    @Autowired
+    private RoleFactory roleFactory;
+    /**
+     * allows access to transactions
      */
     @Autowired
     private PlatformTransactionManager txManager;
+    /**
+     * creates <code>SupervisorPermission</code> objects
+     */
+    @Autowired
+    private SupervisorPermissionFactory supervisorPermissionFactory;
+    /**
+     * optionally provides bootstrap provisioning
+     */
+    @Autowired(required=false)
+    private AdminConfiguration adminConfiguration;
     /**
      * length of time to cache user permissions
      */

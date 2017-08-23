@@ -111,11 +111,6 @@
     </dependency>
     <!-- other runtime -->
     <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <scope>runtime</scope>
@@ -142,6 +137,34 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <jvmArguments>
+            -Dlogging.config=src/test/cmd_exec/conf/log4j2.xml
+            -Dorg.marketcetera.appDir=src/test/cmd_exec
+            -Dspring.config.location=src/test/cmd_exec/conf/application.properties
+          </jvmArguments>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/output</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+              <includeScope>runtime</includeScope>
+              <excludeScope>test</excludeScope>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

@@ -1,16 +1,19 @@
 package org.marketcetera.admin.dao;
 
+import org.marketcetera.admin.SupervisorPermission;
 import org.marketcetera.admin.SupervisorPermissionFactory;
+import org.springframework.stereotype.Service;
 
 /* $License$ */
 
 /**
- *
+ * Creates {@link SupervisorPermission} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class PersistentSupervisorPermissionFactory
         implements SupervisorPermissionFactory
 {

@@ -62,10 +62,9 @@ public class ServerAppConfiguration
         return new quickfix.DefaultMessageFactory();
     }
     /**
-     * 
+     * Get the market data RPC service.
      *
-     *
-     * @return
+     * @return a <code>MarketDataRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
     @Autowired
@@ -75,24 +74,6 @@ public class ServerAppConfiguration
         MarketDataServiceAdapter serviceAdapter = new MarketDataServiceImpl<ServerSession>(inSessionManager);
         marketDataRpcService.setServiceAdapter(serviceAdapter);
         return marketDataRpcService;
-    }
-    /**
-     * Get the initializeDatabase value.
-     *
-     * @return a <code>boolean</code> value
-     */
-    public boolean getInitializeDatabase()
-    {
-        return initializeDatabase;
-    }
-    /**
-     * Sets the initializeDatabase value.
-     *
-     * @param inInitializeDatabase a <code>boolean</code> value
-     */
-    public void setInitializeDatabase(boolean inInitializeDatabase)
-    {
-        initializeDatabase = inInitializeDatabase;
     }
     /**
      * Get the applicationContext value.
@@ -107,8 +88,4 @@ public class ServerAppConfiguration
      * application context value
      */
     private ApplicationContext applicationContext;
-    /**
-     * 
-     */
-    private boolean initializeDatabase = false;
 }

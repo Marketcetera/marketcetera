@@ -9,6 +9,7 @@ import org.marketcetera.trade.dao.SystemInfoService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @version $Id: SystemInfoServiceImpl.java 17266 2017-04-28 14:58:00Z colin $
  * @since 2.4.2
  */
+@Service
 @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
 @ClassVersion("$Id: SystemInfoServiceImpl.java 17266 2017-04-28 14:58:00Z colin $")
 public class SystemInfoServiceImpl

@@ -3,6 +3,7 @@ package org.marketcetera.trade.dao;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /* $License$ */
 
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version $Id: DatabaseVersionInitializer.java 16522 2014-12-31 16:33:08Z colin $
  * @since 2.4.2
  */
+@Component
 @ClassVersion("$Id: DatabaseVersionInitializer.java 16522 2014-12-31 16:33:08Z colin $")
 public class DatabaseVersionInitializer
         implements InitializingBean
