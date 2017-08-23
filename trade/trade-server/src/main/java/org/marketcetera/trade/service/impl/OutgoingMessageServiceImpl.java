@@ -8,6 +8,7 @@ import org.marketcetera.trade.dao.PersistentOutgoingMessage;
 import org.marketcetera.trade.dao.PersistentOutgoingMessageDao;
 import org.marketcetera.trade.service.OutgoingMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class OutgoingMessageServiceImpl
         implements OutgoingMessageService
 {

@@ -15,6 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /* $License$ */
 
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 1.0.0
  * @version $Id: DBAuthenticator.java 17344 2017-08-10 17:40:06Z colin $
  */
+@Service
 @ClassVersion("$Id: DBAuthenticator.java 17344 2017-08-10 17:40:06Z colin $")
 public class DBAuthenticator
         implements Authenticator

@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.5.6.RELEASE</version>
-    <relativePath/> <!-- lookup parent from repository -->
-  </parent>
-  <!--parent>
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
     <version>7</version>
-  </parent-->
+  </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>public-parent</artifactId>
   <version>3.1.0-SNAPSHOT</version>
@@ -39,14 +34,21 @@
     <mvn.javase.version>8</mvn.javase.version>
     <mvn.javaee.version>8</mvn.javaee.version>
     <mvn.cxf.version>3.1.11</mvn.cxf.version>
-    <mvn.hibernate.version>5.0.12.Final</mvn.hibernate.version>
-    <mvn.slf4j.version>1.7.21</mvn.slf4j.version>
-    <mvn.log4j.version>2.1</mvn.log4j.version>
+    <mvn.log4j.version>2.7</mvn.log4j.version>
+    <mvn.spring.boot.version>1.5.6.RELEASE</mvn.spring.boot.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
   </properties>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <!-- Import dependency management from Spring Boot -->
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${mvn.spring.boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <!-- Compile: local modules -->
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -463,12 +465,6 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-c3p0</artifactId>
-        <version>${mvn.hibernate.version}</version>
-        <scope>runtime</scope>
-      </dependency>       
-      <dependency>
         <groupId>org.apache.mina</groupId>
         <artifactId>mina-core</artifactId>
         <version>2.0.16</version>
@@ -556,6 +552,11 @@
     <!-- **** PLUGIN MANAGEMENT SECTION **** -->
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${mvn.spring.boot.version}</version>
+        </plugin>
         <plugin>
           <groupId>com.mysema.maven</groupId>
           <artifactId>apt-maven-plugin</artifactId>

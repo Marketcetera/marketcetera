@@ -29,6 +29,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>admin-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot</artifactId>
+    </dependency>
     <!-- local test -->
     <dependency>
       <groupId>${project.groupId}</groupId>

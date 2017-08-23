@@ -5,6 +5,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.trade.service.impl.DatabaseIdService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /* $License$ */
 
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version $Id: DatabaseIDFactory.java 17266 2017-04-28 14:58:00Z colin $
  * @since 2.4.2
  */
+@Service
 @ClassVersion("$Id: DatabaseIDFactory.java 17266 2017-04-28 14:58:00Z colin $")
 public class DatabaseIDFactory
         extends DBBackedIDFactory

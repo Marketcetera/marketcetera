@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /* $License$ */
 
@@ -17,6 +18,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * @version $Id$
  * @since $Release$
  */
+@EnableTransactionManagement
 @SpringBootApplication(scanBasePackages={"org.marketcetera"})
 @EntityScan(basePackages={"org.marketcetera"})
 @EnableJpaRepositories(basePackages={"org.marketcetera"})

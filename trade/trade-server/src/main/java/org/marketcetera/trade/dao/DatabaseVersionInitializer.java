@@ -40,7 +40,6 @@ public class DatabaseVersionInitializer
      *
      * @param inSystemInfoService a <code>SystemInfoService</code> value
      */
-    @Autowired
     public void setSystemInfoService(SystemInfoService inSystemInfoService)
     {
         systemInfoService = inSystemInfoService;
@@ -48,5 +47,6 @@ public class DatabaseVersionInitializer
     /**
      * provides access to system info objects
      */
+    @Autowired
     private SystemInfoService systemInfoService;
 }

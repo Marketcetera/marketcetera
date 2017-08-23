@@ -7,6 +7,7 @@ import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.dao.ExecutionReportDao;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -22,6 +23,7 @@ import quickfix.field.OrigClOrdID;
  * @version $Id: BasicRootOrderIdFactory.java 17345 2017-08-10 20:47:47Z colin $
  * @since 2.5.0
  */
+@Service
 public class BasicRootOrderIdFactory
         implements RootOrderIdFactory
 {

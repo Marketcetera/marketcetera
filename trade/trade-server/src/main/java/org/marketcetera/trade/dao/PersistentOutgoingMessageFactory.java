@@ -4,6 +4,7 @@ import org.marketcetera.admin.User;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.OutgoingMessage;
 import org.marketcetera.trade.OutgoingMessageFactory;
+import org.springframework.stereotype.Service;
 
 import quickfix.Message;
 import quickfix.SessionID;
@@ -17,6 +18,7 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class PersistentOutgoingMessageFactory
         implements OutgoingMessageFactory
 {

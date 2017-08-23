@@ -13,6 +13,7 @@ import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.Messages;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -31,6 +32,7 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class MessageOwnerServiceImpl
         implements MessageOwnerService,Cacheable
 {

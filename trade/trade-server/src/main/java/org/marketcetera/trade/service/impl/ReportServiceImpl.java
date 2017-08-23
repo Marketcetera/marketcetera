@@ -73,6 +73,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -96,6 +97,7 @@ import quickfix.SessionID;
  * @version $Id: ReportServiceImpl.java 17344 2017-08-10 17:40:06Z colin $
  * @since 2.4.2
  */
+@Service
 @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
 @ClassVersion("$Id: ReportServiceImpl.java 17344 2017-08-10 17:40:06Z colin $")
 public class ReportServiceImpl

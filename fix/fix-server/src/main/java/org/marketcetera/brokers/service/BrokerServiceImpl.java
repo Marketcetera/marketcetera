@@ -64,6 +64,7 @@ import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -84,6 +85,7 @@ import quickfix.SessionSettings;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class BrokerServiceImpl
         implements BrokerService,BrokerStatusListener,ClusterListener,SessionNameProvider
 {

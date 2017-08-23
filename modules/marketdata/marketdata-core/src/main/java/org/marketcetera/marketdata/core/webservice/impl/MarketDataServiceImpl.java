@@ -58,16 +58,16 @@ import com.google.common.collect.Maps;
  */
 @ThreadSafe
 @ClassVersion("$Id$")
-public class MarketDataServiceImpl
-        extends ServiceBaseImpl<Object>
+public class MarketDataServiceImpl<T>
+        extends ServiceBaseImpl<T>
         implements MarketDataService,Lifecycle,MarketDataServiceAdapter
 {
     /**
      * Create a new MarketDataWebServiceImpl instance.
      *
-     * @param inSessionManager a <code>SessionManager&lt;Object&gt;</code> value
+     * @param inSessionManager a <code>SessionManager&lt;T&gt;</code> value
      */
-    public MarketDataServiceImpl(SessionManager<Object> inSessionManager)
+    public MarketDataServiceImpl(SessionManager<T> inSessionManager)
     {
         super(inSessionManager);
     }
@@ -78,10 +78,10 @@ public class MarketDataServiceImpl
     public Set<Capability> getAvailableCapability(ClientContext inContext)
             throws RemoteException
     {
-        return new RemoteCaller<Object,Set<Capability>>(getSessionManager()) {
+        return new RemoteCaller<T,Set<Capability>>(getSessionManager()) {
             @Override
             protected Set<Capability> call(ClientContext inContext,
-                                           SessionHolder<Object> inSessionHolder)
+                                           SessionHolder<T> inSessionHolder)
                     throws Exception
             {
                 SLF4JLoggerProxy.debug(this,
@@ -109,10 +109,10 @@ public class MarketDataServiceImpl
                         final boolean inStreamEvents)
             throws RemoteException
     {
-        return new RemoteCaller<Object,Long>(getSessionManager()) {
+        return new RemoteCaller<T,Long>(getSessionManager()) {
             @Override
             protected Long call(ClientContext inContext,
-                                SessionHolder<Object> inSessionHolder)
+                                SessionHolder<T> inSessionHolder)
                     throws Exception
             {
                 SLF4JLoggerProxy.debug(this,
@@ -149,10 +149,10 @@ public class MarketDataServiceImpl
                                                     final List<Long> inRequestIds)
             throws RemoteException
     {
-        return new RemoteCaller<Object,Map<Long,LinkedList<Event>>>(getSessionManager()) {
+        return new RemoteCaller<T,Map<Long,LinkedList<Event>>>(getSessionManager()) {
             @Override
             protected Map<Long,LinkedList<Event>> call(ClientContext inContext,
-                                                       SessionHolder<Object> inSessionHolder)
+                                                       SessionHolder<T> inSessionHolder)
                     throws Exception
             {
                 SLF4JLoggerProxy.debug(this,
@@ -192,10 +192,10 @@ public class MarketDataServiceImpl
                                   final long inRequestId)
             throws RemoteException
     {
-        return new RemoteCaller<Object,Deque<Event>>(getSessionManager()) {
+        return new RemoteCaller<T,Deque<Event>>(getSessionManager()) {
             @Override
             protected Deque<Event> call(ClientContext inContext,
-                                        SessionHolder<Object> inSessionHolder)
+                                        SessionHolder<T> inSessionHolder)
                     throws Exception
             {
                 SLF4JLoggerProxy.debug(this,
@@ -229,10 +229,10 @@ public class MarketDataServiceImpl
                               final long inRequestId)
             throws RemoteException
     {
-        return new RemoteCaller<Object,Long>(getSessionManager()) {
+        return new RemoteCaller<T,Long>(getSessionManager()) {
             @Override
             protected Long call(ClientContext inContext,
-                                SessionHolder<Object> inSessionHolder)
+                                SessionHolder<T> inSessionHolder)
                     throws Exception
             {
                 SLF4JLoggerProxy.debug(this,
@@ -265,10 +265,10 @@ public class MarketDataServiceImpl
     public void heartbeat(ClientContext inContext)
             throws RemoteException
     {
-        new RemoteCaller<Object,Void>(getSessionManager()) {
+        new RemoteCaller<T,Void>(getSessionManager()) {
             @Override
             protected Void call(ClientContext inContext,
-                                SessionHolder<Object> inSessionHolder)
+                                SessionHolder<T> inSessionHolder)
                     throws Exception
             {
                 return null;
@@ -285,10 +285,10 @@ public class MarketDataServiceImpl
                                     final String inProvider)
             throws RemoteException
     {
-        return new RemoteCaller<Object,Deque<Event>>(getSessionManager()) {
+        return new RemoteCaller<T,Deque<Event>>(getSessionManager()) {
             @Override
             protected Deque<Event> call(ClientContext inContext,
-                                        SessionHolder<Object> inSessionHolder)
+                                        SessionHolder<T> inSessionHolder)
                     throws Exception
             {
                 SLF4JLoggerProxy.debug(this,
@@ -327,10 +327,10 @@ public class MarketDataServiceImpl
                                         final PageRequest inPage)
             throws RemoteException
     {
-        return new RemoteCaller<Object,Deque<Event>>(getSessionManager()) {
+        return new RemoteCaller<T,Deque<Event>>(getSessionManager()) {
             @Override
             protected Deque<Event> call(ClientContext inContext,
-                                        SessionHolder<Object> inSessionHolder)
+                                        SessionHolder<T> inSessionHolder)
                     throws Exception
             {
                 SLF4JLoggerProxy.debug(this,
@@ -370,10 +370,10 @@ public class MarketDataServiceImpl
                        final long inRequestId)
             throws RemoteException
     {
-        new RemoteCaller<Object,Void>(getSessionManager()){
+        new RemoteCaller<T,Void>(getSessionManager()){
             @Override
             protected Void call(ClientContext inContext,
-                                SessionHolder<Object> inSessionHolder)
+                                SessionHolder<T> inSessionHolder)
                     throws Exception
             {
                 doCancel(inRequestId);

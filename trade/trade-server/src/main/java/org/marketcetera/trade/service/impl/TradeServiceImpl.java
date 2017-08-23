@@ -28,6 +28,7 @@ import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -44,6 +45,7 @@ import quickfix.Message;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class TradeServiceImpl
         implements TradeService,TradeMessagePublisher
 {

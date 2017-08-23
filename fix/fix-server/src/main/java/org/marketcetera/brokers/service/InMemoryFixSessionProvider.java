@@ -18,6 +18,7 @@ import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -37,6 +38,7 @@ import quickfix.SessionSettings;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class InMemoryFixSessionProvider
         implements FixSessionProvider
 {
@@ -192,6 +194,7 @@ public class InMemoryFixSessionProvider
      *
      * @param inFixSessionDescriptors a <code>Collection&lt;FixSessionsDescriptor&gt;</code> value
      */
+    @Autowired(required=false)
     public void setFixSessions(Collection<FixSessionsDescriptor> inFixSessionDescriptors)
     {
         FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();

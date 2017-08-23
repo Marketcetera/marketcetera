@@ -3,6 +3,7 @@ package org.marketcetera.fix.impl;
 import org.marketcetera.brokers.BrokerFactory;
 import org.marketcetera.brokers.SessionCustomization;
 import org.marketcetera.fix.FixSession;
+import org.springframework.stereotype.Service;
 
 /* $License$ */
 
@@ -13,6 +14,7 @@ import org.marketcetera.fix.FixSession;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class SimpleBrokerFactory
         implements BrokerFactory
 {

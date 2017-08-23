@@ -34,12 +34,14 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -56,6 +58,7 @@ import com.google.common.collect.Sets;
  * @version $Id: AuthorizationServiceImpl.java 84563 2015-03-31 18:39:06Z colin $
  * @since 1.0.1
  */
+@Service
 @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
 public class AuthorizationServiceImpl
         implements AuthorizationService
@@ -389,42 +392,29 @@ public class AuthorizationServiceImpl
                     throws Exception
             {
                 Set<User> supervisors = Sets.newHashSet();
-                DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-                def.setName("findSupervisorTransaction");
-                def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-                def.setReadOnly(true);
-                TransactionStatus status = transactionManager.getTransaction(def);
-                try {
-                    PersistentUser subject = userDao.findByName(inKey.getUsername());
-                    if(subject == null) {
-                        return supervisors;
-                    }
-                    PersistentPermission permission = permissionDao.findByName(inKey.getPermissionName());
-                    if(permission == null) {
-                        return supervisors;
-                    }
-                    List<PersistentSupervisorPermission> allSupervisorPermissions = supervisorPermissionDao.findAll();
-                    for(PersistentSupervisorPermission supervisorPermission : allSupervisorPermissions) {
-                        if(supervisorPermission.getSubjects().contains(subject) && supervisorPermission.getPermissions().contains(permission)) {
-                            supervisors.add(supervisorPermission.getSupervisor());
+                TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+                txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+                txTemplate.setReadOnly(true);
+                txTemplate.execute(new TransactionCallback<Object>() {
+                    public Object doInTransaction(TransactionStatus status)
+                    {
+                        PersistentUser subject = userDao.findByName(inKey.getUsername());
+                        if(subject == null) {
+                            return supervisors;
                         }
+                        PersistentPermission permission = permissionDao.findByName(inKey.getPermissionName());
+                        if(permission == null) {
+                            return supervisors;
+                        }
+                        List<PersistentSupervisorPermission> allSupervisorPermissions = supervisorPermissionDao.findAll();
+                        for(PersistentSupervisorPermission supervisorPermission : allSupervisorPermissions) {
+                            if(supervisorPermission.getSubjects().contains(subject) && supervisorPermission.getPermissions().contains(permission)) {
+                                supervisors.add(supervisorPermission.getSupervisor());
+                            }
+                        }
+                        return supervisors;
                     }
-                } catch (Exception e) {
-                    SLF4JLoggerProxy.warn(this,
-                                          e);
-                    try {
-                        transactionManager.rollback(status);
-                    } catch (Exception e1) {
-                        SLF4JLoggerProxy.warn(this,
-                                              e1);
-                    } finally {
-                        status = null;
-                    }
-                } finally {
-                    if(status != null) {
-                        transactionManager.commit(status);
-                    }
-                }
+                });
                 return supervisors;
             }});
         subjectUsersByKey = CacheBuilder.newBuilder().expireAfterAccess(userPermissionCacheTtl,TimeUnit.MILLISECONDS).build(new CacheLoader<GetSubjectUsersKey,Set<User>>() {
@@ -437,39 +427,27 @@ public class AuthorizationServiceImpl
                 if(permission == null) {
                     return subjects;
                 }
-                DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-                def.setName("findSupervisorTransaction");
-                def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-                def.setReadOnly(true);
-                TransactionStatus status = transactionManager.getTransaction(def);
-                try {
-                    PersistentUser supervisor = userDao.findByName(inKey.getUser().getName());
-                    if(supervisor != null) {
-                        Set<PersistentSupervisorPermission> allSupervisorPermissions = supervisorPermissionDao.findBySupervisor(supervisor);
-                        for(PersistentSupervisorPermission supervisorPermission : allSupervisorPermissions) {
-                            if(supervisorPermission.getPermissions().contains(permission)) {
-                                for(User user : supervisorPermission.getSubjects()) {
-                                    subjects.add((PersistentUser)user);
+                TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+                txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+                txTemplate.setReadOnly(true);
+                txTemplate.execute(new TransactionCallback<Object>() {
+                    @Override
+                    public Object doInTransaction(TransactionStatus inStatus)
+                    {
+                        PersistentUser supervisor = userDao.findByName(inKey.getUser().getName());
+                        if(supervisor != null) {
+                            Set<PersistentSupervisorPermission> allSupervisorPermissions = supervisorPermissionDao.findBySupervisor(supervisor);
+                            for(PersistentSupervisorPermission supervisorPermission : allSupervisorPermissions) {
+                                if(supervisorPermission.getPermissions().contains(permission)) {
+                                    for(User user : supervisorPermission.getSubjects()) {
+                                        subjects.add((PersistentUser)user);
+                                    }
                                 }
                             }
                         }
+                        return subjects;
                     }
-                } catch (Exception e) {
-                    SLF4JLoggerProxy.warn(this,
-                                          e);
-                    try {
-                        transactionManager.rollback(status);
-                    } catch (Exception e1) {
-                        SLF4JLoggerProxy.warn(this,
-                                              e1);
-                    } finally {
-                        status = null;
-                    }
-                } finally {
-                    if(status != null) {
-                        transactionManager.commit(status);
-                    }
-                }
+                });
                 return subjects;
             }});
     }
@@ -702,10 +680,10 @@ public class AuthorizationServiceImpl
     @Autowired
     private UserDao userDao;
     /**
-     * provides access to transaction services
+     * 
      */
     @Autowired
-    private JpaTransactionManager transactionManager;
+    private PlatformTransactionManager txManager;
     /**
      * length of time to cache user permissions
      */

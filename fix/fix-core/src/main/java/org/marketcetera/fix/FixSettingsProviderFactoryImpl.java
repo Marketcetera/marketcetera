@@ -1,7 +1,11 @@
 package org.marketcetera.fix;
 
-import org.marketcetera.fix.FixSettingsProvider;
-import org.marketcetera.fix.FixSettingsProviderFactory;
+import javax.annotation.PostConstruct;
+
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Service;
 
 import quickfix.LogFactory;
 import quickfix.MessageFactory;
@@ -16,6 +20,8 @@ import quickfix.MessageStoreFactory;
  * @version $Id$
  * @since $Release$
  */
+@Service
+@ConfigurationProperties(prefix="fix")
 public class FixSettingsProviderFactoryImpl
         implements FixSettingsProviderFactory
 {
@@ -31,6 +37,19 @@ public class FixSettingsProviderFactoryImpl
                                            acceptorHost,
                                            acceptorProtocol,
                                            acceptorPort);
+    }
+    /**
+     * Validate and start the object
+     */
+    @PostConstruct
+    public void start()
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "FIX Settings: {} {} {} {}",
+                               acceptorHost,
+                               acceptorPort,
+                               logFactoryClass,
+                               messageStoreFactoryClass);
     }
     /**
      * Get the acceptorPort value.
@@ -151,6 +170,7 @@ public class FixSettingsProviderFactoryImpl
     /**
      * message factory
      */
+    @Autowired
     private MessageFactory messageFactory;
     /**
      * acceptor port value
