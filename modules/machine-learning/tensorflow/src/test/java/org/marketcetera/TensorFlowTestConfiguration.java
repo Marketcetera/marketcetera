@@ -15,9 +15,9 @@ import org.springframework.context.annotation.ComponentScan;
  * @version $Id$
  * @since $Release$
  */
-@ComponentScan("org.marketcetera")
 @SpringBootConfiguration
 @EnableAutoConfiguration
+@ComponentScan("org.marketcetera")
 public class TensorFlowTestConfiguration
 {
     /**

@@ -33,8 +33,8 @@ import quickfix.Message;
  * @version $Id$
  * @since $Release$
  */
-@SpringBootTest(classes=FixModuleTestConfiguration.class)
 @RunWith(SpringRunner.class)
+@SpringBootTest(classes={FixModuleTestConfiguration.class})
 public class FixModuleTest
         extends FixModuleTestBase
 {

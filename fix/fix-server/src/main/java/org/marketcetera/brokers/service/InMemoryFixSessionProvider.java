@@ -11,8 +11,7 @@ import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
-import org.marketcetera.fix.provisioning.FixSessionDescriptor;
-import org.marketcetera.fix.provisioning.FixSessionsDescriptor;
+import org.marketcetera.fix.provisioning.FixSessionsConfiguration;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
@@ -190,32 +189,33 @@ public class InMemoryFixSessionProvider
                               "Unable to start session, dynamic sessions are not supported");
     }
     /**
-     * Set the FIX session descriptors value.
+     * Set the FIX sessions value.
      *
-     * @param inFixSessionDescriptors a <code>Collection&lt;FixSessionsDescriptor&gt;</code> value
+     * @param inFixSessionsConfiguration a <code>FixSessionsConfiguration</code> value
      */
     @Autowired(required=false)
-    public void setFixSessions(Collection<FixSessionsDescriptor> inFixSessionDescriptors)
+    public void setFixSessions(FixSessionsConfiguration inFixSessionsConfiguration)
     {
         FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
         fixSessionsByName.invalidateAll();
         fixSessionsBySessionId.invalidateAll();
         fixSessionsByBrokerId.invalidateAll();
-        for(FixSessionsDescriptor fixSessionsDescriptor : inFixSessionDescriptors) {
-            Map<String,String> globalSettings = fixSessionsDescriptor.getSessionSettings().getSessionSettings();
-            for(FixSessionDescriptor fixSessionDescriptor : fixSessionsDescriptor.getFixSessions()) {
+        for(FixSessionsConfiguration.FixSessionDescriptor fixSessionsDescriptor : inFixSessionsConfiguration.getSessionDescriptors()) {
+            Map<String,String> globalSettings = fixSessionsDescriptor.getSettings();
+            for(FixSessionsConfiguration.Session fixSessionDescriptor : fixSessionsDescriptor.getSessions()) {
                 Map<String,String> sessionSettings = Maps.newHashMap();
                 sessionSettings.putAll(globalSettings);
-                sessionSettings.putAll(fixSessionDescriptor.getSessionSettings().getSessionSettings());
+                sessionSettings.putAll(fixSessionDescriptor.getSettings());
                 FixSession fixSession = fixSessionFactory.create();
                 fixSession.setAffinity(fixSessionDescriptor.getAffinity());
-                fixSession.setBrokerId(fixSessionDescriptor.getBrokerId().getValue());
+                fixSession.setBrokerId(fixSessionDescriptor.getBrokerId());
                 if(fixSessionDescriptor.getMappedBrokerId() != null) {
-                    fixSession.setMappedBrokerId(fixSessionDescriptor.getMappedBrokerId().getValue());
+                    fixSession.setMappedBrokerId(fixSessionDescriptor.getMappedBrokerId());
                 }
                 fixSession.setDescription(fixSessionDescriptor.getDescription());
                 String connectionType = sessionSettings.get(SessionFactory.SETTING_CONNECTION_TYPE);
                 fixSession.setIsAcceptor(SessionFactory.ACCEPTOR_CONNECTION_TYPE.equals(connectionType));
+                System.out.println("COLIN: session " + fixSessionDescriptor.getName() + " connection type: " + connectionType);
                 fixSession.setIsEnabled(true);
                 if(fixSession.isAcceptor()) {
                     fixSession.setHost(fixSettingsProvider.getAcceptorHost());

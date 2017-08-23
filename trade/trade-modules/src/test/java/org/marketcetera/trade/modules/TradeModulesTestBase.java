@@ -19,7 +19,7 @@ import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradeMessagePublisher;
-import org.marketcetera.trade.service.TradeTestBase;
+import org.marketcetera.trade.service.TradeServerTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
@@ -34,7 +34,7 @@ import com.google.common.collect.Lists;
  * @since $Release$
  */
 public abstract class TradeModulesTestBase
-        extends TradeTestBase
+        extends TradeServerTestBase
 {
     /**
      * Run before each test.

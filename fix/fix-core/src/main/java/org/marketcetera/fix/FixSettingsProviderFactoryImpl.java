@@ -4,8 +4,9 @@ import javax.annotation.PostConstruct;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import quickfix.LogFactory;
 import quickfix.MessageFactory;
@@ -20,7 +21,8 @@ import quickfix.MessageStoreFactory;
  * @version $Id$
  * @since $Release$
  */
-@Service
+@Component
+@EnableAutoConfiguration
 @ConfigurationProperties(prefix="fix")
 public class FixSettingsProviderFactoryImpl
         implements FixSettingsProviderFactory

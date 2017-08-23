@@ -3,7 +3,7 @@ package org.marketcetera.brokers;
 /* $License$ */
 
 /**
- *
+ * Defines constants for brokers.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

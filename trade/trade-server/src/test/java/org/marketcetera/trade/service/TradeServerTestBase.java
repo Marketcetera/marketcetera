@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version $Id$
  * @since $Release$
  */
-public abstract class TradeTestBase
+public abstract class TradeServerTestBase
         extends FixModuleTestBase
 {
     /**

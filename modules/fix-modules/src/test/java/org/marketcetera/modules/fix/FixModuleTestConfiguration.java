@@ -16,8 +16,8 @@ import quickfix.MessageFactory;
  * @version $Id$
  * @since $Release$
  */
-@ComponentScan("org.marketcetera")
 @SpringBootConfiguration
+@ComponentScan("org.marketcetera")
 public class FixModuleTestConfiguration
 {
     /**
