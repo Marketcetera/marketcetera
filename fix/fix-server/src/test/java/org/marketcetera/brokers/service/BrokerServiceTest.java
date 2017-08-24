@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.brokers.Broker;
+import org.marketcetera.fix.FixServerTestConfiguration;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.module.ExpectedFailure;
@@ -33,8 +34,8 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
-@SpringBootTest
 @RunWith(SpringRunner.class)
+@SpringBootTest(classes=FixServerTestConfiguration.class)
 public class BrokerServiceTest
 {
     /**

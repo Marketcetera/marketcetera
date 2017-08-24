@@ -7,7 +7,6 @@ import java.util.Deque;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.marketcetera.TradeModuleTestConfiguration;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.modules.fix.FIXMessageHolder;

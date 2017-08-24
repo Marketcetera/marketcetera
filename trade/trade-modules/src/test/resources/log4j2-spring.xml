@@ -10,8 +10,8 @@
       <AppenderRef ref="STDOUT"/>
     </Root>
     <logger name="org.marketcetera" level="info"/>
-    <logger name="org.marketcetera.trade.service" level="debug"/>
-    <logger name="org.marketcetera.brokers.service" level="debug"/>
+    <logger name="org.marketcetera.trade.modules" level="debug"/>
     <logger name="metc.brokers" level="info"/>
+    <logger name="fix.prettyprint" level="debug"/>
   </Loggers>
 </Configuration>

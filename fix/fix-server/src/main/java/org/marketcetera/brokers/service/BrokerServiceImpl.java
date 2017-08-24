@@ -385,6 +385,9 @@ public class BrokerServiceImpl
     @Override
     public void addFixSessionListener(FixSessionListener inFixSessionListener)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Adding FIX session listener: {}",
+                               inFixSessionListener);
         fixSessionListeners.add(inFixSessionListener);
     }
     /* (non-Javadoc)

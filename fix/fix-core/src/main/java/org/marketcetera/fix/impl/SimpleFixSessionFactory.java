@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionFactory;
-import org.springframework.stereotype.Service;
 
 /* $License$ */
 
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
  * @version $Id$
  * @since $Release$
  */
-@Service
 public class SimpleFixSessionFactory
         implements FixSessionFactory
 {

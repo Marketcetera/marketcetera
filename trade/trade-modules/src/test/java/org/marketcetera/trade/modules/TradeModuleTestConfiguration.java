@@ -1,9 +1,8 @@
-package org.marketcetera;
+package org.marketcetera.trade.modules;
 
-import org.marketcetera.TradeServerTestConfiguration;
+import org.marketcetera.trade.TradeServerTestConfiguration;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
 
 /* $License$ */
 
@@ -16,7 +15,6 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@ComponentScan("org.marketcetera")
 public class TradeModuleTestConfiguration
         extends TradeServerTestConfiguration
 {

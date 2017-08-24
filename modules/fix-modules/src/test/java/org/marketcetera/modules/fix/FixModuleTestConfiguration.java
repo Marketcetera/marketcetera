@@ -1,11 +1,11 @@
 package org.marketcetera.modules.fix;
 
+import org.marketcetera.fix.FixServerTestConfiguration;
 import org.marketcetera.module.ModuleManager;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-
-import quickfix.MessageFactory;
 
 /* $License$ */
 
@@ -17,19 +17,11 @@ import quickfix.MessageFactory;
  * @since $Release$
  */
 @SpringBootConfiguration
+@EnableAutoConfiguration
 @ComponentScan("org.marketcetera")
 public class FixModuleTestConfiguration
+        extends FixServerTestConfiguration
 {
-    /**
-     * Get the message factory value.
-     *
-     * @return a <code>MessageFactory</code> value
-     */
-    @Bean
-    public MessageFactory getMessageFactory()
-    {
-        return new quickfix.DefaultMessageFactory();
-    }
     /**
      * Get the module manager value.
      *

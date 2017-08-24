@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.math.BigDecimal;
 
 import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.modules.fix.FixModuleTestBase;
@@ -14,7 +15,13 @@ import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TradeServerTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /* $License$ */
 
@@ -25,6 +32,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version $Id$
  * @since $Release$
  */
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes=TradeServerTestConfiguration.class)
+@ComponentScan(basePackages={"org.marketcetera"})
+@EntityScan(basePackages={"org.marketcetera"})
+@EnableJpaRepositories(basePackages={"org.marketcetera"})
 public abstract class TradeServerTestBase
         extends FixModuleTestBase
 {

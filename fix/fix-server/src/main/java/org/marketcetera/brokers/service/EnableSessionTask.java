@@ -28,9 +28,10 @@ public class EnableSessionTask
             throws Exception
     {
         SLF4JLoggerProxy.debug(this,
-                               "Calling enable for {} on {}",
+                               "Calling enable for {} on {} with listeners: {}",
                                session,
-                               getClusterService().getInstanceData());
+                               getClusterService().getInstanceData(),
+                               brokerService.getFixSessionListeners());
         for(FixSessionListener fixSessionListener : brokerService.getFixSessionListeners()) {
             try {
                 fixSessionListener.sessionEnabled(session);

@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang.Validate;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionFactory;
@@ -17,7 +20,6 @@ import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -37,7 +39,6 @@ import quickfix.SessionSettings;
  * @version $Id$
  * @since $Release$
  */
-@Service
 public class InMemoryFixSessionProvider
         implements FixSessionProvider
 {
@@ -235,6 +236,15 @@ public class InMemoryFixSessionProvider
         SLF4JLoggerProxy.debug(this,
                                "Created brokers: {}",
                                fixSessionsByName.asMap());
+    }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        Validate.notNull(fixSettingsProviderFactory);
+        Validate.notNull(fixSessionFactory);
     }
     /**
      * cache FIX sessions by name

@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.admin.service.UserService;
@@ -21,6 +22,11 @@ import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradeMessagePublisher;
 import org.marketcetera.trade.service.TradeServerTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.collect.Lists;
 
@@ -33,6 +39,11 @@ import com.google.common.collect.Lists;
  * @version $Id$
  * @since $Release$
  */
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes=TradeModuleTestConfiguration.class)
+@ComponentScan(basePackages={"org.marketcetera"})
+@EntityScan(basePackages={"org.marketcetera"})
+@EnableJpaRepositories(basePackages={"org.marketcetera"})
 public abstract class TradeModulesTestBase
         extends TradeServerTestBase
 {

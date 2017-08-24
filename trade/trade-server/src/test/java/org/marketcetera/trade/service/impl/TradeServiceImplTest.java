@@ -10,8 +10,6 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.marketcetera.TradeServerTestConfiguration;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.core.CoreException;
@@ -26,8 +24,6 @@ import org.marketcetera.trade.service.FieldSetterMessageModifier;
 import org.marketcetera.trade.service.Messages;
 import org.marketcetera.trade.service.TestBrokerSelector;
 import org.marketcetera.trade.service.TradeServerTestBase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.collect.Maps;
 
@@ -42,8 +38,6 @@ import quickfix.Message;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes=TradeServerTestConfiguration.class)
 public class TradeServiceImplTest
         extends TradeServerTestBase
 {

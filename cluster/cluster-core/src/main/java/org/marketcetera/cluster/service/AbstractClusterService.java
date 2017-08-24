@@ -1006,7 +1006,7 @@ public abstract class AbstractClusterService
     /**
      * cluster instance name to use instead of creating a new one
      */
-    private String instanceName = "matp";
+    private String instanceName = "metc";
     /**
      * the number assigned to this host
      */
