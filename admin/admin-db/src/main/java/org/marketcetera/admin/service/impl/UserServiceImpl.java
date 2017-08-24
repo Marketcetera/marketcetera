@@ -23,7 +23,6 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +43,6 @@ import com.querydsl.jpa.impl.JPAQuery;
  * @version $Id: UserServiceImpl.java 17346 2017-08-10 21:45:52Z colin $
  * @since 2.4.2
  */
-@Service
 @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
 @ClassVersion("$Id: UserServiceImpl.java 17346 2017-08-10 21:45:52Z colin $")
 public class UserServiceImpl

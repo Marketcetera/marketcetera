@@ -1,11 +1,15 @@
 package org.marketcetera.trade;
 
 import org.assertj.core.util.Lists;
+import org.marketcetera.admin.service.UserService;
+import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.brokers.SessionCustomization;
 import org.marketcetera.fix.FixServerTestConfiguration;
 import org.marketcetera.fix.provisioning.SimpleSessionCustomization;
 import org.marketcetera.trade.service.FieldSetterMessageModifier;
+import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.TestBrokerSelector;
+import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -77,5 +81,25 @@ public class TradeServerTestConfiguration
         modifier3.setValue("10002-sessionCustomization2");
         sessionCustomization.setOrderModifiers(Lists.newArrayList(modifier1,modifier2,modifier3));
         return sessionCustomization;
+    }
+    /**
+     * Get the user service value.
+     *
+     * @return a <code>UserService</code> value
+     */
+    @Bean
+    public UserService getUserService()
+    {
+        return new UserServiceImpl();
+    }
+    /**
+     * Get the message owner service value.
+     *
+     * @return a <code>MessageOwnerService</code> value
+     */
+    @Bean
+    public MessageOwnerService getMessageOwnerService()
+    {
+        return new MessageOwnerServiceImpl();
     }
 }
