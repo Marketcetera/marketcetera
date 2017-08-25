@@ -27,7 +27,7 @@ public class ServerApplication
     /**
      * Main application entry.
      *
-     * @param inArgs
+     * @param inArgs a <code>String[]</code> value
      */
     public static void main(String[] inArgs)
     {
