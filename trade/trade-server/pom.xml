@@ -50,6 +50,11 @@
     <!-- local test -->
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>client</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>fix-modules</artifactId>
       <scope>test</scope>
     </dependency>
@@ -101,6 +106,10 @@
       <scope>test</scope>
     </dependency>
     <!-- other test -->
+    <dependency>
+      <groupId>pl.pragmatists</groupId>
+      <artifactId>JUnitParams</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
