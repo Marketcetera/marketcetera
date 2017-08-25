@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -162,25 +163,29 @@ public class FixSettingsProviderFactoryImpl
         acceptorProtocol = inAcceptorProtocol;
     }
     /**
-     * message store factory class
-     */
-    private Class<MessageStoreFactory> messageStoreFactoryClass;
-    /**
-     * log factory class
-     */
-    private Class<LogFactory> logFactoryClass;
-    /**
      * message factory
      */
     @Autowired
     private MessageFactory messageFactory;
     /**
+     * message store factory class
+     */
+    @Value("${metc.fix.message.store.factory.class:org.marketcetera.fix.store.NoopStoreFactory}")
+    private Class<MessageStoreFactory> messageStoreFactoryClass;
+    /**
+     * log factory class
+     */
+    @Value("${metc.fix.log.factory.class:quickfix.SLF4JLogFactory}")
+    private Class<LogFactory> logFactoryClass;
+    /**
      * acceptor port value
      */
+    @Value("${metc.fix.acceptor.port:9800}")
     private int acceptorPort;
     /**
      * acceptor host value
      */
+    @Value("${metc.fix.acceptor.host:127.0.0.1}")
     private String acceptorHost;
     /**
      * acceptor protocol value
