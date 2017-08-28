@@ -4,7 +4,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
-import org.marketcetera.client.OrderValidationException;
+import org.marketcetera.trade.client.OrderValidationException;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;

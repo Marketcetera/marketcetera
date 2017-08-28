@@ -1,8 +1,8 @@
 package org.marketcetera.client.instruments;
 
-import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.client.OrderValidationException;
 
 /* $License$ */
 

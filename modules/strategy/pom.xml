@@ -12,7 +12,7 @@
   <packaging>jar</packaging>
   <name>Strategy Module</name>
   <dependencies>
-    <!-- Compile. -->
+    <!-- local compile -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
@@ -23,8 +23,17 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>client</artifactId>
+      <artifactId>mdclient-server</artifactId>
+    </dependency>    
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-core</artifactId>
+    </dependency>
+    <!-- other compile -->
     <dependency>
       <groupId>org.apache.bsf</groupId>
       <artifactId>com.springsource.org.apache.bsf</artifactId>
@@ -37,13 +46,7 @@
       <groupId>org.ow2.sirocco</groupId>
       <artifactId>sirocco-text-table-formatter</artifactId>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>mdclient-server</artifactId>
-    </dependency>    
-    <!-- Runtime. -->
-
-    <!-- Testing. -->
+    <!-- local test -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>fix-core</artifactId>
@@ -74,22 +77,4 @@
       <artifactId>util-test</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-
-      <!-- Configure Eclipse IDE metadata. -->
-      <plugin>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <buildOutputDirectory>target/classes</buildOutputDirectory>
-          <downloadSources>true</downloadSources>
-          <downloadJavadocs>true</downloadJavadocs>
-          <pde>true</pde>
-          <manifest>null</manifest>
-          <resolveDependencies>false</resolveDependencies>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

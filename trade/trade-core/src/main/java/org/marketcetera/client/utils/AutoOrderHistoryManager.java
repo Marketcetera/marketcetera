@@ -2,11 +2,10 @@ package org.marketcetera.client.utils;
 
 import java.util.Date;
 
-import org.marketcetera.client.ClientInitException;
-import org.marketcetera.client.ReportListener;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.client.ReportListener;
 import org.marketcetera.trade.utils.OrderHistoryManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -52,10 +51,8 @@ public class AutoOrderHistoryManager
      * Create a new AutoOrderHistoryManager instance.
      *
      * @param inReportHistoryOrigin a <code>Date</code> value indicating the point from which to gather order history or <code>null</code>
-     * @throws ClientInitException if a connection to the <code>Client</code> cannot be made 
      */
     public AutoOrderHistoryManager(Date inReportHistoryOrigin)
-            throws ClientInitException
     {
         super(inReportHistoryOrigin);
     }

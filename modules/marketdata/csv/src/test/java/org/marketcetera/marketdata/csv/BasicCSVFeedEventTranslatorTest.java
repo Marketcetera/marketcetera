@@ -29,8 +29,6 @@ import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.client.ClientManager;
-import org.marketcetera.client.MockClient.MockClientFactory;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -72,8 +70,8 @@ public class BasicCSVFeedEventTranslatorTest
     public static void once()
             throws Exception
     {
-        ClientManager.setClientFactory(new MockClientFactory());
-        ClientManager.init(null);
+//        ClientManager.setClientFactory(new MockClientFactory());
+//        ClientManager.init(null);
     }
     /**
      * Tests the ability of the translator to parse <code>BigDecimal</code> values.

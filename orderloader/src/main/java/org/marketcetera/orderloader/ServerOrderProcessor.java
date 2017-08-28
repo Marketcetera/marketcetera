@@ -1,17 +1,16 @@
 package org.marketcetera.orderloader;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import org.marketcetera.client.ClientInitException;
-import org.marketcetera.client.ClientManager;
-import org.marketcetera.client.ClientParameters;
-import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.ReportListener;
+
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.client.ReportListener;
+import org.marketcetera.trade.client.TradingClient;
+import org.marketcetera.trade.client.TradingClientParameters;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -64,25 +63,20 @@ public class ServerOrderProcessor implements OrderProcessor {
      * Creates an instance.
      *
      * @param inParameter the parameters to connect to the server.
-     *
-     * @throws ClientInitException if there were unexpected issues initializing
-     * the client.
-     * @throws ConnectionException if there were network issues initializing
-     * the client.
      */
-    public ServerOrderProcessor(ClientParameters inParameter)
-            throws ClientInitException, ConnectionException {
+    public ServerOrderProcessor(TradingClientParameters inParameter)
+    {
         mOrdersOutstanding=new AtomicInteger();
-        ClientManager.init(inParameter);
-        ClientManager.getInstance().addReportListener(new CounterListener());
+        throw new UnsupportedOperationException("TODO: initialize client");
+//        ClientManager.init(inParameter);
+//        ClientManager.getInstance().addReportListener(new CounterListener());
     }
-
     @Override
     public void processOrder(Order inOrder, int inOrderIndex) throws Exception {
         if(inOrder instanceof OrderSingle) {
-            ClientManager.getInstance().sendOrder((OrderSingle)inOrder);
+            tradingClient.sendOrder((OrderSingle)inOrder);
         } else if(inOrder instanceof FIXOrder) {
-            ClientManager.getInstance().sendOrderRaw((FIXOrder)inOrder);
+            tradingClient.sendOrder((FIXOrder)inOrder);
         } else {
             throw new OrderParsingException(new I18NBoundMessage1P(
                     Messages.UNEXPECTED_ORDER_TYPE, inOrder));
@@ -92,10 +86,6 @@ public class ServerOrderProcessor implements OrderProcessor {
 
     @Override
     public void done() {
-        if (!ClientManager.isInitialized()) {
-            return;
-        }
-
         // Wait until a certain timeout for the ORS to acknowledge
         // receipt of orders sent. If we don't wait, because orders
         // are sent via JMS which is asynchronous, we might close the
@@ -125,8 +115,11 @@ public class ServerOrderProcessor implements OrderProcessor {
             }
         }
         try {
-            ClientManager.getInstance().close();
-        } catch (ClientInitException ignore) {
-        }
+            tradingClient.stop();
+        } catch (Exception ignored) {}
     }
+    /**
+     * provides access to trading services
+     */
+    private TradingClient tradingClient;
 }

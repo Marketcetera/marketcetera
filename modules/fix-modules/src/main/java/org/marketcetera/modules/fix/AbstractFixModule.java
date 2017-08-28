@@ -292,6 +292,7 @@ public abstract class AbstractFixModule
     void activate()
             throws Exception
     {
+        instanceData = clusterService.getInstanceData();
         Collection<FixSession> fixSessions = getFixSessions();
         if(!fixSessions.isEmpty()) {
             SessionSettings sessionSettings = SessionSettingsGenerator.generateSessionSettings(getFixSessions(),
@@ -312,7 +313,6 @@ public abstract class AbstractFixModule
     protected void preStart()
             throws ModuleException
     {
-        instanceData = clusterService.getInstanceData();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()

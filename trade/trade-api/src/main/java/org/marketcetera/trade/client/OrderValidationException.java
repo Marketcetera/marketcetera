@@ -1,4 +1,4 @@
-package org.marketcetera.client;
+package org.marketcetera.trade.client;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.except.I18NException;

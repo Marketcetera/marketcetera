@@ -1,18 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
-<!--
-- Author: anshul@marketcetera.com
-- Since: 2.0.0
-- Version: $Id: pom.xml 17243 2016-09-02 17:24:01Z colin $
-- $License$
--->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>seclient-parent</artifactId>
@@ -20,12 +10,9 @@
   </parent>
   <artifactId>seclient-ws-client</artifactId>
   <packaging>jar</packaging>
-
   <name>Strategy Engine WebServices Client</name>
-
   <dependencies>
-
-    <!-- compile -->
+    <!-- local compile -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
@@ -42,6 +29,12 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>remote-emitter</artifactId>
     </dependency>
+    <!-- spring compile -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <!-- other compile -->
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
@@ -50,40 +43,8 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-    </dependency>
     <!-- runtime -->
-    <!--dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-pool</artifactId>
-        </dependency-->
-    <!--dependency>
-        <groupId>commons-pool</groupId>
-        <artifactId>commons-pool</artifactId>
-        </dependency-->
-    <!--dependency>
-        <groupId>org.apache.geronimo.specs</groupId>
-        <artifactId>geronimo-jta_1.1_spec</artifactId>
-        </dependency-->
-    <!-- Ensures that older versions are not used by other dependencies. -->
-    <!--dependency>
-        <groupId>commons-collections</groupId>
-        <artifactId>commons-collections</artifactId>
-        <scope>runtime</scope>
-        </dependency-->
-    <!-- test -->
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-transports-http-jetty</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!--dependency>
-        <groupId>org.apache.xbean</groupId>
-        <artifactId>xbean-spring</artifactId>
-        <scope>test</scope>
-        </dependency-->
+    <!-- local test -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
@@ -91,13 +52,14 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>client</artifactId>
-      <scope>test</scope>
+      <artifactId>util-test</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>util-test</artifactId>
+      <artifactId>remote-receiver</artifactId>
+      <scope>test</scope>
     </dependency>
+    <!-- other test -->
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
@@ -111,14 +73,9 @@
       <artifactId>junit</artifactId>
     </dependency> 
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>remote-receiver</artifactId>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http-jetty</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>client</artifactId>
-      <type>test-jar</type>
     </dependency>
   </dependencies>
   <build>

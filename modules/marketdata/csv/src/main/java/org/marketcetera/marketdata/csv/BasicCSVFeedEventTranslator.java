@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -48,12 +47,14 @@ import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.options.OptionUtils;
+import org.marketcetera.symbol.SymbolResolver;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */
 
@@ -797,7 +798,7 @@ public class BasicCSVFeedEventTranslator
         if(symbol == null) {
             return null;
         }
-        Instrument instrument = ClientManager.getInstance().resolveSymbol(symbol);
+        Instrument instrument = symbolResolver.resolveSymbol(symbol);
         if(instrument != null) {
             return instrument;
         }
@@ -1179,6 +1180,11 @@ public class BasicCSVFeedEventTranslator
                                                            dataChunk));
         }
     }
+    /**
+     * provides symbol resolution services
+     */
+    @Autowired
+    private SymbolResolver symbolResolver;
     /**
      * used to uniquely identify events
      */

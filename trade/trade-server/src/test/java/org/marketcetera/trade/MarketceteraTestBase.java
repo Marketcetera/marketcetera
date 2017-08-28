@@ -40,8 +40,6 @@ import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.service.BrokerService;
-import org.marketcetera.client.Client;
-import org.marketcetera.client.ReportListener;
 import org.marketcetera.core.PriceQtyTuple;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.time.TimeFactoryImpl;
@@ -56,6 +54,8 @@ import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.client.ReportListener;
+import org.marketcetera.trade.client.TradingClient;
 import org.marketcetera.trade.dao.ExecutionReportDao;
 import org.marketcetera.trade.dao.OrderSummaryDao;
 import org.marketcetera.trade.dao.PersistentReportDao;
@@ -118,11 +118,10 @@ public class MarketceteraTestBase
             SLF4JLoggerProxy.warn(this,
                                   "Report service will not be available for this test");
         }
-        if(client == null) {
+        if(tradingClient == null) {
             SLF4JLoggerProxy.warn(this,
                                   "Client will not be available for this test");
         } else {
-            client = applicationContext.getBean(Client.class);
             reports.clear();
             ReportListener reportListener = new ReportListener() {
                 @Override
@@ -142,7 +141,7 @@ public class MarketceteraTestBase
                     }
                 }
             };
-            client.addReportListener(reportListener);
+            tradingClient.addReportListener(reportListener);
         }
         hostAcceptorPort = fixSettingsProvider.getAcceptorPort();
         remoteAcceptorPort = hostAcceptorPort + 1000;
@@ -166,8 +165,8 @@ public class MarketceteraTestBase
             SLF4JLoggerProxy.info(this,
                                   "{} cleanup beginning",
                                   name.getMethodName());
-            if(client != null) {
-                client.removeReportListener(reportListener);
+            if(tradingClient != null) {
+                tradingClient.removeReportListener(reportListener);
             }
             try {
                 if(receiver != null) {
@@ -2299,7 +2298,7 @@ public class MarketceteraTestBase
      * provides access to client trading services
      */
     @Autowired(required=false)
-    protected Client client;
+    protected TradingClient tradingClient;
     /**
      * provides fix settings
      */

@@ -1,4 +1,4 @@
-package org.marketcetera.client;
+package org.marketcetera.trade.client;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.ExecutionReport;
@@ -20,7 +20,7 @@ import org.marketcetera.trade.OrderCancelReject;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface ReportListener {
     /**
      * Invoked to supply an execution report instance to the report listener.

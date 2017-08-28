@@ -2,9 +2,9 @@ package org.marketcetera.client.instruments;
 
 import java.text.SimpleDateFormat;
 
-import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.client.OrderValidationException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 

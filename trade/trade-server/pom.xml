@@ -42,17 +42,16 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>admin-db</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>tradingclient-api</artifactId>
+    </dependency>
     <!-- other compile -->
     <dependency>
       <groupId>com.querydsl</groupId>
       <artifactId>querydsl-jpa</artifactId>
     </dependency>
     <!-- local test -->
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>client</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>fix-modules</artifactId>

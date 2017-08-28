@@ -1,17 +1,16 @@
 package org.marketcetera.client.utils;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import org.marketcetera.client.Client;
-import org.marketcetera.client.ClientInitException;
-import org.marketcetera.client.ClientManager;
-import org.marketcetera.client.ConnectionException;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.client.TradingClient;
 import org.marketcetera.trade.utils.OrderHistoryManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -56,17 +55,16 @@ public class LiveOrderHistoryManager
      * Create a new LiveOrderHistoryManager instance.
      * 
      * @param inReportHistoryOrigin a <code>Date</code> value indicating the point from which to gather order history or <code>null</code>
-     * @throws ClientInitException if a connection to the <code>Client</code> cannot be made 
      */
     public LiveOrderHistoryManager(Date inReportHistoryOrigin)
-            throws ClientInitException
     {
         if(inReportHistoryOrigin == null) {
             reportHistoryOrigin = new Date(0);
         } else {
             reportHistoryOrigin = inReportHistoryOrigin;
         }
-        client = ClientManager.getInstance();
+//        client = ClientManager.getInstance();
+        throw new UnsupportedOperationException("TODO: initialize tradingclient");
     }
     /**
      * Gets the open orders.
@@ -115,27 +113,27 @@ public class LiveOrderHistoryManager
         //  we'll get it in both channels). this actually doesn't matter because the OrderID is the same on
         //  each so we'll just process it twice but it won't create any duplicate records in our map keyed by OrderID
         final Deque<ReportBase> snapshotReports = new LinkedList<ReportBase>();
-        try {
-            ReportBase[] orderHistory = client.getReportsSince(reportHistoryOrigin);
-            SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,
-                                   "{} report(s) to process", //$NON-NLS-1$
-                                   orderHistory.length);
-            final SortedSet<ReportBase> tempSnapshotReports = new TreeSet<ReportBase>(ReportBase.ReportComparator.INSTANCE);
-            for(ReportBase report : orderHistory) {
-                tempSnapshotReports.add(report);
-            }
-            List<ReportBaseImpl> openOrders = client.getOpenOrders();
-            if(openOrders != null) {
-                for(ReportBase openOrder : openOrders) {
-                    if(!tempSnapshotReports.contains(openOrder)) {
-                        tempSnapshotReports.add(openOrder);
-                    }
-                }
-            }
-            snapshotReports.addAll(tempSnapshotReports);
-        } catch (ConnectionException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            List<ExecutionReport> orderHistory = client.getReportsSince(reportHistoryOrigin);
+//            SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,
+//                                   "{} report(s) to process", //$NON-NLS-1$
+//                                   orderHistory.size());
+//            final SortedSet<ReportBase> tempSnapshotReports = new TreeSet<ReportBase>(ReportBase.ReportComparator.INSTANCE);
+//            for(ReportBase report : orderHistory) {
+//                tempSnapshotReports.add(report);
+//            }
+//            List<ExecutionReport> openOrders = client.getOpenOrders();
+//            if(openOrders != null) {
+//                for(ReportBase openOrder : openOrders) {
+//                    if(!tempSnapshotReports.contains(openOrder)) {
+//                        tempSnapshotReports.add(openOrder);
+//                    }
+//                }
+//            }
+//            snapshotReports.addAll(tempSnapshotReports);
+//        } catch (ConnectionException e) {
+//            throw new RuntimeException(e);
+//        }
         // snapshotReports contains all the reports as dictated by the origin date
         if(!snapshotReports.isEmpty()) {
             for(ReportBase report : snapshotReports) {
@@ -161,6 +159,7 @@ public class LiveOrderHistoryManager
         "LiveOrderHistoryManager Report Processor"); //$NON-NLS-1$
         reportProcessor.start();
         isRunning = true;
+        throw new UnsupportedOperationException("TODO: initialize LiveOrderHistory");
     }
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#stop()
@@ -205,9 +204,9 @@ public class LiveOrderHistoryManager
     /**
      * Get the client value.
      *
-     * @return a <code>Client</code> value
+     * @return a <code>TradingClient</code> value
      */
-    protected Client getClient()
+    protected TradingClient getClient()
     {
         return client;
     }
@@ -230,5 +229,5 @@ public class LiveOrderHistoryManager
     /**
      * connection to the client 
      */
-    private final Client client;
+    private TradingClient client;
 }

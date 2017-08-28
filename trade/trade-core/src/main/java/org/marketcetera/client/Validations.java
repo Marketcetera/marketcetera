@@ -1,10 +1,16 @@
 package org.marketcetera.client;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.trade.*;
 import org.marketcetera.client.instruments.InstrumentValidationHandler;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderSingleSuggestion;
+import org.marketcetera.trade.client.OrderValidationException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**

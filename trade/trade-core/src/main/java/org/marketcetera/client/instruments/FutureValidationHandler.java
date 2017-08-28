@@ -1,8 +1,8 @@
 package org.marketcetera.client.instruments;
 
-import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.client.OrderValidationException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 
 /* $License$ */

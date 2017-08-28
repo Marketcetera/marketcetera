@@ -4,7 +4,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentFunctionHandler;
 import org.marketcetera.core.instruments.StaticInstrumentFunctionSelector;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.client.OrderValidationException;
+import org.marketcetera.trade.client.OrderValidationException;
 
 /* $License$ */
 /**

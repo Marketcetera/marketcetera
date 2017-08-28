@@ -2,8 +2,8 @@ package org.marketcetera.client.instruments;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.client.OrderValidationException;
 import org.marketcetera.trade.Equity;
-import org.marketcetera.client.OrderValidationException;
 
 /* $License$ */
 /**
