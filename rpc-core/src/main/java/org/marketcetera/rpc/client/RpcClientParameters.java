@@ -15,17 +15,15 @@ public interface RpcClientParameters
         extends ClientParameters
 {
     /**
-     * 
+     * Get the heartbeat interval value in millis.
      *
-     *
-     * @return
+     * @return a <code>long</code> value
      */
     long getHeartbeatInterval();
     /**
-     * 
+     * Get the interval in millis to wait for an orderly shutdown.
      *
-     *
-     * @return
+     * @return a <code>long</code> value
      */
     long getShutdownWait();
 }

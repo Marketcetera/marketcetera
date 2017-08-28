@@ -11,7 +11,7 @@ import org.marketcetera.core.BaseClientParameters;
  * @version $Id$
  * @since $Release$
  */
-public abstract class AbstractRpcClientParameters
+public abstract class BaseRpcClientParameters
         extends BaseClientParameters
         implements RpcClientParameters
 {
@@ -50,11 +50,11 @@ public abstract class AbstractRpcClientParameters
         shutdownWait = inShutdownWait;
     }
     /**
-     * 
+     * heartbeat interval value
      */
     private long heartbeatInterval = 5000;
     /**
-     * 
+     * shutdown wait value
      */
     private long shutdownWait = 5000;
 }

@@ -5,7 +5,7 @@ import java.util.Locale;
 /* $License$ */
 
 /**
- *
+ * Provides parameters for a client to connect.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -14,38 +14,33 @@ import java.util.Locale;
 public interface ClientParameters
 {
     /**
-     * 
+     * Get the hostname value.
      *
-     *
-     * @return
+     * @return a <code>String</code> value
      */
     String getHostname();
     /**
-     * 
+     * Get the port value.
      *
-     *
-     * @return
+     * @return an <code>int</code> value
      */
     int getPort();
     /**
-     * 
+     * Get the username value.
      *
-     *
-     * @return
+     * @return a <code>String</code> value
      */
     String getUsername();
     /**
-     * 
+     * Get the password value.
      *
-     *
-     * @return
+     * @return a <code>String</code> value
      */
     String getPassword();
     /**
-     * 
+     * Get the client locale value.
      *
-     *
-     * @return
+     * @return a <code>Locale</code> value
      */
     Locale getLocale();
 }

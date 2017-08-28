@@ -5,14 +5,14 @@ import org.marketcetera.util.ws.ContextClassProvider;
 /* $License$ */
 
 /**
- * Provides a context-aware {@link AbstractRpcClientParameters} implementation.
+ * Provides a context-aware {@link BaseRpcClientParameters} implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public abstract class AbstractContextAwareRpcClientParameters
-        extends AbstractRpcClientParameters
+        extends BaseRpcClientParameters
 {
     /**
      * Get the contextClassProvider value.

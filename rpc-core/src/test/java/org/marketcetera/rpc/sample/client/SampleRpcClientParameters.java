@@ -1,6 +1,6 @@
 package org.marketcetera.rpc.sample.client;
 
-import org.marketcetera.rpc.client.AbstractRpcClientParameters;
+import org.marketcetera.rpc.client.BaseRpcClientParameters;
 import org.marketcetera.rpc.client.RpcClientParameters;
 import org.marketcetera.rpc.sample.SampleRpcService;
 
@@ -14,7 +14,7 @@ import org.marketcetera.rpc.sample.SampleRpcService;
  * @since $Release$
  */
 public class SampleRpcClientParameters
-        extends AbstractRpcClientParameters
+        extends BaseRpcClientParameters
         implements RpcClientParameters
 {
 }

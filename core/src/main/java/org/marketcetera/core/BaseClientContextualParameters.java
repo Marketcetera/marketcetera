@@ -13,12 +13,12 @@ import org.marketcetera.util.ws.ContextClassProvider;
  */
 public class BaseClientContextualParameters
         extends BaseClientParameters
+        implements ContextualClientParameters
 {
-    /**
-     * Get the contextClassProvider value.
-     *
-     * @return a <code>ContextClassProvider</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.ContextualClientParameters#getContextClassProvider()
      */
+    @Override
     public ContextClassProvider getContextClassProvider()
     {
         return contextClassProvider;

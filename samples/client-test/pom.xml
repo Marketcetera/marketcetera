@@ -22,6 +22,14 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>trade-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-client-rpc-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>mdclient-api</artifactId>
     </dependency>
     <dependency>
@@ -39,14 +47,14 @@
       <id>executeClient</id>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
+	  <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
             <configuration>
-              <mainClass>org.marketcetera.clienttest.ClientTest</mainClass>
-              <classpathScope>runtime</classpathScope>
+	      <mainClass>org.marketcetera.clienttest.ClientTest</mainClass>
+              <layout>ZIP</layout>
             </configuration>
-          </plugin>
+	  </plugin>
         </plugins>
       </build>
     </profile>
