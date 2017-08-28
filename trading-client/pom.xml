@@ -12,7 +12,6 @@
   <packaging>pom</packaging>
   <name>Trading Client Parent</name>
   <modules>
-    <module>tradingclient-api</module>
     <module>tradingclient-rpc-client</module>
     <module>tradingclient-rpc-core</module>
   </modules>

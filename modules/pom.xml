@@ -16,8 +16,8 @@
     <module>machine-learning</module>
     <module>marketdata</module>
     <module>misc</module>
-    <module>remote</module>
-    <module>strategy</module>
+    <!--module>remote</module-->
+    <!--module>strategy</module-->
     <module>fix-modules</module>
   </modules>
 </project>

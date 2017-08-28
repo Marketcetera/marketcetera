@@ -16,7 +16,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <modules>
-    <module>seclient-ws</module>
+    <!--module>seclient-ws</module-->
     <module>seclient-api</module>
     <module>seclient-rpc-client</module>
     <module>seclient-rpc-core</module>

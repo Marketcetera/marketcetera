@@ -283,11 +283,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>tradingclient-api</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>tradingclient-rpc-client</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
@@ -996,12 +991,12 @@
     <module>fix</module>
     <module>fork</module>
     <module>modules</module>
-    <module>orderloader</module>
+    <!--module>orderloader</module-->
     <module>packages</module>
     <module>rpc-core</module>
     <module>samples</module>
     <module>seclient</module>
-    <module>strategyagent</module>
+    <!--module>strategyagent</module-->
     <module>trade</module>
     <module>trading-client</module>
     <module>util</module>

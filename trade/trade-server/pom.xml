@@ -42,10 +42,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>admin-db</artifactId>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>tradingclient-api</artifactId>
-    </dependency>
     <!-- other compile -->
     <dependency>
       <groupId>com.querydsl</groupId>
