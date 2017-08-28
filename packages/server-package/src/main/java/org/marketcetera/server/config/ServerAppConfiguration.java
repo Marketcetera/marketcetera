@@ -6,24 +6,18 @@ import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.brokers.service.InMemoryFixSessionProvider;
-import org.marketcetera.core.ContextClassAggregator;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpcService;
-import org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter;
-import org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider;
-import org.marketcetera.marketdata.core.webservice.impl.MarketDataServiceImpl;
+import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
+import org.marketcetera.mdclient.MarketDataContextClassProvider;
 import org.marketcetera.module.ModuleManager;
-import org.marketcetera.saclient.rpc.SAClientContextClassProvider;
+import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.server.session.ServerSession;
 import org.marketcetera.server.session.ServerSessionFactory;
-import org.marketcetera.trade.TradeContextClassProvider;
 import org.marketcetera.trade.impl.DefaultOwnerStrategy;
 import org.marketcetera.trade.impl.OutgoingMessageLookupStrategy;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
-import org.marketcetera.util.rpc.RpcServer;
-import org.marketcetera.util.rpc.RpcServiceSpec;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +28,7 @@ import org.springframework.context.annotation.Bean;
 
 import com.google.common.collect.Lists;
 
+import io.grpc.BindableService;
 import quickfix.MessageFactory;
 
 /* $License$ */
@@ -97,38 +92,40 @@ public class ServerAppConfiguration
     /**
      * Get the RPC server value.
      *
-     * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager a <code>SessionManager&lt;ServerSession&gt;</code> value
-     * @param inServiceSpecs a <code>List&lt;RpcServiceSpec&lt;ClientSessin&gt;&gt;</code> value
-     * @return an <code>RpcServer&lt;ServerSession&gt;</code> value
+     * @param inServiceSpecs a <code>List&lt;BindableService&gt;</code> value
+     * @return an <code>RpcServer</code> value
+     * @throws Exception if the server cannot be created 
      */
     @Bean
-    public RpcServer<ServerSession> getRpcService(@Autowired Authenticator inAuthenticator,
-                                                  @Autowired SessionManager<ServerSession> inSessionManager,
-                                                  @Autowired List<RpcServiceSpec<ServerSession>> inServiceSpecs)
+    public RpcServer getRpcServer(@Autowired(required=false) List<BindableService> inServiceSpecs)
+            throws Exception
     {
-        RpcServer<ServerSession> rpcServer = new RpcServer<>();
-        ContextClassAggregator contextClassAggregator = new ContextClassAggregator();
-        contextClassAggregator.setContextClassProviders(Lists.newArrayList(new TradeContextClassProvider(),new MarketDataContextClassProvider(),new SAClientContextClassProvider()));
-        rpcServer.setContextClassProvider(contextClassAggregator);
+        RpcServer rpcServer = new RpcServer();
         rpcServer.setHostname(rpcHostname);
         rpcServer.setPort(rpcPort);
-        rpcServer.setAuthenticator(inAuthenticator);
-        rpcServer.setSessionManager(inSessionManager);
-        rpcServer.setServiceSpecs(inServiceSpecs);
+        if(inServiceSpecs != null) {
+            for(BindableService service : inServiceSpecs) {
+                rpcServer.getServerServiceDefinitions().add(service);
+            }
+        }
         return rpcServer;
     }
     /**
      * Get the market data RPC service.
      *
+     * @param inAuthenticator
+     * @param inSessionManager
      * @return a <code>MarketDataRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
-    public MarketDataRpcService<ServerSession> getMarketDataRpcService(@Autowired SessionManager<ServerSession> inSessionManager)
+    public MarketDataRpcService<ServerSession> getMarketDataRpcService(@Autowired Authenticator inAuthenticator,
+                                                                       @Autowired SessionManager<ServerSession> inSessionManager)
     {
         MarketDataRpcService<ServerSession> marketDataRpcService = new MarketDataRpcService<>();
-        MarketDataServiceAdapter serviceAdapter = new MarketDataServiceImpl<ServerSession>(inSessionManager);
-        marketDataRpcService.setServiceAdapter(serviceAdapter);
+        // TODO need a market data service adapter
+        marketDataRpcService.setContextClassProvider(MarketDataContextClassProvider.INSTANCE);
+        marketDataRpcService.setAuthenticator(inAuthenticator);
+        marketDataRpcService.setSessionManager(inSessionManager);
         return marketDataRpcService;
     }
     /**

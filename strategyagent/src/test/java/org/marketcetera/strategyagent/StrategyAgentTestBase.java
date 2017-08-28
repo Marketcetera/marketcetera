@@ -15,7 +15,7 @@ import org.junit.BeforeClass;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.saclient.SAService;
+import org.marketcetera.strategyengine.server.SEService;
 import org.marketcetera.util.unicode.UnicodeFileWriter;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.SessionManager;
@@ -296,7 +296,7 @@ public class StrategyAgentTestBase
     /**
      * 
      */
-    protected static SAService servicesProvider;
+    protected static SEService servicesProvider;
     /**
      * 
      */

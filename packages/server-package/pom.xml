@@ -21,15 +21,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>saclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>fix-server</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>marketdata-core</artifactId>
+      <artifactId>mdclient-rpc-server</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

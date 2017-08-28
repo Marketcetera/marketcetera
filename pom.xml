@@ -157,7 +157,7 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-core</artifactId>
+        <artifactId>rpc-core</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
@@ -223,7 +223,67 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>saclient</artifactId>
+        <artifactId>seclient-api</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>seclient-rpc-core</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>seclient-rpc-server</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>seclient-rpc-client</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>seclient-ws-client</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-api</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-server</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-rpc-core</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-rpc-server</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-rpc-client</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-ws-client</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-ws-server</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-ws-core</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <!-- Compile: QuickFIX/J -->
@@ -363,30 +423,34 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-core</artifactId>
+        <version>1.5.0</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-netty</artifactId>
+        <version>1.5.0</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-protobuf</artifactId>
+        <version>1.5.0</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-stub</artifactId>
+        <version>1.5.0</version>
+      </dependency>
+      <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>2.6.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.googlecode.protobuf-rpc-pro</groupId>
-        <artifactId>protobuf-streamer-pro</artifactId>
-        <version>1.2.3</version>
-        <exclusions>
-          <exclusion>
-            <groupId>io.netty</groupId>
-            <artifactId>netty</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.googlecode.protobuf-rpc-pro</groupId>
-        <artifactId>protobuf-rpc-pro-duplex</artifactId>
-        <version>3.2.2</version>
+        <version>3.4.0</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-all</artifactId>
-        <version>4.0.15.Final</version>
+        <version>4.1.12.Final</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -486,6 +550,34 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-rpc-client</artifactId>
+	<type>test-jar</type>
+	<scope>test</scope>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mdclient-server</artifactId>
+	<type>test-jar</type>
+	<scope>test</scope>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>seclient-rpc-client</artifactId>
+	<type>test-jar</type>
+	<scope>test</scope>
+        <version>3.1.0-SNAPSHOT</version>
+      </dependency>      
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>rpc-core</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>trade-server</artifactId>
         <version>3.1.0-SNAPSHOT</version>
         <type>test-jar</type>
@@ -515,13 +607,6 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cluster-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-core</artifactId>
         <version>3.1.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
@@ -818,6 +903,11 @@
         <artifactId>wagon-ssh</artifactId>
         <version>2.5</version>
       </extension>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>1.5.0.Final</version>
+      </extension>
     </extensions>
     <resources>
       <resource>
@@ -905,8 +995,9 @@
     <module>modules</module>
     <module>orderloader</module>
     <module>packages</module>
-    <module>saclient</module>
+    <module>rpc-core</module>
     <module>samples</module>
+    <module>seclient</module>
     <module>strategyagent</module>
     <module>trade</module>
     <module>util</module>
