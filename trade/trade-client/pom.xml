@@ -12,7 +12,7 @@
   <packaging>pom</packaging>
   <name>Trade Client Parent</name>
   <modules>
-    <module>tradingclient-rpc-client</module>
-    <module>tradingclient-rpc-core</module>
+    <module>trade-client-rpc-client</module>
+    <module>trade-client-rpc-core</module>
   </modules>
 </project>
