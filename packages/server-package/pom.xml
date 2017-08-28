@@ -43,6 +43,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>trade-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-client-rpc-server</artifactId>
+    </dependency>
     <!-- spring compile -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
