@@ -9,6 +9,6 @@
     <Root level="warn" includeLocation="true">
       <AppenderRef ref="STDOUT"/>
     </Root>
-    <logger name="org.marketcetera.clienttest" level="info"/>
+    <logger name="org.marketcetera.clienttest" level="debug"/>
   </Loggers>
 </Configuration>

@@ -134,7 +134,6 @@ public class TradingRpcClient
                                                                       String... inRootSymbols)
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#addExceptionListener(java.beans.ExceptionListener)
@@ -143,7 +142,6 @@ public class TradingRpcClient
     public void addExceptionListener(ExceptionListener inListener)
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#removeExceptionListener(java.beans.ExceptionListener)
@@ -152,7 +150,6 @@ public class TradingRpcClient
     public void removeExceptionListener(ExceptionListener inListener)
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#getBrokersStatus()
@@ -161,7 +158,6 @@ public class TradingRpcClient
     public BrokersStatus getBrokersStatus()
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#resolveSymbol(java.lang.String)
@@ -170,7 +166,6 @@ public class TradingRpcClient
     public Instrument resolveSymbol(String inSymbol)
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#findRootOrderIdFor(org.marketcetera.trade.OrderID)

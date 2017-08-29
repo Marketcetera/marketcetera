@@ -10,6 +10,7 @@ import org.marketcetera.client.rpc.server.TradeClientRpcService;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
+import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.server.session.ServerSession;
@@ -74,7 +75,23 @@ public class ServerApplication
     {
         ModuleManager moduleManager = new ModuleManager();
         moduleManager.init();
+        moduleManager.createDataFlow(buildOutgoingOrderDataRequest());
         return moduleManager;
+    }
+    public DataRequest[] buildOutgoingOrderDataRequest()
+    {
+        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+/*
+        ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
+        dataRequestBuilder.add(new DataRequest(headwaterUrn));
+        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(OrderConverterModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(OutgoingMessageCachingModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(OutgoingMessagePersistenceModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
+                                               inFixDataRequest));
+ */
+        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
     }
     /**
      * Get the message factory value.

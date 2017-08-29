@@ -63,6 +63,20 @@ public class HeadwaterModule
         }
     }
     /**
+     * Create a headwater module.
+     *
+     * @param inHeadwaterInstance a <code>String</code> value
+     * @param inModuleManager a <code>ModuleManager</code> value
+     * @return a <code>ModuleURN</code> value
+     */
+    public static ModuleURN createHeadwaterModule(String inHeadwaterInstance,
+                                                  ModuleManager inModuleManager)
+    {
+        ModuleURN headwaterUrn = inModuleManager.createModule(HeadwaterModuleFactory.PROVIDER_URN,
+                                                              inHeadwaterInstance);
+        return headwaterUrn;
+    }
+    /**
      * Emit the given data to the given data flows, if specified.
      * 
      * <p>If no data flows are specified, the data is emitted to all data flows in which this module participates.

@@ -1,6 +1,13 @@
 package org.marketcetera.clienttest;
 
+import java.math.BigDecimal;
+
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Side;
 import org.marketcetera.trade.client.TradingClient;
 import org.marketcetera.trading.rpc.TradingRpcClientFactory;
 import org.marketcetera.trading.rpc.TradingRpcClientParametersImpl;
@@ -117,6 +124,34 @@ public class ClientTest
                                   hostname,
                                   port,
                                   username);
+//            tradingClient.addReportListener(new ReportListener() {
+//                @Override
+//                public void receiveExecutionReport(ExecutionReport inReport)
+//                {
+//                    SLF4JLoggerProxy.info(ClientTest.this,
+//                                          "Received {}",
+//                                          inReport);
+//                }
+//                @Override
+//                public void receiveCancelReject(OrderCancelReject inReport)
+//                {
+//                    SLF4JLoggerProxy.info(ClientTest.this,
+//                                          "Received {}",
+//                                          inReport);
+//                }
+//            });
+            Factory factory = Factory.getInstance();
+            OrderSingle testOrder = factory.createOrderSingle();
+            testOrder.setInstrument(new Equity("METC"));
+            testOrder.setOrderType(OrderType.Limit);
+            testOrder.setQuantity(BigDecimal.TEN);
+            testOrder.setPrice(BigDecimal.TEN);
+            testOrder.setSide(Side.Buy);
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "Sending {}",
+                                  testOrder);
+            tradingClient.sendOrder(testOrder);
+            Thread.sleep(5000);
         } finally {
             if(tradingClient != null) {
                 tradingClient.stop();

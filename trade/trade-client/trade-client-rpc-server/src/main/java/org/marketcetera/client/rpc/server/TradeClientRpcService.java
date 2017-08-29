@@ -10,14 +10,13 @@ import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.server.AbstractRpcService;
-import org.marketcetera.trade.service.TradeService;
+import org.marketcetera.trading.rpc.TradingRpc;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersRequest;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersResponse;
 import org.marketcetera.trading.rpc.TradingRpc.SendOrderRequest;
 import org.marketcetera.trading.rpc.TradingRpc.SendOrderResponse;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -129,14 +128,23 @@ public class TradeClientRpcService<SessionClazz>
         public void sendOrders(SendOrderRequest inRequest,
                                StreamObserver<SendOrderResponse> inResponseObserver)
         {
-            throw new UnsupportedOperationException(); // TODO
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                TradingRpc.SendOrderResponse.Builder responseBuilder = TradingRpc.SendOrderResponse.newBuilder();
+                // TODO construct order
+                // TODO emit order to data flow
+                TradingRpc.SendOrderResponse response = responseBuilder.build();
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
         }
     }
-    /**
-     * provides trade services
-     */
-    @Autowired
-    private TradeService tradeServer;
+    // TODO add service adapter so we don't need to repeat if we add another client type
     /**
      * provides the RPC service
      */
