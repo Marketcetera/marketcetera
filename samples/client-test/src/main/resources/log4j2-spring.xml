@@ -10,5 +10,7 @@
       <AppenderRef ref="STDOUT"/>
     </Root>
     <logger name="org.marketcetera.clienttest" level="debug"/>
+    <logger name="org.marketcetera.trading.rpc" level="trace"/>
+    <logger name="org.marketcetera.trading.rpc.TradingRpcClient" level="trace"/>
   </Loggers>
 </Configuration>

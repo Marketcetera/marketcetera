@@ -11,13 +11,16 @@ import org.marketcetera.brokers.Selector;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXConverter;
+import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.TradeConstants;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradeMessagePublisher;
@@ -64,7 +67,7 @@ public class TradeServiceImpl
                                    inOrder.getBrokerID(),
                                    broker);
         }
-        if(broker == null) {
+        if(broker == null && brokerSelector != null) {
             BrokerID brokerId = brokerSelector.chooseBroker(inOrder);
             if(brokerId != null) {
                 broker = brokerService.getBroker(brokerId);
@@ -220,6 +223,18 @@ public class TradeServiceImpl
                                                  e);
             }
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.TradeService#submitOrderToOutgoingDataFlow(org.marketcetera.trade.HasOrder)
+     */
+    @Override
+    public void submitOrderToOutgoingDataFlow(HasOrder inOrder)
+    {
+        HeadwaterModule outgoingDataFlowModule = HeadwaterModule.getInstance(TradeConstants.outgoingDataFlowName);
+        if(outgoingDataFlowModule == null) {
+            throw new IllegalStateException("Outgoing data flow not established");
+        }
+        outgoingDataFlowModule.emit(inOrder);
     }
     /**
      * Resolve the given broker into the appropriate virtual or physical broker.

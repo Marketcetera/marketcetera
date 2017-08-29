@@ -4,6 +4,15 @@ option java_generic_services = true;
 option java_package = "org.marketcetera.rpc.base";
 option java_outer_classname = "BaseRpc";
 
+message KeyValuePair {
+    string key = 1;
+    string value = 2;
+}
+
+message Map {
+    repeated KeyValuePair keyValuePairs = 1;
+}
+
 message Qty {
     int64 qty = 1;
     int32 scale = 2;

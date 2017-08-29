@@ -4,61 +4,7 @@ option java_package = "org.marketcetera.trading.rpc";
 option java_outer_classname = "TradingRpc";
 import "rpc_base.proto";
 import "rpc_paging.proto";
-
-enum OrderType {
-    UnknownOrderType = 0;
-    Market = 1;
-    Limit = 2;
-    Stop = 3;
-    StopLimit = 4;
-    MarketOnClose = 5;
-    WithOrWithout = 6;
-    LimitOrBetter = 7;
-    LimitWithOrWithout = 8;
-    OnBasis = 9;
-    OnClose = 10;
-    LimitOnClose = 11;
-    ForexMarket = 12;
-    PreviouslyQuoted = 13;
-    PreviouslyIndicated = 14;
-    ForexLimit = 15;
-    ForexSwap = 16;
-    ForexPreviouslyQuoted = 17;
-    Funari = 18;
-    Pegged = 19;
-}
-
-enum OrderStatusType {
-    New = 0;
-    PartiallyFilled = 1;
-    Filled = 2;
-    DoneForDay = 3;
-    Canceled = 4;
-    Replaced = 5;
-    PendingCancel = 6;
-    Stopped = 7;
-    Rejected = 8;
-    Suspended = 9;
-    PendingNew = 10;
-    Calculated = 11;
-    Expired = 12;
-    AcceptedForBidding = 13;
-    PendingReplace = 14;
-    UnknownOrderStatus = 99;
-}
-
-enum SideType {
-    UnknownSide = 0;
-    Buy = 1;
-    Sell = 2;
-    BuyMinus = 3;
-    SellPlus = 4;
-    SellShort = 5;
-    SellShortExempt = 6;
-    Undisclosed = 7;
-    Cross = 8;
-    CrossShort = 9;
-}
+import "rpc_trading_types.proto";
 
 message OpenOrdersRequest {
     string sessionId = 1;
@@ -70,38 +16,16 @@ message OpenOrdersResponse {
     repeated OpenOrder orders = 2;
 }
 
-message OpenOrder {
-}
-
-message OrderSingle {
-    string brokerId = 1;
-    string symbol = 2;
-    SideType side = 3;
-    Qty quantity = 4;
-    Qty price = 5;
-    string account = 6;
-    OrderType orderType = 7;
-    string customFields = 8;
-    Qty displayQty = 9;
-    string orderId = 10;
-    // algo?
-    // TIF?
-    // security type?
-    // order capacity?
-    // position effect?
-    // text?
-}
-
 message SendOrderRequest {
     string sessionId = 1;
-    repeated OrderSingle order = 2;
+    repeated Order order = 2;
 }
 
 message SendOrderResponse {
-    repeated OrderSingleResponse orderResponse = 1;
+    repeated OrderResponse orderResponse = 1;
 }
 
-message OrderSingleResponse {
+message OrderResponse {
     string orderid = 1;
     bool failed = 2;
     string message = 3;

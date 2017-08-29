@@ -42,6 +42,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>admin-db</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>misc</artifactId>
+    </dependency>
     <!-- other compile -->
     <dependency>
       <groupId>com.querydsl</groupId>
@@ -57,11 +61,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>fix-modules</artifactId>
       <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>misc</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

@@ -3,6 +3,9 @@ package org.marketcetera.client.rpc.server;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.marketcetera.admin.HasUser;
+import org.marketcetera.admin.User;
+import org.marketcetera.admin.service.UserService;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
 import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
@@ -10,6 +13,10 @@ import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.server.AbstractRpcService;
+import org.marketcetera.trade.HasOrder;
+import org.marketcetera.trade.HasStatus;
+import org.marketcetera.trade.Order;
+import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.trading.rpc.TradingRpc;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersRequest;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersResponse;
@@ -17,6 +24,10 @@ import org.marketcetera.trading.rpc.TradingRpc.SendOrderRequest;
 import org.marketcetera.trading.rpc.TradingRpc.SendOrderResponse;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase;
+import org.marketcetera.trading.rpc.TradingTypesRpc;
+import org.marketcetera.trading.rpc.TradingUtil;
+import org.marketcetera.util.ws.stateful.SessionHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -129,10 +140,31 @@ public class TradeClientRpcService<SessionClazz>
                                StreamObserver<SendOrderResponse> inResponseObserver)
         {
             try {
-                validateAndReturnSession(inRequest.getSessionId());
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
                 TradingRpc.SendOrderResponse.Builder responseBuilder = TradingRpc.SendOrderResponse.newBuilder();
-                // TODO construct order
-                // TODO emit order to data flow
+                TradingRpc.OrderResponse.Builder orderResponseBuilder = TradingRpc.OrderResponse.newBuilder();
+                for(TradingTypesRpc.Order rpcOrder : inRequest.getOrderList()) {
+                    try {
+                        Order matpOrder = TradingUtil.getOrder(rpcOrder);
+                        TradingUtil.setOrderId(matpOrder,
+                                               orderResponseBuilder);
+                        User user = userService.findByName(sessionHolder.getUser());
+                        latestOrder = null;
+                        tradeService.submitOrderToOutgoingDataFlow(new RpcOrderWrapper(user,
+                                                                                       matpOrder));
+                        if(latestOrder != null) {
+                            orderResponseBuilder.setFailed(latestOrder.getFailed());
+                            orderResponseBuilder.setMessage(latestOrder.getMessage());
+                        } else {
+                            orderResponseBuilder.setFailed(false);
+                        }
+                    } catch (Exception e) {
+                        orderResponseBuilder.setFailed(true);
+                        orderResponseBuilder.setMessage(ExceptionUtils.getRootCauseMessage(e));
+                    }
+                    responseBuilder.addOrderResponse(orderResponseBuilder.build());
+                    orderResponseBuilder.clear();
+                }
                 TradingRpc.SendOrderResponse response = responseBuilder.build();
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
@@ -144,7 +176,120 @@ public class TradeClientRpcService<SessionClazz>
             }
         }
     }
-    // TODO add service adapter so we don't need to repeat if we add another client type
+    /**
+     * Wraps submitted orders.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class RpcOrderWrapper
+            implements HasOrder,HasUser,HasStatus
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.HasOrder#getOrder()
+         */
+        @Override
+        public Order getOrder()
+        {
+            return order;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.admin.HasUser#getUser()
+         */
+        @Override
+        public User getUser()
+        {
+            return user;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.HasStatus#getFailed()
+         */
+        @Override
+        public boolean getFailed()
+        {
+            return failed;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.HasStatus#setFailed(boolean)
+         */
+        @Override
+        public void setFailed(boolean inFailed)
+        {
+            failed = inFailed;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.HasStatus#getMessage()
+         */
+        @Override
+        public String getMessage()
+        {
+            return message;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.HasStatus#setMessage(java.lang.String)
+         */
+        @Override
+        public void setMessage(String inMessage)
+        {
+            message = inMessage;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("RpcOrderWrapper [order=").append(order).append(", user=").append(user).append(", failed=")
+                    .append(failed).append(", message=").append(message).append(", start=").append(start).append("]");
+            return builder.toString();
+        }
+        /**
+         * Create a new RpcHasOrder instance.
+         *
+         * @param inUser a <code>User</code> value
+         * @param inOrder an <code>Order</code> value
+         */
+        private RpcOrderWrapper(User inUser,
+                                Order inOrder)
+        {
+            user = inUser;
+            order = inOrder;
+            failed = false;
+        }
+        /**
+         * message value
+         */
+        private volatile String message;
+        /**
+         * failed value
+         */
+        private volatile boolean failed;
+        /**
+         * user value
+         */
+        private final User user;
+        /**
+         * order value
+         */
+        private final Order order;
+        /**
+         * start time stamp
+         */
+        private final long start = System.nanoTime();
+    }
+    private RpcOrderWrapper latestOrder;
+    /**
+     * privates access to user services
+     */
+    @Autowired
+    private UserService userService;
+    /**
+     * provides access to trade services
+     */
+    @Autowired
+    private TradeService tradeService;
     /**
      * provides the RPC service
      */

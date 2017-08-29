@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
+import org.marketcetera.brokers.Selector;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.brokers.service.InMemoryFixSessionProvider;
 import org.marketcetera.client.rpc.server.TradeClientRpcService;
@@ -12,13 +13,27 @@ import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.modules.fix.FixDataRequest;
+import org.marketcetera.modules.fix.FixInitiatorModuleFactory;
+import org.marketcetera.modules.headwater.HeadwaterModule;
+import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.server.session.ServerSession;
 import org.marketcetera.server.session.ServerSessionFactory;
+import org.marketcetera.symbol.IterativeSymbolResolver;
+import org.marketcetera.symbol.PatternSymbolResolver;
+import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.trade.BasicSelector;
+import org.marketcetera.trade.TradeConstants;
 import org.marketcetera.trade.impl.DefaultOwnerStrategy;
 import org.marketcetera.trade.impl.OutgoingMessageLookupStrategy;
+import org.marketcetera.trade.modules.OrderConverterModuleFactory;
+import org.marketcetera.trade.modules.OutgoingMessageCachingModuleFactory;
+import org.marketcetera.trade.modules.OutgoingMessagePersistenceModuleFactory;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
+import org.marketcetera.trading.rpc.TradingUtil;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,23 +90,8 @@ public class ServerApplication
     {
         ModuleManager moduleManager = new ModuleManager();
         moduleManager.init();
-        moduleManager.createDataFlow(buildOutgoingOrderDataRequest());
+        moduleManager.createDataFlow(buildOutgoingOrderDataRequest(moduleManager));
         return moduleManager;
-    }
-    public DataRequest[] buildOutgoingOrderDataRequest()
-    {
-        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
-/*
-        ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
-        dataRequestBuilder.add(new DataRequest(headwaterUrn));
-        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(OrderConverterModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(OutgoingMessageCachingModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(OutgoingMessagePersistenceModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
-                                               inFixDataRequest));
- */
-        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
     }
     /**
      * Get the message factory value.
@@ -219,6 +219,76 @@ public class ServerApplication
         DefaultOwnerStrategy defaultOwnerStrategy = new DefaultOwnerStrategy();
         defaultOwnerStrategy.setUsername("trader");
         return defaultOwnerStrategy;
+    }
+    /**
+     * Get the symbol resolver service value.
+     *
+     * @return a <code>SymbolResolverService</code> value
+     */
+    @Bean
+    public SymbolResolverService getSymbolResolverService()
+    {
+        IterativeSymbolResolver symbolResolverService = new IterativeSymbolResolver();
+        symbolResolverService.setSymbolResolvers(Lists.newArrayList(new PatternSymbolResolver()));
+        TradingUtil.setSymbolResolverService(symbolResolverService);
+        return symbolResolverService;
+    }
+    /**
+     * Get the broker selector value.
+     *
+     * @return a <code>Selector</code> value
+     */
+    @Bean
+    public Selector getBrokerSelector()
+    {
+        BasicSelector selector = new BasicSelector();
+        return selector;
+    }
+    /**
+     * Build the outgoing order data flow.
+     *
+     * @param inModuleManager a <code>ModuleManager</code> value
+     * @return a <code>DataRequest[]</code> value
+     */
+    private DataRequest[] buildOutgoingOrderDataRequest(ModuleManager inModuleManager)
+    {
+        startModulesIfNecessary(inModuleManager,
+                                TransactionModuleFactory.INSTANCE_URN,
+                                OrderConverterModuleFactory.INSTANCE_URN,
+                                OutgoingMessageCachingModuleFactory.INSTANCE_URN,
+                                OutgoingMessagePersistenceModuleFactory.INSTANCE_URN,
+                                FixInitiatorModuleFactory.INSTANCE_URN);
+        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+        ModuleURN headwaterUrn = HeadwaterModule.createHeadwaterModule(TradeConstants.outgoingDataFlowName,
+                                                                       inModuleManager);
+        dataRequestBuilder.add(new DataRequest(headwaterUrn));
+        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(OrderConverterModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(OutgoingMessageCachingModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(OutgoingMessagePersistenceModuleFactory.INSTANCE_URN));
+        FixDataRequest fixDataRequest = new FixDataRequest();
+        fixDataRequest.setIncludeAdmin(false);
+        fixDataRequest.setIncludeApp(true);
+        fixDataRequest.getMessageWhiteList().clear();
+        fixDataRequest.getMessageBlackList().clear();
+        dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
+                                               fixDataRequest));
+        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
+    }
+    /**
+     * Start instance modules if necessary.
+     *
+     * @param inModuleManager a <code>ModuleManager</code> value
+     * @param inInstanceUrns a <code>ModuleURN[]</code> value
+     */
+    private void startModulesIfNecessary(ModuleManager inModuleManager,
+                                         ModuleURN...inInstanceUrns)
+    {
+        for(ModuleURN instanceUrn : inInstanceUrns) {
+            if(!inModuleManager.getModuleInfo(instanceUrn).getState().isStarted()) {
+                inModuleManager.start(instanceUrn);
+            }
+        }
     }
     /**
      * message owner value

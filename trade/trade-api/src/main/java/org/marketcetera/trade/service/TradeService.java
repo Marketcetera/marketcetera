@@ -1,6 +1,9 @@
 package org.marketcetera.trade.service;
 
 import org.marketcetera.brokers.Broker;
+import org.marketcetera.fix.OrderIntercepted;
+import org.marketcetera.trade.HasOrder;
+import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.TradeMessage;
 
@@ -47,4 +50,10 @@ public interface TradeService
      */
     TradeMessage convertResponse(Message inMessage,
                                  Broker inBroker);
+    /**
+     * Submits the given order to the standard outgoing data flow.
+     *
+     * @param inOrder a <code>HasOrder</code> value
+     */
+    void submitOrderToOutgoingDataFlow(HasOrder inOrder);
 }

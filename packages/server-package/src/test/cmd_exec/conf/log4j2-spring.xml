@@ -44,7 +44,7 @@
       <AppenderRef ref="STDOUT"/>
     </Root>
     <logger name="org.marketcetera" level="info"/>
-    <logger name="org.marketcetera.admin.provisioning" level="debug"/>
+    <logger name="fix.prettyprint" level="debug"/>
     <logger name="metc.brokers" level="info" additivity="false">
       <AppenderRef ref="BROKERS"/>
       <AppenderRef ref="FILE"/>

@@ -10,6 +10,7 @@ import java.util.concurrent.Callable;
 
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.BrokersStatus;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.Version;
 import org.marketcetera.core.VersionInfo;
@@ -20,13 +21,17 @@ import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.client.AbstractRpcClient;
+import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSummary;
+import org.marketcetera.trade.RelatedOrder;
 import org.marketcetera.trade.client.ReportListener;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradingClient;
@@ -236,76 +241,124 @@ public class TradingRpcClient
             public List<SendOrderResponse> call()
                     throws Exception
             {
-                SLF4JLoggerProxy.trace(this,
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
                                        "{} sending {} order(s)",
                                        getSessionId(),
                                        inOrders.size());
                 TradingRpc.SendOrderRequest.Builder requestBuilder = TradingRpc.SendOrderRequest.newBuilder();
+                TradingTypesRpc.Order.Builder orderBuilder = TradingTypesRpc.Order.newBuilder();
+                TradingTypesRpc.OrderBase.Builder orderBaseBuilder = null;
+                TradingTypesRpc.FIXOrder.Builder fixOrderBuilder = null;
+                BaseRpc.Map.Builder mapBuilder = null;
+                BaseRpc.KeyValuePair.Builder keyValuePairBuilder = null;
                 requestBuilder.setSessionId(getSessionId().getValue());
-                TradingRpc.OrderSingle.Builder orderBuilder = TradingRpc.OrderSingle.newBuilder();
-//                for(Order order : inOrders) {
-//                    String account = StringUtils.trimToNull(order.getAccount());
-//                    if(account != null) {
-//                        orderBuilder.setAccount(account);
-//                    }
-//                    if(order.getBrokerID() != null) {
-//                        orderBuilder.setBrokerId(order.getBrokerID().getValue());
-//                    }
-//                    if(order.getCustomFields() != null && !order.getCustomFields().isEmpty()) {
-//                        Properties customFieldsProperties = new Properties();
-//                        customFieldsProperties.putAll(order.getCustomFields());
-//                        String compactProperties = Util.propertiesToString(customFieldsProperties);
-//                        orderBuilder.setCustomFields(compactProperties);
-//                    }
-//                    if(order.getDisplayQuantity() != null) {
-//                        orderBuilder.setDisplayQty(BaseUtil.getQtyValueFrom(order.getDisplayQuantity()));
-//                    }
-//                    if(order.getInstrument() != null) {
-//                        orderBuilder.setSymbol(order.getInstrument().getFullSymbol());
-//                    }
-//                    if(order.getOrderCapacity() != null) {
-//                        // TODO
-//                    }
-//                    if(order.getOrderID() != null) {
-//                        orderBuilder.setOrderId(order.getOrderID().getValue());
-//                    }
-//                    if(order.getOrderType() != null) {
-//                        orderBuilder.setOrderType(TradingUtil.getOrderTypeFromOrderType(order.getOrderType()));
-//                    }
-//                    if(order.getPositionEffect() != null) {
-//                        // TODO
-//                    }
-//                    if(order.getPrice() != null) {
-//                        orderBuilder.setPrice(BaseUtil.getQtyValueFrom(order.getPrice()));
-//                    }
-//                    if(order.getQuantity() != null) {
-//                        orderBuilder.setQuantity(BaseUtil.getQtyValueFrom(order.getQuantity()));
-//                    }
-//                    if(order.getSecurityType() != null) {
-//                        // TODO ?
-//                    }
-//                    if(order.getSide() != null) {
-//                        orderBuilder.setSide(TradingUtil.getSideTypeFromSide(order.getSide()));
-//                    }
-//                    if(order.getText() != null) {
-//                        // TODO
-//                    }
-//                    if(order.getTimeInForce() != null) {
-//                        // TODO
-//                    }
-//                    requestBuilder.addOrder(orderBuilder.build());
-//                    orderBuilder.clear();
-//                }
-                TradingRpc.SendOrderResponse response = getBlockingStub().sendOrders(requestBuilder.build());
+                for(Order order : inOrders) {
+                    try {
+                        if(order instanceof FIXOrder) {
+                            FIXOrder fixOrder = (FIXOrder)order;
+                            if(fixOrderBuilder == null) {
+                                fixOrderBuilder = TradingTypesRpc.FIXOrder.newBuilder();
+                            } else {
+                                fixOrderBuilder.clear();
+                            }
+                            if(mapBuilder == null) {
+                                mapBuilder = BaseRpc.Map.newBuilder();
+                            } else {
+                                mapBuilder.clear();
+                            }
+                            for(Map.Entry<Integer,String> entry : fixOrder.getFields().entrySet()) {
+                                if(keyValuePairBuilder == null) {
+                                    keyValuePairBuilder = BaseRpc.KeyValuePair.newBuilder();
+                                } else {
+                                    keyValuePairBuilder.clear();
+                                }
+                                keyValuePairBuilder.setKey(String.valueOf(entry.getKey()));
+                                keyValuePairBuilder.setKey(entry.getValue());
+                                mapBuilder.addKeyValuePairs(keyValuePairBuilder.build());
+                            }
+                            TradingUtil.setBrokerId(fixOrder,
+                                                    fixOrderBuilder);
+//                            fixOrderBuilder.setMessage(mapBuilder.build());
+                            // TODO
+                            orderBuilder.setFixOrder(fixOrderBuilder.build());
+                        } else if(order instanceof OrderBase) {
+                            if(orderBaseBuilder == null) {
+                                orderBaseBuilder = TradingTypesRpc.OrderBase.newBuilder();
+                            } else {
+                                orderBaseBuilder.clear();
+                            }
+                            // either an OrderSingle, OrderReplace, or OrderCancel
+                            // the types overlap some, first, set all the common fields on OrderBase
+                            OrderBase orderBase = (OrderBase)order;
+                            TradingUtil.setAccount(orderBase,
+                                                   orderBaseBuilder);
+                            TradingUtil.setBrokerId(orderBase,
+                                                    orderBaseBuilder);
+                            TradingUtil.setRpcCustomFields(orderBase,
+                                                        orderBaseBuilder);
+                            TradingUtil.setInstrument(orderBase,
+                                                      orderBaseBuilder);
+                            TradingUtil.setOrderId(orderBase,
+                                                   orderBaseBuilder);
+                            TradingUtil.setQuantity(orderBase,
+                                                    orderBaseBuilder);
+                            TradingUtil.setSide(orderBase,
+                                                orderBaseBuilder);
+                            TradingUtil.setText(orderBase,
+                                                orderBaseBuilder);
+                            // now, check for various special order types
+                            if(orderBase instanceof NewOrReplaceOrder) {
+                                NewOrReplaceOrder newOrReplaceOrder = (NewOrReplaceOrder)orderBase;
+                                TradingUtil.setDisplayQuantity(newOrReplaceOrder,
+                                                               orderBaseBuilder);
+                                TradingUtil.setOrderCapacity(newOrReplaceOrder,
+                                                             orderBaseBuilder);
+                                TradingUtil.setOrderType(newOrReplaceOrder,
+                                                         orderBaseBuilder);
+                                TradingUtil.setPositionEffect(newOrReplaceOrder,
+                                                              orderBaseBuilder);
+                                TradingUtil.setPrice(newOrReplaceOrder,
+                                                     orderBaseBuilder);
+                                TradingUtil.setTimeInForce(newOrReplaceOrder,
+                                                           orderBaseBuilder);
+                            }
+                            TradingTypesRpc.OrderBase rpcOrderBase = orderBaseBuilder.build();
+                            if(order instanceof RelatedOrder) {
+                                RelatedOrder relatedOrder = (RelatedOrder)order;
+                                TradingUtil.setOriginalOrderId(relatedOrder,
+                                                               orderBaseBuilder);
+                            } else {
+                                orderBuilder.setOrderBase(rpcOrderBase);
+                            }
+                        } else {
+                            throw new UnsupportedOperationException("Unsupported order type: " + order.getClass().getSimpleName());
+                        }
+                        requestBuilder.addOrder(orderBuilder.build());
+                        orderBuilder.clear();
+                        if(orderBaseBuilder != null) {
+                            orderBaseBuilder.clear();
+                        }
+                    } catch (Exception e) {
+                        PlatformServices.handleException(TradingRpcClient.this,
+                                                         "Unable to send " + order,
+                                                         e);
+                    }
+                }
+                TradingRpc.SendOrderRequest sendOrderRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       sendOrderRequest);
+                TradingRpc.SendOrderResponse response = getBlockingStub().sendOrders(sendOrderRequest);
                 List<SendOrderResponse> results = new ArrayList<>();
-                for(TradingRpc.OrderSingleResponse rpcResponse : response.getOrderResponseList()) {
+                for(TradingRpc.OrderResponse rpcResponse : response.getOrderResponseList()) {
                     SendOrderResponse orderResponse = new SendOrderResponse();
                     orderResponse.setFailed(rpcResponse.getFailed());
                     orderResponse.setMessage(rpcResponse.getMessage());
                     orderResponse.setOrderId(rpcResponse.getOrderid()==null?null:new OrderID(rpcResponse.getOrderid()));
                     results.add(orderResponse);
                 }
-                SLF4JLoggerProxy.trace(this,
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
                                        results);
