@@ -6,6 +6,7 @@ import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.TradeMessagePublisher;
 
 import quickfix.Message;
 
@@ -19,6 +20,7 @@ import quickfix.Message;
  * @since $Release$
  */
 public interface TradeService
+        extends TradeMessagePublisher
 {
     /**
      * Select a broker for the given order.

@@ -17,12 +17,18 @@ import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.trading.rpc.TradingRpc;
+import org.marketcetera.trading.rpc.TradingRpc.AddTradeMessageListenerRequest;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersRequest;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersResponse;
+import org.marketcetera.trading.rpc.TradingRpc.RemoveTradeMessageListenerRequest;
+import org.marketcetera.trading.rpc.TradingRpc.RemoveTradeMessageListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpc.SendOrderRequest;
 import org.marketcetera.trading.rpc.TradingRpc.SendOrderResponse;
+import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase;
 import org.marketcetera.trading.rpc.TradingTypesRpc;
@@ -30,6 +36,9 @@ import org.marketcetera.trading.rpc.TradingUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -189,6 +198,78 @@ public class TradeClientRpcService<SessionClazz>
                 throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
             }
         }
+        
+        /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#addTradeMessageListener(org.marketcetera.trading.rpc.TradingRpc.AddTradeMessageListenerRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void addTradeMessageListener(AddTradeMessageListenerRequest inRequest,
+                                            StreamObserver<TradeMessageListenerResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Received add trade message listener request {}",
+                                       inRequest);
+                String listenerId = inRequest.getListenerId();
+                TradeMessageListenerProxy tradeMessageListenerProxy = tradeMessageListenersById.getIfPresent(listenerId);
+                if(tradeMessageListenerProxy == null) {
+                    tradeMessageListenerProxy = new TradeMessageListenerProxy(listenerId,
+                                                                              inResponseObserver);
+                    tradeMessageListenersById.put(tradeMessageListenerProxy.id,
+                                                  tradeMessageListenerProxy);
+                    tradeService.addTradeMessageListener(tradeMessageListenerProxy);
+                }
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#removeTradeMessageListener(org.marketcetera.trading.rpc.TradingRpc.RemoveTradeMessageListenerRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void removeTradeMessageListener(RemoveTradeMessageListenerRequest inRequest,
+                                               StreamObserver<RemoveTradeMessageListenerResponse> inResponseObserver)
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
+    }
+    private static class TradeMessageListenerProxy
+            implements TradeMessageListener
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.TradeMessageListener#receiveTradeMessage(org.marketcetera.trade.TradeMessage)
+         */
+        @Override
+        public void receiveTradeMessage(TradeMessage inTradeMessage)
+        {
+            SLF4JLoggerProxy.trace(TradeClientRpcService.class,
+                                   "{} received trade message {}",
+                                   id,
+                                   inTradeMessage);
+            responseBuilder.setTemp(inTradeMessage.toString());
+            observer.onNext(responseBuilder.build());
+            responseBuilder.clear();
+        }
+        /**
+         * Create a new TradeMessageListenerProxy instance.
+         *
+         * @param inId
+         * @param inObserver
+         */
+        private TradeMessageListenerProxy(String inId,
+                                          StreamObserver<TradeMessageListenerResponse> inObserver)
+        {
+            id = inId;
+            observer = inObserver;
+        }
+        private final TradingRpc.TradeMessageListenerResponse.Builder responseBuilder = TradingRpc.TradeMessageListenerResponse.newBuilder();
+        private final String id;
+        private final StreamObserver<TradeMessageListenerResponse> observer;
     }
     /**
      * Wraps submitted orders.
@@ -311,4 +392,8 @@ public class TradeClientRpcService<SessionClazz>
      * description of this service
      */
     private final static String description = "Marketcetera Trading Service";
+    /**
+     * holds trade message listeners by id
+     */
+    private final Cache<String,TradeMessageListenerProxy> tradeMessageListenersById = CacheBuilder.newBuilder().build();
 }

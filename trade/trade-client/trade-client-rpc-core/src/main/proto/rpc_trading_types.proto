@@ -151,3 +151,10 @@ message Order {
     OrderBase orderBase = 2;
     MatpOrderType matpOrderType = 3;
 }
+
+message ExecutionReport {
+}
+
+message OrderCancelReject {
+}
+

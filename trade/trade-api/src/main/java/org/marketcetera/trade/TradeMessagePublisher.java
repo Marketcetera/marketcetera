@@ -23,10 +23,4 @@ public interface TradeMessagePublisher
      * @param inTradeMessageListener a <code>TradeMessageListener</code> value
      */
     void removeTradeMessageListener(TradeMessageListener inTradeMessageListener);
-    /**
-     * Receives a trade message to broadcast to interested subscribers.
-     *
-     * @param inTradeMessage a <code>TradeMessage</code> value
-     */
-    void reportTradeMessage(TradeMessage inTradeMessage);
 }

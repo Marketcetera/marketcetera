@@ -10,6 +10,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.client.TradingClient;
 import org.marketcetera.trade.utils.OrderHistoryManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -137,7 +138,7 @@ public class LiveOrderHistoryManager
         // snapshotReports contains all the reports as dictated by the origin date
         if(!snapshotReports.isEmpty()) {
             for(ReportBase report : snapshotReports) {
-                LiveOrderHistoryManager.super.add(report);
+                LiveOrderHistoryManager.super.add((TradeMessage)report);
             }
             snapshotReports.clear();
             SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,
@@ -151,7 +152,7 @@ public class LiveOrderHistoryManager
                 try {
                     while(isRunning) {
                         // process any updates that exist
-                        add(updateReports.take());
+                        add((TradeMessage)updateReports.take());
                     }
                 } catch (InterruptedException ignored) {}
             }

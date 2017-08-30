@@ -11,6 +11,7 @@ import org.marketcetera.client.rpc.server.TradeClientRpcService;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
+import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
@@ -31,9 +32,13 @@ import org.marketcetera.trade.impl.OutgoingMessageLookupStrategy;
 import org.marketcetera.trade.modules.OrderConverterModuleFactory;
 import org.marketcetera.trade.modules.OutgoingMessageCachingModuleFactory;
 import org.marketcetera.trade.modules.OutgoingMessagePersistenceModuleFactory;
+import org.marketcetera.trade.modules.TradeMessageBroadcastModuleFactory;
+import org.marketcetera.trade.modules.TradeMessageConverterModuleFactory;
+import org.marketcetera.trade.modules.TradeMessagePersistenceModuleFactory;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
 import org.marketcetera.trading.rpc.TradingUtil;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +95,12 @@ public class ServerApplication
     {
         ModuleManager moduleManager = new ModuleManager();
         moduleManager.init();
-        moduleManager.createDataFlow(buildOutgoingOrderDataRequest(moduleManager));
+        DataFlowID outgoingDataFlow = moduleManager.createDataFlow(buildOutgoingDataRequest(moduleManager));
+        DataFlowID incomingDataFlow = moduleManager.createDataFlow(buildIncomingDataRequest(moduleManager));
+        SLF4JLoggerProxy.info(this,
+                              "Created outgoing data flow: {} and incoming data flow: {}",
+                              outgoingDataFlow,
+                              incomingDataFlow);
         return moduleManager;
     }
     /**
@@ -245,12 +255,40 @@ public class ServerApplication
         return selector;
     }
     /**
+     * Build the incoming order data flow.
+     *
+     * @param inModuleManager a <code>ModuleManager</code> value
+     * @return a <code>DataRequest[]</code> value
+     */
+    private DataRequest[] buildIncomingDataRequest(ModuleManager inModuleManager)
+    {
+        startModulesIfNecessary(inModuleManager,
+                                TransactionModuleFactory.INSTANCE_URN,
+                                TradeMessageConverterModuleFactory.INSTANCE_URN,
+                                TradeMessagePersistenceModuleFactory.INSTANCE_URN,
+                                TradeMessageBroadcastModuleFactory.INSTANCE_URN,
+                                FixInitiatorModuleFactory.INSTANCE_URN);
+        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+        FixDataRequest fixDataRequest = new FixDataRequest();
+        fixDataRequest.setIncludeAdmin(false);
+        fixDataRequest.setIncludeApp(true);
+        fixDataRequest.getMessageWhiteList().clear();
+        fixDataRequest.getMessageBlackList().clear();
+        dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
+                                               fixDataRequest));
+        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TradeMessagePersistenceModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TradeMessageBroadcastModuleFactory.INSTANCE_URN));
+        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
+    }
+    /**
      * Build the outgoing order data flow.
      *
      * @param inModuleManager a <code>ModuleManager</code> value
      * @return a <code>DataRequest[]</code> value
      */
-    private DataRequest[] buildOutgoingOrderDataRequest(ModuleManager inModuleManager)
+    private DataRequest[] buildOutgoingDataRequest(ModuleManager inModuleManager)
     {
         startModulesIfNecessary(inModuleManager,
                                 TransactionModuleFactory.INSTANCE_URN,

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import org.marketcetera.brokers.BrokerStatusListener;
@@ -32,14 +33,19 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.RelatedOrder;
-import org.marketcetera.trade.client.ReportListener;
+import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradingClient;
+import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceBlockingStub;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceStub;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 
 import io.grpc.Channel;
@@ -59,22 +65,76 @@ public class TradingRpcClient
         implements TradingClient
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradingClient#addReportListener(org.marketcetera.trade.client.ReportListener)
+     * @see org.marketcetera.trade.client.TradingClient#addTradeMessageListener(org.marketcetera.trade.client.TradeMessageListener)
      */
     @Override
-    public void addReportListener(ReportListener inReportListener)
+    public void addTradeMessageListener(TradeMessageListener inTradeMessageListener)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        if(tradeMessageListenerWrappers.asMap().containsKey(inTradeMessageListener)) {
+            return;
+        }
+        final TradeMessageListenerWrapper wrapper = tradeMessageListenerWrappers.getUnchecked(inTradeMessageListener);
+        if(wrapper == null) {
+            return;
+        }
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} adding report listener",
+                                       getSessionId());
+                TradingRpc.AddTradeMessageListenerRequest.Builder requestBuilder = TradingRpc.AddTradeMessageListenerRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(wrapper.getId());
+                TradingRpc.AddTradeMessageListenerRequest addTradeMessageListenerRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       addTradeMessageListenerRequest);
+                getAsyncStub().addTradeMessageListener(addTradeMessageListenerRequest,
+                                                       wrapper);
+                return null;
+            }
+        });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradingClient#removeReportListener(org.marketcetera.trade.client.ReportListener)
+     * @see org.marketcetera.trade.client.TradingClient#removeTradeMessageListener(org.marketcetera.trade.client.TradeMessageListener)
      */
     @Override
-    public void removeReportListener(ReportListener inReportListener)
+    public void removeTradeMessageListener(TradeMessageListener inTradeMessageListener)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        final TradeMessageListenerWrapper wrapper = tradeMessageListenerWrappers.getIfPresent(inTradeMessageListener);
+        tradeMessageListenerWrappers.invalidate(inTradeMessageListener);
+        if(wrapper == null) {
+            return;
+        }
+        tradeMessageListenerWrappersById.invalidate(wrapper.getId());
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} removing report listener",
+                                       getSessionId());
+                TradingRpc.RemoveTradeMessageListenerRequest.Builder requestBuilder = TradingRpc.RemoveTradeMessageListenerRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(wrapper.getId());
+                TradingRpc.RemoveTradeMessageListenerRequest removeTradeMessageListenerRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       removeTradeMessageListenerRequest);
+                TradingRpc.RemoveTradeMessageListenerResponse response = getBlockingStub().removeTradeMessageListener(removeTradeMessageListenerRequest);
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
+            }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#addBrokerStatusListener(org.marketcetera.brokers.BrokerStatusListener)
@@ -450,6 +510,75 @@ public class TradingRpcClient
         return APP_ID_VERSION;
     }
     /**
+     *
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class TradeMessageListenerWrapper
+            implements StreamObserver<TradeMessageListenerResponse>
+    {
+        /* (non-Javadoc)
+         * @see io.grpc.stub.StreamObserver#onNext(java.lang.Object)
+         */
+        @Override
+        public void onNext(TradeMessageListenerResponse inValue)
+        {
+            SLF4JLoggerProxy.trace(TradingRpcClient.class,
+                                   "{} received {}",
+                                   id,
+                                   inValue);
+        }
+        /* (non-Javadoc)
+         * @see io.grpc.stub.StreamObserver#onError(java.lang.Throwable)
+         */
+        @Override
+        public void onError(Throwable inT)
+        {
+            SLF4JLoggerProxy.trace(TradingRpcClient.class,
+                                   "{} received {}",
+                                   id,
+                                   inT);
+        }
+        /* (non-Javadoc)
+         * @see io.grpc.stub.StreamObserver#onCompleted()
+         */
+        @Override
+        public void onCompleted()
+        {
+            SLF4JLoggerProxy.trace(TradingRpcClient.class,
+                                   "{} completed",
+                                   id);
+        }
+        /**
+         * Get the id value.
+         *
+         * @return a <code>String</code> value
+         */
+        private String getId()
+        {
+            return id;
+        }
+        /**
+         * Create a new TradeMessageListenerWrapper instance.
+         *
+         * @param inTradeMessageListener a <code>TradeMessageListener</code> value
+         */
+        private TradeMessageListenerWrapper(TradeMessageListener inTradeMessageListener)
+        {
+            tradeMessageListener = inTradeMessageListener;
+        }
+        /**
+         * report listener value
+         */
+        private final TradeMessageListener tradeMessageListener;
+        /**
+         * unique id value
+         */
+        private final String id = UUID.randomUUID().toString();
+    }
+    /**
      * The client's application ID: the application name.
      */
     private static final String APP_ID_NAME = TradingRpcClient.class.getSimpleName();
@@ -461,4 +590,22 @@ public class TradingRpcClient
      * The client's application ID: the ID.
      */
     private static final AppId APP_ID = Util.getAppId(APP_ID_NAME,APP_ID_VERSION.getVersionInfo());
+    /**
+     * holds report listeners by their id
+     */
+    private final Cache<String,TradeMessageListenerWrapper> tradeMessageListenerWrappersById = CacheBuilder.newBuilder().build();
+    /**
+     * holds report listeners by the original listener
+     */
+    private final LoadingCache<TradeMessageListener,TradeMessageListenerWrapper> tradeMessageListenerWrappers = CacheBuilder.newBuilder().build(new CacheLoader<TradeMessageListener,TradeMessageListenerWrapper>() {
+        @Override
+        public TradeMessageListenerWrapper load(TradeMessageListener inKey)
+                throws Exception
+        {
+            TradeMessageListenerWrapper wrapper = new TradeMessageListenerWrapper(inKey);
+            tradeMessageListenerWrappersById.put(wrapper.getId(),
+                                           wrapper);
+            return wrapper;
+        }}
+    );
 }

@@ -22,8 +22,8 @@ import org.marketcetera.trade.Order;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.TradeConstants;
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.TradeMessageBroadcaster;
 import org.marketcetera.trade.TradeMessageListener;
-import org.marketcetera.trade.TradeMessagePublisher;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.Messages;
@@ -50,7 +50,7 @@ import quickfix.Message;
  */
 @Service
 public class TradeServiceImpl
-        implements TradeService,TradeMessagePublisher
+        implements TradeService,TradeMessageBroadcaster
 {
     /* (non-Javadoc)
      * @see org.marketcetera.trade.service.TradeService#selectBroker(org.marketcetera.trade.Order)
@@ -209,7 +209,7 @@ public class TradeServiceImpl
         tradeMessageListeners.remove(inTradeMessageListener);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.service.TradeService#reportTradeMessage(org.marketcetera.trade.TradeMessage)
+     * @see org.marketcetera.trade.TradeMessageBroadcaster#reportTradeMessage(org.marketcetera.trade.TradeMessage)
      */
     @Override
     public void reportTradeMessage(TradeMessage inTradeMessage)

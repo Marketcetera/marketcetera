@@ -2,10 +2,9 @@ package org.marketcetera.client.utils;
 
 import java.util.Date;
 
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.client.ReportListener;
+import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.utils.OrderHistoryManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -45,7 +44,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public class AutoOrderHistoryManager
         extends LiveOrderHistoryManager
-        implements ReportListener
+        implements TradeMessageListener
 {
     /**
      * Create a new AutoOrderHistoryManager instance.
@@ -60,34 +59,21 @@ public class AutoOrderHistoryManager
      * @see org.marketcetera.trade.utils.OrderHistoryManager#add(org.marketcetera.trade.ReportBase)
      */
     @Override
-    public void add(ReportBase inReport)
+    public void add(TradeMessage inTradeMessage)
     {
         throw new UnsupportedOperationException(org.marketcetera.client.Messages.DONT_ADD_REPORTS.getText());
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.client.ReportListener#receiveExecutionReport(org.marketcetera.trade.ExecutionReport)
+     * @see org.marketcetera.trade.TradeMessageListener#receiveTradeMessage(org.marketcetera.trade.TradeMessage)
      */
     @Override
-    public void receiveExecutionReport(ExecutionReport inReport)
+    public void receiveTradeMessage(TradeMessage inTradeMessage)
     {
-        SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,
+        SLF4JLoggerProxy.debug(this,
                                "Received {}", //$NON-NLS-1$
-                               inReport);
-        if(inReport != null) {
-            super.add(inReport);
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.client.ReportListener#receiveCancelReject(org.marketcetera.trade.OrderCancelReject)
-     */
-    @Override
-    public void receiveCancelReject(OrderCancelReject inReport)
-    {
-        SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,
-                               "Received {}", //$NON-NLS-1$
-                               inReport);
-        if(inReport != null) {
-            super.add(inReport);
+                               inTradeMessage);
+        if(inTradeMessage != null) {
+            super.add(inTradeMessage);
         }
     }
     /* (non-Javadoc)
@@ -96,7 +82,7 @@ public class AutoOrderHistoryManager
     @Override
     public synchronized void start()
     {
-        getClient().addReportListener(this);
+        getClient().addTradeMessageListener(this);
         super.start();
     }
     /* (non-Javadoc)
@@ -105,7 +91,7 @@ public class AutoOrderHistoryManager
     @Override
     public synchronized void stop()
     {
-        getClient().removeReportListener(this);
+        getClient().removeTradeMessageListener(this);
         super.stop();
     }
 }

@@ -31,10 +31,32 @@ message OrderResponse {
     string message = 3;
 }
 
+message AddTradeMessageListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message TradeMessageListenerResponse {
+    ExecutionReport executionReport = 1;
+    OrderCancelReject orderCancelReject = 2;
+    string temp = 3;
+}
+
+message RemoveTradeMessageListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message RemoveTradeMessageListenerResponse {
+    Status status = 1;
+}
+
 service TradingRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
     rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}
     rpc getOpenOrders(OpenOrdersRequest) returns (OpenOrdersResponse);
     rpc sendOrders(SendOrderRequest) returns (SendOrderResponse);
+    rpc addTradeMessageListener(AddTradeMessageListenerRequest) returns (stream TradeMessageListenerResponse);
+    rpc removeTradeMessageListener(RemoveTradeMessageListenerRequest) returns (RemoveTradeMessageListenerResponse);
 }

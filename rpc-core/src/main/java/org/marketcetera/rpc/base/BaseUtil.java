@@ -3,6 +3,8 @@ package org.marketcetera.rpc.base;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import org.apache.commons.lang.StringUtils;
+
 /* $License$ */
 
 /**
@@ -44,5 +46,23 @@ public abstract class BaseUtil
         qtyBuilder.setQty(quantity.longValue());
         qtyBuilder.setScale(6);
         return qtyBuilder.build();
+    }
+    /**
+     * Get an RPC status message with the given values.
+     *
+     * @param inFailed a <code>boolean</code> value
+     * @param inErrorMessage a <code>String</code> value
+     * @return a <code>BaseRpc.Status</code> value
+     */
+    public static BaseRpc.Status getStatus(boolean inFailed,
+                                           String inErrorMessage)
+    {
+        BaseRpc.Status.Builder inStatusBuilder = BaseRpc.Status.newBuilder();
+        inStatusBuilder.setFailed(inFailed);
+        String value = StringUtils.trimToNull(inErrorMessage);
+        if(value != null) {
+            inStatusBuilder.setErrorMessage(value);
+        }
+        return inStatusBuilder.build();
     }
 }

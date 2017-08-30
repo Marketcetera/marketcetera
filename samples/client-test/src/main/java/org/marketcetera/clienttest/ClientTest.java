@@ -8,6 +8,8 @@ import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.TradingClient;
 import org.marketcetera.trading.rpc.TradingRpcClientFactory;
 import org.marketcetera.trading.rpc.TradingRpcClientParametersImpl;
@@ -57,60 +59,13 @@ public class ClientTest
                               "Ending client test");
     }
     /**
-     * 
+     * Run the client test.
      *
-     *
-     * @throws Exception
+     * @throws Exception if an error occurs running the client test
      */
     private void runTest()
             throws Exception
     {
-//      // connect server client
-//      RpcClientParameters parameters = new RpcClientParameters("user",
-//                                                               "password".toCharArray(),
-//                                                               "tcp://dare.marketcetera.com:61616",
-//                                                               "dare.marketcetera.com",
-//                                                               8999);
-//      ClientManager.setClientFactory(new RpcClientFactory());
-//      ClientManager.init(parameters);
-//      Client client = ClientManager.getInstance();
-//      client.reconnect();
-//      SLF4JLoggerProxy.info(ClientTest.class,
-//                            "Connected to server: {}",
-//                            client.isServerAlive());
-//      client.addReportListener(new ReportListener() {
-//          @Override
-//          public void receiveExecutionReport(ExecutionReport inReport)
-//          {
-//              SLF4JLoggerProxy.info(this,
-//                                    "Received {}",
-//                                    inReport);
-//          }
-//          @Override
-//          public void receiveCancelReject(OrderCancelReject inReport)
-//          {
-//              SLF4JLoggerProxy.info(this,
-//                                    "Received {}",
-//                                    inReport);
-//          }
-//      });
-//      Factory factory = Factory.getInstance();
-//      OrderSingle testOrder = factory.createOrderSingle();
-//      testOrder.setInstrument(new Equity("METC"));
-//      testOrder.setOrderType(OrderType.Limit);
-//      testOrder.setQuantity(BigDecimal.TEN);
-//      testOrder.setPrice(BigDecimal.TEN);
-//      testOrder.setSide(Side.Buy);
-//      SLF4JLoggerProxy.info(ClientTest.class,
-//                            "Sending {}",
-//                            testOrder);
-//      client.sendOrder(testOrder);
-//      try {
-//          Thread.sleep(5000);
-//      } catch (InterruptedException e) {
-//          e.printStackTrace();
-//      }
-//      client.close();
         try {
             TradingRpcClientParametersImpl params = new TradingRpcClientParametersImpl();
             params.setHostname(hostname);
@@ -124,22 +79,16 @@ public class ClientTest
                                   hostname,
                                   port,
                                   username);
-//            tradingClient.addReportListener(new ReportListener() {
-//                @Override
-//                public void receiveExecutionReport(ExecutionReport inReport)
-//                {
-//                    SLF4JLoggerProxy.info(ClientTest.this,
-//                                          "Received {}",
-//                                          inReport);
-//                }
-//                @Override
-//                public void receiveCancelReject(OrderCancelReject inReport)
-//                {
-//                    SLF4JLoggerProxy.info(ClientTest.this,
-//                                          "Received {}",
-//                                          inReport);
-//                }
-//            });
+            TradeMessageListener tradeMessageListener = new TradeMessageListener() {
+                @Override
+                public void receiveTradeMessage(TradeMessage inTradeMessage)
+                {
+                    SLF4JLoggerProxy.info(ClientTest.this,
+                                          "Received {}",
+                                          inTradeMessage);
+                }
+            };
+            tradingClient.addTradeMessageListener(tradeMessageListener);
             Factory factory = Factory.getInstance();
             OrderSingle testOrder = factory.createOrderSingle();
             testOrder.setInstrument(new Equity("METC"));
@@ -152,6 +101,7 @@ public class ClientTest
                                   testOrder);
             tradingClient.sendOrder(testOrder);
             Thread.sleep(5000);
+            tradingClient.removeTradeMessageListener(tradeMessageListener);
         } finally {
             if(tradingClient != null) {
                 tradingClient.stop();

@@ -1,5 +1,7 @@
 package org.marketcetera.trade.modules;
 
+import java.util.Collection;
+
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
@@ -8,9 +10,11 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.trade.HasTradeMessage;
 import org.marketcetera.trade.TradeMessage;
-import org.marketcetera.trade.TradeMessagePublisher;
+import org.marketcetera.trade.TradeMessageBroadcaster;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -38,16 +42,18 @@ public class TradeMessageBroadcastModule
                                                                   inData.getClass().getSimpleName()));
         }
         TradeMessage tradeMessage = ((HasTradeMessage)inData).getTradeMessage();
-        if(tradeMessagePublisher == null) {
+        if(tradeMessageBroadcasters == null || tradeMessageBroadcasters.isEmpty()) {
             Messages.NO_TRADE_MESSAGE_PUBLISHER.warn(this,
                                                      tradeMessage);
         } else {
-            try {
-                tradeMessagePublisher.reportTradeMessage(tradeMessage);
-            } catch (Exception e) {
-                PlatformServices.handleException(this,
-                                                 "Error publishing trade message",
-                                                 e);
+            for(TradeMessageBroadcaster tradeMessageBroadcaster : tradeMessageBroadcasters) {
+                try {
+                    tradeMessageBroadcaster.reportTradeMessage(tradeMessage);
+                } catch (Exception e) {
+                    PlatformServices.handleException(this,
+                                                     "Error publishing trade message",
+                                                     e);
+                }
             }
         }
         return (HasTradeMessage)inData;
@@ -66,5 +72,5 @@ public class TradeMessageBroadcastModule
      * provides access to trade services
      */
     @Autowired(required=false)
-    private TradeMessagePublisher tradeMessagePublisher;
+    private Collection<TradeMessageBroadcaster> tradeMessageBroadcasters = Lists.newArrayList();
 }

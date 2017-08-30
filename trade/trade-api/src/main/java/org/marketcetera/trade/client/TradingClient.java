@@ -19,6 +19,7 @@ import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSummary;
+import org.marketcetera.trade.TradeMessagePublisher;
 
 /* $License$ */
 
@@ -30,7 +31,7 @@ import org.marketcetera.trade.OrderSummary;
  * @since $Release$
  */
 public interface TradingClient
-        extends BaseClient,ReportPublisher,BrokerStatusPublisher
+        extends BaseClient,TradeMessagePublisher,BrokerStatusPublisher
 {
     /**
      * Get open orders.
@@ -75,18 +76,6 @@ public interface TradingClient
      * @return an <code>OrderID</code> value
      */
     OrderID modifyOrder(OrderReplace inOrderReplace);
-    /**
-     *
-     *
-     * @param inReportListener a <code>ReportListener</code> value
-     */
-    void addReportListener(ReportListener inReportListener);
-    /**
-     *
-     *
-     * @param inReportListener a <code>ReportListener</code> value
-     */
-    void removeReportListener(ReportListener inReportListener);
     /**
      *
      *

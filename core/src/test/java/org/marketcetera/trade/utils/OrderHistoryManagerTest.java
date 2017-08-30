@@ -34,9 +34,13 @@ import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.CollectionAssert;
+
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 
 import quickfix.Message;
 import quickfix.field.AvgPx;
@@ -61,9 +65,6 @@ import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TargetCompID;
 import quickfix.field.TransactTime;
-
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 
 /* $License$ */
 
@@ -571,7 +572,7 @@ public class OrderHistoryManagerTest
                                                                              null,
                                                                              OrderStatus.Filled);
         assertFalse(report1.getOrderStatus().isCancellable());
-        manager.add(report1);
+        manager.add((TradeMessage)report1);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -585,7 +586,7 @@ public class OrderHistoryManagerTest
                                                                              null,
                                                                              OrderStatus.PartiallyFilled);
         assertTrue(report2.getOrderStatus().isCancellable());
-        manager.add(report2);
+        manager.add((TradeMessage)report2);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -642,7 +643,7 @@ public class OrderHistoryManagerTest
         ReportBase report1 = OrderHistoryManagerTest.generateExecutionReport(orderID.getValue(),
                                                                              null,
                                                                              OrderStatus.New);
-        orderManager.add(report1);
+        orderManager.add((TradeMessage)report1);
         assertTrue(reportHistory.isEmpty());
         reportHistory = orderManager.getReportHistoryFor(orderID);
         assertEquals(1,
@@ -665,7 +666,7 @@ public class OrderHistoryManagerTest
         ReportBase report1 = OrderHistoryManagerTest.generateExecutionReport(orderID.getValue(),
                                                                              null,
                                                                              OrderStatus.New);
-        orderManager.add(report1);
+        orderManager.add((TradeMessage)report1);
         assertEquals(orderManager.getLatestReportFor(orderID).getOrderStatus(),
                      OrderStatus.New);
         // create replacement order with a different status and pre-search for it
@@ -674,7 +675,7 @@ public class OrderHistoryManagerTest
         ReportBase report2 = OrderHistoryManagerTest.generateExecutionReport(replacementOrderID.getValue(),
                                                                              orderID.getValue(),
                                                                              OrderStatus.Canceled);
-        orderManager.add(report2);
+        orderManager.add((TradeMessage)report2);
         Deque<ReportBase> originalReportHistory = orderManager.getReportHistoryFor(orderID);
         Deque<ReportBase> replacementReportHistory = orderManager.getReportHistoryFor(replacementOrderID);
         assertEquals(OrderStatus.Canceled,
