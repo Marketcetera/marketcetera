@@ -145,6 +145,10 @@ public class TradeClientRpcService<SessionClazz>
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
                 TradingRpc.SendOrderResponse.Builder responseBuilder = TradingRpc.SendOrderResponse.newBuilder();
                 TradingRpc.OrderResponse.Builder orderResponseBuilder = TradingRpc.OrderResponse.newBuilder();
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Received send order request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
                 for(TradingTypesRpc.Order rpcOrder : inRequest.getOrderList()) {
                     try {
                         Order matpOrder = TradingUtil.getOrder(rpcOrder);
@@ -153,7 +157,7 @@ public class TradeClientRpcService<SessionClazz>
                         User user = userService.findByName(sessionHolder.getUser());
                         Object result = tradeService.submitOrderToOutgoingDataFlow(new RpcOrderWrapper(user,
                                                                                                        matpOrder));
-                        SLF4JLoggerProxy.debug(this,
+                        SLF4JLoggerProxy.debug(TradeClientRpcService.this,
                                                "Order submission returned {}",
                                                result);
                         if(result instanceof HasStatus) {
@@ -161,7 +165,7 @@ public class TradeClientRpcService<SessionClazz>
                             orderResponseBuilder.setFailed(hasStatusResult.getFailed());
                             if(hasStatusResult.getFailed()) {
                                 orderResponseBuilder.setMessage(hasStatusResult.getErrorMessage());
-                                SLF4JLoggerProxy.warn(this,
+                                SLF4JLoggerProxy.warn(TradeClientRpcService.this,
                                                       "Order submission failed: {}",
                                                       result);
                             }

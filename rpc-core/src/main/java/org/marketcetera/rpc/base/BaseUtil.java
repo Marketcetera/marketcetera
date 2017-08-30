@@ -22,9 +22,6 @@ public abstract class BaseUtil
      */
     public static BigDecimal getScaledQuantity(BaseRpc.Qty inQty)
     {
-        if(inQty == null) {
-            return null;
-        }
         BigDecimal base = new BigDecimal(inQty.getQty());
         int scale = inQty.getScale();
         base = base.setScale(scale,

@@ -46,11 +46,10 @@ import quickfix.Message;
 public abstract class TradingUtil
 {
     /**
-     * 
+     * Get the RPC time in force value for the given MATP time in force value.
      *
-     *
-     * @param inTimeInForce
-     * @return
+     * @param inTimeInForce a <code>TimeInForce</code> value
+     * @return a <code>TradingTypesRpc.TimeInForce</code> value
      */
     public static TradingTypesRpc.TimeInForce getRpcTimeInForce(TimeInForce inTimeInForce)
     {
@@ -639,15 +638,15 @@ public abstract class TradingUtil
         return BaseUtil.getScaledQuantity(inRpcOrder.getPrice());
     }
     /**
-    *
-    *
-    * @param inRpcOrder
-    * @return
-    */
-   public static BigDecimal getDisplayQuantity(TradingTypesRpc.OrderBase inRpcOrder)
-   {
-       return BaseUtil.getScaledQuantity(inRpcOrder.getDisplayQuantity());
-   }
+     * Get the display quantity of the given order.
+     *
+     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @return a <code>BigDecimal</code> value or <code>null</code>
+     */
+    public static BigDecimal getDisplayQuantity(TradingTypesRpc.OrderBase inRpcOrder)
+    {
+        return BaseUtil.getScaledQuantity(inRpcOrder.getDisplayQuantity());
+    }
     /**
      *
      *
@@ -698,18 +697,32 @@ public abstract class TradingUtil
         }
     }
     /**
+     * Set the display quantity from the given order on the given builder.
      *
-     *
-     * @param inOrder
-     * @param inOrderBuilder
+     * @param inOrder a <code>NewOrReplaceOrder</code> value
+     * @param inOrderBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
      */
     public static void setDisplayQuantity(NewOrReplaceOrder inOrder,
                                           TradingTypesRpc.OrderBase.Builder inOrderBuilder)
     {
-        if(inOrder.getDisplayQuantity() == null) {
+        if(inOrder.getDisplayQuantity() == null || BigDecimal.ZERO.compareTo(inOrder.getDisplayQuantity()) == 0) {
             return;
         }
         inOrderBuilder.setDisplayQuantity(BaseUtil.getQtyValueFrom(inOrder.getDisplayQuantity()));
+    }
+    /**
+     * 
+     *
+     *
+     * @param inOrder
+     * @param inRpcOrder
+     */
+    public static void setDisplayQuantity(NewOrReplaceOrder inOrder,
+                                          TradingTypesRpc.OrderBase inRpcOrder)
+    {
+        if(inRpcOrder.hasDisplayQuantity()) {
+            inOrder.setDisplayQuantity(BaseUtil.getScaledQuantity(inRpcOrder.getDisplayQuantity()));
+        }
     }
     /**
      *
@@ -820,10 +833,10 @@ public abstract class TradingUtil
         return brokerId;
     }
     /**
+     * Get the MATP order value for the given RPC order.
      *
-     *
-     * @param inRpcOrder
-     * @return
+     * @param inRpcOrder a <code>TradingTypesRpc.Order</code> value
+     * @return an <code>Order</code> value
      */
     public static Order getOrder(TradingTypesRpc.Order inRpcOrder)
     {
@@ -875,7 +888,8 @@ public abstract class TradingUtil
         }
         if(newOrReplaceOrder != null) {
             newOrReplaceOrder.setBrokerAlgo(getBrokerAlgo(rpcOrderBase));
-            newOrReplaceOrder.setDisplayQuantity(getDisplayQuantity(rpcOrderBase));
+            setDisplayQuantity(newOrReplaceOrder,
+                               rpcOrderBase);
             newOrReplaceOrder.setExecutionDestination(StringUtils.trimToNull(rpcOrderBase.getExecutionDestination()));
             newOrReplaceOrder.setOrderCapacity(getOrderCapacity(rpcOrderBase.getOrderCapacity()));
             newOrReplaceOrder.setOrderType(getOrderType(rpcOrderBase.getOrderType()));
