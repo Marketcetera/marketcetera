@@ -22,6 +22,7 @@ import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.HasMutableStatus;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
@@ -134,6 +135,11 @@ public abstract class AbstractFixModule
             boolean messageSent = Session.sendToTarget(message,
                                                        targetSessionId);
             if(!messageSent) {
+                if(inData instanceof HasMutableStatus) {
+                    HasMutableStatus mutableStatus = (HasMutableStatus)inData;
+                    mutableStatus.setFailed(true);
+                    mutableStatus.setErrorMessage("FIX message not sent to broker because FIX session was unavailable");
+                }
                 throw new ReceiveDataException(new IllegalArgumentException("Message not sent: " + message));
             }
         } catch (SessionNotFound e) {
@@ -187,17 +193,19 @@ public abstract class AbstractFixModule
     public void toAdmin(Message inMessage,
                         SessionID inSessionId)
     {
-        if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
-            SLF4JLoggerProxy.info(this,
-                                  "{} sending admin:",
-                                  inSessionId);
-            FIXMessageUtil.logMessage(inSessionId,
+        if(!FIXMessageUtil.isHeartbeat(inMessage)) {
+            if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
+                SLF4JLoggerProxy.info(this,
+                                      "{} sending admin:",
+                                      inSessionId);
+                FIXMessageUtil.logMessage(inSessionId,
+                                          inMessage);
+            } else {
+                SLF4JLoggerProxy.info(this,
+                                      "{} sending admin: {}",
+                                      inSessionId,
                                       inMessage);
-        } else {
-            SLF4JLoggerProxy.info(this,
-                                  "{} sending admin: {}",
-                                  inSessionId,
-                                  inMessage);
+            }
         }
     }
     /* (non-Javadoc)

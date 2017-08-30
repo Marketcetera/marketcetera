@@ -6,6 +6,8 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.admin.HasUser;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.UserService;
+import org.marketcetera.module.HasMutableStatus;
+import org.marketcetera.module.HasStatus;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
 import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
@@ -14,7 +16,6 @@ import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.trade.HasOrder;
-import org.marketcetera.trade.HasStatus;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.trading.rpc.TradingRpc;
@@ -26,6 +27,7 @@ import org.marketcetera.trading.rpc.TradingRpcServiceGrpc;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase;
 import org.marketcetera.trading.rpc.TradingTypesRpc;
 import org.marketcetera.trading.rpc.TradingUtil;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -149,12 +151,20 @@ public class TradeClientRpcService<SessionClazz>
                         TradingUtil.setOrderId(matpOrder,
                                                orderResponseBuilder);
                         User user = userService.findByName(sessionHolder.getUser());
-                        latestOrder = null;
-                        tradeService.submitOrderToOutgoingDataFlow(new RpcOrderWrapper(user,
-                                                                                       matpOrder));
-                        if(latestOrder != null) {
-                            orderResponseBuilder.setFailed(latestOrder.getFailed());
-                            orderResponseBuilder.setMessage(latestOrder.getMessage());
+                        Object result = tradeService.submitOrderToOutgoingDataFlow(new RpcOrderWrapper(user,
+                                                                                                       matpOrder));
+                        SLF4JLoggerProxy.debug(this,
+                                               "Order submission returned {}",
+                                               result);
+                        if(result instanceof HasStatus) {
+                            HasStatus hasStatusResult = (HasStatus)result;
+                            orderResponseBuilder.setFailed(hasStatusResult.getFailed());
+                            if(hasStatusResult.getFailed()) {
+                                orderResponseBuilder.setMessage(hasStatusResult.getErrorMessage());
+                                SLF4JLoggerProxy.warn(this,
+                                                      "Order submission failed: {}",
+                                                      result);
+                            }
                         } else {
                             orderResponseBuilder.setFailed(false);
                         }
@@ -184,7 +194,7 @@ public class TradeClientRpcService<SessionClazz>
      * @since $Release$
      */
     private static class RpcOrderWrapper
-            implements HasOrder,HasUser,HasStatus
+            implements HasOrder,HasUser,HasMutableStatus
     {
         /* (non-Javadoc)
          * @see org.marketcetera.trade.HasOrder#getOrder()
@@ -222,7 +232,7 @@ public class TradeClientRpcService<SessionClazz>
          * @see org.marketcetera.trade.HasStatus#getMessage()
          */
         @Override
-        public String getMessage()
+        public String getErrorMessage()
         {
             return message;
         }
@@ -230,7 +240,7 @@ public class TradeClientRpcService<SessionClazz>
          * @see org.marketcetera.trade.HasStatus#setMessage(java.lang.String)
          */
         @Override
-        public void setMessage(String inMessage)
+        public void setErrorMessage(String inMessage)
         {
             message = inMessage;
         }
@@ -279,7 +289,6 @@ public class TradeClientRpcService<SessionClazz>
          */
         private final long start = System.nanoTime();
     }
-    private RpcOrderWrapper latestOrder;
     /**
      * privates access to user services
      */

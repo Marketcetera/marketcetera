@@ -3,6 +3,7 @@ package org.marketcetera.modules.publisher;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -30,6 +31,20 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 public class PublisherModule
         extends AbstractDataReemitterModule
 {
+    /**
+     * Create a publisher module.
+     *
+     * @param inModuleManager a <code>ModuleManager</code> value
+     * @param inSubscriber an <code>ISubscriber</code> value
+     * @return a <code>ModuleURN</code> value
+     */
+    public static ModuleURN createPublisherModule(ModuleManager inModuleManager,
+                                                  ISubscriber inSubscriber)
+    {
+        ModuleURN publisherUrn = inModuleManager.createModule(PublisherModuleFactory.PROVIDER_URN,
+                                                              inSubscriber);
+        return publisherUrn;
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataReceiver#receiveData(org.marketcetera.module.DataFlowID, java.lang.Object)
      */

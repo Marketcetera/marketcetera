@@ -54,6 +54,7 @@ public interface TradeService
      * Submits the given order to the standard outgoing data flow.
      *
      * @param inOrder a <code>HasOrder</code> value
+     * @return an <code>Object</code> value containing the result of the submission, if available
      */
-    void submitOrderToOutgoingDataFlow(HasOrder inOrder);
+    Object submitOrderToOutgoingDataFlow(HasOrder inOrder);
 }

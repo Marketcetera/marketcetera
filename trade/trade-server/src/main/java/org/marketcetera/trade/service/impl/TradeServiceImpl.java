@@ -228,13 +228,15 @@ public class TradeServiceImpl
      * @see org.marketcetera.trade.service.TradeService#submitOrderToOutgoingDataFlow(org.marketcetera.trade.HasOrder)
      */
     @Override
-    public void submitOrderToOutgoingDataFlow(HasOrder inOrder)
+    public Object submitOrderToOutgoingDataFlow(HasOrder inOrder)
     {
         HeadwaterModule outgoingDataFlowModule = HeadwaterModule.getInstance(TradeConstants.outgoingDataFlowName);
         if(outgoingDataFlowModule == null) {
             throw new IllegalStateException("Outgoing data flow not established");
         }
         outgoingDataFlowModule.emit(inOrder);
+        // note that this object won't have deterministic state if async flows are used
+        return inOrder;
     }
     /**
      * Resolve the given broker into the appropriate virtual or physical broker.

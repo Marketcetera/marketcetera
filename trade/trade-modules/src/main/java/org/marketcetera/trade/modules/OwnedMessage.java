@@ -4,6 +4,7 @@ import org.marketcetera.admin.HasUser;
 import org.marketcetera.admin.User;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.HasSessionId;
+import org.marketcetera.module.HasMutableStatus;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.HasBrokerID;
 
@@ -20,7 +21,7 @@ import quickfix.SessionID;
  * @since $Release$
  */
 public class OwnedMessage
-        implements HasFIXMessage,HasUser,HasBrokerID,HasSessionId
+        implements HasFIXMessage,HasUser,HasBrokerID,HasSessionId,HasMutableStatus
 {
     /**
      * Create a new OwnedMessage instance.
@@ -132,6 +133,38 @@ public class OwnedMessage
     {
         sessionId = inSessionId;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasStatus#getFailed()
+     */
+    @Override
+    public boolean getFailed()
+    {
+        return failed;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasStatus#getErrorMessage()
+     */
+    @Override
+    public String getErrorMessage()
+    {
+        return errorMessage;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasMutableStatus#setErrorMessage(java.lang.String)
+     */
+    @Override
+    public void setErrorMessage(String inErrorMessage)
+    {
+        errorMessage = inErrorMessage;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasMutableStatus#setFailed(boolean)
+     */
+    @Override
+    public void setFailed(boolean inFailed)
+    {
+        failed = inFailed;
+    }
     /**
      * FIX message value
      */
@@ -148,4 +181,12 @@ public class OwnedMessage
      * session id value
      */
     private SessionID sessionId;
+    /**
+     * failed value
+     */
+    private boolean failed;
+    /**
+     * error message value
+     */
+    private String errorMessage;
 }
