@@ -216,17 +216,19 @@ public abstract class AbstractFixModule
                           SessionID inSessionId)
             throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, RejectLogon
     {
-        if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
-            SLF4JLoggerProxy.info(this,
-                                  "{} received admin:",
-                                  inSessionId);
-            FIXMessageUtil.logMessage(inSessionId,
+        if(!FIXMessageUtil.isHeartbeat(inMessage)) {
+            if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
+                SLF4JLoggerProxy.info(this,
+                                      "{} received admin:",
+                                      inSessionId);
+                FIXMessageUtil.logMessage(inSessionId,
+                                          inMessage);
+            } else {
+                SLF4JLoggerProxy.info(this,
+                                      "{} received admin: {}",
+                                      inSessionId,
                                       inMessage);
-        } else {
-            SLF4JLoggerProxy.info(this,
-                                  "{} received admin: {}",
-                                  inSessionId,
-                                  inMessage);
+            }
         }
         sendMessageIfNecessary(inMessage,
                                inSessionId,
