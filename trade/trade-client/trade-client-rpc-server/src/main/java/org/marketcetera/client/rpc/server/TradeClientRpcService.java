@@ -235,9 +235,15 @@ public class TradeClientRpcService<SessionClazz>
                                                StreamObserver<RemoveTradeMessageListenerResponse> inResponseObserver)
         {
             throw new UnsupportedOperationException(); // TODO
-            
         }
     }
+    /**
+     * Wraps a {@link TradeMessageListener} with the RPC call from the client.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
     private static class TradeMessageListenerProxy
             implements TradeMessageListener
     {
@@ -247,19 +253,30 @@ public class TradeClientRpcService<SessionClazz>
         @Override
         public void receiveTradeMessage(TradeMessage inTradeMessage)
         {
+            TradingUtil.setTradeMessage(inTradeMessage,
+                                        responseBuilder);
+            TradeMessageListenerResponse response = responseBuilder.build();
             SLF4JLoggerProxy.trace(TradeClientRpcService.class,
-                                   "{} received trade message {}",
+                                   "{} received trade message {}, sending {}",
                                    id,
-                                   inTradeMessage);
-            responseBuilder.setTemp(inTradeMessage.toString());
-            observer.onNext(responseBuilder.build());
+                                   inTradeMessage,
+                                   response);
+            observer.onNext(response);
             responseBuilder.clear();
+        }
+        /**
+         * Closes the connection with the RPC client call.
+         */
+        @SuppressWarnings("unused")
+        private void close()
+        {
+            observer.onCompleted();
         }
         /**
          * Create a new TradeMessageListenerProxy instance.
          *
-         * @param inId
-         * @param inObserver
+         * @param inId a <code>String</code> value
+         * @param inObserver a <code>StreamObserver&lt;TradeMessageListenerResponse&gt;</code> value
          */
         private TradeMessageListenerProxy(String inId,
                                           StreamObserver<TradeMessageListenerResponse> inObserver)
@@ -267,8 +284,17 @@ public class TradeClientRpcService<SessionClazz>
             id = inId;
             observer = inObserver;
         }
+        /**
+         * builder used to construct messages
+         */
         private final TradingRpc.TradeMessageListenerResponse.Builder responseBuilder = TradingRpc.TradeMessageListenerResponse.newBuilder();
+        /**
+         * listener id uniquely identifies this listener
+         */
         private final String id;
+        /**
+         * provides the connection to the RPC client call
+         */
         private final StreamObserver<TradeMessageListenerResponse> observer;
     }
     /**

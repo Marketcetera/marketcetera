@@ -2,34 +2,46 @@ package org.marketcetera.trading.rpc;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.FIXResponse;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderCapacity;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.PositionEffect;
 import org.marketcetera.trade.RelatedOrder;
+import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
+import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trading.rpc.TradingTypesRpc.FixMessage;
 
 import com.google.common.collect.Maps;
+import com.google.protobuf.util.Timestamps;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -45,6 +57,25 @@ import quickfix.Message;
  */
 public abstract class TradingUtil
 {
+    /**
+     * Get the RPC hierarchy value from the given value.
+     *
+     * @param inHierarchy a <code>Hierarchy</code> value
+     * @return a <code>TradingTypesRpc.Hierarchy</code> value
+     */
+    public static TradingTypesRpc.Hierarchy getRpcHierarchy(Hierarchy inHierarchy)
+    {
+        switch(inHierarchy) {
+            case Child:
+                return TradingTypesRpc.Hierarchy.ChildHierarchy;
+            case Flat:
+                return TradingTypesRpc.Hierarchy.FlatHierarchy;
+            case Parent:
+                return TradingTypesRpc.Hierarchy.ParentHierarchy;
+            default:
+                throw new UnsupportedOperationException("Unsupported hierarchy: " + inHierarchy);
+        }
+    }
     /**
      * Get the RPC time in force value for the given MATP time in force value.
      *
@@ -432,11 +463,10 @@ public abstract class TradingUtil
         }
     }
     /**
-     * 
+     * Set the instrument from the given order on the given builder.
      *
-     *
-     * @param inOrder
-     * @param inOrderBuilder
+     * @param inOrder an <code>OrderBase</code> value
+     * @param inOrderBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
      */
     public static void setInstrument(OrderBase inOrder,
                                      TradingTypesRpc.OrderBase.Builder inOrderBuilder)
@@ -528,6 +558,49 @@ public abstract class TradingUtil
             return;
         }
         inOrderBuilder.setAccount(value);
+    }
+    /**
+     * Set the account from value the given trade message on the given builder.
+     *
+     * @param inExecutionReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setAccount(ExecutionReport inExecutionReport,
+                                  TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        String value = StringUtils.trimToNull(inExecutionReport.getAccount());
+        if(value == null) {
+            return;
+        }
+        inBuilder.setAccount(value);
+    }
+    /**
+     * Set the user ID from value the given trade message on the given builder.
+     *
+     * @param inReportBase a <code>ReportBase</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setUserId(ReportBase inReportBase,
+                                 TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReportBase.getActorID() == null) {
+            return;
+        }
+        inBuilder.setUser(String.valueOf(inReportBase.getActorID()));
+    }
+    /**
+     * Set the user ID from value the given trade message on the given builder.
+     *
+     * @param inReport a <code>FIXResponse</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setUserId(FIXResponse inReport,
+                                 TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getActorID() == null) {
+            return;
+        }
+        inBuilder.setUser(String.valueOf(inReport.getActorID()));
     }
     /**
      *
@@ -857,7 +930,7 @@ public abstract class TradingUtil
                                      TradingTypesRpc.OrderBase inRpcOrder)
     {
         if(inRpcOrder.hasBrokerAlgo()) {
-            inOrder.setBrokerAlgo(getBrokerAlgo(inRpcOrder));
+            inOrder.setBrokerAlgo(getBrokerAlgo(inRpcOrder).orElse(null));
         }
     }
     /**
@@ -887,18 +960,18 @@ public abstract class TradingUtil
         }
     }
     /**
+     * Set the order capacity from the given order on the given builder.
      *
-     *
-     * @param inOrder
-     * @param inOrderBuilder
+     * @param inOrder a <code>NewOrReplaceOrder</code> value
+     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
      */
     public static void setOrderCapacity(NewOrReplaceOrder inOrder,
-                                        TradingTypesRpc.OrderBase.Builder inOrderBuilder)
+                                        TradingTypesRpc.OrderBase.Builder inBuilder)
     {
         if(inOrder.getOrderCapacity() == null) {
             return;
         }
-        inOrderBuilder.setOrderCapacity(getRpcOrderCapacity(inOrder.getOrderCapacity()));
+        inBuilder.setOrderCapacity(getRpcOrderCapacity(inOrder.getOrderCapacity()));
     }
     /**
      *
@@ -1155,27 +1228,677 @@ public abstract class TradingUtil
         return orderBase;
     }
     /**
+     * Set the given trade message on the given builder.
+     *
+     * @param inTradeMessage a <code>TradeMessage</code> value
+     * @param inBuilder a <code>TradingRpc.TradeMessageListenerResponse.Builder</code>
+     */
+    public static void setTradeMessage(TradeMessage inTradeMessage,
+                                       TradingRpc.TradeMessageListenerResponse.Builder inBuilder)
+    {
+        TradingTypesRpc.TradeMessage.Builder tradeMessageBuilder = TradingTypesRpc.TradeMessage.newBuilder();
+        ReportBase reportBase = null;
+        ExecutionReport executionReport = null;
+        FIXResponse fixResponse = null;
+        if(inTradeMessage instanceof ReportBase) {
+            reportBase = (ReportBase)inTradeMessage;
+        }
+        if(inTradeMessage instanceof ExecutionReport) {
+            executionReport = (ExecutionReport)inTradeMessage;
+            tradeMessageBuilder.setTradeMessageType(TradingTypesRpc.TradeMessageType.TradeMessageExecutionReport);
+        } else if(inTradeMessage instanceof OrderCancelReject) {
+            tradeMessageBuilder.setTradeMessageType(TradingTypesRpc.TradeMessageType.TradeMessageOrderCancelReject);
+        } else if(inTradeMessage instanceof FIXResponse) {
+            fixResponse = (FIXResponse)inTradeMessage;
+            tradeMessageBuilder.setTradeMessageType(TradingTypesRpc.TradeMessageType.TradeMessageFixResponse);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        if(reportBase != null) {
+            setBrokerId(reportBase,
+                        tradeMessageBuilder);
+            setBrokerOrderId(reportBase,
+                             tradeMessageBuilder);
+            setHierarchy(reportBase,
+                         tradeMessageBuilder);
+            setOrderId(reportBase,
+                       tradeMessageBuilder);
+            setOrderStatus(reportBase,
+                           tradeMessageBuilder);
+            setOriginalOrderId(reportBase,
+                               tradeMessageBuilder);
+            setOriginator(reportBase,
+                          tradeMessageBuilder);
+            setReportId(reportBase,
+                        tradeMessageBuilder);
+            setSendingTime(reportBase,
+                           tradeMessageBuilder);
+            setText(reportBase,
+                    tradeMessageBuilder);
+            setUserId(reportBase,
+                      tradeMessageBuilder);
+        }
+        if(executionReport != null) {
+            setAccount(executionReport,
+                       tradeMessageBuilder);
+            setAveragePrice(executionReport,
+                            tradeMessageBuilder);
+            setCumulativeQuantity(executionReport,
+                                  tradeMessageBuilder);
+            setExecutionId(executionReport,
+                           tradeMessageBuilder);
+            setExecutionType(executionReport,
+                             tradeMessageBuilder);
+            setInstrument(executionReport,
+                          tradeMessageBuilder);
+            setLastMarket(executionReport,
+                          tradeMessageBuilder);
+            setLastPrice(executionReport,
+                         tradeMessageBuilder);
+            setLastQuantity(executionReport,
+                            tradeMessageBuilder);
+            setLeavesQuantity(executionReport,
+                              tradeMessageBuilder);
+            setOrderCapacity(executionReport,
+                             tradeMessageBuilder);
+            setOrderDisplayQuantity(executionReport,
+                                    tradeMessageBuilder);
+            setOrderQuantity(executionReport,
+                             tradeMessageBuilder);
+            setOrderType(executionReport,
+                         tradeMessageBuilder);
+            setPositionEffect(executionReport,
+                              tradeMessageBuilder);
+            setPrice(executionReport,
+                     tradeMessageBuilder);
+            setSide(executionReport,
+                    tradeMessageBuilder);
+            setTimeInForce(executionReport,
+                           tradeMessageBuilder);
+            setTransactTime(executionReport,
+                            tradeMessageBuilder);
+        }
+        if(fixResponse != null) {
+            setBrokerId(fixResponse,
+                        tradeMessageBuilder);
+            setFixMessage(fixResponse,
+                          tradeMessageBuilder);
+            setOriginator(fixResponse,
+                          tradeMessageBuilder);
+            setUserId(fixResponse,
+                      tradeMessageBuilder);
+        }
+        inBuilder.setTradeMessage(tradeMessageBuilder.build());
+    }
+    /**
+     * Set the FIX message from the given message holder on the given builder.
+     *
+     * @param inMessageHolder a <code>HasFIXMessage</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setFixMessage(HasFIXMessage inMessageHolder,
+                                     TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        throw new UnsupportedOperationException();
+    }
+    /**
+     * Set the transact time from the given report on the given builder.
+     *
+     * @param inReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setTransactTime(ExecutionReport inReport,
+                                       TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getTransactTime() == null) {
+            return;
+        }
+        inBuilder.setTransactTime(Timestamps.fromMillis(inReport.getTransactTime().getTime()));
+    }
+    /**
+     * Set the time in force from the given report on the given builder.
+     *
+     * @param inReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setTimeInForce(ExecutionReport inReport,
+                                      TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getTimeInForce() == null) {
+            return;
+        }
+        inBuilder.setTimeInForce(getRpcTimeInForce(inReport.getTimeInForce()));
+    }
+    /**
+     * Set the side from the given report on the given builder.
+     *
+     * @param inReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setSide(ExecutionReport inReport,
+                               TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getSide() == null) {
+            return;
+        }
+        inBuilder.setSide(getRpcSide(inReport.getSide()));
+    }
+    /**
+     * Set the price value the given trade message on the given builder.
+     *
+     * @param inExecutionReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setPrice(ExecutionReport inExecutionReport,
+                                TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inExecutionReport.getPrice() == null) {
+            return;
+        }
+        inBuilder.setPrice(BaseUtil.getQtyValueFrom(inExecutionReport.getPrice()));
+    }
+    /**
+     * Set the position effect from the given report on the given builder.
+     *
+     * @param inReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setPositionEffect(ExecutionReport inReport,
+                                         TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getPositionEffect() == null) {
+            return;
+        }
+        inBuilder.setPositionEffect(getRpcPositionEffect(inReport.getPositionEffect()));
+    }
+    /**
+     * Set the order type from the given report on the given builder.
+     *
+     * @param inReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setOrderType(ExecutionReport inReport,
+                                    TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getOrderType() == null) {
+            return;
+        }
+        inBuilder.setOrderType(getRpcOrderType(inReport.getOrderType()));
+    }
+    /**
+     * Set the order quantity from value the given trade message on the given builder.
+     *
+     * @param inExecutionReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setOrderQuantity(ExecutionReport inExecutionReport,
+                                        TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inExecutionReport.getOrderQuantity() == null) {
+            return;
+        }
+        inBuilder.setOrderQuantity(BaseUtil.getQtyValueFrom(inExecutionReport.getOrderQuantity()));
+    }
+    /**
+     * Set the order display quantity from value the given trade message on the given builder.
+     *
+     * @param inExecutionReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setOrderDisplayQuantity(ExecutionReport inExecutionReport,
+                                               TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inExecutionReport.getOrderDisplayQuantity() == null) {
+            return;
+        }
+        inBuilder.setOrderDisplayQuantity(BaseUtil.getQtyValueFrom(inExecutionReport.getOrderDisplayQuantity()));
+    }
+    /**
+     * Set the order capacity from the given report on the given builder.
+     *
+     * @param inReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setOrderCapacity(ExecutionReport inReport,
+                                        TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getOrderCapacity() == null) {
+            return;
+        }
+        inBuilder.setOrderCapacity(getRpcOrderCapacity(inReport.getOrderCapacity()));
+    }
+    /**
+     * Set the leaves quantity from value the given trade message on the given builder.
+     *
+     * @param inExecutionReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setLeavesQuantity(ExecutionReport inExecutionReport,
+                                         TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inExecutionReport.getLeavesQuantity() == null) {
+            return;
+        }
+        inBuilder.setLeavesQuantity(BaseUtil.getQtyValueFrom(inExecutionReport.getLeavesQuantity()));
+    }
+    /**
+     * Set the last quantity from value the given trade message on the given builder.
+     *
+     * @param inExecutionReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setLastQuantity(ExecutionReport inExecutionReport,
+                                       TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inExecutionReport.getLastQuantity() == null) {
+            return;
+        }
+        inBuilder.setLastQuantity(BaseUtil.getQtyValueFrom(inExecutionReport.getLastQuantity()));
+    }
+    /**
+     * Set the last price from value the given trade message on the given builder.
+     *
+     * @param inExecutionReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setLastPrice(ExecutionReport inExecutionReport,
+                                    TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inExecutionReport.getLastPrice() == null) {
+            return;
+        }
+        inBuilder.setLastPrice(BaseUtil.getQtyValueFrom(inExecutionReport.getLastPrice()));
+    }
+    /**
+     * Set the last market from the given report on the given builder.
+     *
+     * @param inExecutionReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setLastMarket(ExecutionReport inExecutionReport,
+                                     TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        String value = StringUtils.trimToNull(inExecutionReport.getLastMarket());
+        if(value == null) {
+            return;
+        }
+        inBuilder.setLastMarket(value);
+    }
+    /**
+     * Set the instrument from the given report on the given builder.
+     *
+     * @param inReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setInstrument(ExecutionReport inReport,
+                                     TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getInstrument() == null) {
+            return;
+        }
+        inBuilder.setInstrument(getRpcInstrument(inReport.getInstrument()));
+    }
+    /**
+     * Get the RPC execution type value from the given value.
+     *
+     * @param inExecutionType an <code>ExecutionType</code> value
+     * @return a <code>TradingTypesRpc.ExecutionType</code> value
+     */
+    public static TradingTypesRpc.ExecutionType getRpcExecutionType(ExecutionType inExecutionType)
+    {
+        switch(inExecutionType) {
+            case Calculated:
+                return TradingTypesRpc.ExecutionType.CalculatedExecutionType;
+            case Canceled:
+                return TradingTypesRpc.ExecutionType.CanceledExecutionType;
+            case DoneForDay:
+                return TradingTypesRpc.ExecutionType.DoneForDayExecutionType;
+            case Expired:
+                return TradingTypesRpc.ExecutionType.ExpiredExecutionType;
+            case Fill:
+                return TradingTypesRpc.ExecutionType.FillExecutionType;
+            case New:
+                return TradingTypesRpc.ExecutionType.NewExecutionType;
+            case OrderStatus:
+                return TradingTypesRpc.ExecutionType.OrderStatusExecutionType;
+            case PartialFill:
+                return TradingTypesRpc.ExecutionType.PartialFillExecutionType;
+            case PendingCancel:
+                return TradingTypesRpc.ExecutionType.PendingCancelExecutionType;
+            case PendingNew:
+                return TradingTypesRpc.ExecutionType.PendingNewExecutionType;
+            case PendingReplace:
+                return TradingTypesRpc.ExecutionType.PendingReplaceExecutionType;
+            case Rejected:
+                return TradingTypesRpc.ExecutionType.RejectedExecutionType;
+            case Replace:
+                return TradingTypesRpc.ExecutionType.ReplaceExecutionType;
+            case Restated:
+                return TradingTypesRpc.ExecutionType.RestatedExecutionType;
+            case Stopped:
+                return TradingTypesRpc.ExecutionType.StoppedExecutionType;
+            case Suspended:
+                return TradingTypesRpc.ExecutionType.SuspendedExecutionType;
+            case Trade:
+                return TradingTypesRpc.ExecutionType.TradeCancelExecutionType;
+            case TradeCancel:
+                return TradingTypesRpc.ExecutionType.TradeCancelExecutionType;
+            case TradeCorrect:
+                return TradingTypesRpc.ExecutionType.TradeCorrectExecutionType;
+            case Unknown:
+                return TradingTypesRpc.ExecutionType.UnknownExecutionType;
+            default:
+                throw new UnsupportedOperationException("Unsupported execution type: " + inExecutionType);
+        }
+    }
+    /**
+     * Set the execution type from the given report on the given builder.
+     *
+     * @param inReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setExecutionType(ExecutionReport inReport,
+                                        TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getExecutionType() == null) {
+            return;
+        }
+        inBuilder.setExecutionType(getRpcExecutionType(inReport.getExecutionType()));
+    }
+    /**
+     * Set the execution ID from the given report on the given builder.
+     *
+     * @param inReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setExecutionId(ExecutionReport inReport,
+                                      TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        String value = StringUtils.trimToNull(inReport.getExecutionID());
+        if(value == null) {
+            return;
+        }
+        inBuilder.setExecutionId(value);
+    }
+    /**
+     * Set the cumulative quantity from value the given trade message on the given builder.
+     *
+     * @param inExecutionReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setCumulativeQuantity(ExecutionReport inExecutionReport,
+                                             TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inExecutionReport.getCumulativeQuantity() == null) {
+            return;
+        }
+        inBuilder.setCumulativeQuantity(BaseUtil.getQtyValueFrom(inExecutionReport.getCumulativeQuantity()));
+    }
+    /**
+     * Set the average price from value the given trade message on the given builder.
+     *
+     * @param inExecutionReport an <code>ExecutionReport</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setAveragePrice(ExecutionReport inExecutionReport,
+                                       TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inExecutionReport.getAveragePrice() == null) {
+            return;
+        }
+        inBuilder.setAveragePrice(BaseUtil.getQtyValueFrom(inExecutionReport.getAveragePrice()));
+    }
+    /**
+     * Set the broker ID from value the given trade message on the given builder.
+     *
+     * @param inReportBase a <code>ReportBase</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setBrokerId(ReportBase inReportBase,
+                                   TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReportBase.getBrokerID() == null) {
+            return;
+        }
+        inBuilder.setBrokerId(String.valueOf(inReportBase.getBrokerID()));
+    }
+    /**
+     * Set the broker ID from value the given trade message on the given builder.
+     *
+     * @param inReport a <code>FIXResponse</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setBrokerId(FIXResponse inReport,
+                                   TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getBrokerID() == null) {
+            return;
+        }
+        inBuilder.setBrokerId(String.valueOf(inReport.getBrokerID()));
+    }
+    /**
+     * Set the broker order ID from the given report on the given builder.
+     *
+     * @param inReport a <code>ReportBase</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setBrokerOrderId(ReportBase inReport,
+                                        TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getBrokerOrderID() == null) {
+            return;
+        }
+        inBuilder.setBrokerOrderId(inReport.getBrokerOrderID());
+    }
+    /**
+     * Set the order ID from the given report on the given builder.
+     *
+     * @param inReport a <code>ReportBase</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setOrderId(ReportBase inReport,
+                                  TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getOrderID() == null) {
+            return;
+        }
+        inBuilder.setOrderId(String.valueOf(inReport.getOrderID()));
+    }
+    /**
+     * Set the report ID from the given report on the given builder.
+     *
+     * @param inReport a <code>ReportBase</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setReportId(ReportBase inReport,
+                                  TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getReportID() == null) {
+            return;
+        }
+        inBuilder.setReportId(String.valueOf(inReport.getReportID()));
+    }
+    /**
+     * Set the sending time from the given report on the given builder.
+     *
+     * @param inReport a <code>ReportBase</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setSendingTime(ReportBase inReport,
+                                      TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getSendingTime() == null) {
+            return;
+        }
+        inBuilder.setSendingTime(Timestamps.fromMillis(inReport.getSendingTime().getTime()));
+    }
+    /**
+     * Set the text from the given report on the given builder.
+     *
+     * @param inReport a <code>ReportBase</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setText(ReportBase inReport,
+                               TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        String value = StringUtils.trimToNull(inReport.getText());
+        if(value == null) {
+            return;
+        }
+        inBuilder.setText(value);
+    }
+    /**
+     * Set the original order ID from the given report on the given builder.
+     *
+     * @param inReport a <code>ReportBase</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setOriginalOrderId(ReportBase inReport,
+                                          TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getOriginalOrderID() == null) {
+            return;
+        }
+        inBuilder.setOriginalOrderId(String.valueOf(inReport.getOriginalOrderID()));
+    }
+    /**
+     * Set the hierarchy from the given report on the given builder.
+     *
+     * @param inReport a <code>ReportBase</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setHierarchy(ReportBase inReport,
+                                    TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getHierarchy() == null) {
+            return;
+        }
+        inBuilder.setHierarchy(getRpcHierarchy(inReport.getHierarchy()));
+    }
+    /**
+     * Set the order status from the given report on the given builder.
+     *
+     * @param inReport a <code>ReportBase</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setOrderStatus(ReportBase inReport,
+                                      TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getOrderStatus() == null) {
+            return;
+        }
+        inBuilder.setOrderStatus(getRpcOrderStatus(inReport.getOrderStatus()));
+    }
+    /**
+     * Set the originator from the given report on the given builder.
+     *
+     * @param inReport a <code>ReportBase</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setOriginator(ReportBase inReport,
+                                     TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getOriginator() == null) {
+            return;
+        }
+        inBuilder.setOriginator(getRpcOriginator(inReport.getOriginator()));
+    }
+    /**
+     * Set the originator from the given report on the given builder.
+     *
+     * @param inReport a <code>FIXResponse</code> value
+     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     */
+    public static void setOriginator(FIXResponse inReport,
+                                     TradingTypesRpc.TradeMessage.Builder inBuilder)
+    {
+        if(inReport.getOriginator() == null) {
+            return;
+        }
+        inBuilder.setOriginator(getRpcOriginator(inReport.getOriginator()));
+    }
+    /**
+     * Get the RPC order status value from the given value.
+     *
+     * @param inOrderStatus an <code>OrderStatus</code> value
+     * @return a <code>TradingTypesRpc.OrderStatus</code> value
+     */
+    public static TradingTypesRpc.OrderStatusType getRpcOrderStatus(OrderStatus inOrderStatus)
+    {
+        switch(inOrderStatus) {
+            case AcceptedForBidding:
+                return TradingTypesRpc.OrderStatusType.AcceptedForBidding;
+            case Calculated:
+                return TradingTypesRpc.OrderStatusType.Calculated;
+            case Canceled:
+                return TradingTypesRpc.OrderStatusType.Canceled;
+            case DoneForDay:
+                return TradingTypesRpc.OrderStatusType.DoneForDay;
+            case Expired:
+                return TradingTypesRpc.OrderStatusType.Expired;
+            case Filled:
+                return TradingTypesRpc.OrderStatusType.Filled;
+            case New:
+                return TradingTypesRpc.OrderStatusType.New;
+            case PartiallyFilled:
+                return TradingTypesRpc.OrderStatusType.PartiallyFilled;
+            case PendingCancel:
+                return TradingTypesRpc.OrderStatusType.PendingCancel;
+            case PendingNew:
+                return TradingTypesRpc.OrderStatusType.PendingNew;
+            case PendingReplace:
+                return TradingTypesRpc.OrderStatusType.PendingReplace;
+            case Rejected:
+                return TradingTypesRpc.OrderStatusType.Rejected;
+            case Replaced:
+                return TradingTypesRpc.OrderStatusType.Replaced;
+            case Stopped:
+                return TradingTypesRpc.OrderStatusType.Stopped;
+            case Suspended:
+                return TradingTypesRpc.OrderStatusType.Suspended;
+            case Unknown:
+                return TradingTypesRpc.OrderStatusType.UnknownOrderStatus;
+            default:
+                throw new UnsupportedOperationException("Unsupported order status: " + inOrderStatus);
+        }
+    }
+    /**
+     * Get the RPC originator value from the given value.
+     *
+     * @param inOriginator an <code>Originator</code> value
+     * @return a <code>TradingTypesRpc.Originator</code> value
+     */
+    public static TradingTypesRpc.Originator getRpcOriginator(Originator inOriginator)
+    {
+        switch(inOriginator) {
+            case Broker:
+                return TradingTypesRpc.Originator.BrokerOriginator;
+            case Server:
+                return TradingTypesRpc.Originator.ServerOriginator;
+            default:
+                throw new UnsupportedOperationException("Unsupported originator: " + inOriginator);
+        }
+    }
+    /**
      * 
      *
      *
      * @param inRpcOrder
-     * @return
+     * @return an <code>Optional&lt;BrokerAlgo&gt;</code> value or <code>null</code>
      */
-    public static BrokerAlgo getBrokerAlgo(TradingTypesRpc.OrderBase inRpcOrder)
+    public static Optional<BrokerAlgo> getBrokerAlgo(TradingTypesRpc.OrderBase inRpcOrder)
     {
-        // TODO
-        return null;
+        throw new UnsupportedOperationException();
     }
     /**
+     * Get the FIX message from the given RPC FIX message.
      *
-     *
-     * @param inRpcMessage
-     * @return
+     * @param inRpcMessage a <code>FixMessge</code> value
+     * @return a <code>Message</code> value
      */
     public static Message getFixMessage(FixMessage inRpcMessage)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        throw new UnsupportedOperationException();
     }
     /**
      *

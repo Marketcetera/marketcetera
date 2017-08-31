@@ -3,6 +3,7 @@ option java_generic_services = true;
 option java_package = "org.marketcetera.trading.rpc";
 option java_outer_classname = "TradingTypesRpc";
 import "rpc_base.proto";
+import "google/protobuf/timestamp.proto";
 
 enum OrderType {
     UnknownOrderType = 0;
@@ -124,6 +125,40 @@ enum MatpOrderType {
     FIXOrderType = 3;
 }
 
+enum ExecutionType {
+    UnknownExecutionType = 0;
+    NewExecutionType = 1;
+    PartialFillExecutionType = 2;
+    FillExecutionType = 3;
+    DoneForDayExecutionType = 4;
+    CanceledExecutionType = 5;
+    ReplaceExecutionType = 6;
+    PendingCancelExecutionType = 7;
+    StoppedExecutionType = 8;
+    RejectedExecutionType = 9;
+    SuspendedExecutionType = 10;
+    PendingNewExecutionType = 11;
+    CalculatedExecutionType = 12;
+    ExpiredExecutionType = 13;
+    RestatedExecutionType = 14;
+    PendingReplaceExecutionType = 15;
+    TradeExecutionType = 16;
+    TradeCorrectExecutionType = 17;
+    TradeCancelExecutionType = 18;
+    OrderStatusExecutionType = 19;
+}
+
+enum Hierarchy {
+    FlatHierarchy = 0;
+    ParentHierarchy = 1;
+    ChildHierarchy = 2;
+}
+
+enum Originator {
+    ServerOriginator = 0;
+    BrokerOriginator = 1;
+}
+
 message OrderBase {
     string brokerId = 1;
     string account = 2;
@@ -152,9 +187,43 @@ message Order {
     MatpOrderType matpOrderType = 3;
 }
 
-message ExecutionReport {
+enum TradeMessageType {
+    TradeMessageExecutionReport = 0;
+    TradeMessageOrderCancelReject = 1;
+    TradeMessageFixResponse = 2;
 }
 
-message OrderCancelReject {
+message TradeMessage {
+    string account = 1;
+    string user = 2;
+    Qty averagePrice = 3;
+    string brokerId = 4;
+    string brokerOrderId = 5;
+    Qty cumulativeQuantity = 6;
+    string executionId = 7;
+    ExecutionType executionType = 8;
+    Hierarchy hierarchy = 9;
+    Instrument instrument = 10;
+    string lastMarket = 11;
+    Qty lastPrice = 12;
+    Qty lastQuantity = 13;
+    Qty leavesQuantity = 14;
+    OrderCapacity orderCapacity = 15;
+    Qty orderDisplayQuantity = 16;
+    string orderId = 17;
+    Qty orderQuantity = 18;
+    OrderStatusType orderStatus = 19;
+    OrderType orderType = 20;
+    string originalOrderId = 21;
+    Originator originator = 22;
+    PositionEffect positionEffect = 23;
+    Qty price = 24;
+    string reportId = 25;
+    google.protobuf.Timestamp sendingTime = 26;
+    Side side = 27;
+    string text = 28;
+    TimeInForce timeInForce = 29;
+    google.protobuf.Timestamp transactTime = 30;
+    FixMessage message = 31;
+    TradeMessageType tradeMessageType = 32;
 }
-

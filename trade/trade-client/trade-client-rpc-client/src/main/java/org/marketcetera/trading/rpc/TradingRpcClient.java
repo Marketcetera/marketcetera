@@ -73,7 +73,7 @@ public class TradingRpcClient
         if(tradeMessageListenerWrappers.asMap().containsKey(inTradeMessageListener)) {
             return;
         }
-        final TradeMessageListenerWrapper wrapper = tradeMessageListenerWrappers.getUnchecked(inTradeMessageListener);
+        final TradeMessageListenerProxy wrapper = tradeMessageListenerWrappers.getUnchecked(inTradeMessageListener);
         if(wrapper == null) {
             return;
         }
@@ -105,7 +105,7 @@ public class TradingRpcClient
     @Override
     public void removeTradeMessageListener(TradeMessageListener inTradeMessageListener)
     {
-        final TradeMessageListenerWrapper wrapper = tradeMessageListenerWrappers.getIfPresent(inTradeMessageListener);
+        final TradeMessageListenerProxy wrapper = tradeMessageListenerWrappers.getIfPresent(inTradeMessageListener);
         tradeMessageListenerWrappers.invalidate(inTradeMessageListener);
         if(wrapper == null) {
             return;
@@ -510,13 +510,13 @@ public class TradingRpcClient
         return APP_ID_VERSION;
     }
     /**
-     *
+     * Wraps a trade message listener with the RPC communication mechanism.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
      * @since $Release$
      */
-    private static class TradeMessageListenerWrapper
+    private static class TradeMessageListenerProxy
             implements StreamObserver<TradeMessageListenerResponse>
     {
         /* (non-Javadoc)
@@ -565,13 +565,14 @@ public class TradingRpcClient
          *
          * @param inTradeMessageListener a <code>TradeMessageListener</code> value
          */
-        private TradeMessageListenerWrapper(TradeMessageListener inTradeMessageListener)
+        private TradeMessageListenerProxy(TradeMessageListener inTradeMessageListener)
         {
             tradeMessageListener = inTradeMessageListener;
         }
         /**
          * report listener value
          */
+        @SuppressWarnings("unused")
         private final TradeMessageListener tradeMessageListener;
         /**
          * unique id value
@@ -593,16 +594,16 @@ public class TradingRpcClient
     /**
      * holds report listeners by their id
      */
-    private final Cache<String,TradeMessageListenerWrapper> tradeMessageListenerWrappersById = CacheBuilder.newBuilder().build();
+    private final Cache<String,TradeMessageListenerProxy> tradeMessageListenerWrappersById = CacheBuilder.newBuilder().build();
     /**
      * holds report listeners by the original listener
      */
-    private final LoadingCache<TradeMessageListener,TradeMessageListenerWrapper> tradeMessageListenerWrappers = CacheBuilder.newBuilder().build(new CacheLoader<TradeMessageListener,TradeMessageListenerWrapper>() {
+    private final LoadingCache<TradeMessageListener,TradeMessageListenerProxy> tradeMessageListenerWrappers = CacheBuilder.newBuilder().build(new CacheLoader<TradeMessageListener,TradeMessageListenerProxy>() {
         @Override
-        public TradeMessageListenerWrapper load(TradeMessageListener inKey)
+        public TradeMessageListenerProxy load(TradeMessageListener inKey)
                 throws Exception
         {
-            TradeMessageListenerWrapper wrapper = new TradeMessageListenerWrapper(inKey);
+            TradeMessageListenerProxy wrapper = new TradeMessageListenerProxy(inKey);
             tradeMessageListenerWrappersById.put(wrapper.getId(),
                                            wrapper);
             return wrapper;

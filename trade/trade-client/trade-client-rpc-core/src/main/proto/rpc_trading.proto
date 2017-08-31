@@ -37,9 +37,7 @@ message AddTradeMessageListenerRequest {
 }
 
 message TradeMessageListenerResponse {
-    ExecutionReport executionReport = 1;
-    OrderCancelReject orderCancelReject = 2;
-    string temp = 3;
+    TradeMessage tradeMessage = 1;
 }
 
 message RemoveTradeMessageListenerRequest {
