@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.core.PlatformServices;
@@ -37,6 +38,7 @@ import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradingClient;
+import org.marketcetera.trading.rpc.TradingRpc.BrokerStatusListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceBlockingStub;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceStub;
@@ -71,11 +73,13 @@ public class TradingRpcClient
     @Override
     public void addTradeMessageListener(TradeMessageListener inTradeMessageListener)
     {
-        if(tradeMessageListenerWrappers.asMap().containsKey(inTradeMessageListener)) {
+        // check to see if this listener is already registered
+        if(listenerProxies.asMap().containsKey(inTradeMessageListener)) {
             return;
         }
-        final TradeMessageListenerProxy wrapper = tradeMessageListenerWrappers.getUnchecked(inTradeMessageListener);
-        if(wrapper == null) {
+        // make sure that this listener wasn't just whisked out from under us
+        final AbstractListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inTradeMessageListener);
+        if(listener == null) {
             return;
         }
         executeCall(new Callable<Void>() {
@@ -88,14 +92,14 @@ public class TradingRpcClient
                                        getSessionId());
                 TradingRpc.AddTradeMessageListenerRequest.Builder requestBuilder = TradingRpc.AddTradeMessageListenerRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setListenerId(wrapper.getId());
+                requestBuilder.setListenerId(listener.getId());
                 TradingRpc.AddTradeMessageListenerRequest addTradeMessageListenerRequest = requestBuilder.build();
                 SLF4JLoggerProxy.trace(TradingRpcClient.this,
                                        "{} sending {}",
                                        getSessionId(),
                                        addTradeMessageListenerRequest);
                 getAsyncStub().addTradeMessageListener(addTradeMessageListenerRequest,
-                                                       wrapper);
+                                                       (TradeMessageListenerProxy)listener);
                 return null;
             }
         });
@@ -106,12 +110,12 @@ public class TradingRpcClient
     @Override
     public void removeTradeMessageListener(TradeMessageListener inTradeMessageListener)
     {
-        final TradeMessageListenerProxy proxy = tradeMessageListenerWrappers.getIfPresent(inTradeMessageListener);
-        tradeMessageListenerWrappers.invalidate(inTradeMessageListener);
+        final AbstractListenerProxy<?,?,?> proxy = listenerProxies.getIfPresent(inTradeMessageListener);
+        listenerProxies.invalidate(inTradeMessageListener);
         if(proxy == null) {
             return;
         }
-        tradeMessageListenerWrappersById.invalidate(proxy.getId());
+        listenerProxiesById.invalidate(proxy.getId());
         executeCall(new Callable<Void>() {
             @Override
             public Void call()
@@ -143,8 +147,36 @@ public class TradingRpcClient
     @Override
     public void addBrokerStatusListener(BrokerStatusListener inBrokerStatusListener)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        // check to see if this listener is already registered
+        if(listenerProxies.asMap().containsKey(inBrokerStatusListener)) {
+            return;
+        }
+        // make sure that this listener wasn't just whisked out from under us
+        final AbstractListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inBrokerStatusListener);
+        if(listener == null) {
+            return;
+        }
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} adding broker status listener",
+                                       getSessionId());
+                TradingRpc.AddBrokerStatusListenerRequest.Builder requestBuilder = TradingRpc.AddBrokerStatusListenerRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(listener.getId());
+                TradingRpc.AddBrokerStatusListenerRequest addBrokerStatusListenerRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       addBrokerStatusListenerRequest);
+                getAsyncStub().addBrokerStatusListener(addBrokerStatusListenerRequest,
+                                                       (BrokerStatusListenerProxy)listener);
+                return null;
+            }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#removeBrokerStatusListener(org.marketcetera.brokers.BrokerStatusListener)
@@ -152,8 +184,36 @@ public class TradingRpcClient
     @Override
     public void removeBrokerStatusListener(BrokerStatusListener inBrokerStatusListener)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        final AbstractListenerProxy<?,?,?> proxy = listenerProxies.getIfPresent(inBrokerStatusListener);
+        listenerProxies.invalidate(inBrokerStatusListener);
+        if(proxy == null) {
+            return;
+        }
+        listenerProxiesById.invalidate(proxy.getId());
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} removing broker status listener",
+                                       getSessionId());
+                TradingRpc.RemoveBrokerStatusListenerRequest.Builder requestBuilder = TradingRpc.RemoveBrokerStatusListenerRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(proxy.getId());
+                TradingRpc.RemoveBrokerStatusListenerRequest removeBrokerStatusListenerRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       removeBrokerStatusListenerRequest);
+                TradingRpc.RemoveBrokerStatusListenerResponse response = getBlockingStub().removeBrokerStatusListener(removeBrokerStatusListenerRequest);
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
+            }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#addServerStatusListener(org.marketcetera.core.notifications.ServerStatusListener)
@@ -511,31 +571,53 @@ public class TradingRpcClient
         return APP_ID_VERSION;
     }
     /**
-     * Wraps a trade message listener with the RPC communication mechanism.
+     * Provides common behavior for message listener proxies.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
      * @since $Release$
      */
-    private static class TradeMessageListenerProxy
-            implements StreamObserver<TradeMessageListenerResponse>
+    private static abstract class AbstractListenerProxy<ListenerResponseClazz,MessageClazz,MessageListenerClazz>
+            implements StreamObserver<ListenerResponseClazz>
     {
+        private static AbstractListenerProxy<?,?,?> getListenerFor(Object inListener)
+        {
+            if(inListener instanceof TradeMessageListener) {
+                return new TradeMessageListenerProxy((TradeMessageListener)inListener);
+            } else if(inListener instanceof BrokerStatusListener) {
+                return new BrokerStatusListenerProxy((BrokerStatusListener)inListener);
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        }
         /* (non-Javadoc)
          * @see io.grpc.stub.StreamObserver#onNext(java.lang.Object)
          */
         @Override
-        public void onNext(TradeMessageListenerResponse inValue)
+        public void onNext(ListenerResponseClazz inResponse)
         {
             SLF4JLoggerProxy.trace(TradingRpcClient.class,
                                    "{} received {}",
-                                   id,
-                                   inValue);
+                                   getId(),
+                                   inResponse);
+            MessageClazz message;
             try {
-                TradeMessage tradeMessage = TradingUtil.getTradeMessage(inValue);
-                tradeMessageListener.receiveTradeMessage(tradeMessage);
+                message = translateMessage(inResponse);
             } catch (Exception e) {
                 PlatformServices.handleException(TradingRpcClient.class,
-                                                 "Error handling trade message",
+                                                 "Error translating message",
+                                                 e);
+                return;
+            }
+            if(message == null) {
+                return;
+            }
+            try {
+                sendMessage(messageListener,
+                            message);
+            } catch (Exception e) {
+                PlatformServices.handleException(TradingRpcClient.class,
+                                                 "Error sending message",
                                                  e);
             }
         }
@@ -547,7 +629,7 @@ public class TradingRpcClient
         {
             SLF4JLoggerProxy.trace(TradingRpcClient.class,
                                    "{} received {}",
-                                   id,
+                                   getId(),
                                    inT);
         }
         /* (non-Javadoc)
@@ -558,34 +640,123 @@ public class TradingRpcClient
         {
             SLF4JLoggerProxy.trace(TradingRpcClient.class,
                                    "{} completed",
-                                   id);
+                                   getId());
         }
+        /**
+         * Translate the message contained in the given response.
+         *
+         * @param inResponse a <code>ListenerResponseClazz</code> value
+         * @return a <code>MessageClazz</code> value
+         */
+        protected abstract MessageClazz translateMessage(ListenerResponseClazz inResponse);
+        /**
+         * Send the given message to the given message listener.
+         *
+         * @param inMessageListener a <code>MessageListenerClazz</code> value
+         * @param inMessage a <code>MessageClazz</code> value
+         */
+        protected abstract void sendMessage(MessageListenerClazz inMessageListener,
+                                            MessageClazz inMessage);
         /**
          * Get the id value.
          *
          * @return a <code>String</code> value
          */
-        private String getId()
+        protected String getId()
         {
             return id;
         }
         /**
-         * Create a new TradeMessageListenerWrapper instance.
+         * Create a new AbstractListenerProxy instance.
          *
-         * @param inTradeMessageListener a <code>TradeMessageListener</code> value
+         * @param inMessageListener a <code>MessageListenerClazz</code> value
          */
-        private TradeMessageListenerProxy(TradeMessageListener inTradeMessageListener)
+        protected AbstractListenerProxy(MessageListenerClazz inMessageListener)
         {
-            tradeMessageListener = inTradeMessageListener;
+            messageListener = inMessageListener;
         }
         /**
-         * report listener value
+         * message listener to receive the messages
          */
-        private final TradeMessageListener tradeMessageListener;
+        private final MessageListenerClazz messageListener;
         /**
          * unique id value
          */
         private final String id = UUID.randomUUID().toString();
+    }
+    /**
+     * Provides an interface between broker message stream listeners and their handlers.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class BrokerStatusListenerProxy
+            extends AbstractListenerProxy<BrokerStatusListenerResponse,BrokerStatus,BrokerStatusListener>
+    {
+        /**
+         * Create a new BrokerStatusListenerProxy instance.
+         *
+         * @param inMessageListener
+         */
+        protected BrokerStatusListenerProxy(BrokerStatusListener inMessageListener)
+        {
+            super(inMessageListener);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcClient.AbstractListenerProxy#translateMessage(java.lang.Object)
+         */
+        @Override
+        protected BrokerStatus translateMessage(BrokerStatusListenerResponse inResponse)
+        {
+            return TradingUtil.getBrokerStatus(inResponse).orElse(null);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcClient.AbstractListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        protected void sendMessage(BrokerStatusListener inMessageListener,
+                                   BrokerStatus inMessage)
+        {
+            inMessageListener.receiveBrokerStatus(inMessage);
+        }
+    }
+    /**
+     * Provides an interface between trade message stream listeners and their handlers.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class TradeMessageListenerProxy
+            extends AbstractListenerProxy<TradeMessageListenerResponse,TradeMessage,TradeMessageListener>
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcClient.AbstractListenerProxy#translateMessage(java.lang.Object)
+         */
+        @Override
+        protected TradeMessage translateMessage(TradeMessageListenerResponse inResponse)
+        {
+            return TradingUtil.getTradeMessage(inResponse);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcClient.AbstractListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        protected void sendMessage(TradeMessageListener inMessageListener,
+                                   TradeMessage inMessage)
+        {
+            inMessageListener.receiveTradeMessage(inMessage);
+        }
+        /**
+         * Create a new TradeMessageListenerProxy instance.
+         *
+         * @param inTradeMessageListener a <code>TradeMessageListener</code> value
+         */
+        protected TradeMessageListenerProxy(TradeMessageListener inTradeMessageListener)
+        {
+            super(inTradeMessageListener);
+        }
     }
     /**
      * The client's application ID: the application name.
@@ -602,19 +773,19 @@ public class TradingRpcClient
     /**
      * holds report listeners by their id
      */
-    private final Cache<String,TradeMessageListenerProxy> tradeMessageListenerWrappersById = CacheBuilder.newBuilder().build();
+    private final Cache<String,AbstractListenerProxy<?,?,?>> listenerProxiesById = CacheBuilder.newBuilder().build();
     /**
-     * holds report listeners by the original listener
+     * holds listener proxies keyed by the listener
      */
-    private final LoadingCache<TradeMessageListener,TradeMessageListenerProxy> tradeMessageListenerWrappers = CacheBuilder.newBuilder().build(new CacheLoader<TradeMessageListener,TradeMessageListenerProxy>() {
+    private final LoadingCache<Object,AbstractListenerProxy<?,?,?>> listenerProxies = CacheBuilder.newBuilder().build(new CacheLoader<Object,AbstractListenerProxy<?,?,?>>() {
         @Override
-        public TradeMessageListenerProxy load(TradeMessageListener inKey)
+        public AbstractListenerProxy<?,?,?> load(Object inKey)
                 throws Exception
         {
-            TradeMessageListenerProxy wrapper = new TradeMessageListenerProxy(inKey);
-            tradeMessageListenerWrappersById.put(wrapper.getId(),
-                                           wrapper);
-            return wrapper;
+            AbstractListenerProxy<?,?,?> proxy = AbstractListenerProxy.getListenerFor(inKey);
+            listenerProxiesById.put(proxy.getId(),
+                                    proxy);
+            return proxy;
         }}
     );
 }

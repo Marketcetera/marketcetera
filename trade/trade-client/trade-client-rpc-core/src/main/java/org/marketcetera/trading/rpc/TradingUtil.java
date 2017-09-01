@@ -7,8 +7,17 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.algo.BrokerAlgo;
+import org.marketcetera.algo.BrokerAlgoSpec;
+import org.marketcetera.algo.BrokerAlgoTagSpec;
+import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.ClusteredBrokerStatus;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.HasClusterData;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.fix.FixSession;
+import org.marketcetera.fix.FixSessionFactory;
+import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.symbol.SymbolResolverService;
@@ -40,6 +49,7 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
+import org.marketcetera.trading.rpc.TradingRpc.BrokerStatusListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
 import org.marketcetera.trading.rpc.TradingTypesRpc.FixMessage;
 
@@ -2055,6 +2065,199 @@ public abstract class TradingUtil
         }
     }
     /**
+     * Get the broker status value from the given response.
+     *
+     * @param inResponse a <code>BrokerStatusListenerResponse</code> value
+     * @return an <code>Optional&lt;BrokerStatus&gt;</code> value
+     */
+    public static Optional<BrokerStatus> getBrokerStatus(BrokerStatusListenerResponse inResponse)
+    {
+        BrokerStatus brokerStatus = null;
+        if(inResponse.hasBrokerStatus()) {
+            TradingTypesRpc.BrokerStatus rpcBrokerStatus = inResponse.getBrokerStatus();
+            Map<String,String> settings = Maps.newHashMap();
+            if(rpcBrokerStatus.hasSettings()) {
+                settings = BaseUtil.getMap(rpcBrokerStatus.getSettings());
+            }
+            settings.put("id",
+                         rpcBrokerStatus.getId());
+            settings.put("host",
+                         rpcBrokerStatus.getHost());
+            settings.put("name",
+                         rpcBrokerStatus.getName());
+            settings.put("port",
+                         String.valueOf(rpcBrokerStatus.getPort()));
+            brokerStatus = new ClusteredBrokerStatus(fixSessionFactory.create(settings),
+                                                     rpcBrokerStatus.hasClusterData() ? getClusterData(rpcBrokerStatus.getClusterData()).orElse(null) : null,
+                                                     getFixSessionStatus(rpcBrokerStatus.getFixSessionStatus()),
+                                                     rpcBrokerStatus.getLoggedOn());
+//          rpcBrokerStatus.getBrokerAlgosList() TODO
+        }
+        return(brokerStatus==null ? Optional.empty():Optional.of(brokerStatus));
+    }
+    /**
+     * Get the cluster data value from the given RPC value.
+     *
+     * @param inRpcClusterData a <code>TradingTypesRpc.ClusterData</code> value
+     * @return an <code>Optional&lt;ClusterData&gt;</code> value
+     */
+    public static Optional<ClusterData> getClusterData(TradingTypesRpc.ClusterData inRpcClusterData)
+    {
+        ClusterData clusterData = new ClusterData(inRpcClusterData.getTotalInstances(),
+                                                  inRpcClusterData.getHostId(),
+                                                  inRpcClusterData.getHostNumber(),
+                                                  inRpcClusterData.getInstanceNumber(),
+                                                  inRpcClusterData.getUuid());
+        return(clusterData == null ? Optional.empty() : Optional.of(clusterData));
+    }
+    /**
+     * Set the given broker status value on the given RPC builder.
+     *
+     * @param inStatus a <code>BrokerStatus</code> value
+     * @param inResponseBuilder a <code>TradingRpc.BrokerStatusListenerResponse.Builder</code> value
+     */
+    public static void setBrokerStatus(BrokerStatus inStatus,
+                                       TradingRpc.BrokerStatusListenerResponse.Builder inResponseBuilder)
+    {
+        if(inStatus == null) {
+            return;
+        }
+        TradingTypesRpc.BrokerStatus.Builder brokerStatusBuilder = TradingTypesRpc.BrokerStatus.newBuilder();
+        setBrokerAlgos(inStatus,
+                       brokerStatusBuilder);
+        brokerStatusBuilder.setHost(inStatus.getHost());
+        setBrokerId(inStatus,
+                    brokerStatusBuilder);
+        brokerStatusBuilder.setLoggedOn(inStatus.getLoggedOn());
+        brokerStatusBuilder.setName(inStatus.getName());
+        brokerStatusBuilder.setPort(inStatus.getPort());
+        brokerStatusBuilder.setSettings(BaseUtil.getRpcMap(inStatus.getSettings()));
+        brokerStatusBuilder.setFixSessionStatus(getRpcFixSessionStatus(inStatus.getStatus()));
+        if(inStatus instanceof HasClusterData) {
+            HasClusterData hasClusterData = (HasClusterData)inStatus;
+            TradingTypesRpc.ClusterData.Builder clusterDataBuilder = TradingTypesRpc.ClusterData.newBuilder();
+            ClusterData clusterData = hasClusterData.getClusterData();
+            clusterDataBuilder.setHostId(clusterData.getHostId());
+            clusterDataBuilder.setHostNumber(clusterData.getHostNumber());
+            clusterDataBuilder.setInstanceNumber(clusterData.getInstanceNumber());
+            clusterDataBuilder.setTotalInstances(clusterData.getTotalInstances());
+            clusterDataBuilder.setUuid(clusterData.getUuid());
+            brokerStatusBuilder.setClusterData(clusterDataBuilder.build());
+        }
+        inResponseBuilder.setBrokerStatus(brokerStatusBuilder.build());
+    }
+    /**
+     * Get the FIX session status value from the given RPC value.
+     *
+     * @param inRpcFixSessionStatus a <code>TradingTypesRpc.FixSessionStatus</code> value
+     * @return a <code>FixSessionStatus</code> value
+     */
+    public static FixSessionStatus getFixSessionStatus(TradingTypesRpc.FixSessionStatus inRpcFixSessionStatus)
+    {
+        switch(inRpcFixSessionStatus) {
+            case AffinityMismatchFixSessionStatus:
+                return FixSessionStatus.AFFINITY_MISMATCH;
+            case BackupFixSessionStatus:
+                return FixSessionStatus.BACKUP;
+            case ConnectedFixSessionStatus:
+                return FixSessionStatus.CONNECTED;
+            case DeletedFixSessionStatus:
+                return FixSessionStatus.DELETED;
+            case DisabledFixSessionStatus:
+                return FixSessionStatus.DISABLED;
+            case DisconnectedFixSessionStatus:
+                return FixSessionStatus.DISCONNECTED;
+            case NotConnectedFixSessionStatus:
+                return FixSessionStatus.NOT_CONNECTED;
+            case StoppedFixSessionStatus:
+                return FixSessionStatus.STOPPED;
+            case UnknownFixSessionStatus:
+                return FixSessionStatus.UNKNOWN;
+            case UNRECOGNIZED:
+            default:
+                throw new UnsupportedOperationException("Unsupported fix session status: " + inRpcFixSessionStatus);
+        }
+    }
+    /**
+     * Get the RPC FIX session status value for the given value.
+     *
+     * @param inStatus a <code>FixSessionStatus</code> value
+     * @return a <code>TradingTypesRpc.FixSessionStatus</code> value
+     */
+    public static TradingTypesRpc.FixSessionStatus getRpcFixSessionStatus(FixSessionStatus inStatus)
+    {
+        switch(inStatus) {
+            case AFFINITY_MISMATCH:
+                return TradingTypesRpc.FixSessionStatus.AffinityMismatchFixSessionStatus;
+            case BACKUP:
+                return TradingTypesRpc.FixSessionStatus.BackupFixSessionStatus;
+            case CONNECTED:
+                return TradingTypesRpc.FixSessionStatus.ConnectedFixSessionStatus;
+            case DELETED:
+                return TradingTypesRpc.FixSessionStatus.DeletedFixSessionStatus;
+            case DISABLED:
+                return TradingTypesRpc.FixSessionStatus.DisabledFixSessionStatus;
+            case DISCONNECTED:
+                return TradingTypesRpc.FixSessionStatus.DisconnectedFixSessionStatus;
+            case NOT_CONNECTED:
+                return TradingTypesRpc.FixSessionStatus.NotConnectedFixSessionStatus;
+            case STOPPED:
+                return TradingTypesRpc.FixSessionStatus.StoppedFixSessionStatus;
+            case UNKNOWN:
+                return TradingTypesRpc.FixSessionStatus.UnknownFixSessionStatus;
+            default:
+                throw new UnsupportedOperationException("Unsupported fix session status: " + inStatus);
+        }
+    }
+    /**
+     * Set the given broker ID on the given RPC builder.
+     *
+     * @param inStatus a <code>BrokerStatus</code> value
+     * @param inBrokerStatusBuilder a <code>TradingTypesRpc.BrokerStatus.Builder</code> value
+     */
+    public static void setBrokerId(BrokerStatus inStatus,
+                                   TradingTypesRpc.BrokerStatus.Builder inBrokerStatusBuilder)
+    {
+        if(inStatus == null || inStatus.getId() == null) {
+            return;
+        }
+        inBrokerStatusBuilder.setId(inStatus.getId().getValue());
+    }
+    /**
+     * Set the broker algos value on the given RPC builder.
+     *
+     * @param inStatus a <code>BrokerStatus</code> value
+     * @param inBrokerStatusBuilder a <code>TradingTypesRpc.BrokerStatus.Builder</code> value
+     */
+    public static void setBrokerAlgos(BrokerStatus inStatus,
+                                      TradingTypesRpc.BrokerStatus.Builder inBrokerStatusBuilder)
+    {
+        if(inStatus.getBrokerAlgos().isEmpty()) {
+            return;
+        }
+        TradingTypesRpc.BrokerAlgo.Builder brokerAlgoBuilder = TradingTypesRpc.BrokerAlgo.newBuilder();
+        TradingTypesRpc.BrokerAlgoTagSpec.Builder brokerAlgoTagSpecBuilder = TradingTypesRpc.BrokerAlgoTagSpec.newBuilder();
+        for(BrokerAlgoSpec brokerAlgo : inStatus.getBrokerAlgos()) {
+            for(BrokerAlgoTagSpec tagSpec : brokerAlgo.getAlgoTagSpecs()) {
+                brokerAlgoTagSpecBuilder.setAdvice(tagSpec.getAdvice());
+                brokerAlgoTagSpecBuilder.setDefaultValue(tagSpec.getDefaultValue());
+                brokerAlgoTagSpecBuilder.setDescription(tagSpec.getDescription());
+                brokerAlgoTagSpecBuilder.setIsReadOnly(tagSpec.isReadOnly());
+                brokerAlgoTagSpecBuilder.setLabel(tagSpec.getLabel());
+                brokerAlgoTagSpecBuilder.setMandatory(tagSpec.getIsMandatory());
+                brokerAlgoTagSpecBuilder.setOptions(BaseUtil.getRpcMap(tagSpec.getOptions()));
+                brokerAlgoTagSpecBuilder.setPattern(tagSpec.getPattern());
+                brokerAlgoTagSpecBuilder.setTag(tagSpec.getTag());
+                brokerAlgoTagSpecBuilder.setValidator(tagSpec.getValidator()==null?null:tagSpec.getValidator().getClass().getName());
+                brokerAlgoBuilder.addAlgoTagSpecs(brokerAlgoTagSpecBuilder.build());
+                brokerAlgoTagSpecBuilder.clear();
+            }
+            brokerAlgoBuilder.setName(brokerAlgo.getName());
+            inBrokerStatusBuilder.addBrokerAlgos(brokerAlgoBuilder.build());
+            brokerAlgoBuilder.clear();
+        }
+    }
+    /**
      * Get the symbolResolverService value.
      *
      * @return a <code>SymbolResolverService</code> value
@@ -2071,6 +2274,24 @@ public abstract class TradingUtil
     public static void setSymbolResolverService(SymbolResolverService inSymbolResolverService)
     {
         symbolResolverService = inSymbolResolverService;
+    }
+    /**
+     * Get the fixSessionFactory value.
+     *
+     * @return a <code>FixSessionFactory</code> value
+     */
+    public static FixSessionFactory getFixSessionFactory()
+    {
+        return fixSessionFactory;
+    }
+    /**
+     * Sets the fixSessionFactory value.
+     *
+     * @param inFixSessionFactory a <code>FixSessionFactory</code> value
+     */
+    public static void setFixSessionFactory(FixSessionFactory inFixSessionFactory)
+    {
+        fixSessionFactory = inFixSessionFactory;
     }
     /**
      * Set the values on the given FIX field map from the given RPC map.
@@ -2117,4 +2338,8 @@ public abstract class TradingUtil
      * provides symbol resolver services
      */
     private static SymbolResolverService symbolResolverService;
+    /**
+     * creates {@link FixSession} objects
+     */
+    private static FixSessionFactory fixSessionFactory;
 }

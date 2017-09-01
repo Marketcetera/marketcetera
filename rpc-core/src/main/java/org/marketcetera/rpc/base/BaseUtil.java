@@ -2,8 +2,11 @@ package org.marketcetera.rpc.base;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+
+import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -64,5 +67,40 @@ public abstract class BaseUtil
             inStatusBuilder.setErrorMessage(value);
         }
         return inStatusBuilder.build();
+    }
+    /**
+     * Get an RPC map from the given map.
+     *
+     * @param inMap a <code>Map&lt;String,String&gt;</code> value
+     * @return a <code>BaseRpc.Map</code> value
+     */
+    public static BaseRpc.Map getRpcMap(Map<String,String> inMap)
+    {
+        BaseRpc.Map.Builder mapBuilder = BaseRpc.Map.newBuilder();
+        if(inMap != null) {
+            BaseRpc.KeyValuePair.Builder keyValuePairBuilder = BaseRpc.KeyValuePair.newBuilder();
+            for(Map.Entry<String,String> entry : inMap.entrySet()) {
+                keyValuePairBuilder.setKey(entry.getKey());
+                keyValuePairBuilder.setValue(entry.getValue());
+                mapBuilder.addKeyValuePairs(keyValuePairBuilder.build());
+                keyValuePairBuilder.clear();
+            }
+        }
+        return mapBuilder.build();
+    }
+    /**
+     * Get a map value from the given RPC map.
+     *
+     * @param inMap a <code>BaseRpc.Map</code> value
+     * @return a <code>Map&lt;String,String&gt;</code> value
+     */
+    public static Map<String,String> getMap(BaseRpc.Map inMap)
+    {
+        Map<String,String> map = Maps.newHashMap();
+        for(BaseRpc.KeyValuePair rpcKeyValuePair : inMap.getKeyValuePairsList()) {
+            map.put(rpcKeyValuePair.getKey(),
+                    rpcKeyValuePair.getValue());
+        }
+        return map;
     }
 }

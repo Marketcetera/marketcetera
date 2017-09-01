@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
+import org.marketcetera.fix.MutableFixSession;
 import org.marketcetera.persist.NDEntityBase;
 
 
@@ -28,7 +29,7 @@ import org.marketcetera.persist.NDEntityBase;
 @XmlAccessorType(XmlAccessType.NONE)
 public class SimpleFixSession
         extends NDEntityBase
-        implements FixSession, ActiveFixSession
+        implements FixSession, ActiveFixSession, MutableFixSession
 {
     /* (non-Javadoc)
      * @see com.marketcetera.fix.FixSession#getAffinity()

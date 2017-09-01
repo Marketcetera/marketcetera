@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerStatus;
-import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.brokers.BrokerStatusBroadcaster;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
@@ -421,10 +421,10 @@ public abstract class AbstractFixModule
                                                                        instanceData,
                                                                        status,
                                                                        inLoggedOn);
-        synchronized(brokerStatusListenerLock) {
-            for(BrokerStatusListener brokerStatusListener : brokerStatusListeners) {
+        synchronized(brokerStatusBroadcasterLock) {
+            for(BrokerStatusBroadcaster brokerStatusBroadcaster : brokerStatusBroadcasters) {
                 try {
-                    brokerStatusListener.receiveBrokerStatus(brokerStatus);
+                    brokerStatusBroadcaster.reportBrokerStatus(brokerStatus);
                 } catch (Exception e) {
                     PlatformServices.handleException(this,
                                                      "Problem reporting broker status",
@@ -601,19 +601,19 @@ public abstract class AbstractFixModule
     @Autowired
     private ClusterService clusterService;
     /**
-     * guards access to {@link #brokerStatusListeners}
+     * guards access to {@link #brokerStatusBroadcasters}
      */
-    private final Object brokerStatusListenerLock = new Object();
+    private final Object brokerStatusBroadcasterLock = new Object();
     /**
      * provides access to broker services
      */
     @Autowired
     private BrokerService brokerService;
     /**
-     * broker status listeners
+     * broker status publishers
      */
     @Autowired
-    private Collection<BrokerStatusListener> brokerStatusListeners = Lists.newArrayList();
+    private Collection<BrokerStatusBroadcaster> brokerStatusBroadcasters = Lists.newArrayList();
     /**
      * underlying FIX engine
      */

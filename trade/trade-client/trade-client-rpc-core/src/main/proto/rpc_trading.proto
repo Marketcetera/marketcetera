@@ -49,6 +49,24 @@ message RemoveTradeMessageListenerResponse {
     Status status = 1;
 }
 
+message AddBrokerStatusListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message BrokerStatusListenerResponse {
+    BrokerStatus brokerStatus = 1;
+}
+
+message RemoveBrokerStatusListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message RemoveBrokerStatusListenerResponse {
+    Status status = 1;
+}
+
 service TradingRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
@@ -57,4 +75,6 @@ service TradingRpcService {
     rpc sendOrders(SendOrderRequest) returns (SendOrderResponse);
     rpc addTradeMessageListener(AddTradeMessageListenerRequest) returns (stream TradeMessageListenerResponse);
     rpc removeTradeMessageListener(RemoveTradeMessageListenerRequest) returns (RemoveTradeMessageListenerResponse);
+    rpc addBrokerStatusListener(AddBrokerStatusListenerRequest) returns (stream BrokerStatusListenerResponse);
+    rpc removeBrokerStatusListener(RemoveBrokerStatusListenerRequest) returns (RemoveBrokerStatusListenerResponse);
 }

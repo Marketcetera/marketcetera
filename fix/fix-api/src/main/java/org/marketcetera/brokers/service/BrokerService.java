@@ -7,6 +7,7 @@ import java.util.List;
 import org.marketcetera.admin.User;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokerStatusPublisher;
 import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.brokers.SessionCustomization;
 import org.marketcetera.cluster.ClusterData;
@@ -32,6 +33,7 @@ import quickfix.SessionSettings;
  * @since $Release$
  */
 public interface BrokerService
+        extends BrokerStatusPublisher
 {
     /**
      * Get the broker for the given session id.

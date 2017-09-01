@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -32,6 +33,7 @@ import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerConstants;
 import org.marketcetera.brokers.BrokerFactory;
 import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokerStatusBroadcaster;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.brokers.ClusteredBrokerStatus;
@@ -42,6 +44,7 @@ import org.marketcetera.cluster.service.ClusterListener;
 import org.marketcetera.cluster.service.ClusterMember;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.ApplicationContextProvider;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.AcceptorSessionAttributes;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
@@ -69,6 +72,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import quickfix.ConfigError;
 import quickfix.FieldConvertError;
@@ -87,7 +91,7 @@ import quickfix.SessionSettings;
  */
 @Service
 public class BrokerServiceImpl
-        implements BrokerService,BrokerStatusListener,ClusterListener,SessionNameProvider
+        implements BrokerService,ClusterListener,SessionNameProvider,BrokerStatusBroadcaster
 {
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getBroker(quickfix.SessionID)
@@ -136,12 +140,23 @@ public class BrokerServiceImpl
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.client.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.brokers.BrokerStatus)
+     * @see org.marketcetera.brokers.BrokerStatusPublisher#addBrokerStatusListener(org.marketcetera.brokers.BrokerStatusListener)
      */
     @Override
-    public void receiveBrokerStatus(BrokerStatus inStatus)
+    public void addBrokerStatusListener(BrokerStatusListener inListener)
     {
-        reportBrokerStatus(inStatus);
+        brokerStatusListeners.add(inListener);
+        for(BrokerStatus brokerStatus : clusterBrokerStatus) {
+            inListener.receiveBrokerStatus(brokerStatus);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.BrokerStatusPublisher#removeBrokerStatusListener(org.marketcetera.brokers.BrokerStatusListener)
+     */
+    @Override
+    public void removeBrokerStatusListener(BrokerStatusListener inListener)
+    {
+        brokerStatusListeners.remove(inListener);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getSessionStart(quickfix.SessionID)
@@ -273,6 +288,15 @@ public class BrokerServiceImpl
             SLF4JLoggerProxy.warn(this,
                                   e,
                                   "Unable to update broker status");
+        }
+        for(BrokerStatusListener brokerStatusListener : brokerStatusListeners) {
+            try {
+                brokerStatusListener.receiveBrokerStatus(inBrokerStatus);
+            } catch (Exception e) {
+                PlatformServices.handleException(this,
+                                                 "Error reporting broker status",
+                                                 e);
+            }
         }
     }
     /* (non-Javadoc)
@@ -895,6 +919,10 @@ public class BrokerServiceImpl
         }
         lastBrokerLog = thisBrokerLog;
     }
+    /**
+     * holds broker status listener subscribers
+     */
+    private final Set<BrokerStatusListener> brokerStatusListeners = Sets.newConcurrentHashSet();
     /**
      * provides fix sessions
      */

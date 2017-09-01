@@ -2,7 +2,11 @@ package org.marketcetera.clienttest;
 
 import java.math.BigDecimal;
 
+import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.fix.FixSessionFactory;
+import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderSingle;
@@ -13,6 +17,7 @@ import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.TradingClient;
 import org.marketcetera.trading.rpc.TradingRpcClientFactory;
 import org.marketcetera.trading.rpc.TradingRpcClientParametersImpl;
+import org.marketcetera.trading.rpc.TradingUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,6 +72,7 @@ public class ClientTest
             throws Exception
     {
         try {
+            TradingUtil.setFixSessionFactory(fixSessionFactory);
             TradingRpcClientParametersImpl params = new TradingRpcClientParametersImpl();
             params.setHostname(hostname);
             params.setPort(port);
@@ -79,6 +85,16 @@ public class ClientTest
                                   hostname,
                                   port,
                                   username);
+            BrokerStatusListener brokerStatusListener = new BrokerStatusListener() {
+                @Override
+                public void receiveBrokerStatus(BrokerStatus inStatus)
+                {
+                    SLF4JLoggerProxy.info(ClientTest.this,
+                                          "Received {}",
+                                          inStatus);
+                }
+            };
+            tradingClient.addBrokerStatusListener(brokerStatusListener);
             TradeMessageListener tradeMessageListener = new TradeMessageListener() {
                 @Override
                 public void receiveTradeMessage(TradeMessage inTradeMessage)
@@ -102,6 +118,7 @@ public class ClientTest
             tradingClient.sendOrder(testOrder);
             Thread.sleep(5000);
             tradingClient.removeTradeMessageListener(tradeMessageListener);
+            tradingClient.removeBrokerStatusListener(brokerStatusListener);
         } finally {
             if(tradingClient != null) {
                 tradingClient.stop();
@@ -126,12 +143,35 @@ public class ClientTest
         TradingRpcClientFactory tradingClientFactory = new TradingRpcClientFactory();
         return tradingClientFactory;
     }
+    /**
+     * Get the autowired instance.
+     *
+     * @return a <code>ClientTest</code> value
+     */
     @Bean
     public static ClientTest getClientTest()
     {
         return new ClientTest();
     }
+    /**
+     * Get the FIX session factory value.
+     *
+     * @return a <code>FixSessionFactory</code> value
+     */
+    @Bean
+    public FixSessionFactory getFixSessionFactory()
+    {
+        return new SimpleFixSessionFactory();
+    }
+    /**
+     * instance created for autowiring purposes
+     */
     private static ClientTest instance;
+    /**
+     * creates {@link FixSessionFactory} objects
+     */
+    @Autowired
+    private FixSessionFactory fixSessionFactory;
     /**
      * hostname value
      */
