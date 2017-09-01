@@ -8,6 +8,7 @@ import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.module.HasMutableStatus;
 import org.marketcetera.module.HasStatus;
+import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
 import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
@@ -234,7 +235,29 @@ public class TradeClientRpcService<SessionClazz>
         public void removeTradeMessageListener(RemoveTradeMessageListenerRequest inRequest,
                                                StreamObserver<RemoveTradeMessageListenerResponse> inResponseObserver)
         {
-            throw new UnsupportedOperationException(); // TODO
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Received remove trade message listener request {}",
+                                       inRequest);
+                String listenerId = inRequest.getListenerId();
+                TradeMessageListenerProxy tradeMessageListenerProxy = tradeMessageListenersById.getIfPresent(listenerId);
+                tradeMessageListenersById.invalidate(listenerId);
+                if(tradeMessageListenerProxy != null) {
+                    tradeService.removeTradeMessageListener(tradeMessageListenerProxy);
+                }
+                TradingRpc.RemoveTradeMessageListenerResponse.Builder responseBuilder = TradingRpc.RemoveTradeMessageListenerResponse.newBuilder();
+                responseBuilder.setStatus(BaseUtil.getStatus(false,
+                                                             null));
+                TradingRpc.RemoveTradeMessageListenerResponse response = responseBuilder.build();
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
         }
     }
     /**

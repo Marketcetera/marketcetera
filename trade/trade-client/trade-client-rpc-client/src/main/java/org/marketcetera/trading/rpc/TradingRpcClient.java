@@ -33,6 +33,7 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.RelatedOrder;
+import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradingClient;
@@ -105,12 +106,12 @@ public class TradingRpcClient
     @Override
     public void removeTradeMessageListener(TradeMessageListener inTradeMessageListener)
     {
-        final TradeMessageListenerProxy wrapper = tradeMessageListenerWrappers.getIfPresent(inTradeMessageListener);
+        final TradeMessageListenerProxy proxy = tradeMessageListenerWrappers.getIfPresent(inTradeMessageListener);
         tradeMessageListenerWrappers.invalidate(inTradeMessageListener);
-        if(wrapper == null) {
+        if(proxy == null) {
             return;
         }
-        tradeMessageListenerWrappersById.invalidate(wrapper.getId());
+        tradeMessageListenerWrappersById.invalidate(proxy.getId());
         executeCall(new Callable<Void>() {
             @Override
             public Void call()
@@ -121,7 +122,7 @@ public class TradingRpcClient
                                        getSessionId());
                 TradingRpc.RemoveTradeMessageListenerRequest.Builder requestBuilder = TradingRpc.RemoveTradeMessageListenerRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setListenerId(wrapper.getId());
+                requestBuilder.setListenerId(proxy.getId());
                 TradingRpc.RemoveTradeMessageListenerRequest removeTradeMessageListenerRequest = requestBuilder.build();
                 SLF4JLoggerProxy.trace(TradingRpcClient.this,
                                        "{} sending {}",
@@ -529,6 +530,14 @@ public class TradingRpcClient
                                    "{} received {}",
                                    id,
                                    inValue);
+            try {
+                TradeMessage tradeMessage = TradingUtil.getTradeMessage(inValue);
+                tradeMessageListener.receiveTradeMessage(tradeMessage);
+            } catch (Exception e) {
+                PlatformServices.handleException(TradingRpcClient.class,
+                                                 "Error handling trade message",
+                                                 e);
+            }
         }
         /* (non-Javadoc)
          * @see io.grpc.stub.StreamObserver#onError(java.lang.Throwable)
@@ -572,7 +581,6 @@ public class TradingRpcClient
         /**
          * report listener value
          */
-        @SuppressWarnings("unused")
         private final TradeMessageListener tradeMessageListener;
         /**
          * unique id value
