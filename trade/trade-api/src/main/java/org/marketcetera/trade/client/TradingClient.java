@@ -2,6 +2,7 @@ package org.marketcetera.trade.client;
 
 import java.beans.ExceptionListener;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.marketcetera.brokers.BrokerStatusPublisher;
 import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.core.BaseClient;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
@@ -35,18 +37,18 @@ public interface TradingClient
     /**
      * Get open orders.
      *
-     * @return a <code>List&lt;OrderSummary&gt;</code> value
+     * @return a <code>Collection&lt;? extends OrderSummary&gt;</code> value
      */
-    List<OrderSummary> getOpenOrders();
+    Collection<? extends OrderSummary> getOpenOrders();
     /**
      * Get open orders.
      *
      * @param inPageNumber an <code>int</code> value
      * @param inPageSize an <code>int</code> value
-     * @return a <code>List&lt;OrderSummary&gt;</code> value
+     * @return a <code>CollectionPageResponset&lt;? extends OrderSummary&gt;</code> value
      */
-    List<OrderSummary> getOpenOrders(int inPageNumber,
-                                     int inPageSize);
+    CollectionPageResponse<? extends OrderSummary> getOpenOrders(int inPageNumber,
+                                                                 int inPageSize);
     /**
      * Submit the given orders.
      *

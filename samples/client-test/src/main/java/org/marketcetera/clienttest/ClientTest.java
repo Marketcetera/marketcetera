@@ -2,6 +2,9 @@ package org.marketcetera.clienttest;
 
 import java.math.BigDecimal;
 
+import org.marketcetera.admin.User;
+import org.marketcetera.admin.UserFactory;
+import org.marketcetera.admin.impl.SimpleUserFactory;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.core.PlatformServices;
@@ -9,9 +12,13 @@ import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MutableOrderSummary;
+import org.marketcetera.trade.MutableOrderSummaryFactory;
 import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.SimpleOrderSummaryFactory;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.TradingClient;
@@ -73,6 +80,8 @@ public class ClientTest
     {
         try {
             TradingUtil.setFixSessionFactory(fixSessionFactory);
+            TradingUtil.setOrderSummaryFactory(orderSummaryFactory);
+            TradingUtil.setUserFactory(userFactory);
             TradingRpcClientParametersImpl params = new TradingRpcClientParametersImpl();
             params.setHostname(hostname);
             params.setPort(port);
@@ -112,11 +121,19 @@ public class ClientTest
             testOrder.setQuantity(BigDecimal.TEN);
             testOrder.setPrice(BigDecimal.TEN);
             testOrder.setSide(Side.Buy);
+            testOrder.setExecutionDestination("COLIN");
             SLF4JLoggerProxy.info(ClientTest.class,
                                   "Sending {}",
                                   testOrder);
             tradingClient.sendOrder(testOrder);
             Thread.sleep(5000);
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "Checking open orders");
+            for(OrderSummary orderSummary : tradingClient.getOpenOrders()) {
+                SLF4JLoggerProxy.info(ClientTest.class,
+                                      "{}",
+                                      orderSummary);
+            }
             tradingClient.removeTradeMessageListener(tradeMessageListener);
             tradingClient.removeBrokerStatusListener(brokerStatusListener);
         } finally {
@@ -164,6 +181,26 @@ public class ClientTest
         return new SimpleFixSessionFactory();
     }
     /**
+     * Get the mutable order summary factory value.
+     *
+     * @return a <code>MutableOrderSummaryFactory</code> value
+     */
+    @Bean
+    public MutableOrderSummaryFactory getMutableOrderSummaryFactory()
+    {
+        return new SimpleOrderSummaryFactory();
+    }
+    /**
+     * Get the user factory value.
+     *
+     * @return a <code>UserFactory</code> value
+     */
+    @Bean
+    public UserFactory getUserFactory()
+    {
+        return new SimpleUserFactory();
+    }
+    /**
      * instance created for autowiring purposes
      */
     private static ClientTest instance;
@@ -201,4 +238,14 @@ public class ClientTest
      */
     @Autowired
     private TradingRpcClientFactory tradeClientFactory;
+    /**
+     * creates {@link MutableOrderSummary} objects
+     */
+    @Autowired
+    private MutableOrderSummaryFactory orderSummaryFactory;
+    /**
+     * creates {@link User} objects
+     */
+    @Autowired
+    private UserFactory userFactory;
 }

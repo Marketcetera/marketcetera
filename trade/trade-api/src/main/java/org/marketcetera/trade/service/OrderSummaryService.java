@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.marketcetera.admin.User;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportBase;
-import org.springframework.data.domain.Page;
 
 /* $License$ */
 
@@ -96,10 +96,10 @@ public interface OrderSummaryService
      *
      * @param inPageNumber an <code>int</code> value
      * @param inPageSize an <code>int</code> value
-     * @return a <code>Page&lt;OrderSummary&gt;</code> value
+     * @return a <code>CollectionPageResponse&lt;OrderSummary&gt;</code> value
      */
-    Page<? extends OrderSummary> findOpenOrders(int inPageNumber,
-                                                int inPageSize);
+    CollectionPageResponse<? extends OrderSummary> findOpenOrders(int inPageNumber,
+                                                                  int inPageSize);
     /**
      * Update the order status value with the given reports.
      *

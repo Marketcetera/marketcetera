@@ -7,6 +7,7 @@ import java.util.Set;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.user.PersistentUser;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderSummary;
@@ -178,16 +179,17 @@ public class OrderSummaryServiceImpl
      * @see com.marketcetera.ors.dao.OrderStatusService#findOpenOrders(int, int)
      */
     @Override
-    public Page<? extends OrderSummary> findOpenOrders(int inPageNumber,
-                                                       int inPageSize)
+    public CollectionPageResponse<? extends OrderSummary> findOpenOrders(int inPageNumber,
+                                                                         int inPageSize)
     {
         Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC,
                                             QPersistentOrderSummary.persistentOrderSummary.sendingTime.getMetadata().getName()));
         Pageable pageRequest = new PageRequest(inPageNumber,
                                                inPageSize,
                                                sort);
-        return orderStatusDao.findOpenOrders(OrderStatus.openOrderStatuses,
-                                             pageRequest);
+        Page<PersistentOrderSummary> pageResponse = orderStatusDao.findOpenOrders(OrderStatus.openOrderStatuses,
+                                                                                  pageRequest);
+        return new CollectionPageResponse<>(pageResponse);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.service.OrderStatusService#update(org.marketcetera.trade.OrderSummary, org.marketcetera.trade.Report, org.marketcetera.trade.ReportBase)

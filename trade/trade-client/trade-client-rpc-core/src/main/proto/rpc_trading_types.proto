@@ -119,7 +119,7 @@ message OrderSummary {
     Qty orderPrice = 15;
     google.protobuf.Timestamp sendingTime = 16;
     google.protobuf.Timestamp transactTime = 17;
-    string userId = 18;
+    User user = 18;
 }
 
 message FixMessage {

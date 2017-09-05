@@ -2,6 +2,8 @@ package org.marketcetera.persist;
 
 import java.util.Collection;
 
+import org.springframework.data.domain.Page;
+
 import com.google.common.collect.Lists;
 
 /* $License$ */
@@ -16,6 +18,26 @@ import com.google.common.collect.Lists;
 public class CollectionPageResponse<Clazz>
         extends PageResponse
 {
+    /**
+     * Create a new CollectionPageResponse instance.
+     */
+    public CollectionPageResponse() {}
+    /**
+     * Create a new CollectionPageResponse instance.
+     *
+     * @param inPage a <code>Page&lt;Clazz&gt:</code> value
+     */
+    public CollectionPageResponse(Page<Clazz> inPage)
+    {
+        setElements(inPage.getContent());
+        setHasContent(inPage.hasContent());
+        setPageMaxSize(inPage.getSize());
+        setPageNumber(inPage.getNumber());
+        setPageSize(inPage.getNumberOfElements());
+        setTotalPages(inPage.getTotalPages());
+        setTotalSize(inPage.getTotalElements());
+        // TODO this doesn't handle sort yet
+    }
     /**
      * Get the elements value.
      *

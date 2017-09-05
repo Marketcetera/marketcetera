@@ -1,11 +1,14 @@
 package org.marketcetera.trading.rpc;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.marketcetera.admin.User;
+import org.marketcetera.admin.UserFactory;
 import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTagSpec;
@@ -29,9 +32,10 @@ import org.marketcetera.trade.FIXResponse;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.MutableOrderSummary;
+import org.marketcetera.trade.MutableOrderSummaryFactory;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.Order;
-import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
@@ -40,10 +44,12 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.PositionEffect;
 import org.marketcetera.trade.RelatedOrder;
+import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
@@ -491,32 +497,41 @@ public abstract class TradingUtil
         inBuilder.setInstrument(getRpcInstrument(inOrder.getInstrument()));
     }
     /**
+     * Get the RPC instrument from the given instrument.
      *
-     *
-     * @param inInstrument
-     * @return
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>TradingTypesRpc.Instrument</code>value
      */
-    public static org.marketcetera.trading.rpc.TradingTypesRpc.Instrument getRpcInstrument(Instrument inInstrument)
+    public static TradingTypesRpc.Instrument getRpcInstrument(Instrument inInstrument)
     {
         TradingTypesRpc.Instrument.Builder instrumentBuilder = TradingTypesRpc.Instrument.newBuilder();
         instrumentBuilder.setSymbol(inInstrument.getFullSymbol());
         return instrumentBuilder.build();
     }
     /**
+     * Get the instrument on the given RPC order base object.
      *
-     *
-     * @param inRpcOrder
-     * @return
+     * @param inRpcOrder a <code>TradingTypeRpc.OrderBase</code> value
+     * @return an <code>Instrument</code> value
      */
     private static Instrument getInstrument(TradingTypesRpc.OrderBase inRpcOrder)
     {
         return symbolResolverService.resolveSymbol(inRpcOrder.getInstrument().getSymbol());
     }
     /**
-     * 
+     * Get the instrument on the given RPC order summary object.
      *
+     * @param inRpcOrder a <code>TradingTypeRpc.OrderSummary</code> value
+     * @return an <code>Instrument</code> value
+     */
+    private static Instrument getInstrument(TradingTypesRpc.OrderSummary inRpcOrderSummary)
+    {
+        return symbolResolverService.resolveSymbol(inRpcOrderSummary.getInstrument().getSymbol());
+    }
+    /**
+     * Set the RPC custom fields from the given order.
      *
-     * @param inOrder
+     * @param inOrder an <code>OrderBase</code> value
      * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
      */
     public static void setRpcCustomFields(OrderBase inOrder,
@@ -559,9 +574,9 @@ public abstract class TradingUtil
         inOrder.setCustomFields(customFields);
     }
     /**
+     * Set the account value.
      *
-     *
-     * @param inOrder
+     * @param inOrder an <code>OrderBase</code> value
      * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
      */
     public static void setAccount(OrderBase inOrder,
@@ -924,6 +939,21 @@ public abstract class TradingUtil
         inOrder.setExecutionDestination(StringUtils.trimToNull(inRpcOrder.getExecutionDestination()));
     }
     /**
+     * Set the execution destination from the given RPC order.
+     *
+     * @param inOrder a <code>NewOrReplaceOrder</code> value
+     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     */
+    public static void setExecutionDestination(NewOrReplaceOrder inOrder,
+                                               TradingTypesRpc.OrderBase.Builder inBuilder)
+    {
+        String value = StringUtils.trimToNull(inOrder.getExecutionDestination());
+        if(value == null) {
+            return;
+        }
+        inBuilder.setExecutionDestination(value);
+    }
+    /**
      * Set the peg-to-midpoint value from the given RPC order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
@@ -1157,6 +1187,11 @@ public abstract class TradingUtil
             if(value != null) {
                 brokerId = new BrokerID(value);
             }
+        } else if(inObject instanceof TradingTypesRpc.OrderSummary) {
+            String value = StringUtils.trimToNull(((TradingTypesRpc.OrderSummary)inObject).getBrokerId());
+            if(value != null) {
+                brokerId = new BrokerID(value);
+            }
         }
         if(brokerId == null) {
             return Optional.empty();
@@ -1259,13 +1294,22 @@ public abstract class TradingUtil
         if(!inResponse.hasTradeMessage()) {
             throw new UnsupportedOperationException();
         }
-        TradingTypesRpc.TradeMessage rpcTradeMessage  = inResponse.getTradeMessage();
+        return getTradeMessage(inResponse.getTradeMessage());
+    }
+    /**
+     * Get the trade message value from the given RPC trade message.
+     *
+     * @param inReport a <code>TradingTypesRpc.TradeMessage</code> value
+     * @return a <code>TradeMessage</code> value
+     */
+    public static TradeMessage getTradeMessage(TradingTypesRpc.TradeMessage inRpcTradeMessage)
+    {
         TradeMessage tradeMessage = null;
-        Message fixMessage = getFixMessage(rpcTradeMessage.getMessage());
-        BrokerID brokerId = getBrokerId(rpcTradeMessage).orElse(null);
-        Originator originator = getOriginator(rpcTradeMessage);
-        UserID userId = getUserId(rpcTradeMessage).orElse(null);
-        switch(rpcTradeMessage.getTradeMessageType()) {
+        Message fixMessage = getFixMessage(inRpcTradeMessage.getMessage());
+        BrokerID brokerId = getBrokerId(inRpcTradeMessage).orElse(null);
+        Originator originator = getOriginator(inRpcTradeMessage);
+        UserID userId = getUserId(inRpcTradeMessage).orElse(null);
+        switch(inRpcTradeMessage.getTradeMessageType()) {
             case TradeMessageExecutionReport:
                 tradeMessage = Factory.getInstance().createExecutionReport(fixMessage,
                                                                            brokerId,
@@ -1294,13 +1338,12 @@ public abstract class TradingUtil
         return tradeMessage;
     }
     /**
-     * Set the given trade message on the given builder.
+     * Get the RPC trade message from the given trade message.
      *
      * @param inTradeMessage a <code>TradeMessage</code> value
-     * @param inBuilder a <code>TradingRpc.TradeMessageListenerResponse.Builder</code>
+     * @return a <code>TradingTypesRpc.TradeMessage</code> value
      */
-    public static void setTradeMessage(TradeMessage inTradeMessage,
-                                       TradingRpc.TradeMessageListenerResponse.Builder inBuilder)
+    public static TradingTypesRpc.TradeMessage getRpcTradeMessage(TradeMessage inTradeMessage)
     {
         TradingTypesRpc.TradeMessage.Builder tradeMessageBuilder = TradingTypesRpc.TradeMessage.newBuilder();
         ReportBase reportBase = null;
@@ -1396,7 +1439,18 @@ public abstract class TradingUtil
             setUserId(fixResponse,
                       tradeMessageBuilder);
         }
-        inBuilder.setTradeMessage(tradeMessageBuilder.build());
+        return tradeMessageBuilder.build();
+    }
+    /**
+     * Set the given trade message on the given builder.
+     *
+     * @param inTradeMessage a <code>TradeMessage</code> value
+     * @param inBuilder a <code>TradingRpc.TradeMessageListenerResponse.Builder</code>
+     */
+    public static void setTradeMessage(TradeMessage inTradeMessage,
+                                       TradingRpc.TradeMessageListenerResponse.Builder inBuilder)
+    {
+        inBuilder.setTradeMessage(getRpcTradeMessage(inTradeMessage));
     }
     /**
      * Set the FIX message from the given message holder on the given builder.
@@ -1872,6 +1926,17 @@ public abstract class TradingUtil
         inBuilder.setOrderStatus(getRpcOrderStatus(inReport.getOrderStatus()));
     }
     /**
+     * Set the order status from the given RPC value on the given order summary.
+     *
+     * @param inRpcOrderSummary a <code>TradingTypesRpc.OrderSummary</code> value
+     * @param inOrderSummary a <code>MutableOrderSummary</code> value
+     */
+    public static void setOrderStatus(TradingTypesRpc.OrderSummary inRpcOrderSummary,
+                                      MutableOrderSummary inOrderSummary)
+    {
+        inOrderSummary.setOrderStatus(getOrderStatus(inRpcOrderSummary.getOrderStatus()));
+    }
+    /**
      * Set the originator from the given report on the given builder.
      *
      * @param inReport a <code>ReportBase</code> value
@@ -1942,6 +2007,52 @@ public abstract class TradingUtil
                 return TradingTypesRpc.OrderStatusType.UnknownOrderStatus;
             default:
                 throw new UnsupportedOperationException("Unsupported order status: " + inOrderStatus);
+        }
+    }
+    /**
+     * Get the order status value from the given RPC value.
+     *
+     * @param inRpcOrderStatus a <code>TradingTypesRpc.OrderStatusType</code> value
+     * @return an <code>OrderStatus</code> value
+     */
+    public static OrderStatus getOrderStatus(TradingTypesRpc.OrderStatusType inRpcOrderStatus)
+    {
+        switch(inRpcOrderStatus) {
+            case AcceptedForBidding:
+                return OrderStatus.AcceptedForBidding;
+            case Calculated:
+                return OrderStatus.Calculated;
+            case Canceled:
+                return OrderStatus.Canceled;
+            case DoneForDay:
+                return OrderStatus.DoneForDay;
+            case Expired:
+                return OrderStatus.Expired;
+            case Filled:
+                return OrderStatus.Filled;
+            case New:
+                return OrderStatus.New;
+            case PartiallyFilled:
+                return OrderStatus.PartiallyFilled;
+            case PendingCancel:
+                return OrderStatus.PendingCancel;
+            case PendingNew:
+                return OrderStatus.PendingNew;
+            case PendingReplace:
+                return OrderStatus.PendingReplace;
+            case Rejected:
+                return OrderStatus.Rejected;
+            case Replaced:
+                return OrderStatus.Replaced;
+            case Stopped:
+                return OrderStatus.Stopped;
+            case Suspended:
+                return OrderStatus.Suspended;
+            case UnknownOrderStatus:
+                return OrderStatus.Unknown;
+            case UNRECOGNIZED:
+            default:
+                throw new UnsupportedOperationException("Unsupported order status: " + inRpcOrderStatus);
         }
     }
     /**
@@ -2063,6 +2174,38 @@ public abstract class TradingUtil
                                                  "Unable to set order id",
                                                  e);
             }
+        }
+    }
+    /**
+     * Set the order id value.
+     *
+     * @param inRpcOrderSummary a <code>TradingTypesRpc.OrderSummary</code> value
+     * @param inOrderSummary a <code>MutableOrderSummary</code> value
+     */
+    public static void setOrderId(TradingTypesRpc.OrderSummary inRpcOrderSummary,
+                                  MutableOrderSummary inOrderSummary)
+    {
+        String value = StringUtils.trimToNull(inRpcOrderSummary.getOrderId());
+        if(value != null) {
+            inOrderSummary.setOrderId(new OrderID(value));
+        } else {
+            inOrderSummary.setOrderId(null);
+        }
+    }
+    /**
+     * Set the root order id value.
+     *
+     * @param inRpcOrderSummary a <code>TradingTypesRpc.OrderSummary</code> value
+     * @param inOrderSummary a <code>MutableOrderSummary</code> value
+     */
+    public static void setRootOrderId(TradingTypesRpc.OrderSummary inRpcOrderSummary,
+                                      MutableOrderSummary inOrderSummary)
+    {
+        String value = StringUtils.trimToNull(inRpcOrderSummary.getRootOrderId());
+        if(value != null) {
+            inOrderSummary.setRootOrderId(new OrderID(value));
+        } else {
+            inOrderSummary.setRootOrderId(null);
         }
     }
     /**
@@ -2261,13 +2404,175 @@ public abstract class TradingUtil
     /**
      * Get an order summary value from the given RPC order summary.
      *
-     * @param inOrderSummary a <code>TradingTypesRpc.OrderSummary</code> value
+     * @param inRpcOrderSummary a <code>TradingTypesRpc.OrderSummary</code> value
      * @return an <code>Optional&lt;OrderSummary&gt;</code> value
      */
-    public static Optional<OrderSummary> getOrderSummary(TradingTypesRpc.OrderSummary inOrderSummary)
+    public static Optional<OrderSummary> getOrderSummary(TradingTypesRpc.OrderSummary inRpcOrderSummary)
     {
-        throw new UnsupportedOperationException(); // TODO
-
+        MutableOrderSummary orderSummary = orderSummaryFactory.create();
+        orderSummary.setAccount(inRpcOrderSummary.getAccount());;
+        if(inRpcOrderSummary.hasUser()) {
+            setUser(inRpcOrderSummary.getUser(),
+                    orderSummary);
+        }
+        if(inRpcOrderSummary.hasAveragePrice()) {
+            orderSummary.setAveragePrice(BaseUtil.getScaledQuantity(inRpcOrderSummary.getAveragePrice()));
+        }
+        orderSummary.setBrokerId(getBrokerId(inRpcOrderSummary).orElse(null));
+        if(inRpcOrderSummary.hasCumulativeQuantity()) {
+            orderSummary.setCumulativeQuantity(BaseUtil.getScaledQuantity(inRpcOrderSummary.getCumulativeQuantity()));
+        }
+        if(inRpcOrderSummary.hasInstrument()) {
+            orderSummary.setInstrument(getInstrument(inRpcOrderSummary));
+        }
+        if(inRpcOrderSummary.hasLastPrice()) {
+            orderSummary.setLastPrice(BaseUtil.getScaledQuantity(inRpcOrderSummary.getLastPrice()));
+        }
+        if(inRpcOrderSummary.hasLastQuantity()) {
+            orderSummary.setLastQuantity(BaseUtil.getScaledQuantity(inRpcOrderSummary.getLastQuantity()));
+        }
+        if(inRpcOrderSummary.hasLeavesQuantity()) {
+            orderSummary.setLeavesQuantity(BaseUtil.getScaledQuantity(inRpcOrderSummary.getLeavesQuantity()));
+        }
+        setOrderId(inRpcOrderSummary,
+                   orderSummary);
+        if(inRpcOrderSummary.hasOrderPrice()) {
+            orderSummary.setOrderPrice(BaseUtil.getScaledQuantity(inRpcOrderSummary.getOrderPrice()));
+        }
+        if(inRpcOrderSummary.hasOrderQuantity()) {
+            orderSummary.setOrderQuantity(BaseUtil.getScaledQuantity(inRpcOrderSummary.getOrderQuantity()));
+        }
+        setOrderStatus(inRpcOrderSummary,
+                       orderSummary);
+        if(inRpcOrderSummary.hasReport()) {
+            TradeMessage tradeMessage = getTradeMessage(inRpcOrderSummary.getReport());
+            if(tradeMessage instanceof Report) {
+                System.out.println("COLIN: " + tradeMessage + " is a report");
+                orderSummary.setReport((Report)tradeMessage);
+            } else {
+                System.out.println("COLIN: " + tradeMessage + " is NOT a report");
+            }
+        }
+        setRootOrderId(inRpcOrderSummary,
+                       orderSummary);
+        if(inRpcOrderSummary.hasSendingTime()) {
+            orderSummary.setSendingTime(new Date(Timestamps.toMillis(inRpcOrderSummary.getSendingTime())));
+        }
+        orderSummary.setSide(getSide(inRpcOrderSummary.getSide()));
+        if(inRpcOrderSummary.hasTransactTime()) {
+            orderSummary.setTransactTime(new Date(Timestamps.toMillis(inRpcOrderSummary.getTransactTime())));
+        }
+        orderSummary.setViewer(orderSummary.getActor());
+        return Optional.of(orderSummary);
+    }
+    /**
+     * Get the RPC order summary value from the given order summary.
+     *
+     * @param inOrderSummary an <code>OrderSummary</code> value
+     * @return a <code>TradingTypesRpc.OrderSummary</code> value
+     */
+    public static TradingTypesRpc.OrderSummary getRpcOrderSummary(OrderSummary inOrderSummary)
+    {
+        TradingTypesRpc.OrderSummary.Builder orderSummaryBuilder = TradingTypesRpc.OrderSummary.newBuilder();
+        String value = StringUtils.trimToNull(inOrderSummary.getAccount());
+        if(value != null) {
+            orderSummaryBuilder.setAccount(value);
+        }
+        if(inOrderSummary.getAveragePrice() != null) {
+            orderSummaryBuilder.setAveragePrice(BaseUtil.getQtyValueFrom(inOrderSummary.getAveragePrice()));
+        }
+        value = StringUtils.trimToNull(inOrderSummary.getBrokerId()==null?null:inOrderSummary.getBrokerId().getValue());
+        if(value != null) {
+            orderSummaryBuilder.setBrokerId(value);
+        }
+        if(inOrderSummary.getCumulativeQuantity() != null) {
+            orderSummaryBuilder.setCumulativeQuantity(BaseUtil.getQtyValueFrom(inOrderSummary.getCumulativeQuantity()));
+        }
+        if(inOrderSummary.getInstrument() != null) {
+            orderSummaryBuilder.setInstrument(getRpcInstrument(inOrderSummary.getInstrument()));
+        }
+        if(inOrderSummary.getLastPrice() != null) {
+            orderSummaryBuilder.setLastPrice(BaseUtil.getQtyValueFrom(inOrderSummary.getLastPrice()));
+        }
+        if(inOrderSummary.getLastQuantity() != null) {
+            orderSummaryBuilder.setLastQuantity(BaseUtil.getQtyValueFrom(inOrderSummary.getLastQuantity()));
+        }
+        if(inOrderSummary.getLeavesQuantity() != null) {
+            orderSummaryBuilder.setLeavesQuantity(BaseUtil.getQtyValueFrom(inOrderSummary.getLeavesQuantity()));
+        }
+        value = inOrderSummary.getOrderId()==null?null:inOrderSummary.getOrderId().getValue();
+        if(value != null) {
+            orderSummaryBuilder.setOrderId(value);
+        }
+        if(inOrderSummary.getOrderPrice() != null) {
+            orderSummaryBuilder.setOrderPrice(BaseUtil.getQtyValueFrom(inOrderSummary.getOrderPrice()));
+        }
+        if(inOrderSummary.getOrderQuantity() != null) {
+            orderSummaryBuilder.setOrderQuantity(BaseUtil.getQtyValueFrom(inOrderSummary.getOrderQuantity()));
+        }
+        if(inOrderSummary.getOrderStatus() != null) {
+            orderSummaryBuilder.setOrderStatus(getRpcOrderStatus(inOrderSummary.getOrderStatus()));
+        }
+        if(inOrderSummary.getReport() != null) {
+            if(inOrderSummary.getReport() instanceof TradeMessage) {
+                orderSummaryBuilder.setReport(getRpcTradeMessage((TradeMessage)inOrderSummary.getReport()));
+            } else {
+                System.out.println("COLIN: " + inOrderSummary.getReport() + " is NOT a trade message");
+            }
+        }
+        value = inOrderSummary.getRootOrderId()==null?null:inOrderSummary.getRootOrderId().getValue();
+        if(value != null) {
+            orderSummaryBuilder.setRootOrderId(value);
+        }
+        if(inOrderSummary.getSendingTime() != null) {
+            orderSummaryBuilder.setSendingTime(Timestamps.fromMillis(inOrderSummary.getSendingTime().getTime()));
+        }
+        if(inOrderSummary.getSide() != null) {
+            orderSummaryBuilder.setSide(getRpcSide(inOrderSummary.getSide()));
+        }
+        if(inOrderSummary.getTransactTime() != null) {
+            orderSummaryBuilder.setTransactTime(Timestamps.fromMillis(inOrderSummary.getTransactTime().getTime()));
+        }
+        if(inOrderSummary.getActor() != null) {
+            orderSummaryBuilder.setUser(getRpcUser(inOrderSummary.getActor()));
+        }
+        return orderSummaryBuilder.build();
+    }
+    /**
+     * Set the user from the given RPC user on the given order summary.
+     *
+     * @param inRpcUser a <code>BaseRpc.User</code> value
+     * @param inOrderSummary a <code>MutableOrderSummary</code> value
+     */
+    public static void setUser(BaseRpc.User inRpcUser,
+                               MutableOrderSummary inOrderSummary)
+    {
+        User user = userFactory.create(inRpcUser.getName(),
+                                       "*******",
+                                       inRpcUser.getDescription(),
+                                       inRpcUser.getActive());
+        inOrderSummary.setActor(user);
+        inOrderSummary.setViewer(user);
+    }
+    /**
+     * Get the RPC user from the given user.
+     *
+     * @param inUser a <code>User</code> value
+     * @return a <code>BaseRpc.User</code> value
+     */
+    public static BaseRpc.User getRpcUser(User inUser)
+    {
+        BaseRpc.User.Builder userBuilder = BaseRpc.User.newBuilder();
+        userBuilder.setActive(inUser.isActive());
+        String value = StringUtils.trimToNull(inUser.getDescription());
+        if(value != null) {
+            userBuilder.setDescription(value);
+        }
+        value = StringUtils.trimToNull(inUser.getName());
+        if(value != null) {
+            userBuilder.setName(value);
+        }
+        return userBuilder.build();
     }
     /**
      * Get the symbolResolverService value.
@@ -2304,6 +2609,42 @@ public abstract class TradingUtil
     public static void setFixSessionFactory(FixSessionFactory inFixSessionFactory)
     {
         fixSessionFactory = inFixSessionFactory;
+    }
+    /**
+     * Get the orderSummaryFactory value.
+     *
+     * @return a <code>MutableOrderSummaryFactory</code> value
+     */
+    public static MutableOrderSummaryFactory getOrderSummaryFactory()
+    {
+        return orderSummaryFactory;
+    }
+    /**
+     * Sets the orderSummaryFactory value.
+     *
+     * @param inOrderSummaryFactory a <code>MutableOrderSummaryFactory</code> value
+     */
+    public static void setOrderSummaryFactory(MutableOrderSummaryFactory inOrderSummaryFactory)
+    {
+        orderSummaryFactory = inOrderSummaryFactory;
+    }
+    /**
+     * Get the userFactory value.
+     *
+     * @return a <code>UserFactory</code> value
+     */
+    public static UserFactory getUserFactory()
+    {
+        return userFactory;
+    }
+    /**
+     * Sets the userFactory value.
+     *
+     * @param inUserFactory a <code>UserFactory</code> value
+     */
+    public static void setUserFactory(UserFactory inUserFactory)
+    {
+        userFactory = inUserFactory;
     }
     /**
      * Set the values on the given FIX field map from the given RPC map.
@@ -2354,4 +2695,12 @@ public abstract class TradingUtil
      * creates {@link FixSession} objects
      */
     private static FixSessionFactory fixSessionFactory;
+    /**
+     * creates {@link MutableOrderSummary} objects
+     */
+    private static MutableOrderSummaryFactory orderSummaryFactory;
+    /**
+     * creats {@link User} objects
+     */
+    private static UserFactory userFactory;
 }

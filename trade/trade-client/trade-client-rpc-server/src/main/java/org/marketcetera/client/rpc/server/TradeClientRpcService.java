@@ -11,6 +11,7 @@ import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.module.HasMutableStatus;
 import org.marketcetera.module.HasStatus;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
 import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
@@ -18,11 +19,14 @@ import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.base.BaseUtil;
+import org.marketcetera.rpc.paging.PagingUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
+import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.trading.rpc.TradingRpc;
 import org.marketcetera.trading.rpc.TradingRpc.AddBrokerStatusListenerRequest;
@@ -139,11 +143,28 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
-//                MarketdataRpc.MarketDataResponse.Builder responseBuilder = MarketdataRpc.MarketDataResponse.newBuilder();
-//                MarketdataRpc.MarketDataResponse response = responseBuilder.setId(marketDataService.request(org.marketcetera.marketdata.MarketDataRequestBuilder.newRequestFromString(inRequest.getRequest()),
-//                                                                                                         inRequest.getStreamEvents())).build();
-//                inResponseObserver.onNext(response);
-//                inResponseObserver.onCompleted();
+                TradingRpc.OpenOrdersResponse.Builder responseBuilder = TradingRpc.OpenOrdersResponse.newBuilder();
+                int pageNumber = 0;
+                int pageSize = Integer.MAX_VALUE;
+                if(inRequest.hasPageRequest()) {
+                    pageNumber = PagingUtil.getPageNumber(inRequest.getPageRequest());
+                    pageSize = PagingUtil.getPageNumber(inRequest.getPageRequest());
+                }
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Received open order request {}",
+                                       inRequest);
+                CollectionPageResponse<? extends OrderSummary> orderSummaryPage = orderSummaryService.findOpenOrders(pageNumber,
+                                                                                                                     pageSize);
+                for(OrderSummary orderSummary : orderSummaryPage.getElements()) {
+                    responseBuilder.addOrders(TradingUtil.getRpcOrderSummary(orderSummary));
+                }
+                responseBuilder.setPageResponse(PagingUtil.getPageResponse(orderSummaryPage));
+                TradingRpc.OpenOrdersResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Responding: {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
             } catch (Exception e) {
                 if(e instanceof StatusRuntimeException) {
                     throw (StatusRuntimeException)e;
@@ -329,7 +350,7 @@ public class TradeClientRpcService<SessionClazz>
         }
     }
     /**
-     *
+     * Provides common behaviors for listener proxies.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -384,7 +405,7 @@ public class TradeClientRpcService<SessionClazz>
         private final StreamObserver<ResponseClazz> observer;
     }
     /**
-     *
+     * Provides a connection between broker status requests and the server interface.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -591,6 +612,11 @@ public class TradeClientRpcService<SessionClazz>
      */
     @Autowired
     private TradeService tradeService;
+    /**
+     * provides access to order summary services
+     */
+    @Autowired
+    private OrderSummaryService orderSummaryService;
     /**
      * provides the RPC service
      */
