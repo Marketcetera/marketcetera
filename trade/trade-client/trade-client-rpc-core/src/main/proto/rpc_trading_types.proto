@@ -101,7 +101,25 @@ message Instrument {
     string symbol = 1;
 }
 
-message OpenOrder {
+message OrderSummary {
+    OrderStatusType orderStatus = 1;
+    TradeMessage report = 2;
+    string rootOrderId = 3;
+    string orderId = 4;
+    Qty cumulativeQuantity = 5;
+    string account = 6;
+    string brokerId = 7;
+    Side side = 8;
+    Instrument instrument = 9;
+    Qty averagePrice = 10;
+    Qty lastQuantity = 11;
+    Qty leavesQuantity = 12;
+    Qty orderQuantity = 13;
+    Qty lastPrice = 14;
+    Qty orderPrice = 15;
+    google.protobuf.Timestamp sendingTime = 16;
+    google.protobuf.Timestamp transactTime = 17;
+    string userId = 18;
 }
 
 message FixMessage {

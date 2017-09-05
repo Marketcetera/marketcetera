@@ -31,6 +31,7 @@ import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
@@ -2256,6 +2257,17 @@ public abstract class TradingUtil
             inBrokerStatusBuilder.addBrokerAlgos(brokerAlgoBuilder.build());
             brokerAlgoBuilder.clear();
         }
+    }
+    /**
+     * Get an order summary value from the given RPC order summary.
+     *
+     * @param inOrderSummary a <code>TradingTypesRpc.OrderSummary</code> value
+     * @return an <code>Optional&lt;OrderSummary&gt;</code> value
+     */
+    public static Optional<OrderSummary> getOrderSummary(TradingTypesRpc.OrderSummary inOrderSummary)
+    {
+        throw new UnsupportedOperationException(); // TODO
+
     }
     /**
      * Get the symbolResolverService value.

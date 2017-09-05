@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -16,13 +17,13 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.Version;
 import org.marketcetera.core.VersionInfo;
-import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.client.AbstractRpcClient;
+import org.marketcetera.rpc.paging.PagingUtil;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.NewOrReplaceOrder;
@@ -216,24 +217,6 @@ public class TradingRpcClient
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradingClient#addServerStatusListener(org.marketcetera.core.notifications.ServerStatusListener)
-     */
-    @Override
-    public void addServerStatusListener(ServerStatusListener inListener)
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradingClient#removeServerStatusListener(org.marketcetera.core.notifications.ServerStatusListener)
-     */
-    @Override
-    public void removeServerStatusListener(ServerStatusListener inListener)
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#getPositionAsOf(java.util.Date, org.marketcetera.trade.Instrument)
      */
     @Override
@@ -317,21 +300,23 @@ public class TradingRpcClient
                 SLF4JLoggerProxy.trace(this,
                                        "{} requesting open orders",
                                        getSessionId());
-//                TradingRpc.OpenOrdersRequest.Builder requestBuilder = TradingRpc.OpenOrdersRequest.newBuilder();
-//                requestBuilder.setSessionId(getSessionId().getValue());
-//                requestBuilder.setPageRequest(PagingUtil.buildPageRequest(inPageNumber,
-//                                                                          inPageSize));
-//                TradingRpc.OpenOrdersResponse response = getBlockingStub().getOpenOrders(requestBuilder.build());
-//                List<ExecutionReport> results = new ArrayList<>();
-//                for(TradingRpc.OpenOrder rpcOpenOrder : response.getOrdersList()) {
-//                    // TODO
-//                }
-//                SLF4JLoggerProxy.trace(this,
-//                                       "{} returning {}",
-//                                       getSessionId(),
-//                                       results);
-//                return results;
-                throw new UnsupportedOperationException();
+                TradingRpc.OpenOrdersRequest.Builder requestBuilder = TradingRpc.OpenOrdersRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setPageRequest(PagingUtil.buildPageRequest(inPageNumber,
+                                                                          inPageSize));
+                TradingRpc.OpenOrdersResponse response = getBlockingStub().getOpenOrders(requestBuilder.build());
+                List<OrderSummary> results = new ArrayList<>();
+                for(TradingTypesRpc.OrderSummary rpcOrderSummary : response.getOrdersList()) {
+                    Optional<OrderSummary> value = TradingUtil.getOrderSummary(rpcOrderSummary);
+                    if(value.isPresent()) {
+                        results.add(value.get());
+                    }
+                }
+                SLF4JLoggerProxy.trace(this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       results);
+                return results;
             }
         });
     }
@@ -341,7 +326,8 @@ public class TradingRpcClient
     @Override
     public List<OrderSummary> getOpenOrders()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return getOpenOrders(1,
+                             Integer.MAX_VALUE);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#sendOrder(org.marketcetera.trade.Order)

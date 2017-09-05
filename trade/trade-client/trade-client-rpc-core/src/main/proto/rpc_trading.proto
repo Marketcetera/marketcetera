@@ -13,7 +13,7 @@ message OpenOrdersRequest {
 
 message OpenOrdersResponse {
     PageResponse pageResponse = 1;
-    repeated OpenOrder orders = 2;
+    repeated OrderSummary orders = 2;
 }
 
 message SendOrderRequest {

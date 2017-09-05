@@ -10,7 +10,6 @@ import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.BrokerStatusPublisher;
 import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.core.BaseClient;
-import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
@@ -77,43 +76,17 @@ public interface TradingClient
      */
     OrderID modifyOrder(OrderReplace inOrderReplace);
     /**
+     * Add the given broker status listener.
      *
-     *
-     * @param inBrokerStatusListener
+     * @param inBrokerStatusListener a <code>BrokerStatusListener</code> value
      */
     void addBrokerStatusListener(BrokerStatusListener inBrokerStatusListener);
     /**
+     * Remove the given broker status listener.
      *
-     *
-     * @param inBrokerStatusListener
+     * @param inBrokerStatusListener a <code>BrokerStatusListener</code> value
      */
     void removeBrokerStatusListener(BrokerStatusListener inBrokerStatusListener);
-    /**
-     * Adds a server connection status listener, which receives all
-     * the server connection status changes.
-     *
-     * <p>If the same listener is added more than once, it will receive
-     * notifications as many times as it has been added.</p>
-     *
-     * <p>The listeners are notified in the reverse order of their
-     * addition.</p>
-     *
-     * @param listener The listener which should be supplied the
-     * server connection status changes.
-     */
-    void addServerStatusListener(ServerStatusListener listener);
-    /**
-     * Removes a server connection status listener that was previously
-     * added via {@link
-     * #addServerStatusListener(ServerStatusListener)}.
-     *
-     * <p>If the listener was added more than once, only its most
-     * recently added instance will be removed.</p>
-     *
-     * @param listener The listener which should stop receiving server
-     * connection status changes.
-     */
-    void removeServerStatusListener(ServerStatusListener listener);
     /**
      * Returns the position of the supplied instrument based on reports generated and received on or before the supplied date in UTC.
      *
