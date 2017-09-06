@@ -80,6 +80,15 @@ message BrokersStatusResponse {
     repeated BrokerStatus brokerStatus = 1;
 }
 
+message FindRootOrderIdRequest {
+    string sessionId = 1;
+    string orderId = 2;
+}
+
+message FindRootOrderIdResponse {
+    string rootOrderId = 1;
+}
+
 service TradingRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
@@ -92,4 +101,5 @@ service TradingRpcService {
     rpc removeBrokerStatusListener(RemoveBrokerStatusListenerRequest) returns (RemoveBrokerStatusListenerResponse);
     rpc resolveSymbol(ResolveSymbolRequest) returns (ResolveSymbolResponse);
     rpc getBrokersStatus(BrokersStatusRequest) returns (BrokersStatusResponse);
+    rpc findRootOrderId(FindRootOrderIdRequest) returns (FindRootOrderIdResponse);
 }

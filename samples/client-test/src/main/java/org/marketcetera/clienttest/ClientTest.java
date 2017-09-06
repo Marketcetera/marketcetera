@@ -32,6 +32,7 @@ import org.marketcetera.trade.SimpleOrderSummaryFactory;
 import org.marketcetera.trade.SimpleReportFactory;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
+import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradingClient;
 import org.marketcetera.trading.rpc.TradingRpcClientFactory;
 import org.marketcetera.trading.rpc.TradingRpcClientParametersImpl;
@@ -142,7 +143,7 @@ public class ClientTest
             SLF4JLoggerProxy.info(ClientTest.class,
                                   "Sending {}",
                                   testOrder);
-            tradingClient.sendOrder(testOrder);
+            SendOrderResponse sendOrderResponse = tradingClient.sendOrder(testOrder);
             // wait a bit to receive some execution reports
             Thread.sleep(5000);
             // query open orders, if there are any
@@ -190,6 +191,13 @@ public class ClientTest
             SLF4JLoggerProxy.info(ClientTest.class,
                                   "{}",
                                   tradingClient.getBrokersStatus());
+            // test root order ID lookup
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "Testing root order ID lookup");
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "{} -> {}",
+                                  sendOrderResponse.getOrderId(),
+                                  tradingClient.findRootOrderIdFor(sendOrderResponse.getOrderId()));
             tradingClient.removeTradeMessageListener(tradeMessageListener);
             tradingClient.removeBrokerStatusListener(brokerStatusListener);
         } finally {

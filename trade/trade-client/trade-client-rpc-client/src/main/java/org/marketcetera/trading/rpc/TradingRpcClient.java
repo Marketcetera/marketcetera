@@ -222,9 +222,45 @@ public class TradingRpcClient
      * @see org.marketcetera.trade.client.TradingClient#findRootOrderIdFor(org.marketcetera.trade.OrderID)
      */
     @Override
-    public OrderID findRootOrderIdFor(OrderID inOrderID)
+    public OrderID findRootOrderIdFor(OrderID inOrderId)
     {
-        throw new UnsupportedOperationException(); // TODO
+        OrderID result = rootOrderIdCache.getIfPresent(inOrderId);
+        if(result != null) {
+            return result;
+        }
+        result = executeCall(new Callable<OrderID>() {
+            @Override
+            public OrderID call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} finding root order ID for: {}",
+                                       getSessionId(),
+                                       inOrderId);
+                TradingRpc.FindRootOrderIdRequest.Builder requestBuilder = TradingRpc.FindRootOrderIdRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setOrderId(inOrderId.getValue());
+                TradingRpc.FindRootOrderIdResponse response = getBlockingStub().findRootOrderId(requestBuilder.build());
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                OrderID result = null;
+                if(response.getRootOrderId() != null) {
+                    result = new OrderID(response.getRootOrderId());
+                }
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result;
+            }}
+        );
+        if(result != null) {
+            rootOrderIdCache.put(inOrderId,
+                                 result);
+        }
+        return result;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#getPositionAsOf(java.util.Date, org.marketcetera.trade.Instrument)
@@ -794,6 +830,10 @@ public class TradingRpcClient
      * symbol to instrument cache
      */
     private final Cache<String,Instrument> symbolCache = CacheBuilder.newBuilder().expireAfterAccess(10,TimeUnit.SECONDS).build();
+    /**
+     * root order ID cache
+     */
+    private final Cache<OrderID,OrderID> rootOrderIdCache = CacheBuilder.newBuilder().expireAfterAccess(10,TimeUnit.MINUTES).build();
     /**
      * holds report listeners by their id
      */

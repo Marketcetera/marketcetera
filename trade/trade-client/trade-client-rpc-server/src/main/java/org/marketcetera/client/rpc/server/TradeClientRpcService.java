@@ -24,10 +24,12 @@ import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.service.OrderSummaryService;
+import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.trading.rpc.TradingRpc;
 import org.marketcetera.trading.rpc.TradingRpc.AddBrokerStatusListenerRequest;
@@ -35,6 +37,8 @@ import org.marketcetera.trading.rpc.TradingRpc.AddTradeMessageListenerRequest;
 import org.marketcetera.trading.rpc.TradingRpc.BrokerStatusListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpc.BrokersStatusRequest;
 import org.marketcetera.trading.rpc.TradingRpc.BrokersStatusResponse;
+import org.marketcetera.trading.rpc.TradingRpc.FindRootOrderIdRequest;
+import org.marketcetera.trading.rpc.TradingRpc.FindRootOrderIdResponse;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersRequest;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersResponse;
 import org.marketcetera.trading.rpc.TradingRpc.RemoveBrokerStatusListenerRequest;
@@ -402,6 +406,35 @@ public class TradeClientRpcService<SessionClazz>
                 throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
             }
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#findRootOrderId(org.marketcetera.trading.rpc.TradingRpc.FindRootOrderIdRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void findRootOrderId(FindRootOrderIdRequest inRequest,
+                                    StreamObserver<FindRootOrderIdResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                TradingRpc.FindRootOrderIdResponse.Builder responseBuilder = TradingRpc.FindRootOrderIdResponse.newBuilder();
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Received find root order id request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                OrderID orderId = new OrderID(inRequest.getOrderId());
+                OrderID rootOrderId = reportService.getRootOrderIdFor(orderId);
+                if(rootOrderId != null) {
+                    responseBuilder.setRootOrderId(rootOrderId.getValue());
+                }
+                TradingRpc.FindRootOrderIdResponse response = responseBuilder.build();
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
     }
     /**
      * Provides common behaviors for listener proxies.
@@ -651,6 +684,11 @@ public class TradeClientRpcService<SessionClazz>
          */
         private final long start = System.nanoTime();
     }
+    /**
+     * provides report services
+     */
+    @Autowired
+    private ReportService reportService;
     /**
      * provides symbol resolution services
      */
