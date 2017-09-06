@@ -13,6 +13,7 @@ import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTagSpec;
 import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.brokers.ClusteredBrokerStatus;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.HasClusterData;
@@ -2246,25 +2247,34 @@ public abstract class TradingUtil
         BrokerStatus brokerStatus = null;
         if(inResponse.hasBrokerStatus()) {
             TradingTypesRpc.BrokerStatus rpcBrokerStatus = inResponse.getBrokerStatus();
-            Map<String,String> settings = Maps.newHashMap();
-            if(rpcBrokerStatus.hasSettings()) {
-                settings = BaseUtil.getMap(rpcBrokerStatus.getSettings());
-            }
-            settings.put("id",
-                         rpcBrokerStatus.getId());
-            settings.put("host",
-                         rpcBrokerStatus.getHost());
-            settings.put("name",
-                         rpcBrokerStatus.getName());
-            settings.put("port",
-                         String.valueOf(rpcBrokerStatus.getPort()));
-            brokerStatus = new ClusteredBrokerStatus(fixSessionFactory.create(settings),
-                                                     rpcBrokerStatus.hasClusterData() ? getClusterData(rpcBrokerStatus.getClusterData()).orElse(null) : null,
-                                                     getFixSessionStatus(rpcBrokerStatus.getFixSessionStatus()),
-                                                     rpcBrokerStatus.getLoggedOn());
-//          rpcBrokerStatus.getBrokerAlgosList() TODO
+            brokerStatus = getBrokerStatus(rpcBrokerStatus).orElse(null);
         }
         return(brokerStatus==null ? Optional.empty():Optional.of(brokerStatus));
+    }
+    /**
+     * Get the broker status for the given RPC value.
+     *
+     * @param inRpcBrokerStatus a <code>TradingTypesRpc.BrokerStatus</code> value
+     * @return an <code>Optional&lt;BrokerStatus&gt;</code> value
+     */
+    public static Optional<BrokerStatus> getBrokerStatus(TradingTypesRpc.BrokerStatus inRpcBrokerStatus)
+    {
+        Map<String,String> settings = Maps.newHashMap();
+        if(inRpcBrokerStatus.hasSettings()) {
+            settings = BaseUtil.getMap(inRpcBrokerStatus.getSettings());
+        }
+        settings.put("id",
+                     inRpcBrokerStatus.getId());
+        settings.put("host",
+                     inRpcBrokerStatus.getHost());
+        settings.put("name",
+                     inRpcBrokerStatus.getName());
+        settings.put("port",
+                     String.valueOf(inRpcBrokerStatus.getPort()));
+        return Optional.of(new ClusteredBrokerStatus(fixSessionFactory.create(settings),
+                                                     inRpcBrokerStatus.hasClusterData() ? getClusterData(inRpcBrokerStatus.getClusterData()).orElse(null) : null,
+                                                     getFixSessionStatus(inRpcBrokerStatus.getFixSessionStatus()),
+                                                     inRpcBrokerStatus.getLoggedOn()));
     }
     /**
      * Get the cluster data value from the given RPC value.
@@ -2282,6 +2292,54 @@ public abstract class TradingUtil
         return(clusterData == null ? Optional.empty() : Optional.of(clusterData));
     }
     /**
+     * Set the RPC brokers status on the given builder with the given value.
+     *
+     * @param inBrokersStatus a <code>BrokersStatus</code> value
+     * @param inBuilder a <code>TradingRpc.BrokersStatusResponse.Builder</code> value
+     */
+    public static void setBrokersStatus(BrokersStatus inBrokersStatus,
+                                        TradingRpc.BrokersStatusResponse.Builder inBuilder)
+    {
+        for(BrokerStatus brokerStatus : inBrokersStatus.getBrokers()) {
+            TradingTypesRpc.BrokerStatus.Builder brokerStatusBuilder = TradingTypesRpc.BrokerStatus.newBuilder();
+            setBrokerStatus(brokerStatus,
+                            brokerStatusBuilder);
+            inBuilder.addBrokerStatus(brokerStatusBuilder.build());
+            brokerStatusBuilder.clear();
+        }
+    }
+    /**
+     * Set the broker status on the given RPC broker status builder.
+     *
+     * @param inStatus a <code>BrokerStatus</code> value
+     * @param inBuilder a <code>TradingTypesRpc.BrokerStatus.Builder</code> value
+     */
+    public static void setBrokerStatus(BrokerStatus inStatus,
+                                       TradingTypesRpc.BrokerStatus.Builder inBuilder)
+    {
+        setBrokerAlgos(inStatus,
+                       inBuilder);
+        inBuilder.setHost(inStatus.getHost());
+        setBrokerId(inStatus,
+                    inBuilder);
+        inBuilder.setLoggedOn(inStatus.getLoggedOn());
+        inBuilder.setName(inStatus.getName());
+        inBuilder.setPort(inStatus.getPort());
+        inBuilder.setSettings(BaseUtil.getRpcMap(inStatus.getSettings()));
+        inBuilder.setFixSessionStatus(getRpcFixSessionStatus(inStatus.getStatus()));
+        if(inStatus instanceof HasClusterData) {
+            HasClusterData hasClusterData = (HasClusterData)inStatus;
+            TradingTypesRpc.ClusterData.Builder clusterDataBuilder = TradingTypesRpc.ClusterData.newBuilder();
+            ClusterData clusterData = hasClusterData.getClusterData();
+            clusterDataBuilder.setHostId(clusterData.getHostId());
+            clusterDataBuilder.setHostNumber(clusterData.getHostNumber());
+            clusterDataBuilder.setInstanceNumber(clusterData.getInstanceNumber());
+            clusterDataBuilder.setTotalInstances(clusterData.getTotalInstances());
+            clusterDataBuilder.setUuid(clusterData.getUuid());
+            inBuilder.setClusterData(clusterDataBuilder.build());
+        }
+    }
+    /**
      * Set the given broker status value on the given RPC builder.
      *
      * @param inStatus a <code>BrokerStatus</code> value
@@ -2294,27 +2352,8 @@ public abstract class TradingUtil
             return;
         }
         TradingTypesRpc.BrokerStatus.Builder brokerStatusBuilder = TradingTypesRpc.BrokerStatus.newBuilder();
-        setBrokerAlgos(inStatus,
-                       brokerStatusBuilder);
-        brokerStatusBuilder.setHost(inStatus.getHost());
-        setBrokerId(inStatus,
-                    brokerStatusBuilder);
-        brokerStatusBuilder.setLoggedOn(inStatus.getLoggedOn());
-        brokerStatusBuilder.setName(inStatus.getName());
-        brokerStatusBuilder.setPort(inStatus.getPort());
-        brokerStatusBuilder.setSettings(BaseUtil.getRpcMap(inStatus.getSettings()));
-        brokerStatusBuilder.setFixSessionStatus(getRpcFixSessionStatus(inStatus.getStatus()));
-        if(inStatus instanceof HasClusterData) {
-            HasClusterData hasClusterData = (HasClusterData)inStatus;
-            TradingTypesRpc.ClusterData.Builder clusterDataBuilder = TradingTypesRpc.ClusterData.newBuilder();
-            ClusterData clusterData = hasClusterData.getClusterData();
-            clusterDataBuilder.setHostId(clusterData.getHostId());
-            clusterDataBuilder.setHostNumber(clusterData.getHostNumber());
-            clusterDataBuilder.setInstanceNumber(clusterData.getInstanceNumber());
-            clusterDataBuilder.setTotalInstances(clusterData.getTotalInstances());
-            clusterDataBuilder.setUuid(clusterData.getUuid());
-            brokerStatusBuilder.setClusterData(clusterDataBuilder.build());
-        }
+        setBrokerStatus(inStatus,
+                        brokerStatusBuilder);
         inResponseBuilder.setBrokerStatus(brokerStatusBuilder.build());
     }
     /**

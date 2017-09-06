@@ -14,6 +14,8 @@ import java.util.concurrent.TimeUnit;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.BrokersStatus;
+import org.marketcetera.brokers.ClusteredBrokerStatus;
+import org.marketcetera.brokers.ClusteredBrokersStatus;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.Version;
@@ -217,6 +219,14 @@ public class TradingRpcClient
         });
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradingClient#findRootOrderIdFor(org.marketcetera.trade.OrderID)
+     */
+    @Override
+    public OrderID findRootOrderIdFor(OrderID inOrderID)
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#getPositionAsOf(java.util.Date, org.marketcetera.trade.Instrument)
      */
     @Override
@@ -224,7 +234,6 @@ public class TradingRpcClient
                                       Instrument inInstrument)
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#getAllPositionsAsOf(java.util.Date)
@@ -233,7 +242,6 @@ public class TradingRpcClient
     public Map<PositionKey<Instrument>,BigDecimal> getAllPositionsAsOf(Date inDate)
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#getOptionPositionsAsOf(java.util.Date, java.lang.String[])
@@ -250,7 +258,36 @@ public class TradingRpcClient
     @Override
     public BrokersStatus getBrokersStatus()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return executeCall(new Callable<BrokersStatus>() {
+            @Override
+            public BrokersStatus call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} getting brokers status",
+                                       getSessionId());
+                TradingRpc.BrokersStatusRequest.Builder requestBuilder = TradingRpc.BrokersStatusRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                TradingRpc.BrokersStatusResponse response = getBlockingStub().getBrokersStatus(requestBuilder.build());
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                List<ClusteredBrokerStatus> brokers = Lists.newArrayList();
+                for(TradingTypesRpc.BrokerStatus rpcBrokerStatus : response.getBrokerStatusList()) {
+                    Optional<BrokerStatus> brokerStatus = TradingUtil.getBrokerStatus(rpcBrokerStatus);
+                    if(brokerStatus.isPresent()) {
+                        brokers.add((ClusteredBrokerStatus)brokerStatus.get());
+                    }
+                }
+                BrokersStatus brokersStatus = new ClusteredBrokersStatus(brokers);
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       brokersStatus);
+                return brokersStatus;
+            }}
+        );
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#resolveSymbol(java.lang.String)
@@ -295,15 +332,6 @@ public class TradingRpcClient
                             result);
         }
         return result;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradingClient#findRootOrderIdFor(org.marketcetera.trade.OrderID)
-     */
-    @Override
-    public OrderID findRootOrderIdFor(OrderID inOrderID)
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.tradingclient.TradingClient#getOpenOrders(int, int)

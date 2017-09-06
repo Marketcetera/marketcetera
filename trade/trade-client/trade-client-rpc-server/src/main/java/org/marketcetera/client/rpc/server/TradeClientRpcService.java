@@ -8,6 +8,7 @@ import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.module.HasMutableStatus;
 import org.marketcetera.persist.CollectionPageResponse;
@@ -32,6 +33,8 @@ import org.marketcetera.trading.rpc.TradingRpc;
 import org.marketcetera.trading.rpc.TradingRpc.AddBrokerStatusListenerRequest;
 import org.marketcetera.trading.rpc.TradingRpc.AddTradeMessageListenerRequest;
 import org.marketcetera.trading.rpc.TradingRpc.BrokerStatusListenerResponse;
+import org.marketcetera.trading.rpc.TradingRpc.BrokersStatusRequest;
+import org.marketcetera.trading.rpc.TradingRpc.BrokersStatusResponse;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersRequest;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersResponse;
 import org.marketcetera.trading.rpc.TradingRpc.RemoveBrokerStatusListenerRequest;
@@ -296,6 +299,9 @@ public class TradeClientRpcService<SessionClazz>
                 }
                 TradingRpc.RemoveTradeMessageListenerResponse.Builder responseBuilder = TradingRpc.RemoveTradeMessageListenerResponse.newBuilder();
                 TradingRpc.RemoveTradeMessageListenerResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Returning {}",
+                                       response);
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
@@ -354,6 +360,39 @@ public class TradeClientRpcService<SessionClazz>
                 }
                 TradingRpc.RemoveBrokerStatusListenerResponse.Builder responseBuilder = TradingRpc.RemoveBrokerStatusListenerResponse.newBuilder();
                 TradingRpc.RemoveBrokerStatusListenerResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#getBrokersStatus(org.marketcetera.trading.rpc.TradingRpc.BrokersStatusRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getBrokersStatus(BrokersStatusRequest inRequest,
+                                     StreamObserver<BrokersStatusResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Received get brokers status request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                TradingRpc.BrokersStatusResponse.Builder responseBuilder = TradingRpc.BrokersStatusResponse.newBuilder();
+                BrokersStatus brokersStatus = brokerService.getBrokersStatus();
+                TradingUtil.setBrokersStatus(brokersStatus,
+                                             responseBuilder);
+                TradingRpc.BrokersStatusResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Returning {}",
+                                       response);
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {

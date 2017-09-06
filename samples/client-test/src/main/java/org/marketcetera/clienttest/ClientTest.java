@@ -184,6 +184,12 @@ public class ClientTest
                                   "{} -> {}",
                                   convertibleBond.getFullSymbol(),
                                   tradingClient.resolveSymbol(convertibleBond.getFullSymbol()));
+            // test broker status
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "Testing brokers status");
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "{}",
+                                  tradingClient.getBrokersStatus());
             tradingClient.removeTradeMessageListener(tradeMessageListener);
             tradingClient.removeBrokerStatusListener(brokerStatusListener);
         } finally {

@@ -72,6 +72,14 @@ message ResolveSymbolResponse {
     Instrument instrument = 1;
 }
 
+message BrokersStatusRequest {
+    string sessionId = 1;
+}
+
+message BrokersStatusResponse {
+    repeated BrokerStatus brokerStatus = 1;
+}
+
 service TradingRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
@@ -83,4 +91,5 @@ service TradingRpcService {
     rpc addBrokerStatusListener(AddBrokerStatusListenerRequest) returns (stream BrokerStatusListenerResponse);
     rpc removeBrokerStatusListener(RemoveBrokerStatusListenerRequest) returns (RemoveBrokerStatusListenerResponse);
     rpc resolveSymbol(ResolveSymbolRequest) returns (ResolveSymbolResponse);
+    rpc getBrokersStatus(BrokersStatusRequest) returns (BrokersStatusResponse);
 }
