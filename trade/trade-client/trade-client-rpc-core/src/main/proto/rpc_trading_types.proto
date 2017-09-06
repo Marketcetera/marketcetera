@@ -99,6 +99,7 @@ enum TimeInForce {
 
 message Instrument {
     string symbol = 1;
+    SecurityType securityType = 2;
 }
 
 message OrderSummary {

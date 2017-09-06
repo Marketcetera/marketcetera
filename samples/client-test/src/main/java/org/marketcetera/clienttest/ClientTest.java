@@ -10,9 +10,6 @@ import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
-import org.marketcetera.symbol.IterativeSymbolResolver;
-import org.marketcetera.symbol.PatternSymbolResolver;
-import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
@@ -45,8 +42,6 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -96,7 +91,6 @@ public class ClientTest
             TradingUtil.setFixSessionFactory(fixSessionFactory);
             TradingUtil.setOrderSummaryFactory(orderSummaryFactory);
             TradingUtil.setUserFactory(userFactory);
-            TradingUtil.setSymbolResolverService(symbolResolverService);
             TradingUtil.setReportFactory(reportFactory);
             TradingRpcClientParametersImpl params = new TradingRpcClientParametersImpl();
             params.setHostname(hostname);
@@ -265,19 +259,6 @@ public class ClientTest
         return new SimpleUserFactory();
     }
     /**
-     * Get the symbol resolver service value.
-     *
-     * @return a <code>SymbolResolverService</code> value
-     */
-    @Bean
-    public SymbolResolverService getSymbolResolverService()
-    {
-        IterativeSymbolResolver symbolResolverService = new IterativeSymbolResolver();
-        symbolResolverService.setSymbolResolvers(Lists.newArrayList(new PatternSymbolResolver()));
-        TradingUtil.setSymbolResolverService(symbolResolverService);
-        return symbolResolverService;
-    }
-    /**
      * Get the report factory value.
      *
      * @return a <code>MutableReportFactory</code> value
@@ -335,11 +316,6 @@ public class ClientTest
      */
     @Autowired
     private UserFactory userFactory;
-    /**
-     * resolves symbols
-     */
-    @Autowired
-    private SymbolResolverService symbolResolverService;
     /**
      * creates {@link MutableReport} objects
      */

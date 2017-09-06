@@ -22,15 +22,19 @@ import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSessionStatus;
+import org.marketcetera.options.OptionUtils;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseUtil;
-import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.ConvertibleBond;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.FIXResponse;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.HasTradeMessage;
 import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
@@ -193,11 +197,10 @@ public abstract class TradingUtil
         }
     }
     /**
-     * 
+     * Get the order capacity value from the given RPC order capacity.
      *
-     *
-     * @param inOrderCapacity
-     * @return
+     * @param inOrderCapacity a <code>TradingTypesRpc.OrderCapacity</code> value
+     * @return an <code>OrderCapacity</code> value
      */
     public static OrderCapacity getOrderCapacity(TradingTypesRpc.OrderCapacity inOrderCapacity)
     {
@@ -222,11 +225,10 @@ public abstract class TradingUtil
         }
     }
     /**
-     * 
+     * Get the RPC position effect from the given position effect value.
      *
-     *
-     * @param inPositionEffect
-     * @return
+     * @param inPositionEffect a <code>PositionEffect</code> value
+     * @return a <code>TradingTypesRpc.PositionEffect</code> value
      */
     public static TradingTypesRpc.PositionEffect getRpcPositionEffect(PositionEffect inPositionEffect)
     {
@@ -242,11 +244,10 @@ public abstract class TradingUtil
         }
     }
     /**
-     * 
+     * Get the position effect value from the given RPC position effect value.
      *
-     *
-     * @param inPositionEffect
-     * @return
+     * @param inPositionEffect a <code>TradingTypesRpc.PositionEffect</code> value
+     * @return a <code>PositionEffect</code> value
      */
     public static PositionEffect getPositionEffect(TradingTypesRpc.PositionEffect inPositionEffect)
     {
@@ -524,37 +525,59 @@ public abstract class TradingUtil
     {
         TradingTypesRpc.Instrument.Builder instrumentBuilder = TradingTypesRpc.Instrument.newBuilder();
         instrumentBuilder.setSymbol(inInstrument.getFullSymbol());
+        instrumentBuilder.setSecurityType(getRpcSecurityType(inInstrument.getSecurityType()));
         return instrumentBuilder.build();
     }
     /**
      * Get the instrument on the given RPC order base object.
      *
      * @param inRpcOrder a <code>TradingTypeRpc.OrderBase</code> value
-     * @return an <code>Instrument</code> value
+     * @return an <code>Optional&lt;Instrument&gt;</code> value
      */
-    private static Instrument getInstrument(TradingTypesRpc.OrderBase inRpcOrder)
+    private static Optional<Instrument> getInstrument(TradingTypesRpc.OrderBase inRpcOrder)
     {
-        return symbolResolverService.resolveSymbol(inRpcOrder.getInstrument().getSymbol());
+        if(!inRpcOrder.hasInstrument() || inRpcOrder.getInstrument().getSymbol() == null) {
+            return Optional.empty();
+        }
+        return Optional.of(getInstrument(inRpcOrder.getInstrument()));
     }
     /**
      * Get the instrument value from the given RPC instrument object.
      *
-     * @param inInstrument a <code>TradingTypesRpc.Instrument</code> value
+     * @param inRpcInstrument a <code>TradingTypesRpc.Instrument</code> value
      * @return an <code>Instrument</code> value
      */
-    public static Instrument getInstrument(TradingTypesRpc.Instrument inInstrument)
+    public static Instrument getInstrument(TradingTypesRpc.Instrument inRpcInstrument)
     {
-        return symbolResolverService.resolveSymbol(inInstrument.getSymbol());
+        switch(inRpcInstrument.getSecurityType()) {
+            case CommonStock:
+                return new Equity(inRpcInstrument.getSymbol());
+            case ConvertibleBond:
+                return new ConvertibleBond(inRpcInstrument.getSymbol());
+            case Currency:
+                return new Currency(inRpcInstrument.getSymbol());
+            case Future:
+                return Future.fromString(inRpcInstrument.getSymbol());
+            case Option:
+                return OptionUtils.getOsiOptionFromString(inRpcInstrument.getSymbol());
+            default:
+            case UnknownSecurityType:
+            case UNRECOGNIZED:
+                throw new UnsupportedOperationException("Unknown security type: " + inRpcInstrument.getSecurityType());
+        }
     }
     /**
      * Get the instrument on the given RPC order summary object.
      *
-     * @param inRpcOrder a <code>TradingTypeRpc.OrderSummary</code> value
-     * @return an <code>Instrument</code> value
+     * @param inRpcOrderSummary a <code>TradingTypeRpc.OrderSummary</code> value
+     * @return an <code>Optional&lt;Instrument&gt;</code> value
      */
-    private static Instrument getInstrument(TradingTypesRpc.OrderSummary inRpcOrderSummary)
+    private static Optional<Instrument> getInstrument(TradingTypesRpc.OrderSummary inRpcOrderSummary)
     {
-        return symbolResolverService.resolveSymbol(inRpcOrderSummary.getInstrument().getSymbol());
+        if(!inRpcOrderSummary.hasInstrument() || inRpcOrderSummary.getInstrument().getSymbol() == null) {
+            return Optional.empty();
+        }
+        return Optional.of(getInstrument(inRpcOrderSummary.getInstrument()));
     }
     /**
      * Set the RPC custom fields from the given order.
@@ -660,9 +683,9 @@ public abstract class TradingUtil
         inBuilder.setUser(String.valueOf(inReport.getActorID()));
     }
     /**
+     * Set the text value on the given RPC builder from the given order.
      *
-     *
-     * @param inOrder
+     * @param inOrder an <code>OrderBase</code>value
      * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
      */
     public static void setText(OrderBase inOrder,
@@ -675,19 +698,19 @@ public abstract class TradingUtil
         inBuilder.setText(value);
     }
     /**
+     * Get the text value from the given RPC order.
      *
-     *
-     * @param inRpcOrder
-     * @return
+     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @return a <code>String</code> value
      */
     public static String getText(TradingTypesRpc.OrderBase inRpcOrder)
     {
         return StringUtils.trimToNull(inRpcOrder.getText());
     }
     /**
+     * Set the broker ID from the given order on the given RPC builder.
      *
-     *
-     * @param inOrder
+     * @param inOrder an <code>OrderBase</code> value
      * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
      */
     public static void setBrokerId(OrderBase inOrder,
@@ -700,24 +723,24 @@ public abstract class TradingUtil
         inBuilder.setBrokerId(value);
     }
     /**
-    *
-    *
-    * @param inOrder
-    * @param inBuilder
-    */
-   public static void setBrokerId(FIXOrder inOrder,
-                                  TradingTypesRpc.FIXOrder.Builder inBuilder)
-   {
-       if(inOrder.getBrokerID() == null) {
-           return;
-       }
-       String value = StringUtils.trimToNull(inOrder.getBrokerID().getValue());
-       inBuilder.setBrokerId(value);
-   }
+     * Set the broker ID from the given order on the given RPC builder.
+     *
+     * @param inOrder a <code>FIXOrder</code> value
+     * @param inBuilder a <code>TradingTypesRpc.FIXOrder.Builder</code> value
+     */
+    public static void setBrokerId(FIXOrder inOrder,
+                                   TradingTypesRpc.FIXOrder.Builder inBuilder)
+    {
+        if(inOrder.getBrokerID() == null) {
+            return;
+        }
+        String value = StringUtils.trimToNull(inOrder.getBrokerID().getValue());
+        inBuilder.setBrokerId(value);
+    }
     /**
+     * Set the order ID from the given order on the given RPC builder.
      *
-     *
-     * @param inOrder
+     * @param inOrder an <code>OrderBase</code> value
      * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
      */
     public static void setOrderId(OrderBase inOrder,
@@ -730,19 +753,19 @@ public abstract class TradingUtil
         inBuilder.setOrderId(value);
     }
     /**
+     * Get the order ID from the given RPC order.
      *
-     *
-     * @param inRpcOrder
-     * @return
+     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @return an <code>OrderID</code> value
      */
     public static OrderID getOrderId(TradingTypesRpc.OrderBase inRpcOrder)
     {
         return new OrderID(inRpcOrder.getOrderId());
     }
     /**
+     * Set the order quantity from the given order on the given RPC builder.
      *
-     *
-     * @param inOrder
+     * @param inOrder an <code>OrderBase</code> value
      * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
      */
     public static void setQuantity(OrderBase inOrder,
@@ -754,20 +777,20 @@ public abstract class TradingUtil
         inBuilder.setQuantity(BaseUtil.getQtyValueFrom(inOrder.getQuantity()));
     }
     /**
+     * Get the order quantity from the given RPC order.
      *
-     *
-     * @param inRpcOrder
-     * @return
+     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @return a <code>BigDecimal</code> value
      */
     public static BigDecimal getQuantity(TradingTypesRpc.OrderBase inRpcOrder)
     {
         return BaseUtil.getScaledQuantity(inRpcOrder.getQuantity());
     }
     /**
+     * Get the order price from the given RPC order.
      *
-     *
-     * @param inRpcOrder
-     * @return
+     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @return a <code>BigDecimal</code> value
      */
     public static BigDecimal getPrice(TradingTypesRpc.OrderBase inRpcOrder)
     {
@@ -784,9 +807,9 @@ public abstract class TradingUtil
         return BaseUtil.getScaledQuantity(inRpcOrder.getDisplayQuantity());
     }
     /**
+     * Set the side from the given order on the given RPC builder.
      *
-     *
-     * @param inOrder
+     * @param inOrder an <code>OrderBase</code> value
      * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
      */
     public static void setSide(OrderBase inOrder,
@@ -798,10 +821,10 @@ public abstract class TradingUtil
         inBuilder.setSide(getRpcSide(inOrder.getSide()));
     }
     /**
+     * Get the side from the given RPC order.
      *
-     *
-     * @param inRpcOrder
-     * @return
+     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @return a <code>Side</code> value
      */
     public static Side getSide(TradingTypesRpc.OrderBase inRpcOrder)
     {
@@ -847,11 +870,10 @@ public abstract class TradingUtil
         inBuilder.setDisplayQuantity(BaseUtil.getQtyValueFrom(inOrder.getDisplayQuantity()));
     }
     /**
-     * 
+     * Set the display quantity from the given RPC order on the given order.
      *
-     *
-     * @param inOrder
-     * @param inRpcOrder
+     * @param inOrder a <code>NewOrReplaceOrder</code> value
+     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
      */
     public static void setDisplayQuantity(NewOrReplaceOrder inOrder,
                                           TradingTypesRpc.OrderBase inRpcOrder)
@@ -930,7 +952,7 @@ public abstract class TradingUtil
                                      TradingTypesRpc.OrderBase inRpcOrder)
     {
         if(inRpcOrder.hasInstrument()) {
-            inOrder.setInstrument(getInstrument(inRpcOrder));
+            inOrder.setInstrument(getInstrument(inRpcOrder).orElse(null));
         }
     }
     /**
@@ -1046,7 +1068,7 @@ public abstract class TradingUtil
         inBuilder.setOrderCapacity(getRpcOrderCapacity(inOrder.getOrderCapacity()));
     }
     /**
-     *
+     * Set the order type value from the given order on the given RPC builder.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
      * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
@@ -1060,7 +1082,7 @@ public abstract class TradingUtil
         inBuilder.setOrderType(getRpcOrderType(inOrder.getOrderType()));
     }
     /**
-     *
+     * Set the position effect from the given order on the given RPC builder.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
      * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
@@ -1074,7 +1096,7 @@ public abstract class TradingUtil
         inBuilder.setPositionEffect(getRpcPositionEffect(inOrder.getPositionEffect()));
     }
     /**
-     *
+     * Set the order price from the given order on the given RPC builder.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
      * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
@@ -1177,9 +1199,9 @@ public abstract class TradingUtil
         inOrder.setOrderCapacity(matpOrderCapacity);
     }
     /**
+     * Set the original order ID from the given order on the given RPC builder.
      *
-     *
-     * @param inOrder
+     * @param inOrder a <code>RelatedOrder</code> value
      * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
      */
     public static void setOriginalOrderId(RelatedOrder inOrder,
@@ -2146,7 +2168,18 @@ public abstract class TradingUtil
      */
     public static Optional<BrokerAlgo> getBrokerAlgo(TradingTypesRpc.OrderBase inRpcOrder)
     {
-        throw new UnsupportedOperationException();
+        if(!inRpcOrder.hasBrokerAlgo()) {
+            return Optional.empty();
+        }
+        TradingTypesRpc.BrokerAlgo rpcBrokerAlgo = inRpcOrder.getBrokerAlgo();
+        BrokerAlgo brokerAlgo = new BrokerAlgo();
+        String brokerAlgoName = rpcBrokerAlgo.getName();
+        // TODO need to look up broker algo spec by name?
+        for(TradingTypesRpc.BrokerAlgoTagSpec rpcAlgoTagSpec : rpcBrokerAlgo.getAlgoTagSpecsList()) {
+            int tag = rpcAlgoTagSpec.getTag();
+            // TODO the spec needs an actual value
+        }
+        return Optional.of(brokerAlgo);
     }
     /**
      * Get the FIX message from the given RPC FIX message.
@@ -2489,7 +2522,7 @@ public abstract class TradingUtil
             orderSummary.setCumulativeQuantity(BaseUtil.getScaledQuantity(inRpcOrderSummary.getCumulativeQuantity()));
         }
         if(inRpcOrderSummary.hasInstrument()) {
-            orderSummary.setInstrument(getInstrument(inRpcOrderSummary));
+            orderSummary.setInstrument(getInstrument(inRpcOrderSummary).orElse(null));
         }
         if(inRpcOrderSummary.hasLastPrice()) {
             orderSummary.setLastPrice(BaseUtil.getScaledQuantity(inRpcOrderSummary.getLastPrice()));
@@ -2637,24 +2670,6 @@ public abstract class TradingUtil
         return userBuilder.build();
     }
     /**
-     * Get the symbolResolverService value.
-     *
-     * @return a <code>SymbolResolverService</code> value
-     */
-    public static SymbolResolverService getSymbolResolverService()
-    {
-        return symbolResolverService;
-    }
-    /**
-     * Sets the symbolResolverService value.
-     *
-     * @param inSymbolResolverService a <code>SymbolResolverService</code> value
-     */
-    public static void setSymbolResolverService(SymbolResolverService inSymbolResolverService)
-    {
-        symbolResolverService = inSymbolResolverService;
-    }
-    /**
      * Get the fixSessionFactory value.
      *
      * @return a <code>FixSessionFactory</code> value
@@ -2767,10 +2782,6 @@ public abstract class TradingUtil
             keyValueBuilder.clear();
         }
     }
-    /**
-     * provides symbol resolver services
-     */
-    private static SymbolResolverService symbolResolverService;
     /**
      * creates {@link FixSession} objects
      */

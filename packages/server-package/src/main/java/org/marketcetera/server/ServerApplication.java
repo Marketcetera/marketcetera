@@ -37,7 +37,6 @@ import org.marketcetera.trade.modules.TradeMessageConverterModuleFactory;
 import org.marketcetera.trade.modules.TradeMessagePersistenceModuleFactory;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
-import org.marketcetera.trading.rpc.TradingUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.SessionManager;
@@ -240,7 +239,6 @@ public class ServerApplication
     {
         IterativeSymbolResolver symbolResolverService = new IterativeSymbolResolver();
         symbolResolverService.setSymbolResolvers(Lists.newArrayList(new PatternSymbolResolver()));
-        TradingUtil.setSymbolResolverService(symbolResolverService);
         return symbolResolverService;
     }
     /**
