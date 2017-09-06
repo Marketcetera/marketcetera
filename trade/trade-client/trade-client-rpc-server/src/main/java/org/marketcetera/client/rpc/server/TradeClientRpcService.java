@@ -10,7 +10,6 @@ import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.module.HasMutableStatus;
-import org.marketcetera.module.HasStatus;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
@@ -18,10 +17,11 @@ import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
-import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.rpc.paging.PagingUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
+import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.HasOrder;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.TradeMessage;
@@ -38,6 +38,8 @@ import org.marketcetera.trading.rpc.TradingRpc.RemoveBrokerStatusListenerRequest
 import org.marketcetera.trading.rpc.TradingRpc.RemoveBrokerStatusListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpc.RemoveTradeMessageListenerRequest;
 import org.marketcetera.trading.rpc.TradingRpc.RemoveTradeMessageListenerResponse;
+import org.marketcetera.trading.rpc.TradingRpc.ResolveSymbolRequest;
+import org.marketcetera.trading.rpc.TradingRpc.ResolveSymbolResponse;
 import org.marketcetera.trading.rpc.TradingRpc.SendOrderRequest;
 import org.marketcetera.trading.rpc.TradingRpc.SendOrderResponse;
 import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
@@ -198,21 +200,12 @@ public class TradeClientRpcService<SessionClazz>
                         SLF4JLoggerProxy.debug(TradeClientRpcService.this,
                                                "Order submission returned {}",
                                                result);
-                        if(result instanceof HasStatus) {
-                            HasStatus hasStatusResult = (HasStatus)result;
-                            orderResponseBuilder.setFailed(hasStatusResult.getFailed());
-                            if(hasStatusResult.getFailed()) {
-                                orderResponseBuilder.setMessage(hasStatusResult.getErrorMessage());
-                                SLF4JLoggerProxy.warn(TradeClientRpcService.this,
-                                                      "Order submission failed: {}",
-                                                      result);
-                            }
-                        } else {
-                            orderResponseBuilder.setFailed(false);
-                        }
                     } catch (Exception e) {
-                        orderResponseBuilder.setFailed(true);
-                        orderResponseBuilder.setMessage(ExceptionUtils.getRootCauseMessage(e));
+                        SLF4JLoggerProxy.warn(TradeClientRpcService.this,
+                                              e,
+                                              "Unable to submit order {}",
+                                              rpcOrder);
+                        inResponseObserver.onError(e);
                     }
                     responseBuilder.addOrderResponse(orderResponseBuilder.build());
                     orderResponseBuilder.clear();
@@ -227,7 +220,33 @@ public class TradeClientRpcService<SessionClazz>
                 throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
             }
         }
-        
+        /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#resolveSymbol(org.marketcetera.trading.rpc.TradingRpc.ResolveSymbolRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void resolveSymbol(ResolveSymbolRequest inRequest,
+                                  StreamObserver<ResolveSymbolResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                TradingRpc.ResolveSymbolResponse.Builder responseBuilder = TradingRpc.ResolveSymbolResponse.newBuilder();
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Received resolve symbol request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                Instrument instrument = symbolResolverService.resolveSymbol(inRequest.getSymbol());
+                TradingUtil.setInstrument(instrument,
+                                          responseBuilder);
+                TradingRpc.ResolveSymbolResponse response = responseBuilder.build();
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
         /* (non-Javadoc)
          * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#addTradeMessageListener(org.marketcetera.trading.rpc.TradingRpc.AddTradeMessageListenerRequest, io.grpc.stub.StreamObserver)
          */
@@ -276,8 +295,6 @@ public class TradeClientRpcService<SessionClazz>
                     tradeMessageListenerProxy.close();
                 }
                 TradingRpc.RemoveTradeMessageListenerResponse.Builder responseBuilder = TradingRpc.RemoveTradeMessageListenerResponse.newBuilder();
-                responseBuilder.setStatus(BaseUtil.getStatus(false,
-                                                             null));
                 TradingRpc.RemoveTradeMessageListenerResponse response = responseBuilder.build();
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
@@ -336,8 +353,6 @@ public class TradeClientRpcService<SessionClazz>
                     brokerStatusListenerProxy.close();
                 }
                 TradingRpc.RemoveBrokerStatusListenerResponse.Builder responseBuilder = TradingRpc.RemoveBrokerStatusListenerResponse.newBuilder();
-                responseBuilder.setStatus(BaseUtil.getStatus(false,
-                                                             null));
                 TradingRpc.RemoveBrokerStatusListenerResponse response = responseBuilder.build();
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
@@ -597,6 +612,11 @@ public class TradeClientRpcService<SessionClazz>
          */
         private final long start = System.nanoTime();
     }
+    /**
+     * provides symbol resolution services
+     */
+    @Autowired
+    private SymbolResolverService symbolResolverService;
     /**
      * provides access to broker services
      */

@@ -35,6 +35,7 @@ import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.MutableOrderSummary;
 import org.marketcetera.trade.MutableOrderSummaryFactory;
+import org.marketcetera.trade.MutableReport;
 import org.marketcetera.trade.MutableReportFactory;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.Order;
@@ -499,6 +500,20 @@ public abstract class TradingUtil
         inBuilder.setInstrument(getRpcInstrument(inOrder.getInstrument()));
     }
     /**
+     * Set the instrument value on the given builder.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inBuilder a <code>TradingRpc.ResolveSymbolResponse.Builder</code> value
+     */
+    public static void setInstrument(Instrument inInstrument,
+                                     TradingRpc.ResolveSymbolResponse.Builder inBuilder)
+    {
+        if(inInstrument == null) {
+            return;
+        }
+        inBuilder.setInstrument(getRpcInstrument(inInstrument));
+    }
+    /**
      * Get the RPC instrument from the given instrument.
      *
      * @param inInstrument an <code>Instrument</code> value
@@ -519,6 +534,16 @@ public abstract class TradingUtil
     private static Instrument getInstrument(TradingTypesRpc.OrderBase inRpcOrder)
     {
         return symbolResolverService.resolveSymbol(inRpcOrder.getInstrument().getSymbol());
+    }
+    /**
+     * Get the instrument value from the given RPC instrument object.
+     *
+     * @param inInstrument a <code>TradingTypesRpc.Instrument</code> value
+     * @return an <code>Instrument</code> value
+     */
+    public static Instrument getInstrument(TradingTypesRpc.Instrument inInstrument)
+    {
+        return symbolResolverService.resolveSymbol(inInstrument.getSymbol());
     }
     /**
      * Get the instrument on the given RPC order summary object.

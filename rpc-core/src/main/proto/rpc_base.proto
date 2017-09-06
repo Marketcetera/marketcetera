@@ -4,11 +4,6 @@ option java_generic_services = true;
 option java_package = "org.marketcetera.rpc.base";
 option java_outer_classname = "BaseRpc";
 
-message Status {
-    bool failed = 1;
-    string errorMessage = 2;
-}
-
 message KeyValuePair {
     string key = 1;
     string value = 2;

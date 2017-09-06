@@ -15,9 +15,7 @@ import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
-import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.TradeMessagePublisher;
 
@@ -62,20 +60,6 @@ public interface TradingClient
      * @return a <code>SendOrderResponse</code> value
      */
     SendOrderResponse sendOrder(Order inOrder);
-    /**
-     * Submit the given order cancel request.
-     *
-     * @param inOrderCancel an <code>OrderCancel</code> value
-     * @return an <code>OrderID</code> value
-     */
-    OrderID cancelOrder(OrderCancel inOrderCancel);
-    /**
-     * Submit the given order cancel replace request.
-     *
-     * @param inOrderReplace an <code>OrderReplace</code> value
-     * @return an <code>OrderID</code> value
-     */
-    OrderID modifyOrder(OrderReplace inOrderReplace);
     /**
      * Add the given broker status listener.
      *

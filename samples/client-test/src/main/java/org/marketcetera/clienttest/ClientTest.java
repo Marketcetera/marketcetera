@@ -13,12 +13,17 @@ import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.trade.ConvertibleBond;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.MutableOrderSummary;
 import org.marketcetera.trade.MutableOrderSummaryFactory;
 import org.marketcetera.trade.MutableReport;
 import org.marketcetera.trade.MutableReportFactory;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.OrderType;
@@ -104,6 +109,7 @@ public class ClientTest
                                   hostname,
                                   port,
                                   username);
+            // add a broker status listener
             BrokerStatusListener brokerStatusListener = new BrokerStatusListener() {
                 @Override
                 public void receiveBrokerStatus(BrokerStatus inStatus)
@@ -114,6 +120,7 @@ public class ClientTest
                 }
             };
             tradingClient.addBrokerStatusListener(brokerStatusListener);
+            // add a trade message listener
             TradeMessageListener tradeMessageListener = new TradeMessageListener() {
                 @Override
                 public void receiveTradeMessage(TradeMessage inTradeMessage)
@@ -124,6 +131,7 @@ public class ClientTest
                 }
             };
             tradingClient.addTradeMessageListener(tradeMessageListener);
+            // send an order
             Factory factory = Factory.getInstance();
             OrderSingle testOrder = factory.createOrderSingle();
             testOrder.setInstrument(new Equity("METC"));
@@ -135,7 +143,9 @@ public class ClientTest
                                   "Sending {}",
                                   testOrder);
             tradingClient.sendOrder(testOrder);
+            // wait a bit to receive some execution reports
             Thread.sleep(5000);
+            // query open orders, if there are any
             SLF4JLoggerProxy.info(ClientTest.class,
                                   "Checking open orders");
             for(OrderSummary orderSummary : tradingClient.getOpenOrders()) {
@@ -143,6 +153,37 @@ public class ClientTest
                                       "{}",
                                       orderSummary);
             }
+            // test symbol resolution
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "Testing symbol resolution");
+            Equity equity = new Equity("METC");
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "{} -> {}",
+                                  equity.getFullSymbol(),
+                                  tradingClient.resolveSymbol(equity.getFullSymbol()));
+            Future future = Future.fromString("METC-201812");
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "{} -> {}",
+                                  future.getFullSymbol(),
+                                  tradingClient.resolveSymbol(future.getFullSymbol()));
+            Currency currency = new Currency("USD/GBP");
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "{} -> {}",
+                                  currency.getFullSymbol(),
+                                  tradingClient.resolveSymbol(currency.getFullSymbol()));
+            Option option = new Option("METC",
+                                       "20181215",
+                                       BigDecimal.TEN,
+                                       OptionType.Put);
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "{} -> {}",
+                                  option.getFullSymbol(),
+                                  tradingClient.resolveSymbol(option.getFullSymbol()));
+            ConvertibleBond convertibleBond = new ConvertibleBond("US013817AT86");
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "{} -> {}",
+                                  convertibleBond.getFullSymbol(),
+                                  tradingClient.resolveSymbol(convertibleBond.getFullSymbol()));
             tradingClient.removeTradeMessageListener(tradeMessageListener);
             tradingClient.removeBrokerStatusListener(brokerStatusListener);
         } finally {

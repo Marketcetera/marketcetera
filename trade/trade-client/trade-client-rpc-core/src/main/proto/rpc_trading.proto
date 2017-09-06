@@ -27,8 +27,6 @@ message SendOrderResponse {
 
 message OrderResponse {
     string orderid = 1;
-    bool failed = 2;
-    string message = 3;
 }
 
 message AddTradeMessageListenerRequest {
@@ -46,7 +44,6 @@ message RemoveTradeMessageListenerRequest {
 }
 
 message RemoveTradeMessageListenerResponse {
-    Status status = 1;
 }
 
 message AddBrokerStatusListenerRequest {
@@ -64,7 +61,15 @@ message RemoveBrokerStatusListenerRequest {
 }
 
 message RemoveBrokerStatusListenerResponse {
-    Status status = 1;
+}
+
+message ResolveSymbolRequest {
+    string sessionId = 1;
+    string symbol = 2;
+}
+
+message ResolveSymbolResponse {
+    Instrument instrument = 1;
 }
 
 service TradingRpcService {
@@ -77,4 +82,5 @@ service TradingRpcService {
     rpc removeTradeMessageListener(RemoveTradeMessageListenerRequest) returns (RemoveTradeMessageListenerResponse);
     rpc addBrokerStatusListener(AddBrokerStatusListenerRequest) returns (stream BrokerStatusListenerResponse);
     rpc removeBrokerStatusListener(RemoveBrokerStatusListenerRequest) returns (RemoveBrokerStatusListenerResponse);
+    rpc resolveSymbol(ResolveSymbolRequest) returns (ResolveSymbolResponse);
 }

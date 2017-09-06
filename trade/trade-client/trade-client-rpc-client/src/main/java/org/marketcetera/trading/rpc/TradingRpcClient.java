@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerStatusListener;
@@ -31,9 +32,7 @@ import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderBase;
-import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.RelatedOrder;
 import org.marketcetera.trade.TradeMessage;
@@ -259,7 +258,43 @@ public class TradingRpcClient
     @Override
     public Instrument resolveSymbol(String inSymbol)
     {
-        throw new UnsupportedOperationException(); // TODO
+        Instrument result = symbolCache.getIfPresent(inSymbol);
+        if(result != null) {
+            return result;
+        }
+        result = executeCall(new Callable<Instrument>() {
+            @Override
+            public Instrument call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} resolving symbol: {}",
+                                       getSessionId(),
+                                       inSymbol);
+                TradingRpc.ResolveSymbolRequest.Builder requestBuilder = TradingRpc.ResolveSymbolRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setSymbol(inSymbol);
+                TradingRpc.ResolveSymbolResponse response = getBlockingStub().resolveSymbol(requestBuilder.build());
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Instrument result = null;
+                if(response.hasInstrument()) {
+                    result = TradingUtil.getInstrument(response.getInstrument());
+                }
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result;
+            }}
+        );
+        if(result != null) {
+            symbolCache.put(inSymbol,
+                            result);
+        }
+        return result;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#findRootOrderIdFor(org.marketcetera.trade.OrderID)
@@ -282,7 +317,7 @@ public class TradingRpcClient
             public CollectionPageResponse<? extends OrderSummary> call()
                     throws Exception
             {
-                SLF4JLoggerProxy.trace(this,
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
                                        "{} requesting open orders",
                                        getSessionId());
                 TradingRpc.OpenOrdersRequest.Builder requestBuilder = TradingRpc.OpenOrdersRequest.newBuilder();
@@ -299,7 +334,7 @@ public class TradingRpcClient
                 }
                 PagingUtil.setPageResponse(response.getPageResponse(),
                                            results);
-                SLF4JLoggerProxy.trace(this,
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
                                        results);
@@ -372,8 +407,8 @@ public class TradingRpcClient
                             }
                             TradingUtil.setBrokerId(fixOrder,
                                                     fixOrderBuilder);
-//                            fixOrderBuilder.setMessage(mapBuilder.build());
                             // TODO
+//                            fixOrderBuilder.setMessage(mapBuilder.build());
                             orderBuilder.setFixOrder(fixOrderBuilder.build());
                         } else if(order instanceof OrderBase) {
                             if(orderBaseBuilder == null) {
@@ -449,8 +484,6 @@ public class TradingRpcClient
                 List<SendOrderResponse> results = new ArrayList<>();
                 for(TradingRpc.OrderResponse rpcResponse : response.getOrderResponseList()) {
                     SendOrderResponse orderResponse = new SendOrderResponse();
-                    orderResponse.setFailed(rpcResponse.getFailed());
-                    orderResponse.setMessage(rpcResponse.getMessage());
                     orderResponse.setOrderId(rpcResponse.getOrderid()==null?null:new OrderID(rpcResponse.getOrderid()));
                     results.add(orderResponse);
                 }
@@ -461,22 +494,6 @@ public class TradingRpcClient
                 return results;
             }
         });
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.tradingclient.TradingClient#cancelOrder(org.marketcetera.trade.OrderCancel)
-     */
-    @Override
-    public OrderID cancelOrder(OrderCancel inOrderCancel)
-    {
-        throw new UnsupportedOperationException(); // TODO
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.tradingclient.TradingClient#modifyOrder(org.marketcetera.trade.OrderReplace)
-     */
-    @Override
-    public OrderID modifyOrder(OrderReplace inOrderReplace)
-    {
-        throw new UnsupportedOperationException(); // TODO
     }
     /**
      * Create a new TradingRpcClient instance.
@@ -745,6 +762,10 @@ public class TradingRpcClient
      * The client's application ID: the ID.
      */
     private static final AppId APP_ID = Util.getAppId(APP_ID_NAME,APP_ID_VERSION.getVersionInfo());
+    /**
+     * symbol to instrument cache
+     */
+    private final Cache<String,Instrument> symbolCache = CacheBuilder.newBuilder().expireAfterAccess(10,TimeUnit.SECONDS).build();
     /**
      * holds report listeners by their id
      */
