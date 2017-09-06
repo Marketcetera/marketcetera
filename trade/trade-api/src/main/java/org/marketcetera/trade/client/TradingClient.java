@@ -1,6 +1,5 @@
 package org.marketcetera.trade.client;
 
-import java.beans.ExceptionListener;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
@@ -114,38 +113,6 @@ public interface TradingClient
      */
     Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
                                                                String... inRootSymbols);
-    /**
-     * Adds an exception listener. The exception listeners are notified
-     * whenever the client encounters connectivity issues when communicating
-     * with the server.
-     * <p>
-     * The listeners are notified only when connectivity issues are
-     * encountered when sending or receiving messages, ie. when any of
-     * the <code>send*()</code> methods are invoked, or when the
-     * client receives a message and encounters errors processing it
-     * before delivering it to {@link ReportListener} or {@link
-     * BrokerStatusListener}, or when client heartbeats cannot reach
-     * the server.
-     * <p>
-     * If the same listener is added more than once, it will receive
-     * notifications as many times as it's been added.
-     * <p>
-     * The listeners are notified in the reverse order of their addition.
-     *
-     * @param inListener the listener instance.
-     */
-    void addExceptionListener(ExceptionListener inListener);
-    /**
-     * Removes exception listener that was previously added via
-     * {@link #addExceptionListener(java.beans.ExceptionListener)}. The
-     * listener will stop receiving exception notifications after this
-     * method returns.
-     * If the listener was added more than once, only its most
-     * recently added occurrence will be removed. 
-     *
-     * @param inListener The exception listener that should no longer
-     */
-    void removeExceptionListener(ExceptionListener inListener);
     /**
      * Returns the server's broker status.
      *

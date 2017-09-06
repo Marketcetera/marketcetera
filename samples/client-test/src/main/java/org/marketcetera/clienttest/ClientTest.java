@@ -10,6 +10,9 @@ import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
+import org.marketcetera.symbol.IterativeSymbolResolver;
+import org.marketcetera.symbol.PatternSymbolResolver;
+import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MutableOrderSummary;
@@ -33,6 +36,8 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -82,6 +87,7 @@ public class ClientTest
             TradingUtil.setFixSessionFactory(fixSessionFactory);
             TradingUtil.setOrderSummaryFactory(orderSummaryFactory);
             TradingUtil.setUserFactory(userFactory);
+            TradingUtil.setSymbolResolverService(symbolResolverService);
             TradingRpcClientParametersImpl params = new TradingRpcClientParametersImpl();
             params.setHostname(hostname);
             params.setPort(port);
@@ -116,7 +122,7 @@ public class ClientTest
             tradingClient.addTradeMessageListener(tradeMessageListener);
             Factory factory = Factory.getInstance();
             OrderSingle testOrder = factory.createOrderSingle();
-            testOrder.setInstrument(new Equity("METC"));
+            testOrder.setInstrument(new Equity("METC2"));
             testOrder.setOrderType(OrderType.Limit);
             testOrder.setQuantity(BigDecimal.TEN);
             testOrder.setPrice(BigDecimal.TEN);
@@ -201,6 +207,19 @@ public class ClientTest
         return new SimpleUserFactory();
     }
     /**
+     * Get the symbol resolver service value.
+     *
+     * @return a <code>SymbolResolverService</code> value
+     */
+    @Bean
+    public SymbolResolverService getSymbolResolverService()
+    {
+        IterativeSymbolResolver symbolResolverService = new IterativeSymbolResolver();
+        symbolResolverService.setSymbolResolvers(Lists.newArrayList(new PatternSymbolResolver()));
+        TradingUtil.setSymbolResolverService(symbolResolverService);
+        return symbolResolverService;
+    }
+    /**
      * instance created for autowiring purposes
      */
     private static ClientTest instance;
@@ -248,4 +267,9 @@ public class ClientTest
      */
     @Autowired
     private UserFactory userFactory;
+    /**
+     * resolves symbols
+     */
+    @Autowired
+    private SymbolResolverService symbolResolverService;
 }

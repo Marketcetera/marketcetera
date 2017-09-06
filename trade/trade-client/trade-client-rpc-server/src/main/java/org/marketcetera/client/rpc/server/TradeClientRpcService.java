@@ -148,7 +148,7 @@ public class TradeClientRpcService<SessionClazz>
                 int pageSize = Integer.MAX_VALUE;
                 if(inRequest.hasPageRequest()) {
                     pageNumber = PagingUtil.getPageNumber(inRequest.getPageRequest());
-                    pageSize = PagingUtil.getPageNumber(inRequest.getPageRequest());
+                    pageSize = PagingUtil.getPageSize(inRequest.getPageRequest());
                 }
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Received open order request {}",

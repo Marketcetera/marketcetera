@@ -1,6 +1,5 @@
 package org.marketcetera.trading.rpc;
 
-import java.beans.ExceptionListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -243,22 +242,6 @@ public class TradingRpcClient
     @Override
     public Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
                                                                       String... inRootSymbols)
-    {
-        throw new UnsupportedOperationException(); // TODO
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradingClient#addExceptionListener(java.beans.ExceptionListener)
-     */
-    @Override
-    public void addExceptionListener(ExceptionListener inListener)
-    {
-        throw new UnsupportedOperationException(); // TODO
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradingClient#removeExceptionListener(java.beans.ExceptionListener)
-     */
-    @Override
-    public void removeExceptionListener(ExceptionListener inListener)
     {
         throw new UnsupportedOperationException(); // TODO
     }

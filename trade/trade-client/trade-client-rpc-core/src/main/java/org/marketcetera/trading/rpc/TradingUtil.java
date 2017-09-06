@@ -30,6 +30,7 @@ import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.FIXResponse;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.HasTradeMessage;
 import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.MutableOrderSummary;
@@ -2514,10 +2515,10 @@ public abstract class TradingUtil
             orderSummaryBuilder.setOrderStatus(getRpcOrderStatus(inOrderSummary.getOrderStatus()));
         }
         if(inOrderSummary.getReport() != null) {
-            if(inOrderSummary.getReport() instanceof TradeMessage) {
-                orderSummaryBuilder.setReport(getRpcTradeMessage((TradeMessage)inOrderSummary.getReport()));
-            } else {
-                System.out.println("COLIN: " + inOrderSummary.getReport() + " is NOT a trade message");
+            Report report = inOrderSummary.getReport();
+            if(report instanceof HasTradeMessage) {
+                HasTradeMessage hasTradeMessage = (HasTradeMessage)report;
+                orderSummaryBuilder.setReport(getRpcTradeMessage(hasTradeMessage.getTradeMessage()));
             }
         }
         value = inOrderSummary.getRootOrderId()==null?null:inOrderSummary.getRootOrderId().getValue();
