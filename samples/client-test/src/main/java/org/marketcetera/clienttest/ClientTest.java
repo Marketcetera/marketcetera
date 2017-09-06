@@ -17,11 +17,14 @@ import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.MutableOrderSummary;
 import org.marketcetera.trade.MutableOrderSummaryFactory;
+import org.marketcetera.trade.MutableReport;
+import org.marketcetera.trade.MutableReportFactory;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.SimpleOrderSummaryFactory;
+import org.marketcetera.trade.SimpleReportFactory;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.TradingClient;
@@ -88,6 +91,7 @@ public class ClientTest
             TradingUtil.setOrderSummaryFactory(orderSummaryFactory);
             TradingUtil.setUserFactory(userFactory);
             TradingUtil.setSymbolResolverService(symbolResolverService);
+            TradingUtil.setReportFactory(reportFactory);
             TradingRpcClientParametersImpl params = new TradingRpcClientParametersImpl();
             params.setHostname(hostname);
             params.setPort(port);
@@ -122,12 +126,11 @@ public class ClientTest
             tradingClient.addTradeMessageListener(tradeMessageListener);
             Factory factory = Factory.getInstance();
             OrderSingle testOrder = factory.createOrderSingle();
-            testOrder.setInstrument(new Equity("METC2"));
+            testOrder.setInstrument(new Equity("METC"));
             testOrder.setOrderType(OrderType.Limit);
             testOrder.setQuantity(BigDecimal.TEN);
             testOrder.setPrice(BigDecimal.TEN);
             testOrder.setSide(Side.Buy);
-            testOrder.setExecutionDestination("COLIN");
             SLF4JLoggerProxy.info(ClientTest.class,
                                   "Sending {}",
                                   testOrder);
@@ -220,6 +223,16 @@ public class ClientTest
         return symbolResolverService;
     }
     /**
+     * Get the report factory value.
+     *
+     * @return a <code>MutableReportFactory</code> value
+     */
+    @Bean
+    public MutableReportFactory getReportFactory()
+    {
+        return new SimpleReportFactory();
+    }
+    /**
      * instance created for autowiring purposes
      */
     private static ClientTest instance;
@@ -272,4 +285,9 @@ public class ClientTest
      */
     @Autowired
     private SymbolResolverService symbolResolverService;
+    /**
+     * creates {@link MutableReport} objects
+     */
+    @Autowired
+    private MutableReportFactory reportFactory;
 }

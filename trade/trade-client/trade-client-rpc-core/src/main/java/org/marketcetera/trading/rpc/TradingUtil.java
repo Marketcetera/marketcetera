@@ -35,6 +35,7 @@ import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.MutableOrderSummary;
 import org.marketcetera.trade.MutableOrderSummaryFactory;
+import org.marketcetera.trade.MutableReportFactory;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderBase;
@@ -2447,12 +2448,8 @@ public abstract class TradingUtil
                        orderSummary);
         if(inRpcOrderSummary.hasReport()) {
             TradeMessage tradeMessage = getTradeMessage(inRpcOrderSummary.getReport());
-            if(tradeMessage instanceof Report) {
-                System.out.println("COLIN: " + tradeMessage + " is a report");
-                orderSummary.setReport((Report)tradeMessage);
-            } else {
-                System.out.println("COLIN: " + tradeMessage + " is NOT a report");
-            }
+            orderSummary.setReport(reportFactory.create(tradeMessage,
+                                                        orderSummary.getActor()));
         }
         setRootOrderId(inRpcOrderSummary,
                        orderSummary);
@@ -2648,6 +2645,24 @@ public abstract class TradingUtil
         userFactory = inUserFactory;
     }
     /**
+     * Get the reportFactory value.
+     *
+     * @return a <code>MutableReportFactory</code> value
+     */
+    public static MutableReportFactory getReportFactory()
+    {
+        return reportFactory;
+    }
+    /**
+     * Sets the reportFactory value.
+     *
+     * @param inReportFactory a <code>MutableReportFactory</code> value
+     */
+    public static void setReportFactory(MutableReportFactory inReportFactory)
+    {
+        reportFactory = inReportFactory;
+    }
+    /**
      * Set the values on the given FIX field map from the given RPC map.
      *
      * @param inRpcMap a <code>BaseRpc.Map</code> value
@@ -2701,7 +2716,11 @@ public abstract class TradingUtil
      */
     private static MutableOrderSummaryFactory orderSummaryFactory;
     /**
-     * creats {@link User} objects
+     * creates {@link User} objects
      */
     private static UserFactory userFactory;
+    /**
+     * creates {@link MutableReport} objects
+     */
+    private static MutableReportFactory reportFactory;
 }

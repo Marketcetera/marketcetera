@@ -24,7 +24,7 @@ public class SimpleReport
     @Override
     public UserID getActorID()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return user==null?null:user.getUserID();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getViewerID()
@@ -32,7 +32,7 @@ public class SimpleReport
     @Override
     public UserID getViewerID()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return user==null?null:user.getUserID();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getOrderID()
@@ -40,7 +40,7 @@ public class SimpleReport
     @Override
     public OrderID getOrderID()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return orderId;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getActor()
@@ -48,7 +48,7 @@ public class SimpleReport
     @Override
     public User getActor()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return user;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getViewer()
@@ -56,7 +56,7 @@ public class SimpleReport
     @Override
     public User getViewer()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return user;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getFixMessage()
@@ -64,7 +64,7 @@ public class SimpleReport
     @Override
     public String getFixMessage()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return fixMessage;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getSessionId()
@@ -72,7 +72,7 @@ public class SimpleReport
     @Override
     public SessionID getSessionId()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return sessionId;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getMsgSeqNum()
@@ -80,7 +80,7 @@ public class SimpleReport
     @Override
     public int getMsgSeqNum()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return msgSeqNum;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getSendingTime()
@@ -88,7 +88,7 @@ public class SimpleReport
     @Override
     public Date getSendingTime()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return sendingTime;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getReportType()
@@ -96,7 +96,7 @@ public class SimpleReport
     @Override
     public ReportType getReportType()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return reportType;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getBrokerID()
@@ -104,7 +104,7 @@ public class SimpleReport
     @Override
     public BrokerID getBrokerID()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return brokerId;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getReportID()
@@ -112,7 +112,7 @@ public class SimpleReport
     @Override
     public ReportID getReportID()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return reportId;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getOriginator()
@@ -120,7 +120,7 @@ public class SimpleReport
     @Override
     public Originator getOriginator()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return originator;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getHierarchy()
@@ -128,25 +128,7 @@ public class SimpleReport
     @Override
     public Hierarchy getHierarchy()
     {
-        throw new UnsupportedOperationException(); // TODO
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.MutableReport#setActorID(org.marketcetera.trade.UserID)
-     */
-    @Override
-    public void setActorID(UserID inUserId)
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.MutableReport#setViewerID(org.marketcetera.trade.UserID)
-     */
-    @Override
-    public void setViewerID(UserID inUserId)
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
+        return hierarchy;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableReport#setOrderID(org.marketcetera.trade.OrderID)
@@ -154,8 +136,7 @@ public class SimpleReport
     @Override
     public void setOrderID(OrderID inOrderId)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        orderId = inOrderId;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableReport#setActor(org.marketcetera.admin.User)
@@ -163,8 +144,7 @@ public class SimpleReport
     @Override
     public void setActor(User inUser)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        user = inUser;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableReport#setViewer(org.marketcetera.admin.User)
@@ -172,8 +152,7 @@ public class SimpleReport
     @Override
     public void setViewer(User inUser)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        user = inUser;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableReport#setFixMessage(java.lang.String)
@@ -181,8 +160,7 @@ public class SimpleReport
     @Override
     public void setFixMessage(String inFixMessage)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        fixMessage = inFixMessage;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableReport#setSessionId(quickfix.SessionID)
@@ -190,8 +168,7 @@ public class SimpleReport
     @Override
     public void setSessionId(SessionID inSessionId)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        sessionId = inSessionId;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableReport#setMsgSeqNum(int)
@@ -199,8 +176,7 @@ public class SimpleReport
     @Override
     public void setMsgSeqNum(int inMsgSeqNum)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        msgSeqNum = inMsgSeqNum;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableReport#setSendingTime(java.util.Date)
@@ -208,8 +184,7 @@ public class SimpleReport
     @Override
     public void setSendingTime(Date inSendingTime)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        sendingTime = inSendingTime;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableReport#setReportType(org.marketcetera.trade.ReportType)
@@ -217,8 +192,7 @@ public class SimpleReport
     @Override
     public void setReportType(ReportType inReportType)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        reportType = inReportType;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableReport#setBrokerID(org.marketcetera.trade.BrokerID)
@@ -226,8 +200,7 @@ public class SimpleReport
     @Override
     public void setBrokerID(BrokerID inBrokerId)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        brokerId = inBrokerId;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableReport#setReportID(org.marketcetera.trade.ReportID)
@@ -235,8 +208,7 @@ public class SimpleReport
     @Override
     public void setReportID(ReportID inReportId)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        reportId = inReportId;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableReport#setOriginator(org.marketcetera.trade.Originator)
@@ -244,8 +216,7 @@ public class SimpleReport
     @Override
     public void setOriginator(Originator inOriginator)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        originator = inOriginator;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableReport#setHierarchy(org.marketcetera.trade.Hierarchy)
@@ -253,7 +224,64 @@ public class SimpleReport
     @Override
     public void setHierarchy(Hierarchy inHierarchy)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        hierarchy = inHierarchy;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("SimpleReport [orderId=").append(orderId).append(", sessionId=").append(sessionId)
+                .append(", msgSeqNum=").append(msgSeqNum).append(", brokerId=").append(brokerId).append(", user=")
+                .append(user).append(", sendingTime=").append(sendingTime).append(", reportType=").append(reportType)
+                .append(", reportId=").append(reportId).append(", originator=").append(originator)
+                .append(", hierarchy=").append(hierarchy).append(", fixMessage=").append(fixMessage).append("]");
+        return builder.toString();
+    }
+    /**
+     * order id value
+     */
+    private OrderID orderId;
+    /**
+     * user value
+     */
+    private User user;
+    /**
+     * FIX message value
+     */
+    private String fixMessage;
+    /**
+     * session id value
+     */
+    private SessionID sessionId;
+    /**
+     * msg seq num value
+     */
+    private int msgSeqNum;
+    /**
+     * sending time value
+     */
+    private Date sendingTime;
+    /**
+     * report type value
+     */
+    private ReportType reportType;
+    /**
+     * broker id value
+     */
+    private BrokerID brokerId;
+    /**
+     * report id value
+     */
+    private ReportID reportId;
+    /**
+     * originator value
+     */
+    private Originator originator;
+    /**
+     * hierarchy value
+     */
+    private Hierarchy hierarchy;
 }

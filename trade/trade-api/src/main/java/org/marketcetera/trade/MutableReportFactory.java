@@ -1,5 +1,7 @@
 package org.marketcetera.trade;
 
+import org.marketcetera.admin.User;
+
 /* $License$ */
 
 /**
@@ -18,4 +20,13 @@ public interface MutableReportFactory
      * @return a <code>MutableReport</code> value
      */
     MutableReport create();
+    /**
+     * Create a report object.
+     *
+     * @param inTradeMessage a <code>TradeMessage</code> value
+     * @param inUser 
+     * @return a <code>MutableReport</code> value
+     */
+    MutableReport create(TradeMessage inTradeMessage,
+                         User inUser);
 }
