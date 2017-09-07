@@ -33,11 +33,14 @@ import org.marketcetera.fix.IncomingMessage;
 import org.marketcetera.fix.dao.IncomingMessageDao;
 import org.marketcetera.fix.dao.PersistentIncomingMessage;
 import org.marketcetera.fix.dao.QPersistentIncomingMessage;
+import org.marketcetera.modules.headwater.HeadwaterModule;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionReportSummary;
+import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.HasMutableReportID;
 import org.marketcetera.trade.Instrument;
@@ -54,8 +57,10 @@ import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.ReportType;
 import org.marketcetera.trade.RootOrderIdFactory;
 import org.marketcetera.trade.SecurityType;
+import org.marketcetera.trade.TradeConstants;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradingPermissions;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.trade.dao.ExecutionReportDao;
 import org.marketcetera.trade.dao.PersistentExecutionReport;
 import org.marketcetera.trade.dao.PersistentOrderSummary;
@@ -128,6 +133,32 @@ public class ReportServiceImpl
             } catch (Exception ignored) {}
             timerService = null;
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.ReportService#addReport(org.marketcetera.trade.FIXMessageWrapper, org.marketcetera.trade.BrokerID, org.marketcetera.trade.UserID)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void addReport(FIXMessageWrapper inReport,
+                          BrokerID inBrokerID,
+                          UserID inUserId)
+    {
+        quickfix.Message fixMessage = inReport.getMessage();
+        // inject the new report
+        HeadwaterModule reportInjectionEntryPoint = HeadwaterModule.getInstance(TradeConstants.reportInjectionDataFlowName);
+        if(reportInjectionEntryPoint == null) {
+            SLF4JLoggerProxy.warn(this,
+                                  "Unable to add {} because the report injection data flow [{}] does not exist. This data flow must be defined in the server configuration.",
+                                  inReport,
+                                  TradeConstants.reportInjectionDataFlowName);
+            throw new UnsupportedOperationException("No report injection data flow");
+        }
+        SLF4JLoggerProxy.info(this,
+                              "Injecting: {}",
+                              fixMessage);
+        // TODO set sessionID on the message
+        // TODO set owner of this message
+        reportInjectionEntryPoint.emit(inReport);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getReportFor(org.marketcetera.trade.ReportID)

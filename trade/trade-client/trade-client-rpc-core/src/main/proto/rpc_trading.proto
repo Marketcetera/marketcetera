@@ -119,6 +119,16 @@ message GetAllPositionsByRootAsOfResponse {
     repeated Position position = 1;
 }
 
+message AddReportRequest {
+    string sessionId = 1;
+    string brokerId = 2;
+    Hierarchy hierarchy = 3;
+    FixMessage message = 4;
+}
+
+message AddReportResponse {
+}
+
 service TradingRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
@@ -135,4 +145,5 @@ service TradingRpcService {
     rpc getPositionAsOf(GetPositionAsOfRequest) returns (GetPositionAsOfResponse);
     rpc getAllPositionsAsOf(GetAllPositionsAsOfRequest) returns (GetAllPositionsAsOfResponse);
     rpc getAllPositionsByRootAsOf(GetAllPositionsByRootAsOfRequest) returns (GetAllPositionsByRootAsOfResponse);
+    rpc addReport(AddReportRequest) returns (AddReportResponse);
 }

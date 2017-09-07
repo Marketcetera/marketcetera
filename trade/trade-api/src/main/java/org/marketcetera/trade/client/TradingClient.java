@@ -12,6 +12,8 @@ import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.core.BaseClient;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
@@ -98,29 +100,25 @@ public interface TradingClient
     Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
                                                                String... inRootSymbols);
     /**
-     * Returns the server's broker status.
-     *
-     * @return The status.
-     *
-     * completed.
+     * Get the status of all brokers.
+     * 
+     * @return a <code>BrokersStatus</code> value
      */
     BrokersStatus getBrokersStatus();
-//    /**
-//     * Adds the given report to the system data flow.
-//     * 
-//     * <p>Reports added this way will be added to the system data bus. Reports will be
-//     * persisted and become part of the system record. All clients will receive this
-//     * report.
-//     * 
-//     * <p><em>This will affect reported positions</em></p>.
-//     *
-//     * @param inReport a <code>FIXMessageWrapper</code> value
-//     * @param inBrokerID a <code>BrokerID</code> value
-//     * @param inHierarchy a <code>Hierarchy</code> value
-//     */
-//    void addReport(FIXMessageWrapper inReport,
-//                   BrokerID inBrokerID,
-//                   Hierarchy inHierarchy);
+    /**
+     * Add the given report to the system data flow.
+     * 
+     * <p>Reports added this way will be added to the system data bus. Reports will be
+     * persisted and become part of the system record. The report will be owned by the
+     * user logged in to the client.
+     * 
+     * <p><em>This will affect reported positions</em></p>.
+     *
+     * @param inReport a <code>FIXMessageWrapper</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
+     */
+    void addReport(FIXMessageWrapper inReport,
+                   BrokerID inBrokerID);
 //    /**
 //     * Removes the given report from the persistent report store.
 //     * 

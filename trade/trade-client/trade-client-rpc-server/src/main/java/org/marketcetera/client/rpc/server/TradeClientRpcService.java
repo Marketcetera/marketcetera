@@ -28,6 +28,8 @@ import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.rpc.paging.PagingUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
@@ -42,6 +44,8 @@ import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.trading.rpc.TradingRpc;
 import org.marketcetera.trading.rpc.TradingRpc.AddBrokerStatusListenerRequest;
+import org.marketcetera.trading.rpc.TradingRpc.AddReportRequest;
+import org.marketcetera.trading.rpc.TradingRpc.AddReportResponse;
 import org.marketcetera.trading.rpc.TradingRpc.AddTradeMessageListenerRequest;
 import org.marketcetera.trading.rpc.TradingRpc.BrokerStatusListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpc.BrokersStatusRequest;
@@ -630,6 +634,50 @@ public class TradeClientRpcService<SessionClazz>
                     positionBuilder.clear();
                 }
                 TradingRpc.GetAllPositionsByRootAsOfResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#addReport(org.marketcetera.trading.rpc.TradingRpc.AddReportRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void addReport(AddReportRequest inRequest,
+                              StreamObserver<AddReportResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                TradingRpc.AddReportResponse.Builder responseBuilder = TradingRpc.AddReportResponse.newBuilder();
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Received add report request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                FIXMessageWrapper report = null;
+                if(inRequest.hasMessage()) {
+                    report = new FIXMessageWrapper(TradingUtil.getFixMessage(inRequest.getMessage()));
+                }
+                BrokerID brokerId = TradingUtil.getBrokerId(inRequest).orElse(null);
+                User user = userService.findByName(sessionHolder.getUser());
+                if(user == null) {
+                    throw new IllegalArgumentException("Unknown user: " + user);
+                }
+                reportService.addReport(report,
+                                        brokerId,
+                                        user.getUserID());
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "{} added for {}/{}",
+                                       report,
+                                       user,
+                                       brokerId);
+                TradingRpc.AddReportResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Returning {}",
                                        response);

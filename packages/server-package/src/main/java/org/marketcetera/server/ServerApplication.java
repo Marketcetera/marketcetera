@@ -96,10 +96,12 @@ public class ServerApplication
         moduleManager.init();
         DataFlowID outgoingDataFlow = moduleManager.createDataFlow(buildOutgoingDataRequest(moduleManager));
         DataFlowID incomingDataFlow = moduleManager.createDataFlow(buildIncomingDataRequest(moduleManager));
+        DataFlowID reportInjectionDataFlow = moduleManager.createDataFlow(buildInjectionDataRequest(moduleManager));
         SLF4JLoggerProxy.info(this,
-                              "Created outgoing data flow: {} and incoming data flow: {}",
+                              "Created outgoing data flow: {}, incoming data flow: {}, report injection data flow: {}",
                               outgoingDataFlow,
-                              incomingDataFlow);
+                              incomingDataFlow,
+                              reportInjectionDataFlow);
         return moduleManager;
     }
     /**
@@ -274,6 +276,30 @@ public class ServerApplication
         fixDataRequest.getMessageBlackList().clear();
         dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
                                                fixDataRequest));
+        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TradeMessagePersistenceModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TradeMessageBroadcastModuleFactory.INSTANCE_URN));
+        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
+    }
+    /**
+     * Build the report injection data request.
+     *
+     * @param inModuleManager a <code>ModuleManager</code> value
+     * @return a <code>DataRequest[]</code> value
+     */
+    private DataRequest[] buildInjectionDataRequest(ModuleManager inModuleManager)
+    {
+        startModulesIfNecessary(inModuleManager,
+                                TransactionModuleFactory.INSTANCE_URN,
+                                TradeMessageConverterModuleFactory.INSTANCE_URN,
+                                TradeMessagePersistenceModuleFactory.INSTANCE_URN,
+                                TradeMessageBroadcastModuleFactory.INSTANCE_URN,
+                                FixInitiatorModuleFactory.INSTANCE_URN);
+        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+        ModuleURN headwaterUrn = HeadwaterModule.createHeadwaterModule(TradeConstants.reportInjectionDataFlowName,
+                                                                       inModuleManager);
+        dataRequestBuilder.add(new DataRequest(headwaterUrn));
         dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(TradeMessagePersistenceModuleFactory.INSTANCE_URN));

@@ -70,7 +70,6 @@ import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.trading.rpc.TradingRpc.BrokerStatusListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
-import org.marketcetera.trading.rpc.TradingTypesRpc.FixMessage;
 
 import com.google.common.collect.Maps;
 import com.google.protobuf.util.Timestamps;
@@ -106,6 +105,26 @@ public abstract class TradingUtil
                 return TradingTypesRpc.Hierarchy.ParentHierarchy;
             default:
                 throw new UnsupportedOperationException("Unsupported hierarchy: " + inHierarchy);
+        }
+    }
+    /**
+     * Get the hierarchy value from the given RPC hierarchy.
+     *
+     * @param inHierarchy a <code>TradingTypesRpc.Hierarchy</code> value
+     * @return a <code>Hierarchy</code> value
+     */
+    public static Hierarchy getHierarchy(TradingTypesRpc.Hierarchy inHierarchy)
+    {
+        switch(inHierarchy) {
+            case ChildHierarchy:
+                return Hierarchy.Child;
+            case FlatHierarchy:
+                return Hierarchy.Flat;
+            case ParentHierarchy:
+                return Hierarchy.Parent;
+            case UNRECOGNIZED:
+            default:
+                throw new UnsupportedOperationException();
         }
     }
     /**
@@ -1246,6 +1265,11 @@ public abstract class TradingUtil
             if(value != null) {
                 brokerId = new BrokerID(value);
             }
+        } else if(inObject instanceof TradingRpc.AddReportRequest) {
+            String value = StringUtils.trimToNull(((TradingRpc.AddReportRequest)inObject).getBrokerId());
+            if(value != null) {
+                brokerId = new BrokerID(value);
+            }
         }
         if(brokerId == null) {
             return Optional.empty();
@@ -2222,10 +2246,10 @@ public abstract class TradingUtil
     /**
      * Get the FIX message from the given RPC FIX message.
      *
-     * @param inRpcMessage a <code>FixMessge</code> value
+     * @param inRpcMessage a <code>TradingTypesRpc.FixMessage</code> value
      * @return a <code>Message</code> value
      */
-    public static Message getFixMessage(FixMessage inRpcMessage)
+    public static Message getFixMessage(TradingTypesRpc.FixMessage inRpcMessage)
     {
         Message fixMessage = new Message();
         if(inRpcMessage.hasHeader()) {
@@ -2244,6 +2268,29 @@ public abstract class TradingUtil
         fixMessage.toString();
         // validate message?
         return fixMessage;
+    }
+    /**
+     * Get the RPC FIX message from the given FIX message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @return a <code>TradingTypesRpc.FixMessage</code> value
+     */
+    public static TradingTypesRpc.FixMessage getFixMessage(Message inMessage)
+    {
+        TradingTypesRpc.FixMessage.Builder fixMessageBuilder = TradingTypesRpc.FixMessage.newBuilder();
+        Map<String,String> fields = Maps.newHashMap();
+        setFieldMap(inMessage.getHeader(),
+                    fields);
+        fixMessageBuilder.setHeader(BaseUtil.getRpcMap(fields));
+        fields.clear();
+        setFieldMap(inMessage,
+                    fields);
+        fixMessageBuilder.setBody(BaseUtil.getRpcMap(fields));
+        fields.clear();
+        setFieldMap(inMessage.getTrailer(),
+                    fields);
+        fixMessageBuilder.setFooter(BaseUtil.getRpcMap(fields));
+        return fixMessageBuilder.build();
     }
     /**
      * Set the order ID from the given order on the given builder.
@@ -2830,6 +2877,22 @@ public abstract class TradingUtil
             keyValueBuilder.setValue(String.valueOf(field.getObject()));
             inBuilder.addKeyValuePairs(keyValueBuilder.build());
             keyValueBuilder.clear();
+        }
+    }
+    /**
+     * Set the values on the given field map and put them in the given map.
+     *
+     * @param inFieldMap a <code>quickfix.FieldMap</code>value
+     * @param inFields a <code>Map&lt;String,String&gt;</code> value
+     */
+    private static void setFieldMap(quickfix.FieldMap inFieldMap,
+                                    Map<String,String> inFields)
+    {
+        Iterator<quickfix.Field<?>> fieldIterator = inFieldMap.iterator();
+        while(fieldIterator.hasNext()) {
+            quickfix.Field<?> field = fieldIterator.next();
+            inFields.put(String.valueOf(field.getTag()),
+                         String.valueOf(field.getObject()));
         }
     }
     /**

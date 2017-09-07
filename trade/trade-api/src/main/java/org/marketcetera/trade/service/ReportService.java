@@ -9,10 +9,12 @@ import java.util.Set;
 import org.marketcetera.admin.User;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.fix.IncomingMessage;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReportSummary;
+import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.HasMutableReportID;
 import org.marketcetera.trade.Instrument;
@@ -23,6 +25,7 @@ import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.domain.Page;
 
@@ -282,4 +285,20 @@ public interface ReportService
      * @param inReport a <code>HasMutableReportID</code> value
      */
     void assignReportId(HasMutableReportID inReport);
+    /**
+     * Add the given report to the system data flow.
+     * 
+     * <p>Reports added this way will be added to the system data bus. Reports will be
+     * persisted and become part of the system record. The report will be owned by the
+     * given user.
+     * 
+     * <p><em>This will affect reported positions</em></p>.
+     *
+     * @param inReport a <code>FIXMessageWrapper</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
+     * @param inUserID a <code>UserID</code> value
+     */
+    void addReport(FIXMessageWrapper inReport,
+                   BrokerID inBrokerID,
+                   UserID inUserId);
 }

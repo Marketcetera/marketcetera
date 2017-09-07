@@ -29,6 +29,8 @@ import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.rpc.paging.PagingUtil;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.NewOrReplaceOrder;
@@ -667,6 +669,36 @@ public class TradingRpcClient
                 return results;
             }
         });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradingClient#addReport(org.marketcetera.trade.FIXMessageWrapper, org.marketcetera.trade.BrokerID)
+     */
+    @Override
+    public void addReport(FIXMessageWrapper inReport,
+                          BrokerID inBrokerID)
+    {
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                TradingRpc.AddReportRequest.Builder requestBuilder = TradingRpc.AddReportRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setBrokerId(inBrokerID.getValue());
+                requestBuilder.setMessage(TradingUtil.getFixMessage(inReport.getMessage()));
+                TradingRpc.AddReportRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                TradingRpc.AddReportResponse response = getBlockingStub().addReport(request);
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
+            }}
+        );
     }
     /**
      * Create a new TradingRpcClient instance.
