@@ -15,6 +15,7 @@ import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.HasMutableReportID;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
@@ -77,6 +78,17 @@ public interface ReportService
     public List<ReportBase> getReportsSince(User inUser,
                                             Date inDate);
     /**
+     * Get the position of the given instrument as of the given date from the point of view of the given user.
+     *
+     * @param inUser a <code>User</code> value
+     * @param inDate a <code>Date</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getPositionAsOf(User inUser,
+                                      Date inDate,
+                                      Instrument inInstrument);
+    /**
      * Gets the position of the given equity as of the given date from the point of view
      * of the given user.
      *
@@ -116,6 +128,15 @@ public interface ReportService
     public BigDecimal getCurrencyPositionAsOf(User inUser,
                                               Date inDate,
                                               Currency inCurrency);
+    /**
+     * Get all positions as of the given date visible to the given user.
+     *
+     * @param inUser a <code>User</code> value a <code>User</code> value
+     * @param inDate a <code>Date</code> value
+     * @return a <code>Map&lt;PositionKey&lt;? extends Instrument&gt;,BigDecimal&lt;</code> value
+     */
+    Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(User inUser,
+                                                                          Date inDate);
     /**
      * Gets all currency positions as of the given date visible to the given user.
      *

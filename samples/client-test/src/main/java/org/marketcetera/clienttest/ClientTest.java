@@ -1,6 +1,7 @@
 package org.marketcetera.clienttest;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserFactory;
@@ -129,7 +130,10 @@ public class ClientTest
             // send an order
             Factory factory = Factory.getInstance();
             OrderSingle testOrder = factory.createOrderSingle();
-            testOrder.setInstrument(new Equity("METC"));
+            testOrder.setInstrument(new Option("METC",
+                                               "20171210",
+                                               BigDecimal.TEN,
+                                               OptionType.Put));
             testOrder.setOrderType(OrderType.Limit);
             testOrder.setQuantity(BigDecimal.TEN);
             testOrder.setPrice(BigDecimal.TEN);
@@ -192,6 +196,21 @@ public class ClientTest
                                   "{} -> {}",
                                   sendOrderResponse.getOrderId(),
                                   tradingClient.findRootOrderIdFor(sendOrderResponse.getOrderId()));
+            // test positions
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "Testing positions");
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "{} -> {}",
+                                  testOrder.getInstrument(),
+                                  tradingClient.getPositionAsOf(new Date(),
+                                                                testOrder.getInstrument()));
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "All positions -> {}",
+                                  tradingClient.getAllPositionsAsOf(new Date()));
+            SLF4JLoggerProxy.info(ClientTest.class,
+                                  "Option positions by root: {} -> {}",
+                                  tradingClient.getOptionPositionsAsOf(new Date(),
+                                                                       "METC"));
             tradingClient.removeTradeMessageListener(tradeMessageListener);
             tradingClient.removeBrokerStatusListener(brokerStatusListener);
         } finally {

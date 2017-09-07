@@ -26,6 +26,7 @@ import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
+import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.rpc.paging.PagingUtil;
 import org.marketcetera.trade.FIXOrder;
@@ -53,6 +54,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.protobuf.util.Timestamps;
 
 import io.grpc.Channel;
 import io.grpc.stub.StreamObserver;
@@ -269,47 +272,82 @@ public class TradingRpcClient
     public BigDecimal getPositionAsOf(Date inDate,
                                       Instrument inInstrument)
     {
-//        return executeCall(new Callable<BigDecimal>() {
-//            @Override
-//            public BigDecimal call()
-//                    throws Exception
-//            {
-//                SLF4JLoggerProxy.trace(TradingRpcClient.this,
-//                                       "{} getting position of {} as of {}",
-//                                       getSessionId(),
-//                                       inInstrument,
-//                                       inDate);
-//                TradingRpc.GetPositionAsOfRequest.Builder requestBuilder = TradingRpc.GetPositionAsOfRequest.newBuilder();
-//                requestBuilder.setSessionId(getSessionId().getValue());
-//                TradingRpc.BrokersStatusResponse response = getBlockingStub().getBrokersStatus(requestBuilder.build());
-//                SLF4JLoggerProxy.trace(TradingRpcClient.this,
-//                                       "{} received {}",
-//                                       getSessionId(),
-//                                       response);
-//                List<ClusteredBrokerStatus> brokers = Lists.newArrayList();
-//                for(TradingTypesRpc.BrokerStatus rpcBrokerStatus : response.getBrokerStatusList()) {
-//                    Optional<BrokerStatus> brokerStatus = TradingUtil.getBrokerStatus(rpcBrokerStatus);
-//                    if(brokerStatus.isPresent()) {
-//                        brokers.add((ClusteredBrokerStatus)brokerStatus.get());
-//                    }
-//                }
-//                BrokersStatus brokersStatus = new ClusteredBrokersStatus(brokers);
-//                SLF4JLoggerProxy.trace(TradingRpcClient.this,
-//                                       "{} returning {}",
-//                                       getSessionId(),
-//                                       brokersStatus);
-//                return brokersStatus;
-//            }}
-//        );
-        throw new UnsupportedOperationException(); // TODO
+        return executeCall(new Callable<BigDecimal>() {
+            @Override
+            public BigDecimal call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} getting position of {} as of {}",
+                                       getSessionId(),
+                                       inInstrument,
+                                       inDate);
+                TradingRpc.GetPositionAsOfRequest.Builder requestBuilder = TradingRpc.GetPositionAsOfRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setInstrument(TradingUtil.getRpcInstrument(inInstrument));
+                requestBuilder.setTimestamp(Timestamps.fromMillis(inDate.getTime()));
+                TradingRpc.GetPositionAsOfResponse response = getBlockingStub().getPositionAsOf(requestBuilder.build());
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                BigDecimal result = BigDecimal.ZERO;
+                if(response.hasPosition()) {
+                    result = BaseUtil.getScaledQuantity(response.getPosition());
+                }
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result;
+            }}
+        );
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#getAllPositionsAsOf(java.util.Date)
      */
     @Override
-    public Map<PositionKey<Instrument>,BigDecimal> getAllPositionsAsOf(Date inDate)
+    public Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(Date inDate)
     {
-        throw new UnsupportedOperationException(); // TODO
+        return executeCall(new Callable<Map<PositionKey<? extends Instrument>,BigDecimal>>() {
+            @Override
+            public Map<PositionKey<? extends Instrument>,BigDecimal> call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} getting all positions as of {}",
+                                       getSessionId(),
+                                       inDate);
+                TradingRpc.GetAllPositionsAsOfRequest.Builder requestBuilder = TradingRpc.GetAllPositionsAsOfRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setTimestamp(Timestamps.fromMillis(inDate.getTime()));
+                TradingRpc.GetAllPositionsAsOfResponse response = getBlockingStub().getAllPositionsAsOf(requestBuilder.build());
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Map<PositionKey<? extends Instrument>,BigDecimal> result = Maps.newHashMap();
+                for(TradingTypesRpc.Position rpcPosition : response.getPositionList()) {
+                    PositionKey<? extends Instrument> positionKey = null;
+                    BigDecimal position = BigDecimal.ZERO;
+                    if(rpcPosition.hasPositionKey()) {
+                        positionKey = TradingUtil.getPositionKey(rpcPosition.getPositionKey());
+                    }
+                    if(rpcPosition.hasPosition()) {
+                        position = BaseUtil.getScaledQuantity(rpcPosition.getPosition());
+                    }
+                    if(positionKey != null) {
+                        result.put(positionKey,
+                                   position);
+                    }
+                }
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result;
+            }}
+        );
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#getOptionPositionsAsOf(java.util.Date, java.lang.String[])
@@ -318,7 +356,46 @@ public class TradingRpcClient
     public Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
                                                                       String... inRootSymbols)
     {
-        throw new UnsupportedOperationException(); // TODO
+        return executeCall(new Callable<Map<PositionKey<Option>,BigDecimal>>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Map<PositionKey<Option>,BigDecimal> call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} getting all option positions as of {}",
+                                       getSessionId(),
+                                       inDate);
+                TradingRpc.GetAllPositionsByRootAsOfRequest.Builder requestBuilder = TradingRpc.GetAllPositionsByRootAsOfRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setTimestamp(Timestamps.fromMillis(inDate.getTime()));
+                TradingRpc.GetAllPositionsByRootAsOfResponse response = getBlockingStub().getAllPositionsByRootAsOf(requestBuilder.build());
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Map<PositionKey<Option>,BigDecimal> result = Maps.newHashMap();
+                for(TradingTypesRpc.Position rpcPosition : response.getPositionList()) {
+                    PositionKey<Option> positionKey = null;
+                    BigDecimal position = BigDecimal.ZERO;
+                    if(rpcPosition.hasPositionKey()) {
+                        positionKey = (PositionKey<Option>)TradingUtil.getPositionKey(rpcPosition.getPositionKey());
+                    }
+                    if(rpcPosition.hasPosition()) {
+                        position = BaseUtil.getScaledQuantity(rpcPosition.getPosition());
+                    }
+                    if(positionKey != null) {
+                        result.put(positionKey,
+                                   position);
+                    }
+                }
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result;
+            }}
+        );
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#getBrokersStatus()

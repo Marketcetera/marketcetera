@@ -85,9 +85,9 @@ public interface TradingClient
      * Returns all positions based on reports generated and received on or before the supplied date in UTC.
      *
      * @param inDate a <code>Date</code> value
-     * @return a <code>Map&lt;PositionKey&lt;Instrument&gt;,BigDecimal&gt;</code> value
+     * @return a <code>Map&lt;PositionKey&lt;? extends Instrument&gt;,BigDecimal&gt;</code> value
      */
-    Map<PositionKey<Instrument>,BigDecimal> getAllPositionsAsOf(Date inDate);
+    Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(Date inDate);
     /**
      * Returns all positions of options with the given root symbols based on reports generated and received on or before the supplied date in UTC.
      *

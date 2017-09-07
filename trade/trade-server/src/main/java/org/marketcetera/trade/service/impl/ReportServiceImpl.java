@@ -80,6 +80,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
@@ -328,6 +329,40 @@ public class ReportServiceImpl
         return executionReportDao.findAll(page);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.ReportService#getPositionAsOf(org.marketcetera.admin.User, java.util.Date, org.marketcetera.trade.Instrument)
+     */
+    @Override
+    public BigDecimal getPositionAsOf(User inUser,
+                                      Date inDate,
+                                      Instrument inInstrument)
+    {
+        switch(inInstrument.getSecurityType()) {
+            case Currency:
+                return getCurrencyPositionAsOf(inUser,
+                                               inDate,
+                                               (Currency)inInstrument);
+            case ConvertibleBond:
+                return getConvertibleBondPositionAsOf(inUser,
+                                                      inDate,
+                                                      (ConvertibleBond)inInstrument);
+            case CommonStock:
+                return getEquityPositionAsOf(inUser,
+                                             inDate,
+                                             (Equity)inInstrument);
+            case Future:
+                return getFuturePositionAsOf(inUser,
+                                             inDate,
+                                             (Future)inInstrument);
+            case Option:
+                return getOptionPositionAsOf(inUser,
+                                             inDate,
+                                             (Option)inInstrument);
+            case Unknown:
+            default:
+                throw new UnsupportedOperationException("Unsupported security type: " + inInstrument.getSecurityType());
+        }
+    }
+    /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getEquityPositionAsOf(com.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Equity)
      */
     @Override
@@ -363,6 +398,26 @@ public class ReportServiceImpl
         return reports;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.ReportService#getAllPositionsAsOf(org.marketcetera.admin.User, java.util.Date)
+     */
+    @Override
+    public Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(User inUser,
+                                                                                 Date inDate)
+    {
+        Map<PositionKey<? extends Instrument>,BigDecimal> results = Maps.newHashMap();
+        results.putAll(getAllEquityPositionsAsOf(inUser,
+                                                 inDate));
+        results.putAll(getAllCurrencyPositionsAsOf(inUser,
+                                                   inDate));
+        results.putAll(getAllConvertibleBondPositionsAsOf(inUser,
+                                                          inDate));
+        results.putAll(getAllFuturePositionsAsOf(inUser,
+                                                 inDate));
+        results.putAll(getAllOptionPositionsAsOf(inUser,
+                                                 inDate));
+        return results;
+    }
+    /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getAllEquityPositionsAsOf(com.marketcetera.ors.security.SimpleUser, java.util.Date)
      */
     @Override
@@ -384,7 +439,8 @@ public class ReportServiceImpl
                 return PositionKeyFactory.createEquityKey(inSymbol,
                                                           inAccount,
                                                           inTraderId == null ? null : String.valueOf(inTraderId));
-            }});
+            }}
+        );
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getCurrencyPositionAsOf(com.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Currency)

@@ -20,6 +20,8 @@ import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.HasClusterData;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Validator;
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionFactory;
@@ -2704,6 +2706,18 @@ public abstract class TradingUtil
             userBuilder.setName(value);
         }
         return userBuilder.build();
+    }
+    /**
+     * Get the position key value from the given RPC position key.
+     *
+     * @param inRpcPositionKey a <code>TradingTypesRpc.PositionKey</code> value
+     * @return a <code>PositionKey&lt;? extends Instrument&gt;</code> value
+     */
+    public static PositionKey<? extends Instrument> getPositionKey(TradingTypesRpc.PositionKey inRpcPositionKey)
+    {
+        return PositionKeyFactory.createKey(getInstrument(inRpcPositionKey.getInstrument()),
+                                            StringUtils.trimToNull(inRpcPositionKey.getAccount()),
+                                            StringUtils.trimToNull(inRpcPositionKey.getTraderId()));
     }
     /**
      * Get the fixSessionFactory value.
