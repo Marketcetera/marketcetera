@@ -5,6 +5,7 @@ option java_outer_classname = "TradingRpc";
 import "rpc_base.proto";
 import "rpc_paging.proto";
 import "rpc_trading_types.proto";
+import "google/protobuf/timestamp.proto";
 
 message OpenOrdersRequest {
     string sessionId = 1;
@@ -89,6 +90,35 @@ message FindRootOrderIdResponse {
     string rootOrderId = 1;
 }
 
+message GetPositionAsOfRequest {
+    string sessionId = 1;
+    Instrument instrument = 2;
+    google.protobuf.Timestamp timestamp = 3;
+}
+
+message GetPositionAsOfResponse {
+    Qty position = 1;
+}
+
+message GetAllPositionsAsOfRequest {
+    string sessionId = 1;
+    google.protobuf.Timestamp timestamp = 2;
+}
+
+message GetAllPositionsAsOfResponse {
+    repeated Position position = 1;
+}
+
+message GetAllPositionsByRootAsOfRequest {
+    string sessionId = 1;
+    google.protobuf.Timestamp timestamp = 2;
+    repeated string root = 3;
+}
+
+message GetAllPositionsByRootAsOfResponse {
+    repeated Position position = 1;
+}
+
 service TradingRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
@@ -102,4 +132,7 @@ service TradingRpcService {
     rpc resolveSymbol(ResolveSymbolRequest) returns (ResolveSymbolResponse);
     rpc getBrokersStatus(BrokersStatusRequest) returns (BrokersStatusResponse);
     rpc findRootOrderId(FindRootOrderIdRequest) returns (FindRootOrderIdResponse);
+    rpc getPositionAsOf(GetPositionAsOfRequest) returns (GetPositionAsOfResponse);
+    rpc getAllPositionsAsOf(GetAllPositionsAsOfRequest) returns (GetAllPositionsAsOfResponse);
+    rpc getAllPositionsByRootAsOf(GetAllPositionsByRootAsOfRequest) returns (GetAllPositionsByRootAsOfResponse);
 }

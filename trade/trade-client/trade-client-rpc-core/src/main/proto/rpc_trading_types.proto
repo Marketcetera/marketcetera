@@ -145,6 +145,7 @@ message BrokerAlgoTagSpec {
     string pattern = 8;
     Map options = 9;
     string validator = 10;
+    string value = 11;
 }
 
 message BrokerAlgo {
@@ -292,4 +293,15 @@ message BrokerStatus {
     Map settings = 7;
     FixSessionStatus fixSessionStatus = 8;
     ClusterData clusterData = 9;
+}
+
+message PositionKey {
+    Instrument instrument = 1;
+    string account = 2;
+    string traderId = 3;
+}
+
+message Position {
+    PositionKey positionKey = 1;
+    Qty position = 2;
 }

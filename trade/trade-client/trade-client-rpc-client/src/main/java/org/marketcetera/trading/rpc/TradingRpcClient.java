@@ -269,6 +269,38 @@ public class TradingRpcClient
     public BigDecimal getPositionAsOf(Date inDate,
                                       Instrument inInstrument)
     {
+//        return executeCall(new Callable<BigDecimal>() {
+//            @Override
+//            public BigDecimal call()
+//                    throws Exception
+//            {
+//                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+//                                       "{} getting position of {} as of {}",
+//                                       getSessionId(),
+//                                       inInstrument,
+//                                       inDate);
+//                TradingRpc.GetPositionAsOfRequest.Builder requestBuilder = TradingRpc.GetPositionAsOfRequest.newBuilder();
+//                requestBuilder.setSessionId(getSessionId().getValue());
+//                TradingRpc.BrokersStatusResponse response = getBlockingStub().getBrokersStatus(requestBuilder.build());
+//                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+//                                       "{} received {}",
+//                                       getSessionId(),
+//                                       response);
+//                List<ClusteredBrokerStatus> brokers = Lists.newArrayList();
+//                for(TradingTypesRpc.BrokerStatus rpcBrokerStatus : response.getBrokerStatusList()) {
+//                    Optional<BrokerStatus> brokerStatus = TradingUtil.getBrokerStatus(rpcBrokerStatus);
+//                    if(brokerStatus.isPresent()) {
+//                        brokers.add((ClusteredBrokerStatus)brokerStatus.get());
+//                    }
+//                }
+//                BrokersStatus brokersStatus = new ClusteredBrokersStatus(brokers);
+//                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+//                                       "{} returning {}",
+//                                       getSessionId(),
+//                                       brokersStatus);
+//                return brokersStatus;
+//            }}
+//        );
         throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)

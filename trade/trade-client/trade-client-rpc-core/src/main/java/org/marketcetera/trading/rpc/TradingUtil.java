@@ -11,6 +11,7 @@ import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.algo.BrokerAlgoSpec;
+import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.algo.BrokerAlgoTagSpec;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokersStatus;
@@ -18,6 +19,7 @@ import org.marketcetera.brokers.ClusteredBrokerStatus;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.HasClusterData;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.core.Validator;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionFactory;
@@ -2173,13 +2175,47 @@ public abstract class TradingUtil
         }
         TradingTypesRpc.BrokerAlgo rpcBrokerAlgo = inRpcOrder.getBrokerAlgo();
         BrokerAlgo brokerAlgo = new BrokerAlgo();
-        String brokerAlgoName = rpcBrokerAlgo.getName();
-        // TODO need to look up broker algo spec by name?
         for(TradingTypesRpc.BrokerAlgoTagSpec rpcAlgoTagSpec : rpcBrokerAlgo.getAlgoTagSpecsList()) {
-            int tag = rpcAlgoTagSpec.getTag();
-            // TODO the spec needs an actual value
+            BrokerAlgoTag brokerAlgoTag = new BrokerAlgoTag(getBrokerTagSpec(rpcAlgoTagSpec),
+                                                            rpcAlgoTagSpec.getValue());
+            brokerAlgo.getAlgoTags().add(brokerAlgoTag);
         }
+        // TODO need to look up broker algo spec by name?
+//        String brokerAlgoName = rpcBrokerAlgo.getName();
+//        brokerAlgo.setAlgoSpec(inAlgoSpec);
         return Optional.of(brokerAlgo);
+    }
+    /**
+     * Get the broker algo tag spec from the given RPC broker algo tag spec.
+     *
+     * @param inRpcAlgoTagSpec a <code>TradingTypesRpc.BrokerAlgoTagSpec</code> value
+     * @return a <code>BrokerAlgoTagSpec</code> value
+     */
+    public static BrokerAlgoTagSpec getBrokerTagSpec(TradingTypesRpc.BrokerAlgoTagSpec inRpcAlgoTagSpec)
+    {
+        BrokerAlgoTagSpec brokerAlgoTagSpec = new BrokerAlgoTagSpec();
+        brokerAlgoTagSpec.setAdvice(inRpcAlgoTagSpec.getAdvice());
+        brokerAlgoTagSpec.setDefaultValue(inRpcAlgoTagSpec.getDefaultValue());
+        brokerAlgoTagSpec.setDescription(inRpcAlgoTagSpec.getDescription());
+        brokerAlgoTagSpec.setIsMandatory(inRpcAlgoTagSpec.getMandatory());
+        brokerAlgoTagSpec.setIsReadOnly(inRpcAlgoTagSpec.getIsReadOnly());
+        brokerAlgoTagSpec.setLabel(inRpcAlgoTagSpec.getLabel());
+        brokerAlgoTagSpec.setOptions(BaseUtil.getMap(inRpcAlgoTagSpec.getOptions()));
+        brokerAlgoTagSpec.setPattern(inRpcAlgoTagSpec.getPattern());
+        brokerAlgoTagSpec.setTag(inRpcAlgoTagSpec.getTag());
+        String validatorValue = inRpcAlgoTagSpec.getValidator();
+        if(validatorValue != null) {
+            try {
+                @SuppressWarnings("unchecked")
+                Validator<BrokerAlgoTag> validator = (Validator<BrokerAlgoTag>)Class.forName(validatorValue).newInstance();
+                brokerAlgoTagSpec.setValidator(validator);
+            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException e) {
+                PlatformServices.handleException(TradingUtil.class,
+                                                 "Cannot construct validator",
+                                                 e);
+            }
+        }
+        return brokerAlgoTagSpec;
     }
     /**
      * Get the FIX message from the given RPC FIX message.
