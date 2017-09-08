@@ -765,6 +765,8 @@ public class BrokerServiceImpl
                                                 sessionCustomization);
             }
         }
+        SLF4JLoggerProxy.info(this,
+                              "Broker service started");
     }
     /**
      * Updates all broker status

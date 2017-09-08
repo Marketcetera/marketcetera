@@ -8,13 +8,13 @@ import java.util.Set;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.IncomingMessage;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReportSummary;
-import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.HasMutableReportID;
 import org.marketcetera.trade.Instrument;
@@ -294,11 +294,11 @@ public interface ReportService
      * 
      * <p><em>This will affect reported positions</em></p>.
      *
-     * @param inReport a <code>FIXMessageWrapper</code> value
+     * @param inMessage a <code>HasFIXMessage</code> value
      * @param inBrokerID a <code>BrokerID</code> value
      * @param inUserID a <code>UserID</code> value
      */
-    void addReport(FIXMessageWrapper inReport,
+    void addReport(HasFIXMessage inMessage,
                    BrokerID inBrokerID,
                    UserID inUserId);
 }

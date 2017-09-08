@@ -1,5 +1,6 @@
 package org.marketcetera.server;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.marketcetera.admin.service.UserService;
@@ -9,15 +10,12 @@ import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.brokers.service.InMemoryFixSessionProvider;
 import org.marketcetera.client.rpc.server.TradeClientRpcService;
 import org.marketcetera.core.ApplicationContainer;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.modules.fix.FixDataRequest;
 import org.marketcetera.modules.fix.FixInitiatorModuleFactory;
-import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.server.session.ServerSession;
@@ -26,7 +24,10 @@ import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.BasicSelector;
-import org.marketcetera.trade.TradeConstants;
+import org.marketcetera.trade.config.DataFlowProvider;
+import org.marketcetera.trade.config.StandardIncomingDataFlowProvider;
+import org.marketcetera.trade.config.StandardOutgoingDataFlowProvider;
+import org.marketcetera.trade.config.StandardReportInjectionDataFlowProvider;
 import org.marketcetera.trade.impl.DefaultOwnerStrategy;
 import org.marketcetera.trade.impl.OutgoingMessageLookupStrategy;
 import org.marketcetera.trade.modules.OrderConverterModuleFactory;
@@ -94,15 +95,58 @@ public class ServerApplication
     {
         ModuleManager moduleManager = new ModuleManager();
         moduleManager.init();
-        DataFlowID outgoingDataFlow = moduleManager.createDataFlow(buildOutgoingDataRequest(moduleManager));
-        DataFlowID incomingDataFlow = moduleManager.createDataFlow(buildIncomingDataRequest(moduleManager));
-        DataFlowID reportInjectionDataFlow = moduleManager.createDataFlow(buildInjectionDataRequest(moduleManager));
-        SLF4JLoggerProxy.info(this,
-                              "Created outgoing data flow: {}, incoming data flow: {}, report injection data flow: {}",
-                              outgoingDataFlow,
-                              incomingDataFlow,
-                              reportInjectionDataFlow);
+        startModulesIfNecessary(moduleManager,
+                                TransactionModuleFactory.INSTANCE_URN,
+                                TradeMessageConverterModuleFactory.INSTANCE_URN,
+                                TradeMessagePersistenceModuleFactory.INSTANCE_URN,
+                                TradeMessageBroadcastModuleFactory.INSTANCE_URN,
+                                OrderConverterModuleFactory.INSTANCE_URN,
+                                OutgoingMessageCachingModuleFactory.INSTANCE_URN,
+                                OutgoingMessagePersistenceModuleFactory.INSTANCE_URN,
+                                FixInitiatorModuleFactory.INSTANCE_URN);
+        for(DataFlowProvider dataFlowProvider : dataFlowProviders) {
+            SLF4JLoggerProxy.info(this,
+                                  "Starting {}",
+                                  dataFlowProvider);
+            try {
+                dataFlowProvider.receiveDataFlowId(moduleManager.createDataFlow(dataFlowProvider.getDataFlow(moduleManager)));
+            } catch (Exception e) {
+                PlatformServices.handleException(this,
+                                                 "Unable to start data flow: " + dataFlowProvider.getName(),
+                                                 e);
+            }
+        }
         return moduleManager;
+    }
+    /**
+     * Create the standard incoming data flow.
+     *
+     * @return a <code>DataFlowProvider</code> value
+     */
+    @Bean
+    public DataFlowProvider getIncomingDataFlow()
+    {
+        return new StandardIncomingDataFlowProvider();
+    }
+    /**
+     * Create the standard outgoing data flow.
+     *
+     * @return a <code>DataFlowProvider</code> value
+     */
+    @Bean
+    public DataFlowProvider getOutgoingDataFlow()
+    {
+        return new StandardOutgoingDataFlowProvider();
+    }
+    /**
+     * Create the standard report injection data flow.
+     *
+     * @return a <code>DataFlowProvider</code> value
+     */
+    @Bean
+    public DataFlowProvider getInjectionDataFlow()
+    {
+        return new StandardReportInjectionDataFlowProvider();
     }
     /**
      * Get the message factory value.
@@ -255,89 +299,6 @@ public class ServerApplication
         return selector;
     }
     /**
-     * Build the incoming order data flow.
-     *
-     * @param inModuleManager a <code>ModuleManager</code> value
-     * @return a <code>DataRequest[]</code> value
-     */
-    private DataRequest[] buildIncomingDataRequest(ModuleManager inModuleManager)
-    {
-        startModulesIfNecessary(inModuleManager,
-                                TransactionModuleFactory.INSTANCE_URN,
-                                TradeMessageConverterModuleFactory.INSTANCE_URN,
-                                TradeMessagePersistenceModuleFactory.INSTANCE_URN,
-                                TradeMessageBroadcastModuleFactory.INSTANCE_URN,
-                                FixInitiatorModuleFactory.INSTANCE_URN);
-        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
-        FixDataRequest fixDataRequest = new FixDataRequest();
-        fixDataRequest.setIncludeAdmin(false);
-        fixDataRequest.setIncludeApp(true);
-        fixDataRequest.getMessageWhiteList().clear();
-        fixDataRequest.getMessageBlackList().clear();
-        dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
-                                               fixDataRequest));
-        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(TradeMessagePersistenceModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(TradeMessageBroadcastModuleFactory.INSTANCE_URN));
-        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
-    }
-    /**
-     * Build the report injection data request.
-     *
-     * @param inModuleManager a <code>ModuleManager</code> value
-     * @return a <code>DataRequest[]</code> value
-     */
-    private DataRequest[] buildInjectionDataRequest(ModuleManager inModuleManager)
-    {
-        startModulesIfNecessary(inModuleManager,
-                                TransactionModuleFactory.INSTANCE_URN,
-                                TradeMessageConverterModuleFactory.INSTANCE_URN,
-                                TradeMessagePersistenceModuleFactory.INSTANCE_URN,
-                                TradeMessageBroadcastModuleFactory.INSTANCE_URN,
-                                FixInitiatorModuleFactory.INSTANCE_URN);
-        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
-        ModuleURN headwaterUrn = HeadwaterModule.createHeadwaterModule(TradeConstants.reportInjectionDataFlowName,
-                                                                       inModuleManager);
-        dataRequestBuilder.add(new DataRequest(headwaterUrn));
-        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(TradeMessagePersistenceModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(TradeMessageBroadcastModuleFactory.INSTANCE_URN));
-        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
-    }
-    /**
-     * Build the outgoing order data flow.
-     *
-     * @param inModuleManager a <code>ModuleManager</code> value
-     * @return a <code>DataRequest[]</code> value
-     */
-    private DataRequest[] buildOutgoingDataRequest(ModuleManager inModuleManager)
-    {
-        startModulesIfNecessary(inModuleManager,
-                                TransactionModuleFactory.INSTANCE_URN,
-                                OrderConverterModuleFactory.INSTANCE_URN,
-                                OutgoingMessageCachingModuleFactory.INSTANCE_URN,
-                                OutgoingMessagePersistenceModuleFactory.INSTANCE_URN,
-                                FixInitiatorModuleFactory.INSTANCE_URN);
-        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
-        ModuleURN headwaterUrn = HeadwaterModule.createHeadwaterModule(TradeConstants.outgoingDataFlowName,
-                                                                       inModuleManager);
-        dataRequestBuilder.add(new DataRequest(headwaterUrn));
-        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(OrderConverterModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(OutgoingMessageCachingModuleFactory.INSTANCE_URN));
-        dataRequestBuilder.add(new DataRequest(OutgoingMessagePersistenceModuleFactory.INSTANCE_URN));
-        FixDataRequest fixDataRequest = new FixDataRequest();
-        fixDataRequest.setIncludeAdmin(false);
-        fixDataRequest.setIncludeApp(true);
-        fixDataRequest.getMessageWhiteList().clear();
-        fixDataRequest.getMessageBlackList().clear();
-        dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
-                                               fixDataRequest));
-        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
-    }
-    /**
      * Start instance modules if necessary.
      *
      * @param inModuleManager a <code>ModuleManager</code> value
@@ -352,6 +313,11 @@ public class ServerApplication
             }
         }
     }
+    /**
+     * provides data flows
+     */
+    @Autowired(required=false)
+    private Collection<DataFlowProvider> dataFlowProviders = Lists.newArrayList();
     /**
      * message owner value
      */

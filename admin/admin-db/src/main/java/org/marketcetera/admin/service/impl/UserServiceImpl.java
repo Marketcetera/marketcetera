@@ -275,14 +275,18 @@ public class UserServiceImpl
                     throws Exception
             {
                 return userDao.findOne(inKey.getValue());
-            }});
+            }}
+        );
         usersByUsername = CacheBuilder.newBuilder().maximumSize(100).build(new CacheLoader<String,PersistentUser>() {
             @Override
             public PersistentUser load(String inKey)
                     throws Exception
             {
                 return userDao.findByName(inKey);
-            }});
+            }}
+        );
+        SLF4JLoggerProxy.info(this,
+                              "User service started");
     }
     /**
      * provides datastore access to user objects

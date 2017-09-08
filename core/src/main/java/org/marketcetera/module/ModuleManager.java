@@ -109,6 +109,21 @@ public final class ModuleManager
         }
     }
     /**
+     * Start instance modules if necessary.
+     *
+     * @param inModuleManager a <code>ModuleManager</code> value
+     * @param inInstanceUrns a <code>ModuleURN[]</code> value
+     */
+    public static void startModulesIfNecessary(ModuleManager inModuleManager,
+                                               ModuleURN...inInstanceUrns)
+    {
+        for(ModuleURN instanceUrn : inInstanceUrns) {
+            if(!inModuleManager.getModuleInfo(instanceUrn).getState().isStarted()) {
+                inModuleManager.start(instanceUrn);
+            }
+        }
+    }
+    /**
      * Creates an instance that uses the same classloader as this class
      * to load module providers.
      */

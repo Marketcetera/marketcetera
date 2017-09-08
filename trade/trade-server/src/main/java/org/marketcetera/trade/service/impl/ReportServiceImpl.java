@@ -38,13 +38,13 @@ import org.marketcetera.fix.dao.PersistentIncomingMessage;
 import org.marketcetera.fix.dao.QPersistentIncomingMessage;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionReportSummary;
-import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.HasMutableReportID;
 import org.marketcetera.trade.Instrument;
@@ -125,6 +125,8 @@ public class ReportServiceImpl
         cachedSessionStart = CacheBuilder.newBuilder().build();
         Validate.isTrue(missingSeqNumBatchSize > 0,
                         "missingSeqNumBatchSize must be positive");
+        SLF4JLoggerProxy.info(this,
+                              "Report service started");
     }
     /**
      * Stop the object.
@@ -140,21 +142,21 @@ public class ReportServiceImpl
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.service.ReportService#addReport(org.marketcetera.trade.FIXMessageWrapper, org.marketcetera.trade.BrokerID, org.marketcetera.trade.UserID)
+     * @see org.marketcetera.trade.service.ReportService#addReport(org.marketcetera.event.HasFIXMessage, org.marketcetera.trade.BrokerID, org.marketcetera.trade.UserID)
      */
     @Override
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
-    public void addReport(FIXMessageWrapper inReport,
+    public void addReport(HasFIXMessage inMessage,
                           BrokerID inBrokerId,
                           UserID inUserId)
     {
-        quickfix.Message fixMessage = inReport.getMessage();
+        quickfix.Message fixMessage = inMessage.getMessage();
         // inject the new report
         HeadwaterModule reportInjectionEntryPoint = HeadwaterModule.getInstance(TradeConstants.reportInjectionDataFlowName);
         if(reportInjectionEntryPoint == null) {
             SLF4JLoggerProxy.warn(this,
                                   "Unable to add {} because the report injection data flow [{}] does not exist. This data flow must be defined in the server configuration.",
-                                  inReport,
+                                  inMessage,
                                   TradeConstants.reportInjectionDataFlowName);
             throw new UnsupportedOperationException("No report injection data flow");
         }
@@ -169,6 +171,11 @@ public class ReportServiceImpl
             // set the session ID as it would be set as if it came from the given broker
             FIXMessageUtil.setSessionId(fixMessage,
                                         FIXMessageUtil.getReversedSessionId(sessionIdTarget));
+            FIXVersion fixVersion = FIXVersion.getFIXVersion(sessionIdTarget);
+            fixVersion.getMessageFactory().addSendingTime(fixMessage);
+        }
+        if(!fixMessage.getHeader().isSetField(quickfix.field.MsgSeqNum.FIELD)) {
+            fixMessage.getHeader().setField(new quickfix.field.MsgSeqNum(Integer.MIN_VALUE));
         }
         SLF4JLoggerProxy.info(this,
                               "Injecting: {}",
@@ -177,7 +184,7 @@ public class ReportServiceImpl
         Object dataToEmit;
         User owner = userService.findByUserId(inUserId);
         if(owner == null) {
-            dataToEmit = inReport;
+            dataToEmit = inMessage;
             SLF4JLoggerProxy.warn(this,
                                   "Unable to establish {} as the owner of {} because that user ID cannot be found. Normal methods will be used to establish the owner of this message.",
                                   inUserId,

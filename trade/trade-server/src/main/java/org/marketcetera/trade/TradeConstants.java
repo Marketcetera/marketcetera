@@ -19,4 +19,8 @@ public interface TradeConstants
      * the system-wide name of the report-injection data flow
      */
     static String reportInjectionDataFlowName = "reportInjectionDataFlow";
+    /**
+     * the system-wide name of the incoming data flow
+     */
+    static String incomingDataFlowName = "incomingDataFlow";
 }
