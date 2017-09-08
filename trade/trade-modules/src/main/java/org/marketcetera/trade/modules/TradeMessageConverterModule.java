@@ -44,7 +44,8 @@ public class TradeMessageConverterModule
                                                                   HasFIXMessage.class.getSimpleName(),
                                                                   inData.getClass().getSimpleName()));
         }
-        Message fixTradeMessage = ((HasFIXMessage)inData).getMessage();
+        HasFIXMessage hasFixMessage = (HasFIXMessage)inData;
+        Message fixTradeMessage = hasFixMessage.getMessage();
         Broker broker;
         try {
             broker = brokerService.getBroker(FIXMessageUtil.getReversedSessionId(FIXMessageUtil.getSessionId(fixTradeMessage)));
@@ -59,7 +60,7 @@ public class TradeMessageConverterModule
                                fixTradeMessage,
                                broker);
         try {
-            TradeMessage tradeMessage = tradeService.convertResponse(fixTradeMessage,
+            TradeMessage tradeMessage = tradeService.convertResponse(hasFixMessage,
                                                                      broker);
             SLF4JLoggerProxy.debug(this,
                                    "Converted {} to {}",

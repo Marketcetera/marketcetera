@@ -11,6 +11,7 @@ import org.marketcetera.brokers.Selector;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
@@ -137,17 +138,18 @@ public class TradeServiceImpl
         return message;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.service.TradeService#convertResponse(quickfix.Message, org.marketcetera.brokers.Broker)
+     * @see org.marketcetera.trade.service.TradeService#convertResponse(org.marketcetera.event.HasFIXMessage, org.marketcetera.brokers.Broker)
      */
     @Override
-    public TradeMessage convertResponse(Message inMessage,
+    public TradeMessage convertResponse(HasFIXMessage inMessage,
                                         Broker inBroker)
     {
+        Message fixMessage = inMessage.getMessage();
         try {
-            if(FIXMessageUtil.isTradingSessionStatus(inMessage)) {
+            if(FIXMessageUtil.isTradingSessionStatus(fixMessage)) {
                 Messages.TRADE_SESSION_STATUS.info(this,
                                                    inBroker.getFIXDataDictionary().getHumanFieldValue(quickfix.field.TradSesStatus.FIELD,
-                                                                                                      inMessage.getString(quickfix.field.TradSesStatus.FIELD)));
+                                                                                                      fixMessage.getString(quickfix.field.TradSesStatus.FIELD)));
             }
         } catch (FieldNotFound e) {
             PlatformServices.handleException(this,
@@ -159,15 +161,15 @@ public class TradeServiceImpl
         for(MessageModifier responseModifier : responseModifiers) {
             try {
                 responseModifier.modify(mappedBroker,
-                                        inMessage);
+                                        fixMessage);
                 SLF4JLoggerProxy.debug(this,
                                        "Applied {} to {}",
                                        responseModifier,
-                                       inMessage);
+                                       fixMessage);
             } catch (Exception e) {
                 Messages.MODIFICATION_FAILED.warn(this,
                                                   e,
-                                                  inMessage,
+                                                  fixMessage,
                                                   inBroker);
             }
         }
@@ -177,7 +179,7 @@ public class TradeServiceImpl
                                                              inBroker.getSessionId(),
                                                              inBroker.getBrokerId());
             // TODO determine hierarchy - this might need the original order to resolve
-            reply = FIXConverter.fromQMessage(inMessage,
+            reply = FIXConverter.fromQMessage(fixMessage,
                                               Originator.Broker,
                                               inBroker.getBrokerId(),
                                               Hierarchy.Flat,
@@ -186,7 +188,7 @@ public class TradeServiceImpl
         } catch (MessageCreationException e) {
             Messages.REPORT_FAILED.error(this,
                                          e,
-                                         inMessage,
+                                         fixMessage,
                                          inBroker);
             throw e;
         }

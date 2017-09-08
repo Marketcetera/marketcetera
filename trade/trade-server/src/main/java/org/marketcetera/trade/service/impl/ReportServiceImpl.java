@@ -18,15 +18,18 @@ import javax.persistence.PersistenceContext;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
+import org.marketcetera.admin.HasUser;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.user.PersistentUser;
+import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.LongIDFactory;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionListener;
 import org.marketcetera.fix.IncomingMessage;
@@ -34,6 +37,7 @@ import org.marketcetera.fix.dao.IncomingMessageDao;
 import org.marketcetera.fix.dao.PersistentIncomingMessage;
 import org.marketcetera.fix.dao.QPersistentIncomingMessage;
 import org.marketcetera.modules.headwater.HeadwaterModule;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
@@ -92,6 +96,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import quickfix.Message;
 import quickfix.SessionID;
 
 /* $License$ */
@@ -140,7 +145,7 @@ public class ReportServiceImpl
     @Override
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public void addReport(FIXMessageWrapper inReport,
-                          BrokerID inBrokerID,
+                          BrokerID inBrokerId,
                           UserID inUserId)
     {
         quickfix.Message fixMessage = inReport.getMessage();
@@ -153,12 +158,35 @@ public class ReportServiceImpl
                                   TradeConstants.reportInjectionDataFlowName);
             throw new UnsupportedOperationException("No report injection data flow");
         }
+        Broker broker = brokerService.getBroker(inBrokerId);
+        if(broker == null) {
+            SLF4JLoggerProxy.warn(this,
+                                  "Unable to set session ID on {} because the broker {} does not exist",
+                                  fixMessage,
+                                  inBrokerId);
+        } else {
+            SessionID sessionIdTarget = broker.getSessionId();
+            // set the session ID as it would be set as if it came from the given broker
+            FIXMessageUtil.setSessionId(fixMessage,
+                                        FIXMessageUtil.getReversedSessionId(sessionIdTarget));
+        }
         SLF4JLoggerProxy.info(this,
                               "Injecting: {}",
                               fixMessage);
-        // TODO set sessionID on the message
-        // TODO set owner of this message
-        reportInjectionEntryPoint.emit(inReport);
+        // set owner of this message
+        Object dataToEmit;
+        User owner = userService.findByUserId(inUserId);
+        if(owner == null) {
+            dataToEmit = inReport;
+            SLF4JLoggerProxy.warn(this,
+                                  "Unable to establish {} as the owner of {} because that user ID cannot be found. Normal methods will be used to establish the owner of this message.",
+                                  inUserId,
+                                  fixMessage);
+        } else {
+            dataToEmit = new AddReportWrapper(owner,
+                                              fixMessage);
+        }
+        reportInjectionEntryPoint.emit(dataToEmit);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getReportFor(org.marketcetera.trade.ReportID)
@@ -1168,6 +1196,63 @@ public class ReportServiceImpl
          */
         BooleanExpression where(QPersistentOrderSummary inTableProxy,
                                 I inInstrument);
+    }
+    /**
+     * Wraps an added report with an owning user.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class AddReportWrapper
+            implements HasFIXMessage,HasUser
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.admin.HasUser#getUser()
+         */
+        @Override
+        public User getUser()
+        {
+            return user;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.event.HasFIXMessage#getMessage()
+         */
+        @Override
+        public Message getMessage()
+        {
+            return message;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("AddReportWrapper [user=").append(user).append(", message=").append(message).append("]");
+            return builder.toString();
+        }
+        /**
+         * Create a new AddReportWrapper instance.
+         *
+         * @param inUser a <code>User</code> value
+         * @param inMessage a <code>Message</code> value
+         */
+        private AddReportWrapper(User inUser,
+                                 Message inMessage)
+        {
+            user = inUser;
+            message = inMessage;
+        }
+        /**
+         * user value
+         */
+        private final User user;
+        /**
+         * message value
+         */
+        private final Message message;
     }
     /**
      * caches session start for a session

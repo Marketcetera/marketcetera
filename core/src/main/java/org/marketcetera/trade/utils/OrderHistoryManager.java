@@ -15,6 +15,7 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Messages;
@@ -97,6 +98,7 @@ public class OrderHistoryManager
      */
     public void add(TradeMessage inTradeMessage)
     {
+        Validate.notNull(inTradeMessage);
         if(!(inTradeMessage instanceof ReportBase)) {
             return;
         }
