@@ -21,6 +21,7 @@ import org.marketcetera.core.Util;
 import org.marketcetera.core.Version;
 import org.marketcetera.core.VersionInfo;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
@@ -30,7 +31,6 @@ import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.rpc.paging.PagingUtil;
 import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.NewOrReplaceOrder;
@@ -40,6 +40,7 @@ import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.RelatedOrder;
+import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.SendOrderResponse;
@@ -671,10 +672,10 @@ public class TradingRpcClient
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradingClient#addReport(org.marketcetera.trade.FIXMessageWrapper, org.marketcetera.trade.BrokerID)
+     * @see org.marketcetera.trade.client.TradingClient#addReport(org.marketcetera.event.HasFIXMessage, org.marketcetera.trade.BrokerID)
      */
     @Override
-    public void addReport(FIXMessageWrapper inReport,
+    public void addReport(HasFIXMessage inReport,
                           BrokerID inBrokerID)
     {
         executeCall(new Callable<Void>() {
@@ -692,6 +693,34 @@ public class TradingRpcClient
                                        getSessionId(),
                                        request);
                 TradingRpc.AddReportResponse response = getBlockingStub().addReport(request);
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
+            }}
+        );
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradingClient#deleteReport(org.marketcetera.trade.ReportID)
+     */
+    @Override
+    public void deleteReport(ReportID inReportId)
+    {
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                TradingRpc.DeleteReportRequest.Builder requestBuilder = TradingRpc.DeleteReportRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setReportId(String.valueOf(inReportId.longValue()));
+                TradingRpc.DeleteReportRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(TradingRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                TradingRpc.DeleteReportResponse response = getBlockingStub().deleteReport(request);
                 SLF4JLoggerProxy.trace(TradingRpcClient.this,
                                        "{} received {}",
                                        getSessionId(),

@@ -50,6 +50,7 @@ public class Sender
     {
         Validate.notNull(sessionSettings);
         Validate.notNull(messageFactory);
+        Validate.notNull(fixSettingsProviderFactory);
         applicationMessages.clear();
         initiators.clear();
         try {
@@ -67,7 +68,7 @@ public class Sender
             throw new RuntimeException(e);
         }
         SLF4JLoggerProxy.info(this,
-                              "Message receiver started");
+                              "Message sender started");
     }
     /**
      * Stops the object.

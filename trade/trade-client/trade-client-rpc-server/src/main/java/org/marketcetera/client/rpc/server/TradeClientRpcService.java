@@ -36,6 +36,7 @@ import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
+import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.UserID;
@@ -50,6 +51,8 @@ import org.marketcetera.trading.rpc.TradingRpc.AddTradeMessageListenerRequest;
 import org.marketcetera.trading.rpc.TradingRpc.BrokerStatusListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpc.BrokersStatusRequest;
 import org.marketcetera.trading.rpc.TradingRpc.BrokersStatusResponse;
+import org.marketcetera.trading.rpc.TradingRpc.DeleteReportRequest;
+import org.marketcetera.trading.rpc.TradingRpc.DeleteReportResponse;
 import org.marketcetera.trading.rpc.TradingRpc.FindRootOrderIdRequest;
 import org.marketcetera.trading.rpc.TradingRpc.FindRootOrderIdResponse;
 import org.marketcetera.trading.rpc.TradingRpc.GetAllPositionsAsOfRequest;
@@ -678,6 +681,39 @@ public class TradeClientRpcService<SessionClazz>
                                        user,
                                        brokerId);
                 TradingRpc.AddReportResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#deleteReport(org.marketcetera.trading.rpc.TradingRpc.DeleteReportRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void deleteReport(DeleteReportRequest inRequest,
+                                 StreamObserver<DeleteReportResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                TradingRpc.DeleteReportResponse.Builder responseBuilder = TradingRpc.DeleteReportResponse.newBuilder();
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "Received delete report request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                ReportID reportId = new ReportID(Long.valueOf(inRequest.getReportId()));
+                reportService.delete(reportId);
+                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                                       "{} deleted for {}",
+                                       reportId,
+                                       sessionHolder.getUser());
+                TradingRpc.DeleteReportResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Returning {}",
                                        response);

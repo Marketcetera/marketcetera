@@ -42,6 +42,16 @@ public class FixSessionsConfiguration
     {
         sessionDescriptors = inSessionDescriptors;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("FixSessionsConfiguration ").append(sessionDescriptors);
+        return builder.toString();
+    }
     /**
      * Describes a set of FIX sessions.
      *
@@ -106,16 +116,6 @@ public class FixSessionsConfiguration
          * sessions with these settings
          */
         private List<Session> sessions = Lists.newArrayList();
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString()
-    {
-        StringBuilder builder = new StringBuilder();
-        builder.append("FixSessionsConfiguration ").append(sessionDescriptors);
-        return builder.toString();
     }
     /**
      * Describes a FIX session.

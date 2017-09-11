@@ -231,11 +231,11 @@ public interface ReportService
      */
     public Report save(ReportBase inReport);
     /**
-     * Deletes the given report.
+     * Delete the report with the given report ID.
      *
-     * @param inReport a <code>ReportBase</code> value
+     * @param inReportId a <code>ReportID</code> value
      */
-    public void delete(ReportBase inReport);
+    void delete(ReportID inReportId);
     /**
      * Gets the order ID of the root of this order chain.
      *

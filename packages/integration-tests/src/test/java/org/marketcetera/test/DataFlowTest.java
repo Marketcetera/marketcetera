@@ -1,6 +1,9 @@
 package org.marketcetera.test;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 
@@ -12,10 +15,12 @@ import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.HasMutableStatus;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TradeMessage;
 
 import quickfix.Message;
 
@@ -60,6 +65,45 @@ public class DataFlowTest
                                 initiatorBroker.getBrokerId(),
                                 user.getUserID());
         assertFalse(reportWrapper.getFailed());
+    }
+    /**
+     * Test that a report can be deleted.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testDeleteReport()
+            throws Exception
+    {
+        Broker initiatorBroker = getInitiator();
+        User user = getTraderUser();
+        CalculatedOrderData order1Data = new CalculatedOrderData(new BigDecimal(10000),
+                                                                 new BigDecimal(100),
+                                                                 OrderType.Limit,
+                                                                 Side.Buy);
+        quickfix.Message order1 = order1Data.generateOrder(new Equity("METC"),
+                                                           initiatorBroker.getSessionId());
+        FIXVersion fixVersion = FIXVersion.getFIXVersion(order1);
+        quickfix.Message message = generateExecutionReport(order1,
+                                                           order1Data,
+                                                           PlatformServices.generateId(),
+                                                           OrderStatus.New,
+                                                           ExecutionType.New,
+                                                           fixVersion.getMessageFactory());
+        ReportWrapper reportWrapper = new ReportWrapper(message);
+        reportService.addReport(reportWrapper,
+                                initiatorBroker.getBrokerId(),
+                                user.getUserID());
+        TradeMessage tradeMessage = waitForNextTradeMessage();
+        assertTrue(tradeMessage instanceof ExecutionReport);
+        ExecutionReport executionReport = (ExecutionReport)tradeMessage;
+        assertNotNull(reportService.getReportFor(executionReport.getReportID()));
+        assertNotNull(orderSummaryService.findByRootOrderIdAndOrderId(executionReport.getOrderID(),
+                                                                      executionReport.getOrderID()));
+        reportService.delete(executionReport.getReportID());
+        assertNull(reportService.getReportFor(executionReport.getReportID()));
+        assertNull(orderSummaryService.findByRootOrderIdAndOrderId(executionReport.getOrderID(),
+                                                                   executionReport.getOrderID()));
     }
     /**
      * Wraps the report with a status holder.

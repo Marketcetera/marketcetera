@@ -762,30 +762,11 @@ public class ReportServiceImpl
             reportSummary.setRootOrderID(rootID);
             reportSummary = executionReportDao.save(reportSummary);
         }
-        // update order status record
+        // update order summary record
         try {
-            OrderSummary orderStatus;
-            if(inReport instanceof OrderCancelReject) {
-                // need to search for some particulars to help us fill out this record
-                orderStatus = orderStatusService.findMostRecentExecutionByRootOrderId(rootID);
-            } else {
-                orderStatus = orderStatusService.findByRootOrderIdAndOrderId(rootID,
-                                                                             inReport.getOrderID());
-                if(orderStatus == null && inReport.getOriginalOrderID() != null) {
-                    orderStatus = orderStatusService.findByRootOrderIdAndOrderId(rootID,
-                                                                                 inReport.getOriginalOrderID());
-                }
-            }
-            if(orderStatus == null) {
-                orderStatus = new PersistentOrderSummary(report,
-                                                        inReport,
-                                                        rootID);
-                orderStatus = orderStatusService.save(orderStatus);
-            } else {
-                orderStatusService.update(orderStatus,
-                                          report,
-                                          inReport);
-            }
+            generateOrderSummary(inReport,
+                                 rootID,
+                                 report);
         } catch (Exception e) {
             if(SLF4JLoggerProxy.isDebugEnabled(this)) {
                 SLF4JLoggerProxy.warn(this,
@@ -803,35 +784,71 @@ public class ReportServiceImpl
         return report;
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.ors.dao.ReportService#delete(com.marketcetera.ors.history.PersistentReport)
+     * @see org.marketcetera.trade.service.ReportService#delete(org.marketcetera.trade.ReportID)
      */
     @Override
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
-    public void delete(ReportBase inReport)
+    public void delete(ReportID inReportId)
     {
-        if(inReport == null) {
-            return;
+        PersistentReport reportToDelete = persistentReportDao.findByReportID(inReportId);
+        if(reportToDelete == null) {
+            throw new IllegalArgumentException("No report for report ID " + inReportId);
         }
-        PersistentReport reportToDelete;
-        if(inReport instanceof PersistentReport) {
-            reportToDelete = (PersistentReport)inReport;
-        } else {
-            reportToDelete = persistentReportDao.findByReportID(inReport.getReportID());
-        }
-        if(reportToDelete == null){
-            return;
-        }
-        // first, delete the execution report summary for this report
-        PersistentExecutionReport reportSummary = executionReportDao.findByReportId(reportToDelete.getId());
-        if(reportSummary != null) {
-            executionReportDao.delete(reportSummary);
+        OrderID rootId = null;
+        PersistentExecutionReport mostRecentExecReport = null;
+        PersistentExecutionReport execReport = executionReportDao.findByReportId(reportToDelete.getId());
+        // this might be null and that's ok, not an error - the report might not be an exec report
+        if(execReport != null) {
+            rootId = execReport.getRootOrderID();
+            executionReportDao.delete(execReport);
+            Page<PersistentExecutionReport> result = executionReportDao.findMostRecentReportFor(rootId,
+                                                                                                new PageRequest(0,1));
+            if(result.hasContent()) {
+                mostRecentExecReport = result.getContent().get(0);
+            }
         }
         // next, delete the order status
         OrderSummary orderStatus = orderStatusService.findByReportId(reportToDelete.getId());
         if(orderStatus != null) {
             orderStatusService.delete(orderStatus);
         }
+        // delete the report
         persistentReportDao.delete(reportToDelete);
+        // recreate the order status if there is a most recent report
+        if(mostRecentExecReport != null) {
+            PersistentReport mostRecentReport = mostRecentExecReport.getReport();
+            ReportBase reportBase = mostRecentReport.toReport();
+            generateOrderSummary(reportBase,
+                                 rootId,
+                                 mostRecentReport);
+        }
+    }
+    private void generateOrderSummary(ReportBase inReportBase,
+                                      OrderID inRootId,
+                                      PersistentReport inReport)
+    {
+        OrderSummary orderStatus;
+        if(inReportBase instanceof OrderCancelReject) {
+            // need to search for some particulars to help us fill out this record
+            orderStatus = orderStatusService.findMostRecentExecutionByRootOrderId(inRootId);
+        } else {
+            orderStatus = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
+                                                                         inReportBase.getOrderID());
+            if(orderStatus == null && inReportBase.getOriginalOrderID() != null) {
+                orderStatus = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
+                                                                             inReportBase.getOriginalOrderID());
+            }
+        }
+        if(orderStatus == null) {
+            orderStatus = new PersistentOrderSummary(inReport,
+                                                     inReportBase,
+                                                     inRootId);
+            orderStatus = orderStatusService.save(orderStatus);
+        } else {
+            orderStatusService.update(orderStatus,
+                                      inReport,
+                                      inReportBase);
+        }
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getRootOrderIdFor(org.marketcetera.trade.OrderID)

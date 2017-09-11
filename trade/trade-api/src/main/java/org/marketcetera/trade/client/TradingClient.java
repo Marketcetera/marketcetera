@@ -11,14 +11,15 @@ import org.marketcetera.brokers.BrokerStatusPublisher;
 import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.core.BaseClient;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
+import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.TradeMessagePublisher;
 
 /* $License$ */
@@ -114,22 +115,22 @@ public interface TradingClient
      * 
      * <p><em>This will affect reported positions</em></p>.
      *
-     * @param inReport a <code>FIXMessageWrapper</code> value
+     * @param inReport a <code>HasFIXMessage</code> value
      * @param inBrokerID a <code>BrokerID</code> value
      */
-    void addReport(FIXMessageWrapper inReport,
+    void addReport(HasFIXMessage inReport,
                    BrokerID inBrokerID);
-//    /**
-//     * Removes the given report from the persistent report store.
-//     * 
-//     * <p>Reports removed this way will not be added to the system data bus and no clients
-//     * will receive this report.
-//     * 
-//     * <p><em>This will affect reported positions</em></p>.
-//     *
-//     * @param inReport an <code>ExecutionReportImpl</code> value
-//     */
-//    void deleteReport(ExecutionReportImpl inReport);
+    /**
+     * Removes the given report from the persistent report store.
+     * 
+     * <p>Reports removed this way will not be added to the system data bus and no clients
+     * will receive this report.
+     * 
+     * <p><em>This will affect reported positions</em></p>.
+     *
+     * @param inReportId a <code>ReportID</code> value
+     */
+    void deleteReport(ReportID inReportId);
     /**
      * Resolves the given symbol to an <code>Instrument</code>.
      *

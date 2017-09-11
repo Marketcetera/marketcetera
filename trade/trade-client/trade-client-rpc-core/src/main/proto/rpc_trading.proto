@@ -129,6 +129,14 @@ message AddReportRequest {
 message AddReportResponse {
 }
 
+message DeleteReportRequest {
+    string sessionId = 1;
+    string reportId = 2;
+}
+
+message DeleteReportResponse {
+}
+
 service TradingRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
@@ -146,4 +154,5 @@ service TradingRpcService {
     rpc getAllPositionsAsOf(GetAllPositionsAsOfRequest) returns (GetAllPositionsAsOfResponse);
     rpc getAllPositionsByRootAsOf(GetAllPositionsByRootAsOfRequest) returns (GetAllPositionsByRootAsOfResponse);
     rpc addReport(AddReportRequest) returns (AddReportResponse);
+    rpc deleteReport(DeleteReportRequest) returns (DeleteReportResponse);
 }

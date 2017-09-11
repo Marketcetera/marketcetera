@@ -14,7 +14,6 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.module.ModuleManager;
-import org.marketcetera.module.ModuleURN;
 import org.marketcetera.modules.fix.FixInitiatorModuleFactory;
 import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.rpc.server.RpcServer;
@@ -95,15 +94,15 @@ public class ServerApplication
     {
         ModuleManager moduleManager = new ModuleManager();
         moduleManager.init();
-        startModulesIfNecessary(moduleManager,
-                                TransactionModuleFactory.INSTANCE_URN,
-                                TradeMessageConverterModuleFactory.INSTANCE_URN,
-                                TradeMessagePersistenceModuleFactory.INSTANCE_URN,
-                                TradeMessageBroadcastModuleFactory.INSTANCE_URN,
-                                OrderConverterModuleFactory.INSTANCE_URN,
-                                OutgoingMessageCachingModuleFactory.INSTANCE_URN,
-                                OutgoingMessagePersistenceModuleFactory.INSTANCE_URN,
-                                FixInitiatorModuleFactory.INSTANCE_URN);
+        ModuleManager.startModulesIfNecessary(moduleManager,
+                                              TransactionModuleFactory.INSTANCE_URN,
+                                              TradeMessageConverterModuleFactory.INSTANCE_URN,
+                                              TradeMessagePersistenceModuleFactory.INSTANCE_URN,
+                                              TradeMessageBroadcastModuleFactory.INSTANCE_URN,
+                                              OrderConverterModuleFactory.INSTANCE_URN,
+                                              OutgoingMessageCachingModuleFactory.INSTANCE_URN,
+                                              OutgoingMessagePersistenceModuleFactory.INSTANCE_URN,
+                                              FixInitiatorModuleFactory.INSTANCE_URN);
         for(DataFlowProvider dataFlowProvider : dataFlowProviders) {
             SLF4JLoggerProxy.info(this,
                                   "Starting {}",
@@ -297,21 +296,6 @@ public class ServerApplication
     {
         BasicSelector selector = new BasicSelector();
         return selector;
-    }
-    /**
-     * Start instance modules if necessary.
-     *
-     * @param inModuleManager a <code>ModuleManager</code> value
-     * @param inInstanceUrns a <code>ModuleURN[]</code> value
-     */
-    private void startModulesIfNecessary(ModuleManager inModuleManager,
-                                         ModuleURN...inInstanceUrns)
-    {
-        for(ModuleURN instanceUrn : inInstanceUrns) {
-            if(!inModuleManager.getModuleInfo(instanceUrn).getState().isStarted()) {
-                inModuleManager.start(instanceUrn);
-            }
-        }
     }
     /**
      * provides data flows

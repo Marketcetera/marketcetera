@@ -3,7 +3,7 @@ package org.marketcetera.trade;
 /* $License$ */
 
 /**
- *
+ * Creates {@link MutableOrderSummary} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

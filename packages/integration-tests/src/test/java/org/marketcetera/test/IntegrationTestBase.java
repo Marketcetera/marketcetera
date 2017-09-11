@@ -16,6 +16,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -42,8 +43,13 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Messages;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.TradeMessageListener;
+import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
+import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -86,7 +92,55 @@ public class IntegrationTestBase
     public void setup()
             throws Exception
     {
+        SLF4JLoggerProxy.info(this,
+                              "{} beginning setup",
+                              name.getMethodName());
+        tradeMessages.clear();
+        tradeService.addTradeMessageListener(tradeMessageListener);
         verifyAllBrokersReady();
+        SLF4JLoggerProxy.info(this,
+                              "{} beginning",
+                              name.getMethodName());
+    }
+    /**
+     * Run after each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @After
+    public void cleanup()
+            throws Exception
+    {
+        SLF4JLoggerProxy.info(this,
+                              "{} cleanup beginning",
+                              name.getMethodName());
+        try {
+            tradeService.removeTradeMessageListener(tradeMessageListener);
+            tradeMessages.clear();
+        } finally {
+            SLF4JLoggerProxy.info(this,
+                                  "{} done",
+                                  name.getMethodName());
+        }
+    }
+    /**
+     * Wait for and return the next trade message.
+     *
+     * @return a <code>TradeMessage</code> value
+     * @throws Exception if the message does not arrive
+     */
+    protected TradeMessage waitForNextTradeMessage()
+            throws Exception
+    {
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return !tradeMessages.isEmpty();
+            }
+        },10);
+        return tradeMessages.remove(0);
     }
     /**
      * Verify that all brokers are connected.
@@ -484,11 +538,10 @@ public class IntegrationTestBase
             tuples.add(new PriceQtyTuple(inPrice,inQty));
         }
         /**
-         * 
+         * Add the given execution to the calculation list.
          *
-         *
-         * @param inExecution
-         * @throws Exception
+         * @param inExecution a <code>Message</code> value
+         * @throws Exception if an unexpected error occurs
          */
         public void addExecution(Message inExecution)
                 throws Exception
@@ -738,6 +791,23 @@ public class IntegrationTestBase
         protected final List<Message> executionMessages = Lists.newArrayList();
     }
     /**
+     * holds trade messages received during a test
+     */
+    protected final List<TradeMessage> tradeMessages = Lists.newArrayList();
+    /**
+     * listens for trade messages received during a test
+     */
+    protected final TradeMessageListener tradeMessageListener = new TradeMessageListener() {
+        @Override
+        public void receiveTradeMessage(TradeMessage inTradeMessage)
+        {
+            synchronized(tradeMessages) {
+                tradeMessages.add(inTradeMessage);
+                tradeMessages.notifyAll();
+            }
+        }
+    };
+    /**
      * provides access to user services
      */
     @Autowired
@@ -752,6 +822,16 @@ public class IntegrationTestBase
      */
     @Autowired
     protected BrokerService brokerService;
+    /**
+     * provides access to trade services
+     */
+    @Autowired
+    protected TradeService tradeService;
+    /**
+     * provides access to order summary services
+     */
+    @Autowired
+    protected OrderSummaryService orderSummaryService;
     /**
      * test artifact used to identify the current test case
      */

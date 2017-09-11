@@ -48,6 +48,7 @@ public class Receiver
     {
         Validate.notNull(sessionSettings);
         Validate.notNull(messageFactory);
+        Validate.notNull(fixSettingsProviderFactory);
         applicationMessages.clear();
         try {
             FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
