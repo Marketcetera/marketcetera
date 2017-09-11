@@ -3,6 +3,8 @@ package org.marketcetera.trade.service.impl;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerUnavailable;
@@ -239,6 +241,15 @@ public class TradeServiceImpl
         outgoingDataFlowModule.emit(inOrder);
         // note that this object won't have deterministic state if async flows are used
         return inOrder;
+    }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        SLF4JLoggerProxy.info(this,
+                              "Trade service started");
     }
     /**
      * Resolve the given broker into the appropriate virtual or physical broker.

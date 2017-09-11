@@ -41,7 +41,12 @@ import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Messages;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Receiver;
+import org.marketcetera.trade.Sender;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
@@ -124,6 +129,78 @@ public class IntegrationTestBase
         }
     }
     /**
+     * Verify that the order status is NEW for the given root/order id pair exists.
+     *
+     * @param inRootOrderId an <code>OrderID</code> value
+     * @param inOrderId an <code>OrderID</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void verifyOrderSummaryStatusNew(final OrderID inRootOrderId,
+                                               final OrderID inOrderId)
+            throws Exception
+    {
+        verifyOrderSummaryStatus(inRootOrderId,
+                                 inOrderId,
+                                 OrderStatus.New);
+    }
+    /**
+     * Verify that the order status is FILLED for the given root/order id pair exists.
+     *
+     * @param inRootOrderId an <code>OrderID</code> value
+     * @param inOrderId an <code>OrderID</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void verifyOrderSummaryStatusFilled(final OrderID inRootOrderId,
+                                                  final OrderID inOrderId)
+            throws Exception
+    {
+        verifyOrderSummaryStatus(inRootOrderId,
+                                 inOrderId,
+                                 OrderStatus.Filled);
+    }
+    /**
+     * Verify that the order status is PARTIALLY FILLED for the given root/order id pair exists.
+     *
+     * @param inRootOrderId an <code>OrderID</code> value
+     * @param inOrderId an <code>OrderID</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void verifyOrderSummaryStatusPartiallyFilled(final OrderID inRootOrderId,
+                                                           final OrderID inOrderId)
+            throws Exception
+    {
+        verifyOrderSummaryStatus(inRootOrderId,
+                                 inOrderId,
+                                 OrderStatus.PartiallyFilled);
+    }
+    /**
+     * Verify that the order status for the given root/order id pair exists.
+     *
+     * @param inRootOrderId an <code>OrderID</code> value
+     * @param inOrderId an <code>OrderID</code> value
+     * @param inExpectedOrderStatus an <code>OrderStatus</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void verifyOrderSummaryStatus(final OrderID inRootOrderId,
+                                            final OrderID inOrderId,
+                                            final OrderStatus inExpectedOrderStatus)
+            throws Exception
+    {
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                OrderSummary orderStatus = orderSummaryService.findByRootOrderIdAndOrderId(inRootOrderId,
+                                                                                          inOrderId);
+                if(orderStatus == null) {
+                    return false;
+                }
+                return orderStatus.getOrderStatus() == inExpectedOrderStatus;
+            }
+        },10);
+    }
+    /**
      * Wait for and return the next trade message.
      *
      * @return a <code>TradeMessage</code> value
@@ -141,6 +218,32 @@ public class IntegrationTestBase
             }
         },10);
         return tradeMessages.remove(0);
+    }
+    /**
+     * 
+     *
+     *
+     * @param inSessionId
+     * @return
+     * @throws Exception
+     */
+    protected Message waitForReceiverMessage(SessionID inSessionId)
+            throws Exception
+    {
+        return receiver.getNextApplicationMessage(inSessionId);
+    }
+    /**
+     * 
+     *
+     *
+     * @param inSessionId
+     * @return
+     * @throws Exception
+     */
+    protected Message waitForSenderMessage(SessionID inSessionId)
+            throws Exception
+    {
+        return sender.getNextApplicationMessage(inSessionId);
     }
     /**
      * Verify that all brokers are connected.
@@ -807,6 +910,16 @@ public class IntegrationTestBase
             }
         }
     };
+    /**
+     * test FIX brokers (receives requests from initiators)
+     */
+    @Autowired
+    protected Receiver receiver;
+    /**
+     * test FIX brokers (sends requests to acceptors)
+     */
+    @Autowired
+    protected Sender sender;
     /**
      * provides access to user services
      */

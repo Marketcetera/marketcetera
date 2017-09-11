@@ -164,6 +164,8 @@ public class MessageOwnerServiceImpl
     public void start()
     {
         usersByOrderId = CacheBuilder.newBuilder().maximumSize(orderCacheSize).build();
+        SLF4JLoggerProxy.info(this,
+                              "Message owner service started");
     }
     /**
      * Get the orderCacheSize value.

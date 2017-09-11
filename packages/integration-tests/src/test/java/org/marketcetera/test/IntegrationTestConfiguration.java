@@ -21,14 +21,20 @@ import org.marketcetera.trade.config.DataFlowProvider;
 import org.marketcetera.trade.config.StandardIncomingDataFlowProvider;
 import org.marketcetera.trade.config.StandardOutgoingDataFlowProvider;
 import org.marketcetera.trade.config.StandardReportInjectionDataFlowProvider;
+import org.marketcetera.trade.impl.DefaultOwnerStrategy;
+import org.marketcetera.trade.impl.OutgoingMessageLookupStrategy;
 import org.marketcetera.trade.modules.OrderConverterModuleFactory;
 import org.marketcetera.trade.modules.OutgoingMessageCachingModuleFactory;
 import org.marketcetera.trade.modules.OutgoingMessagePersistenceModuleFactory;
 import org.marketcetera.trade.modules.TradeMessageBroadcastModuleFactory;
 import org.marketcetera.trade.modules.TradeMessageConverterModuleFactory;
 import org.marketcetera.trade.modules.TradeMessagePersistenceModuleFactory;
+import org.marketcetera.trade.service.MessageOwnerService;
+import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import com.google.common.collect.Lists;
@@ -47,6 +53,8 @@ import quickfix.SessionSettings;
  * @version $Id$
  * @since $Release$
  */
+@SpringBootConfiguration
+@EnableAutoConfiguration
 public class IntegrationTestConfiguration
 {
     /**
@@ -123,14 +131,13 @@ public class IntegrationTestConfiguration
         return new quickfix.DefaultMessageFactory();
     }
     /**
-     * 
+     * Get the test FIX sender.
      *
-     *
-     * @param inMessageFactory
-     * @param inFixSettingsProviderFactory
-     * @param inFixSessionsConfiguration
-     * @param inFixSessionFactory
-     * @return
+     * @param inMessageFactory a <code>quickfix.MessageFactory</code> value
+     * @param inFixSettingsProviderFactory a <code>FixSettingsProviderFactory</code> value
+     * @param inFixSessionsConfiguration a <code>FixSessionsConfiguration</code> value
+     * @param inFixSessionFactory a <code>FixSessionFactory</code> value
+     * @return a <code>Sender</code> value
      */
     @Bean
     public Sender getSender(quickfix.MessageFactory inMessageFactory,
@@ -201,9 +208,9 @@ public class IntegrationTestConfiguration
      * Get the test message receiver.
      *
      * @param inMessageFactory a <code>quickfix.MessageFactory</code> value
-     * @param inFixSettingsProviderFactory a <code>FixSettingsProvideFactory</code> value
-     * @param inFixSessionsConfiguration
-     * @param inFixSessionFactory
+     * @param inFixSettingsProviderFactory a <code>FixSettingsProviderFactory</code> value
+     * @param inFixSessionsConfiguration a <code>FixSessionsConfiguration</code> value
+     * @param inFixSessionFactory a <code>FixSessionFactory</code> value
      * @return a <code>Receiver</code> value
      */
     @Bean
@@ -260,7 +267,6 @@ public class IntegrationTestConfiguration
                 SessionID sessionId = FIXMessageUtil.getReversedSessionId(new SessionID(sessionSettings.get(SessionSettings.BEGINSTRING),
                                                                                         sessionSettings.get(SessionSettings.SENDERCOMPID),
                                                                                         sessionSettings.get(SessionSettings.TARGETCOMPID)));
-                System.out.println("Adding " + sessionId);
                 fixSession.setSessionId(sessionId.toString());
                 sessionSettings.put(SessionSettings.SENDERCOMPID,
                                     sessionId.getSenderCompID());
@@ -288,6 +294,44 @@ public class IntegrationTestConfiguration
     public FixSessionFactory getFixSessionFactory()
     {
         return new SimpleFixSessionFactory();
+    }
+    /**
+     * Get the message owner service value.
+     *
+     * @param inOutgoingMessageLookupStrategy an <code>OutgoingMessageLookupStrategy</code> value
+     * @param inDefaultOwnerStrategy a <code>DefaultOwnerStrategy</code> value
+     * @return a <code>MessageOwnerService</code> value
+     */
+    @Bean
+    public MessageOwnerService getMessageOwnerService(OutgoingMessageLookupStrategy inOutgoingMessageLookupStrategy,
+                                                      DefaultOwnerStrategy inDefaultOwnerStrategy)
+    {
+        MessageOwnerServiceImpl messageOwnerService = new MessageOwnerServiceImpl();
+        messageOwnerService.getIdentifyOwnerStrategies().add(inOutgoingMessageLookupStrategy);
+        messageOwnerService.getIdentifyOwnerStrategies().add(inDefaultOwnerStrategy);
+        return messageOwnerService;
+    }
+    /**
+     * Get the default owner strategy value.
+     *
+     * @return a <code>DefaultOwnerStrategy</code> value
+     */
+    @Bean
+    public DefaultOwnerStrategy getDefaultOwnerStrategy()
+    {
+        DefaultOwnerStrategy defaultOwnerStrategy = new DefaultOwnerStrategy();
+        defaultOwnerStrategy.setUsername("trader");
+        return defaultOwnerStrategy;
+    }
+    /**
+     * Get the outgoing message lookup strategy.
+     *
+     * @return an <code>OutgoingMessageLookupStrategy</code> value
+     */
+    @Bean
+    public OutgoingMessageLookupStrategy getOutgoingMessageLookupStrategy()
+    {
+        return new OutgoingMessageLookupStrategy();
     }
     /**
      * provides data flows
