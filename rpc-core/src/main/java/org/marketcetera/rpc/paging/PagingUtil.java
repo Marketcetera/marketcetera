@@ -1,7 +1,13 @@
 package org.marketcetera.rpc.paging;
 
+import java.util.List;
+
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageResponse;
+import org.marketcetera.persist.Sort;
+import org.marketcetera.persist.SortDirection;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -27,7 +33,41 @@ public abstract class PagingUtil
         PagingRpc.PageRequest.Builder pageBuilder = PagingRpc.PageRequest.newBuilder();
         pageBuilder.setPage(inPageNumber);
         pageBuilder.setSize(inPageSize);
+//        if(inPageRequest.getSortOrder() != null && !inPageRequest.getSortOrder().isEmpty()) {
+//            BaseRpc.SortOrder.Builder sortOrderBuilder = BaseRpc.SortOrder.newBuilder();
+//            BaseRpc.Sort.Builder sortBuilder = BaseRpc.Sort.newBuilder();
+//            for(Sort sort : inPageRequest.getSortOrder()) {
+//                sortBuilder.setDirection(sort.getDirection()==SortDirection.ASCENDING?BaseRpc.SortDirection.ASCENDING:BaseRpc.SortDirection.DESCENDING);
+//                sortBuilder.setProperty(sort.getProperty());
+//                sortOrderBuilder.addSort(sortBuilder.build());
+//                sortBuilder.clear();
+//            }
+//            pageRequestBuilder.setSortOrder(sortOrderBuilder.build());
+//        }
         return pageBuilder.build();
+    }
+    /**
+     * Add the results from the given RPC page to the given response object.
+     *
+     * @param inRpcPage a <code>BaseRpc.PageResponse</code> value
+     * @param inResponse a <code>PageResponse</code> value
+     */
+    public static void addPageToResponse(PagingRpc.PageResponse inRpcPage,
+                                         PageResponse inResponse)
+    {
+        inResponse.setPageMaxSize(inRpcPage.getPageMaxSize());
+        inResponse.setPageNumber(inRpcPage.getPageNumber());
+        inResponse.setPageSize(inRpcPage.getPageSize());
+        inResponse.setTotalPages(inRpcPage.getTotalPages());
+        inResponse.setTotalSize(inRpcPage.getTotalSize());
+        List<Sort> sortOrder = Lists.newArrayList();
+        for(PagingRpc.Sort rpcSort : inRpcPage.getSortOrder().getSortList()) {
+            Sort sort = new Sort();
+            sort.setDirection(rpcSort.getDirection()==PagingRpc.SortDirection.ASCENDING?SortDirection.ASCENDING:SortDirection.DESCENDING);
+            sort.setProperty(rpcSort.getProperty());
+            sortOrder.add(sort);
+        }
+        inResponse.setSortOrder(sortOrder);
     }
     /**
      * Get the page number from the given page request.
