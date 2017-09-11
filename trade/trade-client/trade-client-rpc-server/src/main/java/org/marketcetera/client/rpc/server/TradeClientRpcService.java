@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.admin.HasUser;
 import org.marketcetera.admin.User;
+import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerStatusListener;
@@ -39,6 +40,7 @@ import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
+import org.marketcetera.trade.TradingPermissions;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
@@ -174,7 +176,9 @@ public class TradeClientRpcService<SessionClazz>
                                   StreamObserver<OpenOrdersResponse> inResponseObserver)
         {
             try {
-                validateAndReturnSession(inRequest.getSessionId());
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradingPermissions.ViewOpenOrdersAction.name());
                 TradingRpc.OpenOrdersResponse.Builder responseBuilder = TradingRpc.OpenOrdersResponse.newBuilder();
                 int pageNumber = 0;
                 int pageSize = Integer.MAX_VALUE;
@@ -213,12 +217,14 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                TradingRpc.SendOrderResponse.Builder responseBuilder = TradingRpc.SendOrderResponse.newBuilder();
-                TradingRpc.OrderResponse.Builder orderResponseBuilder = TradingRpc.OrderResponse.newBuilder();
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Received send order request {} from {}",
                                        inRequest,
                                        sessionHolder);
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradingPermissions.SendOrderAction.name());
+                TradingRpc.SendOrderResponse.Builder responseBuilder = TradingRpc.SendOrderResponse.newBuilder();
+                TradingRpc.OrderResponse.Builder orderResponseBuilder = TradingRpc.OrderResponse.newBuilder();
                 for(TradingTypesRpc.Order rpcOrder : inRequest.getOrderList()) {
                     try {
                         Order matpOrder = TradingUtil.getOrder(rpcOrder);
@@ -346,10 +352,12 @@ public class TradeClientRpcService<SessionClazz>
                                             StreamObserver<BrokerStatusListenerResponse> inResponseObserver)
         {
             try {
-                validateAndReturnSession(inRequest.getSessionId());
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Received add broker status listener request {}",
                                        inRequest);
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradingPermissions.ViewBrokerStatusAction.name());
                 String listenerId = inRequest.getListenerId();
                 AbstractListenerProxy<?> brokerStatusListenerProxy = listenerProxiesById.getIfPresent(listenerId);
                 if(brokerStatusListenerProxy == null) {
@@ -412,6 +420,8 @@ public class TradeClientRpcService<SessionClazz>
                                        "Received get brokers status request {} from {}",
                                        inRequest,
                                        sessionHolder);
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradingPermissions.ViewBrokerStatusAction.name());
                 TradingRpc.BrokersStatusResponse.Builder responseBuilder = TradingRpc.BrokersStatusResponse.newBuilder();
                 BrokersStatus brokersStatus = brokerService.getBrokersStatus();
                 TradingUtil.setBrokersStatus(brokersStatus,
@@ -438,11 +448,13 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                TradingRpc.FindRootOrderIdResponse.Builder responseBuilder = TradingRpc.FindRootOrderIdResponse.newBuilder();
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Received find root order id request {} from {}",
                                        inRequest,
                                        sessionHolder);
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradingPermissions.ViewOpenOrdersAction.name());
+                TradingRpc.FindRootOrderIdResponse.Builder responseBuilder = TradingRpc.FindRootOrderIdResponse.newBuilder();
                 OrderID orderId = new OrderID(inRequest.getOrderId());
                 OrderID rootOrderId = reportService.getRootOrderIdFor(orderId);
                 if(rootOrderId != null) {
@@ -472,6 +484,8 @@ public class TradeClientRpcService<SessionClazz>
                                        "Received get position as of request {} from {}",
                                        inRequest,
                                        sessionHolder);
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradingPermissions.ViewPositionAction.name());
                 Instrument instrument = null;
                 if(inRequest.hasInstrument()) {
                     instrument = TradingUtil.getInstrument(inRequest.getInstrument());
@@ -513,11 +527,13 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                TradingRpc.GetAllPositionsAsOfResponse.Builder responseBuilder = TradingRpc.GetAllPositionsAsOfResponse.newBuilder();
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Received get all positions as of request {} from {}",
                                        inRequest,
                                        sessionHolder);
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradingPermissions.ViewPositionAction.name());
+                TradingRpc.GetAllPositionsAsOfResponse.Builder responseBuilder = TradingRpc.GetAllPositionsAsOfResponse.newBuilder();
                 Date timestamp = null;
                 if(inRequest.hasTimestamp()) {
                     timestamp = new Date(Timestamps.toMillis(inRequest.getTimestamp()));
@@ -585,11 +601,13 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                TradingRpc.GetAllPositionsByRootAsOfResponse.Builder responseBuilder = TradingRpc.GetAllPositionsByRootAsOfResponse.newBuilder();
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Received get all positions by root as of request {} from {}",
                                        inRequest,
                                        sessionHolder);
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradingPermissions.ViewPositionAction.name());
+                TradingRpc.GetAllPositionsByRootAsOfResponse.Builder responseBuilder = TradingRpc.GetAllPositionsByRootAsOfResponse.newBuilder();
                 Date timestamp = null;
                 if(inRequest.hasTimestamp()) {
                     timestamp = new Date(Timestamps.toMillis(inRequest.getTimestamp()));
@@ -658,11 +676,13 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                TradingRpc.AddReportResponse.Builder responseBuilder = TradingRpc.AddReportResponse.newBuilder();
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Received add report request {} from {}",
                                        inRequest,
                                        sessionHolder);
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradingPermissions.AddReportAction.name());
+                TradingRpc.AddReportResponse.Builder responseBuilder = TradingRpc.AddReportResponse.newBuilder();
                 FIXMessageWrapper report = null;
                 if(inRequest.hasMessage()) {
                     report = new FIXMessageWrapper(TradingUtil.getFixMessage(inRequest.getMessage()));
@@ -702,11 +722,13 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                TradingRpc.DeleteReportResponse.Builder responseBuilder = TradingRpc.DeleteReportResponse.newBuilder();
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Received delete report request {} from {}",
                                        inRequest,
                                        sessionHolder);
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradingPermissions.DeleteReportAction.name());
+                TradingRpc.DeleteReportResponse.Builder responseBuilder = TradingRpc.DeleteReportResponse.newBuilder();
                 ReportID reportId = new ReportID(Long.valueOf(inRequest.getReportId()));
                 reportService.delete(reportId);
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
@@ -807,6 +829,7 @@ public class TradeClientRpcService<SessionClazz>
                                    getId(),
                                    inStatus,
                                    response);
+            // TODO does the user have permissions to view this broker?
             getObserver().onNext(response);
             responseBuilder.clear();
         }
@@ -852,6 +875,7 @@ public class TradeClientRpcService<SessionClazz>
                                    getId(),
                                    inTradeMessage,
                                    response);
+            // TODO does the user have permissions (including supervisor) to view this report?
             getObserver().onNext(response);
             responseBuilder.clear();
         }
@@ -975,6 +999,11 @@ public class TradeClientRpcService<SessionClazz>
          */
         private final long start = System.nanoTime();
     }
+    /**
+     * provides authorization services
+     */
+    @Autowired
+    private AuthorizationService authzService;
     /**
      * provides report services
      */
