@@ -12,5 +12,6 @@
   <modules>
     <module>admin-api</module>
     <module>admin-db</module>
+    <module>admin-core</module>
   </modules>
 </project>

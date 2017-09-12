@@ -3,6 +3,7 @@ package org.marketcetera.rpc.paging;
 import java.util.List;
 
 import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 import org.marketcetera.persist.PageResponse;
 import org.marketcetera.persist.Sort;
 import org.marketcetera.persist.SortDirection;
@@ -121,5 +122,16 @@ public abstract class PagingUtil
 //        inResults.setSortOrder(inSortOrder); TODO
         inResults.setTotalPages(inPageResponse.getTotalPages());
         inResults.setTotalSize(inPageResponse.getTotalSize());
+    }
+    /**
+     *
+     *
+     * @param inPage
+     * @return
+     */
+    public static PageRequest getPageRequest(PagingRpc.PageRequest inPage)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
     }
 }

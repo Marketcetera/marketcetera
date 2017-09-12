@@ -92,4 +92,17 @@ public interface UserService
      * @return a <code>User</code> value or <code>null</code>
      */
     User findByUserId(UserID inUserId);
+    /**
+     * Change the password of the given user to the given value.
+     * 
+     * <p>Password values must be pre-hashed.
+     *
+     * @param inUser a <code>User</code> value
+     * @param inOldPassword a <code>String</code> value
+     * @param inNewPassword a <code>String</code> value
+     * @return a <code>User</code> value
+     */
+    User changeUserPassword(User inUser,
+                            String inOldPassword,
+                            String inNewPassword);
 }

@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.UserDao;
 import org.marketcetera.admin.service.UserService;
@@ -151,6 +152,25 @@ public class UserServiceImpl
             usersByUserId.invalidate(inUser.getUserID());
             usersByUsername.invalidate(inUser.getName());
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.service.UserService#changeUserPassword(org.marketcetera.admin.User, java.lang.String, java.lang.String)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public PersistentUser changeUserPassword(User inUser,
+                                             String inOldPassword,
+                                             String inNewPassword)
+    {
+        PersistentUser result = userDao.findByName(inUser.getName());
+        if(result == null) {
+            throw new IllegalArgumentException("Unknown user: " + inUser.getName());
+        }
+        Validate.isTrue(result.getHashedPassword().equals(inOldPassword),
+                        "Password value does not match");
+        result.setHashedPassword(inNewPassword);
+        result = userDao.save(result);
+        return result;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.UserService#findOne(long)
