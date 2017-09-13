@@ -44,7 +44,7 @@
       <AppenderRef ref="STDOUT"/>
     </Root>
     <logger name="org.marketcetera" level="info"/>
-    <logger name="org.marketcetera.client.rpc.server.TradeClientRpcService" level="trace"/>
+    <logger name="org.marketcetera.strategyengine.server.rpc.StrategyAgentRpcService" level="trace"/>
     <logger name="fix.prettyprint" level="debug"/>
     <logger name="metc.brokers" level="info" additivity="false">
       <AppenderRef ref="BROKERS"/>

@@ -62,62 +62,12 @@ message DeleteRequest {
 message DeleteResponse {
 }
 
-message GetPropertiesRequest {
-    string sessionId = 1;
-    ModuleURN instance = 2;
-}
-
-message GetPropertiesResponse {
-    Properties properties = 1;
-}
-
-message SetPropertiesRequest {
-    string sessionId = 1;
-    ModuleURN instance = 2;
-    Properties properties = 4;
-}
-
-message SetPropertiesResponse {
-    Properties properties = 1;
-}
-
-message CreateStrategyRequest {
-    string sessionId = 1;
-    CreateStrategyParameters createStrategyParameters = 2;
-}
-
-message CreateStrategyResponse {
-    ModuleURN instance = 1;
-}
-
-message StrategyCreateParmsRequest {
-    string sessionId = 1;
-    ModuleURN instance = 2;
-}
-
-message StrategyCreateParmsResponse {
-    CreateStrategyParameters createStrategyParameters = 1;
-}
-
 message SendDataRequest {
     string sessionId = 1;
     string payload = 2;
 }
 
 message SendDataResponse {
-}
-
-message Properties {
-    repeated Entry entry = 1;
-}
-
-message Entry {
-    string key = 1;
-    string value = 2;
-}
-
-message CreateStrategyParameters {
-    string payload = 1;
 }
 
 service SEClientServiceRpc {
@@ -130,9 +80,5 @@ service SEClientServiceRpc {
     rpc start(StartRequest) returns (StartResponse);
     rpc stop(StopRequest) returns (StopResponse);
     rpc delete(DeleteRequest) returns (DeleteResponse);
-    rpc getProperties(GetPropertiesRequest) returns (GetPropertiesResponse);
-    rpc setProperties(SetPropertiesRequest) returns (SetPropertiesResponse);
-    rpc createStrategy(CreateStrategyRequest) returns (CreateStrategyResponse);
-    rpc getStrategyCreateParms(StrategyCreateParmsRequest) returns (StrategyCreateParmsResponse);
     rpc sendData(SendDataRequest) returns (SendDataResponse);
 }

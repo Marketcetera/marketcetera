@@ -34,6 +34,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>seclient-rpc-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>mdclient-api</artifactId>
     </dependency>
     <dependency>
@@ -51,14 +55,14 @@
       <id>executeClient</id>
       <build>
         <plugins>
-	  <plugin>
+          <plugin>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
             <configuration>
-	      <mainClass>org.marketcetera.clienttest.ClientTest</mainClass>
+              <mainClass>org.marketcetera.clienttest.ClientTest</mainClass>
               <layout>ZIP</layout>
             </configuration>
-	  </plugin>
+          </plugin>
         </plugins>
       </build>
     </profile>
@@ -78,15 +82,15 @@
       </build>
     </profile>
     <profile>
-      <id>executeSaClient</id>
+      <id>executeSeClient</id>
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
             <configuration>
-              <mainClass>org.marketcetera.clienttest.SaClientTest</mainClass>
-              <classpathScope>runtime</classpathScope>
+              <mainClass>org.marketcetera.clienttest.SeClientTest</mainClass>
+              <layout>ZIP</layout>
             </configuration>
           </plugin>
         </plugins>

@@ -19,6 +19,7 @@ import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.server.session.ServerSession;
 import org.marketcetera.server.session.ServerSessionFactory;
+import org.marketcetera.strategyengine.server.rpc.StrategyAgentRpcService;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
@@ -216,6 +217,22 @@ public class ServerApplication
         tradeClientRpcService.setAuthenticator(inAuthenticator);
         tradeClientRpcService.setSessionManager(inSessionManager);
         return tradeClientRpcService;
+    }
+    /**
+     * Get the SE RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return a <code>TradeClientRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public StrategyAgentRpcService<ServerSession> getSeRpcTradeService(@Autowired Authenticator inAuthenticator,
+                                                                       @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        StrategyAgentRpcService<ServerSession> seClientRpcService = new StrategyAgentRpcService<>();
+        seClientRpcService.setAuthenticator(inAuthenticator);
+        seClientRpcService.setSessionManager(inSessionManager);
+        return seClientRpcService;
     }
     /**
      * Get the FIX session provider value.

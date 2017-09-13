@@ -5,7 +5,6 @@ import java.io.StringWriter;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 import javax.annotation.concurrent.GuardedBy;
@@ -14,7 +13,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.Version;
 import org.marketcetera.core.VersionInfo;
@@ -28,7 +26,6 @@ import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SEClientServiceRpcBl
 import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SEClientServiceRpcStub;
 import org.marketcetera.strategyengine.client.ConnectionException;
 import org.marketcetera.strategyengine.client.ConnectionStatusListener;
-import org.marketcetera.strategyengine.client.CreateStrategyParameters;
 import org.marketcetera.strategyengine.client.DataReceiver;
 import org.marketcetera.strategyengine.client.SEClient;
 import org.marketcetera.strategyengine.client.XmlValue;
@@ -37,11 +34,8 @@ import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.util.ws.tags.AppId;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import io.grpc.Channel;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 /* $License$ */
@@ -201,108 +195,6 @@ public class SERpcClient
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.SEClient.SEClient#getProperties(org.marketcetera.module.ModuleURN)
-     */
-    @Override
-    public Map<String,Object> getProperties(ModuleURN inURN)
-            throws ConnectionException
-    {
-        return executeCall(new Callable<Map<String,Object>>(){
-            @Override
-            public Map<String,Object> call()
-                    throws Exception
-            {
-                SEClientRpc.GetPropertiesResponse response = getBlockingStub().getProperties(SEClientRpc.GetPropertiesRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                                                                             .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
-                Map<String,Object> properties = Maps.newHashMap();
-                for(SEClientRpc.Entry entry : response.getProperties().getEntryList()) {
-                    String key = entry.getKey();
-                    Object value = ((XmlValue)unmarshal(entry.getValue())).getValue();
-                    properties.put(key,
-                                   value);
-                }
-                return properties;
-            }
-        });
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.SEClient.SEClient#setProperties(org.marketcetera.module.ModuleURN, java.util.Map)
-     */
-    @Override
-    public Map<String,Object> setProperties(ModuleURN inURN,
-                                            Map<String,Object> inProperties)
-            throws ConnectionException
-    {
-        return executeCall(new Callable<Map<String,Object>>(){
-            @Override
-            public Map<String,Object> call()
-                    throws Exception
-            {
-                SEClientRpc.Properties.Builder propertiesBuilder = SEClientRpc.Properties.newBuilder();
-                try {
-                    for(Map.Entry<String,Object> entry : inProperties.entrySet()) {
-                        SEClientRpc.Entry.Builder entryBuilder = SEClientRpc.Entry.newBuilder();
-                        entryBuilder.setKey(entry.getKey());
-                        // note that this assumes that all values are marshallable
-                        entryBuilder.setValue(marshal(new XmlValue(entry.getValue())));
-                        propertiesBuilder.addEntry(entryBuilder.build());
-                    }
-                } catch (JAXBException e) {
-                    throw new StatusRuntimeException(Status.ABORTED.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
-                }
-                SEClientRpc.SetPropertiesResponse response = getBlockingStub().setProperties(SEClientRpc.SetPropertiesRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                                                                         .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue()))
-                                                                                         .setProperties(propertiesBuilder.build()).build());
-                Map<String,Object> properties = Maps.newHashMap();
-                for(SEClientRpc.Entry entry : response.getProperties().getEntryList()) {
-                    String key = entry.getKey();
-                    Object value = ((XmlValue)unmarshal(entry.getValue())).getValue();
-                    properties.put(key,
-                                   value);
-                }
-                return properties;
-            }
-        });
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.SEClient.SEClient#createStrategy(org.marketcetera.SEClient.CreateStrategyParameters)
-     */
-    @Override
-    public ModuleURN createStrategy(CreateStrategyParameters inParameters)
-            throws ConnectionException
-    {
-        return executeCall(new Callable<ModuleURN>(){
-            @Override
-            public ModuleURN call()
-                    throws Exception
-            {
-                SEClientRpc.CreateStrategyResponse response = getBlockingStub().createStrategy(SEClientRpc.CreateStrategyRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                                                                               .setCreateStrategyParameters(SEClientRpc.CreateStrategyParameters.newBuilder().setPayload(marshal(inParameters)).build()).build());
-                ModuleURN instance = new ModuleURN(response.getInstance().getValue());
-                return instance;
-            }
-        });
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.SEClient.SEClient#getStrategyCreateParms(org.marketcetera.module.ModuleURN)
-     */
-    @Override
-    public CreateStrategyParameters getStrategyCreateParms(ModuleURN inURN)
-            throws ConnectionException
-    {
-        return executeCall(new Callable<CreateStrategyParameters>(){
-            @Override
-            public CreateStrategyParameters call()
-                    throws Exception
-            {
-                SEClientRpc.StrategyCreateParmsResponse response = getBlockingStub().getStrategyCreateParms(SEClientRpc.StrategyCreateParmsRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                                                                                            .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
-                CreateStrategyParameters params = unmarshal(response.getCreateStrategyParameters().getPayload());
-                return params;
-            }
-        });
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.SEClient.SEClient#sendData(java.lang.Object)
      */
     @Override
@@ -338,7 +230,7 @@ public class SERpcClient
      * @see org.marketcetera.SEClient.SEClient#removeDataReciever(org.marketcetera.SEClient.DataReceiver)
      */
     @Override
-    public void removeDataReciever(DataReceiver inReceiver)
+    public void removeDataReceiver(DataReceiver inReceiver)
     {
         if(inReceiver == null) {
             throw new NullPointerException();
@@ -372,21 +264,6 @@ public class SERpcClient
         }
         synchronized (listeners) {
             listeners.removeFirstOccurrence(inListener);
-        }
-    }
-    // TODO received data - this is currently sent via JMS and DataEmitter/RemoteDataEmitter, prob want to switch to XML
-    /* (non-Javadoc)
-     * @see org.marketcetera.SEClient.SEClient#close()
-     */
-    @Override
-    public void close()
-    {
-        try {
-            stop();
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
     /* (non-Javadoc)

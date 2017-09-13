@@ -12,5 +12,6 @@
     <logger name="org.marketcetera.clienttest" level="debug"/>
     <logger name="org.marketcetera.trading.rpc" level="trace"/>
     <logger name="org.marketcetera.trading.rpc.TradingRpcClient" level="trace"/>
+    <logger name="org.marketcetera.strategyengine.client.rpc.SERpcClient" level="trace"/>
   </Loggers>
 </Configuration>
