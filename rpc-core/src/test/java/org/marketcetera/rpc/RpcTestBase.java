@@ -313,6 +313,15 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                             "test",
                             "password");
     }
+    /**
+     * Get the client parameters to create the client.
+     *
+     * @param inHostname a <code>String</code> value
+     * @param inPort an <code>int</code> value
+     * @param inUsername a <code>String</code> value
+     * @param inPassword a <code>String</code> value
+     * @return a <code>RpcClientParametersClazz</code> value
+     */
     protected abstract RpcClientParametersClazz getClientParameters(String inHostname,
                                                                     int inPort,
                                                                     String inUsername,
@@ -338,9 +347,16 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                                                                    inPort,
                                                                    inUsername,
                                                                    inPassword));
+        prepareClient(client);
         client.start();
         return client;
     }
+    /**
+     * Perform any necessary steps on the client before starting it.
+     *
+     * @param inClient a <code>RpcClientClazz</code> value
+     */
+    protected void prepareClient(RpcClientClazz inClient) {}
     /**
      * Create a test service.
      * 
