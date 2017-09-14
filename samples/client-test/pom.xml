@@ -34,7 +34,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>seclient-rpc-client</artifactId>
+      <artifactId>dataflow-rpc-client</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

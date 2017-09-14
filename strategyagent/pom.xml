@@ -19,7 +19,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>seclient-api</artifactId>
+      <artifactId>dataflow-api</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -64,7 +64,7 @@
     <!-- local test -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>seclient-ws-client</artifactId>
+      <artifactId>dataflow-ws-client</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

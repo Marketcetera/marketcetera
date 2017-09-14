@@ -223,22 +223,22 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dataflow-client-api</artifactId>
+        <artifactId>dataflow-api</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dataflow-client-rpc-core</artifactId>
+        <artifactId>dataflow-rpc-core</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dataflow-client-rpc-server</artifactId>
+        <artifactId>dataflow-rpc-server</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dataflow-client-rpc-client</artifactId>
+        <artifactId>dataflow-rpc-client</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
@@ -574,7 +574,7 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dataflow-client-rpc-client</artifactId>
+        <artifactId>dataflow-rpc-client</artifactId>
 	<type>test-jar</type>
 	<scope>test</scope>
         <version>3.1.0-SNAPSHOT</version>

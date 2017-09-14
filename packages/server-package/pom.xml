@@ -61,7 +61,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>seclient-rpc-server</artifactId>
+      <artifactId>dataflow-rpc-server</artifactId>
     </dependency>
     <!-- spring compile -->
     <dependency>

@@ -9,18 +9,18 @@
     <version>3.1.0-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
-  <artifactId>seclient-parent</artifactId>
+  <artifactId>dataflow-parent</artifactId>
   <version>3.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Strategy Engine Client Parent</name>
+  <name>Data Flow Parent</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <modules>
-    <module>seclient-api</module>
-    <module>seclient-rpc-client</module>
-    <module>seclient-rpc-core</module>
-    <module>seclient-rpc-server</module>
+    <module>dataflow-api</module>
+    <module>dataflow-rpc-client</module>
+    <module>dataflow-rpc-core</module>
+    <module>dataflow-rpc-server</module>
   </modules>
 </project>
