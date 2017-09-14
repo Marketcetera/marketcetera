@@ -990,11 +990,11 @@
   </profiles>
   <modules>
     <module>admin</module>
-    <module>clients</module>
     <module>cluster</module>
     <module>core</module>
     <module>fix</module>
     <module>fork</module>
+    <module>marketdata</module>
     <module>modules</module>
     <!--module>orderloader</module-->
     <module>packages</module>

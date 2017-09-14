@@ -7,15 +7,22 @@
     <version>3.1.0-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
-  <artifactId>clients-parent</artifactId>
+  <artifactId>marketdata-parent</artifactId>
   <version>3.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Clients Parent</name>
+  <name>Marketdata Parent</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <modules>
-    <module>marketdata-client</module>
+    <module>marketdata-api</module>
+    <module>marketdata-rpc-client</module>
+    <module>marketdata-rpc-core</module>
+    <module>marketdata-rpc-server</module>
+    <!--module>marketdata-ws-client</module-->
+    <!--module>marketdata-ws-core</module-->
+    <module>marketdata-server</module>
+    <!--module>marketdata-ws-server</module-->
   </modules>
 </project>
