@@ -54,7 +54,7 @@ import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.client.TradingClient;
+import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trade.dao.ExecutionReportDao;
 import org.marketcetera.trade.dao.OrderSummaryDao;
 import org.marketcetera.trade.dao.PersistentReportDao;
@@ -2289,7 +2289,7 @@ public class MarketceteraTestBase
      * provides access to client trading services
      */
     @Autowired(required=false)
-    protected TradingClient tradingClient;
+    protected TradeClient tradingClient;
     /**
      * provides fix settings
      */

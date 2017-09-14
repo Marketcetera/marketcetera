@@ -11,7 +11,7 @@ import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.TradeMessage;
-import org.marketcetera.trade.client.TradingClient;
+import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trade.utils.OrderHistoryManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -207,7 +207,7 @@ public class LiveOrderHistoryManager
      *
      * @return a <code>TradingClient</code> value
      */
-    protected TradingClient getClient()
+    protected TradeClient getClient()
     {
         return client;
     }
@@ -230,5 +230,5 @@ public class LiveOrderHistoryManager
     /**
      * connection to the client 
      */
-    private TradingClient client;
+    private TradeClient client;
 }

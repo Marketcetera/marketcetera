@@ -63,7 +63,7 @@ import org.marketcetera.trade.RootOrderIdFactory;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.TradeConstants;
 import org.marketcetera.trade.TradeMessage;
-import org.marketcetera.trade.TradingPermissions;
+import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.trade.dao.ExecutionReportDao;
 import org.marketcetera.trade.dao.PersistentExecutionReport;
@@ -354,7 +354,7 @@ public class ReportServiceImpl
         QPersistentReport r = QPersistentReport.persistentReport;
         BooleanExpression where = r.sendingTime.goe(inDate);
         Set<User> basicUsers = authzService.getSubjectUsersFor(inUser,
-                                                               TradingPermissions.ViewReportAction.name());
+                                                               TradePermissions.ViewReportAction.name());
         Set<PersistentUser> subjectUsers = Sets.newHashSet();
         for(User basicUser : basicUsers) {
             subjectUsers.add((PersistentUser)basicUser);
@@ -1101,7 +1101,7 @@ public class ReportServiceImpl
         }
         BooleanBuilder permissionWhere = new BooleanBuilder();
         Set<User> basicUsers = authzService.getSubjectUsersFor(inViewer,
-                                                               TradingPermissions.ViewPositionAction.name());
+                                                               TradePermissions.ViewPositionAction.name());
         Set<PersistentUser> subjectUsers = Sets.newHashSet();
         for(User basicUser : basicUsers) {
             subjectUsers.add((PersistentUser)basicUser);
@@ -1156,7 +1156,7 @@ public class ReportServiceImpl
         primaryWhere = primaryWhere.and(o.transactTime.loe(inDate));
         BooleanBuilder permissionWhere = new BooleanBuilder();
         Set<User> basicUsers = authzService.getSubjectUsersFor(inUser,
-                                                               TradingPermissions.ViewPositionAction.name());
+                                                               TradePermissions.ViewPositionAction.name());
         Set<PersistentUser> subjectUsers = Sets.newHashSet();
         for(User basicUser : basicUsers) {
             subjectUsers.add((PersistentUser)basicUser);

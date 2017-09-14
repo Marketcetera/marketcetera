@@ -30,7 +30,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>trade-client-rpc-client</artifactId>
+      <artifactId>trade-rpc-client</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

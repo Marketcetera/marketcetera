@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1658,73 +1659,78 @@ public class SimulatedExchangeTest
     public void testFutureContractSize()
             throws Exception
     {
-        exchange.start();
-        final AllEventsSubscriber all = new AllEventsSubscriber();
-        Token token = exchange.getTopOfBook(ExchangeRequestBuilder.newRequest().withInstrument(brn201212).create(),
+        try {
+            exchange.start();
+            final AllEventsSubscriber all = new AllEventsSubscriber();
+            Token token = exchange.getTopOfBook(ExchangeRequestBuilder.newRequest().withInstrument(brn201212).create(),
+                                                all);
+            MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    return all.events.size() >= 10;
+                }
+            });
+            for(Event event : all.events) {
+                assertTrue(event instanceof FutureEvent);
+                assertEquals(100,
+                             ((FutureEvent)event).getContractSize());
+            }
+            exchange.cancel(token);
+            all.events.clear();
+            token = exchange.getDepthOfBook(ExchangeRequestBuilder.newRequest().withInstrument(brn201212).create(),
                                             all);
-        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return all.events.size() >= 10;
+            MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    return all.events.size() >= 10;
+                }
+            });
+            for(Event event : all.events) {
+                assertTrue(event instanceof FutureEvent);
+                assertEquals(100,
+                             ((FutureEvent)event).getContractSize());
             }
-        });
-        for(Event event : all.events) {
-            assertTrue(event instanceof FutureEvent);
-            assertEquals(100,
-                         ((FutureEvent)event).getContractSize());
-        }
-        exchange.cancel(token);
-        all.events.clear();
-        token = exchange.getDepthOfBook(ExchangeRequestBuilder.newRequest().withInstrument(brn201212).create(),
-                                        all);
-        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return all.events.size() >= 10;
+            exchange.cancel(token);
+            all.events.clear();
+            token = exchange.getLatestTick(ExchangeRequestBuilder.newRequest().withInstrument(brn201212).create(),
+                                           all);
+            MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    return all.events.size() >= 10;
+                }
+            });
+            for(Event event : all.events) {
+                assertTrue(event instanceof FutureEvent);
+                assertEquals(100,
+                             ((FutureEvent)event).getContractSize());
             }
-        });
-        for(Event event : all.events) {
-            assertTrue(event instanceof FutureEvent);
-            assertEquals(100,
-                         ((FutureEvent)event).getContractSize());
-        }
-        exchange.cancel(token);
-        all.events.clear();
-        token = exchange.getLatestTick(ExchangeRequestBuilder.newRequest().withInstrument(brn201212).create(),
-                                       all);
-        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return all.events.size() >= 10;
+            exchange.cancel(token);
+            all.events.clear();
+            token = exchange.getStatistics(ExchangeRequestBuilder.newRequest().withInstrument(brn201212).create(),
+                                           all);
+            MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    return all.events.size() >= 10;
+                }
+            });
+            for(Event event : all.events) {
+                assertTrue(event instanceof FutureEvent);
+                assertEquals(100,
+                             ((FutureEvent)event).getContractSize());
             }
-        });
-        for(Event event : all.events) {
-            assertTrue(event instanceof FutureEvent);
-            assertEquals(100,
-                         ((FutureEvent)event).getContractSize());
-        }
-        exchange.cancel(token);
-        all.events.clear();
-        token = exchange.getStatistics(ExchangeRequestBuilder.newRequest().withInstrument(brn201212).create(),
-                                       all);
-        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return all.events.size() >= 10;
-            }
-        });
-        for(Event event : all.events) {
-            assertTrue(event instanceof FutureEvent);
-            assertEquals(100,
-                         ((FutureEvent)event).getContractSize());
+        } catch (ConcurrentModificationException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
     /**

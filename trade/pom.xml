@@ -14,8 +14,8 @@
     <module>trade-core</module>
     <module>trade-server</module>
     <module>trade-modules</module>
-    <module>trade-client-rpc-client</module>
-    <module>trade-client-rpc-core</module>
-    <module>trade-client-rpc-server</module>
+    <module>trade-rpc-client</module>
+    <module>trade-rpc-core</module>
+    <module>trade-rpc-server</module>
   </modules>
 </project>

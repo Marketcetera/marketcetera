@@ -2,6 +2,7 @@ package org.marketcetera.trade.config;
 
 import java.util.List;
 
+import org.marketcetera.dataflow.config.DataFlowProvider;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleManager;

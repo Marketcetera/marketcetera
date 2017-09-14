@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.dataflow.config.DataFlowProvider;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSettingsProvider;
@@ -17,7 +18,6 @@ import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.Receiver;
 import org.marketcetera.trade.Sender;
-import org.marketcetera.trade.config.DataFlowProvider;
 import org.marketcetera.trade.config.StandardIncomingDataFlowProvider;
 import org.marketcetera.trade.config.StandardOutgoingDataFlowProvider;
 import org.marketcetera.trade.config.StandardReportInjectionDataFlowProvider;

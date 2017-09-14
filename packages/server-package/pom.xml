@@ -57,7 +57,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>trade-client-rpc-server</artifactId>
+      <artifactId>dataflow-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-rpc-server</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

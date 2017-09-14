@@ -31,7 +31,7 @@ import org.marketcetera.trade.SimpleReportFactory;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.SendOrderResponse;
-import org.marketcetera.trade.client.TradingClient;
+import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trading.rpc.TradingRpcClientFactory;
 import org.marketcetera.trading.rpc.TradingRpcClientParametersImpl;
 import org.marketcetera.trading.rpc.TradingUtil;
@@ -319,9 +319,9 @@ public class ClientTest
     /**
      * provides access to trading client services
      */
-    private TradingClient tradingClient;
+    private TradeClient tradingClient;
     /**
-     * creates {@link TradingClient} objects
+     * creates {@link TradeClient} objects
      */
     @Autowired
     private TradingRpcClientFactory tradeClientFactory;
