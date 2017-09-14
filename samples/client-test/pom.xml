@@ -89,7 +89,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
             <configuration>
-              <mainClass>org.marketcetera.clienttest.SeClientTest</mainClass>
+              <mainClass>org.marketcetera.clienttest.DataFlowClientTest</mainClass>
               <layout>ZIP</layout>
             </configuration>
           </plugin>

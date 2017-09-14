@@ -1,11 +1,10 @@
 package org.marketcetera.clienttest;
 
 import org.marketcetera.core.PlatformServices;
-import org.marketcetera.strategyengine.client.ConnectionStatusListener;
-import org.marketcetera.strategyengine.client.DataReceiver;
-import org.marketcetera.strategyengine.client.SEClient;
-import org.marketcetera.strategyengine.client.rpc.SERpcClientParameters;
-import org.marketcetera.strategyengine.client.rpc.StrategyAgentRpcClientFactory;
+import org.marketcetera.dataflow.client.DataFlowClient;
+import org.marketcetera.dataflow.client.DataReceiver;
+import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientParameters;
+import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientFactory;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +17,7 @@ import org.springframework.context.annotation.Bean;
 /* $License$ */
 
 /**
- * Demonstrates how to connect to MATP Strategy Engine services from an external application.
+ * Demonstrates how to connect to data flow services from an external application.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -27,7 +26,7 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 @EnableAutoConfiguration
 @SpringBootConfiguration
-public class SeClientTest
+public class DataFlowClientTest
 {
     /**
      * Main run method.
@@ -36,20 +35,20 @@ public class SeClientTest
      */
     public static void main(String[] inArgs)
     {
-        SpringApplication.run(SeClientTest.class,
+        SpringApplication.run(DataFlowClientTest.class,
                               inArgs);
-        SLF4JLoggerProxy.info(SeClientTest.class,
-                              "Starting SE client test");
+        SLF4JLoggerProxy.info(DataFlowClientTest.class,
+                              "Starting data flow client test");
         try {
-            SeClientTest clientTest = SeClientTest.instance;
+            DataFlowClientTest clientTest = DataFlowClientTest.instance;
             clientTest.runTest();
         } catch (Exception e) {
-            PlatformServices.handleException(SeClientTest.class,
-                                             "SE Client Test Error",
+            PlatformServices.handleException(DataFlowClientTest.class,
+                                             "Data Flow Client Test Error",
                                              e);
         }
-        SLF4JLoggerProxy.info(SeClientTest.class,
-                              "Ending SE client test");
+        SLF4JLoggerProxy.info(DataFlowClientTest.class,
+                              "Ending data flow client test");
     }
     /**
      * Run the client test.
@@ -60,53 +59,40 @@ public class SeClientTest
             throws Exception
     {
         try {
-            SERpcClientParameters params = new SERpcClientParameters();
+            DataFlowRpcClientParameters params = new DataFlowRpcClientParameters();
             params.setHostname(hostname);
             params.setPort(port);
             params.setUsername(username);
             params.setPassword(password);
-            seClient = seClientFactory.create(params);
-            seClient.start();
-            SLF4JLoggerProxy.info(SeClientTest.class,
+            dataFlowClient = dataFlowClientFactory.create(params);
+            dataFlowClient.start();
+            SLF4JLoggerProxy.info(DataFlowClientTest.class,
                                   "SEClient connected to {}:{} as {}",
                                   hostname,
                                   port,
                                   username);
-            // add a connection status listener
-            ConnectionStatusListener connectionStatusListener = new ConnectionStatusListener() {
-
-                @Override
-                public void receiveConnectionStatus(boolean inStatus)
-                {
-                    SLF4JLoggerProxy.info(SeClientTest.this,
-                                          "Received {}",
-                                          inStatus);
-                }
-            };
-            seClient.addConnectionStatusListener(connectionStatusListener);
             // add a data listener
             DataReceiver dataReceiver = new DataReceiver() {
                 @Override
                 public void receiveData(Object inObject)
                 {
-                    SLF4JLoggerProxy.info(SeClientTest.this,
+                    SLF4JLoggerProxy.info(DataFlowClientTest.this,
                                           "Received {}",
                                           inObject);
                 }
             };
-            seClient.addDataReceiver(dataReceiver);
-            seClient.removeDataReceiver(dataReceiver);
-            seClient.removeConnectionStatusListener(connectionStatusListener);
+            dataFlowClient.addDataReceiver(dataReceiver);
+            dataFlowClient.removeDataReceiver(dataReceiver);
         } finally {
-            if(seClient != null) {
-                seClient.stop();
+            if(dataFlowClient != null) {
+                dataFlowClient.stop();
             }
         }
     }
     /**
-     * Create a new SeClientTest instance.
+     * Create a new DataFlowClientTest instance.
      */
-    public SeClientTest()
+    public DataFlowClientTest()
     {
         instance = this;
     }
@@ -116,25 +102,25 @@ public class SeClientTest
      * @return a <code>StrategyAgentRpcClientFactory</code> value
      */
     @Bean
-    public StrategyAgentRpcClientFactory getSeClientFactory()
+    public DataFlowRpcClientFactory getSeClientFactory()
     {
-        StrategyAgentRpcClientFactory seClientFactory = new StrategyAgentRpcClientFactory();
-        return seClientFactory;
+        DataFlowRpcClientFactory clientFactory = new DataFlowRpcClientFactory();
+        return clientFactory;
     }
     /**
      * Get the autowired instance.
      *
-     * @return a <code>SeClientTest</code> value
+     * @return a <code>DataFlowClientTest</code> value
      */
     @Bean
-    public static SeClientTest getSeClientTest()
+    public static DataFlowClientTest getDataFlowClientTest()
     {
-        return new SeClientTest();
+        return new DataFlowClientTest();
     }
     /**
      * instance created for autowiring purposes
      */
-    private static SeClientTest instance;
+    private static DataFlowClientTest instance;
     /**
      * hostname value
      */
@@ -158,12 +144,12 @@ public class SeClientTest
     /**
      * provides access to SE client services
      */
-    private SEClient seClient;
+    private DataFlowClient dataFlowClient;
     /**
-     * creates {@link SEClient} objects
+     * creates {@link DataFlowClient} objects
      */
     @Autowired
-    private StrategyAgentRpcClientFactory seClientFactory;
+    private DataFlowRpcClientFactory dataFlowClientFactory;
 }
 //package org.marketcetera.clienttest;
 //

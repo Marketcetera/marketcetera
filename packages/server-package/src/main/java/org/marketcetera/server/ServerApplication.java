@@ -11,6 +11,7 @@ import org.marketcetera.brokers.service.InMemoryFixSessionProvider;
 import org.marketcetera.client.rpc.server.TradeClientRpcService;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.dataflow.server.rpc.DataFlowRpcService;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.module.ModuleManager;
@@ -19,7 +20,6 @@ import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.server.session.ServerSession;
 import org.marketcetera.server.session.ServerSessionFactory;
-import org.marketcetera.strategyengine.server.rpc.StrategyAgentRpcService;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
@@ -226,10 +226,10 @@ public class ServerApplication
      * @return a <code>TradeClientRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
-    public StrategyAgentRpcService<ServerSession> getSeRpcTradeService(@Autowired Authenticator inAuthenticator,
+    public DataFlowRpcService<ServerSession> getSeRpcTradeService(@Autowired Authenticator inAuthenticator,
                                                                        @Autowired SessionManager<ServerSession> inSessionManager)
     {
-        StrategyAgentRpcService<ServerSession> seClientRpcService = new StrategyAgentRpcService<>();
+        DataFlowRpcService<ServerSession> seClientRpcService = new DataFlowRpcService<>();
         seClientRpcService.setAuthenticator(inAuthenticator);
         seClientRpcService.setSessionManager(inSessionManager);
         return seClientRpcService;

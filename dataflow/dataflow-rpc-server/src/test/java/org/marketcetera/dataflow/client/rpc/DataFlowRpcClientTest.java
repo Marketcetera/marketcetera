@@ -1,23 +1,27 @@
-package org.marketcetera.strategyengine.client.rpc;
+package org.marketcetera.dataflow.client.rpc;
 
 import org.junit.Before;
+import org.marketcetera.dataflow.client.rpc.DataFlowClientContextClassProvider;
+import org.marketcetera.dataflow.client.rpc.DataFlowRpcClient;
+import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientFactory;
+import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientParameters;
+import org.marketcetera.dataflow.rpc.DataFlowClientServiceRpcGrpc;
+import org.marketcetera.dataflow.server.rpc.DataFlowRpcService;
 import org.marketcetera.rpc.RpcTestBase;
 import org.marketcetera.rpc.client.RpcClientFactory;
-import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc;
-import org.marketcetera.strategyengine.server.rpc.StrategyAgentRpcService;
 import org.marketcetera.util.ws.tags.SessionId;
 
 /* $License$ */
 
 /**
- * Tests {@link RpcSAClientImpl}.
+ * Tests {@link DataFlowRpcClient}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: RpcSAClientImplTest.java 17223 2016-08-31 01:03:01Z colin $
  * @since 2.4.0
  */
-public class RpcSAClientImplTest
-        extends RpcTestBase<SERpcClientParameters,SERpcClient,SessionId,SEClientServiceRpcGrpc.SEClientServiceRpcImplBase,StrategyAgentRpcService<SessionId>>
+public class DataFlowRpcClientTest
+        extends RpcTestBase<DataFlowRpcClientParameters,DataFlowRpcClient,SessionId,DataFlowClientServiceRpcGrpc.DataFlowClientServiceRpcImplBase,DataFlowRpcService<SessionId>>
 {
     /**
      * Runs before each test.
@@ -281,31 +285,31 @@ public class RpcSAClientImplTest
      * @see org.marketcetera.rpc.RpcTestBase#createTestService()
      */
     @Override
-    protected StrategyAgentRpcService<SessionId> createTestService()
+    protected DataFlowRpcService<SessionId> createTestService()
     {
-        StrategyAgentRpcService<SessionId> service = new StrategyAgentRpcService<>();
-        service.setContextClassProvider(StrategyAgentClientContextClassProvider.INSTANCE);
+        DataFlowRpcService<SessionId> service = new DataFlowRpcService<>();
+        service.setContextClassProvider(DataFlowClientContextClassProvider.INSTANCE);
         return service;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.RpcTestBase#getRpcClientFactory()
      */
     @Override
-    protected RpcClientFactory<SERpcClientParameters,SERpcClient> getRpcClientFactory()
+    protected RpcClientFactory<DataFlowRpcClientParameters,DataFlowRpcClient> getRpcClientFactory()
     {
-        return new StrategyAgentRpcClientFactory();
+        return new DataFlowRpcClientFactory();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.RpcTestBase#getClientParameters(java.lang.String, int, java.lang.String, java.lang.String)
      */
     @Override
-    protected SERpcClientParameters getClientParameters(String inHostname,
+    protected DataFlowRpcClientParameters getClientParameters(String inHostname,
                                                                    int inPort,
                                                                    String inUsername,
                                                                    String inPassword)
     {
-        SERpcClientParameters parameters = new SERpcClientParameters();
-        parameters.setContextClassProvider(StrategyAgentClientContextClassProvider.INSTANCE);
+        DataFlowRpcClientParameters parameters = new DataFlowRpcClientParameters();
+        parameters.setContextClassProvider(DataFlowClientContextClassProvider.INSTANCE);
         parameters.setHostname(inHostname);
         parameters.setPassword(inPassword);
         parameters.setPort(inPort);
@@ -315,5 +319,5 @@ public class RpcSAClientImplTest
     /**
      * test client value
      */
-    private SERpcClient client;
+    private DataFlowRpcClient client;
 }

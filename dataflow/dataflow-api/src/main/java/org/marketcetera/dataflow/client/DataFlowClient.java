@@ -1,4 +1,4 @@
-package org.marketcetera.strategyengine.client;
+package org.marketcetera.dataflow.client;
 
 import java.util.List;
 
@@ -8,8 +8,9 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
+
 /**
- * The interface to the set of remote services available from a remote strategy engine.
+ * Provides access to data flow services.
  *
  * @author anshul@marketcetera.com
  * @author colin@marketcetera.com
@@ -17,8 +18,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ClassVersion("$Id: SEClient.java 17242 2016-09-02 16:46:48Z colin $")
-public interface SEClient
-        extends BaseClient,ConnectionStatusPublisher,DataPublisher
+public interface DataFlowClient
+        extends BaseClient,DataPublisher
 {
     /**
      * Returns the list of providers available.

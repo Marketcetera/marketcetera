@@ -1,4 +1,4 @@
-package org.marketcetera.strategyengine.server.rpc;
+package org.marketcetera.dataflow.server.rpc;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -13,6 +13,25 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.dataflow.client.DataBroadcaster;
+import org.marketcetera.dataflow.client.XmlValue;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.DeleteRequest;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.DeleteResponse;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.InstancesRequest;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.InstancesResponse;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.ModuleInfoRequest;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.ModuleInfoResponse;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.ProvidersRequest;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.ProvidersResponse;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.SendDataRequest;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.SendDataResponse;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.StartRequest;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.StartResponse;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.StopRequest;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc.StopResponse;
+import org.marketcetera.dataflow.rpc.DataFlowClientServiceRpcGrpc;
+import org.marketcetera.dataflow.rpc.DataFlowClientServiceRpcGrpc.DataFlowClientServiceRpcImplBase;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
@@ -23,25 +42,6 @@ import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.server.AbstractRpcService;
-import org.marketcetera.seclient.rpc.SEClientRpc;
-import org.marketcetera.seclient.rpc.SEClientRpc.DeleteRequest;
-import org.marketcetera.seclient.rpc.SEClientRpc.DeleteResponse;
-import org.marketcetera.seclient.rpc.SEClientRpc.InstancesRequest;
-import org.marketcetera.seclient.rpc.SEClientRpc.InstancesResponse;
-import org.marketcetera.seclient.rpc.SEClientRpc.ModuleInfoRequest;
-import org.marketcetera.seclient.rpc.SEClientRpc.ModuleInfoResponse;
-import org.marketcetera.seclient.rpc.SEClientRpc.ProvidersRequest;
-import org.marketcetera.seclient.rpc.SEClientRpc.ProvidersResponse;
-import org.marketcetera.seclient.rpc.SEClientRpc.SendDataRequest;
-import org.marketcetera.seclient.rpc.SEClientRpc.SendDataResponse;
-import org.marketcetera.seclient.rpc.SEClientRpc.StartRequest;
-import org.marketcetera.seclient.rpc.SEClientRpc.StartResponse;
-import org.marketcetera.seclient.rpc.SEClientRpc.StopRequest;
-import org.marketcetera.seclient.rpc.SEClientRpc.StopResponse;
-import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc;
-import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SEClientServiceRpcImplBase;
-import org.marketcetera.strategyengine.client.DataBroadcaster;
-import org.marketcetera.strategyengine.client.XmlValue;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,14 +56,14 @@ import io.grpc.stub.StreamObserver;
 /* $License$ */
 
 /**
- * Provides SE RPC server services.
+ * Provides Data Flow RPC server services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class StrategyAgentRpcService<SessionClazz>
-        extends AbstractRpcService<SessionClazz,SEClientServiceRpcGrpc.SEClientServiceRpcImplBase>
+public class DataFlowRpcService<SessionClazz>
+        extends AbstractRpcService<SessionClazz,DataFlowClientServiceRpcGrpc.DataFlowClientServiceRpcImplBase>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.server.AbstractRpcService#start()
@@ -110,7 +110,7 @@ public class StrategyAgentRpcService<SessionClazz>
      * @see org.marketcetera.rpc.server.AbstractRpcService#getService()
      */
     @Override
-    protected SEClientServiceRpcImplBase getService()
+    protected DataFlowClientServiceRpcImplBase getService()
     {
         return service;
     }
@@ -154,7 +154,7 @@ public class StrategyAgentRpcService<SessionClazz>
      * @since $Release$
      */
     private class Service
-            extends SEClientServiceRpcGrpc.SEClientServiceRpcImplBase
+            extends DataFlowClientServiceRpcGrpc.DataFlowClientServiceRpcImplBase
     {
         /* (non-Javadoc)
          * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#login(org.marketcetera.rpc.base.BaseRpc.LoginRequest, io.grpc.stub.StreamObserver)
@@ -163,7 +163,7 @@ public class StrategyAgentRpcService<SessionClazz>
         public void login(LoginRequest inRequest,
                           StreamObserver<LoginResponse> inResponseObserver)
         {
-            StrategyAgentRpcService.this.doLogin(inRequest,
+            DataFlowRpcService.this.doLogin(inRequest,
                                                        inResponseObserver);
         }
         /* (non-Javadoc)
@@ -173,7 +173,7 @@ public class StrategyAgentRpcService<SessionClazz>
         public void logout(LogoutRequest inRequest,
                            StreamObserver<LogoutResponse> inResponseObserver)
         {
-            StrategyAgentRpcService.this.doLogout(inRequest,
+            DataFlowRpcService.this.doLogout(inRequest,
                                                         inResponseObserver);
         }
         /* (non-Javadoc)
@@ -183,7 +183,7 @@ public class StrategyAgentRpcService<SessionClazz>
         public void heartbeat(HeartbeatRequest inRequest,
                               StreamObserver<HeartbeatResponse> inResponseObserver)
         {
-            StrategyAgentRpcService.this.doHeartbeat(inRequest,
+            DataFlowRpcService.this.doHeartbeat(inRequest,
                                                            inResponseObserver);
         }
         /* (non-Javadoc)
@@ -199,13 +199,13 @@ public class StrategyAgentRpcService<SessionClazz>
                                        "{} received getProviders request",
                                        getServiceDescription());
                 List<ModuleURN> providers = moduleManager.getProviders();
-                SEClientRpc.ProvidersResponse.Builder responseBuilder = SEClientRpc.ProvidersResponse.newBuilder();
+                DataFlowClientRpc.ProvidersResponse.Builder responseBuilder = DataFlowClientRpc.ProvidersResponse.newBuilder();
                 if(providers != null) {
                     for(ModuleURN provider : providers) {
-                        responseBuilder.addProvider(SEClientRpc.ModuleURN.newBuilder().setValue(provider.getValue()).build());
+                        responseBuilder.addProvider(DataFlowClientRpc.ModuleURN.newBuilder().setValue(provider.getValue()).build());
                     }
                 }
-                SEClientRpc.ProvidersResponse response = responseBuilder.build();
+                DataFlowClientRpc.ProvidersResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -234,13 +234,13 @@ public class StrategyAgentRpcService<SessionClazz>
                                        getServiceDescription(),
                                        provider);
                 List<ModuleURN> instances = moduleManager.getModuleInstances(provider);
-                SEClientRpc.InstancesResponse.Builder responseBuilder = SEClientRpc.InstancesResponse.newBuilder();
+                DataFlowClientRpc.InstancesResponse.Builder responseBuilder = DataFlowClientRpc.InstancesResponse.newBuilder();
                 if(instances != null) {
                     for(ModuleURN instance : instances) {
-                        responseBuilder.addInstance(SEClientRpc.ModuleURN.newBuilder().setValue(instance.getValue()).build());
+                        responseBuilder.addInstance(DataFlowClientRpc.ModuleURN.newBuilder().setValue(instance.getValue()).build());
                     }
                 }
-                SEClientRpc.InstancesResponse response = responseBuilder.build();
+                DataFlowClientRpc.InstancesResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -269,15 +269,15 @@ public class StrategyAgentRpcService<SessionClazz>
                                        getServiceDescription(),
                                        instance);
                 ModuleInfo info = moduleManager.getModuleInfo(instance);
-                SEClientRpc.ModuleInfoResponse.Builder responseBuilder = SEClientRpc.ModuleInfoResponse.newBuilder();
+                DataFlowClientRpc.ModuleInfoResponse.Builder responseBuilder = DataFlowClientRpc.ModuleInfoResponse.newBuilder();
                 if(info != null) {
                     try {
-                        responseBuilder.setInfo(SEClientRpc.ModuleInfo.newBuilder().setPayload(marshal(info)));
+                        responseBuilder.setInfo(DataFlowClientRpc.ModuleInfo.newBuilder().setPayload(marshal(info)));
                     } catch (JAXBException e) {
                         throw new ServiceException(e);
                     }
                 }
-                SEClientRpc.ModuleInfoResponse response = responseBuilder.build();
+                DataFlowClientRpc.ModuleInfoResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -305,9 +305,9 @@ public class StrategyAgentRpcService<SessionClazz>
                                        "{} received start for {} request",
                                        getServiceDescription(),
                                        instance);
-                SEClientRpc.StartResponse.Builder responseBuilder = SEClientRpc.StartResponse.newBuilder();
+                DataFlowClientRpc.StartResponse.Builder responseBuilder = DataFlowClientRpc.StartResponse.newBuilder();
                 moduleManager.start(instance);
-                SEClientRpc.StartResponse response = responseBuilder.build();
+                DataFlowClientRpc.StartResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -335,9 +335,9 @@ public class StrategyAgentRpcService<SessionClazz>
                                        "{} received stop for {} request",
                                        getServiceDescription(),
                                        instance);
-                SEClientRpc.StopResponse.Builder responseBuilder = SEClientRpc.StopResponse.newBuilder();
+                DataFlowClientRpc.StopResponse.Builder responseBuilder = DataFlowClientRpc.StopResponse.newBuilder();
                 moduleManager.stop(instance);
-                SEClientRpc.StopResponse response = responseBuilder.build();
+                DataFlowClientRpc.StopResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -365,9 +365,9 @@ public class StrategyAgentRpcService<SessionClazz>
                                        "{} received delete for {} request",
                                        getServiceDescription(),
                                        instance);
-                SEClientRpc.DeleteResponse.Builder responseBuilder = SEClientRpc.DeleteResponse.newBuilder();
+                DataFlowClientRpc.DeleteResponse.Builder responseBuilder = DataFlowClientRpc.DeleteResponse.newBuilder();
                 moduleManager.deleteModule(instance);
-                SEClientRpc.DeleteResponse response = responseBuilder.build();
+                DataFlowClientRpc.DeleteResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -400,17 +400,17 @@ public class StrategyAgentRpcService<SessionClazz>
                                        "{} received sendData for {} request",
                                        getServiceDescription(),
                                        data);
-                SEClientRpc.SendDataResponse.Builder responseBuilder = SEClientRpc.SendDataResponse.newBuilder();
+                DataFlowClientRpc.SendDataResponse.Builder responseBuilder = DataFlowClientRpc.SendDataResponse.newBuilder();
                 for(DataBroadcaster dataBroadcaster : dataBroadcasters) {
                     try {
                         dataBroadcaster.receiveData(data);
                     } catch (Exception e) {
-                        PlatformServices.handleException(StrategyAgentRpcService.this,
+                        PlatformServices.handleException(DataFlowRpcService.this,
                                                          "Error broadcasting " + data,
                                                          e);
                     }
                 }
-                SEClientRpc.SendDataResponse response = responseBuilder.build();
+                DataFlowClientRpc.SendDataResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning from sendData call",
                                        getServiceDescription());
@@ -464,5 +464,5 @@ public class StrategyAgentRpcService<SessionClazz>
     /**
      * description of this service
      */
-    private final static String description = "StrategyEngine RPC Service";
+    private final static String description = "Data Flow RPC Service";
 }

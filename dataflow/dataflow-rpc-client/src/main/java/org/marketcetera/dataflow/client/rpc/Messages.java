@@ -1,4 +1,4 @@
-package org.marketcetera.strategyengine.client.rpc;
+package org.marketcetera.dataflow.client.rpc;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage1P;
@@ -18,7 +18,7 @@ public interface Messages {
     /**
      * The message provider
      */
-    static final I18NMessageProvider PROVIDER = new I18NMessageProvider("seclient-rpc",Messages.class.getClassLoader());
+    static final I18NMessageProvider PROVIDER = new I18NMessageProvider("dataflow_rpc",Messages.class.getClassLoader());
     /**
      * The message logger.
      */

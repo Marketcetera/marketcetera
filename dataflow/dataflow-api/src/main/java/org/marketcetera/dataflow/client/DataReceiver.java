@@ -1,4 +1,4 @@
-package org.marketcetera.strategyengine.client;
+package org.marketcetera.dataflow.client;
 
 import org.marketcetera.util.misc.ClassVersion;
 

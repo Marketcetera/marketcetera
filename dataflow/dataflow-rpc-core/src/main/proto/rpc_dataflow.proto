@@ -1,8 +1,8 @@
 syntax = "proto3";
 import "rpc_base.proto";
 option java_generic_services = true;
-option java_package = "org.marketcetera.seclient.rpc";
-option java_outer_classname = "SEClientRpc";
+option java_package = "org.marketcetera.dataflow.rpc";
+option java_outer_classname = "DataFlowClientRpc";
 
 message ModuleURN {
     string value = 1;
@@ -64,13 +64,14 @@ message DeleteResponse {
 
 message SendDataRequest {
     string sessionId = 1;
-    string payload = 2;
+    string target = 2;
+    string payload = 3;
 }
 
 message SendDataResponse {
 }
 
-service SEClientServiceRpc {
+service DataFlowClientServiceRpc {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
     rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}

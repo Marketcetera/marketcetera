@@ -1,4 +1,4 @@
-package org.marketcetera.strategyengine.client.rpc;
+package org.marketcetera.dataflow.client.rpc;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -16,20 +16,17 @@ import javax.xml.bind.Unmarshaller;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.Version;
 import org.marketcetera.core.VersionInfo;
+import org.marketcetera.dataflow.client.DataFlowClient;
+import org.marketcetera.dataflow.client.DataReceiver;
+import org.marketcetera.dataflow.client.XmlValue;
+import org.marketcetera.dataflow.rpc.DataFlowClientRpc;
+import org.marketcetera.dataflow.rpc.DataFlowClientServiceRpcGrpc;
+import org.marketcetera.dataflow.rpc.DataFlowClientServiceRpcGrpc.DataFlowClientServiceRpcBlockingStub;
+import org.marketcetera.dataflow.rpc.DataFlowClientServiceRpcGrpc.DataFlowClientServiceRpcStub;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.client.AbstractRpcClient;
-import org.marketcetera.seclient.rpc.SEClientRpc;
-import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc;
-import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SEClientServiceRpcBlockingStub;
-import org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SEClientServiceRpcStub;
-import org.marketcetera.strategyengine.client.ConnectionException;
-import org.marketcetera.strategyengine.client.ConnectionStatusListener;
-import org.marketcetera.strategyengine.client.DataReceiver;
-import org.marketcetera.strategyengine.client.SEClient;
-import org.marketcetera.strategyengine.client.XmlValue;
-import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.util.ws.tags.AppId;
 
@@ -41,22 +38,22 @@ import io.grpc.stub.StreamObserver;
 /* $License$ */
 
 /**
- * Provides an RPC {@link SEClient} interface.
+ * Provides an RPC {@link DataFlowClient} interface.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class SERpcClient
-        extends AbstractRpcClient<SEClientServiceRpcBlockingStub,SEClientServiceRpcStub,SERpcClientParameters>
-        implements SEClient
+public class DataFlowRpcClient
+        extends AbstractRpcClient<DataFlowClientServiceRpcBlockingStub,DataFlowClientServiceRpcStub,DataFlowRpcClientParameters>
+        implements DataFlowClient
 {
     /**
      * Create a new SERpcClient instance.
      *
      * @param inParameters an <code>SERpcClientParameters</code> value
      */
-    SERpcClient(SERpcClientParameters inParameters)
+    DataFlowRpcClient(DataFlowRpcClientParameters inParameters)
     {
         super(inParameters);
         contextClassProvider = inParameters.getContextClassProvider();
@@ -80,16 +77,15 @@ public class SERpcClient
      */
     @Override
     public List<ModuleURN> getProviders()
-            throws ConnectionException
     {
         return executeCall(new Callable<List<ModuleURN>>(){
             @Override
             public List<ModuleURN> call()
                     throws Exception
             {
-                SEClientRpc.ProvidersResponse response = getBlockingStub().getProviders(SEClientRpc.ProvidersRequest.newBuilder().setSessionId(getSessionId().getValue()).build());
+                DataFlowClientRpc.ProvidersResponse response = getBlockingStub().getProviders(DataFlowClientRpc.ProvidersRequest.newBuilder().setSessionId(getSessionId().getValue()).build());
                 List<ModuleURN> providers = Lists.newArrayList();
-                for(SEClientRpc.ModuleURN provider : response.getProviderList()) {
+                for(DataFlowClientRpc.ModuleURN provider : response.getProviderList()) {
                     providers.add(new ModuleURN(provider.getValue()));
                 }
                 return providers;
@@ -101,17 +97,16 @@ public class SERpcClient
      */
     @Override
     public List<ModuleURN> getInstances(ModuleURN inProviderURN)
-            throws ConnectionException
     {
         return executeCall(new Callable<List<ModuleURN>>(){
             @Override
             public List<ModuleURN> call()
                     throws Exception
             {
-                SEClientRpc.InstancesResponse response = getBlockingStub().getInstances(SEClientRpc.InstancesRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                                                                        .setProvider(SEClientRpc.ModuleURN.newBuilder().setValue(inProviderURN.getValue())).build());
+                DataFlowClientRpc.InstancesResponse response = getBlockingStub().getInstances(DataFlowClientRpc.InstancesRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                                                                        .setProvider(DataFlowClientRpc.ModuleURN.newBuilder().setValue(inProviderURN.getValue())).build());
                 List<ModuleURN> instances = Lists.newArrayList();
-                for(SEClientRpc.ModuleURN instance : response.getInstanceList()) {
+                for(DataFlowClientRpc.ModuleURN instance : response.getInstanceList()) {
                     instances.add(new ModuleURN(instance.getValue()));
                 }
                 return instances;
@@ -123,15 +118,14 @@ public class SERpcClient
      */
     @Override
     public ModuleInfo getModuleInfo(ModuleURN inURN)
-            throws ConnectionException
     {
         return executeCall(new Callable<ModuleInfo>(){
             @Override
             public ModuleInfo call()
                     throws Exception
             {
-                SEClientRpc.ModuleInfoResponse response = getBlockingStub().getModuleInfo(SEClientRpc.ModuleInfoRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                                                                          .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
+                DataFlowClientRpc.ModuleInfoResponse response = getBlockingStub().getModuleInfo(DataFlowClientRpc.ModuleInfoRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                                                                          .setInstance(DataFlowClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
                 ModuleInfo info = null;
                 if(response.hasInfo()) {
                     info = unmarshal(response.getInfo().getPayload());
@@ -145,15 +139,14 @@ public class SERpcClient
      */
     @Override
     public void start(final ModuleURN inURN)
-            throws ConnectionException
     {
         executeCall(new Callable<Void>(){
             @Override
             public Void call()
                     throws Exception
             {
-                getBlockingStub().start(SEClientRpc.StartRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                        .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
+                getBlockingStub().start(DataFlowClientRpc.StartRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                        .setInstance(DataFlowClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
                 return null;
             }
         });
@@ -163,15 +156,14 @@ public class SERpcClient
      */
     @Override
     public void stop(ModuleURN inURN)
-            throws ConnectionException
     {
         executeCall(new Callable<Void>(){
             @Override
             public Void call()
                     throws Exception
             {
-                getBlockingStub().stop(SEClientRpc.StopRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                       .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
+                getBlockingStub().stop(DataFlowClientRpc.StopRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                       .setInstance(DataFlowClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
                 return null;
             }
         });
@@ -181,15 +173,14 @@ public class SERpcClient
      */
     @Override
     public void delete(ModuleURN inURN)
-            throws ConnectionException
     {
         executeCall(new Callable<Void>(){
             @Override
             public Void call()
                     throws Exception
             {
-                getBlockingStub().delete(SEClientRpc.DeleteRequest.newBuilder().setSessionId(getSessionId().getValue())
-                                         .setInstance(SEClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
+                getBlockingStub().delete(DataFlowClientRpc.DeleteRequest.newBuilder().setSessionId(getSessionId().getValue())
+                                         .setInstance(DataFlowClientRpc.ModuleURN.newBuilder().setValue(inURN.getValue())).build());
                 return null;
             }
         });
@@ -199,7 +190,6 @@ public class SERpcClient
      */
     @Override
     public void sendData(Object inData)
-            throws ConnectionException
     {
         executeCall(new Callable<Void>(){
             @Override
@@ -207,7 +197,7 @@ public class SERpcClient
                     throws Exception
             {
                 // note that inData must be JAXB marshallable
-                getBlockingStub().sendData(SEClientRpc.SendDataRequest.newBuilder().setSessionId(getSessionId().getValue())
+                getBlockingStub().sendData(DataFlowClientRpc.SendDataRequest.newBuilder().setSessionId(getSessionId().getValue())
                                            .setPayload(marshal(new XmlValue(inData))).build());
                 return null;
             }
@@ -240,66 +230,20 @@ public class SERpcClient
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.SEClient.SEClient#addConnectionStatusListener(org.marketcetera.SEClient.ConnectionStatusListener)
-     */
-    @Override
-    public void addConnectionStatusListener(ConnectionStatusListener inListener)
-    {
-        if(inListener == null) {
-            throw new NullPointerException();
-        }
-        synchronized (listeners) {
-            listeners.addFirst(inListener);
-        }
-        inListener.receiveConnectionStatus(isRunning());
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.SEClient.SEClient#removeConnectionStatusListener(org.marketcetera.SEClient.ConnectionStatusListener)
-     */
-    @Override
-    public void removeConnectionStatusListener(ConnectionStatusListener inListener)
-    {
-        if(inListener == null) {
-            throw new NullPointerException();
-        }
-        synchronized (listeners) {
-            listeners.removeFirstOccurrence(inListener);
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.rpc.client.AbstractRpcClient#onStatusChange(boolean)
-     */
-    @Override
-    protected void onStatusChange(boolean inIsConnected)
-    {
-        synchronized(listeners) {
-            for(ConnectionStatusListener listener: listeners) {
-                try {
-                    listener.receiveConnectionStatus(inIsConnected);
-                } catch (Exception e) {
-                    Messages.LOG_ERROR_RECEIVE_CONNECT_STATUS.warn(this,
-                                                                   e,
-                                                                   inIsConnected);
-                    ExceptUtils.interrupt(e);
-                }
-            }
-        }
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getBlockingStub(io.grpc.Channel)
      */
     @Override
-    protected SEClientServiceRpcBlockingStub getBlockingStub(Channel inChannel)
+    protected DataFlowClientServiceRpcBlockingStub getBlockingStub(Channel inChannel)
     {
-        return SEClientServiceRpcGrpc.newBlockingStub(inChannel);
+        return DataFlowClientServiceRpcGrpc.newBlockingStub(inChannel);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getAsyncStub(io.grpc.Channel)
      */
     @Override
-    protected SEClientServiceRpcStub getAsyncStub(Channel inChannel)
+    protected DataFlowClientServiceRpcStub getAsyncStub(Channel inChannel)
     {
-        return SEClientServiceRpcGrpc.newStub(inChannel);
+        return DataFlowClientServiceRpcGrpc.newStub(inChannel);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#executeLogin(org.marketcetera.rpc.base.BaseRpc.LoginRequest)
@@ -399,17 +343,13 @@ public class SERpcClient
      */
     private final Deque<DataReceiver> receivers = new LinkedList<DataReceiver>();
     /**
-     * connection status listeners collection
-     */
-    private final Deque<ConnectionStatusListener> listeners = new LinkedList<ConnectionStatusListener>();
-    /**
      * provides context classes for marshalling/unmarshalling, may be <code>null</code>
      */
     private ContextClassProvider contextClassProvider;
     /**
      * The client's application ID: the application name.
      */
-    private static final String APP_ID_NAME = SERpcClient.class.getSimpleName();
+    private static final String APP_ID_NAME = DataFlowRpcClient.class.getSimpleName();
     /**
      * The client's application ID: the version.
      */
