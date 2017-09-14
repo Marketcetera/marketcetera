@@ -4,11 +4,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.marketcetera</groupId>
-    <artifactId>mdclient-parent</artifactId>
+    <artifactId>marketdata-parent</artifactId>
     <version>3.1.0-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
-  <artifactId>mdclient-rpc-core</artifactId>
+  <artifactId>marketdata-rpc-core</artifactId>
   <version>3.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <licenses>

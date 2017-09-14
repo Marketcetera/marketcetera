@@ -4,11 +4,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.marketcetera</groupId>
-    <artifactId>mdclient-parent</artifactId>
+    <artifactId>marketdata-parent</artifactId>
     <version>3.1.0-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
-  <artifactId>mdclient-server</artifactId>
+  <artifactId>marketdata-server</artifactId>
   <version>3.1.0-SNAPSHOT</version>
   <name>Market Data Server</name>
   <url>http://maven.apache.org</url>
@@ -27,7 +27,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>mdclient-api</artifactId>
+      <artifactId>marketdata-api</artifactId>
     </dependency>
     <!-- test -->
     <dependency>

@@ -23,7 +23,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>mdclient-server</artifactId>
+      <artifactId>marketdata-server</artifactId>
     </dependency>    
     <dependency>
       <groupId>${project.groupId}</groupId>

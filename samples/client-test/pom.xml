@@ -38,11 +38,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>mdclient-api</artifactId>
+      <artifactId>marketdata-api</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>mdclient-rpc-client</artifactId>
+      <artifactId>marketdata-rpc-client</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

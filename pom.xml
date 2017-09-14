@@ -243,42 +243,42 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mdclient-api</artifactId>
+        <artifactId>marketdata-api</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mdclient-server</artifactId>
+        <artifactId>marketdata-server</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mdclient-rpc-core</artifactId>
+        <artifactId>marketdata-rpc-core</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mdclient-rpc-server</artifactId>
+        <artifactId>marketdata-rpc-server</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mdclient-rpc-client</artifactId>
+        <artifactId>marketdata-rpc-client</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mdclient-ws-client</artifactId>
+        <artifactId>marketdata-ws-client</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mdclient-ws-server</artifactId>
+        <artifactId>marketdata-ws-server</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mdclient-ws-core</artifactId>
+        <artifactId>marketdata-ws-core</artifactId>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
@@ -560,14 +560,14 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mdclient-rpc-client</artifactId>
+        <artifactId>marketdata-rpc-client</artifactId>
 	<type>test-jar</type>
 	<scope>test</scope>
         <version>3.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mdclient-server</artifactId>
+        <artifactId>marketdata-server</artifactId>
 	<type>test-jar</type>
 	<scope>test</scope>
         <version>3.1.0-SNAPSHOT</version>
