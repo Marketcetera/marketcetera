@@ -15,17 +15,17 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase;
-import org.marketcetera.marketdata.core.rpc.MarketdataRpc;
-import org.marketcetera.marketdata.core.rpc.MarketdataRpc.AvailableCapabilityRequest;
-import org.marketcetera.marketdata.core.rpc.MarketdataRpc.AvailableCapabilityResponse;
-import org.marketcetera.marketdata.core.rpc.MarketdataRpc.CancelRequest;
-import org.marketcetera.marketdata.core.rpc.MarketdataRpc.CancelResponse;
-import org.marketcetera.marketdata.core.rpc.MarketdataRpc.MarketDataRequest;
-import org.marketcetera.marketdata.core.rpc.MarketdataRpc.MarketDataResponse;
-import org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotPageRequest;
-import org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotPageResponse;
-import org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotRequest;
-import org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotResponse;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.AvailableCapabilityRequest;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.AvailableCapabilityResponse;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.CancelRequest;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.CancelResponse;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.MarketDataRequest;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.MarketDataResponse;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.SnapshotPageRequest;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.SnapshotPageResponse;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.SnapshotRequest;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.SnapshotResponse;
 import org.marketcetera.marketdata.service.MarketDataService;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
@@ -192,7 +192,7 @@ public class MarketDataRpcService<SessionClazz>
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
-                MarketdataRpc.CancelResponse.Builder responseBuilder = MarketdataRpc.CancelResponse.newBuilder();
+                MarketDataRpc.CancelResponse.Builder responseBuilder = MarketDataRpc.CancelResponse.newBuilder();
                 marketDataService.cancel(inRequest.getId());
                 inResponseObserver.onNext(responseBuilder.build());
                 inResponseObserver.onCompleted();
@@ -212,7 +212,7 @@ public class MarketDataRpcService<SessionClazz>
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
-                MarketdataRpc.SnapshotResponse.Builder responseBuilder = MarketdataRpc.SnapshotResponse.newBuilder();
+                MarketDataRpc.SnapshotResponse.Builder responseBuilder = MarketDataRpc.SnapshotResponse.newBuilder();
 //                Instrument instrument = unmarshall(inRequest.getInstrument().getPayload());
 //                Content content = Content.valueOf(inRequest.getContent().name());
 //                Deque<Event> events = marketDataService.getSnapshot(instrument,
@@ -221,7 +221,7 @@ public class MarketDataRpcService<SessionClazz>
 //                for(Event event : events) {
 //                    responseBuilder.addPayload(marshal(event));
 //                }
-                MarketdataRpc.SnapshotResponse response = responseBuilder.build();
+                MarketDataRpc.SnapshotResponse response = responseBuilder.build();
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
@@ -240,7 +240,7 @@ public class MarketDataRpcService<SessionClazz>
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
-                MarketdataRpc.SnapshotPageResponse.Builder responseBuilder = MarketdataRpc.SnapshotPageResponse.newBuilder();
+                MarketDataRpc.SnapshotPageResponse.Builder responseBuilder = MarketDataRpc.SnapshotPageResponse.newBuilder();
 //                Instrument instrument = unmarshall(inRequest.getInstrument().getPayload());
 //                Content content = Content.valueOf(inRequest.getContent().name());
 //                Deque<Event> events = marketDataService.getSnapshotPage(instrument,
@@ -251,7 +251,7 @@ public class MarketDataRpcService<SessionClazz>
 //                for(Event event : events) {
 //                    responseBuilder.addPayload(marshal(event));
 //                }
-                MarketdataRpc.SnapshotPageResponse response = responseBuilder.build();
+                MarketDataRpc.SnapshotPageResponse response = responseBuilder.build();
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
@@ -270,12 +270,12 @@ public class MarketDataRpcService<SessionClazz>
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
-                MarketdataRpc.AvailableCapabilityResponse.Builder responseBuilder = MarketdataRpc.AvailableCapabilityResponse.newBuilder();
+                MarketDataRpc.AvailableCapabilityResponse.Builder responseBuilder = MarketDataRpc.AvailableCapabilityResponse.newBuilder();
                 Set<Capability> events = marketDataService.getAvailableCapability();
                 for(Capability event : events) {
-                    responseBuilder.addCapability(MarketdataRpc.ContentAndCapability.valueOf(event.name()));
+                    responseBuilder.addCapability(MarketDataRpc.ContentAndCapability.valueOf(event.name()));
                 }
-                MarketdataRpc.AvailableCapabilityResponse response = responseBuilder.build();
+                MarketDataRpc.AvailableCapabilityResponse response = responseBuilder.build();
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {

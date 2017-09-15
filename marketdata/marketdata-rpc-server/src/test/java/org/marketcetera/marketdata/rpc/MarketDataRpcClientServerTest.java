@@ -143,7 +143,7 @@ public class MarketDataRpcClientServerTest
     {
         assertTrue(serviceAdapter.getCanceledIds().isEmpty());
         long timestamp = System.nanoTime();
-        client.cancel(timestamp);
+        client.cancel(String.valueOf(timestamp));
         assertEquals(1,
                      serviceAdapter.getCanceledIds().size());
     }

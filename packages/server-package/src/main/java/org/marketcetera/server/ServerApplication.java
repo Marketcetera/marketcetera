@@ -15,6 +15,7 @@ import org.marketcetera.dataflow.config.DataFlowProvider;
 import org.marketcetera.dataflow.server.rpc.DataFlowRpcService;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
+import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.modules.fix.FixInitiatorModuleFactory;
 import org.marketcetera.persist.TransactionModuleFactory;
@@ -219,20 +220,36 @@ public class ServerApplication
         return tradeClientRpcService;
     }
     /**
-     * Get the SE RPC service.
+     * Get the data flow RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
      * @param inSessionManager&lt;ServerSession&gt;</code> value
-     * @return a <code>TradeClientRpcService&lt;ServerSession&gt;</code> value
+     * @return a <code>DataFlowRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
-    public DataFlowRpcService<ServerSession> getSeRpcTradeService(@Autowired Authenticator inAuthenticator,
-                                                                       @Autowired SessionManager<ServerSession> inSessionManager)
+    public DataFlowRpcService<ServerSession> getDataFlowRpcTradeService(@Autowired Authenticator inAuthenticator,
+                                                                        @Autowired SessionManager<ServerSession> inSessionManager)
     {
-        DataFlowRpcService<ServerSession> seClientRpcService = new DataFlowRpcService<>();
-        seClientRpcService.setAuthenticator(inAuthenticator);
-        seClientRpcService.setSessionManager(inSessionManager);
-        return seClientRpcService;
+        DataFlowRpcService<ServerSession> dataflowClientRpcService = new DataFlowRpcService<>();
+        dataflowClientRpcService.setAuthenticator(inAuthenticator);
+        dataflowClientRpcService.setSessionManager(inSessionManager);
+        return dataflowClientRpcService;
+    }
+    /**
+     * Get the market data RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return a <code>MarketDataRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public MarketDataRpcService<ServerSession> getMarketDataRpcTradeService(@Autowired Authenticator inAuthenticator,
+                                                                            @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        MarketDataRpcService<ServerSession> marketDataClientRpcService = new MarketDataRpcService<>();
+        marketDataClientRpcService.setAuthenticator(inAuthenticator);
+        marketDataClientRpcService.setSessionManager(inSessionManager);
+        return marketDataClientRpcService;
     }
     /**
      * Get the FIX session provider value.

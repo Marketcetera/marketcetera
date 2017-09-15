@@ -28,16 +28,16 @@ public interface MarketDataClient
      * 
      * @param inRequest a <code>MarketDataRequest</code> value
      * @param inMarketDataListener a <code>MarketDataListener</code> value
-     * @return a <code>long</code> value
+     * @return a <code>String</code> value containing the request ID
      */
-    long request(MarketDataRequest inRequest,
-                 MarketDataListener inMarketDataListener);
+    String request(MarketDataRequest inRequest,
+                   MarketDataListener inMarketDataListener);
     /**
      * Cancels a market data request.
      *
-     * @param inRequestId a <code>long</code> value
+     * @param inRequestId a <code>String</code> value
      */
-    void cancel(long inRequestId);
+    void cancel(String inRequestId);
     /**
      * Gets the most recent snapshot of the given market data.
      * 

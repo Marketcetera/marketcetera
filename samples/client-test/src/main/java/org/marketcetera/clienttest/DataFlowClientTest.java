@@ -67,7 +67,7 @@ public class DataFlowClientTest
             dataFlowClient = dataFlowClientFactory.create(params);
             dataFlowClient.start();
             SLF4JLoggerProxy.info(DataFlowClientTest.class,
-                                  "SEClient connected to {}:{} as {}",
+                                  "Data flow client connected to {}:{} as {}",
                                   hostname,
                                   port,
                                   username);
@@ -97,12 +97,12 @@ public class DataFlowClientTest
         instance = this;
     }
     /**
-     * Get the trading client factory value.
+     * Get the data flow client factory value.
      *
-     * @return a <code>StrategyAgentRpcClientFactory</code> value
+     * @return a <code>DataFlowRpcClientFactory</code> value
      */
     @Bean
-    public DataFlowRpcClientFactory getSeClientFactory()
+    public DataFlowRpcClientFactory getDataFlowClientFactory()
     {
         DataFlowRpcClientFactory clientFactory = new DataFlowRpcClientFactory();
         return clientFactory;
@@ -142,7 +142,7 @@ public class DataFlowClientTest
     @Value("${metc.client.port:8998}")
     private int port;
     /**
-     * provides access to SE client services
+     * provides access to market data client services
      */
     private DataFlowClient dataFlowClient;
     /**

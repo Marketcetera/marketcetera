@@ -71,18 +71,18 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
             <configuration>
               <mainClass>org.marketcetera.clienttest.MarketDataClientTest</mainClass>
-              <classpathScope>runtime</classpathScope>
+              <layout>ZIP</layout>
             </configuration>
           </plugin>
         </plugins>
       </build>
     </profile>
     <profile>
-      <id>executeSeClient</id>
+      <id>executeDfClient</id>
       <build>
         <plugins>
           <plugin>

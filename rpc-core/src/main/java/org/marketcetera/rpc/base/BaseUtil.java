@@ -3,8 +3,14 @@ package org.marketcetera.rpc.base;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
+import java.util.UUID;
+
+import org.marketcetera.core.PlatformServices;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Maps;
+
+import io.grpc.stub.StreamObserver;
 
 /* $License$ */
 
@@ -82,5 +88,109 @@ public abstract class BaseUtil
                     rpcKeyValuePair.getValue());
         }
         return map;
+    }
+    /**
+     * Provides common behavior for message listener proxies.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    public static abstract class AbstractListenerProxy<ListenerResponseClazz,MessageClazz,MessageListenerClazz>
+            implements StreamObserver<ListenerResponseClazz>
+    {
+        /* (non-Javadoc)
+         * @see io.grpc.stub.StreamObserver#onNext(java.lang.Object)
+         */
+        @Override
+        public void onNext(ListenerResponseClazz inResponse)
+        {
+            SLF4JLoggerProxy.trace(this,
+                                   "{} received {}",
+                                   getId(),
+                                   inResponse);
+            MessageClazz message;
+            try {
+                message = translateMessage(inResponse);
+            } catch (Exception e) {
+                PlatformServices.handleException(this,
+                                                 "Error translating message",
+                                                 e);
+                return;
+            }
+            if(message == null) {
+                return;
+            }
+            try {
+                sendMessage(messageListener,
+                            message);
+            } catch (Exception e) {
+                PlatformServices.handleException(this,
+                                                 "Error sending message",
+                                                 e);
+            }
+        }
+        /* (non-Javadoc)
+         * @see io.grpc.stub.StreamObserver#onError(java.lang.Throwable)
+         */
+        @Override
+        public void onError(Throwable inT)
+        {
+            SLF4JLoggerProxy.trace(this,
+                                   "{} received {}",
+                                   getId(),
+                                   inT);
+        }
+        /* (non-Javadoc)
+         * @see io.grpc.stub.StreamObserver#onCompleted()
+         */
+        @Override
+        public void onCompleted()
+        {
+            SLF4JLoggerProxy.trace(this,
+                                   "{} completed",
+                                   getId());
+        }
+        /**
+         * Get the id value.
+         *
+         * @return a <code>String</code> value
+         */
+        public String getId()
+        {
+            return id;
+        }
+        /**
+         * Translate the message contained in the given response.
+         *
+         * @param inResponse a <code>ListenerResponseClazz</code> value
+         * @return a <code>MessageClazz</code> value
+         */
+        protected abstract MessageClazz translateMessage(ListenerResponseClazz inResponse);
+        /**
+         * Send the given message to the given message listener.
+         *
+         * @param inMessageListener a <code>MessageListenerClazz</code> value
+         * @param inMessage a <code>MessageClazz</code> value
+         */
+        protected abstract void sendMessage(MessageListenerClazz inMessageListener,
+                                            MessageClazz inMessage);
+        /**
+         * Create a new AbstractListenerProxy instance.
+         *
+         * @param inMessageListener a <code>MessageListenerClazz</code> value
+         */
+        public AbstractListenerProxy(MessageListenerClazz inMessageListener)
+        {
+            messageListener = inMessageListener;
+        }
+        /**
+         * message listener to receive the messages
+         */
+        private final MessageListenerClazz messageListener;
+        /**
+         * unique id value
+         */
+        private final String id = UUID.randomUUID().toString();
     }
 }

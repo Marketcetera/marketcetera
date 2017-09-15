@@ -4,23 +4,22 @@ import "rpc_paging.proto";
 import "rpc_trading_types.proto";
 option java_generic_services = true;
 option java_package = "org.marketcetera.marketdata.core.rpc";
-option java_outer_classname = "MarketdataRpc";
+option java_outer_classname = "MarketDataRpc";
 
 message MarketDataRequest {
     string sessionId = 1;
-    string request = 2;
-    bool streamEvents = 3;
+    string listenerId = 2;
+    string request = 3;
 }
 
 message MarketDataResponse {
     int64 id = 1;
-    bool failed = 2;
-    string message = 3;
 }
 
 message CancelRequest {
     string sessionId = 1;
-    int64 id = 2;
+    string listenerId = 2;
+    int64 id = 3;
 }
 
 message CancelResponse {
@@ -33,8 +32,6 @@ message Event {
 message EventsResponse {
     int64 id = 1;
     repeated string payload = 2;
-    string message = 3;
-    bool failed = 4;
 }
 
 message SnapshotRequest {
@@ -46,8 +43,6 @@ message SnapshotRequest {
 
 message SnapshotResponse {
     repeated string payload = 1;
-    string message = 2;
-    bool failed = 3;
 }
 
 message SnapshotPageRequest {
@@ -60,8 +55,6 @@ message SnapshotPageRequest {
 
 message SnapshotPageResponse {
     repeated string payload = 1;
-    string message = 2;
-    bool failed = 3;
 }
 
 enum ContentAndCapability {
@@ -86,15 +79,13 @@ message AvailableCapabilityRequest {
 
 message AvailableCapabilityResponse {
     repeated ContentAndCapability capability = 1;
-    string message = 2;
-    bool failed = 3;
 }
 
 service MarketDataRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
     rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}
-    rpc request(MarketDataRequest) returns (MarketDataResponse);
+    rpc request(MarketDataRequest) returns (stream MarketDataResponse);
     rpc cancel(CancelRequest) returns (CancelResponse);
     rpc getSnapshot(SnapshotRequest) returns (SnapshotResponse);
     rpc getSnapshotPage(SnapshotPageRequest) returns (SnapshotPageResponse);
