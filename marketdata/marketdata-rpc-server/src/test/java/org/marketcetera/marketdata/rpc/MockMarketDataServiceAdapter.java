@@ -11,8 +11,11 @@ import org.marketcetera.core.Pair;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.mdclient.MarketDataService;
+import org.marketcetera.marketdata.MarketDataStatus;
+import org.marketcetera.marketdata.MarketDataStatusListener;
+import org.marketcetera.marketdata.service.MarketDataService;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.Instrument;
 
@@ -33,24 +36,42 @@ public class MockMarketDataServiceAdapter
         implements MarketDataService
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#request(org.marketcetera.marketdata.MarketDataRequest, boolean)
+     * @see org.marketcetera.marketdata.MarketDataStatusPublisher#addMarketDataStatusListener(org.marketcetera.marketdata.MarketDataStatusListener)
+     */
+    @Override
+    public void addMarketDataStatusListener(MarketDataStatusListener inMarketDataStatusListener)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataStatusPublisher#removeMarketDataStatusListener(org.marketcetera.marketdata.MarketDataStatusListener)
+     */
+    @Override
+    public void removeMarketDataStatusListener(MarketDataStatusListener inMarketDataStatusListener)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataStatusBroadcaster#reportMarketDataStatus(org.marketcetera.marketdata.MarketDataStatus)
+     */
+    @Override
+    public void reportMarketDataStatus(MarketDataStatus inMarketDataStatus)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.service.MarketDataService#request(org.marketcetera.marketdata.MarketDataRequest, org.marketcetera.marketdata.MarketDataListener)
      */
     @Override
     public long request(MarketDataRequest inRequest,
-                        boolean inStreamEvents)
+                        MarketDataListener inMarketDataListener)
     {
-        requests.add(Pair.create(inRequest,
-                                 inStreamEvents));
+//        requests.add(Pair.create(inRequest,
+//                                 inStreamEvents));
         return System.nanoTime();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getLastUpdate(long)
-     */
-    @Override
-    public long getLastUpdate(long inId)
-    {
-        lastUpdateRequests.add(inId);
-        return inId;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#cancel(long)
@@ -59,24 +80,6 @@ public class MockMarketDataServiceAdapter
     public void cancel(long inId)
     {
         canceledIds.add(inId);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getEvents(long)
-     */
-    @Override
-    public Deque<Event> getEvents(long inId)
-    {
-        eventsRequests.add(inId);
-        return eventsToReturn;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getAllEvents(java.util.List)
-     */
-    @Override
-    public Map<Long,LinkedList<Event>> getAllEvents(List<Long> inRequestIds)
-    {
-        allEventsRequests.add(inRequestIds);
-        return allEventsToReturn;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String)

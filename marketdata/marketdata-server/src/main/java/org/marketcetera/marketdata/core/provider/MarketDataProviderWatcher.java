@@ -20,9 +20,10 @@ import javax.management.ObjectName;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.MarketDataStatusListener;
+import org.marketcetera.marketdata.ProviderStatus;
 import org.marketcetera.marketdata.core.MarketDataProviderMBean;
 import org.marketcetera.marketdata.core.Messages;
-import org.marketcetera.marketdata.core.ProviderStatus;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -37,7 +38,6 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id: MarketDataProviderWatcher.java 17068 2015-12-07 17:26:31Z colin $")
 public class MarketDataProviderWatcher
-        implements MarketDataStatusProvider
 {
     /**
      * Validates and starts the object.
@@ -130,7 +130,7 @@ public class MarketDataProviderWatcher
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.provider.MarketDataStatusProvider#addMarketDataStatusListener(org.marketcetera.marketdata.core.provider.MarketDataStatusListener)
      */
-    @Override
+//    @Override
     public void addMarketDataStatusListener(MarketDataStatusListener inMarketDataStatusListener)
     {
         marketDataStatusListeners.add(inMarketDataStatusListener);
@@ -138,7 +138,7 @@ public class MarketDataProviderWatcher
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.provider.MarketDataStatusProvider#removeMarketDataStatusListener(org.marketcetera.marketdata.core.provider.MarketDataStatusListener)
      */
-    @Override
+//    @Override
     public void removeMarketDataStatusListener(MarketDataStatusListener inMarketDataStatusListener)
     {
         marketDataStatusListeners.remove(inMarketDataStatusListener);
@@ -146,7 +146,7 @@ public class MarketDataProviderWatcher
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.provider.MarketDataStatusProvider#isRunning()
      */
-    @Override
+//    @Override
     public boolean isRunning()
     {
         return lastStatus;
@@ -280,7 +280,7 @@ public class MarketDataProviderWatcher
                                                                                       isRunning);
                     for(MarketDataStatusListener listener : marketDataStatusListeners) {
                         try {
-                            listener.receiveMarketDataProviderStatus(newStatus);
+                            listener.receiveMarketDataStatus(newStatus);
                         } catch (Exception e) {
                             // TODO warn
                         }

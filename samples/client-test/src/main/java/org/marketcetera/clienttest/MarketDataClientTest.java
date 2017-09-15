@@ -6,11 +6,11 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.MarketDataContextClassProvider;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
-import org.marketcetera.mdclient.MarketDataContextClassProvider;
-import org.marketcetera.mdclient.rpc.client.MarketDataRpcClient;
-import org.marketcetera.mdclient.rpc.client.MarketDataRpcClientFactory;
-import org.marketcetera.mdclient.rpc.client.MarketDataRpcClientParameters;
+import org.marketcetera.marketdata.rpc.client.MarketDataRpcClient;
+import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
+import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientParameters;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -47,16 +47,16 @@ public class MarketDataClientTest
                                   marketDataClient.isRunning());
             MarketDataRequestBuilder requestBuilder = MarketDataRequestBuilder.newRequest();
             requestBuilder = requestBuilder.withContent(Content.TOP_OF_BOOK,Content.LATEST_TICK).withSymbols("METC").withAssetClass(AssetClass.EQUITY);
-            long requestId = marketDataClient.request(requestBuilder.create(),
-                                                      true);
-            for(int i=0;i<10;i++) {
-                Thread.sleep(1000);
-                Deque<Event> events = marketDataClient.getEvents(requestId);
-                SLF4JLoggerProxy.info(ClientTest.class,
-                                      "Retrieved {}",
-                                      events);
-            }
-            marketDataClient.cancel(requestId);
+//            long requestId = marketDataClient.request(requestBuilder.create(),
+//                                                      true);
+//            for(int i=0;i<10;i++) {
+//                Thread.sleep(1000);
+//                Deque<Event> events = marketDataClient.getEvents(requestId);
+//                SLF4JLoggerProxy.info(ClientTest.class,
+//                                      "Retrieved {}",
+//                                      events);
+//            }
+//            marketDataClient.cancel(requestId);
             marketDataClient.stop();
         } catch (Exception e) {
             PlatformServices.handleException(MarketDataClientTest.class,

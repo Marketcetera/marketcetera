@@ -25,7 +25,7 @@ import org.marketcetera.trade.Instrument;
 /* $License$ */
 
 /**
- * Tests {@link MarketdataCacheElement}.
+ * Tests {@link MarketDataCacheElement}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketdataCacheElementTest.java 17138 2016-03-07 18:59:32Z colin $
@@ -42,11 +42,11 @@ public class MarketdataCacheElementTest
     public void setup()
             throws Exception
     {
-        equityCache = new MarketdataCacheElement(equity);
+        equityCache = new MarketDataCacheElement(equity);
         equityOrderbook = new OrderBook(equity);
     }
     /**
-     * Tests {@link MarketdataCacheElement#update(org.marketcetera.marketdata.Content, org.marketcetera.event.Event...) update top of book}.
+     * Tests {@link MarketDataCacheElement#update(org.marketcetera.marketdata.Content, org.marketcetera.event.Event...) update top of book}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -241,7 +241,7 @@ public class MarketdataCacheElementTest
     /**
      * test cache element value
      */
-    private MarketdataCacheElement equityCache;
+    private MarketDataCacheElement equityCache;
     /**
      * test orderbook used to verify events
      */

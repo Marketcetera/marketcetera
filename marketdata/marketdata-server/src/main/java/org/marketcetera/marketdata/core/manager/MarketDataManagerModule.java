@@ -12,7 +12,7 @@ import org.marketcetera.event.HasInstrument;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.Messages;
-import org.marketcetera.marketdata.core.provider.MarketdataCacheElement;
+import org.marketcetera.marketdata.core.provider.MarketDataCacheElement;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataFlowRequester;
@@ -98,9 +98,9 @@ public class MarketDataManagerModule
                                                 inFlowId,
                                                 inData);
                 } else {
-                    MarketdataCacheElement marketdataCache = cachedMarketdata.get(eventInstrument);
+                    MarketDataCacheElement marketdataCache = cachedMarketdata.get(eventInstrument);
                     if(marketdataCache == null) {
-                        marketdataCache = new MarketdataCacheElement(eventInstrument);
+                        marketdataCache = new MarketDataCacheElement(eventInstrument);
                         cachedMarketdata.put(eventInstrument,
                                              marketdataCache);
                     }
@@ -239,7 +239,7 @@ public class MarketDataManagerModule
                                     Content inContent,
                                     String inProvider)
     {
-        MarketdataCacheElement cachedData = cachedMarketdata.get(inInstrument);
+        MarketDataCacheElement cachedData = cachedMarketdata.get(inInstrument);
         if(cachedData != null) {
             return cachedData.getSnapshot(inContent);
         }
@@ -376,5 +376,5 @@ public class MarketDataManagerModule
     /**
      * tracks cached market data by the instrument
      */
-    private final Map<Instrument,MarketdataCacheElement> cachedMarketdata = new HashMap<Instrument,MarketdataCacheElement>();
+    private final Map<Instrument,MarketDataCacheElement> cachedMarketdata = new HashMap<Instrument,MarketDataCacheElement>();
 }

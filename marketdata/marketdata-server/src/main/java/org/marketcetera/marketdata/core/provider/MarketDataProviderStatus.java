@@ -2,6 +2,8 @@ package org.marketcetera.marketdata.core.provider;
 
 import java.io.Serializable;
 
+import org.marketcetera.marketdata.MarketDataStatus;
+
 /* $License$ */
 
 /**
@@ -12,7 +14,7 @@ import java.io.Serializable;
  * @since $Release$
  */
 public class MarketDataProviderStatus
-        implements Serializable
+        implements Serializable,MarketDataStatus
 {
     /**
      * Get the provider value.
