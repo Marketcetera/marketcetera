@@ -20,9 +20,6 @@
     <module>marketdata-rpc-client</module>
     <module>marketdata-rpc-core</module>
     <module>marketdata-rpc-server</module>
-    <!--module>marketdata-ws-client</module-->
-    <!--module>marketdata-ws-core</module-->
     <module>marketdata-server</module>
-    <!--module>marketdata-ws-server</module-->
   </modules>
 </project>
