@@ -71,6 +71,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>dataflow-rpc-server</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-bogus</artifactId>
+    </dependency>
     <!-- spring compile -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

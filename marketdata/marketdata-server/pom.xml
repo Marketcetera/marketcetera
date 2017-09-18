@@ -19,7 +19,7 @@
     <!-- compile -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>util</artifactId>
+      <artifactId>misc</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

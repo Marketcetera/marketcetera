@@ -15,6 +15,7 @@ import org.marketcetera.dataflow.config.DataFlowProvider;
 import org.marketcetera.dataflow.server.rpc.DataFlowRpcService;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
+import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.modules.fix.FixInitiatorModuleFactory;
@@ -97,6 +98,7 @@ public class ServerApplication
         ModuleManager moduleManager = new ModuleManager();
         moduleManager.init();
         ModuleManager.startModulesIfNecessary(moduleManager,
+                                              BogusFeedModuleFactory.INSTANCE_URN,
                                               TransactionModuleFactory.INSTANCE_URN,
                                               TradeMessageConverterModuleFactory.INSTANCE_URN,
                                               TradeMessagePersistenceModuleFactory.INSTANCE_URN,

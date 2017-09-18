@@ -1,16 +1,8 @@
 package org.marketcetera.marketdata.rpc.client;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.Deque;
 import java.util.Set;
 import java.util.concurrent.Callable;
-
-import javax.annotation.concurrent.GuardedBy;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.marketcetera.core.Util;
 import org.marketcetera.core.Version;
@@ -37,14 +29,12 @@ import org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy;
 import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.util.ws.tags.AppId;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import io.grpc.Channel;
@@ -98,19 +88,27 @@ public class MarketDataRpcClient
     @Override
     public void cancel(String inRequestId)
     {
+        final AbstractClientListenerProxy<?,?,?> proxy = listenerProxiesById.getIfPresent(inRequestId);
+        if(proxy == null) {
+            return;
+        }
+        listenerProxiesById.invalidate(inRequestId);
+        listenerProxies.invalidate(proxy);
         executeCall(new Callable<Void>(){
             @Override
             public Void call()
                     throws Exception
             {
-//                SLF4JLoggerProxy.debug(MarketDataRpcClient.this,
-//                                       "Cancel: {}", //$NON-NLS-1$
-//                                       inRequestId);
-//                MarketDataRpc.CancelResponse response = getBlockingStub().cancel(MarketDataRpc.CancelRequest.newBuilder().setSessionId(getSessionId().getValue())
-//                                                                                 .setId(inRequestId).build());
-//                SLF4JLoggerProxy.debug(MarketDataRpcClient.this,
-//                                       "Cancel Response: {}", //$NON-NLS-1$
-//                                       response);
+                SLF4JLoggerProxy.debug(MarketDataRpcClient.this,
+                                       "Cancel: {}", //$NON-NLS-1$
+                                       inRequestId);
+                MarketDataRpc.CancelRequest.Builder requestBuilder = MarketDataRpc.CancelRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(proxy.getId());
+                MarketDataRpc.CancelResponse response = getBlockingStub().cancel(requestBuilder.build());
+                SLF4JLoggerProxy.debug(MarketDataRpcClient.this,
+                                       "Cancel Response: {}", //$NON-NLS-1$
+                                       response);
                 return null;
             }
         });
@@ -123,28 +121,29 @@ public class MarketDataRpcClient
                                     final Content inContent,
                                     final String inProvider)
     {
-        return executeCall(new Callable<Deque<Event>>(){
-            @Override
-            public Deque<Event> call()
-                    throws Exception
-            {
-                MarketDataRpc.SnapshotRequest.Builder requestBuilder = MarketDataRpc.SnapshotRequest.newBuilder().setSessionId(getSessionId().getValue());
-//                requestBuilder.setContent(MarketdataRpc.ContentAndCapability.valueOf(inContent.name()))
-//                    .setInstrument(TradingTypesRpc.Instrument.newBuilder().setPayload(marshall(inInstrument)));
-                if(inProvider != null){
-                    requestBuilder.setProvider(inProvider);
-                }
-                MarketDataRpc.SnapshotResponse response = getBlockingStub().getSnapshot(requestBuilder.build());
-                Deque<Event> events = Lists.newLinkedList();
-                for(String payload : response.getPayloadList()) {
-                    events.add((Event)unmarshall(payload));
-                }
-                SLF4JLoggerProxy.debug(MarketDataRpcClient.this,
-                                       "GetSnapshotResponse: {}", //$NON-NLS-1$
-                                       events);
-                return events;
-            }
-        });
+//        return executeCall(new Callable<Deque<Event>>(){
+//            @Override
+//            public Deque<Event> call()
+//                    throws Exception
+//            {
+//                MarketDataRpc.SnapshotRequest.Builder requestBuilder = MarketDataRpc.SnapshotRequest.newBuilder().setSessionId(getSessionId().getValue());
+////                requestBuilder.setContent(MarketdataRpc.ContentAndCapability.valueOf(inContent.name()))
+////                    .setInstrument(TradingTypesRpc.Instrument.newBuilder().setPayload(marshall(inInstrument)));
+//                if(inProvider != null){
+//                    requestBuilder.setProvider(inProvider);
+//                }
+//                MarketDataRpc.SnapshotResponse response = getBlockingStub().getSnapshot(requestBuilder.build());
+//                Deque<Event> events = Lists.newLinkedList();
+//                for(String payload : response.getPayloadList()) {
+//                    events.add((Event)unmarshall(payload));
+//                }
+//                SLF4JLoggerProxy.debug(MarketDataRpcClient.this,
+//                                       "GetSnapshotResponse: {}", //$NON-NLS-1$
+//                                       events);
+//                return events;
+//            }
+//        });
+        throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, org.marketcetera.marketdata.core.webservice.PageRequest)
@@ -155,36 +154,37 @@ public class MarketDataRpcClient
                                         final String inProvider,
                                         final PageRequest inPage)
     {
-        return executeCall(new Callable<Deque<Event>>(){
-            @Override
-            public Deque<Event> call()
-                    throws Exception
-            {
-                SLF4JLoggerProxy.debug(MarketDataRpcClient.this,
-                                       "GetSnapshotPage: {}/{}/{}/{}", //$NON-NLS-1$
-                                       inInstrument,
-                                       inContent,
-                                       inProvider,
-                                       inPage);
-                MarketDataRpc.SnapshotPageRequest.Builder requestBuilder = MarketDataRpc.SnapshotPageRequest.newBuilder().setSessionId(getSessionId().getValue());
-//                requestBuilder.setContent(MarketdataRpc.ContentAndCapability.valueOf(inContent.name()))
-//                .setInstrument(MarketdataRpc.Instrument.newBuilder().setPayload(marshall(inInstrument)))
-//                .setPage(PagingUtil.buildPageRequest(inPage.getPageNumber(),
-//                                                     inPage.getPageSize()));
-                if(inProvider != null){
-                    requestBuilder.setProvider(inProvider);
-                }
-                MarketDataRpc.SnapshotPageResponse response = getBlockingStub().getSnapshotPage(requestBuilder.build());
-                Deque<Event> events = Lists.newLinkedList();
-                for(String payload : response.getPayloadList()) {
-                    events.add((Event)unmarshall(payload));
-                }
-                SLF4JLoggerProxy.debug(MarketDataRpcClient.this,
-                                       "GetSnapshotPageResponse: {}", //$NON-NLS-1$
-                                       events);
-                return events;
-            }
-        });
+//        return executeCall(new Callable<Deque<Event>>(){
+//            @Override
+//            public Deque<Event> call()
+//                    throws Exception
+//            {
+//                SLF4JLoggerProxy.debug(MarketDataRpcClient.this,
+//                                       "GetSnapshotPage: {}/{}/{}/{}", //$NON-NLS-1$
+//                                       inInstrument,
+//                                       inContent,
+//                                       inProvider,
+//                                       inPage);
+//                MarketDataRpc.SnapshotPageRequest.Builder requestBuilder = MarketDataRpc.SnapshotPageRequest.newBuilder().setSessionId(getSessionId().getValue());
+////                requestBuilder.setContent(MarketdataRpc.ContentAndCapability.valueOf(inContent.name()))
+////                .setInstrument(MarketdataRpc.Instrument.newBuilder().setPayload(marshall(inInstrument)))
+////                .setPage(PagingUtil.buildPageRequest(inPage.getPageNumber(),
+////                                                     inPage.getPageSize()));
+//                if(inProvider != null){
+//                    requestBuilder.setProvider(inProvider);
+//                }
+//                MarketDataRpc.SnapshotPageResponse response = getBlockingStub().getSnapshotPage(requestBuilder.build());
+//                Deque<Event> events = Lists.newLinkedList();
+//                for(String payload : response.getPayloadList()) {
+//                    events.add((Event)unmarshall(payload));
+//                }
+//                SLF4JLoggerProxy.debug(MarketDataRpcClient.this,
+//                                       "GetSnapshotPageResponse: {}", //$NON-NLS-1$
+//                                       events);
+//                return events;
+//            }
+//        });
+        throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataClient#addMarketDataStatusListener(org.marketcetera.marketdata.MarketDataStatusListener)
@@ -233,30 +233,30 @@ public class MarketDataRpcClient
             throws Exception
     {
         super.start();
-        synchronized(contextLock) {
-            context = JAXBContext.newInstance(contextClassProvider==null?new Class<?>[0]:contextClassProvider.getContextClasses());
-            marshaller = context.createMarshaller();
-            unmarshaller = context.createUnmarshaller();
-        }
+//        synchronized(contextLock) {
+//            context = JAXBContext.newInstance(contextClassProvider==null?new Class<?>[0]:contextClassProvider.getContextClasses());
+//            marshaller = context.createMarshaller();
+//            unmarshaller = context.createUnmarshaller();
+//        }
     }
-    /**
-     * Get the contextClassProvider value.
-     *
-     * @return a <code>ContextClassProvider</code> value
-     */
-    public ContextClassProvider getContextClassProvider()
-    {
-        return contextClassProvider;
-    }
-    /**
-     * Sets the contextClassProvider value.
-     *
-     * @param inContextClassProvider a <code>ContextClassProvider</code> value
-     */
-    public void setContextClassProvider(ContextClassProvider inContextClassProvider)
-    {
-        contextClassProvider = inContextClassProvider;
-    }
+//    /**
+//     * Get the contextClassProvider value.
+//     *
+//     * @return a <code>ContextClassProvider</code> value
+//     */
+//    public ContextClassProvider getContextClassProvider()
+//    {
+//        return contextClassProvider;
+//    }
+//    /**
+//     * Sets the contextClassProvider value.
+//     *
+//     * @param inContextClassProvider a <code>ContextClassProvider</code> value
+//     */
+//    public void setContextClassProvider(ContextClassProvider inContextClassProvider)
+//    {
+//        contextClassProvider = inContextClassProvider;
+//    }
     /**
      * Create a new MarketDataRpcClient instance.
      *
@@ -265,7 +265,7 @@ public class MarketDataRpcClient
     MarketDataRpcClient(MarketDataRpcClientParameters inParameters)
     {
         super(inParameters);
-        contextClassProvider = inParameters.getContextClassProvider();
+//        contextClassProvider = inParameters.getContextClassProvider();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getBlockingStub(io.grpc.Channel)
@@ -326,38 +326,6 @@ public class MarketDataRpcClient
         return APP_ID_VERSION;
     }
     /**
-     * Marshals the given object to an XML stream.
-     *
-     * @param inObject an <code>Object</code> value
-     * @return a <code>String</code> value
-     * @throws JAXBException if an error occurs marshalling the data
-     */
-    private String marshall(Object inObject)
-            throws JAXBException
-    {
-        StringWriter output = new StringWriter();
-        synchronized(contextLock) {
-            marshaller.marshal(inObject,
-                               output);
-        }
-        return output.toString();
-    }
-    /**
-     * Unmarshals an object from the given XML stream.
-     *
-     * @param inData a <code>String</code> value
-     * @return a <code>Clazz</code> value
-     * @throws JAXBException if an error occurs unmarshalling the data
-     */
-    @SuppressWarnings("unchecked")
-    private <Clazz> Clazz unmarshall(String inData)
-            throws JAXBException
-    {
-        synchronized(contextLock) {
-            return (Clazz)unmarshaller.unmarshal(new StringReader(inData));
-        }
-    }
-    /**
      * Creates the appropriate proxy for the given listener.
      *
      * @param inListener an <code>Object</code> value
@@ -408,29 +376,6 @@ public class MarketDataRpcClient
             inMessageListener.receiveMarketData(inMessage);
         }
     }
-    /**
-     * provides context classes for marshalling/unmarshalling, may be <code>null</code>
-     */
-    private ContextClassProvider contextClassProvider;
-    /**
-     * guards access to JAXB context objects
-     */
-    private final Object contextLock = new Object();
-    /**
-     * context used to serialize and unserialize messages as necessary
-     */
-    @GuardedBy("contextLock")
-    private JAXBContext context;
-    /**
-     * marshals messages
-     */
-    @GuardedBy("contextLock")
-    private Marshaller marshaller;
-    /**
-     * unmarshals messages
-     */
-    @GuardedBy("contextLock")
-    private Unmarshaller unmarshaller;
     /**
      * The client's application ID: the application name.
      */

@@ -92,7 +92,7 @@ public class MarketDataClientTest
             requestBuilder = requestBuilder.withContent(Content.TOP_OF_BOOK,Content.LATEST_TICK).withSymbols("METC").withAssetClass(AssetClass.EQUITY);
             MarketDataRequest request = requestBuilder.create();
             SLF4JLoggerProxy.info(MarketDataClientTest.class,
-                                  "Issuing market data request: ",
+                                  "Issuing market data request: {}",
                                   request);
             MarketDataListener marketDataListener = new MarketDataListener() {
                 @Override

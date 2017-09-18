@@ -136,10 +136,13 @@ public abstract class BaseUtil
         @Override
         public void onError(Throwable inT)
         {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} received {}",
-                                   getId(),
-                                   inT);
+            SLF4JLoggerProxy.warn(this,
+                                  inT,
+                                  "{}",
+                                  getId());
+            PlatformServices.handleException(this,
+                                             "Remote Error",
+                                             inT);
         }
         /* (non-Javadoc)
          * @see io.grpc.stub.StreamObserver#onCompleted()

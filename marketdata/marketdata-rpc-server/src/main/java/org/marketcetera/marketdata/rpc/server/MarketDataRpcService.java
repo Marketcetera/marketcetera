@@ -201,10 +201,9 @@ public class MarketDataRpcService<SessionClazz>
                                               (MarketDataListener)marketDataListenerProxy);
                 }
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(e);
+                SLF4JLoggerProxy.warn(MarketDataRpcService.this,
+                                      e);
             }
         }
         /* (non-Javadoc)
@@ -221,7 +220,10 @@ public class MarketDataRpcService<SessionClazz>
                                                   inRequest.getListenerId());
                 BaseUtil.AbstractServerListenerProxy<?> marketDataListenerProxy = listenerProxiesById.getIfPresent(requestId);
                 listenerProxiesById.invalidate(requestId);
-//                marketDataService.cancel(inRequest.getListenerId());
+                marketDataService.cancel(inRequest.getListenerId());
+                if(marketDataListenerProxy != null) {
+                    marketDataListenerProxy.close();
+                }
                 inResponseObserver.onNext(responseBuilder.build());
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
