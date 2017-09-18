@@ -27,7 +27,7 @@ import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.base.BaseUtil;
-import org.marketcetera.rpc.base.BaseUtil.AbstractListenerProxy;
+import org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy;
 import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.rpc.paging.PagingUtil;
 import org.marketcetera.trade.BrokerID;
@@ -87,7 +87,7 @@ public class TradingRpcClient
             return;
         }
         // make sure that this listener wasn't just whisked out from under us
-        final AbstractListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inTradeMessageListener);
+        final AbstractClientListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inTradeMessageListener);
         if(listener == null) {
             return;
         }
@@ -119,7 +119,7 @@ public class TradingRpcClient
     @Override
     public void removeTradeMessageListener(TradeMessageListener inTradeMessageListener)
     {
-        final AbstractListenerProxy<?,?,?> proxy = listenerProxies.getIfPresent(inTradeMessageListener);
+        final AbstractClientListenerProxy<?,?,?> proxy = listenerProxies.getIfPresent(inTradeMessageListener);
         listenerProxies.invalidate(inTradeMessageListener);
         if(proxy == null) {
             return;
@@ -161,7 +161,7 @@ public class TradingRpcClient
             return;
         }
         // make sure that this listener wasn't just whisked out from under us
-        final AbstractListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inBrokerStatusListener);
+        final AbstractClientListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inBrokerStatusListener);
         if(listener == null) {
             return;
         }
@@ -193,7 +193,7 @@ public class TradingRpcClient
     @Override
     public void removeBrokerStatusListener(BrokerStatusListener inBrokerStatusListener)
     {
-        final AbstractListenerProxy<?,?,?> proxy = listenerProxies.getIfPresent(inBrokerStatusListener);
+        final AbstractClientListenerProxy<?,?,?> proxy = listenerProxies.getIfPresent(inBrokerStatusListener);
         listenerProxies.invalidate(inBrokerStatusListener);
         if(proxy == null) {
             return;
@@ -802,7 +802,7 @@ public class TradingRpcClient
      * @param inListener an <code>Object</code> value
      * @return an <code>AbstractListenerProxy&lt;?,?,?&gt;</code> value
      */
-    private static AbstractListenerProxy<?,?,?> getListenerFor(Object inListener)
+    private static AbstractClientListenerProxy<?,?,?> getListenerFor(Object inListener)
     {
         if(inListener instanceof TradeMessageListener) {
             return new TradeMessageListenerProxy((TradeMessageListener)inListener);
@@ -820,7 +820,7 @@ public class TradingRpcClient
      * @since $Release$
      */
     private static class BrokerStatusListenerProxy
-            extends BaseUtil.AbstractListenerProxy<BrokerStatusListenerResponse,BrokerStatus,BrokerStatusListener>
+            extends BaseUtil.AbstractClientListenerProxy<BrokerStatusListenerResponse,BrokerStatus,BrokerStatusListener>
     {
         /**
          * Create a new BrokerStatusListenerProxy instance.
@@ -857,7 +857,7 @@ public class TradingRpcClient
      * @since $Release$
      */
     private static class TradeMessageListenerProxy
-            extends BaseUtil.AbstractListenerProxy<TradeMessageListenerResponse,TradeMessage,TradeMessageListener>
+            extends BaseUtil.AbstractClientListenerProxy<TradeMessageListenerResponse,TradeMessage,TradeMessageListener>
     {
         /* (non-Javadoc)
          * @see org.marketcetera.trading.rpc.TradingRpcClient.AbstractListenerProxy#translateMessage(java.lang.Object)
@@ -909,16 +909,16 @@ public class TradingRpcClient
     /**
      * holds report listeners by their id
      */
-    private final Cache<String,BaseUtil.AbstractListenerProxy<?,?,?>> listenerProxiesById = CacheBuilder.newBuilder().build();
+    private final Cache<String,BaseUtil.AbstractClientListenerProxy<?,?,?>> listenerProxiesById = CacheBuilder.newBuilder().build();
     /**
      * holds listener proxies keyed by the listener
      */
-    private final LoadingCache<Object,BaseUtil.AbstractListenerProxy<?,?,?>> listenerProxies = CacheBuilder.newBuilder().build(new CacheLoader<Object,AbstractListenerProxy<?,?,?>>() {
+    private final LoadingCache<Object,BaseUtil.AbstractClientListenerProxy<?,?,?>> listenerProxies = CacheBuilder.newBuilder().build(new CacheLoader<Object,AbstractClientListenerProxy<?,?,?>>() {
         @Override
-        public BaseUtil.AbstractListenerProxy<?,?,?> load(Object inKey)
+        public BaseUtil.AbstractClientListenerProxy<?,?,?> load(Object inKey)
                 throws Exception
         {
-            BaseUtil.AbstractListenerProxy<?,?,?> proxy = getListenerFor(inKey);
+            BaseUtil.AbstractClientListenerProxy<?,?,?> proxy = getListenerFor(inKey);
             listenerProxiesById.put(proxy.getId(),
                                     proxy);
             return proxy;

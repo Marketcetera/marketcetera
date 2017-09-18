@@ -66,18 +66,18 @@ public class MockMarketDataServiceAdapter
      * @see org.marketcetera.marketdata.service.MarketDataService#request(org.marketcetera.marketdata.MarketDataRequest, org.marketcetera.marketdata.MarketDataListener)
      */
     @Override
-    public long request(MarketDataRequest inRequest,
+    public String request(MarketDataRequest inRequest,
                         MarketDataListener inMarketDataListener)
     {
 //        requests.add(Pair.create(inRequest,
 //                                 inStreamEvents));
-        return System.nanoTime();
+        return String.valueOf(System.nanoTime());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#cancel(long)
      */
     @Override
-    public void cancel(long inId)
+    public void cancel(String inId)
     {
         canceledIds.add(inId);
     }
@@ -139,9 +139,9 @@ public class MockMarketDataServiceAdapter
     /**
      * Get the canceledIds value.
      *
-     * @return a <code>List&lt;Long&gt;</code> value
+     * @return a <code>List&lt;String&gt;</code> value
      */
-    public List<Long> getCanceledIds()
+    public List<String> getCanceledIds()
     {
         return canceledIds;
     }
@@ -359,7 +359,7 @@ public class MockMarketDataServiceAdapter
     /**
      * stores calls to {@link #cancel(long)}
      */
-    private final List<Long> canceledIds = Lists.newArrayList();
+    private final List<String> canceledIds = Lists.newArrayList();
     /**
      * values to return from {@link #getSnapshot(Instrument, Content, String)}
      */

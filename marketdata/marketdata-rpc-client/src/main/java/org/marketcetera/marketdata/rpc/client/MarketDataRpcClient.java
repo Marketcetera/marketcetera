@@ -24,7 +24,6 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRpcUtil;
 import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.MarketDataResponse;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceBlockingStub;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceStub;
@@ -34,7 +33,7 @@ import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.base.BaseUtil;
-import org.marketcetera.rpc.base.BaseUtil.AbstractListenerProxy;
+import org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy;
 import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -71,7 +70,7 @@ public class MarketDataRpcClient
     public String request(MarketDataRequest inRequest,
                           MarketDataListener inMarketDataListener)
     {
-        final AbstractListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inMarketDataListener);
+        final AbstractClientListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inMarketDataListener);
         return executeCall(new Callable<String>(){
             @Override
             @SuppressWarnings("unchecked")
@@ -88,42 +87,10 @@ public class MarketDataRpcClient
                                        getSessionId(),
                                        request);
                 getAsyncStub().request(request,
-                                       (StreamObserver<MarketDataResponse>)listener);
+                                       (StreamObserver<MarketDataRpc.EventsResponse>)listener);
                 return listener.getId();
             }
         });
-/*
-        // check to see if this listener is already registered
-        if(listenerProxies.asMap().containsKey(inTradeMessageListener)) {
-            return;
-        }
-        // make sure that this listener wasn't just whisked out from under us
-        final AbstractListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inTradeMessageListener);
-        if(listener == null) {
-            return;
-        }
-        executeCall(new Callable<Void>() {
-            @Override
-            public Void call()
-                    throws Exception
-            {
-                SLF4JLoggerProxy.trace(TradingRpcClient.this,
-                                       "{} adding report listener",
-                                       getSessionId());
-                TradingRpc.AddTradeMessageListenerRequest.Builder requestBuilder = TradingRpc.AddTradeMessageListenerRequest.newBuilder();
-                requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setListenerId(listener.getId());
-                TradingRpc.AddTradeMessageListenerRequest addTradeMessageListenerRequest = requestBuilder.build();
-                SLF4JLoggerProxy.trace(TradingRpcClient.this,
-                                       "{} sending {}",
-                                       getSessionId(),
-                                       addTradeMessageListenerRequest);
-                getAsyncStub().addTradeMessageListener(addTradeMessageListenerRequest,
-                                                       (TradeMessageListenerProxy)listener);
-                return null;
-            }
-        });
- */
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#cancel(long)
@@ -396,7 +363,7 @@ public class MarketDataRpcClient
      * @param inListener an <code>Object</code> value
      * @return an <code>AbstractListenerProxy&lt;?,?,?&gt;</code> value
      */
-    private static AbstractListenerProxy<?,?,?> getListenerFor(Object inListener)
+    private static AbstractClientListenerProxy<?,?,?> getListenerFor(Object inListener)
     {
         if(inListener instanceof MarketDataListener) {
             return new MarketDataListenerProxy((MarketDataListener)inListener);
@@ -412,7 +379,7 @@ public class MarketDataRpcClient
      * @since $Release$
      */
     private static class MarketDataListenerProxy
-            extends BaseUtil.AbstractListenerProxy<MarketDataRpc.EventsResponse,Event,MarketDataListener>
+            extends BaseUtil.AbstractClientListenerProxy<MarketDataRpc.EventsResponse,Event,MarketDataListener>
     {
         /**
          * Create a new MarketDataListenerProxy instance.
@@ -479,16 +446,16 @@ public class MarketDataRpcClient
     /**
      * holds report listeners by their id
      */
-    private final Cache<String,BaseUtil.AbstractListenerProxy<?,?,?>> listenerProxiesById = CacheBuilder.newBuilder().build();
+    private final Cache<String,BaseUtil.AbstractClientListenerProxy<?,?,?>> listenerProxiesById = CacheBuilder.newBuilder().build();
     /**
      * holds listener proxies keyed by the listener
      */
-    private final LoadingCache<Object,BaseUtil.AbstractListenerProxy<?,?,?>> listenerProxies = CacheBuilder.newBuilder().build(new CacheLoader<Object,AbstractListenerProxy<?,?,?>>() {
+    private final LoadingCache<Object,BaseUtil.AbstractClientListenerProxy<?,?,?>> listenerProxies = CacheBuilder.newBuilder().build(new CacheLoader<Object,AbstractClientListenerProxy<?,?,?>>() {
         @Override
-        public BaseUtil.AbstractListenerProxy<?,?,?> load(Object inKey)
+        public BaseUtil.AbstractClientListenerProxy<?,?,?> load(Object inKey)
                 throws Exception
         {
-            BaseUtil.AbstractListenerProxy<?,?,?> proxy = getListenerFor(inKey);
+            BaseUtil.AbstractClientListenerProxy<?,?,?> proxy = getListenerFor(inKey);
             listenerProxiesById.put(proxy.getId(),
                                     proxy);
             return proxy;

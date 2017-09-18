@@ -3,13 +3,24 @@ package org.marketcetera.marketdata;
 import static org.marketcetera.marketdata.Messages.INVALID_ASSET_CLASS;
 import static org.marketcetera.marketdata.Messages.INVALID_CONTENT;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.marketcetera.core.Util;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -57,6 +68,10 @@ public class MarketDataRequestBuilder
      */
     public static final String SYMBOL_DELIMITER = ","; //$NON-NLS-1$
     /**
+     * the key used to identify the request id specified by the client to uniquely identify the request
+     */
+    public static final String REQUEST_ID_KEY = "requestid";
+    /**
      * Creates a <code>MarketDataRequest</code>.
      * 
      * <p>The <code>String</code> parameter should be a set of key/value pairs delimited
@@ -70,11 +85,12 @@ public class MarketDataRequestBuilder
      *   <li>{@link MarketDataRequestBuilder#EXCHANGE_KEY} - the exchange for which to request market data</li>
      *   <li>{@link MarketDataRequestBuilder#ASSETCLASS_KEY} - the asset class for which to request market data</li>
      *   <li>{@link MarketDataRequestBuilder#PARAMETERS_KEY} - the parameters to add to the market data request</li>
+     *   <li>{@link MarketDataRequestBuilder#REQUEST_ID_KEY} - the id to add to the market data request</li>
      * </ul>
      * 
      * <p>Example:
      * <pre>
-     * "symbols=GOOG,ORCL,MSFT:provider=marketcetera:content=TOP_OF_BOOK"
+     * "symbols=GOOG,ORCL,MSFT:provider=marketcetera:content=TOP_OF_BOOK:id=12345-foo-bar"
      * </pre>
      * 
      * <p>The key/value pairs are validated according to the rules established for each
@@ -97,7 +113,7 @@ public class MarketDataRequestBuilder
             throw new IllegalArgumentException();
         }
         Properties props = Util.propertiesFromString(inRequest);
-        Map<String,String> sanitizedProps = new HashMap<String,String>();
+        Map<String,String> sanitizedProps = Maps.newHashMap();
         for(Object key : props.keySet()) {
             sanitizedProps.put(((String)key).toLowerCase().trim(),
                                ((String)props.get(key)).trim());
@@ -120,6 +136,9 @@ public class MarketDataRequestBuilder
         }
         if(sanitizedProps.containsKey(ASSETCLASS_KEY)) {
             builder.withAssetClass(sanitizedProps.get(ASSETCLASS_KEY));
+        }
+        if(sanitizedProps.containsKey(REQUEST_ID_KEY)) {
+            builder.withRequestId(sanitizedProps.get(REQUEST_ID_KEY));
         }
         if(sanitizedProps.containsKey(PARAMETERS_KEY)) {
             Properties params = Util.propertiesFromString(sanitizedProps.get(PARAMETERS_KEY));
@@ -474,6 +493,20 @@ public class MarketDataRequestBuilder
             throw new IllegalArgumentException(new I18NBoundMessage1P(INVALID_ASSET_CLASS,
                                                                       inAssetClass).getText());
         }
+        return this;
+    }
+    /**
+     * Adds the given id to the market data request.
+     *
+     * @param inId a <code>String</code> value containing a unique identifier
+     * @return a <code>MarketDataRequest</code> value
+     * @throws IllegalArgumentException if the given <code>String</code> is not valid
+     */
+    public MarketDataRequestBuilder withRequestId(String inId)
+    {
+        inId = StringUtils.trimToNull(inId);
+        Validate.notNull(inId);
+        marketdata.setRequestId(inId);
         return this;
     }
     /**

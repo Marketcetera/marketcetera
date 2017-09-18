@@ -96,7 +96,7 @@ public abstract class BaseUtil
      * @version $Id$
      * @since $Release$
      */
-    public static abstract class AbstractListenerProxy<ListenerResponseClazz,MessageClazz,MessageListenerClazz>
+    public static abstract class AbstractClientListenerProxy<ListenerResponseClazz,MessageClazz,MessageListenerClazz>
             implements StreamObserver<ListenerResponseClazz>
     {
         /* (non-Javadoc)
@@ -180,7 +180,7 @@ public abstract class BaseUtil
          *
          * @param inMessageListener a <code>MessageListenerClazz</code> value
          */
-        public AbstractListenerProxy(MessageListenerClazz inMessageListener)
+        public AbstractClientListenerProxy(MessageListenerClazz inMessageListener)
         {
             messageListener = inMessageListener;
         }
@@ -192,5 +192,60 @@ public abstract class BaseUtil
          * unique id value
          */
         private final String id = UUID.randomUUID().toString();
+    }
+    /**
+     * Provides common behaviors for listener proxies.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    public static class AbstractServerListenerProxy<ResponseClazz>
+    {
+        /**
+         * Get the id value.
+         *
+         * @return a <code>String</code> value
+         */
+        public String getId()
+        {
+            return id;
+        }
+        /**
+         * Closes the connection with the RPC client call.
+         */
+        public void close()
+        {
+            observer.onCompleted();
+        }
+        /**
+         * Get the observer value.
+         *
+         * @return a <code>StreamObserver&lt;ResponseClazz&gt;</code> value
+         */
+        protected StreamObserver<ResponseClazz> getObserver()
+        {
+            return observer;
+        }
+        /**
+         * Create a new AbstractListenerProxy instance.
+         *
+         * @param inId a <code>String</code> value
+         * @param inObserver a <code>StreamObserver&lt;ResponseClazz&gt;</code> value
+         */
+        protected AbstractServerListenerProxy(String inId,
+                                              StreamObserver<ResponseClazz> inObserver)
+        {
+            id = inId;
+            observer = inObserver;
+        }
+        /**
+         * listener id uniquely identifies this listener
+         */
+        private final String id;
+        /**
+         * provides the connection to the RPC client call
+         */
+        private final StreamObserver<ResponseClazz> observer;
     }
 }

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 /* $License$ */
 
 /**
- *
+ * Provides market data services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -57,18 +57,20 @@ public class MarketDataServiceImpl
      * @see org.marketcetera.marketdata.service.MarketDataService#request(org.marketcetera.marketdata.MarketDataRequest, org.marketcetera.marketdata.MarketDataListener)
      */
     @Override
-    public long request(MarketDataRequest inRequest,
-                        MarketDataListener inMarketDataListener)
+    public String request(MarketDataRequest inRequest,
+                          MarketDataListener inMarketDataListener)
     {
-        throw new UnsupportedOperationException(); // TODO
+        
+        return inRequest.getRequestId();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.service.MarketDataService#cancel(long)
+     * @see org.marketcetera.marketdata.service.MarketDataService#cancel(java.lang.String)
      */
     @Override
-    public void cancel(long inId)
+    public void cancel(String inId)
     {
         throw new UnsupportedOperationException(); // TODO
+        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.service.MarketDataService#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String)

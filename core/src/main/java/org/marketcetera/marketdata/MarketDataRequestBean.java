@@ -12,6 +12,7 @@ import static org.marketcetera.marketdata.MarketDataRequestBuilder.PROVIDER_KEY;
 import static org.marketcetera.marketdata.MarketDataRequestBuilder.SYMBOLS_KEY;
 import static org.marketcetera.marketdata.MarketDataRequestBuilder.SYMBOL_DELIMITER;
 import static org.marketcetera.marketdata.MarketDataRequestBuilder.UNDERLYINGSYMBOLS_KEY;
+import static org.marketcetera.marketdata.MarketDataRequestBuilder.REQUEST_ID_KEY;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
 
 import javax.annotation.concurrent.ThreadSafe;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -224,6 +225,15 @@ public final class MarketDataRequestBean
             content.addAll(inContent);
         }
     }
+    /**
+     * Sets the requestId value.
+     *
+     * @param inRequestId a <code>String</code> value
+     */
+    public void setRequestId(String inRequestId)
+    {
+        requestId = inRequestId;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
@@ -241,7 +251,7 @@ public final class MarketDataRequestBean
         newBean.setParameters(parameters);
         newBean.setSymbols(symbols);
         newBean.setUnderlyingSymbols(underlyingSymbols);
-        newBean.requestId = requestId;
+        newBean.setRequestId(requestId);
         return newBean;
     }
     /* (non-Javadoc)
@@ -252,6 +262,7 @@ public final class MarketDataRequestBean
     {
         return new HashCodeBuilder(17,
                                    53).append(assetClass)
+                                      .append(requestId)
                                       .append(exchange)
                                       .append(provider)
                                       .append(content)
@@ -277,6 +288,8 @@ public final class MarketDataRequestBean
         MarketDataRequestBean rhs = (MarketDataRequestBean)obj;
         return new EqualsBuilder().append(assetClass,
                                           rhs.assetClass)
+                                  .append(requestId,
+                                          rhs.requestId)
                                   .append(exchange,
                                           rhs.exchange)
                                   .append(provider,
@@ -298,9 +311,18 @@ public final class MarketDataRequestBean
     {
         StringBuilder output = new StringBuilder();
         boolean delimiterNeeded = false;
+        if(requestId != null) {
+            if(delimiterNeeded) {
+                output.append(KEY_VALUE_DELIMITER);
+            }
+            output.append(REQUEST_ID_KEY).append(KEY_VALUE_SEPARATOR).append(requestId);
+            delimiterNeeded = true;
+        }
         Set<String> symbols = getSymbols();
-        if(symbols != null &&
-           !symbols.isEmpty()) {
+        if(symbols != null && !symbols.isEmpty()) {
+            if(delimiterNeeded) {
+                output.append(KEY_VALUE_DELIMITER);
+            }
             boolean symbolListDelimiterNeeded = false;
             output.append(SYMBOLS_KEY).append(KEY_VALUE_SEPARATOR);
             for(String symbol : symbols) {
@@ -313,8 +335,10 @@ public final class MarketDataRequestBean
             delimiterNeeded = true;
         }
         Set<String> underlyingSymbols = getUnderlyingSymbols();
-        if(underlyingSymbols != null &&
-           !underlyingSymbols.isEmpty()) {
+        if(underlyingSymbols != null && !underlyingSymbols.isEmpty()) {
+            if(delimiterNeeded) {
+                output.append(KEY_VALUE_DELIMITER);
+            }
             boolean symbolListDelimiterNeeded = false;
             output.append(UNDERLYINGSYMBOLS_KEY).append(KEY_VALUE_SEPARATOR);
             for(String underlyingSymbol : underlyingSymbols) {
@@ -380,9 +404,9 @@ public final class MarketDataRequestBean
     /**
      * Get the request id value.
      *
-     * @return a <code>long</code> value
+     * @return a <code>String</code> value
      */
-    public long getId()
+    public String getRequestId()
     {
         return requestId;
     }
@@ -425,10 +449,6 @@ public final class MarketDataRequestBean
      * request id value
      */
     @XmlAttribute
-    private volatile long requestId = requestIdCounter.incrementAndGet();
-    /**
-     * provides unique request id values
-     */
-    private static final AtomicLong requestIdCounter = new AtomicLong(0);
-    private static final long serialVersionUID = -3112127556063598129L;
+    private volatile String requestId = UUID.randomUUID().toString();
+    private static final long serialVersionUID = -3197842100588340789L;
 }

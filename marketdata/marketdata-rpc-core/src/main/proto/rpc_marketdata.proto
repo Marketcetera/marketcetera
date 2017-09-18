@@ -12,14 +12,9 @@ message MarketDataRequest {
     string request = 3;
 }
 
-message MarketDataResponse {
-    int64 id = 1;
-}
-
 message CancelRequest {
     string sessionId = 1;
     string listenerId = 2;
-    int64 id = 3;
 }
 
 message CancelResponse {
@@ -30,7 +25,7 @@ message Event {
 }
 
 message EventsResponse {
-    int64 id = 1;
+    string listenerId = 1;
     repeated string payload = 2;
 }
 
@@ -85,7 +80,7 @@ service MarketDataRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
     rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}
-    rpc request(MarketDataRequest) returns (stream MarketDataResponse);
+    rpc request(MarketDataRequest) returns (stream EventsResponse);
     rpc cancel(CancelRequest) returns (CancelResponse);
     rpc getSnapshot(SnapshotRequest) returns (SnapshotResponse);
     rpc getSnapshotPage(SnapshotPageRequest) returns (SnapshotPageResponse);

@@ -12,20 +12,24 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.marketcetera.admin.service.AuthorizationService;
+import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase;
+import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.marketdata.MarketDataPermissions;
+import org.marketcetera.marketdata.MarketDataRpcUtil;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc.AvailableCapabilityRequest;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc.AvailableCapabilityResponse;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc.CancelRequest;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc.CancelResponse;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc.MarketDataRequest;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.MarketDataResponse;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc.SnapshotPageRequest;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc.SnapshotPageResponse;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc.SnapshotRequest;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc.SnapshotResponse;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase;
 import org.marketcetera.marketdata.service.MarketDataService;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
@@ -33,9 +37,16 @@ import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
+import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
+import org.marketcetera.trade.TradeMessageListener;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.ContextClassProvider;
+import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -167,15 +178,28 @@ public class MarketDataRpcService<SessionClazz>
          */
         @Override
         public void request(MarketDataRequest inRequest,
-                            StreamObserver<MarketDataResponse> inResponseObserver)
+                            StreamObserver<MarketDataRpc.EventsResponse> inResponseObserver)
         {
             try {
-//                validateAndReturnSession(inRequest.getSessionId());
-//                MarketdataRpc.MarketDataResponse.Builder responseBuilder = MarketdataRpc.MarketDataResponse.newBuilder();
-//                MarketdataRpc.MarketDataResponse response = responseBuilder.setId(marketDataService.request(org.marketcetera.marketdata.MarketDataRequestBuilder.newRequestFromString(inRequest.getRequest()),
-//                                                                                                         inRequest.getStreamEvents())).build();
-//                inResponseObserver.onNext(response);
-//                inResponseObserver.onCompleted();
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Received market data request {}",
+                                       inRequest);
+                authzService.authorize(sessionHolder.getUser(),
+                                       MarketDataPermissions.RequestMarketDataAction.name());
+                String requestId = buildRequestId(inRequest.getSessionId(),
+                                                  inRequest.getListenerId());
+                BaseUtil.AbstractServerListenerProxy<?> marketDataListenerProxy = listenerProxiesById.getIfPresent(requestId);
+                if(marketDataListenerProxy == null) {
+                    marketDataListenerProxy = new MarketDataListenerProxy(requestId,
+                                                                          inRequest.getListenerId(),
+                                                                          inResponseObserver);
+                    listenerProxiesById.put(marketDataListenerProxy.getId(),
+                                            marketDataListenerProxy);
+                    marketDataService.request(MarketDataRpcUtil.getMarketDataRequest(inRequest.getRequest(),
+                                                                                     requestId),
+                                              (MarketDataListener)marketDataListenerProxy);
+                }
             } catch (Exception e) {
                 if(e instanceof StatusRuntimeException) {
                     throw (StatusRuntimeException)e;
@@ -193,7 +217,11 @@ public class MarketDataRpcService<SessionClazz>
             try {
                 validateAndReturnSession(inRequest.getSessionId());
                 MarketDataRpc.CancelResponse.Builder responseBuilder = MarketDataRpc.CancelResponse.newBuilder();
-                marketDataService.cancel(inRequest.getId());
+                String requestId = buildRequestId(inRequest.getSessionId(),
+                                                  inRequest.getListenerId());
+                BaseUtil.AbstractServerListenerProxy<?> marketDataListenerProxy = listenerProxiesById.getIfPresent(requestId);
+                listenerProxiesById.invalidate(requestId);
+//                marketDataService.cancel(inRequest.getListenerId());
                 inResponseObserver.onNext(responseBuilder.build());
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
@@ -285,6 +313,18 @@ public class MarketDataRpcService<SessionClazz>
                 throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
             }
         }
+        /**
+         * Build a request id from the given attributes.
+         *
+         * @param inSessionId a <code>String</code> value
+         * @param inListenerId a <code>String</code> value
+         * @return a <code>String</code> value
+         */
+        private String buildRequestId(String inSessionId,
+                                      String inListenerId)
+        {
+            return new StringBuilder().append(inSessionId).append('-').append(inListenerId).toString();
+        }
     }
     /**
      * Marshals the given object to an XML stream.
@@ -319,6 +359,60 @@ public class MarketDataRpcService<SessionClazz>
         }
     }
     /**
+     * Wraps a {@link TradeMessageListener} with the RPC call from the client.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class MarketDataListenerProxy
+            extends BaseUtil.AbstractServerListenerProxy<MarketDataRpc.EventsResponse>
+            implements MarketDataListener
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.MarketDataListener#receiveMarketData(org.marketcetera.event.Event)
+         */
+        @Override
+        public void receiveMarketData(Event inEvent)
+        {
+            MarketDataRpcUtil.setEvent(inEvent,
+                                       responseBuilder);
+            responseBuilder.setListenerId(listenerId);
+            MarketDataRpc.EventsResponse response = responseBuilder.build();
+            SLF4JLoggerProxy.trace(MarketDataRpcService.class,
+                                   "{} received event {}, sending {}",
+                                   getId(),
+                                   inEvent,
+                                   response);
+            // TODO does the user have permissions (including supervisor) to view this event?
+            getObserver().onNext(response);
+            responseBuilder.clear();
+        }
+        /**
+         * Create a new MarketDataListenerProxy instance.
+         *
+         * @param inRequestId a <code>String</code> value
+         * @param inListenerId a <code>String</code> value
+         * @param inObserver a <code>StreamObserver&lt;MarketDataListenerResponse&gt;</code> value
+         */
+        private MarketDataListenerProxy(String inRequestId,
+                                        String inListenerId,
+                                        StreamObserver<MarketDataRpc.EventsResponse> inObserver)
+        {
+            super(inRequestId,
+                  inObserver);
+            listenerId = inListenerId;
+        }
+        /**
+         * client-side id
+         */
+        private final String listenerId;
+        /**
+         * builder used to construct messages
+         */
+        private final MarketDataRpc.EventsResponse.Builder responseBuilder = MarketDataRpc.EventsResponse.newBuilder();
+    }
+    /**
      * provides context classes for marshalling/unmarshalling, may be <code>null</code>
      */
     private ContextClassProvider contextClassProvider;
@@ -347,6 +441,11 @@ public class MarketDataRpcService<SessionClazz>
     @Autowired
     private MarketDataService marketDataService;
     /**
+     * provides authorization services
+     */
+    @Autowired
+    private AuthorizationService authzService;
+    /**
      * service instance
      */
     private Service service;
@@ -354,4 +453,8 @@ public class MarketDataRpcService<SessionClazz>
      * description of this service
      */
     private final static String description = "Marketdata RPC Service";
+    /**
+     * holds trade message listeners by id
+     */
+    private final Cache<String,BaseUtil.AbstractServerListenerProxy<?>> listenerProxiesById = CacheBuilder.newBuilder().build();
 }
