@@ -129,18 +129,19 @@ public class MarketDataServiceImpl
                                inRequestId);
         RequestMetaData requestMetaData = requestsByRequestId.getIfPresent(inRequestId);
         requestsByRequestId.invalidate(inRequestId);
-        if(requestMetaData != null) {
-            requestMetaData.setIsActive(false);
-            try {
-                SLF4JLoggerProxy.debug(this,
-                                       "Canceling market data request: {}",
-                                       requestMetaData.getDataFlowId());
-                moduleManager.cancel(requestMetaData.getDataFlowId());
-            } catch (Exception e) {
-                PlatformServices.handleException(this,
-                                                 "Cancel market data request",
-                                                 e);
-            }
+        if(requestMetaData == null) {
+            throw new IllegalArgumentException("Unknown request: " + inRequestId);
+        }
+        requestMetaData.setIsActive(false);
+        try {
+            SLF4JLoggerProxy.debug(this,
+                                   "Canceling market data request: {}",
+                                   requestMetaData.getDataFlowId());
+            moduleManager.cancel(requestMetaData.getDataFlowId());
+        } catch (Exception e) {
+            PlatformServices.handleException(this,
+                                             "Cancel market data request",
+                                             e);
         }
     }
     /* (non-Javadoc)

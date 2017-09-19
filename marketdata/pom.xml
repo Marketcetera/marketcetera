@@ -21,5 +21,6 @@
     <module>marketdata-rpc-core</module>
     <module>marketdata-rpc-server</module>
     <module>marketdata-server</module>
+    <module>marketdata-core</module>
   </modules>
 </project>

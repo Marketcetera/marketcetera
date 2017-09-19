@@ -2,6 +2,7 @@ package org.marketcetera.marketdata;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Optional;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.xml.bind.JAXBContext;
@@ -27,12 +28,15 @@ public class MarketDataRpcUtil
      * Get the event from the given RPC message.
      *
      * @param inResponse a <code>MarketDataRpc.EventsResponse</code> value
-     * @return an <code>Event</code> value
+     * @return an <code>Optional&lt;Event&gt;</code> value
      */
-    public static Event getEvent(MarketDataRpc.EventsResponse inResponse)
+    public static Optional<Event> getEvent(MarketDataRpc.EventsResponse inResponse)
     {
+        if(!inResponse.hasEvent()) {
+            return Optional.empty();
+        }
         try {
-            return (Event)unmarshall(inResponse.getPayload());
+            return Optional.of((Event)unmarshall(inResponse.getEvent().getPayload()));
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
@@ -46,8 +50,18 @@ public class MarketDataRpcUtil
     public static void setEvent(Event inEvent,
                                 MarketDataRpc.EventsResponse.Builder inBuilder)
     {
+        inBuilder.setEvent(getRpcEvent(inEvent));
+    }
+    /**
+     * Get the RPC event for the given event.
+     *
+     * @param inEvent an <code>Event</code> value
+     * @return a <code>MarketDataRpc.Event</code>
+     */
+    public static MarketDataRpc.Event getRpcEvent(Event inEvent)
+    {
         try {
-            inBuilder.setPayload(marshall(inEvent));
+            return MarketDataRpc.Event.newBuilder().setPayload(marshall(inEvent)).build();
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
@@ -56,17 +70,51 @@ public class MarketDataRpcUtil
      * Get the market data request from the given RPC request.
      *
      * @param inRequest a <code>String</code> value
-     * @param inRequestId
+     * @param inServerRequestId a <code>String</code> value
+     * @param inClientRequestId a <code>String</code> value
      * @return a <code>MarketDataRequest</code> value
      */
     public static MarketDataRequest getMarketDataRequest(String inRequest,
-                                                         String inRequestId)
+                                                         String inServerRequestId,
+                                                         String inClientRequestId)
     {
-        StringBuilder requestBuilder = new StringBuilder();
-        requestBuilder.append(inRequest);
-        requestBuilder.append(':');
-        requestBuilder.append(MarketDataRequestBuilder.REQUEST_ID_KEY).append('=').append(inRequestId);
-        return MarketDataRequestBuilder.newRequestFromString(requestBuilder.toString());
+        inRequest = inRequest.replace(inClientRequestId,
+                                      inServerRequestId);
+        return MarketDataRequestBuilder.newRequestFromString(inRequest);
+    }
+    /**
+     * Get the market data status from the given RPC value.
+     *
+     * @param inMarketDataStatus a <code>MarketDataRpc.MarketDataStatus</code> value
+     * @return a <code>MarketDataStatus</code> value
+     */
+    public static MarketDataStatus getMarketDataStatus(MarketDataRpc.MarketDataStatus inMarketDataStatus)
+    {
+        MarketDataProviderStatus status = new MarketDataProviderStatus();
+        status.setFeedStatus(getFeedStatus(inMarketDataStatus.getFeedStatus()));
+        status.setProvider(inMarketDataStatus.getProvider());
+        return status;
+    }
+    /**
+     * Get the feed status value from the given RPC value.
+     *
+     * @param inFeedStatus a <code>MarketDataRpc.FeedStatus</code> value
+     * @return a <code>FeedStatus</code> value
+     */
+    public static FeedStatus getFeedStatus(MarketDataRpc.FeedStatus inFeedStatus)
+    {
+        switch(inFeedStatus) {
+            case AVAILABLE_FEED_STATUS:
+                return FeedStatus.AVAILABLE;
+            case ERROR_FEED_STATUS:
+                return FeedStatus.ERROR;
+            case OFFLINE_FEED_STATUS:
+                return FeedStatus.OFFLINE;
+            case UNKNOWN_FEED_STATUS:
+            case UNRECOGNIZED:
+            default:
+                return FeedStatus.UNKNOWN;
+        }
     }
     /**
      * Marshals the given object to an XML stream.

@@ -3,7 +3,7 @@ package org.marketcetera.marketdata;
 /* $License$ */
 
 /**
- *
+ * Listens for market data status.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -14,7 +14,7 @@ public interface MarketDataStatusListener
     /**
      * Receive the given market data status.
      *
-     * @param inMarketDataStatus
+     * @param inMarketDataStatus a <code>MarketDataStatus</code> value
      */
     void receiveMarketDataStatus(MarketDataStatus inMarketDataStatus);
 }

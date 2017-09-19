@@ -11,6 +11,6 @@
     </Root>
     <logger name="org.marketcetera.clienttest" level="debug"/>
     <logger name="org.marketcetera.trading.rpc" level="trace"/>
-    <logger name="org.marketcetera.marketdata.client.rpc.MarketDataRpcClient" level="trace"/>
+    <logger name="org.marketcetera.marketdata.rpc.client.MarketDataRpcClient" level="trace"/>
   </Loggers>
 </Configuration>

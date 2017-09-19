@@ -1,14 +1,6 @@
 package org.marketcetera.marketdata.rpc.server;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.Set;
-
-import javax.annotation.concurrent.GuardedBy;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -17,31 +9,21 @@ import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataPermissions;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.MarketDataRpcUtil;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.AvailableCapabilityRequest;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.AvailableCapabilityResponse;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.CancelRequest;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.CancelResponse;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.MarketDataRequest;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.SnapshotPageRequest;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.SnapshotPageResponse;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.SnapshotRequest;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.SnapshotResponse;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.AddMarketDataStatusListenerRequest;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.MarketDataStatusListenerResponse;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.RemoveMarketDataStatusListenerRequest;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.RemoveMarketDataStatusListenerResponse;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase;
 import org.marketcetera.marketdata.service.MarketDataService;
-import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
-import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
-import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
-import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
-import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
-import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
+import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
-import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -74,11 +56,6 @@ public class MarketDataRpcService<SessionClazz>
         Validate.notNull(marketDataService,
                          "Market data service required");
         service = new Service();
-        synchronized(contextLock) {
-            context = JAXBContext.newInstance(contextClassProvider==null?new Class<?>[0]:contextClassProvider.getContextClasses());
-            marshaller = context.createMarshaller();
-            unmarshaller = context.createUnmarshaller();
-        }
         super.start();
     }
     /**
@@ -98,24 +75,6 @@ public class MarketDataRpcService<SessionClazz>
     public void setServiceAdapter(MarketDataService inMarketDataService)
     {
         marketDataService = inMarketDataService;
-    }
-    /**
-     * Get the contextClassProvider value.
-     *
-     * @return a <code>ContextClassProvider</code> value
-     */
-    public ContextClassProvider getContextClassProvider()
-    {
-        return contextClassProvider;
-    }
-    /**
-     * Sets the contextClassProvider value.
-     *
-     * @param inContextClassProvider a <code>ContextClassProvider</code> value
-     */
-    public void setContextClassProvider(ContextClassProvider inContextClassProvider)
-    {
-        contextClassProvider = inContextClassProvider;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.server.AbstractRpcService#getServiceDescription()
@@ -147,8 +106,8 @@ public class MarketDataRpcService<SessionClazz>
          * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#login(org.marketcetera.rpc.base.BaseRpc.LoginRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void login(LoginRequest inRequest,
-                          StreamObserver<LoginResponse> inResponseObserver)
+        public void login(BaseRpc.LoginRequest inRequest,
+                          StreamObserver<BaseRpc.LoginResponse> inResponseObserver)
         {
             MarketDataRpcService.this.doLogin(inRequest,
                                               inResponseObserver);
@@ -157,8 +116,8 @@ public class MarketDataRpcService<SessionClazz>
          * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#logout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void logout(LogoutRequest inRequest,
-                           StreamObserver<LogoutResponse> inResponseObserver)
+        public void logout(BaseRpc.LogoutRequest inRequest,
+                           StreamObserver<BaseRpc.LogoutResponse> inResponseObserver)
         {
             MarketDataRpcService.this.doLogout(inRequest,
                                                inResponseObserver);
@@ -167,8 +126,8 @@ public class MarketDataRpcService<SessionClazz>
          * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#heartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void heartbeat(HeartbeatRequest inRequest,
-                              StreamObserver<HeartbeatResponse> inResponseObserver)
+        public void heartbeat(BaseRpc.HeartbeatRequest inRequest,
+                              StreamObserver<BaseRpc.HeartbeatResponse> inResponseObserver)
         {
             MarketDataRpcService.this.doHeartbeat(inRequest,
                                                   inResponseObserver);
@@ -177,7 +136,7 @@ public class MarketDataRpcService<SessionClazz>
          * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#request(org.marketcetera.marketdata.core.rpc.MarketdataRpc.MarketDataRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void request(MarketDataRequest inRequest,
+        public void request(MarketDataRpc.MarketDataRequest inRequest,
                             StreamObserver<MarketDataRpc.EventsResponse> inResponseObserver)
         {
             try {
@@ -187,58 +146,77 @@ public class MarketDataRpcService<SessionClazz>
                                        inRequest);
                 authzService.authorize(sessionHolder.getUser(),
                                        MarketDataPermissions.RequestMarketDataAction.name());
-                String requestId = buildRequestId(inRequest.getSessionId(),
-                                                  inRequest.getListenerId());
-                BaseUtil.AbstractServerListenerProxy<?> marketDataListenerProxy = listenerProxiesById.getIfPresent(requestId);
+                MarketDataRequest request = MarketDataRequestBuilder.newRequestFromString(inRequest.getRequest());
+                // the client is obligated to provide a request id that is unique to her. we need to make sure that that uniqueness is guaranteed as long as she does her part,
+                //  so we're going to build a compound request id that includes the session id. however, the client doesn't know about that so we need to make sure that we
+                //  can deliver her original request id, too.
+                String clientRequestId = request.getRequestId();
+                String serverRequestId = buildRequestId(inRequest.getSessionId(),
+                                                        clientRequestId);
+                BaseUtil.AbstractServerListenerProxy<?> marketDataListenerProxy = listenerProxiesById.getIfPresent(serverRequestId);
                 if(marketDataListenerProxy == null) {
-                    marketDataListenerProxy = new MarketDataListenerProxy(requestId,
-                                                                          inRequest.getListenerId(),
+                    marketDataListenerProxy = new MarketDataListenerProxy(serverRequestId,
+                                                                          clientRequestId,
                                                                           inResponseObserver);
-                    listenerProxiesById.put(marketDataListenerProxy.getId(),
+                    listenerProxiesById.put(serverRequestId,
                                             marketDataListenerProxy);
+                    // we're going to remap the request id from the client request id to the server request id here
                     marketDataService.request(MarketDataRpcUtil.getMarketDataRequest(inRequest.getRequest(),
-                                                                                     requestId),
+                                                                                     serverRequestId,
+                                                                                     clientRequestId),
                                               (MarketDataListener)marketDataListenerProxy);
+                } else {
+                    throw new IllegalArgumentException("Duplicate market data request id: " + clientRequestId);
                 }
             } catch (Exception e) {
-                inResponseObserver.onError(e);
                 SLF4JLoggerProxy.warn(MarketDataRpcService.this,
                                       e);
+                inResponseObserver.onError(e);
             }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#cancel(org.marketcetera.marketdata.core.rpc.MarketdataRpc.CancelRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void cancel(CancelRequest inRequest,
-                           StreamObserver<CancelResponse> inResponseObserver)
+        public void cancel(MarketDataRpc.CancelRequest inRequest,
+                           StreamObserver<MarketDataRpc.CancelResponse> inResponseObserver)
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Received market data cancel request {}",
+                                       inRequest);
                 MarketDataRpc.CancelResponse.Builder responseBuilder = MarketDataRpc.CancelResponse.newBuilder();
-                String requestId = buildRequestId(inRequest.getSessionId(),
-                                                  inRequest.getListenerId());
-                BaseUtil.AbstractServerListenerProxy<?> marketDataListenerProxy = listenerProxiesById.getIfPresent(requestId);
-                listenerProxiesById.invalidate(requestId);
-                marketDataService.cancel(inRequest.getListenerId());
+                String clientRequestId = inRequest.getRequestId();
+                String serverRequestId = buildRequestId(inRequest.getSessionId(),
+                                                        clientRequestId);
+                BaseUtil.AbstractServerListenerProxy<?> marketDataListenerProxy = listenerProxiesById.getIfPresent(serverRequestId);
+                if(marketDataListenerProxy == null) {
+                    throw new IllegalArgumentException("Unknown market data request id: " + clientRequestId);
+                }
+                listenerProxiesById.invalidate(serverRequestId);
+                marketDataService.cancel(serverRequestId);
                 if(marketDataListenerProxy != null) {
                     marketDataListenerProxy.close();
                 }
-                inResponseObserver.onNext(responseBuilder.build());
+                MarketDataRpc.CancelResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Sending response: {}",
+                                       response);
+                inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                SLF4JLoggerProxy.warn(MarketDataRpcService.this,
+                                      e);
+                inResponseObserver.onError(e);
             }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#getSnapshot(org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void getSnapshot(SnapshotRequest inRequest,
-                                StreamObserver<SnapshotResponse> inResponseObserver)
+        public void getSnapshot(MarketDataRpc.SnapshotRequest inRequest,
+                                StreamObserver<MarketDataRpc.SnapshotResponse> inResponseObserver)
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
@@ -265,8 +243,8 @@ public class MarketDataRpcService<SessionClazz>
          * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#getSnapshotPage(org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotPageRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void getSnapshotPage(SnapshotPageRequest inRequest,
-                                    StreamObserver<SnapshotPageResponse> inResponseObserver)
+        public void getSnapshotPage(MarketDataRpc.SnapshotPageRequest inRequest,
+                                    StreamObserver<MarketDataRpc.SnapshotPageResponse> inResponseObserver)
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
@@ -295,8 +273,8 @@ public class MarketDataRpcService<SessionClazz>
          * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#getAvailableCapability(org.marketcetera.marketdata.core.rpc.MarketdataRpc.AvailableCapabilityRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void getAvailableCapability(AvailableCapabilityRequest inRequest,
-                                           StreamObserver<AvailableCapabilityResponse> inResponseObserver)
+        public void getAvailableCapability(MarketDataRpc.AvailableCapabilityRequest inRequest,
+                                           StreamObserver<MarketDataRpc.AvailableCapabilityResponse> inResponseObserver)
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
@@ -315,53 +293,41 @@ public class MarketDataRpcService<SessionClazz>
                 throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
             }
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#addMarketDataStatusListener(org.marketcetera.marketdata.core.rpc.MarketDataRpc.AddMarketDataStatusListenerRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void addMarketDataStatusListener(AddMarketDataStatusListenerRequest inRequest,
+                                                StreamObserver<MarketDataStatusListenerResponse> inResponseObserver)
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#removeMarketDataStatusListener(org.marketcetera.marketdata.core.rpc.MarketDataRpc.RemoveMarketDataStatusListenerRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void removeMarketDataStatusListener(RemoveMarketDataStatusListenerRequest inRequest,
+                                                   StreamObserver<RemoveMarketDataStatusListenerResponse> inResponseObserver)
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
         /**
          * Build a request id from the given attributes.
          *
          * @param inSessionId a <code>String</code> value
-         * @param inListenerId a <code>String</code> value
+         * @param inRequestId a <code>String</code> value
          * @return a <code>String</code> value
          */
         private String buildRequestId(String inSessionId,
-                                      String inListenerId)
+                                      String inRequestId)
         {
-            return new StringBuilder().append(inSessionId).append('-').append(inListenerId).toString();
+            return new StringBuilder().append(inSessionId).append('-').append(inRequestId).toString();
         }
     }
     /**
-     * Marshals the given object to an XML stream.
-     *
-     * @param inObject an <code>Object</code> value
-     * @return a <code>String</code> value
-     * @throws JAXBException if an error occurs marshalling the data
-     */
-    private String marshal(Object inObject)
-            throws JAXBException
-    {
-        StringWriter output = new StringWriter();
-        synchronized(contextLock) {
-            marshaller.marshal(inObject,
-                               output);
-        }
-        return output.toString();
-    }
-    /**
-     * Unmarshals an object from the given XML stream.
-     *
-     * @param inData a <code>String</code> value
-     * @return a <code>Clazz</code> value
-     * @throws JAXBException if an error occurs unmarshalling the data
-     */
-    @SuppressWarnings({ "unchecked" })
-    private <Clazz> Clazz unmarshall(String inData)
-            throws JAXBException
-    {
-        synchronized(contextLock) {
-            return (Clazz)unmarshaller.unmarshal(new StringReader(inData));
-        }
-    }
-    /**
-     * Wraps a {@link TradeMessageListener} with the RPC call from the client.
+     * Wraps a {@link MarketDataListener} with the RPC call from the client.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -379,7 +345,7 @@ public class MarketDataRpcService<SessionClazz>
         {
             MarketDataRpcUtil.setEvent(inEvent,
                                        responseBuilder);
-            responseBuilder.setListenerId(listenerId);
+            responseBuilder.setRequestId(clientRequestId);
             MarketDataRpc.EventsResponse response = responseBuilder.build();
             SLF4JLoggerProxy.trace(MarketDataRpcService.class,
                                    "{} received event {}, sending {}",
@@ -393,50 +359,27 @@ public class MarketDataRpcService<SessionClazz>
         /**
          * Create a new MarketDataListenerProxy instance.
          *
-         * @param inRequestId a <code>String</code> value
-         * @param inListenerId a <code>String</code> value
+         * @param inServerRequestId a <code>String</code> value
+         * @param inClientRequestId a <code>String</code> value
          * @param inObserver a <code>StreamObserver&lt;MarketDataListenerResponse&gt;</code> value
          */
-        private MarketDataListenerProxy(String inRequestId,
-                                        String inListenerId,
+        private MarketDataListenerProxy(String inServerRequestId,
+                                        String inClientRequestId,
                                         StreamObserver<MarketDataRpc.EventsResponse> inObserver)
         {
-            super(inRequestId,
+            super(inServerRequestId,
                   inObserver);
-            listenerId = inListenerId;
+            clientRequestId = inClientRequestId;
         }
         /**
          * client-side id
          */
-        private final String listenerId;
+        private final String clientRequestId;
         /**
          * builder used to construct messages
          */
         private final MarketDataRpc.EventsResponse.Builder responseBuilder = MarketDataRpc.EventsResponse.newBuilder();
     }
-    /**
-     * provides context classes for marshalling/unmarshalling, may be <code>null</code>
-     */
-    private ContextClassProvider contextClassProvider;
-    /**
-     * guards access to JAXB context objects
-     */
-    private final Object contextLock = new Object();
-    /**
-     * context used to serialize and unserialize messages as necessary
-     */
-    @GuardedBy("contextLock")
-    private JAXBContext context;
-    /**
-     * marshals messages
-     */
-    @GuardedBy("contextLock")
-    private Marshaller marshaller;
-    /**
-     * unmarshals messages
-     */
-    @GuardedBy("contextLock")
-    private Unmarshaller unmarshaller;
     /**
      * provides access to market data services
      */

@@ -286,7 +286,6 @@ public class MarketDataRpcClientServerTest
     {
         MarketDataRpcService<SessionId> service = new MarketDataRpcService<SessionId>();
         service.setServiceAdapter(serviceAdapter);
-        service.setContextClassProvider(MarketDataContextClassProvider.INSTANCE);
         return service;
     }
     /**

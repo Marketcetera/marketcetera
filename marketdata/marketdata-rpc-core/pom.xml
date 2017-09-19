@@ -30,6 +30,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>trade-rpc-core</artifactId>
     </dependency>
     <dependency>

@@ -29,6 +29,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>marketdata-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-core</artifactId>
+    </dependency>
     <!-- test -->
     <dependency>
       <groupId>${project.groupId}</groupId>

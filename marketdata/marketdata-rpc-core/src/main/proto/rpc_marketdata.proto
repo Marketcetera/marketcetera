@@ -8,13 +8,12 @@ option java_outer_classname = "MarketDataRpc";
 
 message MarketDataRequest {
     string sessionId = 1;
-    string listenerId = 2;
-    string request = 3;
+    string request = 2;
 }
 
 message CancelRequest {
     string sessionId = 1;
-    string listenerId = 2;
+    string requestId = 2;
 }
 
 message CancelResponse {
@@ -25,8 +24,8 @@ message Event {
 }
 
 message EventsResponse {
-    string listenerId = 1;
-    string payload = 2;
+    string requestId = 1;
+    Event event = 2;
 }
 
 message SnapshotRequest {
@@ -68,12 +67,42 @@ enum ContentAndCapability {
     UNKNOWN = 12;
     EVENT_BOUNDARY = 13;
 }
+
+enum FeedStatus {
+    OFFLINE_FEED_STATUS = 0;
+    ERROR_FEED_STATUS = 1;
+    AVAILABLE_FEED_STATUS = 2;
+    UNKNOWN_FEED_STATUS = 3;
+}
+
+message MarketDataStatus {
+    FeedStatus feedStatus = 1;
+    string provider = 2;
+}
+
 message AvailableCapabilityRequest {
     string sessionId = 1;
 }
 
 message AvailableCapabilityResponse {
     repeated ContentAndCapability capability = 1;
+}
+
+message AddMarketDataStatusListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message MarketDataStatusListenerResponse {
+    MarketDataStatus marketDataStatus = 1;
+}
+
+message RemoveMarketDataStatusListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message RemoveMarketDataStatusListenerResponse {
 }
 
 service MarketDataRpcService {
@@ -85,4 +114,6 @@ service MarketDataRpcService {
     rpc getSnapshot(SnapshotRequest) returns (SnapshotResponse);
     rpc getSnapshotPage(SnapshotPageRequest) returns (SnapshotPageResponse);
     rpc getAvailableCapability(AvailableCapabilityRequest) returns (AvailableCapabilityResponse);
+    rpc addMarketDataStatusListener(AddMarketDataStatusListenerRequest) returns (stream MarketDataStatusListenerResponse);
+    rpc removeMarketDataStatusListener(RemoveMarketDataStatusListenerRequest) returns (RemoveMarketDataStatusListenerResponse);
 }

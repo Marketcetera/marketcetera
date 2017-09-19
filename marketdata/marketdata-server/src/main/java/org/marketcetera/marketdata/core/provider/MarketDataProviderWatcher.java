@@ -20,6 +20,7 @@ import javax.management.ObjectName;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.MarketDataProviderStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.ProviderStatus;
 import org.marketcetera.marketdata.core.MarketDataProviderMBean;
@@ -277,7 +278,7 @@ public class MarketDataProviderWatcher
                 }
                 if(lastStatus != isRunning) {
                     MarketDataProviderStatus newStatus = new MarketDataProviderStatus(moduleName,
-                                                                                      isRunning);
+                                                                                      isRunning?FeedStatus.AVAILABLE:FeedStatus.OFFLINE);
                     for(MarketDataStatusListener listener : marketDataStatusListeners) {
                         try {
                             listener.receiveMarketDataStatus(newStatus);

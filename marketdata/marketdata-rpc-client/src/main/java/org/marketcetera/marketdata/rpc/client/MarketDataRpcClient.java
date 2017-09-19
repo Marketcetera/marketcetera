@@ -14,8 +14,10 @@ import org.marketcetera.marketdata.MarketDataClient;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRpcUtil;
+import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.MarketDataStatusListenerResponse;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceBlockingStub;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceStub;
@@ -60,7 +62,14 @@ public class MarketDataRpcClient
     public String request(MarketDataRequest inRequest,
                           MarketDataListener inMarketDataListener)
     {
-        final AbstractClientListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inMarketDataListener);
+        AbstractClientListenerProxy<?,?,?> proxy = listenerProxiesById.getIfPresent(inRequest.getRequestId());
+        if(proxy != null) {
+            throw new IllegalArgumentException("Duplicate market data request id: " + inRequest.getRequestId());
+        }
+        proxy = getListenerFor(inMarketDataListener);
+        listenerProxiesById.put(inRequest.getRequestId(),
+                                proxy);
+        final AbstractClientListenerProxy<?,?,?> listener = proxy;
         return executeCall(new Callable<String>(){
             @Override
             @SuppressWarnings("unchecked")
@@ -70,7 +79,6 @@ public class MarketDataRpcClient
                 MarketDataRpc.MarketDataRequest.Builder requestBuilder = MarketDataRpc.MarketDataRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setRequest(inRequest.toString());
-                requestBuilder.setListenerId(listener.getId());
                 MarketDataRpc.MarketDataRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
                                        "{} sending {}",
@@ -78,7 +86,7 @@ public class MarketDataRpcClient
                                        request);
                 getAsyncStub().request(request,
                                        (StreamObserver<MarketDataRpc.EventsResponse>)listener);
-                return listener.getId();
+                return inRequest.getRequestId();
             }
         });
     }
@@ -90,10 +98,9 @@ public class MarketDataRpcClient
     {
         final AbstractClientListenerProxy<?,?,?> proxy = listenerProxiesById.getIfPresent(inRequestId);
         if(proxy == null) {
-            return;
+            throw new IllegalArgumentException("Unknown market data request id: " + inRequestId);
         }
         listenerProxiesById.invalidate(inRequestId);
-        listenerProxies.invalidate(proxy);
         executeCall(new Callable<Void>(){
             @Override
             public Void call()
@@ -104,7 +111,7 @@ public class MarketDataRpcClient
                                        inRequestId);
                 MarketDataRpc.CancelRequest.Builder requestBuilder = MarketDataRpc.CancelRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setListenerId(proxy.getId());
+                requestBuilder.setRequestId(inRequestId);
                 MarketDataRpc.CancelResponse response = getBlockingStub().cancel(requestBuilder.build());
                 SLF4JLoggerProxy.debug(MarketDataRpcClient.this,
                                        "Cancel Response: {}", //$NON-NLS-1$
@@ -192,6 +199,36 @@ public class MarketDataRpcClient
     @Override
     public void addMarketDataStatusListener(MarketDataStatusListener inListener)
     {
+        // check to see if this listener is already registered
+        if(listenerProxies.asMap().containsKey(inListener)) {
+            return;
+        }
+        // make sure that this listener wasn't just whisked out from under us
+        final AbstractClientListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inListener);
+        if(listener == null) {
+            return;
+        }
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
+                                       "{} adding status listener",
+                                       getSessionId());
+                MarketDataRpc.AddMarketDataStatusListenerRequest.Builder requestBuilder = MarketDataRpc.AddMarketDataStatusListenerRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(listener.getId());
+                MarketDataRpc.AddMarketDataStatusListenerRequest addMarketDataStatusListenerRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       addMarketDataStatusListenerRequest);
+                getAsyncStub().addMarketDataStatusListener(addMarketDataStatusListenerRequest,
+                                                           (MarketDataStatusListenerProxy)listener);
+                return null;
+            }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataClient#removeMarketDataStatusListener(org.marketcetera.marketdata.MarketDataStatusListener)
@@ -199,6 +236,36 @@ public class MarketDataRpcClient
     @Override
     public void removeMarketDataStatusListener(MarketDataStatusListener inListener)
     {
+        final AbstractClientListenerProxy<?,?,?> proxy = listenerProxies.getIfPresent(inListener);
+        listenerProxies.invalidate(inListener);
+        if(proxy == null) {
+            return;
+        }
+        listenerProxiesById.invalidate(proxy.getId());
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
+                                       "{} removing market data status listener",
+                                       getSessionId());
+                MarketDataRpc.RemoveMarketDataStatusListenerRequest.Builder requestBuilder = MarketDataRpc.RemoveMarketDataStatusListenerRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(proxy.getId());
+                MarketDataRpc.RemoveMarketDataStatusListenerRequest removeMarketDataStatusListenerRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       removeMarketDataStatusListenerRequest);
+                MarketDataRpc.RemoveMarketDataStatusListenerResponse response = getBlockingStub().removeMarketDataStatusListener(removeMarketDataStatusListenerRequest);
+                SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
+            }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getAvailableCapability()
@@ -226,38 +293,6 @@ public class MarketDataRpcClient
         });
     }
     /**
-     * Validate and start the object.
-     */
-    @Override
-    public void start()
-            throws Exception
-    {
-        super.start();
-//        synchronized(contextLock) {
-//            context = JAXBContext.newInstance(contextClassProvider==null?new Class<?>[0]:contextClassProvider.getContextClasses());
-//            marshaller = context.createMarshaller();
-//            unmarshaller = context.createUnmarshaller();
-//        }
-    }
-//    /**
-//     * Get the contextClassProvider value.
-//     *
-//     * @return a <code>ContextClassProvider</code> value
-//     */
-//    public ContextClassProvider getContextClassProvider()
-//    {
-//        return contextClassProvider;
-//    }
-//    /**
-//     * Sets the contextClassProvider value.
-//     *
-//     * @param inContextClassProvider a <code>ContextClassProvider</code> value
-//     */
-//    public void setContextClassProvider(ContextClassProvider inContextClassProvider)
-//    {
-//        contextClassProvider = inContextClassProvider;
-//    }
-    /**
      * Create a new MarketDataRpcClient instance.
      *
      * @param inParameters a <code>MarketDataRpcClientParameters</code> value
@@ -265,7 +300,6 @@ public class MarketDataRpcClient
     MarketDataRpcClient(MarketDataRpcClientParameters inParameters)
     {
         super(inParameters);
-//        contextClassProvider = inParameters.getContextClassProvider();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getBlockingStub(io.grpc.Channel)
@@ -335,8 +369,47 @@ public class MarketDataRpcClient
     {
         if(inListener instanceof MarketDataListener) {
             return new MarketDataListenerProxy((MarketDataListener)inListener);
+        } else if(inListener instanceof MarketDataStatusListener) {
+            return new MarketDataStatusListenerProxy((MarketDataStatusListener)inListener);
         } else {
             throw new UnsupportedOperationException();
+        }
+    }
+    /**
+     * Provides an interface between market data status stream listeners and their handlers.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class MarketDataStatusListenerProxy
+            extends BaseUtil.AbstractClientListenerProxy<MarketDataRpc.MarketDataStatusListenerResponse,MarketDataStatus,MarketDataStatusListener>
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy#translateMessage(java.lang.Object)
+         */
+        @Override
+        protected MarketDataStatus translateMessage(MarketDataStatusListenerResponse inResponse)
+        {
+            return MarketDataRpcUtil.getMarketDataStatus(inResponse.getMarketDataStatus());
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        protected void sendMessage(MarketDataStatusListener inMessageListener,
+                                   MarketDataStatus inMessage)
+        {
+            inMessageListener.receiveMarketDataStatus(inMessage);
+        }
+        /**
+         * Create a new MarketDataStatusListenerProxy instance.
+         *
+         * @param inMessageListener a <code>MarketDataStatusListener</code> value
+         */
+        private MarketDataStatusListenerProxy(MarketDataStatusListener inMessageListener)
+        {
+            super(inMessageListener);
         }
     }
     /**
@@ -359,15 +432,15 @@ public class MarketDataRpcClient
             super(inMessageListener);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcClient.AbstractListenerProxy#translateMessage(java.lang.Object)
+         * @see org.marketcetera.trading.rpc.MarketDataRpcClient.AbstractListenerProxy#translateMessage(java.lang.Object)
          */
         @Override
         protected Event translateMessage(MarketDataRpc.EventsResponse inResponse)
         {
-            return MarketDataRpcUtil.getEvent(inResponse);
+            return MarketDataRpcUtil.getEvent(inResponse).orElse(null);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcClient.AbstractListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
+         * @see org.marketcetera.trading.rpc.MarketDataRpcClient.AbstractListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
          */
         @Override
         protected void sendMessage(MarketDataListener inMessageListener,
@@ -389,7 +462,7 @@ public class MarketDataRpcClient
      */
     private static final AppId APP_ID = Util.getAppId(APP_ID_NAME,APP_ID_VERSION.getVersionInfo());
     /**
-     * holds report listeners by their id
+     * holds report listeners by their id or the market data request id
      */
     private final Cache<String,BaseUtil.AbstractClientListenerProxy<?,?,?>> listenerProxiesById = CacheBuilder.newBuilder().build();
     /**

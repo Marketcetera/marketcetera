@@ -1,7 +1,8 @@
-package org.marketcetera.marketdata.core.provider;
+package org.marketcetera.marketdata;
 
 import java.io.Serializable;
 
+import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataStatus;
 
 /* $License$ */
@@ -16,11 +17,18 @@ import org.marketcetera.marketdata.MarketDataStatus;
 public class MarketDataProviderStatus
         implements Serializable,MarketDataStatus
 {
-    /**
-     * Get the provider value.
-     *
-     * @return a <code>String</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataStatus#getFeedStatus()
      */
+    @Override
+    public FeedStatus getFeedStatus()
+    {
+        return feedStatus;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataStatus#getProvider()
+     */
+    @Override
     public String getProvider()
     {
         return provider;
@@ -35,22 +43,13 @@ public class MarketDataProviderStatus
         provider = inProvider;
     }
     /**
-     * Get the isAvailable value.
+     * Sets the feedStatus value.
      *
-     * @return a <code>boolean</code> value
+     * @param inFeedStatus a <code>FeedStatus</code> value
      */
-    public boolean getIsAvailable()
+    public void setFeedStatus(FeedStatus inFeedStatus)
     {
-        return isAvailable;
-    }
-    /**
-     * Sets the isAvailable value.
-     *
-     * @param a <code>boolean</code> value
-     */
-    public void setIsAvailable(boolean inIsAvailable)
-    {
-        isAvailable = inIsAvailable;
+        feedStatus = inFeedStatus;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -59,20 +58,20 @@ public class MarketDataProviderStatus
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("MarketDataProviderStatus [").append(provider).append(isAvailable?" is available":" is not available").append("]");
+        builder.append("MarketDataProviderStatus [").append(provider).append(feedStatus).append("]");
         return builder.toString();
     }
     /**
      * Create a new MarketDataProviderStatus instance.
      *
      * @param inProvider a <code>String</code> value
-     * @param inIsAvailable a <code>boolean</code> value
+     * @param inFeedStatus a <code>boolean</code> value
      */
     public MarketDataProviderStatus(String inProvider,
-                                    boolean inIsAvailable)
+                                    FeedStatus inFeedStatus)
     {
         provider = inProvider;
-        isAvailable = inIsAvailable;
+        feedStatus = inFeedStatus;
     }
     /**
      * Create a new MarketDataProviderStatus instance.
@@ -83,8 +82,8 @@ public class MarketDataProviderStatus
      */
     private String provider;
     /**
-     * indicates if the provider is available
+     * indicates if the status of the provider
      */
-    private boolean isAvailable;
-    private static final long serialVersionUID = 2241394608997062350L;
+    private FeedStatus feedStatus;
+    private static final long serialVersionUID = 7543127425900182686L;
 }
