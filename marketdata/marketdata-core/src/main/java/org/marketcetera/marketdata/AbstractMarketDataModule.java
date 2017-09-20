@@ -3,6 +3,7 @@ package org.marketcetera.marketdata;
 import static org.marketcetera.marketdata.Messages.BEAN_ATTRIBUTE_CHANGED;
 import static org.marketcetera.marketdata.Messages.FEED_STATUS_CHANGED;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +24,7 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.metrics.ThreadedMetric;
+import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
@@ -36,9 +38,11 @@ import org.marketcetera.module.RequestID;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /* $License$ */
@@ -64,11 +68,12 @@ import com.google.common.collect.Maps;
  * @version $Id$
  * @since 1.0.0
  */
+@AutowiredModule
 @ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken, 
                                                C extends MarketDataFeedCredentials>
         extends Module
-        implements DataEmitter, AbstractMarketDataModuleMXBean, NotificationEmitter
+        implements DataEmitter,AbstractMarketDataModuleMXBean,NotificationEmitter
 {
     /**
      * Gets the feed module with the given provider name.
@@ -377,7 +382,17 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
                                                                                "String", //$NON-NLS-1$
                                                                                oldStatusString,
                                                                                newStatusString));
+        MarketDataProviderStatus status = new MarketDataProviderStatus(getURN().providerName(),
+                                                                       inNewFeedStatus);
+        for(MarketDataStatusBroadcaster marketDataStatusPublisher : marketDataStatusBroadcasters) {
+            marketDataStatusPublisher.reportMarketDataStatus(status);
+        }
     }
+    /**
+     * optional market data status publishers
+     */
+    @Autowired(required=false)
+    private Collection<MarketDataStatusBroadcaster> marketDataStatusBroadcasters = Lists.newArrayList();
     /**
      * tracks feeds by provider name as the feeds are instantiated (not started) - may not be active
      */

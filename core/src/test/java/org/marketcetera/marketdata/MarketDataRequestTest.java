@@ -1730,7 +1730,8 @@ public class MarketDataRequestTest
                                                                                 .withContent(inExpectedContent)
                                                                                 .withAssetClass(inAssetClass)
                                                                                 .withSymbols(inExpectedSymbols)
-                                                                                .withUnderlyingSymbols(inExpectedUnderlyingSymbols);
+                                                                                .withUnderlyingSymbols(inExpectedUnderlyingSymbols)
+                                                                                .withRequestId(inActualRequest.getRequestId());
         for(Map.Entry<String,String> entry : inExpectedParameters.entrySet()) {
             builder.withParameter(entry.getKey(),
                                   entry.getValue());

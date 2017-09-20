@@ -3,8 +3,6 @@ package org.marketcetera.marketdata.service;
 import java.util.Deque;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.publisher.ISubscriber;
@@ -30,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Sets;
 
 /* $License$ */
 
@@ -50,7 +49,16 @@ public class MarketDataServiceImpl
     @Override
     public void addMarketDataStatusListener(MarketDataStatusListener inMarketDataStatusListener)
     {
-        throw new UnsupportedOperationException(); // TODO
+        marketDataStatusListeners.add(inMarketDataStatusListener);
+        for(MarketDataStatus cachedStatus : cachedMarketDataStatus.asMap().values()) {
+            try {
+                inMarketDataStatusListener.receiveMarketDataStatus(cachedStatus);
+            } catch (Exception e) {
+                PlatformServices.handleException(this,
+                                                 "Reporting market data status",
+                                                 e);
+            }
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataStatusPublisher#removeMarketDataStatusListener(org.marketcetera.marketdata.MarketDataStatusListener)
@@ -58,7 +66,7 @@ public class MarketDataServiceImpl
     @Override
     public void removeMarketDataStatusListener(MarketDataStatusListener inMarketDataStatusListener)
     {
-        throw new UnsupportedOperationException(); // TODO
+        marketDataStatusListeners.remove(inMarketDataStatusListener);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataStatusBroadcaster#reportMarketDataStatus(org.marketcetera.marketdata.MarketDataStatus)
@@ -66,7 +74,17 @@ public class MarketDataServiceImpl
     @Override
     public void reportMarketDataStatus(MarketDataStatus inMarketDataStatus)
     {
-        throw new UnsupportedOperationException(); // TODO
+        cachedMarketDataStatus.put(inMarketDataStatus.getProvider(),
+                                   inMarketDataStatus);
+        for(MarketDataStatusListener listener : marketDataStatusListeners) {
+            try {
+                listener.receiveMarketDataStatus(inMarketDataStatus);
+            } catch (Exception e) {
+                PlatformServices.handleException(this,
+                                                 "Reporting market data status",
+                                                 e);
+            }
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.service.MarketDataService#request(org.marketcetera.marketdata.MarketDataRequest, org.marketcetera.marketdata.MarketDataListener)
@@ -172,14 +190,6 @@ public class MarketDataServiceImpl
     public Set<Capability> getAvailableCapability()
     {
         throw new UnsupportedOperationException(); // TODO
-    }
-    /**
-     * Validate and start the object.
-     */
-    @PostConstruct
-    public void start()
-    {
-        
     }
     /**
      * Get the instance URN for the given market data provider name.
@@ -346,4 +356,12 @@ public class MarketDataServiceImpl
      * holds market data provider instances by provider name
      */
     private final Cache<String,ModuleURN> instanceUrnsByProviderName = CacheBuilder.newBuilder().build();
+    /**
+     * holds market data status listeners
+     */
+    private final Set<MarketDataStatusListener> marketDataStatusListeners = Sets.newConcurrentHashSet();
+    /**
+     * caches last-known market data status values
+     */
+    private final Cache<String,MarketDataStatus> cachedMarketDataStatus = CacheBuilder.newBuilder().build();
 }

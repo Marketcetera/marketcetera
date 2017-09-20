@@ -83,6 +83,53 @@ public class MarketDataRpcUtil
         return MarketDataRequestBuilder.newRequestFromString(inRequest);
     }
     /**
+     * Set the given market data status on the given RPC builder.
+     *
+     * @param inMarketDataStatus a <code>MarketDataStatus</code> value
+     * @param inBuilder a <code>MarketDataRpc.MarketDataStatusListenerResponse.Builder</code> value
+     */
+    public static void setMarketDataStatus(MarketDataStatus inMarketDataStatus,
+                                           MarketDataRpc.MarketDataStatusListenerResponse.Builder inBuilder)
+    {
+        if(inMarketDataStatus == null) {
+            return;
+        }
+        inBuilder.setMarketDataStatus(getRpcMarketDataStatus(inMarketDataStatus));
+    }
+    /**
+     * Get the RPC market data status value from the given market data status.
+     *
+     * @param inMarketDataStatus a <code>MarketDataStatus</code> value
+     * @return a <code>MarketDataRpc.MarketDataStatus</code> value
+     */
+    public static MarketDataRpc.MarketDataStatus getRpcMarketDataStatus(MarketDataStatus inMarketDataStatus)
+    {
+        MarketDataRpc.MarketDataStatus.Builder builder = MarketDataRpc.MarketDataStatus.newBuilder();
+        builder.setFeedStatus(getRpcFeedStatus(inMarketDataStatus.getFeedStatus()));
+        builder.setProvider(inMarketDataStatus.getProvider());
+        return builder.build();
+    }
+    /**
+     * Get the RPC feed status value from the given feed status.
+     *
+     * @param inFeedStatus a <code>FeedStatus</code> value
+     * @return a <code>MarketDataRpc.FeedStatus</code> value
+     */
+    public static MarketDataRpc.FeedStatus getRpcFeedStatus(FeedStatus inFeedStatus)
+    {
+        switch(inFeedStatus) {
+            case AVAILABLE:
+                return MarketDataRpc.FeedStatus.AVAILABLE_FEED_STATUS;
+            case ERROR:
+                return MarketDataRpc.FeedStatus.ERROR_FEED_STATUS;
+            case OFFLINE:
+                return MarketDataRpc.FeedStatus.OFFLINE_FEED_STATUS;
+            case UNKNOWN:
+            default:
+                return MarketDataRpc.FeedStatus.UNKNOWN_FEED_STATUS;
+        }
+    }
+    /**
      * Get the market data status from the given RPC value.
      *
      * @param inMarketDataStatus a <code>MarketDataRpc.MarketDataStatus</code> value

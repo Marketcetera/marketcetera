@@ -83,7 +83,7 @@ public class MarketDataClientTest
                 public void receiveMarketDataStatus(MarketDataStatus inMarketDataStatus)
                 {
                     SLF4JLoggerProxy.info(MarketDataClientTest.class,
-                                          "Market data client received: {}",
+                                          "Market data status listener received: {}",
                                           inMarketDataStatus);
                 }
             };

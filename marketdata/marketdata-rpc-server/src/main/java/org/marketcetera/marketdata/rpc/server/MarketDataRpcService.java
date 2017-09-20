@@ -12,6 +12,8 @@ import org.marketcetera.marketdata.MarketDataPermissions;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.MarketDataRpcUtil;
+import org.marketcetera.marketdata.MarketDataStatus;
+import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc.AddMarketDataStatusListenerRequest;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc.MarketDataStatusListenerResponse;
@@ -300,8 +302,25 @@ public class MarketDataRpcService<SessionClazz>
         public void addMarketDataStatusListener(AddMarketDataStatusListenerRequest inRequest,
                                                 StreamObserver<MarketDataStatusListenerResponse> inResponseObserver)
         {
-            throw new UnsupportedOperationException(); // TODO
-            
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Received add market data status listener request {}",
+                                       inRequest);
+                String listenerId = inRequest.getListenerId();
+                BaseUtil.AbstractServerListenerProxy<?> marketDataStatusListenerProxy = listenerProxiesById.getIfPresent(listenerId);
+                if(marketDataStatusListenerProxy == null) {
+                    marketDataStatusListenerProxy = new MarketDataStatusListenerProxy(listenerId,
+                                                                                      inResponseObserver);
+                    listenerProxiesById.put(marketDataStatusListenerProxy.getId(),
+                                            marketDataStatusListenerProxy);
+                    marketDataService.addMarketDataStatusListener((MarketDataStatusListener)marketDataStatusListenerProxy);
+                }
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(MarketDataRpcService.this,
+                                      e);
+                inResponseObserver.onError(e);
+            }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#removeMarketDataStatusListener(org.marketcetera.marketdata.core.rpc.MarketDataRpc.RemoveMarketDataStatusListenerRequest, io.grpc.stub.StreamObserver)
@@ -310,8 +329,30 @@ public class MarketDataRpcService<SessionClazz>
         public void removeMarketDataStatusListener(RemoveMarketDataStatusListenerRequest inRequest,
                                                    StreamObserver<RemoveMarketDataStatusListenerResponse> inResponseObserver)
         {
-            throw new UnsupportedOperationException(); // TODO
-            
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Received market data status listener request {}",
+                                       inRequest);
+                String listenerId = inRequest.getListenerId();
+                BaseUtil.AbstractServerListenerProxy<?> marketDataStatusListenerProxy = listenerProxiesById.getIfPresent(listenerId);
+                listenerProxiesById.invalidate(listenerId);
+                if(marketDataStatusListenerProxy != null) {
+                    marketDataService.removeMarketDataStatusListener((MarketDataStatusListener)marketDataStatusListenerProxy);
+                    marketDataStatusListenerProxy.close();
+                }
+                MarketDataRpc.RemoveMarketDataStatusListenerResponse.Builder responseBuilder = MarketDataRpc.RemoveMarketDataStatusListenerResponse.newBuilder();
+                MarketDataRpc.RemoveMarketDataStatusListenerResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(MarketDataRpcService.this,
+                                      e);
+                inResponseObserver.onError(e);
+            }
         }
         /**
          * Build a request id from the given attributes.
@@ -325,6 +366,51 @@ public class MarketDataRpcService<SessionClazz>
         {
             return new StringBuilder().append(inSessionId).append('-').append(inRequestId).toString();
         }
+    }
+    /**
+     * Wraps a {@link MarketDataStatusListener} with the RPC call from the client.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class MarketDataStatusListenerProxy
+            extends BaseUtil.AbstractServerListenerProxy<MarketDataRpc.MarketDataStatusListenerResponse>
+            implements MarketDataStatusListener
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.MarketDataStatusListener#receiveMarketDataStatus(org.marketcetera.marketdata.MarketDataStatus)
+         */
+        @Override
+        public void receiveMarketDataStatus(MarketDataStatus inMarketDataStatus)
+        {
+            MarketDataRpcUtil.setMarketDataStatus(inMarketDataStatus,
+                                                  responseBuilder);
+            MarketDataRpc.MarketDataStatusListenerResponse response = responseBuilder.build();
+            SLF4JLoggerProxy.trace(MarketDataRpcService.class,
+                                   "{} received market data status {}, sending {}",
+                                   getId(),
+                                   inMarketDataStatus,
+                                   response);
+            getObserver().onNext(response);
+            responseBuilder.clear();
+        }
+        /**
+         * Create a new MarketDataStatusListenerProxy instance.
+         *
+         * @param inId a <code>String</code> value
+         * @param inObserver a <code>StreamObserver&lt;MarketDataRpc.MarketDataStatusListenerResponse&gt;</code> value
+         */
+        private MarketDataStatusListenerProxy(String inId,
+                                              StreamObserver<MarketDataRpc.MarketDataStatusListenerResponse> inObserver)
+        {
+            super(inId,
+                  inObserver);
+        }
+        /**
+         * builder used to construct messages
+         */
+        private final MarketDataRpc.MarketDataStatusListenerResponse.Builder responseBuilder = MarketDataRpc.MarketDataStatusListenerResponse.newBuilder();
     }
     /**
      * Wraps a {@link MarketDataListener} with the RPC call from the client.
