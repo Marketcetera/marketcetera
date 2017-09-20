@@ -1,5 +1,6 @@
 package org.marketcetera.marketdata.service;
 
+import java.util.Collection;
 import java.util.Deque;
 import java.util.Set;
 
@@ -85,6 +86,14 @@ public class MarketDataServiceImpl
                                                  e);
             }
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataCapabilityBroadcaster#reportCapability(java.util.Collection)
+     */
+    @Override
+    public void reportCapability(Collection<Capability> inCapabilities)
+    {
+        capabilities.addAll(inCapabilities);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.service.MarketDataService#request(org.marketcetera.marketdata.MarketDataRequest, org.marketcetera.marketdata.MarketDataListener)
@@ -344,14 +353,18 @@ public class MarketDataServiceImpl
         private DataFlowID dataFlowId;
     }
     /**
-     * request data by request id
-     */
-    private Cache<String,RequestMetaData> requestsByRequestId = CacheBuilder.newBuilder().build();
-    /**
      * provides access to module services
      */
     @Autowired
     private ModuleManager moduleManager;
+    /**
+     * holds reported capabilities
+     */
+    private final Set<Capability> capabilities = Sets.newHashSet();
+    /**
+     * request data by request id
+     */
+    private final Cache<String,RequestMetaData> requestsByRequestId = CacheBuilder.newBuilder().build();
     /**
      * holds market data provider instances by provider name
      */

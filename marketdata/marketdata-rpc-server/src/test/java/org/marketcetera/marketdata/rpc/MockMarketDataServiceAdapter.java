@@ -1,5 +1,6 @@
 package org.marketcetera.marketdata.rpc;
 
+import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,7 +43,6 @@ public class MockMarketDataServiceAdapter
     public void addMarketDataStatusListener(MarketDataStatusListener inMarketDataStatusListener)
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataStatusPublisher#removeMarketDataStatusListener(org.marketcetera.marketdata.MarketDataStatusListener)
@@ -51,7 +51,6 @@ public class MockMarketDataServiceAdapter
     public void removeMarketDataStatusListener(MarketDataStatusListener inMarketDataStatusListener)
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataStatusBroadcaster#reportMarketDataStatus(org.marketcetera.marketdata.MarketDataStatus)
@@ -60,14 +59,13 @@ public class MockMarketDataServiceAdapter
     public void reportMarketDataStatus(MarketDataStatus inMarketDataStatus)
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.service.MarketDataService#request(org.marketcetera.marketdata.MarketDataRequest, org.marketcetera.marketdata.MarketDataListener)
      */
     @Override
     public String request(MarketDataRequest inRequest,
-                        MarketDataListener inMarketDataListener)
+                          MarketDataListener inMarketDataListener)
     {
 //        requests.add(Pair.create(inRequest,
 //                                 inStreamEvents));
@@ -117,6 +115,14 @@ public class MockMarketDataServiceAdapter
     {
         capabilityRequests.incrementAndGet();
         return capabilitiesToReturn;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataCapabilityBroadcaster#reportCapability(java.util.Collection)
+     */
+    @Override
+    public void reportCapability(Collection<Capability> inCapabilities)
+    {
+        throw new UnsupportedOperationException(); // TODO
     }
     /**
      * Get the requests value.

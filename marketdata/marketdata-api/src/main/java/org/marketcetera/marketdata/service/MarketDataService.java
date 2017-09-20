@@ -6,6 +6,7 @@ import java.util.Set;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.MarketDataCapabilityBroadcaster;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataStatusBroadcaster;
@@ -25,7 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id: MarketDataService.java 17245 2016-09-03 01:25:42Z colin $")
 public interface MarketDataService
-        extends MarketDataStatusPublisher,MarketDataStatusBroadcaster
+        extends MarketDataStatusPublisher,MarketDataStatusBroadcaster,MarketDataCapabilityBroadcaster
 {
     /**
      * Request market data.

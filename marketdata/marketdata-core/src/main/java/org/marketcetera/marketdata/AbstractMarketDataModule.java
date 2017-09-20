@@ -273,8 +273,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
     public Set<Capability> getCapabilities()
     {
         Set<Capability> capabilities;
-        if(feed == null ||
-           (capabilities = feed.getCapabilities()) == null) {
+        if(feed == null || (capabilities = feed.getCapabilities()) == null) {
             return unknownCapabilities;
         }
         return capabilities;
@@ -286,8 +285,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
     public Set<AssetClass> getAssetClasses()
     {
         Set<AssetClass> assetClasses;
-        if(feed == null ||
-           (assetClasses = feed.getSupportedAssetClasses()) == null) {
+        if(feed == null || (assetClasses = feed.getSupportedAssetClasses()) == null) {
             return unknownAssetClasses;
         }
         return assetClasses;
@@ -336,7 +334,9 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         } catch (Exception e) {
             throw new ModuleException(e);
         }
-        CapabilityCollection.reportCapability(feed.getCapabilities());
+        for(MarketDataCapabilityBroadcaster capabilityBroadcaster : marketDataCapabilityBroadcasters) {
+            capabilityBroadcaster.reportCapability(feed.getCapabilities());
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -393,6 +393,11 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
      */
     @Autowired(required=false)
     private Collection<MarketDataStatusBroadcaster> marketDataStatusBroadcasters = Lists.newArrayList();
+    /**
+     * optional market data capability publishers
+     */
+    @Autowired(required=false)
+    private Collection<MarketDataCapabilityBroadcaster> marketDataCapabilityBroadcasters = Lists.newArrayList();
     /**
      * tracks feeds by provider name as the feeds are instantiated (not started) - may not be active
      */

@@ -278,15 +278,28 @@ public class MarketDataRpcClient
             public Set<Capability> call()
                     throws Exception
             {
-                SLF4JLoggerProxy.debug(this,
-                                       "GetAvailableCapability"); //$NON-NLS-1$
-                MarketDataRpc.AvailableCapabilityResponse response = getBlockingStub().getAvailableCapability(MarketDataRpc.AvailableCapabilityRequest.newBuilder().setSessionId(getSessionId().getValue()).build());
+                SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
+                                       "{} getting available capability",
+                                       getSessionId());
+                MarketDataRpc.AvailableCapabilityRequest.Builder requestBuilder = MarketDataRpc.AvailableCapabilityRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                MarketDataRpc.AvailableCapabilityRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                MarketDataRpc.AvailableCapabilityResponse response = getBlockingStub().getAvailableCapability(request);
+                SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
                 Set<Capability> capabilities = Sets.newHashSet();
                 for(MarketDataRpc.ContentAndCapability capability : response.getCapabilityList()) {
                     capabilities.add(Capability.valueOf(capability.name()));
                 }
-                SLF4JLoggerProxy.debug(this,
-                                       "GetAvailableCapability: {}", //$NON-NLS-1$
+                SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
                                        capabilities);
                 return capabilities;
             }
