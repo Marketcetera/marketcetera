@@ -1,6 +1,5 @@
-package org.marketcetera.dataflow.client.rpc;
+package org.marketcetera.dataflow.rpc;
 
-import org.marketcetera.dataflow.client.XmlValue;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
@@ -15,7 +14,7 @@ import org.marketcetera.util.ws.ContextClassProvider;
  * @since 2.4.0
  */
 @ClassVersion("$Id: StrategyAgentClientContextClassProvider.java 17233 2016-09-01 20:31:07Z colin $")
-public class DataFlowClientContextClassProvider
+public class DataFlowContextClassProvider
         implements ContextClassProvider
 {
     /* (non-Javadoc)
@@ -33,5 +32,5 @@ public class DataFlowClientContextClassProvider
     /**
      * instance value
      */
-    public static final DataFlowClientContextClassProvider INSTANCE = new DataFlowClientContextClassProvider();
+    public static final DataFlowContextClassProvider INSTANCE = new DataFlowContextClassProvider();
 }

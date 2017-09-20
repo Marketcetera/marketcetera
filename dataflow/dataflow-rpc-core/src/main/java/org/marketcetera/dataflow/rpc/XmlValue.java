@@ -1,4 +1,4 @@
-package org.marketcetera.dataflow.client;
+package org.marketcetera.dataflow.rpc;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

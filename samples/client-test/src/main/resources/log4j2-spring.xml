@@ -9,8 +9,6 @@
     <Root level="warn" includeLocation="true">
       <AppenderRef ref="STDOUT"/>
     </Root>
-    <logger name="org.marketcetera.clienttest" level="debug"/>
-    <logger name="org.marketcetera.trading.rpc" level="trace"/>
-    <logger name="org.marketcetera.marketdata.rpc.client.MarketDataRpcClient" level="trace"/>
+    <logger name="org.marketcetera.dataflow.client.rpc" level="trace"/>
   </Loggers>
 </Configuration>

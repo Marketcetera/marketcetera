@@ -3,8 +3,12 @@ package org.marketcetera.dataflow.client;
 import java.util.List;
 
 import org.marketcetera.core.BaseClient;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataFlowInfo;
+import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.persist.PageRequest;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -27,7 +31,6 @@ public interface DataFlowClient
      * <p>If no providers are available this list is empty.
      * 
      * @return the list of providers available.
-     * @throws ConnectionException if there were errors completing the operation.
      */
     List<ModuleURN> getProviders();
     /**
@@ -49,34 +52,91 @@ public interface DataFlowClient
     /**
      * Starts the module instance having the supplied URN.
      * 
-     * <p>Only strategy module instances can be started. Attempts to start
-     * modules that are not strategy modules will fail.
-     *
      * @param inURN the URN of the module that needs to be started. Cannot be null.
      */
-    void start(ModuleURN inURN);
+    void startModule(ModuleURN inURN);
     /**
      * Stops the module instance having the supplied URN.
      * 
-     * <p>Only strategy module instances can be stopped. Attempts to stop
-     * modules that are not strategy modules will fail.
-     *
      * @param inURN the URN of the module that needs to be stopped. Cannot be null.
      */
-    void stop(ModuleURN inURN);
+    void stopModule(ModuleURN inURN);
     /**
      * Deletes the module instance having the supplied URN.
      * 
-     * <p>Only strategy module instances can be deleted. Attempts to delete
-     * modules that are not strategy modules will fail.
-     *
      * @param inURN the URN of the module that needs to be deleted. Cannot be null.
      */
-    void delete(ModuleURN inURN);
+    void deleteModule(ModuleURN inURN);
     /**
-     * Sends the given object to the Strategy Agent where registered listeners will receive it.
+     * Create the module instance having the supplied URN.
+     * 
+     * @param inURN a <code>ModuleURN</code> value
+     * @param inParameters an <code>Object[]</code> value
+     * @return a <code>ModuleURN</code> value
+     */
+    ModuleURN createModule(ModuleURN inURN,
+                           Object...inParameters);
+    /**
+     * Create the data flow described by the given data requests.
+     *
+     * @param inDataRequest a <code>DataRequest[]</code> value
+     * @param inAppendDataSink a <code>boolean</code> value
+     * @return a <code>DataFlowID</code> value
+     */
+    DataFlowID createDataFlow(DataRequest[] inDataRequest,
+                              boolean inAppendDataSink);
+    /**
+     * Create the data flow described by the given data requests.
+     *
+     * @param inDataRequest a <code>DataRequest[]</code> value
+     * @return a <code>DataFlowID</code> value
+     */
+    DataFlowID createDataFlow(DataRequest[] inDataRequest);
+    /**
+     * Cancel the data flow with the given id.
+     *
+     * @param inDataFlowId a <code>DataFlowID</code> value
+     */
+    void cancelDataFlow(DataFlowID inDataFlowId);
+    /**
+     * Sends the given object to the server where registered listeners will receive it.
      *
      * @param inData an <code>Object</code> value
      */
     void sendData(Object inData);
+    /**
+     * Get the data flow info for the given data flow id.
+     *
+     * @param inDataFlowId a <code>DataFlowID</code> value
+     * @return a <code>DataFlowInfo</code> value
+     */
+    DataFlowInfo getDataFlowInfo(DataFlowID inDataFlowId);
+    /**
+     * Get active data flows.
+     *
+     * @return a <code>List&lt;DataFlowID&gt;</code> value
+     */
+    List<DataFlowID> getDataFlows();
+    /**
+     * Get active data flows.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>List&lt;DataFlowID&gt;</code> value
+     */
+    List<DataFlowID> getDataFlows(PageRequest inPageRequest);
+    /**
+     * Get inactive data flows.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>List&lt;DataFlowInfo&gt;</code> value
+     */
+    List<DataFlowInfo> getDataFlowHistory(PageRequest inPageRequest);
+    /**
+     * Get inactive data flows.
+     *
+     * @return a <code>List&lt;DataFlowInfo&gt;</code> value
+     */
+    List<DataFlowInfo> getDataFlowHistory();
+    // TODO deploy JAR
+    // TODO undeploy JAR
 }

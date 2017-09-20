@@ -2,7 +2,7 @@ syntax = "proto3";
 import "rpc_base.proto";
 option java_generic_services = true;
 option java_package = "org.marketcetera.dataflow.rpc";
-option java_outer_classname = "DataFlowClientRpc";
+option java_outer_classname = "DataFlowRpc";
 
 message ModuleURN {
     string value = 1;
@@ -38,28 +38,28 @@ message ModuleInfoResponse {
     ModuleInfo info = 1;
 }
 
-message StartRequest {
+message StartModuleRequest {
     string sessionId = 1;
     ModuleURN instance = 2;
 }
 
-message StartResponse {
+message StartModuleResponse {
 }
 
-message StopRequest {
+message StopModuleRequest {
     string sessionId = 1;
     ModuleURN instance = 2;
 }
 
-message StopResponse {
+message StopModuleResponse {
 }
 
-message DeleteRequest {
+message DeleteModuleRequest {
     string sessionId = 1;
     ModuleURN instance = 2;
 }
 
-message DeleteResponse {
+message DeleteModuleResponse {
 }
 
 message SendDataRequest {
@@ -71,15 +71,26 @@ message SendDataRequest {
 message SendDataResponse {
 }
 
-service DataFlowClientServiceRpc {
+message CreateModuleRequest {
+    string sessionId = 1;
+    ModuleURN provider = 2;
+    repeated string parameters = 3;
+}
+
+message CreateModuleResponse {
+    ModuleURN instance = 1;
+}
+
+service DataFlowRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
     rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}
     rpc getProviders(ProvidersRequest) returns (ProvidersResponse);
     rpc getInstances(InstancesRequest) returns (InstancesResponse);
     rpc getModuleInfo(ModuleInfoRequest) returns (ModuleInfoResponse);
-    rpc start(StartRequest) returns (StartResponse);
-    rpc stop(StopRequest) returns (StopResponse);
-    rpc delete(DeleteRequest) returns (DeleteResponse);
+    rpc startModule(StartModuleRequest) returns (StartModuleResponse);
+    rpc stopModule(StopModuleRequest) returns (StopModuleResponse);
+    rpc deleteModule(DeleteModuleRequest) returns (DeleteModuleResponse);
     rpc sendData(SendDataRequest) returns (SendDataResponse);
+    rpc createModule(CreateModuleRequest) returns (CreateModuleResponse);
 }

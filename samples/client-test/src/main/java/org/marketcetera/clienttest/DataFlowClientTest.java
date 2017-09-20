@@ -1,10 +1,13 @@
 package org.marketcetera.clienttest;
 
+import java.util.List;
+
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.dataflow.client.DataFlowClient;
 import org.marketcetera.dataflow.client.DataReceiver;
-import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientParameters;
 import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientFactory;
+import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientParameters;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,7 +69,7 @@ public class DataFlowClientTest
             params.setPassword(password);
             dataFlowClient = dataFlowClientFactory.create(params);
             dataFlowClient.start();
-            SLF4JLoggerProxy.info(DataFlowClientTest.class,
+            SLF4JLoggerProxy.info(this,
                                   "Data flow client connected to {}:{} as {}",
                                   hostname,
                                   port,
@@ -82,6 +85,19 @@ public class DataFlowClientTest
                 }
             };
             dataFlowClient.addDataReceiver(dataReceiver);
+            SLF4JLoggerProxy.info(this,
+                                  "Available providers: {}",
+                                  dataFlowClient.getProviders());
+            List<ModuleURN> instances = dataFlowClient.getInstances(null);
+            SLF4JLoggerProxy.info(this,
+                                  "Available instances: {}",
+                                  instances);
+            for(ModuleURN instanceUrn : instances) {
+                SLF4JLoggerProxy.info(this,
+                                      "Module info for {}: {}",
+                                      instances,
+                                      dataFlowClient.getModuleInfo(instanceUrn));
+            }
             dataFlowClient.removeDataReceiver(dataReceiver);
         } finally {
             if(dataFlowClient != null) {

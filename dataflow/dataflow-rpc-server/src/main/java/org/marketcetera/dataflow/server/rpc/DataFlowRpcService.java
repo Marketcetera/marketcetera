@@ -1,53 +1,25 @@
 package org.marketcetera.dataflow.server.rpc;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.Collection;
 import java.util.List;
 
-import javax.annotation.concurrent.GuardedBy;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.marketcetera.core.PlatformServices;
 import org.marketcetera.dataflow.client.DataBroadcaster;
-import org.marketcetera.dataflow.client.XmlValue;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.DeleteRequest;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.DeleteResponse;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.InstancesRequest;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.InstancesResponse;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.ModuleInfoRequest;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.ModuleInfoResponse;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.ProvidersRequest;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.ProvidersResponse;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.SendDataRequest;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.SendDataResponse;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.StartRequest;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.StartResponse;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.StopRequest;
-import org.marketcetera.dataflow.rpc.DataFlowClientRpc.StopResponse;
-import org.marketcetera.dataflow.rpc.DataFlowClientServiceRpcGrpc;
-import org.marketcetera.dataflow.rpc.DataFlowClientServiceRpcGrpc.DataFlowClientServiceRpcImplBase;
+import org.marketcetera.dataflow.rpc.DataFlowRpc;
+import org.marketcetera.dataflow.rpc.DataFlowRpc.CreateModuleRequest;
+import org.marketcetera.dataflow.rpc.DataFlowRpc.CreateModuleResponse;
+import org.marketcetera.dataflow.rpc.DataFlowRpcServiceGrpc;
+import org.marketcetera.dataflow.rpc.DataFlowRpcServiceGrpc.DataFlowRpcServiceImplBase;
+import org.marketcetera.dataflow.rpc.DataFlowRpcUtil;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
-import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
-import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
-import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
-import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
-import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
+import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.ws.ContextClassProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
-import com.google.protobuf.ServiceException;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -63,7 +35,7 @@ import io.grpc.stub.StreamObserver;
  * @since $Release$
  */
 public class DataFlowRpcService<SessionClazz>
-        extends AbstractRpcService<SessionClazz,DataFlowClientServiceRpcGrpc.DataFlowClientServiceRpcImplBase>
+        extends AbstractRpcService<SessionClazz,DataFlowRpcServiceGrpc.DataFlowRpcServiceImplBase>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.server.AbstractRpcService#start()
@@ -73,30 +45,7 @@ public class DataFlowRpcService<SessionClazz>
             throws Exception
     {
         service = new Service();
-        synchronized(contextLock) {
-            context = JAXBContext.newInstance(contextClassProvider==null?new Class<?>[0]:contextClassProvider.getContextClasses());
-            marshaller = context.createMarshaller();
-            unmarshaller = context.createUnmarshaller();
-        }
         super.start();
-    }
-    /**
-     * Get the contextClassProvider value.
-     *
-     * @return a <code>ContextClassProvider</code> value
-     */
-    public ContextClassProvider getContextClassProvider()
-    {
-        return contextClassProvider;
-    }
-    /**
-     * Sets the contextClassProvider value.
-     *
-     * @param a <code>ContextClassProvider</code> value
-     */
-    public void setContextClassProvider(ContextClassProvider inContextClassProvider)
-    {
-        contextClassProvider = inContextClassProvider;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.server.AbstractRpcService#getServiceDescription()
@@ -110,102 +59,70 @@ public class DataFlowRpcService<SessionClazz>
      * @see org.marketcetera.rpc.server.AbstractRpcService#getService()
      */
     @Override
-    protected DataFlowClientServiceRpcImplBase getService()
+    protected DataFlowRpcServiceImplBase getService()
     {
         return service;
     }
     /**
-     * Marshals the given object to an XML stream.
-     *
-     * @param inObject an <code>Object</code> value
-     * @return a <code>String</code> value
-     * @throws JAXBException if an error occurs marshalling the data
-     */
-    private String marshal(Object inObject)
-            throws JAXBException
-    {
-        StringWriter output = new StringWriter();
-        synchronized(contextLock) {
-            marshaller.marshal(inObject,
-                               output);
-        }
-        return output.toString();
-    }
-    /**
-     * Unmarshals an object from the given XML stream.
-     *
-     * @param inData a <code>String</code> value
-     * @return a <code>Clazz</code> value
-     * @throws JAXBException if an error occurs unmarshalling the data
-     */
-    @SuppressWarnings({ "unchecked" })
-    private <Clazz> Clazz unmarshall(String inData)
-            throws JAXBException
-    {
-        synchronized(contextLock) {
-            return (Clazz)unmarshaller.unmarshal(new StringReader(inData));
-        }
-    }
-    /**
-     * Strategy Agent RPC Service implementation.
+     * Data Flow RPC Service implementation.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
      * @since $Release$
      */
     private class Service
-            extends DataFlowClientServiceRpcGrpc.DataFlowClientServiceRpcImplBase
+            extends DataFlowRpcServiceGrpc.DataFlowRpcServiceImplBase
     {
         /* (non-Javadoc)
          * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#login(org.marketcetera.rpc.base.BaseRpc.LoginRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void login(LoginRequest inRequest,
-                          StreamObserver<LoginResponse> inResponseObserver)
+        public void login(BaseRpc.LoginRequest inRequest,
+                          StreamObserver<BaseRpc.LoginResponse> inResponseObserver)
         {
             DataFlowRpcService.this.doLogin(inRequest,
-                                                       inResponseObserver);
+                                            inResponseObserver);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#logout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void logout(LogoutRequest inRequest,
-                           StreamObserver<LogoutResponse> inResponseObserver)
+        public void logout(BaseRpc.LogoutRequest inRequest,
+                           StreamObserver<BaseRpc.LogoutResponse> inResponseObserver)
         {
             DataFlowRpcService.this.doLogout(inRequest,
-                                                        inResponseObserver);
+                                             inResponseObserver);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#heartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void heartbeat(HeartbeatRequest inRequest,
-                              StreamObserver<HeartbeatResponse> inResponseObserver)
+        public void heartbeat(BaseRpc.HeartbeatRequest inRequest,
+                              StreamObserver<BaseRpc.HeartbeatResponse> inResponseObserver)
         {
             DataFlowRpcService.this.doHeartbeat(inRequest,
-                                                           inResponseObserver);
+                                                inResponseObserver);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#getProviders(org.marketcetera.saclient.rpc.SEClientRpc.ProvidersRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void getProviders(ProvidersRequest inRequest,
-                                 StreamObserver<ProvidersResponse> inResponseObserver)
+        public void getProviders(DataFlowRpc.ProvidersRequest inRequest,
+                                 StreamObserver<DataFlowRpc.ProvidersResponse> inResponseObserver)
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
-                SLF4JLoggerProxy.debug(this,
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
                                        "{} received getProviders request",
                                        getServiceDescription());
                 List<ModuleURN> providers = moduleManager.getProviders();
-                DataFlowClientRpc.ProvidersResponse.Builder responseBuilder = DataFlowClientRpc.ProvidersResponse.newBuilder();
+                DataFlowRpc.ProvidersResponse.Builder responseBuilder = DataFlowRpc.ProvidersResponse.newBuilder();
                 if(providers != null) {
                     for(ModuleURN provider : providers) {
-                        responseBuilder.addProvider(DataFlowClientRpc.ModuleURN.newBuilder().setValue(provider.getValue()).build());
+                        responseBuilder.addProvider(DataFlowRpc.ModuleURN.newBuilder().setValue(provider.getValue()).build());
                     }
                 }
-                DataFlowClientRpc.ProvidersResponse response = responseBuilder.build();
+                DataFlowRpc.ProvidersResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {}",
                                        getServiceDescription(),
@@ -223,28 +140,31 @@ public class DataFlowRpcService<SessionClazz>
          * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#getInstances(org.marketcetera.saclient.rpc.SEClientRpc.InstancesRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void getInstances(InstancesRequest inRequest,
-                                 StreamObserver<InstancesResponse> inResponseObserver)
+        public void getInstances(DataFlowRpc.InstancesRequest inRequest,
+                                 StreamObserver<DataFlowRpc.InstancesResponse> inResponseObserver)
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
-                ModuleURN provider = new ModuleURN(inRequest.getProvider().getValue());
-                SLF4JLoggerProxy.debug(this,
-                                       "{} received getInstances for {} request",
+                ModuleURN provider = null;
+                if(inRequest.hasProvider()) {
+                    provider = DataFlowRpcUtil.getModuleUrn(inRequest.getProvider());
+                }
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
+                                       "{} received get instances request {}",
                                        getServiceDescription(),
-                                       provider);
+                                       inRequest);
                 List<ModuleURN> instances = moduleManager.getModuleInstances(provider);
-                DataFlowClientRpc.InstancesResponse.Builder responseBuilder = DataFlowClientRpc.InstancesResponse.newBuilder();
+                DataFlowRpc.InstancesResponse.Builder responseBuilder = DataFlowRpc.InstancesResponse.newBuilder();
                 if(instances != null) {
                     for(ModuleURN instance : instances) {
-                        responseBuilder.addInstance(DataFlowClientRpc.ModuleURN.newBuilder().setValue(instance.getValue()).build());
+                        responseBuilder.addInstance(DataFlowRpcUtil.getRpcModuleUrn(instance));
                     }
                 }
-                DataFlowClientRpc.InstancesResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.debug(this,
+                DataFlowRpc.InstancesResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
                                        "{} returning {}",
                                        getServiceDescription(),
-                                       instances);
+                                       response);
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
@@ -258,27 +178,23 @@ public class DataFlowRpcService<SessionClazz>
          * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#getModuleInfo(org.marketcetera.saclient.rpc.SEClientRpc.ModuleInfoRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void getModuleInfo(ModuleInfoRequest inRequest,
-                                  StreamObserver<ModuleInfoResponse> inResponseObserver)
+        public void getModuleInfo(DataFlowRpc.ModuleInfoRequest inRequest,
+                                  StreamObserver<DataFlowRpc.ModuleInfoResponse> inResponseObserver)
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
-                ModuleURN instance = new ModuleURN(inRequest.getInstance().getValue());
-                SLF4JLoggerProxy.debug(this,
-                                       "{} received getModuleInfo for {} request",
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
+                                       "{} received get module info request {}",
                                        getServiceDescription(),
-                                       instance);
+                                       inRequest);
+                ModuleURN instance = DataFlowRpcUtil.getModuleUrn(inRequest.getInstance());
                 ModuleInfo info = moduleManager.getModuleInfo(instance);
-                DataFlowClientRpc.ModuleInfoResponse.Builder responseBuilder = DataFlowClientRpc.ModuleInfoResponse.newBuilder();
+                DataFlowRpc.ModuleInfoResponse.Builder responseBuilder = DataFlowRpc.ModuleInfoResponse.newBuilder();
                 if(info != null) {
-                    try {
-                        responseBuilder.setInfo(DataFlowClientRpc.ModuleInfo.newBuilder().setPayload(marshal(info)));
-                    } catch (JAXBException e) {
-                        throw new ServiceException(e);
-                    }
+                    responseBuilder.setInfo(DataFlowRpcUtil.getRpcModuleInfo(info));
                 }
-                DataFlowClientRpc.ModuleInfoResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.debug(this,
+                DataFlowRpc.ModuleInfoResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
                                        "{} returning {}",
                                        getServiceDescription(),
                                        response);
@@ -292,23 +208,23 @@ public class DataFlowRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#start(org.marketcetera.saclient.rpc.SEClientRpc.StartRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#start(org.marketcetera.saclient.rpc.SEClientRpc.StartModuleRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void start(StartRequest inRequest,
-                          StreamObserver<StartResponse> inResponseObserver)
+        public void startModule(DataFlowRpc.StartModuleRequest inRequest,
+                                StreamObserver<DataFlowRpc.StartModuleResponse> inResponseObserver)
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
                 ModuleURN instance = new ModuleURN(inRequest.getInstance().getValue());
-                SLF4JLoggerProxy.debug(this,
-                                       "{} received start for {} request",
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
+                                       "{} received start module request  {}",
                                        getServiceDescription(),
-                                       instance);
-                DataFlowClientRpc.StartResponse.Builder responseBuilder = DataFlowClientRpc.StartResponse.newBuilder();
+                                       inRequest);
+                DataFlowRpc.StartModuleResponse.Builder responseBuilder = DataFlowRpc.StartModuleResponse.newBuilder();
                 moduleManager.start(instance);
-                DataFlowClientRpc.StartResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.debug(this,
+                DataFlowRpc.StartModuleResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
                                        "{} returning {}",
                                        getServiceDescription(),
                                        response);
@@ -322,23 +238,23 @@ public class DataFlowRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#stop(org.marketcetera.saclient.rpc.SEClientRpc.StopRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#StopModule(org.marketcetera.saclient.rpc.SEClientRpc.StopModuleRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void stop(StopRequest inRequest,
-                         StreamObserver<StopResponse> inResponseObserver)
+        public void stopModule(DataFlowRpc.StopModuleRequest inRequest,
+                               StreamObserver<DataFlowRpc.StopModuleResponse> inResponseObserver)
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
                 ModuleURN instance = new ModuleURN(inRequest.getInstance().getValue());
-                SLF4JLoggerProxy.debug(this,
-                                       "{} received stop for {} request",
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
+                                       "{} received stop module request {}",
                                        getServiceDescription(),
-                                       instance);
-                DataFlowClientRpc.StopResponse.Builder responseBuilder = DataFlowClientRpc.StopResponse.newBuilder();
+                                       inRequest);
+                DataFlowRpc.StopModuleResponse.Builder responseBuilder = DataFlowRpc.StopModuleResponse.newBuilder();
                 moduleManager.stop(instance);
-                DataFlowClientRpc.StopResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.debug(this,
+                DataFlowRpc.StopModuleResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
                                        "{} returning {}",
                                        getServiceDescription(),
                                        response);
@@ -355,20 +271,20 @@ public class DataFlowRpcService<SessionClazz>
          * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#delete(org.marketcetera.saclient.rpc.SEClientRpc.DeleteRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void delete(DeleteRequest inRequest,
-                           StreamObserver<DeleteResponse> inResponseObserver)
+        public void deleteModule(DataFlowRpc.DeleteModuleRequest inRequest,
+                                 StreamObserver<DataFlowRpc.DeleteModuleResponse> inResponseObserver)
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
                 ModuleURN instance = new ModuleURN(inRequest.getInstance().getValue());
-                SLF4JLoggerProxy.debug(this,
-                                       "{} received delete for {} request",
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
+                                       "{} received delete module request {}",
                                        getServiceDescription(),
-                                       instance);
-                DataFlowClientRpc.DeleteResponse.Builder responseBuilder = DataFlowClientRpc.DeleteResponse.newBuilder();
+                                       inRequest);
+                DataFlowRpc.DeleteModuleResponse.Builder responseBuilder = DataFlowRpc.DeleteModuleResponse.newBuilder();
                 moduleManager.deleteModule(instance);
-                DataFlowClientRpc.DeleteResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.debug(this,
+                DataFlowRpc.DeleteModuleResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
                                        "{} returning {}",
                                        getServiceDescription(),
                                        response);
@@ -385,68 +301,56 @@ public class DataFlowRpcService<SessionClazz>
          * @see org.marketcetera.seclient.rpc.SEClientServiceRpcGrpc.SAClientServiceRpcImplBase#sendData(org.marketcetera.saclient.rpc.SEClientRpc.SendDataRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void sendData(SendDataRequest inRequest,
-                             StreamObserver<SendDataResponse> inResponseObserver)
+        public void sendData(DataFlowRpc.SendDataRequest inRequest,
+                             StreamObserver<DataFlowRpc.SendDataResponse> inResponseObserver)
         {
-            try {
-                validateAndReturnSession(inRequest.getSessionId());
-                Object data;
-                try {
-                    data = ((XmlValue)unmarshall(inRequest.getPayload())).getValue();
-                } catch (JAXBException e) {
-                    throw new ServiceException(e);
-                }
-                SLF4JLoggerProxy.debug(this,
-                                       "{} received sendData for {} request",
-                                       getServiceDescription(),
-                                       data);
-                DataFlowClientRpc.SendDataResponse.Builder responseBuilder = DataFlowClientRpc.SendDataResponse.newBuilder();
-                for(DataBroadcaster dataBroadcaster : dataBroadcasters) {
-                    try {
-                        dataBroadcaster.receiveData(data);
-                    } catch (Exception e) {
-                        PlatformServices.handleException(DataFlowRpcService.this,
-                                                         "Error broadcasting " + data,
-                                                         e);
-                    }
-                }
-                DataFlowClientRpc.SendDataResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.debug(this,
-                                       "{} returning from sendData call",
-                                       getServiceDescription());
-                inResponseObserver.onNext(response);
-                inResponseObserver.onCompleted();
-            } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
-            }
+//            try {
+//                validateAndReturnSession(inRequest.getSessionId());
+//                Object data;
+//                try {
+//                    data = ((XmlValue)unmarshall(inRequest.getPayload())).getValue();
+//                } catch (JAXBException e) {
+//                    throw new ServiceException(e);
+//                }
+//                SLF4JLoggerProxy.debug(this,
+//                                       "{} received sendData for {} request",
+//                                       getServiceDescription(),
+//                                       data);
+//                DataFlowRpc.SendDataResponse.Builder responseBuilder = DataFlowRpc.SendDataResponse.newBuilder();
+//                for(DataBroadcaster dataBroadcaster : dataBroadcasters) {
+//                    try {
+//                        dataBroadcaster.receiveData(data);
+//                    } catch (Exception e) {
+//                        PlatformServices.handleException(DataFlowRpcService.this,
+//                                                         "Error broadcasting " + data,
+//                                                         e);
+//                    }
+//                }
+//                DataFlowRpc.SendDataResponse response = responseBuilder.build();
+//                SLF4JLoggerProxy.debug(this,
+//                                       "{} returning from sendData call",
+//                                       getServiceDescription());
+//                inResponseObserver.onNext(response);
+//                inResponseObserver.onCompleted();
+//            } catch (Exception e) {
+//                if(e instanceof StatusRuntimeException) {
+//                    throw (StatusRuntimeException)e;
+//                }
+//                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+//            }
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.dataflow.rpc.DataFlowRpcServiceGrpc.DataFlowRpcServiceImplBase#createModule(org.marketcetera.dataflow.rpc.DataFlowRpc.CreateModuleRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void createModule(CreateModuleRequest inRequest,
+                                 StreamObserver<CreateModuleResponse> inResponseObserver)
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
         }
     }
-    /**
-     * provides context classes for marshalling/unmarshalling, may be <code>null</code>
-     */
-    private ContextClassProvider contextClassProvider;
-    /**
-     * guards access to JAXB context objects
-     */
-    private final Object contextLock = new Object();
-    /**
-     * context used to serialize and unserialize messages as necessary
-     */
-    @GuardedBy("contextLock")
-    private JAXBContext context;
-    /**
-     * marshals messages
-     */
-    @GuardedBy("contextLock")
-    private Marshaller marshaller;
-    /**
-     * unmarshals messages
-     */
-    @GuardedBy("contextLock")
-    private Unmarshaller unmarshaller;
     /**
      * provides access to module services
      */

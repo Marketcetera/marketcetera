@@ -1,11 +1,8 @@
 package org.marketcetera.dataflow.client.rpc;
 
 import org.junit.Before;
-import org.marketcetera.dataflow.client.rpc.DataFlowClientContextClassProvider;
-import org.marketcetera.dataflow.client.rpc.DataFlowRpcClient;
-import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientFactory;
-import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientParameters;
-import org.marketcetera.dataflow.rpc.DataFlowClientServiceRpcGrpc;
+import org.marketcetera.dataflow.rpc.DataFlowContextClassProvider;
+import org.marketcetera.dataflow.rpc.DataFlowRpcServiceGrpc;
 import org.marketcetera.dataflow.server.rpc.DataFlowRpcService;
 import org.marketcetera.rpc.RpcTestBase;
 import org.marketcetera.rpc.client.RpcClientFactory;
@@ -21,7 +18,7 @@ import org.marketcetera.util.ws.tags.SessionId;
  * @since 2.4.0
  */
 public class DataFlowRpcClientTest
-        extends RpcTestBase<DataFlowRpcClientParameters,DataFlowRpcClient,SessionId,DataFlowClientServiceRpcGrpc.DataFlowClientServiceRpcImplBase,DataFlowRpcService<SessionId>>
+        extends RpcTestBase<DataFlowRpcClientParameters,DataFlowRpcClient,SessionId,DataFlowRpcServiceGrpc.DataFlowRpcServiceImplBase,DataFlowRpcService<SessionId>>
 {
     /**
      * Runs before each test.
@@ -288,7 +285,6 @@ public class DataFlowRpcClientTest
     protected DataFlowRpcService<SessionId> createTestService()
     {
         DataFlowRpcService<SessionId> service = new DataFlowRpcService<>();
-        service.setContextClassProvider(DataFlowClientContextClassProvider.INSTANCE);
         return service;
     }
     /* (non-Javadoc)
@@ -309,7 +305,7 @@ public class DataFlowRpcClientTest
                                                                    String inPassword)
     {
         DataFlowRpcClientParameters parameters = new DataFlowRpcClientParameters();
-        parameters.setContextClassProvider(DataFlowClientContextClassProvider.INSTANCE);
+        parameters.setContextClassProvider(DataFlowContextClassProvider.INSTANCE);
         parameters.setHostname(inHostname);
         parameters.setPassword(inPassword);
         parameters.setPort(inPort);
