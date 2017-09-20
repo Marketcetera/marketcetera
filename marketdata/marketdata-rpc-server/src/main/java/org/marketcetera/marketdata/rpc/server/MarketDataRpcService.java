@@ -15,10 +15,6 @@ import org.marketcetera.marketdata.MarketDataRpcUtil;
 import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.AddMarketDataStatusListenerRequest;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.MarketDataStatusListenerResponse;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.RemoveMarketDataStatusListenerRequest;
-import org.marketcetera.marketdata.core.rpc.MarketDataRpc.RemoveMarketDataStatusListenerResponse;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase;
 import org.marketcetera.marketdata.service.MarketDataService;
@@ -299,8 +295,8 @@ public class MarketDataRpcService<SessionClazz>
          * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#addMarketDataStatusListener(org.marketcetera.marketdata.core.rpc.MarketDataRpc.AddMarketDataStatusListenerRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void addMarketDataStatusListener(AddMarketDataStatusListenerRequest inRequest,
-                                                StreamObserver<MarketDataStatusListenerResponse> inResponseObserver)
+        public void addMarketDataStatusListener(MarketDataRpc.AddMarketDataStatusListenerRequest inRequest,
+                                                StreamObserver<MarketDataRpc.MarketDataStatusListenerResponse> inResponseObserver)
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
@@ -326,8 +322,8 @@ public class MarketDataRpcService<SessionClazz>
          * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#removeMarketDataStatusListener(org.marketcetera.marketdata.core.rpc.MarketDataRpc.RemoveMarketDataStatusListenerRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void removeMarketDataStatusListener(RemoveMarketDataStatusListenerRequest inRequest,
-                                                   StreamObserver<RemoveMarketDataStatusListenerResponse> inResponseObserver)
+        public void removeMarketDataStatusListener(MarketDataRpc.RemoveMarketDataStatusListenerRequest inRequest,
+                                                   StreamObserver<MarketDataRpc.RemoveMarketDataStatusListenerResponse> inResponseObserver)
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());

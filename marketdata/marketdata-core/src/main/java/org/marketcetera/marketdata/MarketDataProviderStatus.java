@@ -58,7 +58,7 @@ public class MarketDataProviderStatus
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("MarketDataProviderStatus [").append(provider).append(feedStatus).append("]");
+        builder.append("MarketDataProviderStatus [").append(provider).append(' ').append(feedStatus).append("]");
         return builder.toString();
     }
     /**
