@@ -8,12 +8,10 @@ import java.util.Deque;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.marketdata.Capability;
@@ -82,16 +80,6 @@ public class MarketDataRpcClientServerTest
     public void testDisconnection()
             throws Exception
     {
-        final AtomicBoolean status = new AtomicBoolean(false);
-        ServerStatusListener statusListener = new ServerStatusListener() {
-            @Override
-            public void receiveServerStatus(boolean inStatus)
-            {
-                status.set(inStatus);
-            }
-        };
-//        client.addServerStatusListener(statusListener);
-        assertTrue(status.get());
         // kill the server
         rpcServer.stop();
         assertFalse(rpcServer.isRunning());
@@ -103,7 +91,6 @@ public class MarketDataRpcClientServerTest
                 return !client.isRunning();
             }
         });
-        assertFalse(status.get());
         rpcServer.start();
         assertTrue(rpcServer.isRunning());
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
@@ -114,7 +101,6 @@ public class MarketDataRpcClientServerTest
                 return client.isRunning();
             }
         });
-        assertTrue(status.get());
     }
     /**
      * Tests {@link MarketDataRpcClient#request(org.marketcetera.marketdata.MarketDataRequest, boolean)}.
@@ -158,8 +144,7 @@ public class MarketDataRpcClientServerTest
     {
         Equity equity = new Equity("AAPL");
         Deque<Event> events = serviceAdapter.getSnapshot(equity,
-                                                         Content.LATEST_TICK,
-                                                         null);
+                                                         Content.LATEST_TICK);
         assertTrue(events.isEmpty());
         Deque<Event> eventsToReturn = serviceAdapter.getSnapshotEventsToReturn();
         eventsToReturn.add(EventTestBase.generateDividendEvent());
@@ -182,8 +167,7 @@ public class MarketDataRpcClientServerTest
                 eventsToReturn.add(EventTestBase.generateMarketstatEvent(instrument));
             }
             events = client.getSnapshot(instrument,
-                                        Content.LATEST_TICK,
-                                        "provider");
+                                        Content.LATEST_TICK);
             assertEquals(eventsToReturn.size(),
                          events.size());
         }
@@ -200,7 +184,6 @@ public class MarketDataRpcClientServerTest
         Equity equity = new Equity("AAPL");
         Deque<Event> events = serviceAdapter.getSnapshotPage(equity,
                                                              Content.LATEST_TICK,
-                                                             null,
                                                              new PageRequest(1,1));
         assertTrue(events.isEmpty());
         Deque<Event> eventsToReturn = serviceAdapter.getSnapshotEventsToReturn();
@@ -223,9 +206,8 @@ public class MarketDataRpcClientServerTest
                 eventsToReturn.add(EventTestBase.generateTradeEvent(instrument));
                 eventsToReturn.add(EventTestBase.generateMarketstatEvent(instrument));
             }
-            events = client.getSnapshotPage(instrument,
+            events = client.getSnapshot(instrument,
                                             Content.LATEST_TICK,
-                                            "provider",
                                             new PageRequest(1,Integer.MAX_VALUE));
             assertEquals(eventsToReturn.size(),
                          events.size());

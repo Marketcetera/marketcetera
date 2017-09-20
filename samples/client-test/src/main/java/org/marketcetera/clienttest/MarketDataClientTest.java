@@ -12,6 +12,7 @@ import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientParameters;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,8 +89,12 @@ public class MarketDataClientTest
                 }
             };
             marketDataClient.addMarketDataStatusListener(statusListener);
+            SLF4JLoggerProxy.info(MarketDataClientTest.class,
+                                  "Available capabilities: {}",
+                                  marketDataClient.getAvailableCapability());
             MarketDataRequestBuilder requestBuilder = MarketDataRequestBuilder.newRequest();
-            requestBuilder = requestBuilder.withContent(Content.TOP_OF_BOOK,Content.LATEST_TICK).withSymbols("METC").withAssetClass(AssetClass.EQUITY);
+            Equity metc = new Equity("METC");
+            requestBuilder = requestBuilder.withContent(Content.TOP_OF_BOOK,Content.LATEST_TICK).withSymbols(metc.getFullSymbol()).withAssetClass(AssetClass.EQUITY);
             MarketDataRequest request = requestBuilder.create();
             SLF4JLoggerProxy.info(MarketDataClientTest.class,
                                   "Issuing market data request: {}",
@@ -112,6 +117,10 @@ public class MarketDataClientTest
             SLF4JLoggerProxy.info(MarketDataClientTest.class,
                                   "Canceling request [{}]",
                                   requestId);
+            SLF4JLoggerProxy.info(MarketDataClientTest.class,
+                                  "Market data snapshot: {}",
+                                  marketDataClient.getSnapshot(metc,
+                                                               Content.TOP_OF_BOOK));
             marketDataClient.cancel(requestId);
             marketDataClient.removeMarketDataStatusListener(statusListener);
         } finally {
@@ -182,72 +191,3 @@ public class MarketDataClientTest
     @Autowired
     private MarketDataRpcClientFactory marketDataClientFactory;
 }
-//package org.marketcetera.clienttest;
-//
-//import java.util.Deque;
-//
-//import org.marketcetera.core.PlatformServices;
-//import org.marketcetera.event.Event;
-//import org.marketcetera.marketdata.AssetClass;
-//import org.marketcetera.marketdata.Content;
-//import org.marketcetera.marketdata.MarketDataContextClassProvider;
-//import org.marketcetera.marketdata.MarketDataRequestBuilder;
-//import org.marketcetera.marketdata.rpc.client.MarketDataRpcClient;
-//import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
-//import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientParameters;
-//import org.marketcetera.util.log.SLF4JLoggerProxy;
-//
-///* $License$ */
-//
-///**
-// * Demonstrates how to connect to MATP market data services from an external application.
-// *
-// * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-// * @version $Id$
-// * @since $Release$
-// */
-//public class MarketDataClientTest
-//{
-//    /**
-//     * Main run method.
-//     *
-//     * @param inArgs a <code>String[]</code> value
-//     */
-//    public static void main(String[] inArgs)
-//    {
-//        SLF4JLoggerProxy.info(MarketDataClientTest.class,
-//                              "Starting market data client test");
-//        try {
-//            MarketDataRpcClientParameters parameters = new MarketDataRpcClientParameters();
-//            parameters.setUsername("user");
-//            parameters.setPassword("password");
-//            parameters.setHostname("locahost");
-//            parameters.setPort(8998);
-//            parameters.setContextClassProvider(new MarketDataContextClassProvider());
-//            MarketDataRpcClient marketDataClient = new MarketDataRpcClientFactory().create(parameters);
-//            marketDataClient.start();
-//            SLF4JLoggerProxy.info(MarketDataClientTest.class,
-//                                  "Connected to market data nexus: {}",
-//                                  marketDataClient.isRunning());
-//            MarketDataRequestBuilder requestBuilder = MarketDataRequestBuilder.newRequest();
-//            requestBuilder = requestBuilder.withContent(Content.TOP_OF_BOOK,Content.LATEST_TICK).withSymbols("METC").withAssetClass(AssetClass.EQUITY);
-////            long requestId = marketDataClient.request(requestBuilder.create(),
-////                                                      true);
-////            for(int i=0;i<10;i++) {
-////                Thread.sleep(1000);
-////                Deque<Event> events = marketDataClient.getEvents(requestId);
-////                SLF4JLoggerProxy.info(MarketDataClientTest.class,
-////                                      "Retrieved {}",
-////                                      events);
-////            }
-////            marketDataClient.cancel(requestId);
-//            marketDataClient.stop();
-//        } catch (Exception e) {
-//            PlatformServices.handleException(MarketDataClientTest.class,
-//                                             "Error executing market data client test",
-//                                             e);
-//        }
-//        SLF4JLoggerProxy.info(MarketDataClientTest.class,
-//                              "Ending market data client test");
-//    }
-//}

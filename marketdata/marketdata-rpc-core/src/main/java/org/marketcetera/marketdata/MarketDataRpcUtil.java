@@ -35,8 +35,18 @@ public class MarketDataRpcUtil
         if(!inResponse.hasEvent()) {
             return Optional.empty();
         }
+        return Optional.of(getEvent(inResponse.getEvent()));
+    }
+    /**
+     * Get the event from the given RPC event value.
+     *
+     * @param inRpcEvent a <code>MarketDataRpc.Event</code> value
+     * @return an <code>Event</code> value
+     */
+    public static Event getEvent(MarketDataRpc.Event inRpcEvent)
+    {
         try {
-            return Optional.of((Event)unmarshall(inResponse.getEvent().getPayload()));
+            return (Event)unmarshall(inRpcEvent.getPayload());
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
@@ -127,6 +137,83 @@ public class MarketDataRpcUtil
             case UNKNOWN:
             default:
                 return MarketDataRpc.FeedStatus.UNKNOWN_FEED_STATUS;
+        }
+    }
+    /**
+     * Get the content value for the given RPC content.
+     *
+     * @param inContent a <code>MarketDataRpc.ContentAndCapability</code> value
+     * @return a <code>Content</code> value
+     */
+    public static Content getContent(MarketDataRpc.ContentAndCapability inContent)
+    {
+        switch(inContent) {
+            case AGGREGATED_DEPTH:
+                return Content.AGGREGATED_DEPTH;
+            case BBO10:
+                return Content.BBO10;
+            case DIVIDEND:
+                return Content.DIVIDEND;
+            case IMBALANCE:
+                return Content.IMBALANCE;
+            case LATEST_TICK:
+                return Content.LATEST_TICK;
+            case LEVEL_2:
+                return Content.LEVEL_2;
+            case MARKET_STAT:
+                return Content.MARKET_STAT;
+            case NBBO:
+                return Content.NBBO;
+            case OPEN_BOOK:
+                return Content.OPEN_BOOK;
+            case TOP_OF_BOOK:
+                return Content.TOP_OF_BOOK;
+            case TOTAL_VIEW:
+                return Content.TOTAL_VIEW;
+            case UNAGGREGATED_DEPTH:
+                return Content.UNAGGREGATED_DEPTH;
+            case EVENT_BOUNDARY:
+            case UNKNOWN:
+            case UNRECOGNIZED:
+            default:
+                throw new UnsupportedOperationException("Unsupported content :" + inContent);
+        }
+    }
+    /**
+     * Get the RPC content from the given value.
+     *
+     * @param inContent a <code>Content</code> value
+     * @return a <code>MarketDataRpc.ContentAndCapability</code> value
+     */
+    public static MarketDataRpc.ContentAndCapability getRpcCntent(Content inContent)
+    {
+        switch(inContent) {
+            case AGGREGATED_DEPTH:
+                return MarketDataRpc.ContentAndCapability.AGGREGATED_DEPTH;
+            case BBO10:
+                return MarketDataRpc.ContentAndCapability.BBO10;
+            case DIVIDEND:
+                return MarketDataRpc.ContentAndCapability.DIVIDEND;
+            case IMBALANCE:
+                return MarketDataRpc.ContentAndCapability.IMBALANCE;
+            case LATEST_TICK:
+                return MarketDataRpc.ContentAndCapability.LATEST_TICK;
+            case LEVEL_2:
+                return MarketDataRpc.ContentAndCapability.LEVEL_2;
+            case MARKET_STAT:
+                return MarketDataRpc.ContentAndCapability.MARKET_STAT;
+            case NBBO:
+                return MarketDataRpc.ContentAndCapability.NBBO;
+            case OPEN_BOOK:
+                return MarketDataRpc.ContentAndCapability.OPEN_BOOK;
+            case TOP_OF_BOOK:
+                return MarketDataRpc.ContentAndCapability.TOP_OF_BOOK;
+            case TOTAL_VIEW:
+                return MarketDataRpc.ContentAndCapability.TOTAL_VIEW;
+            case UNAGGREGATED_DEPTH:
+                return MarketDataRpc.ContentAndCapability.UNAGGREGATED_DEPTH;
+            default:
+                return MarketDataRpc.ContentAndCapability.UNKNOWN;
         }
     }
     /**

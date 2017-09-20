@@ -45,12 +45,10 @@ public interface MarketDataClient
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
-     * @param inProvider a <code>String</code> value or <code>null</code>
      * @return a <code>Deque&lt;Event&gt;</code>
      */
     Deque<Event> getSnapshot(Instrument inInstrument,
-                             Content inContent,
-                             String inProvider);
+                             Content inContent);
     /**
      * Gets a subset of the most recent snapshot available of the given market data.
      *
@@ -58,14 +56,12 @@ public interface MarketDataClient
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
-     * @param inProvider a <code>String</code> value or <code>null</code>
      * @param inPage a <code>PageRequest</code> value indicating what subset to return
      * @return a <code>Deque&lt;Event&gt;</code>
      */
-    Deque<Event> getSnapshotPage(Instrument inInstrument,
-                                 Content inContent,
-                                 String inProvider,
-                                 PageRequest inPage);
+    Deque<Event> getSnapshot(Instrument inInstrument,
+                             Content inContent,
+                             PageRequest inPage);
     /**
      * Adds a market data connection status listener, which receives all market data connection status changes.
      *

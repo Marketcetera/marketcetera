@@ -1,12 +1,14 @@
 package org.marketcetera.marketdata.service;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
@@ -15,6 +17,7 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.NoMarketDataProvidersAvailable;
+import org.marketcetera.marketdata.cache.MarketDataCacheModuleFactory;
 import org.marketcetera.marketdata.core.manager.MarketDataManagerModuleFactory;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /* $License$ */
@@ -42,7 +46,7 @@ import com.google.common.collect.Sets;
  */
 @Service
 public class MarketDataServiceImpl
-        implements MarketDataService
+        implements MarketDataService,MarketDataCacheManager
 {
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataStatusPublisher#addMarketDataStatusListener(org.marketcetera.marketdata.MarketDataStatusListener)
@@ -176,10 +180,11 @@ public class MarketDataServiceImpl
      */
     @Override
     public Deque<Event> getSnapshot(Instrument inInstrument,
-                                    Content inContent,
-                                    String inProvider)
+                                    Content inContent)
     {
-        throw new UnsupportedOperationException(); // TODO
+        return getSnapshotPage(inInstrument,
+                               inContent,
+                               new PageRequest(0,Integer.MAX_VALUE));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.service.MarketDataService#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, org.marketcetera.persist.PageRequest)
@@ -187,10 +192,23 @@ public class MarketDataServiceImpl
     @Override
     public Deque<Event> getSnapshotPage(Instrument inInstrument,
                                         Content inContent,
-                                        String inProvider,
                                         PageRequest inPageRequest)
     {
-        throw new UnsupportedOperationException(); // TODO
+        Deque<Event> events = Lists.newLinkedList();
+        for(MarketDataCacheProvider cacheProvider : cacheProviders) {
+            Event event = cacheProvider.getSnapshot(inInstrument,
+                                                    inContent);
+            if(event != null) {
+                if(event instanceof AggregateEvent) {
+                    events.addAll(((AggregateEvent)event).decompose());
+                } else {
+                    events.add(event);
+                }
+                break;
+            }
+        }
+        // TODO paging
+        return events;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.service.MarketDataService#getAvailableCapability()
@@ -198,7 +216,23 @@ public class MarketDataServiceImpl
     @Override
     public Set<Capability> getAvailableCapability()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return Collections.unmodifiableSet(capabilities);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.service.MarketDataCacheManager#addMarketDataCacheProvider(org.marketcetera.marketdata.service.MarketDataCacheProvider)
+     */
+    @Override
+    public void addMarketDataCacheProvider(MarketDataCacheProvider inMarketDataCacheProvider)
+    {
+        cacheProviders.add(inMarketDataCacheProvider);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.service.MarketDataCacheManager#removeMarketDataCacheProvider(org.marketcetera.marketdata.service.MarketDataCacheProvider)
+     */
+    @Override
+    public void removeMarketDataCacheProvider(MarketDataCacheProvider inMarketDataCacheProvider)
+    {
+        cacheProviders.remove(inMarketDataCacheProvider);
     }
     /**
      * Get the instance URN for the given market data provider name.
@@ -240,8 +274,9 @@ public class MarketDataServiceImpl
         DataRequest sourceRequest = new DataRequest(inSourceUrn,
                                                     inMarketDataRequest);
         RequestMetaData requestMetaData = new RequestMetaData(inListener);
+        DataRequest cacheRequest = new DataRequest(MarketDataCacheModuleFactory.INSTANCE_URN);
         DataRequest targetRequest = new DataRequest(createPublisherModule(requestMetaData));
-        DataFlowID dataFlowId = moduleManager.createDataFlow(new DataRequest[] { sourceRequest,targetRequest });
+        DataFlowID dataFlowId = moduleManager.createDataFlow(new DataRequest[] { sourceRequest,cacheRequest,targetRequest });
         requestMetaData.setDataFlowId(dataFlowId);
         requestsByRequestId.put(inRequestId,
                                 requestMetaData);
@@ -377,4 +412,8 @@ public class MarketDataServiceImpl
      * caches last-known market data status values
      */
     private final Cache<String,MarketDataStatus> cachedMarketDataStatus = CacheBuilder.newBuilder().build();
+    /**
+     * holds market data cache providers
+     */
+    private final Set<MarketDataCacheProvider> cacheProviders = Sets.newConcurrentHashSet();
 }

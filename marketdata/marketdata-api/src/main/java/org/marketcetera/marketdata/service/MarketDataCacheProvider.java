@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.4.0
  */
 @ClassVersion("$Id: MarketDataCache.java 16901 2014-05-11 16:14:11Z colin $")
-public interface MarketDataCache
+public interface MarketDataCacheProvider
 {
     /**
      * Gets a snapshot of the given content for the given instrument, if available.
@@ -35,6 +35,6 @@ public interface MarketDataCache
      * @param inContent a <code>Content</code> value
      * @return an <code>Event</code> value or <code>null</code>
      */
-    public Event getSnapshot(Instrument inInstrument,
-                             Content inContent);
+    Event getSnapshot(Instrument inInstrument,
+                      Content inContent);
 }

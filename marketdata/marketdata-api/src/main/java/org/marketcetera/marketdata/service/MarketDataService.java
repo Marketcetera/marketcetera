@@ -48,24 +48,20 @@ public interface MarketDataService
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
-     * @param inProvider a <code>String</code> value or <code>null</code>
      * @return a <code>Deque&lt;Event&gt;</code> value
      */
     Deque<Event> getSnapshot(Instrument inInstrument,
-                             Content inContent,
-                             String inProvider);
+                             Content inContent);
     /**
      * Gets the most recent snapshot page for the given attributes.
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
-     * @param inProvider a <code>String</code> value or <code>null</code>
      * @param inPageRequest a <code>PageRequest</code> value
      * @return a <code>Deque&lt;Event&gt;</code> value
      */
     Deque<Event> getSnapshotPage(Instrument inInstrument,
                                  Content inContent,
-                                 String inProvider,
                                  PageRequest inPageRequest);
     /**
      * Gets the available capabilities.

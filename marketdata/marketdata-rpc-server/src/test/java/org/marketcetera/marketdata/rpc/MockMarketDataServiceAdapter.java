@@ -80,30 +80,26 @@ public class MockMarketDataServiceAdapter
         canceledIds.add(inId);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content)
      */
     @Override
     public Deque<Event> getSnapshot(Instrument inInstrument,
-                                    Content inContent,
-                                    String inProvider)
+                                    Content inContent)
     {
         snapshotRequests.add(new SnapshotRequest(inInstrument,
-                                                 inContent,
-                                                 inProvider));
+                                                 inContent));
         return snapshotEventsToReturn;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, org.marketcetera.marketdata.core.webservice.PageRequest)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, org.marketcetera.marketdata.core.webservice.PageRequest)
      */
     @Override
     public Deque<Event> getSnapshotPage(Instrument inInstrument,
                                         Content inContent,
-                                        String inProvider,
                                         PageRequest inPageRequest)
     {
         snapshotRequests.add(new SnapshotRequest(inInstrument,
                                                  inContent,
-                                                 inProvider,
                                                  inPageRequest));
         return snapshotEventsToReturn;
     }
@@ -256,15 +252,12 @@ public class MockMarketDataServiceAdapter
          *
          * @param inInstrument an <code>Instrument</code> value
          * @param inContent a <code>Content</code> value
-         * @param inProvider a <code>String</code> value
          */
         public SnapshotRequest(Instrument inInstrument,
-                               Content inContent,
-                               String inProvider)
+                               Content inContent)
         {
             this(inInstrument,
                  inContent,
-                 inProvider,
                  null);
         }
         /**
@@ -272,17 +265,14 @@ public class MockMarketDataServiceAdapter
          *
          * @param inInstrument an <code>Instrument</code> value
          * @param inContent a <code>Content</code> value
-         * @param inProvider a <code>String</code> value
          * @param inPageRequest a <code>PageRequest</code> value
          */
         public SnapshotRequest(Instrument inInstrument,
                                Content inContent,
-                               String inProvider,
                                PageRequest inPageRequest)
         {
             instrument = inInstrument;
             content = inContent;
-            provider = inProvider;
             pageRequest = inPageRequest;
         }
         /**
@@ -304,15 +294,6 @@ public class MockMarketDataServiceAdapter
             return content;
         }
         /**
-         * Get the provider value.
-         *
-         * @return a <code>String</code> value
-         */
-        public String getProvider()
-        {
-            return provider;
-        }
-        /**
          * Get the pageRequest value.
          *
          * @return a <code>PageRequest</code> value
@@ -329,10 +310,6 @@ public class MockMarketDataServiceAdapter
          * content value
          */
         private final Content content;
-        /**
-         * provider value
-         */
-        private final String provider;
         /**
          * page request value, may be <code>null</code>
          */

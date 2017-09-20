@@ -32,23 +32,12 @@ message SnapshotRequest {
     string sessionId = 1;
     Instrument instrument = 2;
     ContentAndCapability content = 3;
-    string provider = 4;
+    PageRequest page = 4;
 }
 
 message SnapshotResponse {
-    repeated string payload = 1;
-}
-
-message SnapshotPageRequest {
-    string sessionId = 1;
-    Instrument instrument = 2;
-    ContentAndCapability content = 3;
-    string provider = 4;
-    PageRequest page = 5;
-}
-
-message SnapshotPageResponse {
-    repeated string payload = 1;
+    repeated Event event = 1;
+    PageResponse pageResponse = 2;
 }
 
 enum ContentAndCapability {
@@ -112,7 +101,6 @@ service MarketDataRpcService {
     rpc request(MarketDataRequest) returns (stream EventsResponse);
     rpc cancel(CancelRequest) returns (CancelResponse);
     rpc getSnapshot(SnapshotRequest) returns (SnapshotResponse);
-    rpc getSnapshotPage(SnapshotPageRequest) returns (SnapshotPageResponse);
     rpc getAvailableCapability(AvailableCapabilityRequest) returns (AvailableCapabilityResponse);
     rpc addMarketDataStatusListener(AddMarketDataStatusListenerRequest) returns (stream MarketDataStatusListenerResponse);
     rpc removeMarketDataStatusListener(RemoveMarketDataStatusListenerRequest) returns (RemoveMarketDataStatusListenerResponse);

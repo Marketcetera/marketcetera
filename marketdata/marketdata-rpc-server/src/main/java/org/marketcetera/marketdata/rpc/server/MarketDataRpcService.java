@@ -1,5 +1,6 @@
 package org.marketcetera.marketdata.rpc.server;
 
+import java.util.Deque;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
@@ -7,6 +8,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataPermissions;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -21,6 +23,8 @@ import org.marketcetera.marketdata.service.MarketDataService;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trading.rpc.TradingUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,46 +222,23 @@ public class MarketDataRpcService<SessionClazz>
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Received snapshot request {}",
+                                       inRequest);
                 MarketDataRpc.SnapshotResponse.Builder responseBuilder = MarketDataRpc.SnapshotResponse.newBuilder();
-//                Instrument instrument = unmarshall(inRequest.getInstrument().getPayload());
-//                Content content = Content.valueOf(inRequest.getContent().name());
-//                Deque<Event> events = marketDataService.getSnapshot(instrument,
-//                                                                 content,
-//                                                                 inRequest.getProvider());
-//                for(Event event : events) {
-//                    responseBuilder.addPayload(marshal(event));
-//                }
-                MarketDataRpc.SnapshotResponse response = responseBuilder.build();
-                inResponseObserver.onNext(response);
-                inResponseObserver.onCompleted();
-            } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
+                Instrument instrument = TradingUtil.getInstrument(inRequest.getInstrument());
+                Content content = MarketDataRpcUtil.getContent(inRequest.getContent());
+                // TODO paging
+                Deque<Event> events = marketDataService.getSnapshot(instrument,
+                                                                    content);
+                for(Event event : events) {
+                    responseBuilder.addEvent(MarketDataRpcUtil.getRpcEvent(event));
                 }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
-            }
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#getSnapshotPage(org.marketcetera.marketdata.core.rpc.MarketdataRpc.SnapshotPageRequest, io.grpc.stub.StreamObserver)
-         */
-        @Override
-        public void getSnapshotPage(MarketDataRpc.SnapshotPageRequest inRequest,
-                                    StreamObserver<MarketDataRpc.SnapshotPageResponse> inResponseObserver)
-        {
-            try {
-                validateAndReturnSession(inRequest.getSessionId());
-                MarketDataRpc.SnapshotPageResponse.Builder responseBuilder = MarketDataRpc.SnapshotPageResponse.newBuilder();
-//                Instrument instrument = unmarshall(inRequest.getInstrument().getPayload());
-//                Content content = Content.valueOf(inRequest.getContent().name());
-//                Deque<Event> events = marketDataService.getSnapshotPage(instrument,
-//                                                                     content,
-//                                                                     inRequest.getProvider(),
-//                                                                     new PageRequest(inRequest.getPage().getPage(),
-//                                                                                     inRequest.getPage().getSize()));
-//                for(Event event : events) {
-//                    responseBuilder.addPayload(marshal(event));
-//                }
-                MarketDataRpc.SnapshotPageResponse response = responseBuilder.build();
+                // TODO paging
+                MarketDataRpc.SnapshotResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Sending response: {}",
+                                       response);
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
