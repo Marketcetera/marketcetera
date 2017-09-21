@@ -1,5 +1,7 @@
 package org.marketcetera.module;
 
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -41,6 +43,10 @@ public abstract class AbstractDataReemitterModule
                             DataEmitterSupport inSupport)
             throws RequestDataException
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Received {} for {}",
+                               inRequest,
+                               inSupport);
         dataSupport.put(inSupport.getFlowID(),
                         inSupport);
     }

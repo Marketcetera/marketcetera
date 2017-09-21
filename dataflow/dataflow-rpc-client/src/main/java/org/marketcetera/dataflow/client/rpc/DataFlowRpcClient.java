@@ -306,6 +306,112 @@ public class DataFlowRpcClient
         throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.dataflow.client.DataFlowClient#createDataFlow(java.util.List, boolean)
+     */
+    @Override
+    public DataFlowID createDataFlow(List<DataRequest> inDataRequests,
+                                     boolean inAppendDataSink)
+    {
+        return executeCall(new Callable<DataFlowID>(){
+            @Override
+            public DataFlowID call()
+                    throws Exception
+            {
+                DataFlowRpc.CreateDataFlowRequest.Builder requestBuilder = DataFlowRpc.CreateDataFlowRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setAppendDataSink(inAppendDataSink);
+                for(DataRequest dataRequest : inDataRequests) {
+                    requestBuilder.addDataRequests(DataFlowRpcUtil.getRpcDataRequest(dataRequest));
+                }
+                DataFlowRpc.CreateDataFlowRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                DataFlowRpc.CreateDataFlowResponse response = getBlockingStub().createDataFlow(request);
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                DataFlowID dataFlowId = DataFlowRpcUtil.getDataFlowId(response.getDataFlowId());
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       dataFlowId);
+                return dataFlowId;
+            }
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dataflow.client.DataFlowClient#createDataFlow(java.util.List)
+     */
+    @Override
+    public DataFlowID createDataFlow(List<DataRequest> inDataRequest)
+    {
+        return createDataFlow(inDataRequest,
+                              false);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dataflow.client.DataFlowClient#cancelDataFlow(org.marketcetera.module.DataFlowID)
+     */
+    @Override
+    public void cancelDataFlow(DataFlowID inDataFlowId)
+    {
+        executeCall(new Callable<Void>(){
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                DataFlowRpc.CancelDataFlowRequest.Builder requestBuilder = DataFlowRpc.CancelDataFlowRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setDataFlowId((DataFlowRpcUtil.getRpcDataFlowId(inDataFlowId)));
+                DataFlowRpc.CancelDataFlowRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                DataFlowRpc.CancelDataFlowResponse response = getBlockingStub().cancelDataFlow(request);
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
+            }
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlowInfo(org.marketcetera.module.DataFlowID)
+     */
+    @Override
+    public DataFlowInfo getDataFlowInfo(DataFlowID inDataFlowId)
+    {
+        return executeCall(new Callable<DataFlowInfo>(){
+            @Override
+            public DataFlowInfo call()
+                    throws Exception
+            {
+                DataFlowRpc.GetDataFlowInfoRequest.Builder requestBuilder = DataFlowRpc.GetDataFlowInfoRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                DataFlowRpc.GetDataFlowInfoRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                DataFlowRpc.GetDataFlowInfoResponse response = getBlockingStub().getDataFlowInfo(request);
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                DataFlowInfo dataFlowInfo = DataFlowRpcUtil.getDataFlowInfo(response.getDataFlowInfo());
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       dataFlowInfo);
+                return dataFlowInfo;
+            }
+        });
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.SEClient.SEClient#addDataReceiver(org.marketcetera.SEClient.DataReceiver)
      */
     @Override
@@ -405,43 +511,6 @@ public class DataFlowRpcClient
      * The client's application ID: the ID.
      */
     private static final AppId APP_ID = Util.getAppId(APP_ID_NAME,APP_ID_VERSION.getVersionInfo());
-    /* (non-Javadoc)
-     * @see org.marketcetera.dataflow.client.DataFlowClient#createDataFlow(org.marketcetera.module.DataRequest[], boolean)
-     */
-    @Override
-    public DataFlowID createDataFlow(DataRequest[] inDataRequest,
-                                     boolean inAppendDataSink)
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.dataflow.client.DataFlowClient#createDataFlow(org.marketcetera.module.DataRequest[])
-     */
-    @Override
-    public DataFlowID createDataFlow(DataRequest[] inDataRequest)
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.dataflow.client.DataFlowClient#cancelDataFlow(org.marketcetera.module.DataFlowID)
-     */
-    @Override
-    public void cancelDataFlow(DataFlowID inDataFlowId)
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlowInfo(org.marketcetera.module.DataFlowID)
-     */
-    @Override
-    public DataFlowInfo getDataFlowInfo(DataFlowID inDataFlowId)
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlows()
      */

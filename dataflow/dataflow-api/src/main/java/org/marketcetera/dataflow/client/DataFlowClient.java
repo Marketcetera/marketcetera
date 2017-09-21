@@ -79,31 +79,25 @@ public interface DataFlowClient
     /**
      * Create the data flow described by the given data requests.
      *
-     * @param inDataRequest a <code>DataRequest[]</code> value
+     * @param inDataRequest a <code>List&lt;DataRequest&gt;</code> value
      * @param inAppendDataSink a <code>boolean</code> value
      * @return a <code>DataFlowID</code> value
      */
-    DataFlowID createDataFlow(DataRequest[] inDataRequest,
+    DataFlowID createDataFlow(List<DataRequest> inDataRequest,
                               boolean inAppendDataSink);
     /**
      * Create the data flow described by the given data requests.
      *
-     * @param inDataRequest a <code>DataRequest[]</code> value
+     * @param inDataRequest a <code>List&lt;DataRequest&gt;</code> value
      * @return a <code>DataFlowID</code> value
      */
-    DataFlowID createDataFlow(DataRequest[] inDataRequest);
+    DataFlowID createDataFlow(List<DataRequest> inDataRequest);
     /**
      * Cancel the data flow with the given id.
      *
      * @param inDataFlowId a <code>DataFlowID</code> value
      */
     void cancelDataFlow(DataFlowID inDataFlowId);
-    /**
-     * Sends the given object to the server where registered listeners will receive it.
-     *
-     * @param inData an <code>Object</code> value
-     */
-    void sendData(Object inData);
     /**
      * Get the data flow info for the given data flow id.
      *
@@ -137,6 +131,12 @@ public interface DataFlowClient
      * @return a <code>List&lt;DataFlowInfo&gt;</code> value
      */
     List<DataFlowInfo> getDataFlowHistory();
+    /**
+     * Sends the given object to the server where registered listeners will receive it.
+     *
+     * @param inData an <code>Object</code> value
+     */
+    void sendData(Object inData);
     // TODO deploy JAR
     // TODO undeploy JAR
 }

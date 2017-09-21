@@ -1,0 +1,3 @@
+#Names of module factory implementations
+org.marketcetera.dataflow.modules.DataFlowReceiverModuleFactory
+org.marketcetera.dataflow.modules.DataFlowSenderModuleFactory

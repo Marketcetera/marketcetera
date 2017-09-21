@@ -7,7 +7,12 @@ import org.marketcetera.dataflow.client.DataFlowClient;
 import org.marketcetera.dataflow.client.DataReceiver;
 import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientFactory;
 import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientParameters;
+import org.marketcetera.dataflow.modules.DataFlowReceiverModuleFactory;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.modules.headwater.HeadwaterModuleFactory;
+import org.marketcetera.modules.ticktock.TickTockModuleFactory;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +21,8 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -98,6 +105,56 @@ public class DataFlowClientTest
                                       instances,
                                       dataFlowClient.getModuleInfo(instanceUrn));
             }
+            ModuleURN providerUrn = HeadwaterModuleFactory.PROVIDER_URN;
+            String instanceName = "test_"+System.nanoTime();
+            SLF4JLoggerProxy.info(this,
+                                  "Creating new module: {} {}",
+                                  providerUrn,
+                                  instanceName);
+            ModuleURN instanceUrn = dataFlowClient.createModule(providerUrn,
+                                                                instanceName);
+            SLF4JLoggerProxy.info(this,
+                                  "Created: {}",
+                                  instanceUrn);
+            SLF4JLoggerProxy.info(this,
+                                  "Stopping {}",
+                                  instanceUrn);
+            dataFlowClient.stopModule(instanceUrn);
+            SLF4JLoggerProxy.info(this,
+                                  "{} stopped",
+                                  instanceUrn);
+            SLF4JLoggerProxy.info(this,
+                                  "Deleting {}",
+                                  instanceUrn);
+            dataFlowClient.deleteModule(instanceUrn);
+            SLF4JLoggerProxy.info(this,
+                                  "{} deleted",
+                                  instanceUrn);
+            // start a module
+            instanceUrn = TickTockModuleFactory.INSTANCE_URN;
+            SLF4JLoggerProxy.info(this,
+                                  "Starting {}",
+                                  instanceUrn);
+            dataFlowClient.startModule(instanceUrn);
+            SLF4JLoggerProxy.info(this,
+                                  "{} started",
+                                  instanceUrn);
+            // build a data request that includes the tick-tock module and the data receiver, which will be sent to us
+            List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+            dataRequestBuilder.add(new DataRequest(instanceUrn));
+            dataRequestBuilder.add(new DataRequest(DataFlowReceiverModuleFactory.INSTANCE_URN));
+            DataFlowID dataFlowId = dataFlowClient.createDataFlow(dataRequestBuilder);
+            SLF4JLoggerProxy.info(this,
+                                  "Data flow {} created",
+                                  dataFlowId);
+            Thread.sleep(5000);
+            // stop the data flow
+            SLF4JLoggerProxy.info(this,
+                                  "Canceling data flow {}",
+                                  dataFlowId);
+            dataFlowClient.cancelDataFlow(dataFlowId);
+            // stop the market data module
+            dataFlowClient.stopModule(instanceUrn);
             dataFlowClient.removeDataReceiver(dataReceiver);
         } finally {
             if(dataFlowClient != null) {
