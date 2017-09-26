@@ -148,12 +148,16 @@ public class DataFlowClientTest
                                   "Data flow {} created",
                                   dataFlowId);
             Thread.sleep(5000);
+            // get info on the created data flow
+            SLF4JLoggerProxy.info(this,
+                                  "Retrieved data flow info: {}",
+                                  dataFlowClient.getDataFlowInfo(dataFlowId));
             // stop the data flow
             SLF4JLoggerProxy.info(this,
                                   "Canceling data flow {}",
                                   dataFlowId);
             dataFlowClient.cancelDataFlow(dataFlowId);
-            // stop the market data module
+            // stop the started module
             dataFlowClient.stopModule(instanceUrn);
             dataFlowClient.removeDataReceiver(dataReceiver);
         } finally {

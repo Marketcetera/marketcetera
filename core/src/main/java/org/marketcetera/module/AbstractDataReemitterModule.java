@@ -22,17 +22,19 @@ public abstract class AbstractDataReemitterModule
      * @see org.marketcetera.module.DataReceiver#receiveData(org.marketcetera.module.DataFlowID, java.lang.Object)
      */
     @Override
-    public void receiveData(DataFlowID inFlowID,
+    public void receiveData(DataFlowID inFlowId,
                             Object inData)
             throws ReceiveDataException
     {
-        DataEmitterSupport dataEmitterSupport = dataSupport.getIfPresent(inFlowID);
-        if(dataEmitterSupport != null) {
-            inData = onReceiveData(inData,
-                                   dataEmitterSupport);
-            if(inData != null) {
-                dataEmitterSupport.send(inData);
-            }
+        DataEmitterSupport dataEmitterSupport = dataSupport.getIfPresent(inFlowId);
+        SLF4JLoggerProxy.trace(this,
+                               "Received {} for {}",
+                               inData,
+                               inFlowId);
+        inData = onReceiveData(inData,
+                               dataEmitterSupport);
+        if(dataEmitterSupport != null && inData != null) {
+            dataEmitterSupport.send(inData);
         }
     }
     /* (non-Javadoc)
@@ -44,7 +46,7 @@ public abstract class AbstractDataReemitterModule
             throws RequestDataException
     {
         SLF4JLoggerProxy.debug(this,
-                               "Received {} for {}",
+                               "Received request {} for {}",
                                inRequest,
                                inSupport);
         dataSupport.put(inSupport.getFlowID(),

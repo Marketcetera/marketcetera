@@ -21,5 +21,6 @@
     <module>dataflow-rpc-core</module>
     <module>dataflow-rpc-server</module>
     <module>dataflow-core</module>
+    <module>dataflow-server</module>
   </modules>
 </project>

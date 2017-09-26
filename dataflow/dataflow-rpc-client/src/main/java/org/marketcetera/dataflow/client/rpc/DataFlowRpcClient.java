@@ -1,7 +1,5 @@
 package org.marketcetera.dataflow.client.rpc;
 
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -11,6 +9,7 @@ import org.marketcetera.core.VersionInfo;
 import org.marketcetera.dataflow.client.DataFlowClient;
 import org.marketcetera.dataflow.client.DataReceiver;
 import org.marketcetera.dataflow.rpc.DataFlowRpc;
+import org.marketcetera.dataflow.rpc.DataFlowRpc.DataReceiverResponse;
 import org.marketcetera.dataflow.rpc.DataFlowRpcServiceGrpc;
 import org.marketcetera.dataflow.rpc.DataFlowRpcServiceGrpc.DataFlowRpcServiceBlockingStub;
 import org.marketcetera.dataflow.rpc.DataFlowRpcServiceGrpc.DataFlowRpcServiceStub;
@@ -22,10 +21,16 @@ import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc;
+import org.marketcetera.rpc.base.BaseUtil;
+import org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy;
 import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 
 import io.grpc.Channel;
@@ -392,6 +397,7 @@ public class DataFlowRpcClient
             {
                 DataFlowRpc.GetDataFlowInfoRequest.Builder requestBuilder = DataFlowRpc.GetDataFlowInfoRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setDataFlowId(DataFlowRpcUtil.getRpcDataFlowId(inDataFlowId));
                 DataFlowRpc.GetDataFlowInfoRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
                                        "{} sending {}",
@@ -417,25 +423,105 @@ public class DataFlowRpcClient
     @Override
     public void addDataReceiver(DataReceiver inReceiver)
     {
-        if(inReceiver == null) {
-            throw new NullPointerException();
+        // check to see if this listener is already registered
+        if(listenerProxies.asMap().containsKey(inReceiver)) {
+            return;
         }
-        synchronized (receivers) {
-            receivers.addFirst(inReceiver);
+        // make sure that this listener wasn't just whisked out from under us
+        final AbstractClientListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inReceiver);
+        if(listener == null) {
+            return;
         }
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} adding report listener",
+                                       getSessionId());
+                DataFlowRpc.AddDataReceiverRequest.Builder requestBuilder = DataFlowRpc.AddDataReceiverRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(listener.getId());
+                DataFlowRpc.AddDataReceiverRequest addDataReceiverRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       addDataReceiverRequest);
+                getAsyncStub().addDataReceiver(addDataReceiverRequest,
+                                               (DataReceiverProxy)listener);
+                return null;
+            }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.SEClient.SEClient#removeDataReciever(org.marketcetera.SEClient.DataReceiver)
      */
     @Override
-    public void removeDataReceiver(DataReceiver inReceiver)
+    public void removeDataReceiver(DataReceiver inDataReceiver)
     {
-        if(inReceiver == null) {
-            throw new NullPointerException();
+        final AbstractClientListenerProxy<?,?,?> proxy = listenerProxies.getIfPresent(inDataReceiver);
+        listenerProxies.invalidate(inDataReceiver);
+        if(proxy == null) {
+            return;
         }
-        synchronized (receivers) {
-            receivers.removeFirstOccurrence(inReceiver);
-        }
+        listenerProxiesById.invalidate(proxy.getId());
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} removing report listener",
+                                       getSessionId());
+                DataFlowRpc.RemoveDataReceiverRequest.Builder requestBuilder = DataFlowRpc.RemoveDataReceiverRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(proxy.getId());
+                DataFlowRpc.RemoveDataReceiverRequest removeDataReceiverRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       removeDataReceiverRequest);
+                DataFlowRpc.RemoveDataReceiverResponse response = getBlockingStub().removeDataReceiver(removeDataReceiverRequest);
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
+            }
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlows()
+     */
+    @Override
+    public List<DataFlowID> getDataFlows()
+    {
+        return getDataFlows(new PageRequest(0,Integer.MAX_VALUE));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlows(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public List<DataFlowID> getDataFlows(PageRequest inPageRequest)
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlowHistory(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public List<DataFlowInfo> getDataFlowHistory(PageRequest inPageRequest)
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlowHistory()
+     */
+    @Override
+    public List<DataFlowInfo> getDataFlowHistory()
+    {
+        return getDataFlowHistory(new PageRequest(0,Integer.MAX_VALUE));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getBlockingStub(io.grpc.Channel)
@@ -496,9 +582,56 @@ public class DataFlowRpcClient
         return APP_ID_VERSION;
     }
     /**
-     * receivers of remove data
+     * Creates the appropriate proxy for the given listener.
+     *
+     * @param inListener an <code>Object</code> value
+     * @return an <code>AbstractListenerProxy&lt;?,?,?&gt;</code> value
      */
-    private final Deque<DataReceiver> receivers = new LinkedList<DataReceiver>();
+    private static AbstractClientListenerProxy<?,?,?> getListenerFor(Object inListener)
+    {
+        if(inListener instanceof DataReceiver) {
+            return new DataReceiverProxy((DataReceiver)inListener);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+    /**
+     * Provides an interface between data receiver stream listeners and their handlers.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class DataReceiverProxy
+            extends BaseUtil.AbstractClientListenerProxy<DataFlowRpc.DataReceiverResponse,Object,DataReceiver>
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy#translateMessage(java.lang.Object)
+         */
+        @Override
+        protected Object translateMessage(DataReceiverResponse inResponse)
+        {
+            return DataFlowRpcUtil.getParameter(inResponse.getData());
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        protected void sendMessage(DataReceiver inMessageListener,
+                                   Object inMessage)
+        {
+            inMessageListener.receiveData(inMessage);
+        }
+        /**
+         * Create a new DataReceiverProxy instance.
+         *
+         * @param inDataReceiver a <code>DataReceiver</code> value
+         */
+        protected DataReceiverProxy(DataReceiver inDataReceiver)
+        {
+            super(inDataReceiver);
+        }
+    }
     /**
      * The client's application ID: the application name.
      */
@@ -511,40 +644,22 @@ public class DataFlowRpcClient
      * The client's application ID: the ID.
      */
     private static final AppId APP_ID = Util.getAppId(APP_ID_NAME,APP_ID_VERSION.getVersionInfo());
-    /* (non-Javadoc)
-     * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlows()
+    /**
+     * holds listeners by their id
      */
-    @Override
-    public List<DataFlowID> getDataFlows()
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlows(org.marketcetera.persist.PageRequest)
+    private final Cache<String,BaseUtil.AbstractClientListenerProxy<?,?,?>> listenerProxiesById = CacheBuilder.newBuilder().build();
+    /**
+     * holds listener proxies keyed by the listener
      */
-    @Override
-    public List<DataFlowID> getDataFlows(PageRequest inPageRequest)
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlowHistory(org.marketcetera.persist.PageRequest)
-     */
-    @Override
-    public List<DataFlowInfo> getDataFlowHistory(PageRequest inPageRequest)
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlowHistory()
-     */
-    @Override
-    public List<DataFlowInfo> getDataFlowHistory()
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
-    }
+    private final LoadingCache<Object,BaseUtil.AbstractClientListenerProxy<?,?,?>> listenerProxies = CacheBuilder.newBuilder().build(new CacheLoader<Object,AbstractClientListenerProxy<?,?,?>>() {
+        @Override
+        public BaseUtil.AbstractClientListenerProxy<?,?,?> load(Object inKey)
+                throws Exception
+        {
+            BaseUtil.AbstractClientListenerProxy<?,?,?> proxy = getListenerFor(inKey);
+            listenerProxiesById.put(proxy.getId(),
+                                    proxy);
+            return proxy;
+        }}
+    );
 }

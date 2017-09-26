@@ -51,12 +51,12 @@ public abstract class DataFlowRpcUtil
     /**
      * Get the module URN from the given RPC value.
      *
-     * @param inInstance a <code>DataFlowClientRpc.ModuleURN</code> value
+     * @param inRpcUrn a <code>DataFlowClientRpc.ModuleURN</code> value
      * @return a <code>ModuleURN</code> value
      */
-    public static ModuleURN getModuleUrn(DataFlowRpc.ModuleURN inInstance)
+    public static ModuleURN getModuleUrn(DataFlowRpc.ModuleURN inRpcUrn)
     {
-        return new ModuleURN(inInstance.getValue());
+        return new ModuleURN(inRpcUrn.getValue());
     }
     /**
      * Get the RPC module info from the given value.
@@ -99,7 +99,7 @@ public abstract class DataFlowRpcUtil
         try {
             return marshall(new XmlValue(inParam));
         } catch (JAXBException e) {
-            throw new RuntimeException(e);
+            return String.valueOf(inParam);
         }
     }
     /**
@@ -114,7 +114,7 @@ public abstract class DataFlowRpcUtil
             XmlValue xmlValue = unmarshall(inParam);
             return xmlValue.getValue();
         } catch (JAXBException e) {
-            throw new RuntimeException(e);
+            return inParam;
         }
     }
     /**
@@ -167,6 +167,17 @@ public abstract class DataFlowRpcUtil
                                data);
     }
     /**
+     * Set the given object on the given response.
+     *
+     * @param inObject an <code>Object</code> value
+     * @param inBuilder a <code>DataFlowRpc.DataReceiverResponse.Builder</code> value
+     */
+    public static void setData(Object inObject,
+                               DataFlowRpc.DataReceiverResponse.Builder inBuilder)
+    {
+        inBuilder.setData(getRpcParameter(inObject));
+    }
+    /**
      * Get the data flow coupling from the given RPC value.
      *
      * @param inDataCoupling a <code>DataFlowRpc.DataCoupling</code> value
@@ -203,6 +214,22 @@ public abstract class DataFlowRpcUtil
         return requestBuilder.build();
     }
     /**
+     * Get the RPC data request from the given data request value.
+     *
+     * @param inDataRequest a <code>StringDataRequest</code> value
+     * @return a <code>DataFlowRpc.DataRequest</code> value
+     */
+    public static DataFlowRpc.DataRequest getRpcDataRequest(StringDataRequest inDataRequest)
+    {
+        DataFlowRpc.DataRequest.Builder requestBuilder = DataFlowRpc.DataRequest.newBuilder();
+        if(inDataRequest.getData() != null) {
+            requestBuilder.setData(getRpcParameter(inDataRequest.getData()));
+        }
+        requestBuilder.setDataCoupling(getRpcDataCoupling(inDataRequest.getCoupling()));
+        requestBuilder.setRequestUrn(getRpcModuleUrn(inDataRequest.getRequestURN()));
+        return requestBuilder.build();
+    }
+    /**
      * Get the RPC value from the given data coupling.
      *
      * @param inCoupling a <code>DataCoupling</code> value
@@ -227,21 +254,93 @@ public abstract class DataFlowRpcUtil
      */
     public static DataFlowInfo getDataFlowInfo(DataFlowRpc.DataFlowInfo inDataFlowInfo)
     {
-        Date created = new Date(Timestamps.toMillis(inDataFlowInfo.getCreated()));
+        Date created = null;
+        if(inDataFlowInfo.hasCreated()) {
+            created = new Date(Timestamps.toMillis(inDataFlowInfo.getCreated()));
+        }
         DataFlowID dataFlowId = getDataFlowId(inDataFlowInfo.getFlowId());
         List<DataFlowStep> dataFlowStepBuilder = Lists.newArrayList();
         for(DataFlowRpc.DataFlowStep rpcDataFlowStep : inDataFlowInfo.getFlowStepsList()) {
             dataFlowStepBuilder.add(getDataFlowStep(rpcDataFlowStep));
         }
-        ModuleURN requesterUrn = getModuleUrn(inDataFlowInfo.getRequesterUrn());
-        Date stopped = new Date(Timestamps.toMillis(inDataFlowInfo.getStopped()));
-        ModuleURN stopperUrn = getModuleUrn(inDataFlowInfo.getStopperUrn());
+        ModuleURN requesterUrn = null;
+        if(inDataFlowInfo.hasRequesterUrn()) {
+            requesterUrn = getModuleUrn(inDataFlowInfo.getRequesterUrn());
+        }
+        Date stopped = null;
+        if(inDataFlowInfo.hasStopped()) {
+            stopped = new Date(Timestamps.toMillis(inDataFlowInfo.getStopped()));
+        }
+        ModuleURN stopperUrn = null;
+        if(inDataFlowInfo.hasStopperUrn()) {
+            stopperUrn = getModuleUrn(inDataFlowInfo.getStopperUrn());
+        }
         return new DataFlowInfo(dataFlowStepBuilder.toArray(new DataFlowStep[dataFlowStepBuilder.size()]),
                                 dataFlowId,
                                 requesterUrn,
                                 stopperUrn,
                                 created,
                                 stopped);
+    }
+    /**
+     * Get the RPC data flow info from the given value.
+     *
+     * @param inDataFlowInfo a <code>DataFlowInfo</code> value
+     * @return a <code>DataFlowRpc.DataFlowInfo</code> value
+     */
+    public static DataFlowRpc.DataFlowInfo getRpcDataFlowInfo(DataFlowInfo inDataFlowInfo)
+    {
+        DataFlowRpc.DataFlowInfo.Builder builder = DataFlowRpc.DataFlowInfo.newBuilder();
+        if(inDataFlowInfo.getCreated() != null) {
+            builder.setCreated(Timestamps.fromMillis(inDataFlowInfo.getCreated().getTime()));
+        }
+        if(inDataFlowInfo.getFlowID() != null) {
+            builder.setFlowId(getRpcDataFlowId(inDataFlowInfo.getFlowID()));
+        }
+        if(inDataFlowInfo.getFlowSteps() != null) {
+            for(DataFlowStep dataFlowStep : inDataFlowInfo.getFlowSteps()) {
+                builder.addFlowSteps(getRpcDataFlowStep(dataFlowStep));
+            }
+        }
+        if(inDataFlowInfo.getRequesterURN() != null) {
+            builder.setRequesterUrn(getRpcModuleUrn(inDataFlowInfo.getRequesterURN()));
+        }
+        if(inDataFlowInfo.getStopped() != null) {
+            builder.setStopped(Timestamps.fromMillis(inDataFlowInfo.getStopped().getTime()));
+        }
+        if(inDataFlowInfo.getStopperURN() != null) {
+            builder.setStopperUrn(getRpcModuleUrn(inDataFlowInfo.getStopperURN()));
+        }
+        return builder.build();
+    }
+    /**
+     * Get the RPC data flow step from the given value.
+     *
+     * @param inDataFlowStep a <code>DataFlowStep</code> value
+     * @return a <code>DataFlowRpc.DataFlowStep</code> value
+     */
+    public static DataFlowRpc.DataFlowStep getRpcDataFlowStep(DataFlowStep inDataFlowStep)
+    {
+        DataFlowRpc.DataFlowStep.Builder builder = DataFlowRpc.DataFlowStep.newBuilder();
+        if(inDataFlowStep.getRequest() != null) {
+            builder.setDataRequest(getRpcDataRequest(inDataFlowStep.getRequest()));
+        }
+        builder.setEmitter(inDataFlowStep.isEmitter());
+        if(inDataFlowStep.getLastEmitError() != null) {
+            builder.setLastEmitError(inDataFlowStep.getLastEmitError());
+        }
+        if(inDataFlowStep.getLastReceiveError() != null) {
+            builder.setLastReceiveError(inDataFlowStep.getLastReceiveError());
+        }
+        if(inDataFlowStep.getModuleURN() != null) {
+            builder.setModuleUrn(getRpcModuleUrn(inDataFlowStep.getModuleURN()));
+        }
+        builder.setNumEmitErrors(inDataFlowStep.getNumEmitErrors());
+        builder.setNumEmitted(inDataFlowStep.getNumEmitted());
+        builder.setNumReceived(inDataFlowStep.getNumReceived());
+        builder.setNumReceiveErrors(inDataFlowStep.getNumReceiveErrors());
+        builder.setReceiver(inDataFlowStep.isReceiver());
+        return builder.build();
     }
     /**
      * Get the data step from the given RPC value.

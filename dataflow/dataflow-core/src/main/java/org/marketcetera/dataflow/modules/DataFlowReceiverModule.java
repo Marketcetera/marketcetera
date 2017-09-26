@@ -38,7 +38,7 @@ public class DataFlowReceiverModule
                                inData);
         for(DataBroadcaster dataBroadcaster : dataBroadcasters) {
             try {
-                dataBroadcaster.receiveData(inDataSupport);
+                dataBroadcaster.receiveData(inData);
             } catch (Exception e) {
                 PlatformServices.handleException(this,
                                                  "Publishing data",
