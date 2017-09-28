@@ -8,6 +8,7 @@ import org.marketcetera.module.DataFlowInfo;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -115,16 +116,16 @@ public interface DataFlowClient
      * Get active data flows.
      *
      * @param inPageRequest a <code>PageRequest</code> value
-     * @return a <code>List&lt;DataFlowID&gt;</code> value
+     * @return a <code>CollectionPageResponse&lt;DataFlowID&gt;</code> value
      */
-    List<DataFlowID> getDataFlows(PageRequest inPageRequest);
+    CollectionPageResponse<DataFlowID> getDataFlows(PageRequest inPageRequest);
     /**
      * Get inactive data flows.
      *
      * @param inPageRequest a <code>PageRequest</code> value
-     * @return a <code>List&lt;DataFlowInfo&gt;</code> value
+     * @return a <code>CollectionPageResponse&lt;DataFlowInfo&gt;</code> value
      */
-    List<DataFlowInfo> getDataFlowHistory(PageRequest inPageRequest);
+    CollectionPageResponse<DataFlowInfo> getDataFlowHistory(PageRequest inPageRequest);
     /**
      * Get inactive data flows.
      *

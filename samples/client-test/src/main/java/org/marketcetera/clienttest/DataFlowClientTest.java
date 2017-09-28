@@ -9,6 +9,7 @@ import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientFactory;
 import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientParameters;
 import org.marketcetera.dataflow.modules.DataFlowReceiverModuleFactory;
 import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataFlowInfo;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.modules.headwater.HeadwaterModuleFactory;
@@ -152,11 +153,23 @@ public class DataFlowClientTest
             SLF4JLoggerProxy.info(this,
                                   "Retrieved data flow info: {}",
                                   dataFlowClient.getDataFlowInfo(dataFlowId));
+            // get all current data flows
+            for(DataFlowID activeDataFlowId : dataFlowClient.getDataFlows()) {
+                SLF4JLoggerProxy.info(this,
+                                      "Retrieved active data flow {}",
+                                      dataFlowClient.getDataFlowInfo(activeDataFlowId));
+            }
             // stop the data flow
             SLF4JLoggerProxy.info(this,
                                   "Canceling data flow {}",
                                   dataFlowId);
             dataFlowClient.cancelDataFlow(dataFlowId);
+            // get historical data flow info
+            for(DataFlowInfo historicalDataFlowInfo : dataFlowClient.getDataFlowHistory()) {
+                SLF4JLoggerProxy.info(this,
+                                      "Retrieved historical data flow {}",
+                                      historicalDataFlowInfo);
+            }
             // stop the started module
             dataFlowClient.stopModule(instanceUrn);
             dataFlowClient.removeDataReceiver(dataReceiver);

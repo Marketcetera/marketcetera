@@ -63,10 +63,7 @@ public abstract class PagingUtil
         inResponse.setTotalSize(inRpcPage.getTotalSize());
         List<Sort> sortOrder = Lists.newArrayList();
         for(PagingRpc.Sort rpcSort : inRpcPage.getSortOrder().getSortList()) {
-            Sort sort = new Sort();
-            sort.setDirection(rpcSort.getDirection()==PagingRpc.SortDirection.ASCENDING?SortDirection.ASCENDING:SortDirection.DESCENDING);
-            sort.setProperty(rpcSort.getProperty());
-            sortOrder.add(sort);
+            sortOrder.add(getSort(rpcSort));
         }
         inResponse.setSortOrder(sortOrder);
     }
@@ -124,14 +121,108 @@ public abstract class PagingUtil
         inResults.setTotalSize(inPageResponse.getTotalSize());
     }
     /**
+     * Get the page request from the given RPC value.
      *
-     *
-     * @param inPage
-     * @return
+     * @param inPage a <code>PagingRpc.PageRequest</code> value
+     * @return a <code>PageRequest</code> value
      */
     public static PageRequest getPageRequest(PagingRpc.PageRequest inPage)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        PageRequest pageRequest = new PageRequest();
+        pageRequest.setPageNumber(inPage.getPage());
+        pageRequest.setPageSize(inPage.getSize());
+        if(inPage.hasSortOrder()) {
+            List<Sort> sortOrder = Lists.newArrayList();
+            for(PagingRpc.Sort rpcSort : inPage.getSortOrder().getSortList()) {
+                sortOrder.add(getSort(rpcSort));
+            }
+            pageRequest.setSortOrder(sortOrder);
+        }
+        return pageRequest;
+    }
+    /**
+     * Get the sort from the given RPC value.
+     *
+     * @param inSort a <code>PagingRpc.Sort</code> value
+     * @return a <code>Sort</code> value
+     */
+    public static Sort getSort(PagingRpc.Sort inSort)
+    {
+        Sort sort = new Sort();
+        sort.setDirection(getSortDirection(inSort.getDirection()));
+        sort.setProperty(inSort.getProperty());
+        return sort;
+    }
+    /**
+     * Get the sort direction from the given RPC value.
+     *
+     * @param inDirection a <code>PagingRpc.SortDirection</code> value
+     * @return a <code>SortDirection</code> value
+     */
+    public static SortDirection getSortDirection(PagingRpc.SortDirection inDirection)
+    {
+        switch(inDirection) {
+            case ASCENDING:
+                return SortDirection.ASCENDING;
+            case DESCENDING:
+                return SortDirection.DESCENDING;
+            case UNRECOGNIZED:
+            default:
+                throw new UnsupportedOperationException(inDirection.name());
+        }
+    }
+    /**
+     * Build an RPC page request from the given value.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>PagingRpc.PageRequest</code> value
+     */
+    public static PagingRpc.PageRequest buildPageRequest(PageRequest inPageRequest)
+    {
+        PagingRpc.PageRequest.Builder builder = PagingRpc.PageRequest.newBuilder();
+        builder.setPage(inPageRequest.getPageNumber());
+        builder.setSize(inPageRequest.getPageSize());
+        if(inPageRequest.getSortOrder() != null) {
+            PagingRpc.SortOrder.Builder sortBuilder = PagingRpc.SortOrder.newBuilder();
+            for(Sort sort : inPageRequest.getSortOrder()) {
+                sortBuilder.addSort(getRpcSort(sort));
+            }
+            builder.setSortOrder(sortBuilder.build());
+        }
+        return builder.build();
+    }
+    /**
+     * Get the RPC sort from the given value.
+     *
+     * @param inSort a <code>Sort</code> value
+     * @return a <code>PagingRpc.Sort</code> value
+     */
+    public static PagingRpc.Sort getRpcSort(Sort inSort)
+    {
+        PagingRpc.Sort.Builder builder = PagingRpc.Sort.newBuilder();
+        if(inSort.getDirection() != null) {
+            builder.setDirection(getRpcSortDirection(inSort.getDirection()));
+        }
+        if(inSort.getProperty() != null) {
+            builder.setProperty(inSort.getProperty());
+        }
+        return builder.build();
+    }
+    /**
+     * Get the RPC sort direction from the given value.
+     *
+     * @param inDirection a <code>SortDirection</code> value
+     * @return a <code>PagingRpc.SortDirection</code> value
+     */
+    public static PagingRpc.SortDirection getRpcSortDirection(SortDirection inDirection)
+    {
+        switch(inDirection) {
+            case ASCENDING:
+                return PagingRpc.SortDirection.ASCENDING;
+            case DESCENDING:
+                return PagingRpc.SortDirection.DESCENDING;
+            default:
+                throw new UnsupportedOperationException(inDirection.name());
+        }
     }
 }

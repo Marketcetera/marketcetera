@@ -19,11 +19,13 @@ import org.marketcetera.module.DataFlowInfo;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy;
 import org.marketcetera.rpc.client.AbstractRpcClient;
+import org.marketcetera.rpc.paging.PagingUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
 
@@ -497,23 +499,87 @@ public class DataFlowRpcClient
     @Override
     public List<DataFlowID> getDataFlows()
     {
-        return getDataFlows(new PageRequest(0,Integer.MAX_VALUE));
+        return Lists.newArrayList(getDataFlows(new PageRequest(0,Integer.MAX_VALUE)).getElements());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlows(org.marketcetera.persist.PageRequest)
      */
     @Override
-    public List<DataFlowID> getDataFlows(PageRequest inPageRequest)
+    public CollectionPageResponse<DataFlowID> getDataFlows(PageRequest inPageRequest)
     {
-        throw new UnsupportedOperationException(); // TODO
+        return executeCall(new Callable<CollectionPageResponse<DataFlowID>>(){
+            @Override
+            public CollectionPageResponse<DataFlowID> call()
+                    throws Exception
+            {
+                DataFlowRpc.GetDataFlowsRequest.Builder requestBuilder = DataFlowRpc.GetDataFlowsRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setPageRequest(PagingUtil.buildPageRequest(inPageRequest));
+                DataFlowRpc.GetDataFlowsRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                DataFlowRpc.GetDataFlowsResponse response = getBlockingStub().getDataFlows(request);
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                CollectionPageResponse<DataFlowID> results = new CollectionPageResponse<>();
+                PagingUtil.setPageResponse(response.getPageResponse(),
+                                           results);
+                List<DataFlowID> resultList = Lists.newArrayList();
+                for(String rpcDataFlowId : response.getDataFlowIdsList()) {
+                    resultList.add(DataFlowRpcUtil.getDataFlowId(rpcDataFlowId));
+                }
+                results.setElements(resultList);
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       results);
+                return results;
+            }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlowHistory(org.marketcetera.persist.PageRequest)
      */
     @Override
-    public List<DataFlowInfo> getDataFlowHistory(PageRequest inPageRequest)
+    public CollectionPageResponse<DataFlowInfo> getDataFlowHistory(PageRequest inPageRequest)
     {
-        throw new UnsupportedOperationException(); // TODO
+        return executeCall(new Callable<CollectionPageResponse<DataFlowInfo>>(){
+            @Override
+            public CollectionPageResponse<DataFlowInfo> call()
+                    throws Exception
+            {
+                DataFlowRpc.GetDataFlowHistoryRequest.Builder requestBuilder = DataFlowRpc.GetDataFlowHistoryRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setPageRequest(PagingUtil.buildPageRequest(inPageRequest));
+                DataFlowRpc.GetDataFlowHistoryRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                DataFlowRpc.GetDataFlowHistoryResponse response = getBlockingStub().getDataFlowHistory(request);
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                CollectionPageResponse<DataFlowInfo> results = new CollectionPageResponse<>();
+                PagingUtil.setPageResponse(response.getPageResponse(),
+                                           results);
+                List<DataFlowInfo> resultList = Lists.newArrayList();
+                for(DataFlowRpc.DataFlowInfo rpcDataFlowInfo : response.getDataFlowInfosList()) {
+                    resultList.add(DataFlowRpcUtil.getDataFlowInfo(rpcDataFlowInfo));
+                }
+                results.setElements(resultList);
+                SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       results);
+                return results;
+            }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.dataflow.client.DataFlowClient#getDataFlowHistory()
@@ -521,7 +587,7 @@ public class DataFlowRpcClient
     @Override
     public List<DataFlowInfo> getDataFlowHistory()
     {
-        return getDataFlowHistory(new PageRequest(0,Integer.MAX_VALUE));
+        return Lists.newArrayList(getDataFlowHistory(new PageRequest(0,Integer.MAX_VALUE)).getElements());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getBlockingStub(io.grpc.Channel)

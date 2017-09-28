@@ -18,8 +18,11 @@ import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseUtil;
+import org.marketcetera.rpc.paging.PagingUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionHolder;
@@ -499,7 +502,41 @@ public class DataFlowRpcService<SessionClazz>
         public void getDataFlows(DataFlowRpc.GetDataFlowsRequest inRequest,
                                  StreamObserver<DataFlowRpc.GetDataFlowsResponse> inResponseObserver)
         {
-            throw new UnsupportedOperationException(); // TODO
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
+                                       "{} received get data flows request {}",
+                                       sessionHolder,
+                                       inRequest);
+                List<DataFlowID> dataFlows = moduleManager.getDataFlows(true); // TODO include this in the request
+                DataFlowRpc.GetDataFlowsResponse.Builder responseBuilder = DataFlowRpc.GetDataFlowsResponse.newBuilder();
+                for(DataFlowID dataFlowId : dataFlows) {
+                    responseBuilder.addDataFlowIds(DataFlowRpcUtil.getRpcDataFlowId(dataFlowId));
+                }
+                // TODO this doesn't respect the incoming page request!
+                CollectionPageResponse<DataFlowID> fauxPage = new CollectionPageResponse<>();
+                fauxPage.setElements(dataFlows);
+                int size = dataFlows.size();
+                fauxPage.setPageMaxSize(size);
+                fauxPage.setPageNumber(0);
+                fauxPage.setPageSize(size);
+                PageRequest incomingPageRequest = PagingUtil.getPageRequest(inRequest.getPageRequest());
+                fauxPage.setSortOrder(incomingPageRequest.getSortOrder());
+                fauxPage.setTotalPages(1);
+                fauxPage.setTotalSize(size);
+                responseBuilder.setPageResponse(PagingUtil.getPageResponse(fauxPage));
+                DataFlowRpc.GetDataFlowsResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
+                                       "{} returning {}",
+                                       sessionHolder,
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(DataFlowRpcService.this,
+                                      e);
+                inResponseObserver.onError(e);
+            }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.dataflow.rpc.DataFlowRpcServiceGrpc.DataFlowRpcServiceImplBase#getDataFlowHistory(org.marketcetera.dataflow.rpc.DataFlowRpc.GetDataFlowHistoryRequest, io.grpc.stub.StreamObserver)
@@ -508,7 +545,41 @@ public class DataFlowRpcService<SessionClazz>
         public void getDataFlowHistory(DataFlowRpc.GetDataFlowHistoryRequest inRequest,
                                        StreamObserver<DataFlowRpc.GetDataFlowHistoryResponse> inResponseObserver)
         {
-            throw new UnsupportedOperationException(); // TODO
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
+                                       "{} received get data flow history request {}",
+                                       sessionHolder,
+                                       inRequest);
+                List<DataFlowInfo> dataFlowHistory = moduleManager.getDataFlowHistory();
+                DataFlowRpc.GetDataFlowHistoryResponse.Builder responseBuilder = DataFlowRpc.GetDataFlowHistoryResponse.newBuilder();
+                for(DataFlowInfo dataFlowInfo : dataFlowHistory) {
+                    responseBuilder.addDataFlowInfos(DataFlowRpcUtil.getRpcDataFlowInfo(dataFlowInfo));
+                }
+                // TODO this doesn't respect the incoming page request!
+                CollectionPageResponse<DataFlowInfo> fauxPage = new CollectionPageResponse<>();
+                fauxPage.setElements(dataFlowHistory);
+                int size = dataFlowHistory.size();
+                fauxPage.setPageMaxSize(size);
+                fauxPage.setPageNumber(0);
+                fauxPage.setPageSize(size);
+                PageRequest incomingPageRequest = PagingUtil.getPageRequest(inRequest.getPageRequest());
+                fauxPage.setSortOrder(incomingPageRequest.getSortOrder());
+                fauxPage.setTotalPages(1);
+                fauxPage.setTotalSize(size);
+                responseBuilder.setPageResponse(PagingUtil.getPageResponse(fauxPage));
+                DataFlowRpc.GetDataFlowHistoryResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(DataFlowRpcService.this,
+                                       "{} returning {}",
+                                       sessionHolder,
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(DataFlowRpcService.this,
+                                      e);
+                inResponseObserver.onError(e);
+            }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.dataflow.rpc.DataFlowRpcServiceGrpc.DataFlowRpcServiceImplBase#addDataReceiver(org.marketcetera.dataflow.rpc.DataFlowRpc.AddDataReceiverRequest, io.grpc.stub.StreamObserver)
