@@ -28,7 +28,15 @@ import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.dnd.Clipboard;
@@ -39,10 +47,24 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.Messages;
@@ -53,13 +75,32 @@ import org.marketcetera.photon.marketdata.IFeedStatusChangedListener;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.ui.TextContributionItem;
-import org.marketcetera.trade.*;
+import org.marketcetera.symbol.PatternSymbolResolver;
+import org.marketcetera.symbol.SymbolResolver;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
-import quickfix.field.*;
+import quickfix.field.BidPx;
+import quickfix.field.BidSize;
+import quickfix.field.HighPx;
+import quickfix.field.LastPx;
+import quickfix.field.LastQty;
+import quickfix.field.LowPx;
+import quickfix.field.OfferPx;
+import quickfix.field.OfferSize;
+import quickfix.field.OpenClose;
+import quickfix.field.PrevClosePx;
+import quickfix.field.Symbol;
+import quickfix.field.TradeVolume;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -259,7 +300,26 @@ public final class MarketDataView
         mViewer.setUseHashlookup(true);
         mItems = WritableList.withElementType(MarketDataViewItem.class);
         mViewer.setInput(mItems);
-        if(mViewState != null ) {
+        if(mViewState == null ) {
+            ScopedPreferenceStore preferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
+            String instrumentList = StringUtils.trimToNull(preferenceStore.getString(preferenceSymbolKey));
+            SymbolResolver symbolResolver = new PatternSymbolResolver();
+            if(instrumentList != null) {
+                for(String symbol : instrumentList.split(",")) {
+                    symbol = StringUtils.trimToNull(symbol);
+                    if(symbol != null) {
+                        Instrument instrument = symbolResolver.resolveSymbol(symbol);
+                        if(instrument != null) {
+                            instrumentsToAdd.add(instrument);
+                        }
+                    }
+                }
+                addInstrumentJobToken = addInstrumentService.scheduleAtFixedRate(new AddInstrumentAgent(),
+                                                                                 1000,
+                                                                                 1000,
+                                                                                 TimeUnit.MILLISECONDS);
+            }
+        } else {
             IMemento[] instrumentList = mViewState.getChildren(INSTRUMENT_LIST);
             if(instrumentList != null) {
                 for(IMemento symbolMemo : instrumentList) {
@@ -935,4 +995,8 @@ public final class MarketDataView
     public static enum MD_TABLE_COLUMNS {
         MD_SYMBOL, LAST_PX, LAST_SZ, BID_SZ, BID_PX, OFFER_PX, OFFER_SZ, PREV_CLOSE, OPEN_PX, HIGH_PX, LOW_PX, TRD_VOLUME,
     }
+    /**
+     * indicates the initial symbol list to use
+     */
+    private static final String preferenceSymbolKey = "org.marketcetera.photon.preferences.MarketDataSymbols";
 }
