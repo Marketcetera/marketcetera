@@ -24,43 +24,43 @@ import com.google.common.collect.Lists;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public final class DeleteHandler extends SafeHandler {
-
+public final class DeleteHandler
+        extends SafeHandler
+{
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.commons.ui.workbench.SafeHandler#executeSafely(org.eclipse.core.commands.ExecutionEvent)
+     */
     @Override
-    protected void executeSafely(ExecutionEvent event)
-            throws ExecutionException {
-        IStructuredSelection selection = (IStructuredSelection) HandlerUtil
-                .getCurrentSelectionChecked(event);
+    protected void executeSafely(ExecutionEvent inEvent)
+            throws ExecutionException
+    {
+        IStructuredSelection selection = (IStructuredSelection)HandlerUtil.getCurrentSelectionChecked(inEvent);
         List<StrategyAgentEngine> engines = Lists.newArrayList();
         boolean someConnected = false;
-        for (Object item : selection.toList()) {
+        for(Object item : selection.toList()) {
             StrategyAgentEngine engine = (StrategyAgentEngine) item;
             engines.add(engine);
-            if (engine.getConnectionState() == ConnectionState.CONNECTED) {
+            if(engine.getConnectionState() == ConnectionState.CONNECTED) {
                 someConnected = true;
             }
         }
         String confirmationMessage;
-        if (engines.size() == 1) {
-            confirmationMessage = Messages.DELETE_HANDLER_CONFIRMATION_SINGLE
-                    .getText(engines.get(0).getName());
+        if(engines.size() == 1) {
+            confirmationMessage = Messages.DELETE_HANDLER_CONFIRMATION_SINGLE.getText(engines.get(0).getName());
         } else {
-            confirmationMessage = Messages.DELETE_HANDLER_CONFIRMATION_MULTIPLE
-                    .getText();
+            confirmationMessage = Messages.DELETE_HANDLER_CONFIRMATION_MULTIPLE.getText();
         }
-        if (!MessageDialog.openConfirm(
-                HandlerUtil.getActiveShellChecked(event),
-                Messages.DELETE_HANDLER_CONFIRMATION__TITLE.getText(),
-                confirmationMessage)) {
+        if(!MessageDialog.openConfirm(HandlerUtil.getActiveShellChecked(inEvent),
+                                      Messages.DELETE_HANDLER_CONFIRMATION__TITLE.getText(),
+                                      confirmationMessage)) {
             return;
         }
-        if (someConnected) {
-            new DisconnectHandler().execute(event);
+        if(someConnected) {
+            new DisconnectHandler().execute(inEvent);
         }
-        IStrategyEngines part = (IStrategyEngines) HandlerUtil
-                .getActivePartChecked(event);
-        for (StrategyAgentEngine engine : engines) {
-            if (engine.getConnectionState() == ConnectionState.CONNECTED) {
+        IStrategyEngines part = (IStrategyEngines)HandlerUtil.getActivePartChecked(inEvent);
+        for(StrategyAgentEngine engine : engines) {
+            if(engine.getConnectionState() == ConnectionState.CONNECTED) {
                 // skip, disconnect must have failed
             } else {
                 part.removeEngine(engine);

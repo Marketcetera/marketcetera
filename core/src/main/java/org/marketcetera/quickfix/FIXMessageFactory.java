@@ -30,6 +30,7 @@ import quickfix.field.ClOrdID;
 import quickfix.field.CumQty;
 import quickfix.field.CxlRejReason;
 import quickfix.field.CxlRejResponseTo;
+import quickfix.field.DefaultApplVerID;
 import quickfix.field.EndSeqNo;
 import quickfix.field.ExecID;
 import quickfix.field.HandlInst;
@@ -69,8 +70,8 @@ import quickfix.field.TransactTime;
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class FIXMessageFactory {
-
+public class FIXMessageFactory
+{
     private MessageFactory msgFactory;
     private FIXMessageAugmentor msgAugmentor;
     private String beginString;
@@ -792,7 +793,18 @@ public class FIXMessageFactory {
             msg.setField(new TransactTime(new Date())); //non-i18n
         }
     }
-
+    /**
+     * Add the default application version if necessary.
+     *
+     * @param inMessage a <code>Message</code> value
+     */
+    public void addDefaultApplicationVersion(Message inMessage)
+    {
+        FIXVersion fixVersion = getFixVersion();
+        if(fixVersion.isFixT()) {
+            inMessage.getHeader().setField(new DefaultApplVerID(fixVersion.getApplicationVersion()));
+        }
+    }
 
 	public Message newResendRequest(BigInteger beginSeqNo, BigInteger endSeqNo) {
 		Message rr = msgFactory.create(beginString, MsgType.RESEND_REQUEST);
@@ -846,6 +858,7 @@ public class FIXMessageFactory {
             (beginString,MsgType.ORDER_CANCEL_REPLACE_REQUEST);
         addTransactionTimeIfNeeded(msg);
         addHandlingInst(msg);
+        addDefaultApplicationVersion(msg);
         return msg;
     }
 
@@ -854,23 +867,29 @@ public class FIXMessageFactory {
         Message msg=msgFactory.create
             (beginString,MsgType.ORDER_CANCEL_REQUEST);
         addTransactionTimeIfNeeded(msg);
+        addDefaultApplicationVersion(msg);
         return msg;
     }
-
+    /**
+     * Create a new empty order single.
+     *
+     * @return a <code>Message</code> value
+     */
     public Message newOrderEmpty()
     {
-        Message msg=msgFactory.create
-            (beginString,MsgType.ORDER_SINGLE);
+        Message msg = msgFactory.create(beginString,
+                                        MsgType.ORDER_SINGLE);
         addHandlingInst(msg);
         addTransactionTimeIfNeeded(msg);
+        addDefaultApplicationVersion(msg);
         return msg;
     }
-
     public Message newOrderCancelRejectEmpty()
     {
         Message msg = msgFactory.create
             (beginString,MsgType.ORDER_CANCEL_REJECT);
         addTransactionTimeIfNeeded(msg);
+        addDefaultApplicationVersion(msg);
         return msg;
     }
 
@@ -879,6 +898,7 @@ public class FIXMessageFactory {
         Message msg = msgFactory.create
             (beginString,MsgType.EXECUTION_REPORT);
         addTransactionTimeIfNeeded(msg);
+        addDefaultApplicationVersion(msg);
         return msg;
     }
     /**
@@ -969,6 +989,15 @@ public class FIXMessageFactory {
         addTransactionTimeIfNeeded(aMessage);
         msgAugmentor.newOrderSingleAugment(aMessage);
         return aMessage;
+    }
+    /**
+     * Get the FIxVersion value.
+     *
+     * @return a <code>FIXVersion</code> value
+     */
+    private FIXVersion getFixVersion()
+    {
+        return FIXVersion.getFIXVersion(beginString);
     }
     /**
      * value used to indicate top of book only

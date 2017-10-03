@@ -56,7 +56,7 @@ public class StrategyEnginesView extends CommonNavigator implements
     /**
      * Tracks the model.
      */
-    private final ServiceTracker mEnginesTracker;
+    private final ServiceTracker<?,?> mEnginesTracker;
 
     /**
      * Input to the common viewer, confined to the UI thread.
