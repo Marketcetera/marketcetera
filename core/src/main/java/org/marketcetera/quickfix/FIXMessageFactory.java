@@ -74,6 +74,10 @@ public class FIXMessageFactory
     private MessageFactory msgFactory;
     private FIXMessageAugmentor msgAugmentor;
     private String beginString;
+    /**
+     * FIX version, may be <code>null</code> - do not initialize in constructor!
+     */
+    private volatile FIXVersion fixVersion;
     /*package */static final char SOH_REPLACE_CHAR = '|';
     private static final char SOH_CHAR = '\001';
     /**
@@ -98,12 +102,14 @@ public class FIXMessageFactory
     public Message newOrderCancelReject()
     {
         Message msg = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REJECT);
+        addApplicationVersion(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
     }
 
     public Message newCancelReplaceShares(String orderID, String origOrderID, BigDecimal quantity) {
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
+        addApplicationVersion(aMessage);
         addTransactionTimeIfNeeded(aMessage);
         aMessage.setField(new ClOrdID(orderID));
         aMessage.setField(new OrigClOrdID(origOrderID));
@@ -122,6 +128,7 @@ public class FIXMessageFactory
             BigDecimal price
     ) {
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
+        addApplicationVersion(aMessage);
         addTransactionTimeIfNeeded(aMessage);
         aMessage.setField(new ClOrdID(orderID));
         aMessage.setField(new OrigClOrdID(origOrderID));
@@ -168,6 +175,7 @@ public class FIXMessageFactory
     {
         Message cancelMessage = msgFactory.create(beginString,
                                                   inMsgType);
+        addApplicationVersion(cancelMessage);
         cancelMessage.setField(new OrigClOrdID(inOldMessage.getString(ClOrdID.FIELD)));
         fillFieldsFromExistingMessage(inOldMessage, inOnlyCopyRequiredFields, cancelMessage);
         if (inOldMessage.isSetField(OrderQty.FIELD)){
@@ -202,6 +210,7 @@ public class FIXMessageFactory
     {
         Message snapshot = msgFactory.create(beginString,
                                              MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH);
+        addApplicationVersion(snapshot);
         DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(snapshot);
         InstrumentToMessage<?> instrumentFunction = InstrumentToMessage.SELECTOR.forInstrument(inInstrument);
         instrumentFunction.set(inInstrument,
@@ -223,6 +232,7 @@ public class FIXMessageFactory
     {
         Message request = msgFactory.create(beginString,
                                             MsgType.MARKET_DATA_INCREMENTAL_REFRESH);
+        addApplicationVersion(request);
         request.setField(new quickfix.field.MDReqID(inRequestId));
         return request;
     }
@@ -289,6 +299,7 @@ public class FIXMessageFactory
             throws FieldNotFound
     {
         Message cancelRequest = inOriginalMessage;
+        addApplicationVersion(cancelRequest);
         cancelRequest.setField(new quickfix.field.SubscriptionRequestType(quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
         return cancelRequest;
     }
@@ -314,6 +325,7 @@ public class FIXMessageFactory
         // TODO add support for content in non 4.2 if dictionary supports it (imbalance, eg)
         Message request = msgFactory.create(beginString,
                                             MsgType.MARKET_DATA_REQUEST);
+        addApplicationVersion(request);
         DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(request);
         request.setField(new MDReqID(inRequestId));
         int contentCount = 0;
@@ -487,6 +499,7 @@ public class FIXMessageFactory
     {
         Message reject = msgFactory.create(beginString,
                                            quickfix.field.MsgType.MARKET_DATA_REQUEST_REJECT);
+        addApplicationVersion(reject);
         reject.setField(new quickfix.field.MDReqID(inRequestId));
         if(inRejectReason != null) {
             reject.setField(new quickfix.field.MDReqRejReason(inRejectReason));
@@ -509,8 +522,9 @@ public class FIXMessageFactory
            thisVersion.equals(FIXVersion.FIX44)) {
             Message request = msgFactory.create(beginString, 
                                                 MsgType.SECURITY_LIST_REQUEST);
+            addApplicationVersion(request);
             request.setField(new SecurityReqID(inReqID));
-            request.setField(new SecurityListRequestType(SecurityListRequestType.SYMBOL));            
+            request.setField(new SecurityListRequestType(SecurityListRequestType.SYMBOL));
             return request;
         }
         throw new IllegalStateException();
@@ -528,8 +542,9 @@ public class FIXMessageFactory
            thisVersion.equals(FIXVersion.FIX44)) {
             Message request = msgFactory.create(beginString, 
                                                 MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
+            addApplicationVersion(request);
             request.setField(new SecurityReqID(inReqID));
-            request.setField(new SecurityListRequestType(SecurityListRequestType.SYMBOL));            
+            request.setField(new SecurityListRequestType(SecurityListRequestType.SYMBOL));
             return request;
         }
         throw new IllegalStateException();
@@ -615,8 +630,8 @@ public class FIXMessageFactory
             Instrument instrument,
             String counterpartyOrderID) {
         Message aMessage = msgFactory.create(beginString,MsgType.ORDER_CANCEL_REQUEST);
-
         addTransactionTimeIfNeeded(aMessage);
+        addApplicationVersion(aMessage);
         aMessage.setField(new ClOrdID(clOrderId));
         aMessage.setField(new OrigClOrdID(origClOrderID));
         aMessage.setField(new Side(side));
@@ -655,6 +670,7 @@ public class FIXMessageFactory
             String inText) throws FieldNotFound {
         Message aMessage = msgFactory.create(beginString, MsgType.EXECUTION_REPORT);
         addTransactionTimeIfNeeded(aMessage);
+        addApplicationVersion(aMessage);
         if (orderID != null) aMessage.setField(new OrderID(orderID));
         aMessage.setField(new ClOrdID(clOrderID));
         aMessage.setField(new ExecID(execID));
@@ -721,6 +737,7 @@ public class FIXMessageFactory
         bmReject.setField(new RefMsgType(refMsgType));
         bmReject.setField(new BusinessRejectReason(rejReason));
         bmReject.setField(new Text(textReason));
+        addApplicationVersion(bmReject);
         return bmReject;
     }
 
@@ -740,7 +757,7 @@ public class FIXMessageFactory
         if(cxlRejReason!=null) {
             reject.setField(cxlRejReason);
         }
-
+        addApplicationVersion(reject);
         return reject;
     }
 
@@ -749,6 +766,7 @@ public class FIXMessageFactory
      */
     public Message newBasicOrder() {
         Message msg =  msgFactory.create(beginString, MsgType.ORDER_SINGLE);
+        addApplicationVersion(msg);
         addHandlingInst(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
@@ -765,6 +783,7 @@ public class FIXMessageFactory
     {
         Message msg = msgFactory.create(beginString, msgType);
         addTransactionTimeIfNeeded(msg);
+        addApplicationVersion(msg);
         return msg;
     }
 
@@ -792,43 +811,55 @@ public class FIXMessageFactory
             msg.setField(new TransactTime(new Date())); //non-i18n
         }
     }
-
-	public Message newResendRequest(BigInteger beginSeqNo, BigInteger endSeqNo) {
-		Message rr = msgFactory.create(beginString, MsgType.RESEND_REQUEST);
-		if (beginSeqNo == null){
-			// from 0
-			rr.setField(new BeginSeqNo(0));
-		} else {
-			rr.setField(new StringField(BeginSeqNo.FIELD,beginSeqNo.toString()));//i18n_number
-		}
-		if (endSeqNo == null){
-			// to infinity 
-			rr.setField(new EndSeqNo(0));
-		} else {
-			rr.setField(new StringField(EndSeqNo.FIELD,endSeqNo.toString()));//i18n_number
-		}
-		return rr;
-	}
-
-    /** Creates a new session-level reject with the given reason to return
-     * to the sender of the incomingMsg
-     * @param incomingMsg   Message that generated this session-level reject
-     * @param rejectReason  Reason for reject
+    /**
+     * Create a new resend request.
+     *
+     * @param inBeginSeqNo a <code>BigInteger</code> value
+     * @param inEndSeqNo a <code>BigInteger</code> value
+     * @return a <code>Message</code> value
+     */
+    public Message newResendRequest(BigInteger inBeginSeqNo,
+                                    BigInteger inEndSeqNo)
+    {
+        Message rr = msgFactory.create(beginString,
+                                       MsgType.RESEND_REQUEST);
+        addApplicationVersion(rr);
+        if (inBeginSeqNo == null){
+            // from 0
+            rr.setField(new BeginSeqNo(0));
+        } else {
+            rr.setField(new StringField(BeginSeqNo.FIELD,inBeginSeqNo.toString()));//i18n_number
+        }
+        if (inEndSeqNo == null){
+            // to infinity 
+            rr.setField(new EndSeqNo(0));
+        } else {
+            rr.setField(new StringField(EndSeqNo.FIELD,inEndSeqNo.toString()));//i18n_number
+        }
+        return rr;
+    }
+    /**
+     * Create a new session-level reject with the given reason to return to the sender of the incomingMsg.
+     * 
+     * @param inIncomingMsg   Message that generated this session-level reject
+     * @param inRejectReason  Reason for reject
      * @return Session-level reject message to send out
      * @throws FieldNotFound
      * @throws SessionNotFound
      */
-    public Message createSessionReject(Message incomingMsg, int rejectReason) throws FieldNotFound,
-            SessionNotFound {
+    public Message createSessionReject(Message inIncomingMsg,
+                                       int inRejectReason)
+            throws FieldNotFound,SessionNotFound
+    {
         Message reply = createMessage(MsgType.REJECT);
-        reverseRoute(incomingMsg, reply);
-        String refSeqNum = incomingMsg.getHeader().getString(MsgSeqNum.FIELD);
+        addApplicationVersion(reply);
+        reverseRoute(inIncomingMsg, reply);
+        String refSeqNum = inIncomingMsg.getHeader().getString(MsgSeqNum.FIELD);
         reply.setString(RefSeqNum.FIELD, refSeqNum);
-        reply.setString(RefMsgType.FIELD, incomingMsg.getHeader().getString(MsgType.FIELD));
-        reply.setInt(SessionRejectReason.FIELD, rejectReason);
+        reply.setString(RefMsgType.FIELD, inIncomingMsg.getHeader().getString(MsgType.FIELD));
+        reply.setInt(SessionRejectReason.FIELD, inRejectReason);
         return reply;
     }
-
     /** Reverses the sender/target compIDs from reply and sets them in the outgoing outgoingMsg */
     public void reverseRoute(Message outgoingMsg, Message reply) throws FieldNotFound {
         reply.getHeader().setString(SenderCompID.FIELD,
@@ -836,22 +867,30 @@ public class FIXMessageFactory
         reply.getHeader().setString(TargetCompID.FIELD,
                 outgoingMsg.getHeader().getString(SenderCompID.FIELD));
     }
-
-
-
+    /**
+     * Create a new empty cancel replace.
+     *
+     * @return a <code>Message</code> value
+     */
     public Message newCancelReplaceEmpty()
     {
-        Message msg=msgFactory.create
-            (beginString,MsgType.ORDER_CANCEL_REPLACE_REQUEST);
+        Message msg = msgFactory.create(beginString,
+                                        MsgType.ORDER_CANCEL_REPLACE_REQUEST);
+        addApplicationVersion(msg);
         addTransactionTimeIfNeeded(msg);
         addHandlingInst(msg);
         return msg;
     }
-
+    /**
+     * Create a new empty cancel.
+     *
+     * @return a <code>Message</code> value
+     */
     public Message newCancelEmpty()
     {
-        Message msg=msgFactory.create
-            (beginString,MsgType.ORDER_CANCEL_REQUEST);
+        Message msg = msgFactory.create(beginString,
+                                        MsgType.ORDER_CANCEL_REQUEST);
+        addApplicationVersion(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
     }
@@ -864,22 +903,34 @@ public class FIXMessageFactory
     {
         Message msg = msgFactory.create(beginString,
                                         MsgType.ORDER_SINGLE);
+        addApplicationVersion(msg);
         addHandlingInst(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
     }
+    /**
+     * Create an empty order cancel reject.
+     *
+     * @return a <code>Message</code> value
+     */
     public Message newOrderCancelRejectEmpty()
     {
-        Message msg = msgFactory.create
-            (beginString,MsgType.ORDER_CANCEL_REJECT);
+        Message msg = msgFactory.create(beginString,
+                                        MsgType.ORDER_CANCEL_REJECT);
+        addApplicationVersion(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
     }
-
+    /**
+     * Create an empty execution report.
+     *
+     * @return a <code>Message</code> value
+     */
     public Message newExecutionReportEmpty()
     {
-        Message msg = msgFactory.create
-            (beginString,MsgType.EXECUTION_REPORT);
+        Message msg = msgFactory.create(beginString,
+                                        MsgType.EXECUTION_REPORT);
+        addApplicationVersion(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
     }
@@ -959,6 +1010,7 @@ public class FIXMessageFactory
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_SINGLE);
         aMessage.setField(new ClOrdID(clOrderID));
         addHandlingInst(aMessage);
+        addApplicationVersion(aMessage);
         InstrumentToMessage.SELECTOR.forInstrument(instrument).
                 set(instrument, beginString, aMessage);
         aMessage.setField(new Side(side));
@@ -971,6 +1023,31 @@ public class FIXMessageFactory
         addTransactionTimeIfNeeded(aMessage);
         msgAugmentor.newOrderSingleAugment(aMessage);
         return aMessage;
+    }
+    /**
+     * Add the application version to the given message, if applicable.
+     *
+     * @param inMessage a <code>Message</code> value
+     */
+    private void addApplicationVersion(Message inMessage)
+    {
+        FIXVersion fixVersion = getFixVersion();
+        if(!fixVersion.isFixT()) {
+            return;
+        }
+        inMessage.getHeader().setField(new quickfix.field.ApplVerID(fixVersion.getApplicationVersion()));
+    }
+    /**
+     * Get the underlying FIX version.
+     *
+     * @return a <code>FIXVersion</code> value
+     */
+    private FIXVersion getFixVersion()
+    {
+        if(fixVersion == null) {
+            fixVersion = FIXVersion.getFIXVersion(beginString);
+        }
+        return fixVersion;
     }
     /**
      * value used to indicate top of book only

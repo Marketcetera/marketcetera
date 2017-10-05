@@ -122,6 +122,9 @@ public class EventFromFixGenerator
                                             exchange);
             }
             char entryType = mdEntry.getChar(quickfix.field.MDEntryType.FIELD);
+            if(entryType == quickfix.field.MDEntryType.EMPTY_BOOK) {
+                continue;
+            }
             QuoteAction quoteAction = QuoteAction.ADD;
             if(!inIsSnapshot) {
                 char updateAction = mdEntry.getChar(quickfix.field.MDUpdateAction.FIELD);
