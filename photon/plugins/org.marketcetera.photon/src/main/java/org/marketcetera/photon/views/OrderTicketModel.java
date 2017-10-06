@@ -326,9 +326,10 @@ public abstract class OrderTicketModel {
         NewOrReplaceOrder currentOrder = getOrderObservable().getTypedValue();
         OrderSingle order = Factory.getInstance().createOrderSingle();
         order.setTimeInForce(org.marketcetera.trade.TimeInForce.Day);
-        if (currentOrder != null) {
+        if(currentOrder != null) {
             order.setAccount(currentOrder.getAccount());
-            order.setBrokerAlgo(currentOrder.getBrokerAlgo());
+            // do not set algo, it's too easy to accidentally fire off another algo order
+            order.setBrokerAlgo(null);
             order.setBrokerID(currentOrder.getBrokerID());
             order.setCustomFields(currentOrder.getCustomFields());
             order.setDisplayQuantity(currentOrder.getDisplayQuantity());
