@@ -5,10 +5,10 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>samples</artifactId>
-    <version>3.0.11</version>
+    <version>3.0.12</version>
   </parent>
   <artifactId>client-test</artifactId>
-  <version>3.0.11</version>
+  <version>3.0.12</version>
   <name>Test MATP Client Applications</name>
   <url>http://maven.apache.org</url>
   <properties>

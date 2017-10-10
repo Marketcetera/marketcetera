@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.marketcetera.core;singleton:=true
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Name: Marketcetera Core Library
-Bundle-Version: 3.0.11
+Bundle-Version: 3.0.12
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.marketcetera.util;visibility:=reexport,
  org.marketcetera.util-test;resolution:=optional,

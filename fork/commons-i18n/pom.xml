@@ -4,10 +4,10 @@
   <parent>
     <groupId>org.marketcetera.fork</groupId>
     <artifactId>fork-parent</artifactId>
-    <version>3.0.11</version>
+    <version>3.0.12</version>
   </parent>
   <artifactId>commons-i18n</artifactId>
-  <version>3.0.11</version>
+  <version>3.0.12</version>
   <name>Apache Commons i18n (Sandbox)</name>
   <description>Internationalization package</description>
   <url>http://commons.apache.org/sandbox/i18n/</url>
