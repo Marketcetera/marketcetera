@@ -40,7 +40,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>admin-db</artifactId>
+      <artifactId>admin-server</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

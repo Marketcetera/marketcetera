@@ -79,7 +79,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>admin-db</artifactId>
+      <artifactId>admin-server</artifactId>
       <scope>test</scope>
     </dependency>
     <!-- spring test -->

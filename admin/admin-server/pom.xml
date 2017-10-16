@@ -9,7 +9,7 @@
     <version>3.1.0-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
-  <artifactId>admin-db</artifactId>
+  <artifactId>admin-server</artifactId>
   <version>3.1.0-SNAPSHOT</version>
   <name>Admin DB</name>
   <url>http://maven.apache.org</url>
