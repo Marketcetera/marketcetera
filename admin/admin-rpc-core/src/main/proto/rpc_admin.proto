@@ -1,0 +1,230 @@
+syntax = "proto3";
+option java_generic_services = true;
+option java_package = "com.marketcetera.admin";
+option java_outer_classname = "AdminRpc";
+import "rpc_base.proto";
+import "rpc_paging.proto";
+
+message PermissionsForUsernameRequest {
+    string sessionId = 1;
+}
+
+message PermissionsForUsernameResponse {
+    string username = 1;
+    repeated string permissions = 2;
+}
+
+//message User {
+//    string name = 1;
+//    string description = 2;
+//    bool active = 3;
+//}
+
+message CreateUserRequest {
+    string sessionId = 1;
+    User user = 2;
+    string password = 3;
+}
+
+message CreateUserResponse {
+    User user = 1;
+}
+
+message ReadUsersRequest {
+    string sessionId = 1;
+    PageRequest page = 2;
+}
+
+message ReadUsersResponse {
+    PageResponse page = 1;
+    repeated User user = 2;
+}
+
+message UpdateUserRequest {
+    string sessionId = 1;
+    string username = 2;
+    User user = 3;
+}
+
+message UpdateUserResponse {
+    User user = 1;
+}
+
+message DeleteUserRequest {
+    string sessionId = 1;
+    string username = 2;
+}
+
+message DeleteUserResponse {
+}
+
+message DeactivateUserRequest {
+    string sessionId = 1;
+    string username = 2;
+}
+
+message DeactivateUserResponse {
+}
+
+message ChangeUserPasswordRequest {
+    string sessionId = 1;
+    string username = 2;
+    string oldPassword = 3;
+    string newPassword = 4;
+}
+
+message ChangeUserPasswordResponse {
+}
+
+message Permission {
+    string name = 1;
+    string description = 2;
+}
+
+message CreatePermissionRequest {
+    string sessionId = 1;
+    Permission permission = 2;
+}
+
+message CreatePermissionResponse {
+    Permission permission = 1;
+}
+
+message ReadPermissionsRequest {
+    string sessionId = 1;
+    PageRequest page = 2;
+}
+
+message ReadPermissionsResponse {
+    PageResponse page = 1;
+    repeated Permission permission = 2;
+}
+
+message UpdatePermissionRequest {
+    string sessionId = 1;
+    string permissionName = 2;
+    Permission permission = 3;
+}
+
+message UpdatePermissionResponse {
+    Permission permission = 1;
+}
+
+message DeletePermissionRequest {
+    string sessionId = 1;
+    string permissionName = 2;
+}
+
+message DeletePermissionResponse {
+}
+
+message Role {
+    string name = 1;
+    string description = 2;
+    repeated User user = 3;
+    repeated Permission permission = 4;
+}
+
+message CreateRoleRequest {
+    string sessionId = 1;
+    Role role = 2;
+    repeated string username = 3;
+    repeated string permissionName = 4;
+}
+
+message CreateRoleResponse {
+    Role role = 1;
+}
+
+message ReadRolesRequest {
+    string sessionId = 1;
+    PageRequest page = 2;
+}
+
+message ReadRolesResponse {
+    PageResponse page = 1;
+    repeated Role role = 2;
+}
+
+message UpdateRoleRequest {
+    string sessionId = 1;
+    string roleName = 2;
+    Role role = 3;
+    repeated string username = 4;
+    repeated string permissionName = 5;
+}
+
+message UpdateRoleResponse {
+    Role role = 1;
+}
+
+message DeleteRoleRequest {
+    string sessionId = 1;
+    string roleName = 2;
+}
+
+message DeleteRoleResponse {
+}
+
+message InstanceDataRequest {
+    string sessionId = 1;
+    uint32 affinity = 2;
+}
+
+message InstanceDataResponse {
+    InstanceData instanceData = 1;
+}
+
+message InstanceData {
+    string hostname = 2;
+    uint32 port = 3;
+}
+
+message UserAttribute {
+    User user = 1;
+    string attributeType = 2;
+    string attribute = 3;
+}
+
+message ReadUserAttributeRequest {
+    string sessionId = 1;
+    string username = 2;
+    string attributeType = 3;
+}
+
+message ReadUserAttributeResponse {
+    UserAttribute userAttribute = 1;
+}
+
+message WriteUserAttributeRequest {
+    string sessionId = 1;
+    string username = 2;
+    string attributeType = 3;
+    string attribute = 4;
+}
+
+message WriteUserAttributeResponse {
+}
+
+service AdminRpcService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc getPermissionsForUsername(PermissionsForUsernameRequest) returns (PermissionsForUsernameResponse);
+    rpc createUser(CreateUserRequest) returns (CreateUserResponse);
+    rpc readUsers(ReadUsersRequest) returns (ReadUsersResponse);
+    rpc updateUser(UpdateUserRequest) returns (UpdateUserResponse);
+    rpc deleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+    rpc deactivateUser(DeactivateUserRequest) returns (DeactivateUserResponse);
+    rpc changeUserPassword(ChangeUserPasswordRequest) returns (ChangeUserPasswordResponse);
+    rpc createPermission(CreatePermissionRequest) returns (CreatePermissionResponse);
+    rpc readPermissions(ReadPermissionsRequest) returns (ReadPermissionsResponse);
+    rpc updatePermission(UpdatePermissionRequest) returns (UpdatePermissionResponse);
+    rpc deletePermission(DeletePermissionRequest) returns (DeletePermissionResponse);
+    rpc createRole(CreateRoleRequest) returns (CreateRoleResponse);
+    rpc readRoles(ReadRolesRequest) returns (ReadRolesResponse);
+    rpc updateRole(UpdateRoleRequest) returns (UpdateRoleResponse);
+    rpc deleteRole(DeleteRoleRequest) returns (DeleteRoleResponse);
+    rpc readUserAttribute(ReadUserAttributeRequest) returns (ReadUserAttributeResponse);
+    rpc writeUserAttribute(WriteUserAttributeRequest) returns (WriteUserAttributeResponse);
+}

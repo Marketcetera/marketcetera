@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.marketcetera</groupId>
@@ -11,7 +13,10 @@
   <name>Admin Parent</name>
   <modules>
     <module>admin-api</module>
-    <module>admin-db</module>
     <module>admin-core</module>
+    <module>admin-db</module>
+    <module>admin-rpc-client</module>
+    <module>admin-rpc-core</module>
+    <module>admin-rpc-server</module>
   </modules>
 </project>
