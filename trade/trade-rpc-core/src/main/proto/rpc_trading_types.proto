@@ -3,6 +3,7 @@ option java_generic_services = true;
 option java_package = "org.marketcetera.trading.rpc";
 option java_outer_classname = "TradingTypesRpc";
 import "rpc_base.proto";
+import "rpc_admin.proto";
 import "google/protobuf/timestamp.proto";
 
 enum OrderType {

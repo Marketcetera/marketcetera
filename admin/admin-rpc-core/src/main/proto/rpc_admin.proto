@@ -14,11 +14,11 @@ message PermissionsForUsernameResponse {
     repeated string permissions = 2;
 }
 
-//message User {
-//    string name = 1;
-//    string description = 2;
-//    bool active = 3;
-//}
+message User {
+    string name = 1;
+    string description = 2;
+    bool active = 3;
+}
 
 message CreateUserRequest {
     string sessionId = 1;

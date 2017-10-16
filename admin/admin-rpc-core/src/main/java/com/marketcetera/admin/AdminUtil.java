@@ -29,7 +29,7 @@ public abstract class AdminUtil
      * @param inUserFactory
      * @return
      */
-    public static User getUser(BaseRpc.User inUser,
+    public static User getUser(AdminRpc.User inUser,
                                UserFactory inUserFactory)
     {
         /*
@@ -60,7 +60,7 @@ public abstract class AdminUtil
      * @param inNewUser
      * @return
      */
-    public static BaseRpc.User getRpcUser(User inNewUser)
+    public static AdminRpc.User getRpcUser(User inNewUser)
     {
         throw new UnsupportedOperationException(); // TODO
     }

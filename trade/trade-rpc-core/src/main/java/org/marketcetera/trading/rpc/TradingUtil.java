@@ -73,6 +73,7 @@ import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
 
 import com.google.common.collect.Maps;
 import com.google.protobuf.util.Timestamps;
+import com.marketcetera.admin.AdminRpc;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -2721,10 +2722,10 @@ public abstract class TradingUtil
     /**
      * Set the user from the given RPC user on the given order summary.
      *
-     * @param inRpcUser a <code>BaseRpc.User</code> value
+     * @param inRpcUser a <code>AdminRpc.User</code> value
      * @param inOrderSummary a <code>MutableOrderSummary</code> value
      */
-    public static void setUser(BaseRpc.User inRpcUser,
+    public static void setUser(AdminRpc.User inRpcUser,
                                MutableOrderSummary inOrderSummary)
     {
         User user = userFactory.create(inRpcUser.getName(),
@@ -2738,11 +2739,11 @@ public abstract class TradingUtil
      * Get the RPC user from the given user.
      *
      * @param inUser a <code>User</code> value
-     * @return a <code>BaseRpc.User</code> value
+     * @return a <code>AdminRpc.User</code> value
      */
-    public static BaseRpc.User getRpcUser(User inUser)
+    public static AdminRpc.User getRpcUser(User inUser)
     {
-        BaseRpc.User.Builder userBuilder = BaseRpc.User.newBuilder();
+        AdminRpc.User.Builder userBuilder = AdminRpc.User.newBuilder();
         userBuilder.setActive(inUser.isActive());
         String value = StringUtils.trimToNull(inUser.getDescription());
         if(value != null) {

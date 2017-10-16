@@ -490,7 +490,7 @@ public class AdminRpcClient
                                        getSessionId(),
                                        response);
                 List<User> results = Lists.newArrayList();
-                for(BaseRpc.User rpcUser : response.getUserList()) {
+                for(AdminRpc.User rpcUser : response.getUserList()) {
                     results.add(AdminUtil.getUser(rpcUser,
                                                   userFactory));
                 }

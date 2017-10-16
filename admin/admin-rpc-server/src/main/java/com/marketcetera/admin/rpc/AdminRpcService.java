@@ -215,7 +215,7 @@ public class AdminRpcService<SessionClazz>
                 authzService.authorize(sessionHolder.getUser(),
                                        AdminPermissions.CreateUserAction.name());
                 if(inRequest.hasUser()) {
-                    BaseRpc.User rpcUser = inRequest.getUser();
+                    AdminRpc.User rpcUser = inRequest.getUser();
                     String username = StringUtils.trimToNull(rpcUser.getName());
                     User newUser = userService.findByName(username);
                     Validate.isTrue(newUser == null,
@@ -304,7 +304,7 @@ public class AdminRpcService<SessionClazz>
                 if(inRequest.hasUser()) {
                     if(existingUser instanceof MutableUser) {
                         MutableUser mutableUser = (MutableUser)existingUser;
-                        BaseRpc.User rpcUser = inRequest.getUser();
+                        AdminRpc.User rpcUser = inRequest.getUser();
                         mutableUser.setIsActive(rpcUser.getActive());
                         mutableUser.setName(rpcUser.getName());
                         mutableUser.setDescription(rpcUser.getDescription());
@@ -634,7 +634,7 @@ public class AdminRpcService<SessionClazz>
                             newRole.getPermissions().add(permission);
                         }
                     }
-                    for(BaseRpc.User rpcUser : rpcRole.getUserList()) {
+                    for(AdminRpc.User rpcUser : rpcRole.getUserList()) {
                         User user = userService.findByName(rpcUser.getName());
                         if(user == null) {
                             SLF4JLoggerProxy.warn(AdminRpcService.this,
@@ -735,7 +735,7 @@ public class AdminRpcService<SessionClazz>
                             existingRole.getPermissions().add(permission);
                         }
                     }
-                    for(BaseRpc.User rpcUser : rpcRole.getUserList()) {
+                    for(AdminRpc.User rpcUser : rpcRole.getUserList()) {
                         User user = userService.findByName(rpcUser.getName());
                         if(user == null) {
                             SLF4JLoggerProxy.warn(AdminRpcService.this,

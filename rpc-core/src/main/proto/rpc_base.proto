@@ -18,12 +18,6 @@ message Qty {
     int32 scale = 2;
 }
 
-message User {
-    string name = 1;
-    string description = 2;
-    bool active = 3;
-}
-
 message LoginRequest {
     string appId = 1;
     string clientId = 2;
