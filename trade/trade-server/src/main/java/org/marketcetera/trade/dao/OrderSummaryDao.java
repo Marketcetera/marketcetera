@@ -62,5 +62,5 @@ public interface OrderSummaryDao
      */
     @Query("select o1 from OrderStatus o1 where o1.orderStatus in ?1 and o1.id = (select max(o2.id) from OrderStatus o2 where o1.rootOrderId=o2.rootOrderId)")
     Page<PersistentOrderSummary> findOpenOrders(Set<OrderStatus> inOpenOrderStatuses,
-                                               Pageable inPageRequest);
+                                                Pageable inPageRequest);
 }

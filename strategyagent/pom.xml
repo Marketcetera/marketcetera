@@ -1,11 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!--
-- Author: anshul@marketcetera.com
-- Since: 0.9.0
-- Version: $Id$
-- $License$
--->
-
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -19,18 +12,14 @@
   <packaging>jar</packaging>
   <name>Strategy Agent</name>
   <dependencies>
-    <!-- Compile. -->
+    <!-- local compile -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>saclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>client</artifactId>
+      <artifactId>dataflow-api</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -40,18 +29,18 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>remote-receiver</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>remote-emitter</artifactId>
+    </dependency>
+    <!-- other compile -->
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
       <scope>compile</scope>
     </dependency>
-    <!-- Runtime. -->
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>marketdata-core</artifactId>
-      <scope>runtime</scope>
-    </dependency>
+    <!-- other runtime -->
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http-jetty</artifactId>
@@ -72,7 +61,12 @@
       <groupId>org.apache.mina</groupId>
       <artifactId>mina-core</artifactId>
     </dependency>
-    <!-- Testing. -->
+    <!-- local test -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>dataflow-ws-client</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
@@ -95,11 +89,6 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>client</artifactId>
-      <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>util-test</artifactId>
     </dependency>
     <dependency>
@@ -107,6 +96,7 @@
       <artifactId>strategy</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- other test -->
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>

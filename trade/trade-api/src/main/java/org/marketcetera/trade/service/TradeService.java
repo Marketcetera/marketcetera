@@ -1,8 +1,13 @@
 package org.marketcetera.trade.service;
 
 import org.marketcetera.brokers.Broker;
+import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.fix.OrderIntercepted;
+import org.marketcetera.trade.HasOrder;
+import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.TradeMessagePublisher;
 
 import quickfix.Message;
 
@@ -16,6 +21,7 @@ import quickfix.Message;
  * @since $Release$
  */
 public interface TradeService
+        extends TradeMessagePublisher
 {
     /**
      * Select a broker for the given order.
@@ -39,12 +45,19 @@ public interface TradeService
     /**
      * Convert the given message from the given broker to a <code>TradeMessage</code>.
      *
-     * @param inMessage a <code>Message</code> value
+     * @param inMessage a <code>HasFIXMessage</code> value
      * @param inBroker a <code>Broker</code> value
      * @return a <code>TradeMessage</code> value
      * @throws OrderIntercepted if the message should not be sent on in the data flow
      * @throws MessageCreationException if the message could not be converted
      */
-    TradeMessage convertResponse(Message inMessage,
+    TradeMessage convertResponse(HasFIXMessage inMessage,
                                  Broker inBroker);
+    /**
+     * Submits the given order to the standard outgoing data flow.
+     *
+     * @param inOrder a <code>HasOrder</code> value
+     * @return an <code>Object</code> value containing the result of the submission, if available
+     */
+    Object submitOrderToOutgoingDataFlow(HasOrder inOrder);
 }

@@ -31,11 +31,6 @@ import org.junit.Test;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.MockBrokerStatusGenerator;
-import org.marketcetera.client.Client;
-import org.marketcetera.client.ClientInitException;
-import org.marketcetera.client.ClientManager;
-import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.Validations;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
@@ -70,8 +65,12 @@ import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.Suggestion;
+import org.marketcetera.trade.client.OrderValidationException;
+import org.marketcetera.trade.client.TradingClient;
 import org.marketcetera.trade.utils.OrderHistoryManagerTest;
 import org.marketcetera.util.test.CollectionAssert;
+
+import com.sun.mail.iap.ConnectionException;
 
 import quickfix.Message;
 
@@ -95,10 +94,10 @@ public class AbstractRunningStrategyTest
     public static void once()
             throws Exception
     {
-        try {
-            ClientManager.setClientFactory(new MockClient.MockClientFactory());
-            ClientManager.init(null);
-        } catch (ClientInitException ignored) {}
+//        try {
+//            ClientManager.setClientFactory(new MockClient.MockClientFactory());
+//            ClientManager.init(null);
+//        } catch (ClientInitException ignored) {}
         OrderHistoryManagerTest.once();
     }
     /**
@@ -549,8 +548,9 @@ public class AbstractRunningStrategyTest
                      strategy.getOrderStatus(report5.getOrderID()));
     }
     /**
-     * Tests that a strategy fails to start when {@link Client#addBrokerStatusListener(BrokerStatusListener)} fails.
-     * @throws Exception 
+     * Tests that a strategy fails to start.
+     * 
+     * @throws Exception if an unexpected error occurs
      */
     @Test
     public void testStrategyFailsToStart() throws Exception {
@@ -597,19 +597,18 @@ public class AbstractRunningStrategyTest
     	return MockBrokerStatusGenerator.generateBrokerStatus("status-" + System.nanoTime(),new BrokerID("id-" + System.nanoTime()),true);
     }
     
-    private void sendBrokerStatus (BrokerStatus brokerStatus) throws ClientInitException {
-    	Client client = ClientManager.getInstance();
-    	
-    	//Verify client is instance of MockClient (needed to send broker status to listeners manually)
-    	assertTrue(client instanceof MockClient);
-    	
-    	((MockClient)client).sendToListeners(brokerStatus);
+    private void sendBrokerStatus (BrokerStatus brokerStatus)
+            throws Exception
+    {
+        //Verify client is instance of MockClient (needed to send broker status to listeners manually)
+        assertTrue(client instanceof MockClient);
+        ((MockClient)client).sendToListeners(brokerStatus);
     }
-    
-    private void removeBrokerStatusListener (BrokerStatusListener brokerStatusListener) throws ClientInitException {
-    	ClientManager.getInstance().removeBrokerStatusListener(brokerStatusListener);
+    private void removeBrokerStatusListener (BrokerStatusListener brokerStatusListener)
+            throws Exception
+    {
+        client.removeBrokerStatusListener(brokerStatusListener);
     }
-    
     /**
      * Resets the test objects as necessary.
      *
@@ -1215,4 +1214,5 @@ public class AbstractRunningStrategyTest
      * test trade object factory
      */
     private Factory factory;
+    private TradingClient client;
 }

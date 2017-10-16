@@ -2,6 +2,8 @@ package org.marketcetera.trade.dao;
 
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -34,4 +36,14 @@ public interface ExecutionReportDao
      * @return a <code>PersistentExecutionReport</code> value or <code>null</code>
      */
     PersistentExecutionReport findByReportId(long inReportId);
+    /**
+     * Find the most recent report for the given root order ID.
+     *
+     * @param inRootId an <code>OrderID</code> value
+     * @param inPage a <code>Pageable</code> value
+     * @return a <code>Page&lt;PersistentExecutionReport&gt;</code> value
+     */
+    @Query("select E1 from PersistentExecutionReport E1 where E1.rootOrderId=?1 and E1.sendingTime=(select max(E2.sendingTime) from PersistentExecutionReport E2 where E2.rootOrderId=?1) order by E1.id desc")
+    Page<PersistentExecutionReport> findMostRecentReportFor(OrderID inRootId,
+                                                            Pageable inPage);
 }

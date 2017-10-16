@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>marketdata-parent</artifactId>
+    <version>3.1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>org.marketcetera</groupId>
+  <artifactId>marketdata-rpc-core</artifactId>
+  <version>3.1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <licenses>
+    <license>
+      <name>GNU General Public License (GPL)v2</name>
+      <url>http://www.fsf.org/licensing/licenses/gpl.txt</url>
+    </license>
+  </licenses>
+  <name>Market Data RPC Core</name>
+  <dependencies>
+    <!-- compile -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>rpc-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-rpc-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <!-- runtime -->
+    <!-- test -->
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.xolstice.maven.plugins</groupId>
+        <artifactId>protobuf-maven-plugin</artifactId>
+        <version>0.5.0</version>
+        <configuration>
+          <!--
+              The version of protoc must match protobuf-java. If you don't depend on
+              protobuf-java directly, you will be transitively depending on the
+              protobuf-java version that grpc depends on.
+          -->
+          <protocArtifact>com.google.protobuf:protoc:3.0.0:exe:${os.detected.classifier}</protocArtifact>
+          <pluginId>grpc-java</pluginId>
+          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.0:exe:${os.detected.classifier}</pluginArtifact>
+          <inputDirectories>
+            <inputDirectory>proto</inputDirectory>
+          </inputDirectories>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>compile-custom</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

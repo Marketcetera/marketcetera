@@ -32,7 +32,19 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>dataflow-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>trade-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fix-modules</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>misc</artifactId>
     </dependency>
     <!-- local test -->
     <dependency>
@@ -48,17 +60,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>fix-modules</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>fix-modules</artifactId>
       <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>misc</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -85,10 +87,10 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <exclusions>
-	<exclusion>
-	  <groupId>com.vaadin.external.google</groupId>
-	  <artifactId>android-json</artifactId>
-	</exclusion>
+        <exclusion>
+          <groupId>com.vaadin.external.google</groupId>
+          <artifactId>android-json</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>

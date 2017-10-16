@@ -40,8 +40,6 @@ import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.service.BrokerService;
-import org.marketcetera.client.Client;
-import org.marketcetera.client.ReportListener;
 import org.marketcetera.core.PriceQtyTuple;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.time.TimeFactoryImpl;
@@ -56,6 +54,7 @@ import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trade.dao.ExecutionReportDao;
 import org.marketcetera.trade.dao.OrderSummaryDao;
 import org.marketcetera.trade.dao.PersistentReportDao;
@@ -118,31 +117,22 @@ public class MarketceteraTestBase
             SLF4JLoggerProxy.warn(this,
                                   "Report service will not be available for this test");
         }
-        if(client == null) {
+        if(tradingClient == null) {
             SLF4JLoggerProxy.warn(this,
                                   "Client will not be available for this test");
         } else {
-            client = applicationContext.getBean(Client.class);
             reports.clear();
-            ReportListener reportListener = new ReportListener() {
+            TradeMessageListener TradeMessageListener = new TradeMessageListener() {
                 @Override
-                public void receiveExecutionReport(ExecutionReport inReport)
+                public void receiveTradeMessage(TradeMessage inTradeMessage)
                 {
-                    reports.add(inReport);
-                    synchronized(reports) {
-                        reports.notifyAll();
-                    }
-                }
-                @Override
-                public void receiveCancelReject(OrderCancelReject inReport)
-                {
-                    reports.add(inReport);
+                    reports.add(inTradeMessage);
                     synchronized(reports) {
                         reports.notifyAll();
                     }
                 }
             };
-            client.addReportListener(reportListener);
+            tradingClient.addTradeMessageListener(TradeMessageListener);
         }
         hostAcceptorPort = fixSettingsProvider.getAcceptorPort();
         remoteAcceptorPort = hostAcceptorPort + 1000;
@@ -166,8 +156,8 @@ public class MarketceteraTestBase
             SLF4JLoggerProxy.info(this,
                                   "{} cleanup beginning",
                                   name.getMethodName());
-            if(client != null) {
-                client.removeReportListener(reportListener);
+            if(tradingClient != null) {
+                tradingClient.removeTradeMessageListener(TradeMessageListener);
             }
             try {
                 if(receiver != null) {
@@ -320,10 +310,10 @@ public class MarketceteraTestBase
     /**
      * Wait for and retrieve the next report received from the client.
      *
-     * @return a <code>ReportBase</code> value
+     * @return a <code>TradeMessage</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected ReportBase waitForClientReport()
+    protected TradeMessage waitForClientReport()
             throws Exception
     {
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
@@ -2290,16 +2280,16 @@ public class MarketceteraTestBase
     /**
      * listens for reports
      */
-    private ReportListener reportListener;
+    private TradeMessageListener TradeMessageListener;
     /**
      * stores reports received from the client
      */
-    protected final Deque<ReportBase> reports = Lists.newLinkedList();
+    protected final Deque<TradeMessage> reports = Lists.newLinkedList();
     /**
      * provides access to client trading services
      */
     @Autowired(required=false)
-    protected Client client;
+    protected TradeClient tradingClient;
     /**
      * provides fix settings
      */

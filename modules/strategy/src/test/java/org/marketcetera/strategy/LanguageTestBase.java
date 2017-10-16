@@ -42,7 +42,6 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.ClusteredBrokersStatus;
-import org.marketcetera.client.Client;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.Event;
@@ -85,6 +84,7 @@ import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.TypesTestBase;
+import org.marketcetera.trade.client.TradingClient;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.NamedThreadFactory;
 
@@ -3864,7 +3864,7 @@ public abstract class LanguageTestBase
     public void userdata()
             throws Exception
     {
-        Client testClient = StrategyModule.clientFactory.getClient();
+        TradingClient testClient = StrategyModule.clientFactory.getClient();
         assertNull(testClient.getUserData());
         StrategyCoordinates strategy = getStrategyCompiles();
         ModuleURN strategyModule = createStrategy(strategy.getName(),

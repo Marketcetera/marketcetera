@@ -8,16 +8,20 @@ import java.util.HashMap;
 import javax.security.auth.login.AppConfigurationEntry;
 import javax.security.auth.login.Configuration;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.MockLoginModule;
 import org.marketcetera.client.MockServer;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.modules.remote.receiver.ClientLoginModule;
-import org.marketcetera.saclient.ConnectionException;
-import org.marketcetera.saclient.SAClientFactoryImpl;
-import org.marketcetera.saclient.SAClientParameters;
+import org.marketcetera.saclient.SEClientFactoryImpl;
+import org.marketcetera.saclient.SEClientParameters;
+import org.marketcetera.strategyengine.client.ConnectionException;
 import org.marketcetera.util.ws.stateless.Node;
 
 /* $License$ */
@@ -108,11 +112,11 @@ public class StrategyAgentRemotingConfigTest
             protected void run()
                     throws Exception
             {
-                SAClientFactoryImpl.getInstance().create(new SAClientParameters(DEFAULT_CREDENTIAL,
-                                                                            DEFAULT_CREDENTIAL.toCharArray(),
-                                                                            RECEIVER_URL,
-                                                                            WS_HOST,
-                                                                            WS_PORT)).start();
+                SEClientFactoryImpl.getInstance().create(new SEClientParameters(DEFAULT_CREDENTIAL,
+                                                                                DEFAULT_CREDENTIAL,
+                                                                                RECEIVER_URL,
+                                                                                WS_HOST,
+                                                                                WS_PORT)).start();
             }
         };
     }
@@ -141,11 +145,11 @@ public class StrategyAgentRemotingConfigTest
             protected void run()
                     throws Exception
             {
-                SAClientFactoryImpl.getInstance().create(new SAClientParameters(DEFAULT_CREDENTIAL,
-                                                                            DEFAULT_CREDENTIAL.toCharArray(),
-                                                                            RECEIVER_URL,
-                                                                            WS_HOST,
-                                                                            WS_PORT)).start();
+                SEClientFactoryImpl.getInstance().create(new SEClientParameters(DEFAULT_CREDENTIAL,
+                                                                                DEFAULT_CREDENTIAL,
+                                                                                RECEIVER_URL,
+                                                                                WS_HOST,
+                                                                                WS_PORT)).start();
             }
         };
     }

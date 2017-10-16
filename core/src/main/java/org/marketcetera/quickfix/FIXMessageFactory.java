@@ -177,11 +177,17 @@ public class FIXMessageFactory {
         addSendingTime(cancelMessage);
         return cancelMessage;
     }
-
-    protected void addSendingTime(Message inCancelMessage) {
-        inCancelMessage.getHeader().setField(new SendingTime(new Date()));
+    /**
+     * Add the current time as the sending time on the given message if necessary.
+     *
+     * @param inMessage a <code>Message</code> value
+     */
+    public void addSendingTime(Message inMessage)
+    {
+        if(!inMessage.getHeader().isSetField(quickfix.field.SendingTime.FIELD)) {
+            inMessage.getHeader().setField(new SendingTime(new Date()));
+        }
     }
-
     protected void fillFieldsFromExistingMessage(Message oldMessage,
                                                  boolean onlyCopyRequiredFields,
                                                  Message inCancelMessage) {

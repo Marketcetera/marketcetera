@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerStatus;
-import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.brokers.BrokerStatusBroadcaster;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
@@ -22,6 +22,7 @@ import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.HasMutableStatus;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
@@ -134,6 +135,11 @@ public abstract class AbstractFixModule
             boolean messageSent = Session.sendToTarget(message,
                                                        targetSessionId);
             if(!messageSent) {
+                if(inData instanceof HasMutableStatus) {
+                    HasMutableStatus mutableStatus = (HasMutableStatus)inData;
+                    mutableStatus.setFailed(true);
+                    mutableStatus.setErrorMessage("FIX message not sent to broker because FIX session was unavailable");
+                }
                 throw new ReceiveDataException(new IllegalArgumentException("Message not sent: " + message));
             }
         } catch (SessionNotFound e) {
@@ -187,17 +193,19 @@ public abstract class AbstractFixModule
     public void toAdmin(Message inMessage,
                         SessionID inSessionId)
     {
-        if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
-            SLF4JLoggerProxy.info(this,
-                                  "{} sending admin:",
-                                  inSessionId);
-            FIXMessageUtil.logMessage(inSessionId,
+        if(!FIXMessageUtil.isHeartbeat(inMessage)) {
+            if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
+                SLF4JLoggerProxy.info(this,
+                                      "{} sending admin:",
+                                      inSessionId);
+                FIXMessageUtil.logMessage(inSessionId,
+                                          inMessage);
+            } else {
+                SLF4JLoggerProxy.info(this,
+                                      "{} sending admin: {}",
+                                      inSessionId,
                                       inMessage);
-        } else {
-            SLF4JLoggerProxy.info(this,
-                                  "{} sending admin: {}",
-                                  inSessionId,
-                                  inMessage);
+            }
         }
     }
     /* (non-Javadoc)
@@ -208,17 +216,19 @@ public abstract class AbstractFixModule
                           SessionID inSessionId)
             throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, RejectLogon
     {
-        if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
-            SLF4JLoggerProxy.info(this,
-                                  "{} received admin:",
-                                  inSessionId);
-            FIXMessageUtil.logMessage(inSessionId,
+        if(!FIXMessageUtil.isHeartbeat(inMessage)) {
+            if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
+                SLF4JLoggerProxy.info(this,
+                                      "{} received admin:",
+                                      inSessionId);
+                FIXMessageUtil.logMessage(inSessionId,
+                                          inMessage);
+            } else {
+                SLF4JLoggerProxy.info(this,
+                                      "{} received admin: {}",
+                                      inSessionId,
                                       inMessage);
-        } else {
-            SLF4JLoggerProxy.info(this,
-                                  "{} received admin: {}",
-                                  inSessionId,
-                                  inMessage);
+            }
         }
         sendMessageIfNecessary(inMessage,
                                inSessionId,
@@ -292,6 +302,7 @@ public abstract class AbstractFixModule
     void activate()
             throws Exception
     {
+        instanceData = clusterService.getInstanceData();
         Collection<FixSession> fixSessions = getFixSessions();
         if(!fixSessions.isEmpty()) {
             SessionSettings sessionSettings = SessionSettingsGenerator.generateSessionSettings(getFixSessions(),
@@ -312,7 +323,6 @@ public abstract class AbstractFixModule
     protected void preStart()
             throws ModuleException
     {
-        instanceData = clusterService.getInstanceData();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -411,10 +421,10 @@ public abstract class AbstractFixModule
                                                                        instanceData,
                                                                        status,
                                                                        inLoggedOn);
-        synchronized(brokerStatusListenerLock) {
-            for(BrokerStatusListener brokerStatusListener : brokerStatusListeners) {
+        synchronized(brokerStatusBroadcasterLock) {
+            for(BrokerStatusBroadcaster brokerStatusBroadcaster : brokerStatusBroadcasters) {
                 try {
-                    brokerStatusListener.receiveBrokerStatus(brokerStatus);
+                    brokerStatusBroadcaster.reportBrokerStatus(brokerStatus);
                 } catch (Exception e) {
                     PlatformServices.handleException(this,
                                                      "Problem reporting broker status",
@@ -591,19 +601,19 @@ public abstract class AbstractFixModule
     @Autowired
     private ClusterService clusterService;
     /**
-     * guards access to {@link #brokerStatusListeners}
+     * guards access to {@link #brokerStatusBroadcasters}
      */
-    private final Object brokerStatusListenerLock = new Object();
+    private final Object brokerStatusBroadcasterLock = new Object();
     /**
      * provides access to broker services
      */
     @Autowired
     private BrokerService brokerService;
     /**
-     * broker status listeners
+     * broker status publishers
      */
     @Autowired
-    private Collection<BrokerStatusListener> brokerStatusListeners = Lists.newArrayList();
+    private Collection<BrokerStatusBroadcaster> brokerStatusBroadcasters = Lists.newArrayList();
     /**
      * underlying FIX engine
      */

@@ -84,6 +84,17 @@ public class SimpleUser
     {
         return new UserID(getId());
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("SimpleUser [userId=").append(getUserID()).append(", name=").append(getName())
+                .append(", description=").append(getDescription()).append("]");
+        return builder.toString();
+    }
     /**
      * Create a new SimpleUser instance.
      */

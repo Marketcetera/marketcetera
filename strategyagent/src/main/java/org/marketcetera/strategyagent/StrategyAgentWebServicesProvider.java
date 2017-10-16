@@ -3,7 +3,7 @@ package org.marketcetera.strategyagent;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.marketcetera.saclient.SAService;
+import org.marketcetera.strategyengine.server.SEService;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.util.ws.stateful.Authenticator;
@@ -50,7 +50,7 @@ public class StrategyAgentWebServicesProvider
                                            sessionManager,
                                            contextClassProvider);
         remoteService = server.publish(serviceProvider,
-                                       SAService.class);
+                                       SEService.class);
         Messages.LOG_REMOTE_WS_CONFIGURED.info(this,
                                                hostname,
                                                String.valueOf(port));
@@ -180,18 +180,18 @@ public class StrategyAgentWebServicesProvider
     /**
      * Get the serviceProvider value.
      *
-     * @return an <code>SAService</code> value
+     * @return an <code>SEService</code> value
      */
-    public SAService getServiceProvider()
+    public SEService getServiceProvider()
     {
         return serviceProvider;
     }
     /**
      * Sets the serviceProvider value.
      *
-     * @param inServiceProvider an <code>SAService</code> value
+     * @param inServiceProvider an <code>SEService</code> value
      */
-    public void setServiceProvider(SAService inServiceProvider)
+    public void setServiceProvider(SEService inServiceProvider)
     {
         serviceProvider = inServiceProvider;
     }
@@ -240,7 +240,7 @@ public class StrategyAgentWebServicesProvider
     /**
      * service provider
      */
-    private SAService serviceProvider;
+    private SEService serviceProvider;
     /**
      * provides context classes to aid in marshaling/unmarshaling
      */

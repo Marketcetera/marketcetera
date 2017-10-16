@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.marketcetera.cluster.InstanceData;
+import org.marketcetera.core.BaseClient;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
-import org.marketcetera.util.rpc.BaseClient;
 
 /* $License$ */
 

@@ -24,7 +24,7 @@ import com.google.common.cache.CacheBuilder;
 /* $License$ */
 
 /**
- * 
+ * Wraps a data flow in a transaction.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

@@ -244,7 +244,7 @@ public class PersistentUser
     public String getHashedPassword() {
         return hashedPassword;
     }
-    private void setHashedPassword(String hashedPassword) {
+    public void setHashedPassword(String hashedPassword) {
         this.hashedPassword = hashedPassword;
     }
     /* (non-Javadoc)

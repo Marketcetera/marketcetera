@@ -10,9 +10,12 @@
   <packaging>pom</packaging>
   <name>Trade Parent</name>
   <modules>
-    <module>trade-server</module>
     <module>trade-api</module>
     <module>trade-core</module>
+    <module>trade-server</module>
     <module>trade-modules</module>
+    <module>trade-rpc-client</module>
+    <module>trade-rpc-core</module>
+    <module>trade-rpc-server</module>
   </modules>
 </project>

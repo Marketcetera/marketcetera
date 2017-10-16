@@ -7,12 +7,13 @@ import java.util.Set;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.user.PersistentUser;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.TradingPermissions;
+import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.trade.dao.OrderSummaryDao;
 import org.marketcetera.trade.dao.PersistentOrderSummary;
 import org.marketcetera.trade.dao.PersistentReport;
@@ -126,7 +127,7 @@ public class OrderSummaryServiceImpl
         BooleanBuilder where = new BooleanBuilder();
         where = where.and(r.orderStatus.in(inOrderStatusValues));
         Set<User> basicUsers = authzService.getSubjectUsersFor(inViewer,
-                                                               TradingPermissions.ViewReportAction.name());
+                                                               TradePermissions.ViewReportAction.name());
         Set<PersistentUser> subjectUsers = Sets.newHashSet();
         for(User basicUser : basicUsers) {
             subjectUsers.add((PersistentUser)basicUser);
@@ -178,16 +179,17 @@ public class OrderSummaryServiceImpl
      * @see com.marketcetera.ors.dao.OrderStatusService#findOpenOrders(int, int)
      */
     @Override
-    public Page<? extends OrderSummary> findOpenOrders(int inPageNumber,
-                                                       int inPageSize)
+    public CollectionPageResponse<? extends OrderSummary> findOpenOrders(int inPageNumber,
+                                                                         int inPageSize)
     {
         Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC,
                                             QPersistentOrderSummary.persistentOrderSummary.sendingTime.getMetadata().getName()));
         Pageable pageRequest = new PageRequest(inPageNumber,
                                                inPageSize,
                                                sort);
-        return orderStatusDao.findOpenOrders(OrderStatus.openOrderStatuses,
-                                             pageRequest);
+        Page<PersistentOrderSummary> pageResponse = orderStatusDao.findOpenOrders(OrderStatus.openOrderStatuses,
+                                                                                  pageRequest);
+        return new CollectionPageResponse<>(pageResponse);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.service.OrderStatusService#update(org.marketcetera.trade.OrderSummary, org.marketcetera.trade.Report, org.marketcetera.trade.ReportBase)

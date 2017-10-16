@@ -8,13 +8,16 @@ import java.util.Set;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.IncomingMessage;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.HasMutableReportID;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
@@ -22,6 +25,7 @@ import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.domain.Page;
 
@@ -77,6 +81,17 @@ public interface ReportService
     public List<ReportBase> getReportsSince(User inUser,
                                             Date inDate);
     /**
+     * Get the position of the given instrument as of the given date from the point of view of the given user.
+     *
+     * @param inUser a <code>User</code> value
+     * @param inDate a <code>Date</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getPositionAsOf(User inUser,
+                                      Date inDate,
+                                      Instrument inInstrument);
+    /**
      * Gets the position of the given equity as of the given date from the point of view
      * of the given user.
      *
@@ -116,6 +131,15 @@ public interface ReportService
     public BigDecimal getCurrencyPositionAsOf(User inUser,
                                               Date inDate,
                                               Currency inCurrency);
+    /**
+     * Get all positions as of the given date visible to the given user.
+     *
+     * @param inUser a <code>User</code> value a <code>User</code> value
+     * @param inDate a <code>Date</code> value
+     * @return a <code>Map&lt;PositionKey&lt;? extends Instrument&gt;,BigDecimal&lt;</code> value
+     */
+    Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(User inUser,
+                                                                          Date inDate);
     /**
      * Gets all currency positions as of the given date visible to the given user.
      *
@@ -207,11 +231,11 @@ public interface ReportService
      */
     public Report save(ReportBase inReport);
     /**
-     * Deletes the given report.
+     * Delete the report with the given report ID.
      *
-     * @param inReport a <code>ReportBase</code> value
+     * @param inReportId a <code>ReportID</code> value
      */
-    public void delete(ReportBase inReport);
+    void delete(ReportID inReportId);
     /**
      * Gets the order ID of the root of this order chain.
      *
@@ -261,4 +285,20 @@ public interface ReportService
      * @param inReport a <code>HasMutableReportID</code> value
      */
     void assignReportId(HasMutableReportID inReport);
+    /**
+     * Add the given report to the system data flow.
+     * 
+     * <p>Reports added this way will be added to the system data bus. Reports will be
+     * persisted and become part of the system record. The report will be owned by the
+     * given user.
+     * 
+     * <p><em>This will affect reported positions</em></p>.
+     *
+     * @param inMessage a <code>HasFIXMessage</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
+     * @param inUserID a <code>UserID</code> value
+     */
+    void addReport(HasFIXMessage inMessage,
+                   BrokerID inBrokerID,
+                   UserID inUserId);
 }

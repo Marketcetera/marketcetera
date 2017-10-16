@@ -4,8 +4,11 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.marketcetera.admin.HasUser;
+import org.marketcetera.admin.User;
 import org.marketcetera.core.Cacheable;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.IdentifyOwnerStrategy;
 import org.marketcetera.trade.UserID;
@@ -69,24 +72,41 @@ public class MessageOwnerServiceImpl
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.service.OrderOwnerService#getMessageOwner(quickfix.Message, quickfix.SessionID, org.marketcetera.trade.BrokerID)
+     * @see org.marketcetera.trade.service.MessageOwnerService#getMessageOwner(org.marketcetera.event.HasFIXMessage, quickfix.SessionID, org.marketcetera.trade.BrokerID)
      */
     @Override
-    public UserID getMessageOwner(Message inIncomingMessage,
+    public UserID getMessageOwner(HasFIXMessage inIncomingMessage,
                                   SessionID inSessionId,
                                   BrokerID inBrokerId)
     {
+        if(inIncomingMessage instanceof HasUser) {
+            // this is the easy case - we already know who the owner is
+            HasUser hasUser = (HasUser)inIncomingMessage;
+            User owner = hasUser.getUser();
+            if(owner == null) {
+                SLF4JLoggerProxy.warn(this,
+                                      "{} alleges to have an incoming owner, but the owner is null, continuing to identify the owner through other means",
+                                      inIncomingMessage);
+            } else {
+                SLF4JLoggerProxy.debug(this,
+                                       "{} has an attached owner: {}",
+                                       inIncomingMessage,
+                                       owner);
+                return owner.getUserID();
+            }
+        }
+        quickfix.Message fixMessage = inIncomingMessage.getMessage();
         // first, check the cache if the message has an order id
         String orderId = null;
-        if(inIncomingMessage.isSetField(quickfix.field.ClOrdID.FIELD)) {
+        if(fixMessage.isSetField(quickfix.field.ClOrdID.FIELD)) {
             try {
-                orderId = inIncomingMessage.getString(quickfix.field.ClOrdID.FIELD);
+                orderId = fixMessage.getString(quickfix.field.ClOrdID.FIELD);
             } catch (FieldNotFound e) {
                 throw new RuntimeException(e);
             }
-        } else if(inIncomingMessage.isSetField(quickfix.field.OrderID.FIELD)) {
+        } else if(fixMessage.isSetField(quickfix.field.OrderID.FIELD)) {
             try {
-                orderId = inIncomingMessage.getString(quickfix.field.OrderID.FIELD);
+                orderId = fixMessage.getString(quickfix.field.OrderID.FIELD);
             } catch (FieldNotFound e) {
                 throw new RuntimeException(e);
             }
@@ -94,7 +114,7 @@ public class MessageOwnerServiceImpl
         if(orderId == null) {
             SLF4JLoggerProxy.debug(this,
                                    "{} has no order id field, cannot determine owner from cache",
-                                   inIncomingMessage);
+                                   fixMessage);
         } else {
             UserID owner = usersByOrderId.getIfPresent(orderId);
             if(owner != null) {
@@ -109,7 +129,7 @@ public class MessageOwnerServiceImpl
                                "{} has no cached owner, beginning owner identity strategies",
                                orderId);
         for(IdentifyOwnerStrategy strategy : identifyOwnerStrategies) {
-            UserID owner = strategy.getOwnerOf(inIncomingMessage,
+            UserID owner = strategy.getOwnerOf(fixMessage,
                                                inSessionId,
                                                inBrokerId);
             if(owner != null) {
@@ -119,13 +139,13 @@ public class MessageOwnerServiceImpl
                 }
                 SLF4JLoggerProxy.debug(this,
                                        "{} is owned by {} according to identity strategies",
-                                       inIncomingMessage,
+                                       fixMessage,
                                        owner);
                 return owner;
             }
         }
         throw new CoreException(new I18NBoundMessage3P(Messages.NO_OWNER,
-                                                       inIncomingMessage,
+                                                       fixMessage,
                                                        inBrokerId,
                                                        inSessionId));
     }
@@ -144,6 +164,8 @@ public class MessageOwnerServiceImpl
     public void start()
     {
         usersByOrderId = CacheBuilder.newBuilder().maximumSize(orderCacheSize).build();
+        SLF4JLoggerProxy.info(this,
+                              "Message owner service started");
     }
     /**
      * Get the orderCacheSize value.

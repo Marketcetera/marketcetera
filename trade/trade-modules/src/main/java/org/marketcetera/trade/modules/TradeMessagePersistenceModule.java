@@ -7,6 +7,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.trade.HasMutableReportID;
 import org.marketcetera.trade.HasTradeMessage;
+import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.service.ReportService;
@@ -52,9 +53,9 @@ public class TradeMessagePersistenceModule
             }
             // TODO need to make the return value of this call be set in the HasTradeMessage that gets emitted somehow
             //  we can just punt and make the return type of this message be "HasReport"?
-            reportService.save(inReport);
+            Report persistedReport = reportService.save(inReport);
             Messages.PERSISTED_REPLY.debug(this,
-                                           inReport);
+                                           persistedReport);
         }
         return (HasTradeMessage)inData;
     }

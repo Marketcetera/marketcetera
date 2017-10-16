@@ -1,0 +1,33 @@
+syntax = "proto3";
+option java_generic_services = true;
+option java_package = "org.marketcetera.rpc.paging";
+option java_outer_classname = "PagingRpc";
+
+message PageRequest {
+    uint32 page = 1;
+    uint32 size = 2;
+    SortOrder sortOrder = 3;
+}
+
+message PageResponse {
+    uint64 totalSize = 1;
+    uint32 totalPages = 2;
+    uint32 pageNumber = 3;
+    uint32 pageSize = 4;
+    uint32 pageMaxSize = 5;
+    SortOrder sortOrder = 6;
+}
+
+enum SortDirection {
+    ASCENDING = 0;
+    DESCENDING = 1;
+}
+
+message Sort {
+    string property = 1;
+    SortDirection direction = 2;
+}
+
+message SortOrder {
+    repeated Sort sort = 1;
+}

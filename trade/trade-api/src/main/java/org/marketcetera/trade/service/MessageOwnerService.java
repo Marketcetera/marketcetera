@@ -1,5 +1,6 @@
 package org.marketcetera.trade.service;
 
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.UserID;
 
@@ -28,12 +29,12 @@ public interface MessageOwnerService
     /**
      * Get the owner of the given message received from the given session or broker.
      *
-     * @param inIncomingMessage a <code>Message</code> value
+     * @param inIncomingMessage a <code>HasFIXMessage</code> value
      * @param inSessionId a <code>SessionID</code> value
      * @param inBrokerId a <code>BrokerID</code> value
      * @return a <code>UserID</code> value
      */
-    UserID getMessageOwner(Message inIncomingMessage,
+    UserID getMessageOwner(HasFIXMessage inIncomingMessage,
                            SessionID inSessionId,
                            BrokerID inBrokerId);
 }

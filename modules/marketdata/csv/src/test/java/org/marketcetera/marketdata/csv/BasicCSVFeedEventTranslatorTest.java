@@ -29,8 +29,6 @@ import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.client.ClientManager;
-import org.marketcetera.client.MockClient.MockClientFactory;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -48,6 +46,8 @@ import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.options.OptionUtils;
+import org.marketcetera.symbol.IterativeSymbolResolver;
+import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
@@ -72,8 +72,10 @@ public class BasicCSVFeedEventTranslatorTest
     public static void once()
             throws Exception
     {
-        ClientManager.setClientFactory(new MockClientFactory());
-        ClientManager.init(null);
+        IterativeSymbolResolver symbolResolver = new IterativeSymbolResolver();
+        symbolResolver.getSymbolResolvers().add(new PatternSymbolResolver());
+        symbolResolver.start();
+        translator.setSymbolResolverService(symbolResolver);
     }
     /**
      * Tests the ability of the translator to parse <code>BigDecimal</code> values.

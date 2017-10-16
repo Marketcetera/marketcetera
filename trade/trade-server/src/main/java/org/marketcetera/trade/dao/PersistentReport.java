@@ -24,6 +24,7 @@ import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.HasTradeMessage;
 import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.OrderCancelReject;
@@ -34,6 +35,7 @@ import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.ReportType;
+import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.trade.service.Messages;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -64,7 +66,7 @@ import quickfix.field.TargetCompID;
 @ClassVersion("$Id: PersistentReport.java 17338 2017-08-09 23:17:57Z colin $")
 public class PersistentReport
         extends EntityBase
-        implements Report
+        implements Report, HasTradeMessage
 {
     /**
      * Creates an instance, given a report.
@@ -99,8 +101,14 @@ public class PersistentReport
             throw new IllegalArgumentException();
         }
     }
-
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasTradeMessage#getTradeMessage()
+     */
+    @Override
+    public TradeMessage getTradeMessage()
+    {
+        return (TradeMessage)toReport();
+    }
     /**
      * Converts the report into a system report instance.
      *
@@ -369,6 +377,23 @@ public class PersistentReport
     {
         return mOriginator;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("PersistentReport [orderID=").append(orderID).append(", mActor=").append(mActor)
+                .append(", viewer=").append(viewer).append(", sendingTime=").append(sendingTime)
+                .append(", mReportType=").append(mReportType).append(", brokerID=").append(brokerID)
+                .append(", reportID=").append(reportID).append(", mOriginator=").append(mOriginator)
+                .append(", hierarchy=").append(hierarchy).append(", sessionIdValue=").append(sessionIdValue)
+                .append(", msgSeqNum=").append(msgSeqNum).append(", mFixMessage=").append(mFixMessage).append("]");
+        return builder.toString();
+    }
+
+
     /**
      * Sets the originator value.
      *

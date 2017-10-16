@@ -3,6 +3,8 @@ package org.marketcetera.trade.service.impl;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerUnavailable;
@@ -11,16 +13,20 @@ import org.marketcetera.brokers.Selector;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXConverter;
+import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.TradeConstants;
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.TradeMessageBroadcaster;
 import org.marketcetera.trade.TradeMessageListener;
-import org.marketcetera.trade.TradeMessagePublisher;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.Messages;
@@ -47,7 +53,7 @@ import quickfix.Message;
  */
 @Service
 public class TradeServiceImpl
-        implements TradeService,TradeMessagePublisher
+        implements TradeService,TradeMessageBroadcaster
 {
     /* (non-Javadoc)
      * @see org.marketcetera.trade.service.TradeService#selectBroker(org.marketcetera.trade.Order)
@@ -64,7 +70,7 @@ public class TradeServiceImpl
                                    inOrder.getBrokerID(),
                                    broker);
         }
-        if(broker == null) {
+        if(broker == null && brokerSelector != null) {
             BrokerID brokerId = brokerSelector.chooseBroker(inOrder);
             if(brokerId != null) {
                 broker = brokerService.getBroker(brokerId);
@@ -134,17 +140,18 @@ public class TradeServiceImpl
         return message;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.service.TradeService#convertResponse(quickfix.Message, org.marketcetera.brokers.Broker)
+     * @see org.marketcetera.trade.service.TradeService#convertResponse(org.marketcetera.event.HasFIXMessage, org.marketcetera.brokers.Broker)
      */
     @Override
-    public TradeMessage convertResponse(Message inMessage,
+    public TradeMessage convertResponse(HasFIXMessage inMessage,
                                         Broker inBroker)
     {
+        Message fixMessage = inMessage.getMessage();
         try {
-            if(FIXMessageUtil.isTradingSessionStatus(inMessage)) {
+            if(FIXMessageUtil.isTradingSessionStatus(fixMessage)) {
                 Messages.TRADE_SESSION_STATUS.info(this,
                                                    inBroker.getFIXDataDictionary().getHumanFieldValue(quickfix.field.TradSesStatus.FIELD,
-                                                                                                      inMessage.getString(quickfix.field.TradSesStatus.FIELD)));
+                                                                                                      fixMessage.getString(quickfix.field.TradSesStatus.FIELD)));
             }
         } catch (FieldNotFound e) {
             PlatformServices.handleException(this,
@@ -156,15 +163,15 @@ public class TradeServiceImpl
         for(MessageModifier responseModifier : responseModifiers) {
             try {
                 responseModifier.modify(mappedBroker,
-                                        inMessage);
+                                        fixMessage);
                 SLF4JLoggerProxy.debug(this,
                                        "Applied {} to {}",
                                        responseModifier,
-                                       inMessage);
+                                       fixMessage);
             } catch (Exception e) {
                 Messages.MODIFICATION_FAILED.warn(this,
                                                   e,
-                                                  inMessage,
+                                                  fixMessage,
                                                   inBroker);
             }
         }
@@ -174,7 +181,7 @@ public class TradeServiceImpl
                                                              inBroker.getSessionId(),
                                                              inBroker.getBrokerId());
             // TODO determine hierarchy - this might need the original order to resolve
-            reply = FIXConverter.fromQMessage(inMessage,
+            reply = FIXConverter.fromQMessage(fixMessage,
                                               Originator.Broker,
                                               inBroker.getBrokerId(),
                                               Hierarchy.Flat,
@@ -183,7 +190,7 @@ public class TradeServiceImpl
         } catch (MessageCreationException e) {
             Messages.REPORT_FAILED.error(this,
                                          e,
-                                         inMessage,
+                                         fixMessage,
                                          inBroker);
             throw e;
         }
@@ -206,7 +213,7 @@ public class TradeServiceImpl
         tradeMessageListeners.remove(inTradeMessageListener);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.service.TradeService#reportTradeMessage(org.marketcetera.trade.TradeMessage)
+     * @see org.marketcetera.trade.TradeMessageBroadcaster#reportTradeMessage(org.marketcetera.trade.TradeMessage)
      */
     @Override
     public void reportTradeMessage(TradeMessage inTradeMessage)
@@ -220,6 +227,29 @@ public class TradeServiceImpl
                                                  e);
             }
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.TradeService#submitOrderToOutgoingDataFlow(org.marketcetera.trade.HasOrder)
+     */
+    @Override
+    public Object submitOrderToOutgoingDataFlow(HasOrder inOrder)
+    {
+        HeadwaterModule outgoingDataFlowModule = HeadwaterModule.getInstance(TradeConstants.outgoingDataFlowName);
+        if(outgoingDataFlowModule == null) {
+            throw new IllegalStateException("Outgoing data flow not established");
+        }
+        outgoingDataFlowModule.emit(inOrder);
+        // note that this object won't have deterministic state if async flows are used
+        return inOrder;
+    }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        SLF4JLoggerProxy.info(this,
+                              "Trade service started");
     }
     /**
      * Resolve the given broker into the appropriate virtual or physical broker.

@@ -18,21 +18,28 @@ import javax.persistence.PersistenceContext;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
+import org.marketcetera.admin.HasUser;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.user.PersistentUser;
+import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.LongIDFactory;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionListener;
 import org.marketcetera.fix.IncomingMessage;
 import org.marketcetera.fix.dao.IncomingMessageDao;
 import org.marketcetera.fix.dao.PersistentIncomingMessage;
 import org.marketcetera.fix.dao.QPersistentIncomingMessage;
+import org.marketcetera.modules.headwater.HeadwaterModule;
+import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
@@ -54,8 +61,10 @@ import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.ReportType;
 import org.marketcetera.trade.RootOrderIdFactory;
 import org.marketcetera.trade.SecurityType;
+import org.marketcetera.trade.TradeConstants;
 import org.marketcetera.trade.TradeMessage;
-import org.marketcetera.trade.TradingPermissions;
+import org.marketcetera.trade.TradePermissions;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.trade.dao.ExecutionReportDao;
 import org.marketcetera.trade.dao.PersistentExecutionReport;
 import org.marketcetera.trade.dao.PersistentOrderSummary;
@@ -80,12 +89,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import quickfix.Message;
 import quickfix.SessionID;
 
 /* $License$ */
@@ -114,6 +125,8 @@ public class ReportServiceImpl
         cachedSessionStart = CacheBuilder.newBuilder().build();
         Validate.isTrue(missingSeqNumBatchSize > 0,
                         "missingSeqNumBatchSize must be positive");
+        SLF4JLoggerProxy.info(this,
+                              "Report service started");
     }
     /**
      * Stop the object.
@@ -127,6 +140,60 @@ public class ReportServiceImpl
             } catch (Exception ignored) {}
             timerService = null;
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.ReportService#addReport(org.marketcetera.event.HasFIXMessage, org.marketcetera.trade.BrokerID, org.marketcetera.trade.UserID)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void addReport(HasFIXMessage inMessage,
+                          BrokerID inBrokerId,
+                          UserID inUserId)
+    {
+        quickfix.Message fixMessage = inMessage.getMessage();
+        // inject the new report
+        HeadwaterModule reportInjectionEntryPoint = HeadwaterModule.getInstance(TradeConstants.reportInjectionDataFlowName);
+        if(reportInjectionEntryPoint == null) {
+            SLF4JLoggerProxy.warn(this,
+                                  "Unable to add {} because the report injection data flow [{}] does not exist. This data flow must be defined in the server configuration.",
+                                  inMessage,
+                                  TradeConstants.reportInjectionDataFlowName);
+            throw new UnsupportedOperationException("No report injection data flow");
+        }
+        Broker broker = brokerService.getBroker(inBrokerId);
+        if(broker == null) {
+            SLF4JLoggerProxy.warn(this,
+                                  "Unable to set session ID on {} because the broker {} does not exist",
+                                  fixMessage,
+                                  inBrokerId);
+        } else {
+            SessionID sessionIdTarget = broker.getSessionId();
+            // set the session ID as it would be set as if it came from the given broker
+            FIXMessageUtil.setSessionId(fixMessage,
+                                        FIXMessageUtil.getReversedSessionId(sessionIdTarget));
+            FIXVersion fixVersion = FIXVersion.getFIXVersion(sessionIdTarget);
+            fixVersion.getMessageFactory().addSendingTime(fixMessage);
+        }
+        if(!fixMessage.getHeader().isSetField(quickfix.field.MsgSeqNum.FIELD)) {
+            fixMessage.getHeader().setField(new quickfix.field.MsgSeqNum(Integer.MIN_VALUE));
+        }
+        SLF4JLoggerProxy.info(this,
+                              "Injecting: {}",
+                              fixMessage);
+        // set owner of this message
+        Object dataToEmit;
+        User owner = userService.findByUserId(inUserId);
+        if(owner == null) {
+            dataToEmit = inMessage;
+            SLF4JLoggerProxy.warn(this,
+                                  "Unable to establish {} as the owner of {} because that user ID cannot be found. Normal methods will be used to establish the owner of this message.",
+                                  inUserId,
+                                  fixMessage);
+        } else {
+            dataToEmit = new AddReportWrapper(owner,
+                                              fixMessage);
+        }
+        reportInjectionEntryPoint.emit(dataToEmit);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getReportFor(org.marketcetera.trade.ReportID)
@@ -287,7 +354,7 @@ public class ReportServiceImpl
         QPersistentReport r = QPersistentReport.persistentReport;
         BooleanExpression where = r.sendingTime.goe(inDate);
         Set<User> basicUsers = authzService.getSubjectUsersFor(inUser,
-                                                               TradingPermissions.ViewReportAction.name());
+                                                               TradePermissions.ViewReportAction.name());
         Set<PersistentUser> subjectUsers = Sets.newHashSet();
         for(User basicUser : basicUsers) {
             subjectUsers.add((PersistentUser)basicUser);
@@ -328,6 +395,40 @@ public class ReportServiceImpl
         return executionReportDao.findAll(page);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.ReportService#getPositionAsOf(org.marketcetera.admin.User, java.util.Date, org.marketcetera.trade.Instrument)
+     */
+    @Override
+    public BigDecimal getPositionAsOf(User inUser,
+                                      Date inDate,
+                                      Instrument inInstrument)
+    {
+        switch(inInstrument.getSecurityType()) {
+            case Currency:
+                return getCurrencyPositionAsOf(inUser,
+                                               inDate,
+                                               (Currency)inInstrument);
+            case ConvertibleBond:
+                return getConvertibleBondPositionAsOf(inUser,
+                                                      inDate,
+                                                      (ConvertibleBond)inInstrument);
+            case CommonStock:
+                return getEquityPositionAsOf(inUser,
+                                             inDate,
+                                             (Equity)inInstrument);
+            case Future:
+                return getFuturePositionAsOf(inUser,
+                                             inDate,
+                                             (Future)inInstrument);
+            case Option:
+                return getOptionPositionAsOf(inUser,
+                                             inDate,
+                                             (Option)inInstrument);
+            case Unknown:
+            default:
+                throw new UnsupportedOperationException("Unsupported security type: " + inInstrument.getSecurityType());
+        }
+    }
+    /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getEquityPositionAsOf(com.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Equity)
      */
     @Override
@@ -363,6 +464,26 @@ public class ReportServiceImpl
         return reports;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.ReportService#getAllPositionsAsOf(org.marketcetera.admin.User, java.util.Date)
+     */
+    @Override
+    public Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(User inUser,
+                                                                                 Date inDate)
+    {
+        Map<PositionKey<? extends Instrument>,BigDecimal> results = Maps.newHashMap();
+        results.putAll(getAllEquityPositionsAsOf(inUser,
+                                                 inDate));
+        results.putAll(getAllCurrencyPositionsAsOf(inUser,
+                                                   inDate));
+        results.putAll(getAllConvertibleBondPositionsAsOf(inUser,
+                                                          inDate));
+        results.putAll(getAllFuturePositionsAsOf(inUser,
+                                                 inDate));
+        results.putAll(getAllOptionPositionsAsOf(inUser,
+                                                 inDate));
+        return results;
+    }
+    /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getAllEquityPositionsAsOf(com.marketcetera.ors.security.SimpleUser, java.util.Date)
      */
     @Override
@@ -384,7 +505,8 @@ public class ReportServiceImpl
                 return PositionKeyFactory.createEquityKey(inSymbol,
                                                           inAccount,
                                                           inTraderId == null ? null : String.valueOf(inTraderId));
-            }});
+            }}
+        );
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getCurrencyPositionAsOf(com.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Currency)
@@ -640,30 +762,11 @@ public class ReportServiceImpl
             reportSummary.setRootOrderID(rootID);
             reportSummary = executionReportDao.save(reportSummary);
         }
-        // update order status record
+        // update order summary record
         try {
-            OrderSummary orderStatus;
-            if(inReport instanceof OrderCancelReject) {
-                // need to search for some particulars to help us fill out this record
-                orderStatus = orderStatusService.findMostRecentExecutionByRootOrderId(rootID);
-            } else {
-                orderStatus = orderStatusService.findByRootOrderIdAndOrderId(rootID,
-                                                                             inReport.getOrderID());
-                if(orderStatus == null && inReport.getOriginalOrderID() != null) {
-                    orderStatus = orderStatusService.findByRootOrderIdAndOrderId(rootID,
-                                                                                 inReport.getOriginalOrderID());
-                }
-            }
-            if(orderStatus == null) {
-                orderStatus = new PersistentOrderSummary(report,
-                                                        inReport,
-                                                        rootID);
-                orderStatus = orderStatusService.save(orderStatus);
-            } else {
-                orderStatusService.update(orderStatus,
-                                          report,
-                                          inReport);
-            }
+            generateOrderSummary(inReport,
+                                 rootID,
+                                 report);
         } catch (Exception e) {
             if(SLF4JLoggerProxy.isDebugEnabled(this)) {
                 SLF4JLoggerProxy.warn(this,
@@ -681,35 +784,71 @@ public class ReportServiceImpl
         return report;
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.ors.dao.ReportService#delete(com.marketcetera.ors.history.PersistentReport)
+     * @see org.marketcetera.trade.service.ReportService#delete(org.marketcetera.trade.ReportID)
      */
     @Override
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
-    public void delete(ReportBase inReport)
+    public void delete(ReportID inReportId)
     {
-        if(inReport == null) {
-            return;
+        PersistentReport reportToDelete = persistentReportDao.findByReportID(inReportId);
+        if(reportToDelete == null) {
+            throw new IllegalArgumentException("No report for report ID " + inReportId);
         }
-        PersistentReport reportToDelete;
-        if(inReport instanceof PersistentReport) {
-            reportToDelete = (PersistentReport)inReport;
-        } else {
-            reportToDelete = persistentReportDao.findByReportID(inReport.getReportID());
-        }
-        if(reportToDelete == null){
-            return;
-        }
-        // first, delete the execution report summary for this report
-        PersistentExecutionReport reportSummary = executionReportDao.findByReportId(reportToDelete.getId());
-        if(reportSummary != null) {
-            executionReportDao.delete(reportSummary);
+        OrderID rootId = null;
+        PersistentExecutionReport mostRecentExecReport = null;
+        PersistentExecutionReport execReport = executionReportDao.findByReportId(reportToDelete.getId());
+        // this might be null and that's ok, not an error - the report might not be an exec report
+        if(execReport != null) {
+            rootId = execReport.getRootOrderID();
+            executionReportDao.delete(execReport);
+            Page<PersistentExecutionReport> result = executionReportDao.findMostRecentReportFor(rootId,
+                                                                                                new PageRequest(0,1));
+            if(result.hasContent()) {
+                mostRecentExecReport = result.getContent().get(0);
+            }
         }
         // next, delete the order status
         OrderSummary orderStatus = orderStatusService.findByReportId(reportToDelete.getId());
         if(orderStatus != null) {
             orderStatusService.delete(orderStatus);
         }
+        // delete the report
         persistentReportDao.delete(reportToDelete);
+        // recreate the order status if there is a most recent report
+        if(mostRecentExecReport != null) {
+            PersistentReport mostRecentReport = mostRecentExecReport.getReport();
+            ReportBase reportBase = mostRecentReport.toReport();
+            generateOrderSummary(reportBase,
+                                 rootId,
+                                 mostRecentReport);
+        }
+    }
+    private void generateOrderSummary(ReportBase inReportBase,
+                                      OrderID inRootId,
+                                      PersistentReport inReport)
+    {
+        OrderSummary orderStatus;
+        if(inReportBase instanceof OrderCancelReject) {
+            // need to search for some particulars to help us fill out this record
+            orderStatus = orderStatusService.findMostRecentExecutionByRootOrderId(inRootId);
+        } else {
+            orderStatus = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
+                                                                         inReportBase.getOrderID());
+            if(orderStatus == null && inReportBase.getOriginalOrderID() != null) {
+                orderStatus = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
+                                                                             inReportBase.getOriginalOrderID());
+            }
+        }
+        if(orderStatus == null) {
+            orderStatus = new PersistentOrderSummary(inReport,
+                                                     inReportBase,
+                                                     inRootId);
+            orderStatus = orderStatusService.save(orderStatus);
+        } else {
+            orderStatusService.update(orderStatus,
+                                      inReport,
+                                      inReportBase);
+        }
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getRootOrderIdFor(org.marketcetera.trade.OrderID)
@@ -962,7 +1101,7 @@ public class ReportServiceImpl
         }
         BooleanBuilder permissionWhere = new BooleanBuilder();
         Set<User> basicUsers = authzService.getSubjectUsersFor(inViewer,
-                                                               TradingPermissions.ViewPositionAction.name());
+                                                               TradePermissions.ViewPositionAction.name());
         Set<PersistentUser> subjectUsers = Sets.newHashSet();
         for(User basicUser : basicUsers) {
             subjectUsers.add((PersistentUser)basicUser);
@@ -1017,7 +1156,7 @@ public class ReportServiceImpl
         primaryWhere = primaryWhere.and(o.transactTime.loe(inDate));
         BooleanBuilder permissionWhere = new BooleanBuilder();
         Set<User> basicUsers = authzService.getSubjectUsersFor(inUser,
-                                                               TradingPermissions.ViewPositionAction.name());
+                                                               TradePermissions.ViewPositionAction.name());
         Set<PersistentUser> subjectUsers = Sets.newHashSet();
         for(User basicUser : basicUsers) {
             subjectUsers.add((PersistentUser)basicUser);
@@ -1081,6 +1220,63 @@ public class ReportServiceImpl
          */
         BooleanExpression where(QPersistentOrderSummary inTableProxy,
                                 I inInstrument);
+    }
+    /**
+     * Wraps an added report with an owning user.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class AddReportWrapper
+            implements HasFIXMessage,HasUser
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.admin.HasUser#getUser()
+         */
+        @Override
+        public User getUser()
+        {
+            return user;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.event.HasFIXMessage#getMessage()
+         */
+        @Override
+        public Message getMessage()
+        {
+            return message;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("AddReportWrapper [user=").append(user).append(", message=").append(message).append("]");
+            return builder.toString();
+        }
+        /**
+         * Create a new AddReportWrapper instance.
+         *
+         * @param inUser a <code>User</code> value
+         * @param inMessage a <code>Message</code> value
+         */
+        private AddReportWrapper(User inUser,
+                                 Message inMessage)
+        {
+            user = inUser;
+            message = inMessage;
+        }
+        /**
+         * user value
+         */
+        private final User user;
+        /**
+         * message value
+         */
+        private final Message message;
     }
     /**
      * caches session start for a session

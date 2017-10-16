@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 import org.junit.After;
 import org.junit.Test;
-import org.marketcetera.marketdata.MockMarketDataFeedModuleFactory;
 import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -174,14 +173,13 @@ public class ProviderLoadTest extends ModuleTestBase {
         //Should see all the providers now
         ModuleTestBase.checkAllProviders(mManager.getProviders());
 
-        assertEquals(6, mManager.getModuleInstances(null).size());
+        assertEquals(5, mManager.getModuleInstances(null).size());
         assertContains(mManager.getModuleInstances(null),new ModuleURN[]{
                 SinkModuleFactory.INSTANCE_URN,
                 EmitterModuleFactory.INSTANCE_URN,
                 SingleModuleFactory.INSTANCE_URN,
                 CopierModuleFactory.INSTANCE_URN,
-                TransactionModuleFactory.INSTANCE_URN,
-                MockMarketDataFeedModuleFactory.INSTANCE_URN});
+                TransactionModuleFactory.INSTANCE_URN});
     }
     private ModuleManager mManager;
     private static class Refresher implements RefreshListener {

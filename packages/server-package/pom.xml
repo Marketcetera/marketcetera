@@ -21,7 +21,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>saclient</artifactId>
+      <artifactId>misc</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -29,7 +29,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>marketdata-core</artifactId>
+      <artifactId>marketdata-rpc-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-server</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -41,11 +45,39 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>fix-modules</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>trade-server</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>trade-modules</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>trade-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>dataflow-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>dataflow-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-rpc-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>dataflow-rpc-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-bogus</artifactId>
     </dependency>
     <!-- spring compile -->
     <dependency>
@@ -85,17 +117,12 @@
     <!-- local runtime -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>trade-modules</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>fix-modules</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>simple-cluster</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>dataflow-server</artifactId>
       <scope>runtime</scope>
     </dependency>
     <!-- spring runtime -->

@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -48,12 +47,14 @@ import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.options.OptionUtils;
+import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */
 
@@ -797,10 +798,6 @@ public class BasicCSVFeedEventTranslator
         if(symbol == null) {
             return null;
         }
-        Instrument instrument = ClientManager.getInstance().resolveSymbol(symbol);
-        if(instrument != null) {
-            return instrument;
-        }
         if(symbol.contains(":")) { //$NON-NLS-1$
             // assume the symbol contains a CFI (ISO10962) code
             String[] chunks = symbol.split(":"); //$NON-NLS-1$
@@ -841,6 +838,10 @@ public class BasicCSVFeedEventTranslator
             // this is a programming mistake - the code is alleged to be supported (contained by SUPPORTED_CFI_CODES)
             //  but is neither E nor O.  therefore, someone added a code to SUPPORTED_CFI_CODES but did not add a new if clause
             throw new UnsupportedOperationException();
+        }
+        Instrument instrument = symbolResolverService.resolveSymbol(symbol);
+        if(instrument != null) {
+            return instrument;
         }
         // the symbol does not contain ":", therefore we can assume it's a symbol on its own
         // we cannot assume the symbol is an Equity, so, first try it on as an Option, but don't get discouraged if it doesn't work
@@ -1179,6 +1180,29 @@ public class BasicCSVFeedEventTranslator
                                                            dataChunk));
         }
     }
+    /**
+     * Get the symbolResolverService value.
+     *
+     * @return a <code>SymbolResolverService</code> value
+     */
+    public SymbolResolverService getSymbolResolverService()
+    {
+        return symbolResolverService;
+    }
+    /**
+     * Sets the symbolResolverService value.
+     *
+     * @param inSymbolResolverService a <code>SymbolResolverService</code> value
+     */
+    public void setSymbolResolverService(SymbolResolverService inSymbolResolverService)
+    {
+        symbolResolverService = inSymbolResolverService;
+    }
+    /**
+     * provides symbol resolution services
+     */
+    @Autowired
+    protected SymbolResolverService symbolResolverService;
     /**
      * used to uniquely identify events
      */

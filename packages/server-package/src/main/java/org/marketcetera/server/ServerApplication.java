@@ -1,13 +1,63 @@
 package org.marketcetera.server;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.marketcetera.admin.service.UserService;
+import org.marketcetera.admin.service.impl.UserServiceImpl;
+import org.marketcetera.brokers.Selector;
+import org.marketcetera.brokers.service.FixSessionProvider;
+import org.marketcetera.brokers.service.InMemoryFixSessionProvider;
+import org.marketcetera.client.rpc.server.TradeClientRpcService;
 import org.marketcetera.core.ApplicationContainer;
-import org.marketcetera.core.ApplicationVersion;
-import org.marketcetera.core.Messages;
+import org.marketcetera.core.PlatformServices;
+import org.marketcetera.dataflow.config.DataFlowProvider;
+import org.marketcetera.dataflow.server.rpc.DataFlowRpcService;
+import org.marketcetera.fix.FixSessionFactory;
+import org.marketcetera.fix.impl.SimpleFixSessionFactory;
+import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
+import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.modules.fix.FixInitiatorModuleFactory;
+import org.marketcetera.persist.TransactionModuleFactory;
+import org.marketcetera.rpc.server.RpcServer;
+import org.marketcetera.server.session.ServerSession;
+import org.marketcetera.server.session.ServerSessionFactory;
+import org.marketcetera.symbol.IterativeSymbolResolver;
+import org.marketcetera.symbol.PatternSymbolResolver;
+import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.trade.BasicSelector;
+import org.marketcetera.trade.config.StandardIncomingDataFlowProvider;
+import org.marketcetera.trade.config.StandardOutgoingDataFlowProvider;
+import org.marketcetera.trade.config.StandardReportInjectionDataFlowProvider;
+import org.marketcetera.trade.impl.DefaultOwnerStrategy;
+import org.marketcetera.trade.impl.OutgoingMessageLookupStrategy;
+import org.marketcetera.trade.modules.OrderConverterModuleFactory;
+import org.marketcetera.trade.modules.OutgoingMessageCachingModuleFactory;
+import org.marketcetera.trade.modules.OutgoingMessagePersistenceModuleFactory;
+import org.marketcetera.trade.modules.TradeMessageBroadcastModuleFactory;
+import org.marketcetera.trade.modules.TradeMessageConverterModuleFactory;
+import org.marketcetera.trade.modules.TradeMessagePersistenceModuleFactory;
+import org.marketcetera.trade.service.MessageOwnerService;
+import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.ws.stateful.Authenticator;
+import org.marketcetera.util.ws.stateful.SessionManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.google.common.collect.Lists;
+
+import io.grpc.BindableService;
+import quickfix.MessageFactory;
 
 /* $License$ */
 
@@ -18,9 +68,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @version $Id$
  * @since $Release$
  */
+@EnableAutoConfiguration
+@SpringBootConfiguration
 @EnableTransactionManagement
-@SpringBootApplication(scanBasePackages={"org.marketcetera"})
 @EntityScan(basePackages={"org.marketcetera"})
+@SpringBootApplication(scanBasePackages={"org.marketcetera"})
 @EnableJpaRepositories(basePackages={"org.marketcetera"})
 public class ServerApplication
 {
@@ -33,72 +85,277 @@ public class ServerApplication
     {
         SpringApplication.run(ServerApplication.class,
                               inArgs);
-        // log application start
-        Messages.APP_COPYRIGHT.info(ApplicationContainer.class);
-        Messages.APP_VERSION_BUILD.info(ApplicationContainer.class,
-                                        ApplicationVersion.getVersion(ApplicationContainer.class),
-                                        ApplicationVersion.getBuildNumber());
-        Messages.APP_START.info(ApplicationContainer.class);
-        // check to see if we're using a different starting context file than the default
-//        String rawValue = StringUtils.trimToNull(System.getProperty(CONTEXT_FILE_PROP));
-//        if(rawValue != null) {
-//            contextFilename = rawValue;
-//        }
-        final ApplicationContainer application;
-        try {
-            application = new ApplicationContainer();
-            application.setArguments(inArgs);
-            application.start();
-        } catch(Exception e) {
-            if(exitCode == 0) {
-                exitCode = -1;
-            }
-            e.printStackTrace();
-            try {
-                Messages.APP_STOP_ERROR.error(ApplicationContainer.class,
-                                              e);
-            } catch(Exception e2) {
-                System.err.println("Reporting failed"); //$NON-NLS-1$
-                System.err.println("Reporting failure"); //$NON-NLS-1$
-                e2.printStackTrace();
-                System.err.println("Original failure"); //$NON-NLS-1$
-                e.printStackTrace();
-            }
-            System.exit(exitCode);
-            return;
-        }
-        Messages.APP_STARTED.info(ApplicationContainer.class);
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                application.stop();
-                Messages.APP_STOP.info(ApplicationContainer.class);
-//                if(LogManager.getContext() instanceof LoggerContext) {
-//                    Configurator.shutdown((LoggerContext)LogManager.getContext());
-//                }
-            }
-        });
-        try {
-            application.startWaitingForever();
-        } catch(Exception e) {
-            try {
-                Messages.APP_STOP_ERROR.error(ApplicationContainer.class,
-                                              e);
-            } catch(Exception e2) {
-                System.err.println("Reporting failed"); //$NON-NLS-1$
-                System.err.println("Reporting failure"); //$NON-NLS-1$
-                e2.printStackTrace();
-                System.err.println("Original failure"); //$NON-NLS-1$
-                e.printStackTrace();
-            }
-            System.exit(exitCode);
-            return;
-        }
-        Messages.APP_STOP_SUCCESS.info(ApplicationContainer.class);
-        System.exit(exitCode);
+        ApplicationContainer.main(inArgs);
     }
     /**
-     * exit code to return on exit
+     * Get the module manager value.
+     *
+     * @return a <code>ModuleManager</code> value
      */
-    protected static int exitCode = 0;
+    @Bean
+    public ModuleManager getModuleManager()
+    {
+        ModuleManager moduleManager = new ModuleManager();
+        moduleManager.init();
+        ModuleManager.startModulesIfNecessary(moduleManager,
+                                              BogusFeedModuleFactory.INSTANCE_URN,
+                                              TransactionModuleFactory.INSTANCE_URN,
+                                              TradeMessageConverterModuleFactory.INSTANCE_URN,
+                                              TradeMessagePersistenceModuleFactory.INSTANCE_URN,
+                                              TradeMessageBroadcastModuleFactory.INSTANCE_URN,
+                                              OrderConverterModuleFactory.INSTANCE_URN,
+                                              OutgoingMessageCachingModuleFactory.INSTANCE_URN,
+                                              OutgoingMessagePersistenceModuleFactory.INSTANCE_URN,
+                                              FixInitiatorModuleFactory.INSTANCE_URN);
+        for(DataFlowProvider dataFlowProvider : dataFlowProviders) {
+            SLF4JLoggerProxy.info(this,
+                                  "Starting {}",
+                                  dataFlowProvider);
+            try {
+                dataFlowProvider.receiveDataFlowId(moduleManager.createDataFlow(dataFlowProvider.getDataFlow(moduleManager)));
+            } catch (Exception e) {
+                PlatformServices.handleException(this,
+                                                 "Unable to start data flow: " + dataFlowProvider.getName(),
+                                                 e);
+            }
+        }
+        return moduleManager;
+    }
+    /**
+     * Create the standard incoming data flow.
+     *
+     * @return a <code>DataFlowProvider</code> value
+     */
+    @Bean
+    public DataFlowProvider getIncomingDataFlow()
+    {
+        return new StandardIncomingDataFlowProvider();
+    }
+    /**
+     * Create the standard outgoing data flow.
+     *
+     * @return a <code>DataFlowProvider</code> value
+     */
+    @Bean
+    public DataFlowProvider getOutgoingDataFlow()
+    {
+        return new StandardOutgoingDataFlowProvider();
+    }
+    /**
+     * Create the standard report injection data flow.
+     *
+     * @return a <code>DataFlowProvider</code> value
+     */
+    @Bean
+    public DataFlowProvider getInjectionDataFlow()
+    {
+        return new StandardReportInjectionDataFlowProvider();
+    }
+    /**
+     * Get the message factory value.
+     *
+     * @return a <code>MessageFactory</code> value
+     */
+    @Bean
+    public MessageFactory getMessageFactory()
+    {
+        return new quickfix.DefaultMessageFactory();
+    }
+    /**
+     * Get the user service value.
+     *
+     * @return a <code>UserService</code> value
+     */
+    @Bean
+    public UserService getUserService()
+    {
+        return new UserServiceImpl();
+    }
+    /**
+     * Get the session manager value.
+     *
+     * @param inServerSessionFactory a <code>ServerSessionFactory</code>value
+     * @return a <code>SessionManager&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public SessionManager<ServerSession> getSessionManager(@Autowired ServerSessionFactory inServerSessionFactory)
+    {
+        SessionManager<ServerSession> sessionManager = new SessionManager<>(inServerSessionFactory,
+                                                                            sessionLife);
+        return sessionManager;
+    }
+    /**
+     * Get the RPC server value.
+     *
+     * @param inServiceSpecs a <code>List&lt;BindableService&gt;</code> value
+     * @return an <code>RpcServer</code> value
+     * @throws Exception if the server cannot be created 
+     */
+    @Bean
+    public RpcServer getRpcServer(@Autowired(required=false) List<BindableService> inServiceSpecs)
+            throws Exception
+    {
+        RpcServer rpcServer = new RpcServer();
+        rpcServer.setHostname(rpcHostname);
+        rpcServer.setPort(rpcPort);
+        if(inServiceSpecs != null) {
+            for(BindableService service : inServiceSpecs) {
+                rpcServer.getServerServiceDefinitions().add(service);
+            }
+        }
+        return rpcServer;
+    }
+    /**
+     * Get the trade RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return a <code>TradeClientRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public TradeClientRpcService<ServerSession> getTradeRpcTradeService(@Autowired Authenticator inAuthenticator,
+                                                                        @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        TradeClientRpcService<ServerSession> tradeClientRpcService = new TradeClientRpcService<>();
+        tradeClientRpcService.setAuthenticator(inAuthenticator);
+        tradeClientRpcService.setSessionManager(inSessionManager);
+        return tradeClientRpcService;
+    }
+    /**
+     * Get the data flow RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return a <code>DataFlowRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public DataFlowRpcService<ServerSession> getDataFlowRpcTradeService(@Autowired Authenticator inAuthenticator,
+                                                                        @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        DataFlowRpcService<ServerSession> dataflowClientRpcService = new DataFlowRpcService<>();
+        dataflowClientRpcService.setAuthenticator(inAuthenticator);
+        dataflowClientRpcService.setSessionManager(inSessionManager);
+        return dataflowClientRpcService;
+    }
+    /**
+     * Get the market data RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return a <code>MarketDataRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public MarketDataRpcService<ServerSession> getMarketDataRpcTradeService(@Autowired Authenticator inAuthenticator,
+                                                                            @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        MarketDataRpcService<ServerSession> marketDataClientRpcService = new MarketDataRpcService<>();
+        marketDataClientRpcService.setAuthenticator(inAuthenticator);
+        marketDataClientRpcService.setSessionManager(inSessionManager);
+        return marketDataClientRpcService;
+    }
+    /**
+     * Get the FIX session provider value.
+     *
+     * @return a <code>FixSessionProvider</code> value
+     */
+    @Bean
+    public FixSessionProvider getFixSessionProvider()
+    {
+        return new InMemoryFixSessionProvider();
+    }
+    /**
+     * Get the FIX session factory value.
+     *
+     * @return a <code>FixSessionFactory</code> value
+     */
+    @Bean
+    public FixSessionFactory getFixSessionFactory()
+    {
+        return new SimpleFixSessionFactory();
+    }
+    /**
+     * Get the message owner service value.
+     *
+     * @param inOutgoingMessageLookupStrategy an <code>OutgoingMessageLookupStrategy</code> value
+     * @param inDefaultOwnerStrategy a <code>DefaultOwnerStrategy</code> value
+     * @return a <code>MessageOwnerService</code> value
+     */
+    @Bean
+    public MessageOwnerService getMessageOwnerService(@Autowired OutgoingMessageLookupStrategy inOutgoingMessageLookupStrategy,
+                                                      @Autowired DefaultOwnerStrategy inDefaultOwnerStrategy)
+    {
+        MessageOwnerServiceImpl messageOwnerService = new MessageOwnerServiceImpl();
+        messageOwnerService.setIdentifyOwnerStrategies(Lists.newArrayList(inOutgoingMessageLookupStrategy,inDefaultOwnerStrategy));
+        return messageOwnerService;
+    }
+    /**
+     * Get the outgoing message lookup strategy value.
+     *
+     * @return an <code>OutgoingMessageLookupStrategy</code> value
+     */
+    @Bean
+    public OutgoingMessageLookupStrategy getOutgoingMessageLookupStrategy()
+    {
+        return new OutgoingMessageLookupStrategy();
+    }
+    /**
+     * Get the default owner strategy value.
+     *
+     * @return a <code>DefaultOwnerStrategy</code> value
+     */
+    @Bean
+    public DefaultOwnerStrategy getDefaultOwnerStrategy()
+    {
+        DefaultOwnerStrategy defaultOwnerStrategy = new DefaultOwnerStrategy();
+        defaultOwnerStrategy.setUsername("trader");
+        return defaultOwnerStrategy;
+    }
+    /**
+     * Get the symbol resolver service value.
+     *
+     * @return a <code>SymbolResolverService</code> value
+     */
+    @Bean
+    public SymbolResolverService getSymbolResolverService()
+    {
+        IterativeSymbolResolver symbolResolverService = new IterativeSymbolResolver();
+        symbolResolverService.setSymbolResolvers(Lists.newArrayList(new PatternSymbolResolver()));
+        return symbolResolverService;
+    }
+    /**
+     * Get the broker selector value.
+     *
+     * @return a <code>Selector</code> value
+     */
+    @Bean
+    public Selector getBrokerSelector()
+    {
+        BasicSelector selector = new BasicSelector();
+        return selector;
+    }
+    /**
+     * provides data flows
+     */
+    @Autowired(required=false)
+    private Collection<DataFlowProvider> dataFlowProviders = Lists.newArrayList();
+    /**
+     * message owner value
+     */
+    @Value("${metc.default.message.owner}")
+    private String defaultMessageOwner = "trader";
+    /**
+     * session life value in millis
+     */
+    @Value("${metc.session.life.mills}")
+    private long sessionLife = SessionManager.INFINITE_SESSION_LIFESPAN;
+    /**
+     * RPC hostname
+     */
+    @Value("${metc.rpc.hostname}")
+    private String rpcHostname = "127.0.0.1";
+    /**
+     * RPC port
+     */
+    @Value("${metc.rpc.port}")
+    private int rpcPort = 8999;
 }

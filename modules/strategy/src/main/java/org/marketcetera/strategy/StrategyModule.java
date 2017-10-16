@@ -1,23 +1,64 @@
 package org.marketcetera.strategy;
 
-import static org.marketcetera.strategy.Messages.*;
+import static org.marketcetera.strategy.Messages.BEAN_ATTRIBUTE_CHANGED;
+import static org.marketcetera.strategy.Messages.CANNOT_CREATE_CONNECTION;
+import static org.marketcetera.strategy.Messages.CANNOT_SEND_EVENT_TO_CEP;
+import static org.marketcetera.strategy.Messages.CEP_REQUEST_FAILED;
+import static org.marketcetera.strategy.Messages.COMBINED_DATA_REQUEST_FAILED;
+import static org.marketcetera.strategy.Messages.EMPTY_INSTANCE_ERROR;
+import static org.marketcetera.strategy.Messages.EMPTY_NAME_ERROR;
+import static org.marketcetera.strategy.Messages.EXECUTION_REPORT_REQUEST_FAILED;
+import static org.marketcetera.strategy.Messages.FAILED_TO_START;
+import static org.marketcetera.strategy.Messages.FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE;
+import static org.marketcetera.strategy.Messages.INVALID_CEP_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_COMBINED_DATA_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_DATA;
+import static org.marketcetera.strategy.Messages.INVALID_EVENT;
+import static org.marketcetera.strategy.Messages.INVALID_LANGUAGE_ERROR;
+import static org.marketcetera.strategy.Messages.INVALID_LOG;
+import static org.marketcetera.strategy.Messages.INVALID_MARKET_DATA_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_MESSAGE;
+import static org.marketcetera.strategy.Messages.INVALID_NOTIFICATION;
+import static org.marketcetera.strategy.Messages.INVALID_TRADE_SUGGESTION;
+import static org.marketcetera.strategy.Messages.MARKET_DATA_REQUEST_FAILED;
+import static org.marketcetera.strategy.Messages.MESSAGE_1P;
+import static org.marketcetera.strategy.Messages.NO_DATA_HANDLE;
+import static org.marketcetera.strategy.Messages.NULL_PARAMETER_ERROR;
+import static org.marketcetera.strategy.Messages.PARAMETER_COUNT_ERROR;
+import static org.marketcetera.strategy.Messages.PARAMETER_TYPE_ERROR;
+import static org.marketcetera.strategy.Messages.SEND_MESSAGE_FAILED;
+import static org.marketcetera.strategy.Messages.STATUS_CHANGED;
+import static org.marketcetera.strategy.Messages.STOP_ERROR;
+import static org.marketcetera.strategy.Messages.UNABLE_TO_CANCEL_DATA_REQUEST;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.concurrent.GuardedBy;
-import javax.management.*;
+import javax.management.AttributeChangeNotification;
+import javax.management.ListenerNotFoundException;
+import javax.management.MBeanNotificationInfo;
+import javax.management.NotificationBroadcasterSupport;
+import javax.management.NotificationEmitter;
+import javax.management.NotificationFilter;
+import javax.management.NotificationListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.brokers.BrokerStatus;
-import org.marketcetera.client.*;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.CloseableLock;
 import org.marketcetera.core.Util;
@@ -32,21 +73,49 @@ import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.manager.MarketDataManager;
 import org.marketcetera.metrics.ThreadedMetric;
-import org.marketcetera.module.*;
-import org.marketcetera.trade.*;
+import org.marketcetera.module.DataEmitter;
+import org.marketcetera.module.DataEmitterSupport;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataFlowRequester;
+import org.marketcetera.module.DataFlowSupport;
+import org.marketcetera.module.DataReceiver;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.IllegalRequestParameterValue;
+import org.marketcetera.module.Module;
+import org.marketcetera.module.ModuleCreationException;
+import org.marketcetera.module.ModuleException;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.RequestID;
+import org.marketcetera.module.StopDataFlowException;
+import org.marketcetera.module.UnsupportedDataTypeException;
+import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.Suggestion;
+import org.marketcetera.trade.client.TradingClient;
+import org.marketcetera.trade.client.TradingClientFactory;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-
-import quickfix.Message;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.sun.mail.iap.ConnectionException;
+
+import quickfix.Message;
 
 /* $License$ */
 
@@ -575,7 +644,6 @@ final class StrategyModule
      */
     @Override
     public List<BrokerStatus> getBrokers()
-        throws ConnectionException, ClientInitException
     {
         return clientFactory.getClient().getBrokersStatus().getBrokers();
     }
@@ -1715,25 +1783,6 @@ final class StrategyModule
         }
     }
     /**
-     * Constructs a <code>Client</code> connection.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since 2.1.0
-     */
-    @ClassVersion("$Id$")
-    static interface ClientFactory
-    {
-        /**
-         * Returns the <code>Client</code> instance to use to connect to the server. 
-         *
-         * @return a <code>Client</code> value
-         * @throws ClientInitException if the client could not be created
-         */
-        Client getClient()
-                throws ClientInitException;
-    }
-    /**
      * the name of the strategy being run - this name is chosen by the module caller and has no mandatory correlation 
      * to the contents of the strategy
      */
@@ -1800,16 +1849,14 @@ final class StrategyModule
     @GuardedBy("dataFlowLock")
     private DataFlowID orsFlow;
     /**
-     * default method for connecting to the client
+     * provides access to the trading client
      */
-    static volatile ClientFactory clientFactory = new ClientFactory() {
-        @Override
-        public Client getClient()
-                throws ClientInitException
-        {
-            return ClientManager.getInstance();
-        }
-    };
+    @Autowired
+    private TradingClientFactory tradingClientFactory;
+    /**
+     * provides access to trading client services
+     */
+    private TradingClient tradingClient;
     /**
      * counter used to guarantee unique identifiers
      */
