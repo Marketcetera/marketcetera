@@ -25,7 +25,6 @@ import org.marketcetera.admin.service.UserAttributeService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
-import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
 import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
@@ -925,5 +924,5 @@ public class AdminRpcService<SessionClazz>
     /**
      * description of the service
      */
-    private static final String DESCRIPTION = "MATP Admin RPC Service"; //$NON-NLS-1$
+    private static final String DESCRIPTION = "Admin RPC Service"; //$NON-NLS-1$
 }

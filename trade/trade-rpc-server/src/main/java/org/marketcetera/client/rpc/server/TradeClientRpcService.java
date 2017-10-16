@@ -986,7 +986,7 @@ public class TradeClientRpcService<SessionClazz>
     /**
      * description of this service
      */
-    private final static String description = "Marketcetera Trading Service";
+    private final static String description = "Trade RPC Service";
     /**
      * holds trade message listeners by id
      */

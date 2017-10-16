@@ -3,7 +3,11 @@ package org.marketcetera.server;
 import java.util.Collection;
 import java.util.List;
 
+import org.marketcetera.admin.UserAttributeFactory;
+import org.marketcetera.admin.dao.PersistentUserAttributeFactory;
+import org.marketcetera.admin.service.UserAttributeService;
 import org.marketcetera.admin.service.UserService;
+import org.marketcetera.admin.service.impl.UserAttributeServiceImpl;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.brokers.Selector;
 import org.marketcetera.brokers.service.FixSessionProvider;
@@ -55,6 +59,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.google.common.collect.Lists;
+import com.marketcetera.admin.rpc.AdminRpcService;
 
 import io.grpc.BindableService;
 import quickfix.MessageFactory;
@@ -222,6 +227,22 @@ public class ServerApplication
         return tradeClientRpcService;
     }
     /**
+     * Get the admin RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return an <code>AdminRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public AdminRpcService<ServerSession> getAdminRpcService(@Autowired Authenticator inAuthenticator,
+                                                             @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        AdminRpcService<ServerSession> adminRpcService = new AdminRpcService<>();
+        adminRpcService.setAuthenticator(inAuthenticator);
+        adminRpcService.setSessionManager(inSessionManager);
+        return adminRpcService;
+    }
+    /**
      * Get the data flow RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
@@ -332,6 +353,26 @@ public class ServerApplication
     {
         BasicSelector selector = new BasicSelector();
         return selector;
+    }
+    /**
+     * Get the user attribute factory value.
+     *
+     * @return a <code>UserAttributeFactory</code> value
+     */
+    @Bean
+    public UserAttributeFactory getUserAttributeFactory()
+    {
+        return new PersistentUserAttributeFactory();
+    }
+    /**
+     * Get the user attribute service value.
+     *
+     * @return a <code>UserAttributeService</code> value
+     */
+    @Bean
+    public UserAttributeService getUserAttributeService()
+    {
+        return new UserAttributeServiceImpl();
     }
     /**
      * provides data flows
