@@ -1,15 +1,18 @@
 package org.marketcetera.saclient;
 
-import org.marketcetera.util.misc.ClassVersion;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlMimeType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 
-import java.io.*;
+import org.apache.commons.io.IOUtils;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -22,8 +25,9 @@ import java.io.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="createStrategyParameters")
 @ClassVersion("$Id$")
-public final class CreateStrategyParameters implements Serializable {
-
+public final class CreateStrategyParameters
+        implements Serializable
+{
     /**
      * Creates an instance.
      *
@@ -33,12 +37,9 @@ public final class CreateStrategyParameters implements Serializable {
      * @param inStrategySource the file containing the strategy source. Cannot be null.
      * @param inParameters the strategy parameters as a list of ':' separated,
      * name=value pairs. Can be null.
-     * @param inRouteOrdersToServer if the strategy should route its orders
-     * to the server.
-     * 
+     * @param inRouteOrdersToServer if the strategy should route its orders to the server.
+     * @throws IOException 
      * @throws NullPointerException if any of the non-null field values are null.
-     * @throws FileNotFoundException if the <code>inStrategySource</code> file
-     * does not exist or if it cannot be read.
      */
     public CreateStrategyParameters(String inInstanceName,
                               String inStrategyName,
@@ -46,7 +47,8 @@ public final class CreateStrategyParameters implements Serializable {
                               File inStrategySource,
                               String inParameters,
                               boolean inRouteOrdersToServer)
-            throws FileNotFoundException {
+            throws IOException
+    {
         if(inStrategyName == null) {
             throw new NullPointerException();
         }
@@ -63,7 +65,7 @@ public final class CreateStrategyParameters implements Serializable {
         mInstanceName = inInstanceName;
         mStrategyName = inStrategyName;
         mLanguage = inLanguage;
-        mStrategySource = new DataHandler(new FileDataSource(inStrategySource));
+        mStrategySource = IOUtils.toString(new FileInputStream(inStrategySource));
         mParameters = inParameters;
         mRouteOrdersToServer = inRouteOrdersToServer;
     }
@@ -105,8 +107,10 @@ public final class CreateStrategyParameters implements Serializable {
      *
      * @throws IOException if there were errors getting the input stream.
      */
-    public InputStream getStrategySource() throws IOException {
-        return mStrategySource.getInputStream();
+    public InputStream getStrategySource()
+            throws IOException
+    {
+        return IOUtils.toInputStream(mStrategySource);
     }
 
     /**
@@ -161,7 +165,6 @@ public final class CreateStrategyParameters implements Serializable {
     private final String mLanguage;
     private final String mParameters;
     private final boolean mRouteOrdersToServer;
-    @XmlMimeType("application/octet-stream")
-    private final DataHandler mStrategySource;
-    private static final long serialVersionUID = 1L;
+    private final String mStrategySource;
+    private static final long serialVersionUID = -4937743911766362165L;
 }
