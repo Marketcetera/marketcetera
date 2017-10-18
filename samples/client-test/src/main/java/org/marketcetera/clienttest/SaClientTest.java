@@ -1,7 +1,7 @@
 package org.marketcetera.clienttest;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.saclient.CreateStrategyParameters;
@@ -65,7 +65,7 @@ public class SaClientTest
                                                               new File(SaClientTest.class.getClassLoader().getResource("HelloWorld.java").getFile()),
                                                               null,
                                                               true);
-        } catch (FileNotFoundException e1) {
+        } catch (IOException e1) {
             e1.printStackTrace();
             return;
         }
