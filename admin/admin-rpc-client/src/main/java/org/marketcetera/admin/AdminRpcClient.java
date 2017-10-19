@@ -1,6 +1,7 @@
 package org.marketcetera.admin;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -8,17 +9,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
-import org.marketcetera.admin.AdminClient;
-import org.marketcetera.admin.AdminUtil;
-import org.marketcetera.admin.Permission;
-import org.marketcetera.admin.PermissionFactory;
-import org.marketcetera.admin.Role;
-import org.marketcetera.admin.RoleFactory;
-import org.marketcetera.admin.User;
-import org.marketcetera.admin.UserAttribute;
-import org.marketcetera.admin.UserAttributeFactory;
-import org.marketcetera.admin.UserAttributeType;
-import org.marketcetera.admin.UserFactory;
+import org.marketcetera.admin.rpc.AdminRpcUtil;
 import org.marketcetera.admin.service.PasswordService;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
@@ -155,7 +146,7 @@ public class AdminRpcClient
                                        inNewUser);
                 AdminRpc.CreateUserRequest.Builder requestBuilder = AdminRpc.CreateUserRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setUser(AdminUtil.getRpcUser(inNewUser));
+                AdminRpcUtil.getRpcUser(inNewUser).ifPresent(value->requestBuilder.setUser(value));
                 requestBuilder.setPassword(passwordService.getHash(inPassword));
                 AdminRpc.CreateUserRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
@@ -167,13 +158,13 @@ public class AdminRpcClient
                                        "{} received {}",
                                        getSessionId(),
                                        response);
-                User result = AdminUtil.getUser(response.getUser(),
-                                                userFactory);
+                Optional<User> result = AdminRpcUtil.getUser(response.getUser(),
+                                                             userFactory);
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
                                        result);
-                return result;
+                return result.orElse(null);
             }
         });
     }
@@ -196,7 +187,7 @@ public class AdminRpcClient
                                        inUser);
                 AdminRpc.UpdateUserRequest.Builder requestBuilder = AdminRpc.UpdateUserRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setUser(AdminUtil.getRpcUser(inUser));
+                AdminRpcUtil.getRpcUser(inUser).ifPresent(value->requestBuilder.setUser(value));
                 requestBuilder.setUsername(inUsername);
                 AdminRpc.UpdateUserRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
@@ -208,13 +199,13 @@ public class AdminRpcClient
                                        "{} received {}",
                                        getSessionId(),
                                        response);
-                User result = AdminUtil.getUser(response.getUser(),
-                                                userFactory);
+                Optional<User> result = AdminRpcUtil.getUser(response.getUser(),
+                                                             userFactory);
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
                                        result);
-                return result;
+                return result.orElse(null);
             }
         });
     }
@@ -303,7 +294,7 @@ public class AdminRpcClient
                                        inRole);
                 AdminRpc.CreateRoleRequest.Builder requestBuilder = AdminRpc.CreateRoleRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setRole(AdminUtil.getRpcRole(inRole));
+                AdminRpcUtil.getRpcRole(inRole).ifPresent(value->requestBuilder.setRole(value));
                 AdminRpc.CreateRoleRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} sending {}",
@@ -314,13 +305,15 @@ public class AdminRpcClient
                                        "{} received {}",
                                        getSessionId(),
                                        response);
-                Role result = AdminUtil.getRole(response.getRole(),
-                                                roleFactory);
+                Optional<Role> result = AdminRpcUtil.getRole(response.getRole(),
+                                                             roleFactory,
+                                                             permissionFactory,
+                                                             userFactory);
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
                                        result);
-                return result;
+                return result.orElse(null);
             }
         });
     }
@@ -363,8 +356,10 @@ public class AdminRpcClient
                                        response);
                 List<Role> results = Lists.newArrayList();
                 for(AdminRpc.Role rpcRole : response.getRoleList()) {
-                    results.add(AdminUtil.getRole(rpcRole,
-                                                  roleFactory));
+                    AdminRpcUtil.getRole(rpcRole,
+                                         roleFactory,
+                                         permissionFactory,
+                                         userFactory).ifPresent(value->results.add(value));
                 }
                 CollectionPageResponse<Role> result = new CollectionPageResponse<>();
                 if(response.hasPage()) {
@@ -399,7 +394,7 @@ public class AdminRpcClient
                                        inRole);
                 AdminRpc.UpdateRoleRequest.Builder requestBuilder = AdminRpc.UpdateRoleRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setRole(AdminUtil.getRpcRole(inRole));
+                AdminRpcUtil.getRpcRole(inRole).ifPresent(value->requestBuilder.setRole(value));
                 requestBuilder.setRoleName(inName);
                 AdminRpc.UpdateRoleRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
@@ -411,13 +406,15 @@ public class AdminRpcClient
                                        "{} received {}",
                                        getSessionId(),
                                        response);
-                Role result = AdminUtil.getRole(response.getRole(),
-                                                roleFactory);
+                Optional<Role> result = AdminRpcUtil.getRole(response.getRole(),
+                                                             roleFactory,
+                                                             permissionFactory,
+                                                             userFactory);
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
                                        result);
-                return result;
+                return result.orElse(null);
             }
         });
     }
@@ -494,8 +491,11 @@ public class AdminRpcClient
                                        response);
                 List<User> results = Lists.newArrayList();
                 for(AdminRpc.User rpcUser : response.getUserList()) {
-                    results.add(AdminUtil.getUser(rpcUser,
-                                                  userFactory));
+                    Optional<User> user = AdminRpcUtil.getUser(rpcUser,
+                                                               userFactory);
+                    if(user.isPresent()) {
+                        results.add(user.get());
+                    }
                 }
                 CollectionPageResponse<User> result = new CollectionPageResponse<>();
                 if(response.hasPage()) {
@@ -528,7 +528,7 @@ public class AdminRpcClient
                                        inPermission);
                 AdminRpc.CreatePermissionRequest.Builder requestBuilder = AdminRpc.CreatePermissionRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setPermission(AdminUtil.getRpcPermission(inPermission));
+                AdminRpcUtil.getRpcPermission(inPermission).ifPresent(value->requestBuilder.setPermission(value));
                 AdminRpc.CreatePermissionRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} sending {}",
@@ -539,13 +539,13 @@ public class AdminRpcClient
                                        "{} received {}",
                                        getSessionId(),
                                        response);
-                Permission result = AdminUtil.getPermission(response.getPermission(),
-                                                            permissionFactory);
+                Optional<Permission> result = AdminRpcUtil.getPermission(response.getPermission(),
+                                                                         permissionFactory);
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
                                        result);
-                return result;
+                return result.orElse(null);
             }
         });
     }
@@ -588,8 +588,7 @@ public class AdminRpcClient
                                        response);
                 List<Permission> results = Lists.newArrayList();
                 for(AdminRpc.Permission rpcPermission : response.getPermissionList()) {
-                    results.add(AdminUtil.getPermission(rpcPermission,
-                                                        permissionFactory));
+                    AdminRpcUtil.getPermission(rpcPermission,permissionFactory).ifPresent(value->results.add(value));
                 }
                 CollectionPageResponse<Permission> result = new CollectionPageResponse<>();
                 if(response.hasPage()) {
@@ -624,7 +623,7 @@ public class AdminRpcClient
                                        inPermission);
                 AdminRpc.UpdatePermissionRequest.Builder requestBuilder = AdminRpc.UpdatePermissionRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setPermission(AdminUtil.getRpcPermission(inPermission));
+                AdminRpcUtil.getRpcPermission(inPermission).ifPresent(value->requestBuilder.setPermission(value));
                 requestBuilder.setPermissionName(inName);
                 AdminRpc.UpdatePermissionRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
@@ -636,13 +635,13 @@ public class AdminRpcClient
                                        "{} received {}",
                                        getSessionId(),
                                        response);
-                Permission result = AdminUtil.getPermission(response.getPermission(),
-                                                            permissionFactory);
+                Optional<Permission> result = AdminRpcUtil.getPermission(response.getPermission(),
+                                                                         permissionFactory);
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
                                        result);
-                return result;
+                return result.orElse(null);
             }
         });
     }
@@ -699,7 +698,7 @@ public class AdminRpcClient
                                        inUsername);
                 AdminRpc.ReadUserAttributeRequest.Builder requestBuilder = AdminRpc.ReadUserAttributeRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setAttributeType(AdminUtil.getRpcUserAttributeType(inAttributeType).getAttribute());
+                requestBuilder.setAttributeType(AdminRpcUtil.getRpcUserAttributeType(inAttributeType).getAttribute());
                 AdminRpc.ReadUserAttributeRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} sending {}",
@@ -712,7 +711,7 @@ public class AdminRpcClient
                                        response);
                 UserAttribute result = null;
                 if(response.hasUserAttribute()) {
-                    result = AdminUtil.getUserAttribute(response.getUserAttribute());
+                    result = AdminRpcUtil.getUserAttribute(response.getUserAttribute());
                 }
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} returning {}",
@@ -743,7 +742,7 @@ public class AdminRpcClient
                                        inUsername);
                 AdminRpc.WriteUserAttributeRequest.Builder requestBuilder = AdminRpc.WriteUserAttributeRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setAttributeType(AdminUtil.getRpcUserAttributeType(inAttributeType).getAttribute());
+                requestBuilder.setAttributeType(AdminRpcUtil.getRpcUserAttributeType(inAttributeType).getAttribute());
                 requestBuilder.setAttribute(inAttribute);
                 AdminRpc.WriteUserAttributeRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,

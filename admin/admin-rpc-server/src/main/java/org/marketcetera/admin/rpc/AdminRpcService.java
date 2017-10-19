@@ -8,7 +8,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.AdminPermissions;
-import org.marketcetera.admin.AdminUtil;
 import org.marketcetera.admin.MutablePermission;
 import org.marketcetera.admin.MutableUser;
 import org.marketcetera.admin.MutableUserAttribute;
@@ -224,7 +223,7 @@ public class AdminRpcService<SessionClazz>
                                                  rpcUser.getDescription(),
                                                  rpcUser.getActive());
                     newUser = userService.save(newUser);
-                    responseBuilder.setUser(AdminUtil.getRpcUser(newUser));
+                    AdminRpcUtil.getRpcUser(newUser).ifPresent(value->responseBuilder.setUser(value));
                 }
                 AdminRpc.CreateUserResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcService.this,
@@ -265,7 +264,7 @@ public class AdminRpcService<SessionClazz>
                 if(pagedResponse != null) {
                     responseBuilder.setPage(PagingUtil.getPageResponse(pagedResponse));
                     for(User user : pagedResponse.getElements()) {
-                        responseBuilder.addUser(AdminUtil.getRpcUser(user));
+                        AdminRpcUtil.getRpcUser(user).ifPresent(value->responseBuilder.addUser(value));
                     }
                 }
                 AdminRpc.ReadUsersResponse response = responseBuilder.build();
@@ -309,7 +308,7 @@ public class AdminRpcService<SessionClazz>
                         mutableUser.setDescription(rpcUser.getDescription());
                         // don't change id or password!
                         existingUser = userService.save(mutableUser);
-                        responseBuilder.setUser(AdminUtil.getRpcUser(existingUser));
+                        AdminRpcUtil.getRpcUser(existingUser).ifPresent(value->responseBuilder.setUser(value));
                     } else {
                         throw new IllegalStateException("User service returned a non-mutable user - check configuration");
                     }
@@ -465,7 +464,7 @@ public class AdminRpcService<SessionClazz>
                     newPermission = permissionFactory.create(rpcPermission.getName(),
                                                              rpcPermission.getDescription());
                     newPermission = authzService.save(newPermission);
-                    responseBuilder.setPermission(AdminUtil.getRpcPermission(newPermission));
+                    AdminRpcUtil.getRpcPermission(newPermission).ifPresent(value->responseBuilder.setPermission(value));
                 }
                 AdminRpc.CreatePermissionResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcService.this,
@@ -506,7 +505,7 @@ public class AdminRpcService<SessionClazz>
                 if(pagedResponse != null) {
                     responseBuilder.setPage(PagingUtil.getPageResponse(pagedResponse));
                     for(Permission permission : pagedResponse.getElements()) {
-                        responseBuilder.addPermission(AdminUtil.getRpcPermission(permission));
+                        AdminRpcUtil.getRpcPermission(permission).ifPresent(value->responseBuilder.addPermission(value));
                     }
                 }
                 AdminRpc.ReadPermissionsResponse response = responseBuilder.build();
@@ -548,7 +547,7 @@ public class AdminRpcService<SessionClazz>
                         mutablePermission.setName(rpcUser.getName());
                         mutablePermission.setDescription(rpcUser.getDescription());
                         existingPermission = authzService.save(mutablePermission);
-                        responseBuilder.setPermission(AdminUtil.getRpcPermission(existingPermission));
+                        AdminRpcUtil.getRpcPermission(existingPermission).ifPresent(value->responseBuilder.setPermission(value));
                     } else {
                         throw new IllegalStateException("User service returned a non-mutable permission - check configuration");
                     }
@@ -644,7 +643,7 @@ public class AdminRpcService<SessionClazz>
                         }
                     }
                     newRole = authzService.save(newRole);
-                    responseBuilder.setRole(AdminUtil.getRpcRole(newRole));
+                    AdminRpcUtil.getRpcRole(newRole).ifPresent(value->responseBuilder.setRole(value));
                 }
                 AdminRpc.CreateRoleResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcService.this,
@@ -685,7 +684,7 @@ public class AdminRpcService<SessionClazz>
                 if(pagedResponse != null) {
                     responseBuilder.setPage(PagingUtil.getPageResponse(pagedResponse));
                     for(Role role : pagedResponse.getElements()) {
-                        responseBuilder.addRole(AdminUtil.getRpcRole(role));
+                        AdminRpcUtil.getRpcRole(role).ifPresent(value->responseBuilder.addRole(value));
                     }
                 }
                 AdminRpc.ReadRolesResponse response = responseBuilder.build();
@@ -745,7 +744,7 @@ public class AdminRpcService<SessionClazz>
                         }
                     }
                     existingRole = authzService.save(existingRole);
-                    responseBuilder.setRole(AdminUtil.getRpcRole(existingRole));
+                    AdminRpcUtil.getRpcRole(existingRole).ifPresent(value->responseBuilder.setRole(value));
                 }
                 AdminRpc.UpdateRoleResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcService.this,
@@ -817,7 +816,7 @@ public class AdminRpcService<SessionClazz>
                 UserAttribute userAttribute = userAttributeService.getUserAttribute(user,
                                                                                     userAttributeType);
                 if(userAttribute != null) {
-                    responseBuilder.setUserAttribute(AdminUtil.getRpcUserAttribute(userAttribute));
+                    responseBuilder.setUserAttribute(AdminRpcUtil.getRpcUserAttribute(userAttribute));
                 }
                 AdminRpc.ReadUserAttributeResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcService.this,
