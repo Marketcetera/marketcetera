@@ -1,4 +1,4 @@
-package com.marketcetera.admin;
+package org.marketcetera.admin;
 
 import org.marketcetera.trade.MarketceteraTestBase;
 import org.springframework.boot.test.context.SpringBootTest;

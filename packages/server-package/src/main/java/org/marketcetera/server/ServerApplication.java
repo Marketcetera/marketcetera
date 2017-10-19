@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.marketcetera.admin.UserAttributeFactory;
 import org.marketcetera.admin.dao.PersistentUserAttributeFactory;
+import org.marketcetera.admin.rpc.AdminRpcService;
 import org.marketcetera.admin.service.UserAttributeService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserAttributeServiceImpl;
@@ -59,7 +60,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.google.common.collect.Lists;
-import com.marketcetera.admin.rpc.AdminRpcService;
 
 import io.grpc.BindableService;
 import quickfix.MessageFactory;

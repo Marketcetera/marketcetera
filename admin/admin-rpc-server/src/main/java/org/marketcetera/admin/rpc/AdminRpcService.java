@@ -1,4 +1,4 @@
-package com.marketcetera.admin.rpc;
+package org.marketcetera.admin.rpc;
 
 import java.util.Set;
 
@@ -8,6 +8,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.AdminPermissions;
+import org.marketcetera.admin.AdminUtil;
 import org.marketcetera.admin.MutablePermission;
 import org.marketcetera.admin.MutableUser;
 import org.marketcetera.admin.MutableUserAttribute;
@@ -74,7 +75,6 @@ import com.marketcetera.admin.AdminRpc.WriteUserAttributeRequest;
 import com.marketcetera.admin.AdminRpc.WriteUserAttributeResponse;
 import com.marketcetera.admin.AdminRpcServiceGrpc;
 import com.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceImplBase;
-import com.marketcetera.admin.AdminUtil;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;

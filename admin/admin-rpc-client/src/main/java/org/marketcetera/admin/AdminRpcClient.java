@@ -1,4 +1,4 @@
-package com.marketcetera.admin;
+package org.marketcetera.admin;
 
 import java.util.List;
 import java.util.Set;
@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.admin.AdminClient;
+import org.marketcetera.admin.AdminUtil;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.Role;
@@ -36,6 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.marketcetera.admin.AdminRpc;
+import com.marketcetera.admin.AdminRpcServiceGrpc;
 import com.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceBlockingStub;
 import com.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceStub;
 

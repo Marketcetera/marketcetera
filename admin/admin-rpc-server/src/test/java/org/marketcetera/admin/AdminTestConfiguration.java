@@ -1,9 +1,11 @@
-package com.marketcetera.admin;
+package org.marketcetera.admin;
 
 import java.util.List;
 
+import org.marketcetera.admin.AdminRpcClientFactory;
 import org.marketcetera.admin.UserAttributeFactory;
 import org.marketcetera.admin.dao.PersistentUserAttributeFactory;
+import org.marketcetera.admin.rpc.AdminRpcService;
 import org.marketcetera.admin.service.UserAttributeService;
 import org.marketcetera.admin.service.impl.UserAttributeServiceImpl;
 import org.marketcetera.rpc.server.RpcServer;
@@ -14,8 +16,6 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-
-import com.marketcetera.admin.rpc.AdminRpcService;
 
 import io.grpc.BindableService;
 

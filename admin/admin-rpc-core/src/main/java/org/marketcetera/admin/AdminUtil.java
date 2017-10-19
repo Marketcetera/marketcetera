@@ -1,14 +1,6 @@
-package com.marketcetera.admin;
+package org.marketcetera.admin;
 
-import org.marketcetera.admin.Permission;
-import org.marketcetera.admin.PermissionFactory;
-import org.marketcetera.admin.Role;
-import org.marketcetera.admin.RoleFactory;
-import org.marketcetera.admin.User;
-import org.marketcetera.admin.UserAttribute;
-import org.marketcetera.admin.UserAttributeType;
-import org.marketcetera.admin.UserFactory;
-import org.marketcetera.rpc.base.BaseRpc;
+import com.marketcetera.admin.AdminRpc;
 
 /* $License$ */
 

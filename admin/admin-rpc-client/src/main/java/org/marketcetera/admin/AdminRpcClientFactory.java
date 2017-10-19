@@ -1,4 +1,4 @@
-package com.marketcetera.admin;
+package org.marketcetera.admin;
 
 import org.marketcetera.admin.AdminClient;
 import org.marketcetera.rpc.client.RpcClientFactory;

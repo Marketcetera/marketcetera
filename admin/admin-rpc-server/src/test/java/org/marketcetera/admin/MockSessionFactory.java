@@ -1,4 +1,4 @@
-package com.marketcetera.admin;
+package org.marketcetera.admin;
 
 import org.marketcetera.util.ws.stateful.SessionFactory;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;

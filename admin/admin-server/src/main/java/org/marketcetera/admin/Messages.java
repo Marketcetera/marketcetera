@@ -19,7 +19,7 @@ public interface Messages {
     /**
      * The message provider
      */
-    static final I18NMessageProvider PROVIDER = new I18NMessageProvider("admin_db"); //$NON-NLS-1$
+    static final I18NMessageProvider PROVIDER = new I18NMessageProvider("admin_server"); //$NON-NLS-1$
     /**
      * The message logger.
      */

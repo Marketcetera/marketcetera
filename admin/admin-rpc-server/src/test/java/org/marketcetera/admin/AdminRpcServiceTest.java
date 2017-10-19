@@ -1,15 +1,19 @@
-package com.marketcetera.admin;
+package org.marketcetera.admin;
 
+import org.marketcetera.admin.AdminRpcClient;
+import org.marketcetera.admin.AdminRpcClientFactory;
+import org.marketcetera.admin.AdminRpcClientParameters;
 import org.marketcetera.admin.impl.SimplePermissionFactory;
 import org.marketcetera.admin.impl.SimpleRoleFactory;
 import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
+import org.marketcetera.admin.rpc.AdminRpcService;
 import org.marketcetera.admin.service.PasswordServiceImpl;
 import org.marketcetera.rpc.RpcTestBase;
 import org.marketcetera.rpc.client.RpcClientFactory;
 import org.marketcetera.util.ws.tags.SessionId;
 
-import com.marketcetera.admin.rpc.AdminRpcService;
+import com.marketcetera.admin.AdminRpcServiceGrpc;
 
 /* $License$ */
 
