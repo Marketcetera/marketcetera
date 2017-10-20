@@ -808,16 +808,14 @@ public class AdminRpcService<SessionClazz>
                 AdminRpc.ReadUserAttributeResponse.Builder responseBuilder = AdminRpc.ReadUserAttributeResponse.newBuilder();
                 authzService.authorize(sessionHolder.getUser(),
                                        AdminPermissions.ReadUserAttributeAction.name());
-                UserAttributeType userAttributeType = UserAttributeType.valueOf(inRequest.getAttributeType());
+                UserAttributeType userAttributeType = AdminRpcUtil.getUserAttributeType(inRequest.getAttributeType()).orElse(null);
                 User user = userService.findByName(inRequest.getUsername());
                 if(user == null) {
                     throw new IllegalArgumentException("Unknown user: '" + inRequest.getUsername()+"'");
                 }
                 UserAttribute userAttribute = userAttributeService.getUserAttribute(user,
                                                                                     userAttributeType);
-                if(userAttribute != null) {
-                    responseBuilder.setUserAttribute(AdminRpcUtil.getRpcUserAttribute(userAttribute));
-                }
+                AdminRpcUtil.getRpcUserAttribute(userAttribute).ifPresent(value->responseBuilder.setUserAttribute(value));
                 AdminRpc.ReadUserAttributeResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcService.this,
                                        "Returning {}",
@@ -847,7 +845,7 @@ public class AdminRpcService<SessionClazz>
                 AdminRpc.WriteUserAttributeResponse.Builder responseBuilder = AdminRpc.WriteUserAttributeResponse.newBuilder();
                 authzService.authorize(sessionHolder.getUser(),
                                        AdminPermissions.WriteUserAttributeAction.name());
-                UserAttributeType userAttributeType = UserAttributeType.valueOf(inRequest.getAttributeType());
+                UserAttributeType userAttributeType = AdminRpcUtil.getUserAttributeType(inRequest.getAttributeType()).orElse(null);
                 User user = userService.findByName(inRequest.getUsername());
                 if(user == null) {
                     throw new IllegalArgumentException("Unknown user: '" + inRequest.getUsername()+"'");

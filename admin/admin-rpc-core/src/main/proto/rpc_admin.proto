@@ -182,14 +182,14 @@ message InstanceData {
 
 message UserAttribute {
     User user = 1;
-    string attributeType = 2;
+    UserAttributeType attributeType = 2;
     string attribute = 3;
 }
 
 message ReadUserAttributeRequest {
     string sessionId = 1;
     string username = 2;
-    string attributeType = 3;
+    UserAttributeType attributeType = 3;
 }
 
 message ReadUserAttributeResponse {
@@ -199,11 +199,17 @@ message ReadUserAttributeResponse {
 message WriteUserAttributeRequest {
     string sessionId = 1;
     string username = 2;
-    string attributeType = 3;
+    UserAttributeType attributeType = 3;
     string attribute = 4;
 }
 
 message WriteUserAttributeResponse {
+}
+
+enum UserAttributeType {
+    UnknownUserAttributeType = 0;
+    DisplayLayoutUserAttributeType = 1;
+    StrategyEnginesUserAttributeType = 2;
 }
 
 service AdminRpcService {

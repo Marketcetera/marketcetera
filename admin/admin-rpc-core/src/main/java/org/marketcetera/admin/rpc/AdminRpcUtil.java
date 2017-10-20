@@ -8,6 +8,7 @@ import org.marketcetera.admin.Role;
 import org.marketcetera.admin.RoleFactory;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserAttribute;
+import org.marketcetera.admin.UserAttributeFactory;
 import org.marketcetera.admin.UserAttributeType;
 import org.marketcetera.admin.UserFactory;
 
@@ -154,36 +155,81 @@ public abstract class AdminRpcUtil
                                                       inPermission.getDescription()));
     }
     /**
+     * Get the user attribute from the given RPC value.
      *
-     *
-     * @param inAttributeType
-     * @return
+     * @param inUserAttribute an <code>AdminRpc.UserAttribute</code> value
+     * @param inUserAttributeFactory a <code>UserAttributeFactory</code> value
+     * @return an <code>Optional&lt;UserAttribute&gt;</code> value
      */
-    public static AdminRpc.UserAttribute getRpcUserAttributeType(UserAttributeType inAttributeType)
+    public static Optional<UserAttribute> getUserAttribute(AdminRpc.UserAttribute inUserAttribute,
+                                                           UserAttributeFactory inUserAttributeFactory,
+                                                           UserFactory inUserFactory)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        if(inUserAttribute == null) {
+            return Optional.empty();
+        }
+        return Optional.of(inUserAttributeFactory.create(getUser(inUserAttribute.getUser(),
+                                                                 inUserFactory).orElse(null),
+                                                         getUserAttributeType(inUserAttribute.getAttributeType()).orElse(null),
+                                                         inUserAttribute.getAttribute()));
     }
     /**
+     * Get the RPC user attribute from the given value.
      *
-     *
-     * @param inUserAttribute
-     * @return
+     * @param inUserAttribute a <code>UserAttribute</code> value
+     * @return an <code>Optional&lt;AdminRpc.UserAttribute&gt;</code> value
      */
-    public static UserAttribute getUserAttribute(AdminRpc.UserAttribute inUserAttribute)
+    public static Optional<AdminRpc.UserAttribute> getRpcUserAttribute(UserAttribute inUserAttribute)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        if(inUserAttribute == null) {
+            return Optional.empty();
+        }
+        AdminRpc.UserAttribute.Builder builder = AdminRpc.UserAttribute.newBuilder();
+        builder.setAttribute(inUserAttribute.getAttribute());
+        builder.setAttributeType(getRpcUserAttributeType(inUserAttribute.getAttributeType()).orElse(AdminRpc.UserAttributeType.UnknownUserAttributeType));
+        builder.setUser(getRpcUser(inUserAttribute.getUser()).orElse(null));
+        return Optional.of(builder.build());
     }
     /**
+     * Get the RPC user attribute type from the given value.
      *
-     *
-     * @param inUserAttribute
-     * @return
+     * @param inAttributeType a <code>UserAttributeType</code> value
+     * @return an <code>Optional&lt;AdminRpc.UserAttributeType</code> value
      */
-    public static AdminRpc.UserAttribute getRpcUserAttribute(UserAttribute inUserAttribute)
+    public static Optional<AdminRpc.UserAttributeType> getRpcUserAttributeType(UserAttributeType inAttributeType)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        if(inAttributeType == null) {
+            return Optional.empty();
+        }
+        switch(inAttributeType) {
+            case DISPLAY_LAYOUT:
+                return Optional.of(AdminRpc.UserAttributeType.DisplayLayoutUserAttributeType);
+            case STRATEGY_ENGINES:
+                return Optional.of(AdminRpc.UserAttributeType.StrategyEnginesUserAttributeType);
+            default:
+                throw new UnsupportedOperationException(inAttributeType.name());
+        }
+    }
+    /**
+     * Get the user attribute type from the given RPC value.
+     *
+     * @param inAttributeType an <code>AdminRpc.UserAttributeType</code> value
+     * @return an <code>Optional&lt;UserAttributeType&gt;</code> value
+     */
+    public static Optional<UserAttributeType> getUserAttributeType(AdminRpc.UserAttributeType inAttributeType)
+    {
+        if(inAttributeType == null) {
+            return Optional.empty();
+        }
+        switch(inAttributeType) {
+            case DisplayLayoutUserAttributeType:
+                return Optional.of(UserAttributeType.DISPLAY_LAYOUT);
+            case StrategyEnginesUserAttributeType:
+                return Optional.of(UserAttributeType.STRATEGY_ENGINES);
+            case UNRECOGNIZED:
+            case UnknownUserAttributeType:
+            default:
+                throw new UnsupportedOperationException(inAttributeType.name());
+        }
     }
 }

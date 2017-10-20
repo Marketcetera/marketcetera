@@ -698,7 +698,7 @@ public class AdminRpcClient
                                        inUsername);
                 AdminRpc.ReadUserAttributeRequest.Builder requestBuilder = AdminRpc.ReadUserAttributeRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setAttributeType(AdminRpcUtil.getRpcUserAttributeType(inAttributeType).getAttribute());
+                AdminRpcUtil.getRpcUserAttributeType(inAttributeType).ifPresent(value->requestBuilder.setAttributeType(value));
                 AdminRpc.ReadUserAttributeRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} sending {}",
@@ -711,7 +711,9 @@ public class AdminRpcClient
                                        response);
                 UserAttribute result = null;
                 if(response.hasUserAttribute()) {
-                    result = AdminRpcUtil.getUserAttribute(response.getUserAttribute());
+                    result = AdminRpcUtil.getUserAttribute(response.getUserAttribute(),
+                                                           userAttributeFactory,
+                                                           userFactory).orElse(null);
                 }
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} returning {}",
@@ -742,7 +744,7 @@ public class AdminRpcClient
                                        inUsername);
                 AdminRpc.WriteUserAttributeRequest.Builder requestBuilder = AdminRpc.WriteUserAttributeRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setAttributeType(AdminRpcUtil.getRpcUserAttributeType(inAttributeType).getAttribute());
+                AdminRpcUtil.getRpcUserAttributeType(inAttributeType).ifPresent(value->requestBuilder.setAttributeType(value));
                 requestBuilder.setAttribute(inAttribute);
                 AdminRpc.WriteUserAttributeRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,

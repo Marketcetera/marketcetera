@@ -11,6 +11,7 @@ import java.util.concurrent.Callable;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
@@ -123,7 +124,7 @@ public class MarketDataRpcClientServerTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testCancel()
             throws Exception
     {

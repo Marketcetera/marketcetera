@@ -17,9 +17,13 @@ import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.Role;
 import org.marketcetera.admin.RoleFactory;
 import org.marketcetera.admin.User;
+import org.marketcetera.admin.UserAttribute;
+import org.marketcetera.admin.UserAttributeFactory;
+import org.marketcetera.admin.UserAttributeType;
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.admin.impl.SimplePermissionFactory;
 import org.marketcetera.admin.impl.SimpleRoleFactory;
+import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
 
 import com.marketcetera.admin.AdminRpc;
@@ -47,6 +51,7 @@ public class AdminRpcUtilTest
         userFactory = new SimpleUserFactory();
         roleFactory = new SimpleRoleFactory();
         permissionFactory = new SimplePermissionFactory();
+        userAttributeFactory = new SimpleUserAttributeFactory();
     }
     /**
      * Test {@link AdminRpcUtil#getUser(com.marketcetera.admin.AdminRpc.User, org.marketcetera.admin.UserFactory)}.
@@ -132,6 +137,76 @@ public class AdminRpcUtilTest
         assertNotNull(role);
         verifyRole(rpcRole,
                    role);
+    }
+    /**
+     * Test {@link AdminRpcUtil#getPermission(com.marketcetera.admin.AdminRpc.Permission, PermissionFactory)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testGetPermission()
+            throws Exception
+    {
+        assertFalse(AdminRpcUtil.getPermission(null,
+                                               permissionFactory).isPresent());
+        AdminRpc.Permission rpcPermission = generateRpcPermission();
+        Permission permission = AdminRpcUtil.getPermission(rpcPermission,
+                                                           permissionFactory).orElse(null);
+        assertNotNull(permission);
+        verifyPermission(rpcPermission,
+                         permission);
+    }
+    /**
+     * Test {@link AdminRpcUtil#getRpcPermission(Permission)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testGetRpcPermission()
+            throws Exception
+    {
+        assertFalse(AdminRpcUtil.getRpcPermission(null).isPresent());
+        Permission permission = generatePermission();
+        AdminRpc.Permission rpcPermission = AdminRpcUtil.getRpcPermission(permission).orElse(null);
+        assertNotNull(rpcPermission);
+        verifyRpcPermission(permission,
+                            rpcPermission);
+    }
+    /**
+     * Test {@link AdminRpcUtil#getUserAttribute(com.marketcetera.admin.AdminRpc.UserAttribute)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testGetUserAttribute()
+            throws Exception
+    {
+        assertFalse(AdminRpcUtil.getUserAttribute(null,
+                                                  userAttributeFactory,
+                                                  userFactory).isPresent());
+        AdminRpc.UserAttribute rpcUserAttribute = generateRpcUserAttribute();
+        UserAttribute userAttribute = AdminRpcUtil.getUserAttribute(rpcUserAttribute,
+                                                                    userAttributeFactory,
+                                                                    userFactory).orElse(null);
+        assertNotNull(userAttribute);
+        verifyUserAttribute(rpcUserAttribute,
+                            userAttribute);
+    }
+    /**
+     * Test {@link AdminRpcUtil#getRpcUserAttribute(UserAttribute)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testGetRpcUserAttribute()
+            throws Exception
+    {
+        assertFalse(AdminRpcUtil.getRpcUserAttribute(null).isPresent());
+        UserAttribute userAttribute = generateUserAttribute();
+        AdminRpc.UserAttribute rpcUserAttribute = AdminRpcUtil.getRpcUserAttribute(userAttribute).orElse(null);
+        assertNotNull(rpcUserAttribute);
+        verifyRpcUserAttribute(userAttribute,
+                               rpcUserAttribute);
     }
     /**
      * Verify the given actual user has the given expected values.
@@ -300,6 +375,108 @@ public class AdminRpcUtilTest
                      inExpectedPermission.getDescription());
     }
     /**
+     * Verify the given user attribute.
+     *
+     * @param inExpectedUserAttribute an <code>AdminRpc.UserAttribute</code> value
+     * @param inActualUserAttribute a <code>UserAttribute</code> value
+     */
+    private void verifyUserAttribute(AdminRpc.UserAttribute inExpectedUserAttribute,
+                                     UserAttribute inActualUserAttribute)
+    {
+        assertEquals(inExpectedUserAttribute.getAttribute(),
+                     inActualUserAttribute.getAttribute());
+        verifyUserAttributeType(inExpectedUserAttribute.getAttributeType(),
+                                inActualUserAttribute.getAttributeType());
+        verifyUser(inExpectedUserAttribute.getUser(),
+                   inActualUserAttribute.getUser());
+    }
+    /**
+     * Verify the given user attribute value.
+     *
+     * @param inExpectedUserAttributeType an <code>AdminRpc.UserAttribute</code> value
+     * @param inActualUserAttributeType a <code>UserAttribute</code> value
+     */
+    private void verifyUserAttributeType(AdminRpc.UserAttributeType inExpectedUserAttributeType,
+                                         UserAttributeType inActualUserAttributeType)
+    {
+        switch(inExpectedUserAttributeType) {
+            case DisplayLayoutUserAttributeType:
+                assertEquals(UserAttributeType.DISPLAY_LAYOUT,
+                             inActualUserAttributeType);
+                break;
+            case StrategyEnginesUserAttributeType:
+                assertEquals(UserAttributeType.STRATEGY_ENGINES,
+                             inActualUserAttributeType);
+                break;
+            case UNRECOGNIZED:
+            case UnknownUserAttributeType:
+            default:
+                throw new UnsupportedOperationException(inExpectedUserAttributeType.name());
+        }
+    }
+    /**
+     * Verify the given user attribute.
+     *
+     * @param inExpectedUserAttribute a <code>UserAttribute</code> value
+     * @param inActualUserAttribute an <code>AdminRpc.UserAttribute</code> value
+     */
+    private void verifyRpcUserAttribute(UserAttribute inExpectedUserAttribute,
+                                        AdminRpc.UserAttribute inActualUserAttribute)
+    {
+        assertEquals(inExpectedUserAttribute.getAttribute(),
+                     inActualUserAttribute.getAttribute());
+        verifyRpcUserAttributeType(inExpectedUserAttribute.getAttributeType(),
+                                   inActualUserAttribute.getAttributeType());
+        verifyRpcUser(inExpectedUserAttribute.getUser(),
+                      inActualUserAttribute.getUser());
+    }
+    /**
+     * Verify the given user attribute type.
+     *
+     * @param inExpectedUserAttributeType a <code>UserAttributeType</code> value
+     * @param inActualUserAttributeType an <code>AdminRpc.UserAttributeType</code> value
+     */
+    private void verifyRpcUserAttributeType(UserAttributeType inExpectedUserAttributeType,
+                                            AdminRpc.UserAttributeType inActualUserAttributeType)
+    {
+        switch(inExpectedUserAttributeType) {
+            case DISPLAY_LAYOUT:
+                assertEquals(AdminRpc.UserAttributeType.DisplayLayoutUserAttributeType,
+                             inActualUserAttributeType);
+                break;
+            case STRATEGY_ENGINES:
+                assertEquals(AdminRpc.UserAttributeType.StrategyEnginesUserAttributeType,
+                             inActualUserAttributeType);
+                break;
+            default:
+                throw new UnsupportedOperationException(inExpectedUserAttributeType.name());
+        }
+    }
+    /**
+     * Generate a user attribute with random values.
+     *
+     * @return a <code>UserAttribute</code> value
+     */
+    private UserAttribute generateUserAttribute()
+    {
+        return userAttributeFactory.create(generateUser(),
+                                           UserAttributeType.STRATEGY_ENGINES,
+                                           generateString());
+    }
+    /**
+     * Generate an RPC user attribute with random values.
+     *
+     * @return an <code>AdminRpc.UserAttribute</code> value
+     */
+    private AdminRpc.UserAttribute generateRpcUserAttribute()
+    {
+        AdminRpc.UserAttribute.Builder builder = AdminRpc.UserAttribute.newBuilder();
+        builder.setAttribute(generateString());
+        builder.setAttributeType(AdminRpc.UserAttributeType.DisplayLayoutUserAttributeType);
+        builder.setUser(generateRpcUser());
+        return builder.build();
+    }
+    /**
      * Verify the given RPC role.
      *
      * @param inExpectedRole a <code>Role</code> value
@@ -432,4 +609,8 @@ public class AdminRpcUtilTest
      * creates {@link Permission} objects
      */
     private PermissionFactory permissionFactory;
+    /**
+     * creates {@link UserAttribute} objects
+     */
+    private UserAttributeFactory userAttributeFactory;
 }
