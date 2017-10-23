@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.admin.Permission;
@@ -83,6 +84,18 @@ public class AdminRpcUtilTest
         assertFalse(AdminRpcUtil.getRpcUser(null).isPresent());
         User user = generateUser();
         AdminRpc.User rpcUser = AdminRpcUtil.getRpcUser(user).orElse(null);
+        assertNotNull(rpcUser);
+        verifyRpcUser(user,
+                      rpcUser);
+        user = generateUser(user.getName(),
+                            null);
+        rpcUser = AdminRpcUtil.getRpcUser(user).orElse(null);
+        assertNotNull(rpcUser);
+        verifyRpcUser(user,
+                      rpcUser);
+        user = generateUser(null,
+                            generateString());
+        rpcUser = AdminRpcUtil.getRpcUser(user).orElse(null);
         assertNotNull(rpcUser);
         verifyRpcUser(user,
                       rpcUser);
@@ -234,9 +247,9 @@ public class AdminRpcUtilTest
                                AdminRpc.User inActualUser)
     {
         assertEquals(inExpectedUser.getName(),
-                     inActualUser.getName());
+                     StringUtils.trimToNull(inActualUser.getName()));
         assertEquals(inExpectedUser.getDescription(),
-                     inActualUser.getDescription());
+                     StringUtils.trimToNull(inActualUser.getDescription()));
         assertEquals(inExpectedUser.isActive(),
                      inActualUser.getActive());
     }
@@ -260,9 +273,22 @@ public class AdminRpcUtilTest
      */
     private User generateUser()
     {
-        return userFactory.create(generateString(),
+        return generateUser(generateString(),
+                            generateString());
+    }
+    /**
+     * Generate a user with the given values.
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inDescription a <code>String</code> value
+     * @return a <code>User</code> value
+     */
+    private User generateUser(String inUsername,
+                              String inDescription)
+    {
+        return userFactory.create(inUsername,
                                   generateString(),
-                                  generateString(),
+                                  inDescription,
                                   true);
     }
     /**

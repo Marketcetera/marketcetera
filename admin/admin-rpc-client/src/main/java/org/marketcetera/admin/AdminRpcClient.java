@@ -5,12 +5,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.admin.rpc.AdminRpcUtil;
-import org.marketcetera.admin.service.PasswordService;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
@@ -24,7 +21,6 @@ import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.rpc.paging.PagingUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -34,7 +30,6 @@ import com.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceBlockingStub;
 import com.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceStub;
 
 import io.grpc.Channel;
-import io.grpc.stub.StreamObserver;
 
 /* $License$ */
 
@@ -109,11 +104,11 @@ public class AdminRpcClient
                 }
                 value = StringUtils.trimToNull(inOldPassword);
                 if(value != null) {
-                    requestBuilder.setOldPassword(passwordService.getHash(inOldPassword));
+                    requestBuilder.setOldPassword(inOldPassword);
                 }
                 value = StringUtils.trimToNull(inNewPassword);
                 if(value != null) {
-                    requestBuilder.setNewPassword(passwordService.getHash(inNewPassword));
+                    requestBuilder.setNewPassword(inNewPassword);
                 }
                 AdminRpc.ChangeUserPasswordRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
@@ -147,7 +142,7 @@ public class AdminRpcClient
                 AdminRpc.CreateUserRequest.Builder requestBuilder = AdminRpc.CreateUserRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
                 AdminRpcUtil.getRpcUser(inNewUser).ifPresent(value->requestBuilder.setUser(value));
-                requestBuilder.setPassword(passwordService.getHash(inPassword));
+                requestBuilder.setPassword(inPassword);
                 AdminRpc.CreateUserRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} sending {}",
@@ -764,7 +759,6 @@ public class AdminRpcClient
      * Validate and start the object.
      */
     @Override
-    @PostConstruct
     public void start()
     {
         Validate.notNull(permissionFactory,
@@ -774,8 +768,6 @@ public class AdminRpcClient
         Validate.notNull(roleFactory,
                          "Role factory required");
         Validate.notNull(userAttributeFactory,
-                         "User attribute factory required");
-        Validate.notNull(passwordService,
                          "User attribute factory required");
         try {
             super.start();
@@ -861,24 +853,6 @@ public class AdminRpcClient
         userAttributeFactory = inUserAttributeFactory;
     }
     /**
-     * Get the passwordService value.
-     *
-     * @return a <code>PasswordService</code> value
-     */
-    public PasswordService getPasswordService()
-    {
-        return passwordService;
-    }
-    /**
-     * Sets the passwordService value.
-     *
-     * @param inPasswordService a <code>PasswordService</code> value
-     */
-    public void setPasswordService(PasswordService inPasswordService)
-    {
-        passwordService = inPasswordService;
-    }
-    /**
      * Create a new AdminRpcClient instance.
      *
      * @param inParameters an <code>AdminRpcClientParameters</code> value
@@ -939,36 +913,25 @@ public class AdminRpcClient
      * @see org.marketcetera.rpc.client.AbstractRpcClient#executeHeartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    protected void executeHeartbeat(HeartbeatRequest inRequest,
-                                    StreamObserver<BaseRpc.HeartbeatResponse> inObserver)
+    protected BaseRpc.HeartbeatResponse executeHeartbeat(HeartbeatRequest inRequest)
     {
-        getAsyncStub().heartbeat(inRequest,
-                                 inObserver);
+        return getBlockingStub().heartbeat(inRequest);
     }
-    /**
-     * provides password services
-     */
-    @Autowired
-    private PasswordService passwordService;
     /**
      * creates {@link UserAttributeFactory} objects
      */
-    @Autowired
     private UserAttributeFactory userAttributeFactory;
     /**
      * creates {@link Permission} objects
      */
-    @Autowired
     private PermissionFactory permissionFactory;
     /**
      * creates {@link User} objects
      */
-    @Autowired
     private UserFactory userFactory;
     /**
      * creates {@link Role} objects
      */
-    @Autowired
     private RoleFactory roleFactory;
     /**
      * The client's application ID: the application name.

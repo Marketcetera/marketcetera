@@ -22,7 +22,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.marketcetera.admin.User;
+import org.marketcetera.admin.MutableUser;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.persist.ValidationException;
@@ -49,7 +49,7 @@ import org.marketcetera.util.log.I18NMessage0P;
 @ClassVersion("$Id: PersistentUser.java 17319 2017-07-17 18:56:02Z colin $")
 public class PersistentUser
         extends NDEntityBase
-        implements User
+        implements MutableUser
 {
     /**
      * The superuser flag of this user.
@@ -103,6 +103,22 @@ public class PersistentUser
      */
     public UserID getUserID() {
         return new UserID(getId());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.MutableUser#setUserId(org.marketcetera.trade.UserID)
+     */
+    @Override
+    public void setUserId(UserID inUserId)
+    {
+        setId(inUserId.getValue());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.MutableUser#setIsActive(boolean)
+     */
+    @Override
+    public void setIsActive(boolean inIsActive)
+    {
+        active = inIsActive;
     }
     /**
      * Returns true if the user password is set.

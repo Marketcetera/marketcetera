@@ -10,7 +10,6 @@ import java.util.concurrent.Executors;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.module.ExpectedFailure;
@@ -194,7 +193,6 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
             throws Exception
     {
         final RpcClientClazz client = createClient();
-        assertTrue(client.isRunning());
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -222,21 +220,13 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                 return client.isRunning();
             }
         });
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return client.isRunning();
-            }
-        });
     }
     /**
      * Test that multiple clients are supported with the same credentials.
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Ignore@Test
+    @Test
     public void testMultipleClients()
             throws Exception
     {
@@ -251,6 +241,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                     try {
                         final RpcClientClazz client = createClient();
                         multipleClients.add(client);
+                        Thread.sleep(1000);
                         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
                             @Override
                             public Boolean call()
@@ -349,6 +340,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                                                                    inPassword));
         prepareClient(client);
         client.start();
+        clients.add(client);
         return client;
     }
     /**

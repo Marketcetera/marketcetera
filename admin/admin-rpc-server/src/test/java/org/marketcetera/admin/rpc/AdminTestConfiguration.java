@@ -1,14 +1,16 @@
-package org.marketcetera.admin;
+package org.marketcetera.admin.rpc;
 
 import java.util.List;
 
 import org.marketcetera.admin.AdminRpcClientFactory;
 import org.marketcetera.admin.UserAttributeFactory;
 import org.marketcetera.admin.dao.PersistentUserAttributeFactory;
-import org.marketcetera.admin.rpc.AdminRpcService;
 import org.marketcetera.admin.service.UserAttributeService;
+import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserAttributeServiceImpl;
+import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.rpc.server.RpcServer;
+import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,14 +66,20 @@ public class AdminTestConfiguration
         return new UserAttributeServiceImpl();
     }
     /**
-     * Get the admin RPC service value.
+     * Get the admin RPC service.
      *
-     * @return an <code>RpcServiceSpec&lt;MockSession&gt;</code> value
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;MockSession&gt;</code> value
+     * @return an <code>AdminRpcService&lt;MockSession&gt;</code> value
      */
     @Bean
-    public AdminRpcService<MockSession> getAdminRpcService()
+    public AdminRpcService<MockSession> getAdminRpcService(@Autowired Authenticator inAuthenticator,
+                                                           @Autowired SessionManager<MockSession> inSessionManager)
     {
-        return new AdminRpcService<>();
+        AdminRpcService<MockSession> adminRpcService = new AdminRpcService<>();
+        adminRpcService.setAuthenticator(inAuthenticator);
+        adminRpcService.setSessionManager(inSessionManager);
+        return adminRpcService;
     }
     /**
      * Get the RPC server value.
@@ -116,6 +124,16 @@ public class AdminTestConfiguration
         SessionManager<MockSession> sessionManager = new SessionManager<>(inMockSessionFactory,
                                                                           sessionLife);
         return sessionManager;
+    }
+    /**
+     * Get the user service value.
+     *
+     * @return a <code>UserService</code> value
+     */
+    @Bean
+    public UserService getUserService()
+    {
+        return new UserServiceImpl();
     }
     /**
      * RPC hostname

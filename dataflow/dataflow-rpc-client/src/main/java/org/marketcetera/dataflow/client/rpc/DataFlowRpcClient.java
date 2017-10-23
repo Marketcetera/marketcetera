@@ -36,7 +36,6 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 
 import io.grpc.Channel;
-import io.grpc.stub.StreamObserver;
 
 /* $License$ */
 
@@ -625,11 +624,9 @@ public class DataFlowRpcClient
      * @see org.marketcetera.rpc.client.AbstractRpcClient#executeHeartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    protected void executeHeartbeat(BaseRpc.HeartbeatRequest inRequest,
-                                    StreamObserver<BaseRpc.HeartbeatResponse> inObserver)
+    protected BaseRpc.HeartbeatResponse executeHeartbeat(BaseRpc.HeartbeatRequest inRequest)
     {
-        getAsyncStub().heartbeat(inRequest,
-                                 inObserver);
+        return getBlockingStub().heartbeat(inRequest);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getAppId()

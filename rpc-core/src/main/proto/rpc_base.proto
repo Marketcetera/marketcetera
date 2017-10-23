@@ -46,7 +46,6 @@ message Locale {
 
 message HeartbeatRequest {
     string sessionId = 1;
-    int64 interval = 2;
 }
 
 message HeartbeatResponse {
@@ -57,5 +56,5 @@ message HeartbeatResponse {
 service BaseRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
-    rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
 }

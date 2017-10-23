@@ -184,7 +184,7 @@ message RemoveDataReceiverResponse {
 service DataFlowRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
-    rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
     rpc getProviders(ProvidersRequest) returns (ProvidersResponse);
     rpc getInstances(InstancesRequest) returns (InstancesResponse);
     rpc getModuleInfo(ModuleInfoRequest) returns (ModuleInfoResponse);

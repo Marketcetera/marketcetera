@@ -190,10 +190,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -232,10 +231,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -274,10 +272,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -320,10 +317,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -353,10 +349,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -417,15 +412,11 @@ public class AdminRpcService<SessionClazz>
                 User existingUser = userService.findByName(inRequest.getUsername());
                 Validate.isTrue(existingUser != null,
                                 "Unknown user: " + inRequest.getUsername());
-                Validate.isTrue(existingUser.getHashedPassword().equals(inRequest.getOldPassword()),
-                                "Password does not match");
-                if(existingUser instanceof MutableUser) {
-                    MutableUser mutableUser = (MutableUser)existingUser;
-                    mutableUser.setHashedPassword(inRequest.getNewPassword());
-                    existingUser = userService.save(mutableUser);
-                } else {
-                    throw new IllegalStateException("User service returned a non-mutable user - check configuration");
-                }
+//                Validate.isTrue(existingUser.getHashedPassword().equals(inRequest.getOldPassword()),
+//                                "Password does not match");
+                userService.changeUserPassword(existingUser,
+                                               inRequest.getOldPassword(),
+                                               inRequest.getNewPassword());
                 AdminRpc.ChangeUserPasswordResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcService.this,
                                        "Returning {}",
@@ -433,10 +424,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -515,10 +505,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -559,10 +548,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -592,10 +580,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -652,10 +639,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -694,10 +680,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -753,10 +738,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -786,10 +770,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -823,10 +806,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -872,10 +854,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
     }

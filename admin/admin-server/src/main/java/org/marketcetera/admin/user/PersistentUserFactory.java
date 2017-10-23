@@ -1,7 +1,7 @@
 package org.marketcetera.admin.user;
 
+import org.marketcetera.admin.MutableUserFactory;
 import org.marketcetera.admin.User;
-import org.marketcetera.admin.UserFactory;
 import org.springframework.stereotype.Component;
 
 /* $License$ */
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PersistentUserFactory
-        implements UserFactory
+        implements MutableUserFactory
 {
     /* (non-Javadoc)
      * @see com.marketcetera.admin.UserFactory#create(java.lang.String, java.lang.String, java.lang.String, boolean)
@@ -33,5 +33,13 @@ public class PersistentUserFactory
         user.setActive(inIsActive);
         user.setSuperuser(false);
         return user;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.MutableUserFactory#create()
+     */
+    @Override
+    public PersistentUser create()
+    {
+        return new PersistentUser();
     }
 }

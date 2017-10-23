@@ -2,6 +2,9 @@ package org.marketcetera.rpc.client;
 
 import java.util.Locale;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -12,7 +15,6 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.VersionInfo;
 import org.marketcetera.rpc.base.BaseRpc;
-import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.tags.NodeId;
@@ -21,9 +23,7 @@ import org.marketcetera.util.ws.tags.SessionId;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractStub;
-import io.grpc.stub.StreamObserver;
 
 /* $License$ */
 
@@ -49,7 +49,7 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
         stopped.set(false);
         startService();
         doLogin();
-        heartbeat();
+        scheduleHeartbeat();
     }
     /**
      * Validate and stop the object.
@@ -59,6 +59,7 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
             throws Exception
     {
         stopped.set(true);
+        cancelHeartbeat();
         doLogout();
         stopService();
     }
@@ -131,39 +132,35 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
     {
     }
     /**
-     * 
+     * Get the blocking stub value.
      *
-     *
-     * @return
+     * @return a <code>BlockingStubClazz</code> value
      */
     protected BlockingStubClazz getBlockingStub()
     {
         return blockingStub;
     }
     /**
-     * 
+     * Get the async stub value.
      *
-     *
-     * @return
+     * @return an <code>AsyncStubClazz</code> value
      */
     protected AsyncStubClazz getAsyncStub()
     {
         return asyncStub;
     }
     /**
-     * 
+     * Get the blocking stub for the given channel.
      *
-     *
-     * @param inChannel
-     * @return
+     * @param inChannel a <code>Channel</code> value
+     * @return a <code>BlockingStubClazz</code> value
      */
     protected abstract BlockingStubClazz getBlockingStub(Channel inChannel);
     /**
-     * 
+     * Get the async stub for the given channel.
      *
-     *
-     * @param inChannel
-     * @return
+     * @param inChannel a <code>Channel</code> value
+     * @return an <code>AsyncStubClazz</code> value
      */
     protected abstract AsyncStubClazz getAsyncStub(Channel inChannel);
     /**
@@ -183,11 +180,9 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
     /**
      * Execute the heartbeat call using the client.
      *
-     * @param inRequest a <code>BaseRpc.HeartbeatRequest</code> value
-     * @return an <code>Iterator&lt;BaseRpc.HeartbeatResponse&gt;</code> value
+     * @return a <code>BaseRpc.HeartbeatResponse</code> value
      */
-    protected abstract void executeHeartbeat(BaseRpc.HeartbeatRequest inRequest,
-                                             StreamObserver<BaseRpc.HeartbeatResponse> inObserver);
+    protected abstract BaseRpc.HeartbeatResponse executeHeartbeat(BaseRpc.HeartbeatRequest inRequest);
     /**
      * Get the app id value of the client.
      *
@@ -226,34 +221,44 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
      */
     private void stopService()
     {
-        // TODO stop hearbeat?
         if(channel != null) {
             try {
                 channel.shutdown().awaitTermination(parameters.getHeartbeatInterval(),
                                                     TimeUnit.MILLISECONDS);
             } catch (Exception e) {
-                e.printStackTrace();
+                SLF4JLoggerProxy.warn(this,
+                                      e);
             }
             channel = null;
         }
     }
     /**
-     * Perform and verify heartbeat request.
+     * Establish heartbeat request.
      */
-    protected void heartbeat()
+    protected void scheduleHeartbeat()
     {
         if(sessionId == null) {
             return;
         }
-        if(heartbeatExecutor == null) {
-            heartbeatExecutor = new HeartbeatExecutor();
-        }
+        cancelHeartbeat();
+        heartbeatToken = heartbeatExecutorService.scheduleAtFixedRate(new HeartbeatTask(),
+                                                                      parameters.getHeartbeatInterval(),
+                                                                      parameters.getHeartbeatInterval(),
+                                                                      TimeUnit.MILLISECONDS);
         SLF4JLoggerProxy.debug(this,
-                               "{} sending heartbeat request: {}",
-                               getAppId(),
-                               sessionId);
-        executeHeartbeat(BaseRpc.HeartbeatRequest.newBuilder().setSessionId(sessionId.getValue()).setInterval(parameters.getHeartbeatInterval()).build(),
-                         heartbeatExecutor);
+                               "{} scheduling heartbeat request at {}ms intervals",
+                               sessionId,
+                               parameters.getHeartbeatInterval());
+    }
+    /**
+     * Cancel the current heartbeat request, if necessary.
+     */
+    protected void cancelHeartbeat()
+    {
+        if(heartbeatToken != null) {
+            heartbeatToken.cancel(false);
+        }
+        heartbeatToken = null;
     }
     /**
      * Perform the logout and adjust the status.
@@ -286,6 +291,7 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
             } finally {
                 notifyStatusChange(false);
                 sessionId = null;
+                alive.set(false);
             }
         }
     }
@@ -315,6 +321,7 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
             alive.set(true);
             notifyStatusChange(true);
         } catch (Exception e) {
+            alive.set(false);
             if(SLF4JLoggerProxy.isDebugEnabled(this)) {
                 SLF4JLoggerProxy.warn(this,
                                       e,
@@ -369,16 +376,17 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
         if(stopped.get()) {
             return;
         }
-        stopService();
         while(!alive.get()) {
             try {
                 SLF4JLoggerProxy.info(this,
                                       "{} trying to reconnect",
                                       getAppId());
+                stopService();
                 startService();
                 doLogin();
-                heartbeat();
+                scheduleHeartbeat();
             } catch (Exception e) {
+                alive.set(false);
                 String message = ExceptionUtils.getRootCauseMessage(e);
                 if(SLF4JLoggerProxy.isDebugEnabled(this)) {
                     SLF4JLoggerProxy.warn(this,
@@ -388,82 +396,69 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
                     SLF4JLoggerProxy.warn(this,
                                           message);
                 }
-                if(e instanceof StatusRuntimeException) {
-                    try {
-                        Thread.sleep(parameters.getHeartbeatInterval());
-                    } catch (InterruptedException e1) {
-                        break;
-                    }
-                } else {
+                try {
+                    Thread.sleep(parameters.getHeartbeatInterval());
+                } catch (InterruptedException e1) {
                     break;
                 }
+//                if(e instanceof StatusRuntimeException) {
+//                    try {
+//                        Thread.sleep(parameters.getHeartbeatInterval());
+//                    } catch (InterruptedException e1) {
+//                        break;
+//                    }
+//                } else {
+//                    break;
+//                }
             }
         }
     }
     /**
-     * Tracks and responds to heartbeat messages from the server.
+     * Executes a heartbeat request and processes the response.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
      * @since $Release$
      */
-    private class HeartbeatExecutor
-            implements StreamObserver<BaseRpc.HeartbeatResponse>
+    private class HeartbeatTask
+            implements Runnable
     {
         /* (non-Javadoc)
-         * @see io.grpc.stub.StreamObserver#onNext(java.lang.Object)
+         * @see java.lang.Runnable#run()
          */
         @Override
-        public void onNext(HeartbeatResponse inValue)
+        public void run()
         {
-            SLF4JLoggerProxy.trace(AbstractRpcClient.this,
-                                   "{}/{} received heartbeat: {}",
-                                   getAppId(),
-                                   sessionId,
-                                   inValue);
             try {
-                // TODO if not received within a certain interval, you know we're disconnected
-                onHeartbeat();
+                BaseRpc.HeartbeatRequest request = BaseRpc.HeartbeatRequest.newBuilder().setSessionId(sessionId.getValue()).build();
+                SLF4JLoggerProxy.trace(AbstractRpcClient.this,
+                                       "{} sending heartbeat request: {}",
+                                       getAppId(),
+                                       request);
+                BaseRpc.HeartbeatResponse response = executeHeartbeat(request);
+                SLF4JLoggerProxy.trace(AbstractRpcClient.this,
+                                       "{} received heartbeat response: {}",
+                                       getAppId(),
+                                       response);
             } catch (Exception e) {
-                String message = ExceptionUtils.getRootCauseMessage(e);
-                if(SLF4JLoggerProxy.isDebugEnabled(this)) {
-                    SLF4JLoggerProxy.warn(AbstractRpcClient.this,
-                                          e,
-                                          message);
-                } else {
-                    SLF4JLoggerProxy.warn(AbstractRpcClient.this,
-                                          message);
+                cancelHeartbeat();
+                alive.set(false);
+                notifyStatusChange(false);
+                if(stopped.get()) {
+                    return;
                 }
+                SLF4JLoggerProxy.warn(AbstractRpcClient.this,
+                                      e,
+                                      "{} received heartbeat error",
+                                      getAppId());
+                reconnect();
             }
-        }
-        /* (non-Javadoc)
-         * @see io.grpc.stub.StreamObserver#onError(java.lang.Throwable)
-         */
-        @Override
-        public void onError(Throwable inT)
-        {
-            alive.set(false);
-            notifyStatusChange(false);
-            if(stopped.get()) {
-                return;
-            }
-            SLF4JLoggerProxy.warn(AbstractRpcClient.this,
-                                  inT,
-                                  "{} received a heartbeat error",
-                                  getAppId());
-            reconnect();
-        }
-        /* (non-Javadoc)
-         * @see io.grpc.stub.StreamObserver#onCompleted()
-         */
-        @Override
-        public void onCompleted()
-        {
-            SLF4JLoggerProxy.trace(AbstractRpcClient.this,
-                                   "{} heartbeat completed",
-                                   getAppId());
         }
     }
+    /**
+     * token holding current heartbeat scheduled job, if any, may be <code>null</code>
+     */
+    private ScheduledFuture<?> heartbeatToken;
     /**
      * client locale value
      */
@@ -481,15 +476,15 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
      */
     private final AtomicBoolean stopped = new AtomicBoolean(false);
     /**
-     * 
+     * RPC channel value
      */
     private ManagedChannel channel;
     /**
-     * 
+     * blocking stub value
      */
     private BlockingStubClazz blockingStub;
     /**
-     * 
+     * async stub value
      */
     private AsyncStubClazz asyncStub;
     /**
@@ -497,11 +492,11 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
      */
     private volatile boolean lastStatus;
     /**
-     * manages heartbeat communications with the server
-     */
-    private HeartbeatExecutor heartbeatExecutor;
-    /**
      * parameters used to start the client
      */
     private final ParameterClazz parameters;
+    /**
+     * common heartbeat executor for <em>all</em> clients, do not touch it when this client stops
+     */
+    private static final ScheduledExecutorService heartbeatExecutorService = Executors.newScheduledThreadPool(1);
 }

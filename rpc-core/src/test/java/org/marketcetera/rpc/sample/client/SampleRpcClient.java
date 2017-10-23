@@ -3,8 +3,8 @@ package org.marketcetera.rpc.sample.client;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.Version;
 import org.marketcetera.core.VersionInfo;
+import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
-import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
 import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
@@ -16,7 +16,6 @@ import org.marketcetera.rpc.sample.SampleRpcServiceGrpc.SampleRpcServiceStub;
 import org.marketcetera.util.ws.tags.AppId;
 
 import io.grpc.Channel;
-import io.grpc.stub.StreamObserver;
 
 /* $License$ */
 
@@ -93,11 +92,9 @@ public class SampleRpcClient
      * @see org.marketcetera.rpc.client.AbstractRpcClient#executeHeartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    protected void executeHeartbeat(HeartbeatRequest inRequest,
-                                    StreamObserver<HeartbeatResponse> inObserver)
+    protected BaseRpc.HeartbeatResponse executeHeartbeat(HeartbeatRequest inRequest)
     {
-        getAsyncStub().heartbeat(inRequest,
-                                 inObserver);
+        return getBlockingStub().heartbeat(inRequest);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getAppId()

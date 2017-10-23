@@ -61,7 +61,6 @@ import com.google.common.collect.Maps;
 import com.google.protobuf.util.Timestamps;
 
 import io.grpc.Channel;
-import io.grpc.stub.StreamObserver;
 
 /* $License$ */
 
@@ -774,11 +773,9 @@ public class TradingRpcClient
      * @see org.marketcetera.rpc.client.AbstractRpcClient#executeHeartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    protected void executeHeartbeat(HeartbeatRequest inRequest,
-                                    StreamObserver<BaseRpc.HeartbeatResponse> inObserver)
+    protected BaseRpc.HeartbeatResponse executeHeartbeat(HeartbeatRequest inRequest)
     {
-        getAsyncStub().heartbeat(inRequest,
-                                 inObserver);
+        return getBlockingStub().heartbeat(inRequest);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#getAppId()

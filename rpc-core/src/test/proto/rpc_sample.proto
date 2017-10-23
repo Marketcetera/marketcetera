@@ -8,5 +8,5 @@ option java_outer_classname = "SampleRpc";
 service SampleRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
-    rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
 }

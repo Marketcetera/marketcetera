@@ -1,7 +1,7 @@
 package org.marketcetera.admin;
 
-import org.marketcetera.admin.AdminClient;
 import org.marketcetera.rpc.client.RpcClientFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */
 
@@ -21,6 +21,31 @@ public class AdminRpcClientFactory
     @Override
     public AdminRpcClient create(AdminRpcClientParameters inParameters)
     {
-        return new AdminRpcClient(inParameters);
+        AdminRpcClient adminClient = new AdminRpcClient(inParameters);
+        adminClient.setPermissionFactory(permissionFactory);
+        adminClient.setRoleFactory(roleFactory);
+        adminClient.setUserAttributeFactory(userAttributeFactory);
+        adminClient.setUserFactory(userFactory);
+        return adminClient;
     }
+    /**
+     * creates {@link UserAttributeFactory} objects
+     */
+    @Autowired
+    private UserAttributeFactory userAttributeFactory;
+    /**
+     * creates {@link Permission} objects
+     */
+    @Autowired
+    private PermissionFactory permissionFactory;
+    /**
+     * creates {@link User} objects
+     */
+    @Autowired
+    private UserFactory userFactory;
+    /**
+     * creates {@link Role} objects
+     */
+    @Autowired
+    private RoleFactory roleFactory;
 }

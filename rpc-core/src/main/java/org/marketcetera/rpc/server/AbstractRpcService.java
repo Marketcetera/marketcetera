@@ -1,12 +1,6 @@
 package org.marketcetera.rpc.server;
 
 import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
@@ -25,6 +19,9 @@ import org.marketcetera.util.ws.tags.NodeId;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.util.ws.tags.VersionId;
 import org.marketcetera.util.ws.wrappers.LocaleWrapper;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import io.grpc.BindableService;
 import io.grpc.ServerServiceDefinition;
@@ -88,42 +85,6 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
         authenticator = inAuthenticator;
     }
     /**
-     * Get the defaultHearbeatExecutorPoolSize value.
-     *
-     * @return a <code>long</code> value
-     */
-    public long getDefaultHearbeatExecutorPoolSize()
-    {
-        return defaultHearbeatExecutorPoolSize;
-    }
-    /**
-     * Sets the defaultHearbeatExecutorPoolSize value.
-     *
-     * @param inDefaultHearbeatExecutorPoolSize a <code>long</code> value
-     */
-    public void setDefaultHearbeatExecutorPoolSize(long inDefaultHearbeatExecutorPoolSize)
-    {
-        defaultHearbeatExecutorPoolSize = inDefaultHearbeatExecutorPoolSize;
-    }
-    /**
-     * Get the defaultHeartbeatInterval value.
-     *
-     * @return a <code>long</code> value
-     */
-    public long getDefaultHeartbeatInterval()
-    {
-        return defaultHeartbeatInterval;
-    }
-    /**
-     * Sets the defaultHeartbeatInterval value.
-     *
-     * @param inDefaultHeartbeatInterval a <code>long</code> value
-     */
-    public void setDefaultHeartbeatInterval(long inDefaultHeartbeatInterval)
-    {
-        defaultHeartbeatInterval = inDefaultHeartbeatInterval;
-    }
-    /**
      * Get the sessionManager value.
      *
      * @return a <code>SessionManager<SessionClazz></code> value
@@ -154,11 +115,10 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
      */
     protected abstract ServiceClazz getService();
     /**
-     * 
+     * Execute the given login request.
      *
-     *
-     * @param inRequest
-     * @param inResponseObserver
+     * @param inRequest a <code>BaseRpc.LoginRequest</code> value
+     * @param inResponseObserver a <code>StreamObserver&lt;BaseRpc.LoginResponse&gt;</code> value
      */
     protected void doLogin(BaseRpc.LoginRequest inRequest,
                            StreamObserver<BaseRpc.LoginResponse> inResponseObserver)
@@ -180,6 +140,7 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
                                                                 inRequest.getLocale().getCountry(),
                                                                 inRequest.getLocale().getVariant()));
             context.setLocale(locale);
+            System.out.println("COLIN: authenticating with " + username + " " + password);
             if(authenticator.shouldAllow(context,
                                          username,
                                          password.toCharArray())) {
@@ -218,11 +179,10 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
         }
     }
     /**
-     * 
+     * Execute the given logout request.
      *
-     *
-     * @param inRequest
-     * @param inResponseObserver
+     * @param inRequest a <code>BaseRpc.LogoutRequest</code> value
+     * @param inResponseObserver a <code>StreamObserver&lt;BaseRpc.LogoutResponse&gt;</code> value
      */
     protected void doLogout(BaseRpc.LogoutRequest inRequest,
                             StreamObserver<BaseRpc.LogoutResponse> inResponseObserver)
@@ -235,12 +195,7 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
             String rawRequestSessionId = StringUtils.trimToNull(inRequest.getSessionId());
             if(rawRequestSessionId != null) {
                 SessionId sessionId = new SessionId(rawRequestSessionId);
-                SessionMetaData sessionMetaData = allSessionMetaData.remove(sessionId);
-                sessionMetaData.heartbeatToken.cancel(true);
-                sessionMetaData.heartbeatToken = null;
-                SLF4JLoggerProxy.trace(this,
-                                       "{} logged out",
-                                       sessionMetaData);
+                allSessionMetaData.invalidate(sessionId);
             }
             BaseRpc.LogoutResponse.Builder responseBuilder = BaseRpc.LogoutResponse.newBuilder();
             BaseRpc.LogoutResponse response = responseBuilder.build();
@@ -282,36 +237,15 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
             throw new StatusRuntimeException(Status.UNAUTHENTICATED);
         }
         SessionId requestSessionId = new SessionId(rawRequestSessionId);
-        final SessionMetaData sessionMetaData = allSessionMetaData.get(requestSessionId);
+        final SessionMetaData sessionMetaData = allSessionMetaData.getIfPresent(requestSessionId);
         if(sessionMetaData == null) {
             throw new StatusRuntimeException(Status.UNAUTHENTICATED);
         }
         BaseRpc.HeartbeatResponse.Builder responseBuilder = BaseRpc.HeartbeatResponse.newBuilder();
         responseBuilder.setSessionId(inRequest.getSessionId());
-        long heartbeatInterval = inRequest.getInterval();
-        if(heartbeatInterval == 0) {
-            heartbeatInterval = defaultHeartbeatInterval;
-        }
-        sessionMetaData.heartbeatToken = heartbeatExecutor.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run()
-            {
-                try {
-                    responseBuilder.setTimestamp(System.currentTimeMillis());
-                    BaseRpc.HeartbeatResponse response = responseBuilder.build();
-                    inResponseObserver.onNext(response);
-                } catch (Exception e) {
-                    SLF4JLoggerProxy.warn(AbstractRpcService.this,
-                                          e,
-                                          "Ending heartbeats to {}/{}",
-                                          sessionMetaData.context.getAppId(),
-                                          sessionMetaData.sessionId);
-                    // TODO which of these, or neither?
-//                    inResponseObserver.onError(new StatusRuntimeException(Status.CANCELLED));
-                    inResponseObserver.onCompleted();
-                }
-            }
-        }, heartbeatInterval, heartbeatInterval, TimeUnit.MILLISECONDS);
+        responseBuilder.setTimestamp(System.currentTimeMillis());
+        inResponseObserver.onNext(responseBuilder.build());
+        inResponseObserver.onCompleted();
     }
     /**
      * Validates the given session value and returns the session meta information if successful.
@@ -327,7 +261,7 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
             throw new StatusRuntimeException(Status.UNAUTHENTICATED);
         }
         SessionId requestSessionId = new SessionId(rawRequestSessionId);
-        final SessionMetaData sessionMetaData = allSessionMetaData.get(requestSessionId);
+        final SessionMetaData sessionMetaData = allSessionMetaData.getIfPresent(requestSessionId);
         if(sessionMetaData == null) {
             throw new StatusRuntimeException(Status.UNAUTHENTICATED);
         }
@@ -339,7 +273,7 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
         return sessionInfo;
     }
     /**
-     *
+     * Holds meta data for a session.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -358,6 +292,13 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
                     .append(", context=").append(context).append(", created=").append(created).append("]");
             return builder.toString();
         }
+        /**
+         * Create a new SessionMetaData instance.
+         *
+         * @param inSessionId a <code>SessionId</code> value
+         * @param inUsername a <code>String</code> value
+         * @param inContext a <code>StatelessClientContext</code> value
+         */
         private SessionMetaData(SessionId inSessionId,
                                 String inUsername,
                                 StatelessClientContext inContext)
@@ -366,16 +307,27 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
             username = inUsername;
             context = inContext;
         }
+        /**
+         * username value
+         */
         private final String username;
+        /**
+         * session id value
+         */
         private final SessionId sessionId;
+        /**
+         * context value
+         */
         private final StatelessClientContext context;
+        /**
+         * created value
+         */
         private final DateTime created = new DateTime();
-        private ScheduledFuture<?> heartbeatToken;
     }
     /**
-     * 
+     * holds session meta data by session id
      */
-    private final Map<SessionId,SessionMetaData> allSessionMetaData = new ConcurrentHashMap<>();
+    private final Cache<SessionId,SessionMetaData> allSessionMetaData = CacheBuilder.newBuilder().build();
     /**
      * manages sessions
      */
@@ -384,16 +336,4 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
      * provides authentication services
      */
     private Authenticator authenticator;
-    /**
-     * 
-     */
-    private long defaultHearbeatExecutorPoolSize = 10;
-    /**
-     * 
-     */
-    private long defaultHeartbeatInterval = 1000;
-    /**
-     * 
-     */
-    private ScheduledExecutorService heartbeatExecutor = Executors.newScheduledThreadPool(10);
 }

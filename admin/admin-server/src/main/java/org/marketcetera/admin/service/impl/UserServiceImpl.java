@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.UserDao;
 import org.marketcetera.admin.service.UserService;
@@ -166,10 +165,11 @@ public class UserServiceImpl
         if(result == null) {
             throw new IllegalArgumentException("Unknown user: " + inUser.getName());
         }
-        Validate.isTrue(result.getHashedPassword().equals(inOldPassword),
-                        "Password value does not match");
-        result.setHashedPassword(inNewPassword);
+        result.changePassword(inOldPassword.toCharArray(),
+                              inNewPassword.toCharArray());
         result = userDao.save(result);
+        usersByUserId.invalidate(inUser.getUserID());
+        usersByUsername.invalidate(inUser.getName());
         return result;
     }
     /* (non-Javadoc)

@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.marketcetera.admin.User;
+import org.marketcetera.admin.MutableUser;
 import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.trade.UserID;
 
@@ -22,7 +22,7 @@ import org.marketcetera.trade.UserID;
 @XmlAccessorType(XmlAccessType.NONE)
 public class SimpleUser
         extends NDEntityBase
-        implements User
+        implements MutableUser
 {
     /**
      * Create a new SimpleUser instance.
@@ -83,6 +83,14 @@ public class SimpleUser
     public UserID getUserID()
     {
         return new UserID(getId());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.MutableUser#setUserId(org.marketcetera.trade.UserID)
+     */
+    @Override
+    public void setUserId(UserID inUserId)
+    {
+        setId(inUserId.getValue());
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

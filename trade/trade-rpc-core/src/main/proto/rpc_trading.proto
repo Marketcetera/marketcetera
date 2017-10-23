@@ -140,7 +140,7 @@ message DeleteReportResponse {
 service TradingRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
-    rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
     rpc getOpenOrders(OpenOrdersRequest) returns (OpenOrdersResponse);
     rpc sendOrders(SendOrderRequest) returns (SendOrderResponse);
     rpc addTradeMessageListener(AddTradeMessageListenerRequest) returns (stream TradeMessageListenerResponse);

@@ -97,7 +97,7 @@ message RemoveMarketDataStatusListenerResponse {
 service MarketDataRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
-    rpc heartbeat(HeartbeatRequest) returns (stream HeartbeatResponse) {}
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
     rpc request(MarketDataRequest) returns (stream EventsResponse);
     rpc cancel(CancelRequest) returns (CancelResponse);
     rpc getSnapshot(SnapshotRequest) returns (SnapshotResponse);

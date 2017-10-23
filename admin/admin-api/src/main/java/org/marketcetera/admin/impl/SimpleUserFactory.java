@@ -1,7 +1,7 @@
 package org.marketcetera.admin.impl;
 
-import org.marketcetera.admin.User;
-import org.marketcetera.admin.UserFactory;
+import org.marketcetera.admin.MutableUser;
+import org.marketcetera.admin.MutableUserFactory;
 
 /* $License$ */
 
@@ -13,20 +13,28 @@ import org.marketcetera.admin.UserFactory;
  * @since $Release$
  */
 public class SimpleUserFactory
-        implements UserFactory
+        implements MutableUserFactory
 {
     /* (non-Javadoc)
      * @see com.marketcetera.admin.UserFactory#create(java.lang.String, java.lang.String, java.lang.String, boolean)
      */
     @Override
-    public User create(String inName,
-                       String inPassword,
-                       String inDescription,
-                       boolean inIsActive)
+    public MutableUser create(String inName,
+                              String inPassword,
+                              String inDescription,
+                              boolean inIsActive)
     {
         return new SimpleUser(inName,
                               inDescription,
                               inPassword,
                               inIsActive);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.MutableUserFactory#create()
+     */
+    @Override
+    public MutableUser create()
+    {
+        return new SimpleUser();
     }
 }
