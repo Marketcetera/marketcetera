@@ -140,7 +140,6 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
                                                                 inRequest.getLocale().getCountry(),
                                                                 inRequest.getLocale().getVariant()));
             context.setLocale(locale);
-            System.out.println("COLIN: authenticating with " + username + " " + password);
             if(authenticator.shouldAllow(context,
                                          username,
                                          password.toCharArray())) {

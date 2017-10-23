@@ -151,7 +151,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
     public void testBadServerPort()
             throws Exception
     {
-        new ExpectedFailure<StatusRuntimeException>("UNAVAILABLE") {
+        new ExpectedFailure<StatusRuntimeException>("UNAVAILABLE: Transport closed for unknown reason") {
             @Override
             protected void run()
                     throws Exception
