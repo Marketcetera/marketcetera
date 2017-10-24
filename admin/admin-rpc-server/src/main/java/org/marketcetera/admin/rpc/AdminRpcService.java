@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.admin.MutablePermission;
+import org.marketcetera.admin.MutableRole;
 import org.marketcetera.admin.MutableUser;
 import org.marketcetera.admin.MutableUserAttribute;
 import org.marketcetera.admin.Permission;
@@ -703,30 +704,37 @@ public class AdminRpcService<SessionClazz>
                                 "Unknown role: " + inRequest.getRoleName());
                 if(inRequest.hasRole()) {
                     AdminRpc.Role rpcRole = inRequest.getRole();
-                    existingRole.getPermissions().clear();
-                    existingRole.getSubjects().clear();
-                    for(AdminRpc.Permission rpcPermission : rpcRole.getPermissionList()) {
-                        Permission permission = authzService.findPermissionByName(rpcPermission.getName());
-                        if(permission == null) {
-                            SLF4JLoggerProxy.warn(AdminRpcService.this,
-                                                  "Skipping unknown permission {}",
-                                                  rpcPermission.getName());
-                        } else {
-                            existingRole.getPermissions().add(permission);
+                    if(existingRole instanceof MutableRole) {
+                        MutableRole mutableRole = (MutableRole)existingRole;
+                        mutableRole.getPermissions().clear();
+                        mutableRole.getSubjects().clear();
+                        for(AdminRpc.Permission rpcPermission : rpcRole.getPermissionList()) {
+                            Permission permission = authzService.findPermissionByName(rpcPermission.getName());
+                            if(permission == null) {
+                                SLF4JLoggerProxy.warn(AdminRpcService.this,
+                                                      "Skipping unknown permission {}",
+                                                      rpcPermission.getName());
+                            } else {
+                                mutableRole.getPermissions().add(permission);
+                            }
                         }
-                    }
-                    for(AdminRpc.User rpcUser : rpcRole.getUserList()) {
-                        User user = userService.findByName(rpcUser.getName());
-                        if(user == null) {
-                            SLF4JLoggerProxy.warn(AdminRpcService.this,
-                                                  "Skipping unknown user {}",
-                                                  rpcUser.getName());
-                        } else {
-                            existingRole.getSubjects().add(user);
+                        for(AdminRpc.User rpcUser : rpcRole.getUserList()) {
+                            User user = userService.findByName(rpcUser.getName());
+                            if(user == null) {
+                                SLF4JLoggerProxy.warn(AdminRpcService.this,
+                                                      "Skipping unknown user {}",
+                                                      rpcUser.getName());
+                            } else {
+                                mutableRole.getSubjects().add(user);
+                            }
                         }
+                        mutableRole.setDescription(StringUtils.trimToNull(inRequest.getRole().getDescription()));
+                        mutableRole.setName(StringUtils.trimToNull(inRequest.getRole().getName()));
+                        existingRole = authzService.save(mutableRole);
+                        AdminRpcUtil.getRpcRole(existingRole).ifPresent(value->responseBuilder.setRole(value));
+                    } else {
+                        throw new IllegalStateException("User attribute service returned a non-mutable user attribute - check configuration");
                     }
-                    existingRole = authzService.save(existingRole);
-                    AdminRpcUtil.getRpcRole(existingRole).ifPresent(value->responseBuilder.setRole(value));
                 }
                 AdminRpc.UpdateRoleResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcService.this,

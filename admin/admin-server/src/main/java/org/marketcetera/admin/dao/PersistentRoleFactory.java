@@ -1,6 +1,6 @@
 package org.marketcetera.admin.dao;
 
-import org.marketcetera.admin.RoleFactory;
+import org.marketcetera.admin.MutableRoleFactory;
 import org.springframework.stereotype.Service;
 
 /* $License$ */
@@ -14,9 +14,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PersistentRoleFactory
-        implements RoleFactory
+        implements MutableRoleFactory
 {
-
     /* (non-Javadoc)
      * @see com.marketcetera.tiaacref.systemmodel.RoleFactory#create(java.lang.String, java.lang.String)
      */
@@ -28,5 +27,13 @@ public class PersistentRoleFactory
         role.setName(inName);
         role.setDescription(inDescription);
         return role;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.MutableRoleFactory#create()
+     */
+    @Override
+    public PersistentRole create()
+    {
+        return new PersistentRole();
     }
 }

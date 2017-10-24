@@ -3,6 +3,7 @@ package org.marketcetera.admin.impl;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.marketcetera.admin.MutableRole;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.Role;
 import org.marketcetera.admin.User;
@@ -19,7 +20,7 @@ import org.marketcetera.persist.NDEntityBase;
  */
 public class SimpleRole
         extends NDEntityBase
-        implements Role
+        implements MutableRole
 {
     /* (non-Javadoc)
      * @see com.marketcetera.admin.Role#getPermissions()

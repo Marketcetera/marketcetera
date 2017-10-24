@@ -6,13 +6,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 import org.marketcetera.admin.AdminClient;
 import org.marketcetera.admin.AdminPermissions;
+import org.marketcetera.admin.MutableRole;
 import org.marketcetera.admin.MutableUser;
 import org.marketcetera.admin.Permission;
+import org.marketcetera.admin.Role;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeType;
@@ -65,7 +68,7 @@ public class AdminRpcServerTest
             }
         };
         testClient.stop();
-        assertEquals(4,
+        assertEquals(userService.findAll().size(),
                      adminClient.readUsers().size());
     }
     /**
@@ -108,10 +111,6 @@ public class AdminRpcServerTest
         assertEquals(updatedUser.getDescription(),
                      user.getDescription());
     }
-    // TODO create role
-    // TODO read roles
-    // TODO update role
-    // TODO delete role
     /**
      * Test {@link AdminClient#readRoles()}.
      *
@@ -121,7 +120,150 @@ public class AdminRpcServerTest
     public void testReadRoles()
             throws Exception
     {
-        
+        // no permission
+        final AdminClient testClient = generateTraderClient();
+        new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for ReadRoleAction") {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                testClient.readRoles();
+            }
+        };
+        testClient.stop();
+        assertEquals(authorizationService.findAllRoles().size(),
+                     adminClient.readRoles().size());
+    }
+    /**
+     * Test {@link AdminClient#createRole(org.marketcetera.admin.Role)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testCreateRole()
+            throws Exception
+    {
+        // no permission
+        final AdminClient testClient = generateTraderClient();
+        final Role newRole = AdminRpcUtilTest.generateRole(1,1);
+        new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for CreateRoleAction") {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                testClient.createRole(newRole);
+            }
+        };
+        testClient.stop();
+        List<Role> roles = authorizationService.findAllRoles();
+        int startRoleCount = roles.size();
+        assertEquals(startRoleCount,
+                     adminClient.readRoles().size());
+        adminClient.createRole(newRole);
+        roles = authorizationService.findAllRoles();
+        int finalRoleCount = roles.size();
+        assertEquals(startRoleCount+1,
+                     finalRoleCount);
+        adminClient.deleteRole(newRole.getName());
+        roles = authorizationService.findAllRoles();
+        finalRoleCount = roles.size();
+        assertEquals(startRoleCount,
+                     finalRoleCount);
+    }
+    /**
+     * Test {@link AdminClient#updateRole(String, Role)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testUpdateRole()
+            throws Exception
+    {
+        // no permission
+        final AdminClient testClient = generateTraderClient();
+        final Role sampleRole = adminClient.readRoles().get(0);
+        new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for UpdateRoleAction") {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                testClient.updateRole(sampleRole.getName(),
+                                      sampleRole);
+            }
+        };
+        testClient.stop();
+        // no role by this name
+        final String badRoleName = PlatformServices.generateId();
+        new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: IllegalArgumentException: Unknown role: " + badRoleName) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                adminClient.updateRole(badRoleName,
+                                       sampleRole);
+            }
+        };
+        // successful tests
+        Role newRole = AdminRpcUtilTest.generateRole(1,
+                                                     1);
+        Role returnedRole = adminClient.createRole(newRole);
+        assertTrue(returnedRole instanceof MutableRole);
+        MutableRole updatedRole = (MutableRole)returnedRole;
+        updatedRole.setDescription(PlatformServices.generateId());
+        updatedRole.setName(PlatformServices.generateId());
+        User newUser = AdminRpcUtilTest.generateUser();
+        newUser = adminClient.createUser(newUser,
+                                         "password");
+        updatedRole.getSubjects().add(newUser);
+        Permission newPermission = AdminRpcUtilTest.generatePermission();
+        newPermission = adminClient.createPermission(newPermission);
+        updatedRole.getPermissions().add(newPermission);
+        returnedRole = adminClient.updateRole(newRole.getName(),
+                                              updatedRole);
+        AdminRpcUtilTest.verifyModelRole(updatedRole,
+                                         returnedRole);
+        adminClient.deleteRole(returnedRole.getName());
+        adminClient.deleteUser(newUser.getName());
+    }
+    /**
+     * Test {@link AdminClient#deleteRole(String)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testDeleteRole()
+            throws Exception
+    {
+        // no permission
+        final AdminClient testClient = generateTraderClient();
+        final Role sampleRole = adminClient.readRoles().get(0);
+        new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for DeleteRoleAction") {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                testClient.deleteRole(sampleRole.getName());
+            }
+        };
+        testClient.stop();
+        // no role by this name
+        final String badRoleName = PlatformServices.generateId();
+        new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: IllegalArgumentException: Unknown role: " + badRoleName) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                adminClient.deleteRole(badRoleName);
+            }
+        };
+        int startingRoleCount = authorizationService.findAllRoles().size();
+        Role newRole = AdminRpcUtilTest.generateRole(0,0);
+        adminClient.createRole(newRole);
+        assertEquals(startingRoleCount+1,
+                     authorizationService.findAllRoles().size());
+        adminClient.deleteRole(newRole.getName());
+        assertEquals(startingRoleCount,
+                     authorizationService.findAllRoles().size());
     }
     /**
      * Test {@link AdminClient#getUserAttribute(String, org.marketcetera.admin.UserAttributeType)} and

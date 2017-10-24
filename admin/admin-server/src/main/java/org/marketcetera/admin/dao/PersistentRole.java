@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.marketcetera.admin.MutableRole;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.Role;
 import org.marketcetera.admin.User;
@@ -28,7 +29,7 @@ import org.marketcetera.persist.NDEntityBase;
 @Table(name="roles")
 public class PersistentRole
         extends NDEntityBase
-        implements Role
+        implements MutableRole
 {
     /**
      * Create a new PersistentRole instance.

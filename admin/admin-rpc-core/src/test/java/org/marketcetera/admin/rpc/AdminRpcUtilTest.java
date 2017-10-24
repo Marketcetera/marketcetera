@@ -226,6 +226,22 @@ public class AdminRpcUtilTest
      * Verify the given actual user has the given expected values.
      *
      * @param inExpectedUser a <code>User</code> value
+     * @param inActualUser a <code>User</code> value
+     */
+    public static void verifyModelUser(User inExpectedUser,
+                                       User inActualUser)
+    {
+        assertEquals(inExpectedUser.getName(),
+                     inActualUser.getName());
+        assertEquals(inExpectedUser.getDescription(),
+                     inActualUser.getDescription());
+        assertEquals(inExpectedUser.isActive(),
+                     inActualUser.isActive());
+    }
+    /**
+     * Verify the given actual user has the given expected values.
+     *
+     * @param inExpectedUser a <code>User</code> value
      * @param inActualUser an <code>AdminRpc.User</code> value
      */
     public static void verifyRpcUser(User inExpectedUser,
@@ -358,6 +374,24 @@ public class AdminRpcUtilTest
                     inActualRole.getSubjects());
     }
     /**
+     * Verify the expected role matches the actual role.
+     *
+     * @param inExpectedRole a <code>Role</code> value
+     * @param inActualRole a <code>Role</code> value
+     */
+    public static void verifyModelRole(Role inExpectedRole,
+                                       Role inActualRole)
+    {
+        assertEquals(inExpectedRole.getDescription(),
+                     inActualRole.getDescription());
+        assertEquals(inExpectedRole.getName(),
+                     inActualRole.getName());
+        verifyModelPermissions(inExpectedRole.getPermissions(),
+                               inActualRole.getPermissions());
+        verifyModelUsers(inExpectedRole.getSubjects(),
+                         inActualRole.getSubjects());
+    }
+    /**
      * Verify the given permission.
      *
      * @param inExpectedPermission an <code>AdminRpc.Permission</code> value
@@ -365,6 +399,20 @@ public class AdminRpcUtilTest
      */
     public static void verifyPermission(AdminRpc.Permission inExpectedPermission,
                                         Permission inActualPermission)
+    {
+        assertEquals(inExpectedPermission.getName(),
+                     inActualPermission.getName());
+        assertEquals(inExpectedPermission.getDescription(),
+                     inActualPermission.getDescription());
+    }
+    /**
+     * Verify the given permission.
+     *
+     * @param inExpectedPermission a <code>Permission</code> value
+     * @param inActualPermission a <code>Permission</code> value
+     */
+    public static void verifyModelPermission(Permission inExpectedPermission,
+                                             Permission inActualPermission)
     {
         assertEquals(inExpectedPermission.getName(),
                      inActualPermission.getName());
@@ -554,6 +602,29 @@ public class AdminRpcUtilTest
         }
     }
     /**
+     * Verify the given permissions.
+     *
+     * @param inExpectedPermissions a <code>Collection&lt;Permission</code> value
+     * @param inActualPermissions a <code>Collection&lt;Permission&gt;</code> value
+     */
+    public static void verifyModelPermissions(Collection<Permission> inExpectedPermissions,
+                                              Collection<Permission> inActualPermissions)
+    {
+        assertEquals(inExpectedPermissions.size(),
+                     inActualPermissions.size());
+        Map<String,Permission> expectedPermissions = inExpectedPermissions.stream().collect(Collectors.toMap(Permission::getName,
+                                                                                                             Function.identity()));
+        Map<String,Permission> actualPermissions = inActualPermissions.stream().collect(Collectors.toMap(Permission::getName,
+                                                                                                         Function.identity()));
+        for(Map.Entry<String,Permission> entry : actualPermissions.entrySet()) {
+            Permission expectedPermission = expectedPermissions.get(entry.getKey());
+            assertNotNull("No expected permission named '" + entry.getKey() + "'",
+                          expectedPermission);
+            verifyModelPermission(entry.getValue(),
+                                  expectedPermission);
+        }
+    }
+    /**
      * Verify the given RPC users.
      *
      * @param inExpectedUsers a <code>Collection&lt;User&gt;</code> value
@@ -597,6 +668,29 @@ public class AdminRpcUtilTest
                           rpcUser);
             verifyRpcUser(entry.getValue(),
                           rpcUser);
+        }
+    }
+    /**
+     * Verify the given users.
+     *
+     * @param inExpectedUsers a <code>Collection&lt;User</code> value
+     * @param inActualUsers a <code>Collection&lt;User&gt;</code> value
+     */
+    public static void verifyModelUsers(Collection<User> inExpectedUsers,
+                                        Collection<User> inActualUsers)
+    {
+        assertEquals(inExpectedUsers.size(),
+                     inActualUsers.size());
+        Map<String,User> expectedUsers = inExpectedUsers.stream().collect(Collectors.toMap(User::getName,
+                                                                                           Function.identity()));
+        Map<String,User> actualUsers = inActualUsers.stream().collect(Collectors.toMap(User::getName,
+                                                                                       Function.identity()));
+        for(Map.Entry<String,User> entry : actualUsers.entrySet()) {
+            User expectedUser = expectedUsers.get(entry.getKey());
+            assertNotNull("No expected user named '" + entry.getKey() + "'",
+                          expectedUser);
+            verifyModelUser(entry.getValue(),
+                            expectedUser);
         }
     }
     /**
