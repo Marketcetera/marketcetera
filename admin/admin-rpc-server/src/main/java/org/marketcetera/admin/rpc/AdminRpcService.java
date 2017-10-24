@@ -387,10 +387,9 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
             }
         }
         /* (non-Javadoc)
@@ -412,8 +411,6 @@ public class AdminRpcService<SessionClazz>
                 User existingUser = userService.findByName(inRequest.getUsername());
                 Validate.isTrue(existingUser != null,
                                 "Unknown user: " + inRequest.getUsername());
-//                Validate.isTrue(existingUser.getHashedPassword().equals(inRequest.getOldPassword()),
-//                                "Password does not match");
                 userService.changeUserPassword(existingUser,
                                                inRequest.getOldPassword(),
                                                inRequest.getNewPassword());
@@ -834,18 +831,25 @@ public class AdminRpcService<SessionClazz>
                 }
                 UserAttribute userAttribute = userAttributeService.getUserAttribute(user,
                                                                                     userAttributeType);
-                if(userAttribute == null) {
-                    userAttribute = userAttributeFactory.create(user,
-                                                                userAttributeType,
-                                                                inRequest.getAttribute());
-                } else {
-                    if(userAttribute instanceof MutableUserAttribute) {
-                        MutableUserAttribute mutableUserAttribute = (MutableUserAttribute)userAttribute;
-                        mutableUserAttribute.setAttribute(inRequest.getAttribute());
-                        userAttribute = userAttributeService.save(userAttribute);
-                    } else {
-                        throw new IllegalStateException("User attribute service returned a non-mutable user attribute - check configuration");
+                String attributeValue = StringUtils.trimToNull(inRequest.getAttribute());
+                if(attributeValue == null) {
+                    if(userAttribute != null) {
+                        userAttributeService.delete(userAttribute);
                     }
+                } else {
+                    if(userAttribute == null) {
+                        userAttribute = userAttributeFactory.create(user,
+                                                                    userAttributeType,
+                                                                    inRequest.getAttribute());
+                    } else {
+                        if(userAttribute instanceof MutableUserAttribute) {
+                            MutableUserAttribute mutableUserAttribute = (MutableUserAttribute)userAttribute;
+                            mutableUserAttribute.setAttribute(inRequest.getAttribute());
+                        } else {
+                            throw new IllegalStateException("User attribute service returned a non-mutable user attribute - check configuration");
+                        }
+                    }
+                    userAttribute = userAttributeService.save(userAttribute);
                 }
                 AdminRpc.WriteUserAttributeResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcService.this,

@@ -693,6 +693,7 @@ public class AdminRpcClient
                                        inUsername);
                 AdminRpc.ReadUserAttributeRequest.Builder requestBuilder = AdminRpc.ReadUserAttributeRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setUsername(inUsername);
                 AdminRpcUtil.getRpcUserAttributeType(inAttributeType).ifPresent(value->requestBuilder.setAttributeType(value));
                 AdminRpc.ReadUserAttributeRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
@@ -739,8 +740,12 @@ public class AdminRpcClient
                                        inUsername);
                 AdminRpc.WriteUserAttributeRequest.Builder requestBuilder = AdminRpc.WriteUserAttributeRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setUsername(inUsername);
                 AdminRpcUtil.getRpcUserAttributeType(inAttributeType).ifPresent(value->requestBuilder.setAttributeType(value));
-                requestBuilder.setAttribute(inAttribute);
+                String attributeValue = StringUtils.trimToNull(inAttribute);
+                if(attributeValue != null) {
+                    requestBuilder.setAttribute(inAttribute);
+                }
                 AdminRpc.WriteUserAttributeRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} sending {}",

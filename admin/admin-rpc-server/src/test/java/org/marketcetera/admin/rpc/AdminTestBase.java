@@ -11,6 +11,8 @@ import org.marketcetera.admin.AdminRpcClientFactory;
 import org.marketcetera.admin.AdminRpcClientParameters;
 import org.marketcetera.admin.MutableUser;
 import org.marketcetera.admin.MutableUserFactory;
+import org.marketcetera.admin.PermissionFactory;
+import org.marketcetera.admin.dao.PersistentPermissionDao;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,6 +117,16 @@ public abstract class AdminTestBase
      * provides access to admin services
      */
     protected AdminClient adminClient;
+    /**
+     * provides data store access to permission objects
+     */
+    @Autowired
+    protected PersistentPermissionDao permissionDao;
+    /**
+     * creates {@link Permission} objects
+     */
+    @Autowired
+    protected PermissionFactory permissionFactory;
     /**
      * creates {@link AdminClient} objects
      */

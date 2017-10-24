@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.marketcetera.admin.MutablePermission;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.Role;
 import org.marketcetera.persist.NDEntityBase;
@@ -23,7 +24,7 @@ import org.marketcetera.persist.NDEntityBase;
 @Table(name="permissions")
 public class PersistentPermission
         extends NDEntityBase
-        implements Permission
+        implements MutablePermission
 {
     /**
      * Create a new PersistentPermission instance.

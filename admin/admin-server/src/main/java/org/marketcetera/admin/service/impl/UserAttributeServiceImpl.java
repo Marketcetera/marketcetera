@@ -60,6 +60,19 @@ public class UserAttributeServiceImpl
         return userAttributeDao.save(pUserAttribute);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.admin.service.UserAttributeService#delete(org.marketcetera.admin.UserAttribute)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void delete(UserAttribute inUserAttribute)
+    {
+        PersistentUserAttribute pUserAttribute = userAttributeDao.findByUserAndUserAttributeType(inUserAttribute.getUser(),
+                                                                                                 inUserAttribute.getAttributeType());
+        if(pUserAttribute != null) {
+            userAttributeDao.delete(pUserAttribute);
+        }
+    }
+    /* (non-Javadoc)
      * @see com.marketcetera.admin.service.UserAttributeService#getUserAttribute(com.marketcetera.admin.User, com.marketcetera.admin.UserAttributeType)
      */
     @Override

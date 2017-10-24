@@ -79,7 +79,10 @@
       <artifactId>log4j-1.2-api</artifactId>
       <scope>compile</scope>
     </dependency>
-
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
     <!-- Runtime. -->
     <dependency>
       <groupId>org.springframework</groupId>

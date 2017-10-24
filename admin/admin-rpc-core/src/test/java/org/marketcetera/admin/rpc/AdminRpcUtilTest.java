@@ -6,12 +6,10 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.PermissionFactory;
@@ -26,6 +24,7 @@ import org.marketcetera.admin.impl.SimplePermissionFactory;
 import org.marketcetera.admin.impl.SimpleRoleFactory;
 import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
+import org.marketcetera.core.PlatformServices;
 
 import com.marketcetera.admin.AdminRpc;
 
@@ -40,20 +39,6 @@ import com.marketcetera.admin.AdminRpc;
  */
 public class AdminRpcUtilTest
 {
-    /**
-     * Run before each test.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @Before
-    public void setup()
-            throws Exception
-    {
-        userFactory = new SimpleUserFactory();
-        roleFactory = new SimpleRoleFactory();
-        permissionFactory = new SimplePermissionFactory();
-        userAttributeFactory = new SimpleUserAttributeFactory();
-    }
     /**
      * Test {@link AdminRpcUtil#getUser(com.marketcetera.admin.AdminRpc.User, org.marketcetera.admin.UserFactory)}.
      *
@@ -227,8 +212,8 @@ public class AdminRpcUtilTest
      * @param inExpectedUser an <code>AdminRpc.User</code> value
      * @param inActualUser a <code>User</code> value
      */
-    private void verifyUser(AdminRpc.User inExpectedUser,
-                            User inActualUser)
+    public static void verifyUser(AdminRpc.User inExpectedUser,
+                                  User inActualUser)
     {
         assertEquals(inExpectedUser.getName(),
                      inActualUser.getName());
@@ -243,8 +228,8 @@ public class AdminRpcUtilTest
      * @param inExpectedUser a <code>User</code> value
      * @param inActualUser an <code>AdminRpc.User</code> value
      */
-    private void verifyRpcUser(User inExpectedUser,
-                               AdminRpc.User inActualUser)
+    public static void verifyRpcUser(User inExpectedUser,
+                                     AdminRpc.User inActualUser)
     {
         assertEquals(inExpectedUser.getName(),
                      StringUtils.trimToNull(inActualUser.getName()));
@@ -258,7 +243,7 @@ public class AdminRpcUtilTest
      *
      * @return an <code>AdminRpc.User</code> value
      */
-    private AdminRpc.User generateRpcUser()
+    public static AdminRpc.User generateRpcUser()
     {
         AdminRpc.User.Builder builder = AdminRpc.User.newBuilder();
         builder.setActive(true);
@@ -271,7 +256,7 @@ public class AdminRpcUtilTest
      *
      * @return a <code>User</code> value
      */
-    private User generateUser()
+    public static User generateUser()
     {
         return generateUser(generateString(),
                             generateString());
@@ -283,8 +268,8 @@ public class AdminRpcUtilTest
      * @param inDescription a <code>String</code> value
      * @return a <code>User</code> value
      */
-    private User generateUser(String inUsername,
-                              String inDescription)
+    public static User generateUser(String inUsername,
+                                    String inDescription)
     {
         return userFactory.create(inUsername,
                                   generateString(),
@@ -296,7 +281,7 @@ public class AdminRpcUtilTest
      *
      * @return a <code>Permission</code> value
      */
-    private Permission generatePermission()
+    public static Permission generatePermission()
     {
         return permissionFactory.create(generateString(),
                                         generateString());
@@ -306,7 +291,7 @@ public class AdminRpcUtilTest
      *
      * @return an <code>AdminRpc.Permission</code> value
      */
-    private AdminRpc.Permission generateRpcPermission()
+    public static AdminRpc.Permission generateRpcPermission()
     {
         AdminRpc.Permission.Builder builder = AdminRpc.Permission.newBuilder();
         builder.setDescription(generateString());
@@ -320,8 +305,8 @@ public class AdminRpcUtilTest
      * @param inPermissionCount an <code>int</code> value
      * @return a <code>Role</code> value
      */
-    private Role generateRole(int inUserCount,
-                              int inPermissionCount)
+    public static Role generateRole(int inUserCount,
+                                    int inPermissionCount)
     {
         Role role = roleFactory.create(generateString(),
                                        generateString());
@@ -340,8 +325,8 @@ public class AdminRpcUtilTest
      * @param inPermissionCount an <code>int</code> value
      * @return an <code>AdminRpc.Role</code> value
      */
-    private AdminRpc.Role generateRpcRole(int inUserCount,
-                                          int inPermissionCount)
+    public static AdminRpc.Role generateRpcRole(int inUserCount,
+                                                int inPermissionCount)
     {
         AdminRpc.Role.Builder builder = AdminRpc.Role.newBuilder();
         builder.setDescription(generateString());
@@ -360,8 +345,8 @@ public class AdminRpcUtilTest
      * @param inExpectedRole an <code>AdminRpc.Role</code> value
      * @param inActualRole a <code>Role</code> value
      */
-    private void verifyRole(AdminRpc.Role inExpectedRole,
-                            Role inActualRole)
+    public static void verifyRole(AdminRpc.Role inExpectedRole,
+                                  Role inActualRole)
     {
         assertEquals(inExpectedRole.getDescription(),
                      inActualRole.getDescription());
@@ -378,8 +363,8 @@ public class AdminRpcUtilTest
      * @param inExpectedPermission an <code>AdminRpc.Permission</code> value
      * @param inActualPermission a <code>Permission</code> value
      */
-    private void verifyPermission(AdminRpc.Permission inExpectedPermission,
-                                  Permission inActualPermission)
+    public static void verifyPermission(AdminRpc.Permission inExpectedPermission,
+                                        Permission inActualPermission)
     {
         assertEquals(inExpectedPermission.getName(),
                      inActualPermission.getName());
@@ -392,8 +377,8 @@ public class AdminRpcUtilTest
      * @param inExpectedPermission a <code>Permission</code> value
      * @param inActualPermission an <code>AdminRpc.Permission</code> value
      */
-    private void verifyRpcPermission(Permission inActualPermission,
-                                     AdminRpc.Permission inExpectedPermission)
+    public static void verifyRpcPermission(Permission inActualPermission,
+                                           AdminRpc.Permission inExpectedPermission)
     {
         assertEquals(inActualPermission.getName(),
                      inExpectedPermission.getName());
@@ -406,8 +391,8 @@ public class AdminRpcUtilTest
      * @param inExpectedUserAttribute an <code>AdminRpc.UserAttribute</code> value
      * @param inActualUserAttribute a <code>UserAttribute</code> value
      */
-    private void verifyUserAttribute(AdminRpc.UserAttribute inExpectedUserAttribute,
-                                     UserAttribute inActualUserAttribute)
+    public static void verifyUserAttribute(AdminRpc.UserAttribute inExpectedUserAttribute,
+                                           UserAttribute inActualUserAttribute)
     {
         assertEquals(inExpectedUserAttribute.getAttribute(),
                      inActualUserAttribute.getAttribute());
@@ -422,8 +407,8 @@ public class AdminRpcUtilTest
      * @param inExpectedUserAttributeType an <code>AdminRpc.UserAttribute</code> value
      * @param inActualUserAttributeType a <code>UserAttribute</code> value
      */
-    private void verifyUserAttributeType(AdminRpc.UserAttributeType inExpectedUserAttributeType,
-                                         UserAttributeType inActualUserAttributeType)
+    public static void verifyUserAttributeType(AdminRpc.UserAttributeType inExpectedUserAttributeType,
+                                               UserAttributeType inActualUserAttributeType)
     {
         switch(inExpectedUserAttributeType) {
             case DisplayLayoutUserAttributeType:
@@ -446,8 +431,8 @@ public class AdminRpcUtilTest
      * @param inExpectedUserAttribute a <code>UserAttribute</code> value
      * @param inActualUserAttribute an <code>AdminRpc.UserAttribute</code> value
      */
-    private void verifyRpcUserAttribute(UserAttribute inExpectedUserAttribute,
-                                        AdminRpc.UserAttribute inActualUserAttribute)
+    public static void verifyRpcUserAttribute(UserAttribute inExpectedUserAttribute,
+                                              AdminRpc.UserAttribute inActualUserAttribute)
     {
         assertEquals(inExpectedUserAttribute.getAttribute(),
                      inActualUserAttribute.getAttribute());
@@ -462,8 +447,8 @@ public class AdminRpcUtilTest
      * @param inExpectedUserAttributeType a <code>UserAttributeType</code> value
      * @param inActualUserAttributeType an <code>AdminRpc.UserAttributeType</code> value
      */
-    private void verifyRpcUserAttributeType(UserAttributeType inExpectedUserAttributeType,
-                                            AdminRpc.UserAttributeType inActualUserAttributeType)
+    public static void verifyRpcUserAttributeType(UserAttributeType inExpectedUserAttributeType,
+                                                  AdminRpc.UserAttributeType inActualUserAttributeType)
     {
         switch(inExpectedUserAttributeType) {
             case DISPLAY_LAYOUT:
@@ -483,7 +468,7 @@ public class AdminRpcUtilTest
      *
      * @return a <code>UserAttribute</code> value
      */
-    private UserAttribute generateUserAttribute()
+    public static UserAttribute generateUserAttribute()
     {
         return userAttributeFactory.create(generateUser(),
                                            UserAttributeType.STRATEGY_ENGINES,
@@ -494,7 +479,7 @@ public class AdminRpcUtilTest
      *
      * @return an <code>AdminRpc.UserAttribute</code> value
      */
-    private AdminRpc.UserAttribute generateRpcUserAttribute()
+    public static AdminRpc.UserAttribute generateRpcUserAttribute()
     {
         AdminRpc.UserAttribute.Builder builder = AdminRpc.UserAttribute.newBuilder();
         builder.setAttribute(generateString());
@@ -508,8 +493,8 @@ public class AdminRpcUtilTest
      * @param inExpectedRole a <code>Role</code> value
      * @param inActualRole an <code>AdminRpc.Role</code> value
      */
-    private void verifyRpcRole(Role inExpectedRole,
-                               AdminRpc.Role inActualRole)
+    public static void verifyRpcRole(Role inExpectedRole,
+                                     AdminRpc.Role inActualRole)
     {
         assertEquals(inExpectedRole.getDescription(),
                      inActualRole.getDescription());
@@ -528,8 +513,8 @@ public class AdminRpcUtilTest
      * @param inExpectedPermissions a <code>Collection&lt;Permission&gt;</code> value
      * @param inActualPermissions a <code>Collection&lt;AdminRpc.Permission</code> value
      */
-    private void verifyRpcPermissions(Collection<Permission> inExpectedPermissions,
-                                      Collection<AdminRpc.Permission> inActualPermissions)
+    public static void verifyRpcPermissions(Collection<Permission> inExpectedPermissions,
+                                            Collection<AdminRpc.Permission> inActualPermissions)
     {
         assertEquals(inExpectedPermissions.size(),
                      inActualPermissions.size());
@@ -551,8 +536,8 @@ public class AdminRpcUtilTest
      * @param inExpectedPermissions a <code>Collection&lt;AdminRpc.Permission</code> value
      * @param inActualPermissions a <code>Collection&lt;Permission&gt;</code> value
      */
-    private void verifyPermissions(Collection<AdminRpc.Permission> inExpectedPermissions,
-                                   Collection<Permission> inActualPermissions)
+    public static void verifyPermissions(Collection<AdminRpc.Permission> inExpectedPermissions,
+                                         Collection<Permission> inActualPermissions)
     {
         assertEquals(inExpectedPermissions.size(),
                      inActualPermissions.size());
@@ -574,8 +559,8 @@ public class AdminRpcUtilTest
      * @param inExpectedUsers a <code>Collection&lt;User&gt;</code> value
      * @param inActualUsers a <code>Collection&lt;AdminRpc.User</code> value
      */
-    private void verifyRpcUsers(Collection<User> inExpectedUsers,
-                                Collection<AdminRpc.User> inActualUsers)
+    public static void verifyRpcUsers(Collection<User> inExpectedUsers,
+                                      Collection<AdminRpc.User> inActualUsers)
     {
         assertEquals(inExpectedUsers.size(),
                      inActualUsers.size());
@@ -597,7 +582,7 @@ public class AdminRpcUtilTest
      * @param inExpectedUsers a <code>Collection&lt;AdminRpc.User</code> value
      * @param inActualUsers a <code>Collection&lt;User&gt;</code> value
      */
-    private void verifyUsers(Collection<AdminRpc.User> inExpectedUsers,
+    public static void verifyUsers(Collection<AdminRpc.User> inExpectedUsers,
                                    Collection<User> inActualUsers)
     {
         assertEquals(inExpectedUsers.size(),
@@ -619,24 +604,24 @@ public class AdminRpcUtilTest
      *
      * @return a <code>String</code> value
      */
-    private String generateString()
+    private static String generateString()
     {
-        return UUID.randomUUID().toString();
+        return PlatformServices.generateId();
     }
     /**
      * creates {@link User} objects
      */
-    private UserFactory userFactory;
+    private static UserFactory userFactory = new SimpleUserFactory();
     /**
      * creates {@link Role} objects
      */
-    private RoleFactory roleFactory;
+    private static RoleFactory roleFactory = new SimpleRoleFactory();
     /**
      * creates {@link Permission} objects
      */
-    private PermissionFactory permissionFactory;
+    private static PermissionFactory permissionFactory = new SimplePermissionFactory();
     /**
      * creates {@link UserAttribute} objects
      */
-    private UserAttributeFactory userAttributeFactory;
+    private static UserAttributeFactory userAttributeFactory = new SimpleUserAttributeFactory();
 }

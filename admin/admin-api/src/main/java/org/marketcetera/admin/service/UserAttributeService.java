@@ -31,4 +31,10 @@ public interface UserAttributeService
      */
     UserAttribute getUserAttribute(User inUser,
                                    UserAttributeType inUserAttributeType);
+    /**
+     * Remove the given user attribute.
+     *
+     * @param inUserAttribute a <code>UserAttribute</code> value
+     */
+    void delete(UserAttribute inUserAttribute);
 }

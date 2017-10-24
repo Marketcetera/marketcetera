@@ -1,8 +1,8 @@
 package org.marketcetera.admin.dao;
 
+import org.marketcetera.admin.MutableUserAttributeFactory;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserAttribute;
-import org.marketcetera.admin.UserAttributeFactory;
 import org.marketcetera.admin.UserAttributeType;
 
 /* $License$ */
@@ -15,15 +15,15 @@ import org.marketcetera.admin.UserAttributeType;
  * @since 1.2.0
  */
 public class PersistentUserAttributeFactory
-        implements UserAttributeFactory
+        implements MutableUserAttributeFactory
 {
     /* (non-Javadoc)
      * @see com.marketcetera.admin.UserAttributeFactory#create(com.marketcetera.admin.User, com.marketcetera.admin.UserAttributeType, java.lang.String)
      */
     @Override
-    public UserAttribute create(User inUser,
-                                UserAttributeType inType,
-                                String inAttribute)
+    public PersistentUserAttribute create(User inUser,
+                                          UserAttributeType inType,
+                                          String inAttribute)
     {
         return new PersistentUserAttribute(inUser,
                                            inType,

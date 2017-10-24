@@ -162,7 +162,7 @@ public interface AdminClient
      *
      * @param inUsername a <code>String</code> value
      * @param inAttributeType a <code>UserAttributeType</code> value
-     * @param inAttribute a <code>String</code> value
+     * @param inAttribute a <code>String</code> value or <code>null</code> to remove the attribute
      */
     void setUserAttribute(String inUsername,
                           UserAttributeType inAttributeType,

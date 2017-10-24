@@ -1,5 +1,6 @@
 package org.marketcetera.util.ws.stateful;
 
+import org.joda.time.DateTime;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 
@@ -114,5 +115,18 @@ public class SessionHolder<T>
     public T getSession()
     {
         return mSession;
+    }
+
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("SessionHolder [user=").append(mUser).append(", session=").append(mSession)
+                .append(", lastAccess=").append(new DateTime(mLastAccess)).append("]");
+        return builder.toString();
     }
 }

@@ -7,6 +7,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.marketcetera.admin.MutableUserAttribute;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeType;
@@ -26,7 +27,7 @@ import org.marketcetera.persist.EntityBase;
 @Entity(name="UserAttribute")
 public class PersistentUserAttribute
         extends EntityBase
-        implements UserAttribute
+        implements MutableUserAttribute
 {
     /**
      * Create a new PersistentUserAttribute instance.
