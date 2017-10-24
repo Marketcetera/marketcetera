@@ -13,7 +13,6 @@ import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataClient;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRpcUtil;
 import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
@@ -21,6 +20,7 @@ import org.marketcetera.marketdata.core.rpc.MarketDataRpc.MarketDataStatusListen
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceBlockingStub;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceStub;
+import org.marketcetera.marketdata.rpc.MarketDataRpcUtil;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
@@ -165,7 +165,7 @@ public class MarketDataRpcClient
                                        response);
                 Deque<Event> events = Lists.newLinkedList();
                 for(MarketDataRpc.Event rpcEvent : response.getEventList()) {
-                    events.add(MarketDataRpcUtil.getEvent(rpcEvent));
+                    MarketDataRpcUtil.getEvent(rpcEvent).ifPresent(value->events.add(value));
                 }
                 SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
                                        "{} returning {}",
@@ -430,7 +430,10 @@ public class MarketDataRpcClient
         @Override
         protected Event translateMessage(MarketDataRpc.EventsResponse inResponse)
         {
-            return MarketDataRpcUtil.getEvent(inResponse).orElse(null);
+            if(inResponse.hasEvent()) {
+                return MarketDataRpcUtil.getEvent(inResponse.getEvent()).orElse(null);
+            }
+            return null;
         }
         /* (non-Javadoc)
          * @see org.marketcetera.trading.rpc.MarketDataRpcClient.AbstractListenerProxy#sendMessage(java.lang.Object, java.lang.Object)

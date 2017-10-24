@@ -1,4 +1,4 @@
-package org.marketcetera.marketdata;
+package org.marketcetera.marketdata.rpc;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -11,6 +11,13 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.marketcetera.event.Event;
+import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.MarketDataContextClassProvider;
+import org.marketcetera.marketdata.MarketDataProviderStatus;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
 
 /* $License$ */
@@ -25,28 +32,15 @@ import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
 public class MarketDataRpcUtil
 {
     /**
-     * Get the event from the given RPC message.
-     *
-     * @param inResponse a <code>MarketDataRpc.EventsResponse</code> value
-     * @return an <code>Optional&lt;Event&gt;</code> value
-     */
-    public static Optional<Event> getEvent(MarketDataRpc.EventsResponse inResponse)
-    {
-        if(!inResponse.hasEvent()) {
-            return Optional.empty();
-        }
-        return Optional.of(getEvent(inResponse.getEvent()));
-    }
-    /**
      * Get the event from the given RPC event value.
      *
      * @param inRpcEvent a <code>MarketDataRpc.Event</code> value
-     * @return an <code>Event</code> value
+     * @return an <code>Optional&lt;Event&gt;</code> value
      */
-    public static Event getEvent(MarketDataRpc.Event inRpcEvent)
+    public static Optional<Event> getEvent(MarketDataRpc.Event inRpcEvent)
     {
         try {
-            return (Event)unmarshall(inRpcEvent.getPayload());
+            return Optional.of(unmarshall(inRpcEvent.getPayload()));
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
