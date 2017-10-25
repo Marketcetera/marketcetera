@@ -379,9 +379,8 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
         while(!alive.get()) {
             try {
                 SLF4JLoggerProxy.info(this,
-                                      "{} trying to reconnect {}",
-                                      getAppId(),
-                                      this);
+                                      "{} trying to reconnect",
+                                      getAppId());
                 stopService();
                 startService();
                 doLogin();
@@ -402,15 +401,6 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
                 } catch (InterruptedException e1) {
                     break;
                 }
-//                if(e instanceof StatusRuntimeException) {
-//                    try {
-//                        Thread.sleep(parameters.getHeartbeatInterval());
-//                    } catch (InterruptedException e1) {
-//                        break;
-//                    }
-//                } else {
-//                    break;
-//                }
             }
         }
     }

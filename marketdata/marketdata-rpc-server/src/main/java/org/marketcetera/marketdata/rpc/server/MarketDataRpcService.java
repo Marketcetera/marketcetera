@@ -4,7 +4,6 @@ import java.util.Deque;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
@@ -32,8 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 /* $License$ */
@@ -171,9 +168,9 @@ public class MarketDataRpcService<SessionClazz>
                     throw new IllegalArgumentException("Duplicate market data request id: " + clientRequestId);
                 }
             } catch (Exception e) {
-                SLF4JLoggerProxy.warn(MarketDataRpcService.this,
-                                      e);
-                inResponseObserver.onError(e);
+                handleError(e,
+                            inResponseObserver);
+                inResponseObserver.onCompleted();
             }
         }
         /* (non-Javadoc)
@@ -189,7 +186,7 @@ public class MarketDataRpcService<SessionClazz>
                                        "Received market data cancel request {}",
                                        inRequest);
                 authzService.authorize(sessionHolder.getUser(),
-                                       MarketDataPermissions.CancelMarketDataAction.name());
+                                       MarketDataPermissions.RequestMarketDataAction.name());
                 MarketDataRpc.CancelResponse.Builder responseBuilder = MarketDataRpc.CancelResponse.newBuilder();
                 String clientRequestId = inRequest.getRequestId();
                 String serverRequestId = buildRequestId(inRequest.getSessionId(),
@@ -210,9 +207,9 @@ public class MarketDataRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                SLF4JLoggerProxy.warn(MarketDataRpcService.this,
-                                      e);
-                inResponseObserver.onError(e);
+                handleError(e,
+                            inResponseObserver);
+                inResponseObserver.onCompleted();
             }
         }
         /* (non-Javadoc)
@@ -246,10 +243,9 @@ public class MarketDataRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
+                inResponseObserver.onCompleted();
             }
         }
         /* (non-Javadoc)
@@ -270,10 +266,9 @@ public class MarketDataRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
+                inResponseObserver.onCompleted();
             }
         }
         /* (non-Javadoc)
@@ -298,9 +293,9 @@ public class MarketDataRpcService<SessionClazz>
                     marketDataService.addMarketDataStatusListener((MarketDataStatusListener)marketDataStatusListenerProxy);
                 }
             } catch (Exception e) {
-                SLF4JLoggerProxy.warn(MarketDataRpcService.this,
-                                      e);
-                inResponseObserver.onError(e);
+                handleError(e,
+                            inResponseObserver);
+                inResponseObserver.onCompleted();
             }
         }
         /* (non-Javadoc)
@@ -330,9 +325,9 @@ public class MarketDataRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                SLF4JLoggerProxy.warn(MarketDataRpcService.this,
-                                      e);
-                inResponseObserver.onError(e);
+                handleError(e,
+                            inResponseObserver);
+                inResponseObserver.onCompleted();
             }
         }
         /**

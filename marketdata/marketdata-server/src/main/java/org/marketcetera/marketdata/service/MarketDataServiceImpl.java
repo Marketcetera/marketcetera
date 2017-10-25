@@ -147,7 +147,7 @@ public class MarketDataServiceImpl
                           inMarketDataListener,
                           requestId);
         }
-        return inRequest.getRequestId();
+        return requestId;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.service.MarketDataService#cancel(java.lang.String)
@@ -249,9 +249,10 @@ public class MarketDataServiceImpl
             for(ModuleURN moduleUrn : ModuleManager.getInstance().getProviders()) {
                 String providerType = moduleUrn.providerType();
                 if(providerType.equals("mdata") && moduleUrn.providerName().equals(inProviderName)) {
+                    instanceUrn = new ModuleURN(moduleUrn,
+                                                "single");
                     instanceUrnsByProviderName.put(inProviderName,
-                                                   moduleUrn);
-                    instanceUrn = moduleUrn;
+                                                   instanceUrn);
                     break;
                 }
             }
@@ -274,6 +275,9 @@ public class MarketDataServiceImpl
         DataRequest sourceRequest = new DataRequest(inSourceUrn,
                                                     inMarketDataRequest);
         RequestMetaData requestMetaData = new RequestMetaData(inListener);
+        ModuleManager.startModulesIfNecessary(moduleManager,
+                                              MarketDataCacheModuleFactory.INSTANCE_URN,
+                                              inSourceUrn);
         DataRequest cacheRequest = new DataRequest(MarketDataCacheModuleFactory.INSTANCE_URN);
         DataRequest targetRequest = new DataRequest(createPublisherModule(requestMetaData));
         DataFlowID dataFlowId = moduleManager.createDataFlow(new DataRequest[] { sourceRequest,cacheRequest,targetRequest });

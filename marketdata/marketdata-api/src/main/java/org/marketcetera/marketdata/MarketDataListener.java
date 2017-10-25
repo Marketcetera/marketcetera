@@ -18,5 +18,11 @@ public interface MarketDataListener
      *
      * @param inEvent an <code>Event</code> value
      */
-    void receiveMarketData(Event inEvent);
+    default void receiveMarketData(Event inEvent) {}
+    /**
+     * Receive the given error that occurred.
+     *
+     * @param inThrowable a <code>Throwable</code>
+     */
+    default void onError(Throwable inThrowable) {}
 }

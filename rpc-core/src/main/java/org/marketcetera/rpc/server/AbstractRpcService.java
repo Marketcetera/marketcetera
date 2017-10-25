@@ -162,19 +162,9 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
             } else {
                 throw new StatusRuntimeException(Status.UNAUTHENTICATED.withDescription(inRequest.getUsername() + " is not a valid user or the password was invalid"));
             }
-        } catch (StatusRuntimeException e) {
-            throw e;
         } catch (Exception e) {
-            String message = "Unexpected error occurred during login: " + ExceptionUtils.getRootCauseMessage(e);
-            if(SLF4JLoggerProxy.isDebugEnabled(this)) {
-                SLF4JLoggerProxy.warn(this,
-                                      e,
-                                      message);
-            } else {
-                SLF4JLoggerProxy.warn(this,
-                                      message);
-            }
-            throw new StatusRuntimeException(Status.INTERNAL.withDescription(message).withCause(e));
+            handleError(e,
+                        inResponseObserver);
         }
     }
     /**
@@ -203,19 +193,9 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
                                    response);
             inResponseObserver.onNext(response);
             inResponseObserver.onCompleted();
-        } catch (StatusRuntimeException e) {
-            throw e;
         } catch (Exception e) {
-            String message = "Unexpected error occurred during logout: " + ExceptionUtils.getRootCauseMessage(e);
-            if(SLF4JLoggerProxy.isDebugEnabled(this)) {
-                SLF4JLoggerProxy.warn(this,
-                                      e,
-                                      message);
-            } else {
-                SLF4JLoggerProxy.warn(this,
-                                      message);
-            }
-            throw new StatusRuntimeException(Status.INTERNAL.withDescription(message).withCause(e));
+            handleError(e,
+                        inResponseObserver);
         }
     }
     /**
@@ -227,24 +207,29 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
     protected void doHeartbeat(final BaseRpc.HeartbeatRequest inRequest,
                                final StreamObserver<BaseRpc.HeartbeatResponse> inResponseObserver)
     {
-        SLF4JLoggerProxy.trace(this,
-                               "{} received hearbeat request: {}", //$NON-NLS-1$
-                               getServiceDescription(),
-                               inRequest.getSessionId());
-        String rawRequestSessionId = StringUtils.trimToNull(inRequest.getSessionId());
-        if(rawRequestSessionId == null) {
-            throw new StatusRuntimeException(Status.UNAUTHENTICATED);
+        try {
+            SLF4JLoggerProxy.trace(this,
+                                   "{} received hearbeat request: {}", //$NON-NLS-1$
+                                   getServiceDescription(),
+                                   inRequest.getSessionId());
+            String rawRequestSessionId = StringUtils.trimToNull(inRequest.getSessionId());
+            if(rawRequestSessionId == null) {
+                throw new StatusRuntimeException(Status.UNAUTHENTICATED);
+            }
+            SessionId requestSessionId = new SessionId(rawRequestSessionId);
+            final SessionMetaData sessionMetaData = allSessionMetaData.getIfPresent(requestSessionId);
+            if(sessionMetaData == null) {
+                throw new StatusRuntimeException(Status.UNAUTHENTICATED);
+            }
+            BaseRpc.HeartbeatResponse.Builder responseBuilder = BaseRpc.HeartbeatResponse.newBuilder();
+            responseBuilder.setSessionId(inRequest.getSessionId());
+            responseBuilder.setTimestamp(System.currentTimeMillis());
+            inResponseObserver.onNext(responseBuilder.build());
+            inResponseObserver.onCompleted();
+        } catch (Exception e) {
+            handleError(e,
+                        inResponseObserver);
         }
-        SessionId requestSessionId = new SessionId(rawRequestSessionId);
-        final SessionMetaData sessionMetaData = allSessionMetaData.getIfPresent(requestSessionId);
-        if(sessionMetaData == null) {
-            throw new StatusRuntimeException(Status.UNAUTHENTICATED);
-        }
-        BaseRpc.HeartbeatResponse.Builder responseBuilder = BaseRpc.HeartbeatResponse.newBuilder();
-        responseBuilder.setSessionId(inRequest.getSessionId());
-        responseBuilder.setTimestamp(System.currentTimeMillis());
-        inResponseObserver.onNext(responseBuilder.build());
-        inResponseObserver.onCompleted();
     }
     /**
      * Validates the given session value and returns the session meta information if successful.
@@ -270,6 +255,24 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
             throw new StatusRuntimeException(Status.UNAUTHENTICATED.withDescription("Invalid session: " + inSessionIdValue)); // TODO
         }
         return sessionInfo;
+    }
+    /**
+     * Handle an exception thrown during an RPC call.
+     *
+     * @param inException a <code>Throwable</code> value
+     * @param inResponseObserver a <code>StreamObserver&lt;Clazz&gt;</code> value
+     */
+    protected <Clazz> void handleError(Throwable inException,
+                                       StreamObserver<Clazz> inResponseObserver)
+    {
+        StatusRuntimeException sre;
+        if(inException instanceof StatusRuntimeException) {
+            sre = (StatusRuntimeException)inException;
+        } else {
+            sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(inException).withDescription(ExceptionUtils.getRootCauseMessage(inException)));
+        }
+        inResponseObserver.onError(sre);
+        throw sre;
     }
     /**
      * Holds meta data for a session.

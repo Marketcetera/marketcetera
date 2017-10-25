@@ -4,6 +4,7 @@ import java.util.Deque;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.Version;
 import org.marketcetera.core.VersionInfo;
@@ -151,7 +152,7 @@ public class MarketDataRpcClient
                                        getSessionId());
                 MarketDataRpc.SnapshotRequest.Builder requestBuilder = MarketDataRpc.SnapshotRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setContent(MarketDataRpcUtil.getRpcCntent(inContent));
+                requestBuilder.setContent(MarketDataRpcUtil.getRpcContent(inContent));
                 requestBuilder.setInstrument(TradingUtil.getRpcInstrument(inInstrument));
                 MarketDataRpc.SnapshotRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
@@ -415,6 +416,18 @@ public class MarketDataRpcClient
     private static class MarketDataListenerProxy
             extends BaseUtil.AbstractClientListenerProxy<MarketDataRpc.EventsResponse,Event,MarketDataListener>
     {
+        /* (non-Javadoc)
+         * @see org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy#onError(java.lang.Throwable)
+         */
+        @Override
+        public void onError(Throwable inT)
+        {
+            super.onError(inT);
+            PlatformServices.handleException(MarketDataRpcClient.class,
+                                             "Market Data Error",
+                                             inT);
+            getMessageListener().onError(inT);
+        }
         /**
          * Create a new MarketDataListenerProxy instance.
          *

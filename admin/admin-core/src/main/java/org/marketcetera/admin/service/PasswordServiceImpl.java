@@ -34,6 +34,22 @@ public class PasswordServiceImpl
             throw new IllegalArgumentException(e);
         }
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.service.PasswordService#getHash(char[][])
+     */
+    @Override
+    public String getHash(char[]... inValues)
+    {
+        try {
+            MessageDigest dig = digest.get();
+            for(char[] c:inValues) {
+                dig.update(new String(c).getBytes("UTF-16")); //$NON-NLS-1$
+            }
+            return new BigInteger(dig.digest()).toString(Character.MAX_RADIX);
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
     /**
      * The digest used to hash the password.
      */

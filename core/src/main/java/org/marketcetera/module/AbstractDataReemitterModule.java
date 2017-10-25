@@ -103,6 +103,15 @@ public abstract class AbstractDataReemitterModule
     {
     }
     /**
+     * Get the data support cache.
+     *
+     * @return a <code>Cache&lt;DataFlowID,DataEmitterSupport&gt;</code> value
+     */
+    protected Cache<DataFlowID,DataEmitterSupport> getDataSupport()
+    {
+        return dataSupport;
+    }
+    /**
      * if wired into a multi-module flow, this object will assist in passing data to the next object in the flow
      */
     private final Cache<DataFlowID,DataEmitterSupport> dataSupport = CacheBuilder.newBuilder().build();

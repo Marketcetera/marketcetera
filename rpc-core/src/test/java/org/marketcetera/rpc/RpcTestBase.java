@@ -88,7 +88,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
     public void testBadPassword()
             throws Exception
     {
-        new ExpectedFailure<StatusRuntimeException>("UNKNOWN") {
+        new ExpectedFailure<StatusRuntimeException>("UNAUTHENTICATED: test is not a valid user or the password was invalid") {
             @Override
             protected void run()
                     throws Exception
@@ -109,7 +109,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
     public void testBadUsername()
             throws Exception
     {
-        new ExpectedFailure<StatusRuntimeException>("UNKNOWN") {
+        new ExpectedFailure<StatusRuntimeException>("UNAUTHENTICATED: bad-username is not a valid user or the password was invalid") {
             @Override
             protected void run()
                     throws Exception

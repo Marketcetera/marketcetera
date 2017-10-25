@@ -1,5 +1,8 @@
 package org.marketcetera.core;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 /* $License$ */
 
 /**
@@ -10,6 +13,7 @@ package org.marketcetera.core;
  * @since $Release$
  */
 public interface BaseClient
+        extends Closeable
 {
     /**
      * Start the client and connect to the server.
@@ -31,4 +35,17 @@ public interface BaseClient
      * @return a <code>boolean</code> value
      */
     boolean isRunning();
+    /* (non-Javadoc)
+     * @see java.io.Closeable#close()
+     */
+    @Override
+    default void close()
+            throws IOException
+    {
+        try {
+            stop();
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
 }

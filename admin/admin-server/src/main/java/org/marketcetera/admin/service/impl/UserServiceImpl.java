@@ -136,7 +136,13 @@ public class UserServiceImpl
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public PersistentUser save(User inUser)
     {
-        return userDao.save((PersistentUser)inUser);
+        PersistentUser pUser;
+        if(inUser instanceof PersistentUser) {
+            pUser = (PersistentUser)inUser;
+        } else {
+            pUser = new PersistentUser(inUser);
+        }
+        return userDao.save(pUser);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.UserService#delete(com.marketcetera.ors.security.SimpleUser)

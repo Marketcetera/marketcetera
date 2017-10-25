@@ -18,4 +18,11 @@ public interface PasswordService
      * @return a <code>String</code> value
      */
     String getHash(String inValue);
+    /**
+     * Get the hash of the given value.
+     *
+     * @param inValue a <code>char[][]</code> value
+     * @return a <code>String</code> value
+     */
+    String getHash(char[]...inValues);
 }

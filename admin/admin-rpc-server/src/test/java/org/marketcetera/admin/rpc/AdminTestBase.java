@@ -1,5 +1,7 @@
 package org.marketcetera.admin.rpc;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -12,9 +14,11 @@ import org.marketcetera.admin.AdminRpcClientParameters;
 import org.marketcetera.admin.MutableUser;
 import org.marketcetera.admin.MutableUserFactory;
 import org.marketcetera.admin.PermissionFactory;
+import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.PersistentPermissionDao;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
+import org.marketcetera.core.PlatformServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -24,6 +28,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
+import io.grpc.StatusRuntimeException;
 import junitparams.JUnitParamsRunner;
 
 /* $License$ */
@@ -76,11 +81,40 @@ public abstract class AdminTestBase
      * @return an <code>AdminClient</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected AdminClient generateTraderClient()
+    protected AdminClient generateTraderAdminClient()
             throws Exception
     {
         return generateAdminClient("trader",
                                    "trader");
+    }
+    /**
+     * Verify the given exception is for lack of the given permission.
+     *
+     * @param inThrowable a <code>Throwable</code> value
+     * @param inPermissionName a <code>String</code> value
+     */
+    protected void assertNotAuthorized(Throwable inThrowable,
+                                       String inPermissionName)
+    {
+        assertTrue(inThrowable instanceof StatusRuntimeException);
+        assertTrue(inThrowable.getMessage().contains("not authorized"));
+        assertTrue(inThrowable.getMessage().contains(inPermissionName));
+    }
+    /**
+     * Generate and create a user with no permissions.
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inPassword a <code>String</code> value
+     * @return a <code>User</code> value
+     */
+    protected User generateUserNoPermissions(String inUsername,
+                                             String inPassword)
+    {
+        User noPermissionUser = AdminRpcUtilTest.generateUser(inUsername,
+                                                              PlatformServices.generateId());
+        noPermissionUser = adminClient.createUser(noPermissionUser,
+                                                  inPassword);
+        return noPermissionUser;
     }
     /**
      * Generate an <code>AdminClient</code> with the given user/password.

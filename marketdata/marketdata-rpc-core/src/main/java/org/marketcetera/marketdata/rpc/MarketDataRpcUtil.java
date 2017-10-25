@@ -179,7 +179,7 @@ public class MarketDataRpcUtil
      * @param inContent a <code>Content</code> value
      * @return a <code>MarketDataRpc.ContentAndCapability</code> value
      */
-    public static MarketDataRpc.ContentAndCapability getRpcCntent(Content inContent)
+    public static MarketDataRpc.ContentAndCapability getRpcContent(Content inContent)
     {
         switch(inContent) {
             case AGGREGATED_DEPTH:

@@ -58,7 +58,7 @@ public class AdminRpcServerTest
             throws Exception
     {
         // no permission
-        final AdminClient testClient = generateTraderClient();
+        final AdminClient testClient = generateTraderAdminClient();
         new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for ReadUserAction") {
             @Override
             protected void run()
@@ -81,7 +81,7 @@ public class AdminRpcServerTest
             throws Exception
     {
         // no permission
-        final AdminClient testClient = generateTraderClient();
+        final AdminClient testClient = generateTraderAdminClient();
         new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for UpdateUserAction") {
             @Override
             protected void run()
@@ -121,7 +121,7 @@ public class AdminRpcServerTest
             throws Exception
     {
         // no permission
-        final AdminClient testClient = generateTraderClient();
+        final AdminClient testClient = generateTraderAdminClient();
         new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for ReadRoleAction") {
             @Override
             protected void run()
@@ -144,7 +144,7 @@ public class AdminRpcServerTest
             throws Exception
     {
         // no permission
-        final AdminClient testClient = generateTraderClient();
+        final AdminClient testClient = generateTraderAdminClient();
         final Role newRole = AdminRpcUtilTest.generateRole(1,1);
         new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for CreateRoleAction") {
             @Override
@@ -180,7 +180,7 @@ public class AdminRpcServerTest
             throws Exception
     {
         // no permission
-        final AdminClient testClient = generateTraderClient();
+        final AdminClient testClient = generateTraderAdminClient();
         final Role sampleRole = adminClient.readRoles().get(0);
         new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for UpdateRoleAction") {
             @Override
@@ -235,7 +235,7 @@ public class AdminRpcServerTest
             throws Exception
     {
         // no permission
-        final AdminClient testClient = generateTraderClient();
+        final AdminClient testClient = generateTraderAdminClient();
         final Role sampleRole = adminClient.readRoles().get(0);
         new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for DeleteRoleAction") {
             @Override
@@ -343,7 +343,7 @@ public class AdminRpcServerTest
             throws Exception
     {
         // no permission
-        final AdminClient testClient = generateTraderClient();
+        final AdminClient testClient = generateTraderAdminClient();
         new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for CreateUserAction") {
             @Override
             protected void run()
@@ -383,7 +383,7 @@ public class AdminRpcServerTest
             throws Exception
     {
         // no permission
-        final AdminClient testClient = generateTraderClient();
+        final AdminClient testClient = generateTraderAdminClient();
         new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for ChangeUserPasswordAction") {
             @Override
             protected void run()
@@ -421,7 +421,7 @@ public class AdminRpcServerTest
             throws Exception
     {
         // no permission
-        final AdminClient testClient = generateTraderClient();
+        final AdminClient testClient = generateTraderAdminClient();
         new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for DeleteUserAction") {
             @Override
             protected void run()
@@ -459,7 +459,7 @@ public class AdminRpcServerTest
             throws Exception
     {
         // no permission
-        final AdminClient testClient = generateTraderClient();
+        final AdminClient testClient = generateTraderAdminClient();
         new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for DeleteUserAction") {
             @Override
             protected void run()
@@ -502,7 +502,7 @@ public class AdminRpcServerTest
             throws Exception
     {
         // no permission
-        final AdminClient testClient = generateTraderClient();
+        final AdminClient testClient = generateTraderAdminClient();
         new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for ReadPermissionAction") {
             @Override
             protected void run()
@@ -525,7 +525,7 @@ public class AdminRpcServerTest
             throws Exception
     {
         // no permission
-        final AdminClient testClient = generateTraderClient();
+        final AdminClient testClient = generateTraderAdminClient();
         new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for UpdatePermissionAction") {
             @Override
             protected void run()
@@ -562,7 +562,7 @@ public class AdminRpcServerTest
             throws Exception
     {
         // no permission
-        final AdminClient testClient = generateTraderClient();
+        final AdminClient testClient = generateTraderAdminClient();
         new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: trader is not authorized for DeletePermissionAction") {
             @Override
             protected void run()

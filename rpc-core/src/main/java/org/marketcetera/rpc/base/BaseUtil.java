@@ -179,11 +179,20 @@ public abstract class BaseUtil
         protected abstract void sendMessage(MessageListenerClazz inMessageListener,
                                             MessageClazz inMessage);
         /**
+         * Get the messageListener value.
+         *
+         * @return a <code>MessageListenerClazz</code> value
+         */
+        protected MessageListenerClazz getMessageListener()
+        {
+            return messageListener;
+        }
+        /**
          * Create a new AbstractListenerProxy instance.
          *
          * @param inMessageListener a <code>MessageListenerClazz</code> value
          */
-        public AbstractClientListenerProxy(MessageListenerClazz inMessageListener)
+        protected AbstractClientListenerProxy(MessageListenerClazz inMessageListener)
         {
             messageListener = inMessageListener;
         }

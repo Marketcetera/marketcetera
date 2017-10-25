@@ -23,6 +23,7 @@ import javax.persistence.UniqueConstraint;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.admin.MutableUser;
+import org.marketcetera.admin.User;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.persist.ValidationException;
@@ -51,6 +52,24 @@ public class PersistentUser
         extends NDEntityBase
         implements MutableUser
 {
+    /**
+     * Create a new PersistentUser instance.
+     */
+    public PersistentUser() {}
+    /**
+     * Create a new PersistentUser instance.
+     *
+     * @param inUser a <code>User</code> value
+     */
+    public PersistentUser(User inUser)
+    {
+        active = inUser.isActive();
+        setName(inUser.getName());
+        setDescription(inUser.getDescription());
+        superuser = false;
+        userData = null;
+        hashedPassword = inUser.getHashedPassword();
+    }
     /**
      * The superuser flag of this user.
      * @return The flag.

@@ -1,5 +1,6 @@
 package org.marketcetera.rpc.paging;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.marketcetera.persist.CollectionPageResponse;
@@ -21,6 +22,27 @@ import com.google.common.collect.Lists;
  */
 public abstract class PagingUtil
 {
+    /*
+     * returns a view (not a new list) of the sourceList for the 
+     * range based on page and pageSize
+     * @param sourceList
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    public static <T> List<T> getPage(List<T> sourceList, int page, int pageSize)
+    {
+        if(pageSize <= 0 || page <= 0) {
+            throw new IllegalArgumentException("invalid page size: " + pageSize);
+        }
+
+        int fromIndex = (page - 1) * pageSize;
+        if(sourceList == null || sourceList.size() < fromIndex){
+            return Collections.emptyList();
+        }
+        // toIndex exclusive
+        return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
+    }    
     /**
      * Build an RPC page request from the given inputs.
      *

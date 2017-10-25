@@ -278,6 +278,18 @@ public class AdminRpcUtilTest
                             generateString());
     }
     /**
+     * Generate a user with random values and the given password.
+     *
+     * @param inPassword a <code>String</code> value
+     * @return a <code>User</code> value
+     */
+    public static User generateUser(String inPassword)
+    {
+        return generateUser(generateString(),
+                            inPassword,
+                            generateString());
+    }
+    /**
      * Generate a user with the given values.
      *
      * @param inUsername a <code>String</code> value
@@ -287,8 +299,24 @@ public class AdminRpcUtilTest
     public static User generateUser(String inUsername,
                                     String inDescription)
     {
+        return generateUser(inUsername,
+                            generateString(),
+                            inDescription);
+    }
+    /**
+     * Generate a user with the given values.
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inPassword a <code>String</code> value
+     * @param inDescription a <code>String</code> value
+     * @return a <code>User</code> value
+     */
+    public static User generateUser(String inUsername,
+                                    String inPassword,
+                                    String inDescription)
+    {
         return userFactory.create(inUsername,
-                                  generateString(),
+                                  inPassword,
                                   inDescription,
                                   true);
     }

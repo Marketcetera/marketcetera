@@ -18,9 +18,5 @@ public enum MarketDataPermissions
     /**
      * permission to request snapshot market data
      */
-    RequestMarketDataSnapshotAction,
-    /**
-     * permission to cancel market data
-     */
-    CancelMarketDataAction
+    RequestMarketDataSnapshotAction
 }
