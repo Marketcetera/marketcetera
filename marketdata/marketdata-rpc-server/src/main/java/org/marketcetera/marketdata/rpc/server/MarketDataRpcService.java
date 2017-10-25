@@ -184,10 +184,12 @@ public class MarketDataRpcService<SessionClazz>
                            StreamObserver<MarketDataRpc.CancelResponse> inResponseObserver)
         {
             try {
-                validateAndReturnSession(inRequest.getSessionId());
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
                 SLF4JLoggerProxy.trace(MarketDataRpcService.this,
                                        "Received market data cancel request {}",
                                        inRequest);
+                authzService.authorize(sessionHolder.getUser(),
+                                       MarketDataPermissions.CancelMarketDataAction.name());
                 MarketDataRpc.CancelResponse.Builder responseBuilder = MarketDataRpc.CancelResponse.newBuilder();
                 String clientRequestId = inRequest.getRequestId();
                 String serverRequestId = buildRequestId(inRequest.getSessionId(),
@@ -221,10 +223,12 @@ public class MarketDataRpcService<SessionClazz>
                                 StreamObserver<MarketDataRpc.SnapshotResponse> inResponseObserver)
         {
             try {
-                validateAndReturnSession(inRequest.getSessionId());
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
                 SLF4JLoggerProxy.trace(MarketDataRpcService.this,
                                        "Received snapshot request {}",
                                        inRequest);
+                authzService.authorize(sessionHolder.getUser(),
+                                       MarketDataPermissions.RequestMarketDataSnapshotAction.name());
                 MarketDataRpc.SnapshotResponse.Builder responseBuilder = MarketDataRpc.SnapshotResponse.newBuilder();
                 Instrument instrument = TradingUtil.getInstrument(inRequest.getInstrument());
                 Content content = MarketDataRpcUtil.getContent(inRequest.getContent());

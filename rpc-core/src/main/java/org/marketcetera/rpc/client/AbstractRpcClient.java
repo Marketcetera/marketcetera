@@ -379,8 +379,9 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
         while(!alive.get()) {
             try {
                 SLF4JLoggerProxy.info(this,
-                                      "{} trying to reconnect",
-                                      getAppId());
+                                      "{} trying to reconnect {}",
+                                      getAppId(),
+                                      this);
                 stopService();
                 startService();
                 doLogin();
