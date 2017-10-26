@@ -9,6 +9,7 @@ import org.marketcetera.admin.service.UserAttributeService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserAttributeServiceImpl;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
+import org.marketcetera.module.ModuleManager;
 import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.SessionManager;
@@ -32,7 +33,7 @@ import io.grpc.BindableService;
  */
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@ComponentScan(basePackages={"org.marketcetera","com.marketcetera"})
+@ComponentScan(basePackages={"org.marketcetera"})
 public class AdminTestConfiguration
 {
     /**
@@ -64,6 +65,18 @@ public class AdminTestConfiguration
     public UserAttributeService getUserAttributeService()
     {
         return new UserAttributeServiceImpl();
+    }
+    /**
+     * Get the module manager value.
+     *
+     * @return a <code>ModuleManager</code> value
+     */
+    @Bean
+    public ModuleManager getModuleManager()
+    {
+        ModuleManager moduleManager = new ModuleManager();
+        moduleManager.init();
+        return moduleManager;
     }
     /**
      * Get the admin RPC service.

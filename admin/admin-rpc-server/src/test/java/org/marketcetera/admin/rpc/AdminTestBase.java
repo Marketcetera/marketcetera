@@ -13,12 +13,14 @@ import org.marketcetera.admin.AdminRpcClientFactory;
 import org.marketcetera.admin.AdminRpcClientParameters;
 import org.marketcetera.admin.MutableUser;
 import org.marketcetera.admin.MutableUserFactory;
+import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.PersistentPermissionDao;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.module.ModuleManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -141,12 +143,12 @@ public abstract class AdminTestBase
      * RPC hostname
      */
     @Value("${metc.rpc.hostname}")
-    private String rpcHostname = "127.0.0.1";
+    protected String rpcHostname = "127.0.0.1";
     /**
      * RPC port
      */
     @Value("${metc.rpc.port}")
-    private int rpcPort = 18999;
+    protected int rpcPort = 18999;
     /**
      * provides access to admin services
      */
@@ -181,6 +183,11 @@ public abstract class AdminTestBase
      */
     @Autowired
     protected UserService userService;
+    /**
+     * provides access to module services
+     */
+    @Autowired
+    protected ModuleManager moduleManager;
     /**
      * test artifact used to identify the current test case
      */

@@ -3,16 +3,20 @@ package org.marketcetera.marketdata.rpc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.util.EnumSet;
+
 import org.junit.Test;
 import org.marketcetera.admin.User;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataClient;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataPermissions;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.manual.ManualFeedModuleFactory;
 import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
@@ -45,19 +49,19 @@ public class MarketDataRpcServerTest
                                                                   MarketDataPermissions.RequestMarketDataAction.name()));
             // won't fail, but won't deliver any events, either
             MarketDataRequest request = generateMarketDataRequest();
-            assertNoMarketDataEventsOrErrors();
+            assertNoMarketData();
             noPermissionClient.request(request,
-                                       this);
+                                       marketDataTestEventListener);
             Throwable permissionError = waitForMarketDataError();
             assertNotAuthorized(permissionError,
                                 MarketDataPermissions.RequestMarketDataAction.name());
             // no events
             assertNoMarketDataEvents();
             // test snapshots
-            resetMarketDataEventsAndErrors();
+            reset();
             assertFalse(authorizationService.authorizeNoException(noPermissionUser.getName(),
                                                                   MarketDataPermissions.RequestMarketDataSnapshotAction.name()));
-            assertNoMarketDataEventsOrErrors();
+            assertNoMarketData();
             // this will fail directly
             new ExpectedFailure<RuntimeException>("INVALID_ARGUMENT: NotAuthorizedException: " + noPermissionUser.getName() + " is not authorized for " + MarketDataPermissions.RequestMarketDataSnapshotAction) {
                 @Override
@@ -73,25 +77,122 @@ public class MarketDataRpcServerTest
         }
     }
     /**
-     * Test {@link MarketDataClient#request(MarketDataRequest, MarketDataListener)}.
+     * Test {@link MarketDataClient#request(MarketDataRequest, MarketDataListener)} and {@link MarketDataClient#cancel(String)}.
      *
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    public void testRequestMarketDataSuccess()
+    public void testRequestAndCancelMarketData()
             throws Exception
     {
-        MarketDataRequest request = generateMarketDataRequest();
-        assertNoMarketDataEventsOrErrors();
+        final MarketDataRequest request = generateMarketDataRequest();
+        assertNoMarketData();
         marketDataClient.request(request,
-                                 this);
-        assertNoMarketDataEventsOrErrors();
+                                 marketDataTestEventListener);
+        assertNoMarketData();
         Event sentEvent = EventTestBase.generateAskEvent(new Equity("METC"));
-        Thread.sleep(5000);
+        waitForActiveRequest(request);
         sendEvent(sentEvent,
                   request);
         Event receivedEvent = waitForMarketDataEvent();
         assertEquals(sentEvent,
                      receivedEvent);
+        // test cancel
+        marketDataClient.cancel(request.getRequestId());
+        waitForNoActiveRequest(request);
+        reset();
+        sendEvent(sentEvent,
+                  null);
+        assertNoMarketData();
+        // repeat cancel test
+        new ExpectedFailure<IllegalArgumentException>("Unknown market data request id: " + request.getRequestId()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                marketDataClient.cancel(request.getRequestId());
+            }
+        };
+    }
+    /**
+     * Test duplicate market data request ids.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testDuplicateMarketDataRequest()
+            throws Exception
+    {
+        final MarketDataRequest request = generateMarketDataRequest();
+        assertNoMarketData();
+        marketDataClient.request(request,
+                                 marketDataTestEventListener);
+        assertNoMarketData();
+        Event sentEvent = EventTestBase.generateAskEvent(new Equity("METC"));
+        waitForActiveRequest(request);
+        sendEvent(sentEvent,
+                  request);
+        Event receivedEvent = waitForMarketDataEvent();
+        assertEquals(sentEvent,
+                     receivedEvent);
+        // request again with the same request
+        reset();
+        new ExpectedFailure<IllegalArgumentException>("Duplicate market data request id: " + request.getRequestId()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                marketDataClient.request(request,
+                                         marketDataTestEventListener);
+            }
+        };
+        // a different client can use the same request id
+        try(MarketDataClient traderClient = generateTraderMarketDataClient()) {
+            reset();
+            traderClient.request(request,
+                                 marketDataTestEventListener);
+            assertNoMarketData();
+            sentEvent = EventTestBase.generateBidEvent(new Equity("METC"));
+            waitForActiveRequest(request);
+            sendEvent(sentEvent,
+                      request);
+            receivedEvent = waitForMarketDataEvent();
+            assertEquals(sentEvent,
+                         receivedEvent);
+            traderClient.cancel(request.getRequestId());
+        }
+        marketDataClient.cancel(request.getRequestId());
+    }
+    /**
+     * Test {@link MarketDataClient#getAvailableCapability()}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testAvailableCapability()
+            throws Exception
+    {
+        assertEquals(EnumSet.allOf(Capability.class),
+                     marketDataClient.getAvailableCapability());
+    }
+    /**
+     * Test {@link MarketDataClient#addMarketDataStatusListener(org.marketcetera.marketdata.MarketDataStatusListener)} and {@link MarketDataClient#removeMarketDataStatusListener(org.marketcetera.marketdata.MarketDataStatusListener)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testMarketDataStatusListeners()
+            throws Exception
+    {
+        marketDataClient.addMarketDataStatusListener(marketDataTestStatusListener);
+        marketDataClient.addMarketDataStatusListener(marketDataTestStatusListener);
+        moduleManager.stop(ManualFeedModuleFactory.INSTANCE_URN);
+        verifyOfflineStatus(waitForMarketDataStatus());
+        assertNoMarketDataStatus();
+        marketDataClient.removeMarketDataStatusListener(marketDataTestStatusListener);
+        marketDataClient.removeMarketDataStatusListener(marketDataTestStatusListener);
+        reset();
+        moduleManager.start(ManualFeedModuleFactory.INSTANCE_URN);
+        assertNoMarketDataStatus();
     }
 }

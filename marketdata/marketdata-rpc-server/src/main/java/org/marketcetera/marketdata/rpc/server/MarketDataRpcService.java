@@ -257,12 +257,18 @@ public class MarketDataRpcService<SessionClazz>
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Received available capability request {}",
+                                       inRequest);
                 MarketDataRpc.AvailableCapabilityResponse.Builder responseBuilder = MarketDataRpc.AvailableCapabilityResponse.newBuilder();
-                Set<Capability> events = marketDataService.getAvailableCapability();
-                for(Capability event : events) {
-                    responseBuilder.addCapability(MarketDataRpc.ContentAndCapability.valueOf(event.name()));
+                Set<Capability> capabilities = marketDataService.getAvailableCapability();
+                for(Capability capability : capabilities) {
+                    responseBuilder.addCapability(MarketDataRpc.ContentAndCapability.valueOf(capability.name()));
                 }
                 MarketDataRpc.AvailableCapabilityResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Sending response: {}",
+                                       response);
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {

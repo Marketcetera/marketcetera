@@ -5,10 +5,8 @@ import java.util.List;
 import org.marketcetera.admin.rpc.MockSession;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
-import org.marketcetera.marketdata.manual.ManualFeedModuleFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
 import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
-import org.marketcetera.module.ModuleManager;
 import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.SessionManager;
@@ -65,20 +63,6 @@ public class MarketDataTestConfiguration
     public MarketDataRpcClientFactory getMarketDataClientFactory()
     {
         return new MarketDataRpcClientFactory();
-    }
-    /**
-     * Get the module manager value.
-     *
-     * @return a <code>ModuleManager</code> value
-     */
-    @Bean
-    public ModuleManager getModuleManager()
-    {
-        ModuleManager moduleManager = new ModuleManager();
-        moduleManager.init();
-        ModuleManager.startModulesIfNecessary(moduleManager,
-                                              ManualFeedModuleFactory.INSTANCE_URN);
-        return moduleManager;
     }
     /**
      * Get the marketData RPC service.

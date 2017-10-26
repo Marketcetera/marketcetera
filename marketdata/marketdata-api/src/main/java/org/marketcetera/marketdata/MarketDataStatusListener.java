@@ -16,5 +16,5 @@ public interface MarketDataStatusListener
      *
      * @param inMarketDataStatus a <code>MarketDataStatus</code> value
      */
-    void receiveMarketDataStatus(MarketDataStatus inMarketDataStatus);
+    default void receiveMarketDataStatus(MarketDataStatus inMarketDataStatus) {}
 }

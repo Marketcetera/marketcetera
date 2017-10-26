@@ -1,13 +1,19 @@
 package org.marketcetera.marketdata.manual;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Map;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.Event;
+import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.MarketDataCapabilityBroadcaster;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.marketdata.MarketDataStatus;
+import org.marketcetera.marketdata.MarketDataStatusBroadcaster;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
@@ -20,11 +26,13 @@ import org.marketcetera.module.RequestID;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -51,41 +59,61 @@ public class ManualFeedModule
     /**
      * Emit the given events to the data flow for the given request id.
      *
-     * @param inRequestId a <code>String</code> value
+     * @param inRequestId a <code>String</code> value or <code>null</code> to submit to all data flows
      * @param inEvents a <code>Collection&lt;Event&gt;</code> value
      */
     public void emit(String inRequestId,
                      Collection<Event> inEvents)
     {
-        RequestData requestData = requestsByRequestId.getIfPresent(inRequestId);
-        if(requestData == null) {
-            SLF4JLoggerProxy.warn(this,
-                                  "No request with id {}, cannot emit events",
-                                  inRequestId);
+        if(inRequestId == null) {
+            SLF4JLoggerProxy.debug(this,
+                                   "No request id specified, submitting to all data flows");
+            for(RequestData request : requestsByRequestId.asMap().values()) {
+                for(Event event : inEvents) {
+                    emit(request.getDataEmitterSupport(),
+                         event);
+                }
+            }
         } else {
-            for(Event event : inEvents) {
-                emit(requestData.getDataEmitterSupport(),
-                     event);
+            RequestData requestData = requestsByRequestId.getIfPresent(inRequestId);
+            if(requestData == null) {
+                SLF4JLoggerProxy.warn(this,
+                                      "No request with id {}, cannot emit events",
+                                      inRequestId);
+            } else {
+                for(Event event : inEvents) {
+                    emit(requestData.getDataEmitterSupport(),
+                         event);
+                }
             }
         }
     }
     /**
      * Emit the given event to the data flow for the given request id.
      *
-     * @param inRequestId a <code>String</code> value
+     * @param inRequestId a <code>String</code> value or <code>null</code> to submit to all data flows
      * @param inEvent a <code>Event</code> value
      */
     public void emit(String inRequestId,
                      Event inEvent)
     {
-        RequestData requestData = requestsByRequestId.getIfPresent(inRequestId);
-        if(requestData == null) {
-            SLF4JLoggerProxy.warn(this,
-                                  "No request with id {}, cannot emit events",
-                                  inRequestId);
+        if(inRequestId == null) {
+            SLF4JLoggerProxy.debug(this,
+                                   "No request id specified, submitting to all data flows");
+            for(RequestData request : requestsByRequestId.asMap().values()) {
+                emit(request.getDataEmitterSupport(),
+                     inEvent);
+            }
         } else {
-            emit(requestData.getDataEmitterSupport(),
-                 inEvent);
+            RequestData requestData = requestsByRequestId.getIfPresent(inRequestId);
+            if(requestData == null) {
+                SLF4JLoggerProxy.warn(this,
+                                      "No request with id {}, cannot emit events",
+                                      inRequestId);
+            } else {
+                emit(requestData.getDataEmitterSupport(),
+                     inEvent);
+            }
         }
     }
     /**
@@ -168,6 +196,24 @@ public class ManualFeedModule
     protected void preStart()
             throws ModuleException
     {
+        for(MarketDataCapabilityBroadcaster broadcaster : capabilityBroadcasters) {
+            broadcaster.reportCapability(EnumSet.allOf(Capability.class));
+        }
+        MarketDataStatus status = new MarketDataStatus() {
+            @Override
+            public FeedStatus getFeedStatus()
+            {
+                return FeedStatus.AVAILABLE;
+            }
+            @Override
+            public String getProvider()
+            {
+                return ManualFeedModuleFactory.IDENTIFIER;
+            }
+        };
+        for(MarketDataStatusBroadcaster broadcaster : statusBroadcasters) {
+            broadcaster.reportMarketDataStatus(status);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -178,6 +224,21 @@ public class ManualFeedModule
     {
         requestsByDataFlowId.invalidateAll();
         requestsByRequestId.invalidateAll();
+        MarketDataStatus status = new MarketDataStatus() {
+            @Override
+            public FeedStatus getFeedStatus()
+            {
+                return FeedStatus.OFFLINE;
+            }
+            @Override
+            public String getProvider()
+            {
+                return ManualFeedModuleFactory.IDENTIFIER;
+            }
+        };
+        for(MarketDataStatusBroadcaster broadcaster : statusBroadcasters) {
+            broadcaster.reportMarketDataStatus(status);
+        }
     }
     /**
      * Create a new ManualFeedModule instance.
@@ -191,11 +252,10 @@ public class ManualFeedModule
         instance = this;
     }
     /**
-     * 
+     * Emit the given event to the given data flow.
      *
-     *
-     * @param inDataEmitter
-     * @param inEvent
+     * @param inDataEmitter a <code>DataEmitterSupport</code> value
+     * @param inEvent an <code>Event</code> value
      */
     private void emit(DataEmitterSupport inDataEmitter,
                       Event inEvent)
@@ -304,6 +364,16 @@ public class ManualFeedModule
          */
         private final MarketDataRequest marketDataRequest;
     }
+    /**
+     * receivers of capabilities of this module
+     */
+    @Autowired(required=false)
+    private Collection<MarketDataCapabilityBroadcaster> capabilityBroadcasters = Lists.newArrayList();
+    /**
+     * receivers of status of this module
+     */
+    @Autowired(required=false)
+    private Collection<MarketDataStatusBroadcaster> statusBroadcasters = Lists.newArrayList();
     /**
      * holds data request info keyed by request id
      */
