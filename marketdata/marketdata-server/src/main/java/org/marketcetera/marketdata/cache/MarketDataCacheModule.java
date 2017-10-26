@@ -43,6 +43,14 @@ public class MarketDataCacheModule
         return marketDataCache.getUnchecked(inInstrument).getSnapshot(inContent);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.core.Cacheable#clear()
+     */
+    @Override
+    public void clear()
+    {
+        marketDataCache.invalidateAll();
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.module.AbstractDataReemitterModule#preStart()
      */
     @Override

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderSummary;
@@ -94,12 +95,10 @@ public interface OrderSummaryService
     /**
      * Find the open orders using the given page attributes.
      *
-     * @param inPageNumber an <code>int</code> value
-     * @param inPageSize an <code>int</code> value
+     * @param inPageRequest a <code>PageRequest</code> value
      * @return a <code>CollectionPageResponse&lt;OrderSummary&gt;</code> value
      */
-    CollectionPageResponse<? extends OrderSummary> findOpenOrders(int inPageNumber,
-                                                                  int inPageSize);
+    CollectionPageResponse<? extends OrderSummary> findOpenOrders(PageRequest inPageRequest);
     /**
      * Update the order status value with the given reports.
      *

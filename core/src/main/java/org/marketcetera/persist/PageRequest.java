@@ -104,6 +104,10 @@ public class PageRequest
         pageSize = inSize;
     }
     /**
+     * page request which requests all data in a single page
+     */
+    public transient static final PageRequest ALL = new PageRequest(0,Integer.MAX_VALUE);
+    /**
      * optional sort directive
      */
     @XmlElement

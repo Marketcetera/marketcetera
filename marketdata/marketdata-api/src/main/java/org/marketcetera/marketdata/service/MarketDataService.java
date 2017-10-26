@@ -11,6 +11,7 @@ import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataStatusBroadcaster;
 import org.marketcetera.marketdata.MarketDataStatusPublisher;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
@@ -60,9 +61,9 @@ public interface MarketDataService
      * @param inPageRequest a <code>PageRequest</code> value
      * @return a <code>Deque&lt;Event&gt;</code> value
      */
-    Deque<Event> getSnapshotPage(Instrument inInstrument,
-                                 Content inContent,
-                                 PageRequest inPageRequest);
+    CollectionPageResponse<Event> getSnapshot(Instrument inInstrument,
+                                              Content inContent,
+                                              PageRequest inPageRequest);
     /**
      * Gets the available capabilities.
      *

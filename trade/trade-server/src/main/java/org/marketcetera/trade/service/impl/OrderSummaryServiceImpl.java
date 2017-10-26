@@ -176,20 +176,21 @@ public class OrderSummaryServiceImpl
         return actualResults;
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.ors.dao.OrderStatusService#findOpenOrders(int, int)
+     * @see org.marketcetera.trade.service.OrderSummaryService#findOpenOrders(org.marketcetera.persist.PageRequest)
      */
     @Override
-    public CollectionPageResponse<? extends OrderSummary> findOpenOrders(int inPageNumber,
-                                                                         int inPageSize)
+    public CollectionPageResponse<? extends OrderSummary> findOpenOrders(org.marketcetera.persist.PageRequest inPageRequest)
     {
+        // TODO use the sort from the page request or this one if no sort specified
         Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC,
                                             QPersistentOrderSummary.persistentOrderSummary.sendingTime.getMetadata().getName()));
-        Pageable pageRequest = new PageRequest(inPageNumber,
-                                               inPageSize,
+        Pageable pageRequest = new PageRequest(inPageRequest.getPageNumber(),
+                                               inPageRequest.getPageSize(),
                                                sort);
         Page<PersistentOrderSummary> pageResponse = orderStatusDao.findOpenOrders(OrderStatus.openOrderStatuses,
                                                                                   pageRequest);
-        return new CollectionPageResponse<>(pageResponse);
+        return new CollectionPageResponse<>(pageRequest,
+                                            pageResponse);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.service.OrderStatusService#update(org.marketcetera.trade.OrderSummary, org.marketcetera.trade.Report, org.marketcetera.trade.ReportBase)

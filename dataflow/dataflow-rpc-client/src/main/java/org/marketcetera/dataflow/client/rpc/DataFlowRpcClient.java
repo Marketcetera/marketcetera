@@ -25,7 +25,7 @@ import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy;
 import org.marketcetera.rpc.client.AbstractRpcClient;
-import org.marketcetera.rpc.paging.PagingUtil;
+import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
 
@@ -513,7 +513,7 @@ public class DataFlowRpcClient
             {
                 DataFlowRpc.GetDataFlowsRequest.Builder requestBuilder = DataFlowRpc.GetDataFlowsRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setPageRequest(PagingUtil.buildPageRequest(inPageRequest));
+                requestBuilder.setPageRequest(PagingRpcUtil.buildPageRequest(inPageRequest));
                 DataFlowRpc.GetDataFlowsRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
                                        "{} sending {}",
@@ -525,8 +525,9 @@ public class DataFlowRpcClient
                                        getSessionId(),
                                        response);
                 CollectionPageResponse<DataFlowID> results = new CollectionPageResponse<>();
-                PagingUtil.setPageResponse(response.getPageResponse(),
-                                           results);
+                PagingRpcUtil.setPageResponse(inPageRequest,
+                                              response.getPageResponse(),
+                                              results);
                 List<DataFlowID> resultList = Lists.newArrayList();
                 for(String rpcDataFlowId : response.getDataFlowIdsList()) {
                     resultList.add(DataFlowRpcUtil.getDataFlowId(rpcDataFlowId));
@@ -553,7 +554,7 @@ public class DataFlowRpcClient
             {
                 DataFlowRpc.GetDataFlowHistoryRequest.Builder requestBuilder = DataFlowRpc.GetDataFlowHistoryRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setPageRequest(PagingUtil.buildPageRequest(inPageRequest));
+                requestBuilder.setPageRequest(PagingRpcUtil.buildPageRequest(inPageRequest));
                 DataFlowRpc.GetDataFlowHistoryRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(DataFlowRpcClient.this,
                                        "{} sending {}",
@@ -565,8 +566,9 @@ public class DataFlowRpcClient
                                        getSessionId(),
                                        response);
                 CollectionPageResponse<DataFlowInfo> results = new CollectionPageResponse<>();
-                PagingUtil.setPageResponse(response.getPageResponse(),
-                                           results);
+                PagingRpcUtil.setPageResponse(inPageRequest,
+                                              response.getPageResponse(),
+                                              results);
                 List<DataFlowInfo> resultList = Lists.newArrayList();
                 for(DataFlowRpc.DataFlowInfo rpcDataFlowInfo : response.getDataFlowInfosList()) {
                     resultList.add(DataFlowRpcUtil.getDataFlowInfo(rpcDataFlowInfo));

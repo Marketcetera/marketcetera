@@ -13,6 +13,7 @@ import org.marketcetera.core.BaseClient;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
@@ -43,12 +44,10 @@ public interface TradeClient
     /**
      * Get open orders.
      *
-     * @param inPageNumber an <code>int</code> value
-     * @param inPageSize an <code>int</code> value
+     * @param inPageRequest a <code>PageRequest</code> value
      * @return a <code>CollectionPageResponset&lt;? extends OrderSummary&gt;</code> value
      */
-    CollectionPageResponse<? extends OrderSummary> getOpenOrders(int inPageNumber,
-                                                                 int inPageSize);
+    CollectionPageResponse<? extends OrderSummary> getOpenOrders(PageRequest inPageRequest);
     /**
      * Submit the given orders.
      *

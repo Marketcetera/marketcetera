@@ -19,6 +19,7 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.module.HasMutableStatus;
 import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
 import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
@@ -26,7 +27,7 @@ import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.base.BaseUtil;
-import org.marketcetera.rpc.paging.PagingUtil;
+import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.BrokerID;
@@ -179,22 +180,15 @@ public class TradeClientRpcService<SessionClazz>
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.ViewOpenOrdersAction.name());
-                TradingRpc.OpenOrdersResponse.Builder responseBuilder = TradingRpc.OpenOrdersResponse.newBuilder();
-                int pageNumber = 0;
-                int pageSize = Integer.MAX_VALUE;
-                if(inRequest.hasPageRequest()) {
-                    pageNumber = PagingUtil.getPageNumber(inRequest.getPageRequest());
-                    pageSize = PagingUtil.getPageSize(inRequest.getPageRequest());
-                }
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Received open order request {}",
                                        inRequest);
-                CollectionPageResponse<? extends OrderSummary> orderSummaryPage = orderSummaryService.findOpenOrders(pageNumber,
-                                                                                                                     pageSize);
-                for(OrderSummary orderSummary : orderSummaryPage.getElements()) {
-                    responseBuilder.addOrders(TradingUtil.getRpcOrderSummary(orderSummary));
-                }
-                responseBuilder.setPageResponse(PagingUtil.getPageResponse(orderSummaryPage));
+                TradingRpc.OpenOrdersResponse.Builder responseBuilder = TradingRpc.OpenOrdersResponse.newBuilder();
+                PageRequest pageRequest = inRequest.hasPageRequest()?PagingRpcUtil.getPageRequest(inRequest.getPageRequest()):PageRequest.ALL;
+                CollectionPageResponse<? extends OrderSummary> orderSummaryPage = orderSummaryService.findOpenOrders(pageRequest);
+                orderSummaryPage.getElements().forEach(value->responseBuilder.addOrders(TradingUtil.getRpcOrderSummary(value)));
+                responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
+                                                                              orderSummaryPage));
                 TradingRpc.OpenOrdersResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Responding: {}",

@@ -17,6 +17,7 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.service.MarketDataService;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.Instrument;
 
@@ -94,14 +95,11 @@ public class MockMarketDataServiceAdapter
      * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, org.marketcetera.marketdata.core.webservice.PageRequest)
      */
     @Override
-    public Deque<Event> getSnapshotPage(Instrument inInstrument,
-                                        Content inContent,
-                                        PageRequest inPageRequest)
+    public CollectionPageResponse<Event> getSnapshot(Instrument inInstrument,
+                                                     Content inContent,
+                                                     PageRequest inPageRequest)
     {
-        snapshotRequests.add(new SnapshotRequest(inInstrument,
-                                                 inContent,
-                                                 inPageRequest));
-        return snapshotEventsToReturn;
+        throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getAvailableCapability()

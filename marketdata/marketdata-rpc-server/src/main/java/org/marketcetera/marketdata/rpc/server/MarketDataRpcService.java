@@ -1,6 +1,5 @@
 package org.marketcetera.marketdata.rpc.server;
 
-import java.util.Deque;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
@@ -19,8 +18,11 @@ import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase;
 import org.marketcetera.marketdata.rpc.MarketDataRpcUtil;
 import org.marketcetera.marketdata.service.MarketDataService;
+import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseUtil;
+import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trading.rpc.TradingUtil;
@@ -229,13 +231,13 @@ public class MarketDataRpcService<SessionClazz>
                 MarketDataRpc.SnapshotResponse.Builder responseBuilder = MarketDataRpc.SnapshotResponse.newBuilder();
                 Instrument instrument = TradingUtil.getInstrument(inRequest.getInstrument());
                 Content content = MarketDataRpcUtil.getContent(inRequest.getContent());
-                // TODO paging
-                Deque<Event> events = marketDataService.getSnapshot(instrument,
-                                                                    content);
-                for(Event event : events) {
-                    responseBuilder.addEvent(MarketDataRpcUtil.getRpcEvent(event));
-                }
-                // TODO paging
+                PageRequest pageRequest = inRequest.hasPage()?PagingRpcUtil.getPageRequest(inRequest.getPage()):PageRequest.ALL;
+                CollectionPageResponse<Event> eventPage = marketDataService.getSnapshot(instrument,
+                                                                                     content,
+                                                                                     pageRequest);
+                eventPage.getElements().forEach(value->responseBuilder.addEvent(MarketDataRpcUtil.getRpcEvent(value)));
+                responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
+                                                                              eventPage));
                 MarketDataRpc.SnapshotResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(MarketDataRpcService.this,
                                        "Sending response: {}",

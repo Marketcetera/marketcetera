@@ -1,5 +1,6 @@
 package org.marketcetera.marketdata.service;
 
+import org.marketcetera.core.Cacheable;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.trade.Instrument;
@@ -16,6 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id: MarketDataCache.java 16901 2014-05-11 16:14:11Z colin $")
 public interface MarketDataCacheProvider
+        extends Cacheable
 {
     /**
      * Gets a snapshot of the given content for the given instrument, if available.

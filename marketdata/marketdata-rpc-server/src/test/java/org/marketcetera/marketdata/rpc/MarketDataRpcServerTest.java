@@ -3,6 +3,7 @@ package org.marketcetera.marketdata.rpc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.util.Deque;
 import java.util.EnumSet;
 
 import org.junit.Test;
@@ -20,6 +21,7 @@ import org.marketcetera.marketdata.manual.ManualFeedModuleFactory;
 import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 
 /* $License$ */
 
@@ -194,5 +196,29 @@ public class MarketDataRpcServerTest
         reset();
         moduleManager.start(ManualFeedModuleFactory.INSTANCE_URN);
         assertNoMarketDataStatus();
+    }
+    /**
+     * Test {@link MarketDataClient#getSnapshot(org.marketcetera.trade.Instrument, Content)} and {@link MarketDataClient#getSnapshot(org.marketcetera.trade.Instrument, Content, org.marketcetera.persist.PageRequest)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testMarketDataSnapshot()
+            throws Exception
+    {
+        // test empty snapshot, no page
+        Instrument instrument = new Equity("METC");
+        for(Content content : Content.values()) {
+            if(content == Content.DIVIDEND) {
+                // TODO see MATP-997
+                continue;
+            }
+            Deque<Event> expectedEvents = cacheManager.getSnapshot(instrument,
+                                                                   content);
+            Deque<Event> actualEvents = marketDataClient.getSnapshot(instrument,
+                                                                     content);
+            assertEquals(expectedEvents,
+                         actualEvents);
+        }
     }
 }

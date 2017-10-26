@@ -22,6 +22,7 @@ import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceBlockingStub;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceStub;
 import org.marketcetera.marketdata.rpc.MarketDataRpcUtil;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
@@ -30,6 +31,7 @@ import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy;
 import org.marketcetera.rpc.client.AbstractRpcClient;
+import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trading.rpc.TradingUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -130,21 +132,21 @@ public class MarketDataRpcClient
     public Deque<Event> getSnapshot(Instrument inInstrument,
                                     Content inContent)
     {
-        return getSnapshot(inInstrument,
-                           inContent,
-                           new PageRequest(0,Integer.MAX_VALUE));
+        return Lists.newLinkedList(getSnapshot(inInstrument,
+                                               inContent,
+                                               PageRequest.ALL).getElements());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataClient#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, org.marketcetera.persist.PageRequest)
      */
     @Override
-    public Deque<Event> getSnapshot(Instrument inInstrument,
-                                    Content inContent,
-                                    PageRequest inPage)
+    public CollectionPageResponse<Event> getSnapshot(Instrument inInstrument,
+                                                     Content inContent,
+                                                     PageRequest inPage)
     {
-        return executeCall(new Callable<Deque<Event>>(){
+        return executeCall(new Callable<CollectionPageResponse<Event>>(){
             @Override
-            public Deque<Event> call()
+            public CollectionPageResponse<Event> call()
                     throws Exception
             {
                 SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
@@ -154,6 +156,7 @@ public class MarketDataRpcClient
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setContent(MarketDataRpcUtil.getRpcContent(inContent));
                 requestBuilder.setInstrument(TradingUtil.getRpcInstrument(inInstrument));
+                requestBuilder.setPage(PagingRpcUtil.buildPageRequest(inPage));
                 MarketDataRpc.SnapshotRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
                                        "{} sending {}",
@@ -168,11 +171,15 @@ public class MarketDataRpcClient
                 for(MarketDataRpc.Event rpcEvent : response.getEventList()) {
                     MarketDataRpcUtil.getEvent(rpcEvent).ifPresent(value->events.add(value));
                 }
+                CollectionPageResponse<Event> eventPage = new CollectionPageResponse<>();
+                PagingRpcUtil.setPageResponse(inPage,
+                                              response.getPageResponse(),
+                                              eventPage);
                 SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
-                                       events);
-                return events;
+                                       eventPage);
+                return eventPage;
             }
         });
     }

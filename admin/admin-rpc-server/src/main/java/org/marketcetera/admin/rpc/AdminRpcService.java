@@ -32,7 +32,7 @@ import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
-import org.marketcetera.rpc.paging.PagingUtil;
+import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionHolder;
@@ -253,19 +253,11 @@ public class AdminRpcService<SessionClazz>
                 AdminRpc.ReadUsersResponse.Builder responseBuilder = AdminRpc.ReadUsersResponse.newBuilder();
                 authzService.authorize(sessionHolder.getUser(),
                                        AdminPermissions.ReadUserAction.name());
-                PageRequest pageRequest = null;
-                if(inRequest.hasPage()) {
-                    pageRequest = PagingUtil.getPageRequest(inRequest.getPage());
-                } else {
-                    pageRequest = new PageRequest(0,Integer.MAX_VALUE);
-                }
-                CollectionPageResponse<User> pagedResponse = userService.findAll(pageRequest);
-                if(pagedResponse != null) {
-                    responseBuilder.setPage(PagingUtil.getPageResponse(pagedResponse));
-                    for(User user : pagedResponse.getElements()) {
-                        AdminRpcUtil.getRpcUser(user).ifPresent(value->responseBuilder.addUser(value));
-                    }
-                }
+                PageRequest pageRequest = inRequest.hasPage()?PagingRpcUtil.getPageRequest(inRequest.getPage()):PageRequest.ALL;
+                CollectionPageResponse<User> userPage = userService.findAll(pageRequest);
+                userPage.getElements().forEach(value->AdminRpcUtil.getRpcUser(value).ifPresent(innerValue->responseBuilder.addUser(innerValue)));
+                responseBuilder.setPage(PagingRpcUtil.getPageResponse(pageRequest,
+                                                                      userPage));
                 AdminRpc.ReadUsersResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcService.this,
                                        "Returning {}",
@@ -483,19 +475,11 @@ public class AdminRpcService<SessionClazz>
                 AdminRpc.ReadPermissionsResponse.Builder responseBuilder = AdminRpc.ReadPermissionsResponse.newBuilder();
                 authzService.authorize(sessionHolder.getUser(),
                                        AdminPermissions.ReadPermissionAction.name());
-                PageRequest pageRequest = null;
-                if(inRequest.hasPage()) {
-                    pageRequest = PagingUtil.getPageRequest(inRequest.getPage());
-                } else {
-                    pageRequest = new PageRequest(0,Integer.MAX_VALUE);
-                }
-                CollectionPageResponse<Permission> pagedResponse = authzService.findAllPermissions(pageRequest);
-                if(pagedResponse != null) {
-                    responseBuilder.setPage(PagingUtil.getPageResponse(pagedResponse));
-                    for(Permission permission : pagedResponse.getElements()) {
-                        AdminRpcUtil.getRpcPermission(permission).ifPresent(value->responseBuilder.addPermission(value));
-                    }
-                }
+                PageRequest pageRequest = inRequest.hasPage()?PagingRpcUtil.getPageRequest(inRequest.getPage()):PageRequest.ALL;
+                CollectionPageResponse<Permission> permissionPage = authzService.findAllPermissions(pageRequest);
+                permissionPage.getElements().forEach(permission->AdminRpcUtil.getRpcPermission(permission).ifPresent(rpcPermission->responseBuilder.addPermission(rpcPermission)));
+                responseBuilder.setPage(PagingRpcUtil.getPageResponse(pageRequest,
+                                                                      permissionPage));
                 AdminRpc.ReadPermissionsResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcService.this,
                                        "Returning {}",
@@ -658,19 +642,11 @@ public class AdminRpcService<SessionClazz>
                 AdminRpc.ReadRolesResponse.Builder responseBuilder = AdminRpc.ReadRolesResponse.newBuilder();
                 authzService.authorize(sessionHolder.getUser(),
                                        AdminPermissions.ReadRoleAction.name());
-                PageRequest pageRequest = null;
-                if(inRequest.hasPage()) {
-                    pageRequest = PagingUtil.getPageRequest(inRequest.getPage());
-                } else {
-                    pageRequest = new PageRequest(0,Integer.MAX_VALUE);
-                }
-                CollectionPageResponse<Role> pagedResponse = authzService.findAllRoles(pageRequest);
-                if(pagedResponse != null) {
-                    responseBuilder.setPage(PagingUtil.getPageResponse(pagedResponse));
-                    for(Role role : pagedResponse.getElements()) {
-                        AdminRpcUtil.getRpcRole(role).ifPresent(value->responseBuilder.addRole(value));
-                    }
-                }
+                PageRequest pageRequest = inRequest.hasPage()?PagingRpcUtil.getPageRequest(inRequest.getPage()):PageRequest.ALL;
+                CollectionPageResponse<Role> rolePage = authzService.findAllRoles(pageRequest);
+                rolePage.getElements().forEach(role->AdminRpcUtil.getRpcRole(role).ifPresent(rpcRole->responseBuilder.addRole(rpcRole)));
+                responseBuilder.setPage(PagingRpcUtil.getPageResponse(pageRequest,
+                                                                      rolePage));
                 AdminRpc.ReadRolesResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcService.this,
                                        "Returning {}",

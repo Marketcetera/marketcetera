@@ -18,7 +18,7 @@ import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.client.AbstractRpcClient;
-import org.marketcetera.rpc.paging.PagingUtil;
+import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
 
@@ -337,8 +337,7 @@ public class AdminRpcClient
                                        inPageRequest);
                 AdminRpc.ReadRolesRequest.Builder requestBuilder = AdminRpc.ReadRolesRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setPage(PagingUtil.buildPageRequest(inPageRequest.getPageNumber(),
-                                                                   inPageRequest.getPageSize()));
+                requestBuilder.setPage(PagingRpcUtil.buildPageRequest(inPageRequest));
                 AdminRpc.ReadRolesRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} sending {}",
@@ -358,8 +357,8 @@ public class AdminRpcClient
                 }
                 CollectionPageResponse<Role> result = new CollectionPageResponse<>();
                 if(response.hasPage()) {
-                    PagingUtil.addPageToResponse(response.getPage(),
-                                                 result);
+                    PagingRpcUtil.addPageToResponse(response.getPage(),
+                                                    result);
                 }
                 result.setElements(results);
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
@@ -472,8 +471,7 @@ public class AdminRpcClient
                                        inPageRequest);
                 AdminRpc.ReadUsersRequest.Builder requestBuilder = AdminRpc.ReadUsersRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setPage(PagingUtil.buildPageRequest(inPageRequest.getPageNumber(),
-                                                                   inPageRequest.getPageSize()));
+                requestBuilder.setPage(PagingRpcUtil.buildPageRequest(inPageRequest));
                 AdminRpc.ReadUsersRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} sending {}",
@@ -494,8 +492,8 @@ public class AdminRpcClient
                 }
                 CollectionPageResponse<User> result = new CollectionPageResponse<>();
                 if(response.hasPage()) {
-                    PagingUtil.addPageToResponse(response.getPage(),
-                                                 result);
+                    PagingRpcUtil.addPageToResponse(response.getPage(),
+                                                    result);
                 }
                 result.setElements(results);
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
@@ -569,8 +567,7 @@ public class AdminRpcClient
                                        inPageRequest);
                 AdminRpc.ReadPermissionsRequest.Builder requestBuilder = AdminRpc.ReadPermissionsRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setPage(PagingUtil.buildPageRequest(inPageRequest.getPageNumber(),
-                                                                   inPageRequest.getPageSize()));
+                requestBuilder.setPage(PagingRpcUtil.buildPageRequest(inPageRequest));
                 AdminRpc.ReadPermissionsRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} sending {}",
@@ -587,8 +584,8 @@ public class AdminRpcClient
                 }
                 CollectionPageResponse<Permission> result = new CollectionPageResponse<>();
                 if(response.hasPage()) {
-                    PagingUtil.addPageToResponse(response.getPage(),
-                                                 result);
+                    PagingRpcUtil.addPageToResponse(response.getPage(),
+                                                    result);
                 }
                 result.setElements(results);
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,

@@ -30,6 +30,7 @@ import org.marketcetera.marketdata.manual.ManualFeedModule;
 import org.marketcetera.marketdata.manual.ManualFeedModuleFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientParameters;
+import org.marketcetera.marketdata.service.MarketDataCacheManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -144,6 +145,7 @@ public abstract class MarketDataTestBase
      */
     protected void reset()
     {
+        cacheManager.clear();
         marketDataTestEventListener.reset();
         marketDataTestStatusListener.reset();
     }
@@ -560,6 +562,11 @@ public abstract class MarketDataTestBase
      * provides access to market data services
      */
     protected MarketDataClient marketDataClient;
+    /**
+     * provides access to the market data cache
+     */
+    @Autowired
+    protected MarketDataCacheManager cacheManager;
     /**
      * provides access to user services
      */

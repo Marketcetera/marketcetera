@@ -3,6 +3,7 @@ package org.marketcetera.marketdata.service;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -24,7 +25,9 @@ import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.modules.publisher.PublisherModuleFactory;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
+import org.marketcetera.persist.PageResponse;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,33 +185,49 @@ public class MarketDataServiceImpl
     public Deque<Event> getSnapshot(Instrument inInstrument,
                                     Content inContent)
     {
-        return getSnapshotPage(inInstrument,
-                               inContent,
-                               new PageRequest(0,Integer.MAX_VALUE));
+        return Lists.newLinkedList(getSnapshot(inInstrument,
+                                               inContent,
+                                               new PageRequest(0,Integer.MAX_VALUE)).getElements());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.service.MarketDataService#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, org.marketcetera.persist.PageRequest)
      */
     @Override
-    public Deque<Event> getSnapshotPage(Instrument inInstrument,
-                                        Content inContent,
-                                        PageRequest inPageRequest)
+    public CollectionPageResponse<Event> getSnapshot(Instrument inInstrument,
+                                                     Content inContent,
+                                                     PageRequest inPageRequest)
     {
-        Deque<Event> events = Lists.newLinkedList();
-        for(MarketDataCacheProvider cacheProvider : cacheProviders) {
-            Event event = cacheProvider.getSnapshot(inInstrument,
-                                                    inContent);
-            if(event != null) {
-                if(event instanceof AggregateEvent) {
-                    events.addAll(((AggregateEvent)event).decompose());
-                } else {
-                    events.add(event);
+        List<Event> events = Lists.newArrayList();
+        synchronized(cacheProviders) {
+            for(MarketDataCacheProvider cacheProvider : cacheProviders) {
+                Event event = cacheProvider.getSnapshot(inInstrument,
+                                                        inContent);
+                if(event != null) {
+                    if(event instanceof AggregateEvent) {
+                        events.addAll(((AggregateEvent)event).decompose());
+                    } else {
+                        events.add(event);
+                    }
+                    break;
                 }
-                break;
             }
         }
-        // TODO paging
-        return events;
+        CollectionPageResponse<Event> response = new CollectionPageResponse<>();
+        List<Event> eventsPage = PageResponse.getPage(events,
+                                                      inPageRequest.getPageNumber()+1,
+                                                      inPageRequest.getPageSize());
+        response.setElements(eventsPage);
+        response.setHasContent(!eventsPage.isEmpty());
+        response.setPageMaxSize(inPageRequest.getPageSize());
+        response.setPageNumber(inPageRequest.getPageNumber());
+        response.setPageSize(eventsPage.size());
+        // TODO events not sorted!
+        response.setSortOrder(inPageRequest.getSortOrder());
+        int totalSize = events.size();
+        response.setTotalPages(PageResponse.getNumberOfPages(inPageRequest,
+                                                             totalSize));
+        response.setTotalSize(totalSize);
+        return response;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.service.MarketDataService#getAvailableCapability()
@@ -224,7 +243,9 @@ public class MarketDataServiceImpl
     @Override
     public void addMarketDataCacheProvider(MarketDataCacheProvider inMarketDataCacheProvider)
     {
-        cacheProviders.add(inMarketDataCacheProvider);
+        synchronized(cacheProviders) {
+            cacheProviders.add(inMarketDataCacheProvider);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.service.MarketDataCacheManager#removeMarketDataCacheProvider(org.marketcetera.marketdata.service.MarketDataCacheProvider)
@@ -232,7 +253,19 @@ public class MarketDataServiceImpl
     @Override
     public void removeMarketDataCacheProvider(MarketDataCacheProvider inMarketDataCacheProvider)
     {
-        cacheProviders.remove(inMarketDataCacheProvider);
+        synchronized(cacheProviders) {
+            cacheProviders.remove(inMarketDataCacheProvider);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.Cacheable#clear()
+     */
+    @Override
+    public void clear()
+    {
+        synchronized(cacheProviders) {
+            cacheProviders.forEach(value->value.clear());
+        }
     }
     /**
      * Get the instance URN for the given market data provider name.

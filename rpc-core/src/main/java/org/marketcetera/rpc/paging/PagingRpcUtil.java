@@ -1,6 +1,5 @@
 package org.marketcetera.rpc.paging;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.marketcetera.persist.CollectionPageResponse;
@@ -20,55 +19,8 @@ import com.google.common.collect.Lists;
  * @version $Id$
  * @since $Release$
  */
-public abstract class PagingUtil
+public abstract class PagingRpcUtil
 {
-    /*
-     * returns a view (not a new list) of the sourceList for the 
-     * range based on page and pageSize
-     * @param sourceList
-     * @param page
-     * @param pageSize
-     * @return
-     */
-    public static <T> List<T> getPage(List<T> sourceList, int page, int pageSize)
-    {
-        if(pageSize <= 0 || page <= 0) {
-            throw new IllegalArgumentException("invalid page size: " + pageSize);
-        }
-
-        int fromIndex = (page - 1) * pageSize;
-        if(sourceList == null || sourceList.size() < fromIndex){
-            return Collections.emptyList();
-        }
-        // toIndex exclusive
-        return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
-    }    
-    /**
-     * Build an RPC page request from the given inputs.
-     *
-     * @param inPageNumber an <code>int</code> value
-     * @param inPageSize an <code>int</code> value
-     * @return a <code>PagingRpc.PageRequest</code> value
-     */
-    public static PagingRpc.PageRequest buildPageRequest(int inPageNumber,
-                                                         int inPageSize)
-    {
-        PagingRpc.PageRequest.Builder pageBuilder = PagingRpc.PageRequest.newBuilder();
-        pageBuilder.setPage(inPageNumber);
-        pageBuilder.setSize(inPageSize);
-//        if(inPageRequest.getSortOrder() != null && !inPageRequest.getSortOrder().isEmpty()) {
-//            BaseRpc.SortOrder.Builder sortOrderBuilder = BaseRpc.SortOrder.newBuilder();
-//            BaseRpc.Sort.Builder sortBuilder = BaseRpc.Sort.newBuilder();
-//            for(Sort sort : inPageRequest.getSortOrder()) {
-//                sortBuilder.setDirection(sort.getDirection()==SortDirection.ASCENDING?BaseRpc.SortDirection.ASCENDING:BaseRpc.SortDirection.DESCENDING);
-//                sortBuilder.setProperty(sort.getProperty());
-//                sortOrderBuilder.addSort(sortBuilder.build());
-//                sortBuilder.clear();
-//            }
-//            pageRequestBuilder.setSortOrder(sortOrderBuilder.build());
-//        }
-        return pageBuilder.build();
-    }
     /**
      * Add the results from the given RPC page to the given response object.
      *
@@ -112,35 +64,66 @@ public abstract class PagingUtil
     /**
      * Get an RPC page response from the given page.
      *
-     * @param inPage a <code>PageResponse</code> value
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @param inPageResponse a <code>PageResponse</code> value
      * @return a <code>PagingRpc.PageResponse</code> value
      */
-    public static PagingRpc.PageResponse getPageResponse(PageResponse inPage)
+    public static PagingRpc.PageResponse getPageResponse(PageRequest inPageRequest,
+                                                         PageResponse inPageResponse)
     {
         PagingRpc.PageResponse.Builder pageResponseBuilder = PagingRpc.PageResponse.newBuilder();
-        pageResponseBuilder.setPageMaxSize(inPage.getPageMaxSize());
-        pageResponseBuilder.setPageNumber(inPage.getPageNumber());
-        pageResponseBuilder.setPageSize(inPage.getPageSize());
-        pageResponseBuilder.setTotalPages(inPage.getTotalPages());
-        pageResponseBuilder.setTotalSize(inPage.getTotalSize());
+        pageResponseBuilder.setPageMaxSize(inPageResponse.getPageMaxSize());
+        pageResponseBuilder.setPageNumber(inPageResponse.getPageNumber());
+        pageResponseBuilder.setPageSize(inPageResponse.getPageSize());
+        pageResponseBuilder.setTotalPages(inPageResponse.getTotalPages());
+        pageResponseBuilder.setTotalSize(inPageResponse.getTotalSize());
+        pageResponseBuilder.setSortOrder(getRpcSort(inPageResponse.getSortOrder()));
         return pageResponseBuilder.build();
+    }
+    /**
+     * Get the RPC sort from the given sort list.
+     *
+     * @param inSortOrder a <code>List&lt;Sort&gt;</code> value
+     * @return a <code>PagingRpc.SortOrder</code> value
+     */
+    public static PagingRpc.SortOrder getRpcSort(List<Sort> inSortOrder)
+    {
+        PagingRpc.SortOrder.Builder builder = PagingRpc.SortOrder.newBuilder();
+        inSortOrder.forEach(sort->builder.addSort(getRpcSort(sort)));
+        return builder.build();
     }
     /**
      * Set the page response values on the given page response from the given RPC page response.
      *
+     * @param inPageRequest a ,code>PagingRpc.PageRequest</code> value
      * @param inPageResponse a <code>PagingRpc.PageResponse</code> value
      * @param inResults a <code>CollectionPageResponse&lt;Clazz&gt;</code> value
      */
-    public static <Clazz> void setPageResponse(PagingRpc.PageResponse inPageResponse,
+    public static <Clazz> void setPageResponse(PageRequest inPageRequest,
+                                               PagingRpc.PageResponse inPageResponse,
                                                CollectionPageResponse<Clazz> inResults)
     {
         inResults.setHasContent(inResults.getElements().isEmpty());;
         inResults.setPageMaxSize(inPageResponse.getPageMaxSize());;
         inResults.setPageNumber(inPageResponse.getPageNumber());
         inResults.setPageSize(inPageResponse.getPageSize());
-//        inResults.setSortOrder(inSortOrder); TODO
+        if(inPageResponse.hasSortOrder()) {
+            inResults.setSortOrder(getSortOrder(inPageResponse.getSortOrder()));
+        }
         inResults.setTotalPages(inPageResponse.getTotalPages());
         inResults.setTotalSize(inPageResponse.getTotalSize());
+    }
+    /**
+     * Get the sort order from the given RPC sort order.
+     *
+     * @param inSortOrder a <code>PagingRpc.SortOrder</code> value
+     * @return a <code>List&lt;Sort&gt;</code> value
+     */
+    public static List<Sort> getSortOrder(PagingRpc.SortOrder inSortOrder)
+    {
+        List<Sort> sortList = Lists.newArrayList();
+        inSortOrder.getSortList().forEach(sort->sortList.add(getSort(sort)));
+        return sortList;
     }
     /**
      * Get the page request from the given RPC value.

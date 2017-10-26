@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.marketcetera.core.BaseClient;
 import org.marketcetera.event.Event;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
@@ -57,11 +58,11 @@ public interface MarketDataClient
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
      * @param inPage a <code>PageRequest</code> value indicating what subset to return
-     * @return a <code>Deque&lt;Event&gt;</code>
+     * @return a <code>CollectionPageResponse&lt;Event&gt;</code>
      */
-    Deque<Event> getSnapshot(Instrument inInstrument,
-                             Content inContent,
-                             PageRequest inPage);
+    CollectionPageResponse<Event> getSnapshot(Instrument inInstrument,
+                                              Content inContent,
+                                              PageRequest inPage);
     /**
      * Adds a market data connection status listener, which receives all market data connection status changes.
      *

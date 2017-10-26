@@ -22,6 +22,7 @@ import org.marketcetera.core.VersionInfo;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
@@ -29,7 +30,7 @@ import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.base.BaseUtil;
 import org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy;
 import org.marketcetera.rpc.client.AbstractRpcClient;
-import org.marketcetera.rpc.paging.PagingUtil;
+import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Instrument;
@@ -481,11 +482,10 @@ public class TradingRpcClient
         return result;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.tradingclient.TradingClient#getOpenOrders(int, int)
+     * @see org.marketcetera.trade.client.TradeClient#getOpenOrders(org.marketcetera.persist.PageRequest)
      */
     @Override
-    public CollectionPageResponse<? extends OrderSummary> getOpenOrders(final int inPageNumber,
-                                                                        final int inPageSize)
+    public CollectionPageResponse<? extends OrderSummary> getOpenOrders(PageRequest inPageRequest)
     {
         return executeCall(new Callable<CollectionPageResponse<? extends OrderSummary>>() {
             @Override
@@ -497,8 +497,7 @@ public class TradingRpcClient
                                        getSessionId());
                 TradingRpc.OpenOrdersRequest.Builder requestBuilder = TradingRpc.OpenOrdersRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setPageRequest(PagingUtil.buildPageRequest(inPageNumber,
-                                                                          inPageSize));
+                requestBuilder.setPageRequest(PagingRpcUtil.buildPageRequest(inPageRequest));
                 TradingRpc.OpenOrdersResponse response = getBlockingStub().getOpenOrders(requestBuilder.build());
                 CollectionPageResponse<OrderSummary> results = new CollectionPageResponse<>();
                 for(TradingTypesRpc.OrderSummary rpcOrderSummary : response.getOrdersList()) {
@@ -507,8 +506,9 @@ public class TradingRpcClient
                         results.getElements().add(value.get());
                     }
                 }
-                PagingUtil.setPageResponse(response.getPageResponse(),
-                                           results);
+                PagingRpcUtil.setPageResponse(inPageRequest,
+                                              response.getPageResponse(),
+                                              results);
                 SLF4JLoggerProxy.trace(TradingRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
@@ -523,8 +523,7 @@ public class TradingRpcClient
     @Override
     public Collection<? extends OrderSummary> getOpenOrders()
     {
-        return getOpenOrders(0,
-                             Integer.MAX_VALUE).getElements();
+        return getOpenOrders(PageRequest.ALL).getElements();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#sendOrder(org.marketcetera.trade.Order)

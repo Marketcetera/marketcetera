@@ -20,9 +20,10 @@ import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
+import org.marketcetera.persist.PageResponse;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseUtil;
-import org.marketcetera.rpc.paging.PagingUtil;
+import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionHolder;
@@ -508,23 +509,28 @@ public class DataFlowRpcService<SessionClazz>
                                        "{} received get data flows request {}",
                                        sessionHolder,
                                        inRequest);
+                PageRequest pageRequest = inRequest.hasPageRequest()?PagingRpcUtil.getPageRequest(inRequest.getPageRequest()):PageRequest.ALL;
                 List<DataFlowID> dataFlows = moduleManager.getDataFlows(true); // TODO include this in the request
+                List<DataFlowID> dataFlowsPage = PageResponse.getPage(dataFlows,
+                                                                      pageRequest.getPageNumber()+1,
+                                                                      pageRequest.getPageSize());
                 DataFlowRpc.GetDataFlowsResponse.Builder responseBuilder = DataFlowRpc.GetDataFlowsResponse.newBuilder();
-                for(DataFlowID dataFlowId : dataFlows) {
-                    responseBuilder.addDataFlowIds(DataFlowRpcUtil.getRpcDataFlowId(dataFlowId));
-                }
-                // TODO this doesn't respect the incoming page request!
+                dataFlowsPage.forEach(value->responseBuilder.addDataFlowIds(DataFlowRpcUtil.getRpcDataFlowId(value)));
                 CollectionPageResponse<DataFlowID> fauxPage = new CollectionPageResponse<>();
-                fauxPage.setElements(dataFlows);
-                int size = dataFlows.size();
-                fauxPage.setPageMaxSize(size);
-                fauxPage.setPageNumber(0);
-                fauxPage.setPageSize(size);
-                PageRequest incomingPageRequest = PagingUtil.getPageRequest(inRequest.getPageRequest());
-                fauxPage.setSortOrder(incomingPageRequest.getSortOrder());
-                fauxPage.setTotalPages(1);
-                fauxPage.setTotalSize(size);
-                responseBuilder.setPageResponse(PagingUtil.getPageResponse(fauxPage));
+                fauxPage.setElements(dataFlowsPage);
+                fauxPage.setHasContent(!dataFlowsPage.isEmpty());
+                fauxPage.setPageMaxSize(pageRequest.getPageSize());
+                fauxPage.setPageNumber(pageRequest.getPageNumber());
+                fauxPage.setPageSize(Math.min(pageRequest.getPageSize(),
+                                              dataFlowsPage.size()));
+                // TODO not sorting!
+                fauxPage.setSortOrder(pageRequest.getSortOrder());
+                int totalSize = dataFlows.size();
+                fauxPage.setTotalPages(PageResponse.getNumberOfPages(pageRequest,
+                                                                     totalSize));
+                fauxPage.setTotalSize(totalSize);
+                responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
+                                                                              fauxPage));
                 DataFlowRpc.GetDataFlowsResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(DataFlowRpcService.this,
                                        "{} returning {}",
@@ -551,23 +557,26 @@ public class DataFlowRpcService<SessionClazz>
                                        "{} received get data flow history request {}",
                                        sessionHolder,
                                        inRequest);
+                PageRequest pageRequest = inRequest.hasPageRequest()?PagingRpcUtil.getPageRequest(inRequest.getPageRequest()):PageRequest.ALL;
                 List<DataFlowInfo> dataFlowHistory = moduleManager.getDataFlowHistory();
+                List<DataFlowInfo> dataFlowHistoryPage = PageResponse.getPage(dataFlowHistory,
+                                                                              pageRequest.getPageNumber()+1,
+                                                                              pageRequest.getPageSize());
                 DataFlowRpc.GetDataFlowHistoryResponse.Builder responseBuilder = DataFlowRpc.GetDataFlowHistoryResponse.newBuilder();
-                for(DataFlowInfo dataFlowInfo : dataFlowHistory) {
-                    responseBuilder.addDataFlowInfos(DataFlowRpcUtil.getRpcDataFlowInfo(dataFlowInfo));
-                }
-                // TODO this doesn't respect the incoming page request!
+                dataFlowHistoryPage.forEach(value->responseBuilder.addDataFlowInfos(DataFlowRpcUtil.getRpcDataFlowInfo(value)));
                 CollectionPageResponse<DataFlowInfo> fauxPage = new CollectionPageResponse<>();
-                fauxPage.setElements(dataFlowHistory);
-                int size = dataFlowHistory.size();
-                fauxPage.setPageMaxSize(size);
-                fauxPage.setPageNumber(0);
-                fauxPage.setPageSize(size);
-                PageRequest incomingPageRequest = PagingUtil.getPageRequest(inRequest.getPageRequest());
-                fauxPage.setSortOrder(incomingPageRequest.getSortOrder());
-                fauxPage.setTotalPages(1);
-                fauxPage.setTotalSize(size);
-                responseBuilder.setPageResponse(PagingUtil.getPageResponse(fauxPage));
+                fauxPage.setElements(dataFlowHistoryPage);
+                fauxPage.setHasContent(!dataFlowHistoryPage.isEmpty());
+                fauxPage.setPageMaxSize(pageRequest.getPageSize());
+                fauxPage.setPageNumber(pageRequest.getPageNumber());
+                fauxPage.setPageSize(Math.min(pageRequest.getPageSize(),
+                                              dataFlowHistoryPage.size()));
+                // TODO not sorting!
+                fauxPage.setSortOrder(pageRequest.getSortOrder());
+                int totalSize = dataFlowHistory.size();
+                fauxPage.setTotalPages(PageResponse.getNumberOfPages(pageRequest,
+                                                                     totalSize));
+                fauxPage.setTotalSize(totalSize);
                 DataFlowRpc.GetDataFlowHistoryResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(DataFlowRpcService.this,
                                        "{} returning {}",
