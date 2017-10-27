@@ -233,8 +233,8 @@ public class MarketDataRpcService<SessionClazz>
                 Content content = MarketDataRpcUtil.getContent(inRequest.getContent());
                 PageRequest pageRequest = inRequest.hasPage()?PagingRpcUtil.getPageRequest(inRequest.getPage()):PageRequest.ALL;
                 CollectionPageResponse<Event> eventPage = marketDataService.getSnapshot(instrument,
-                                                                                     content,
-                                                                                     pageRequest);
+                                                                                        content,
+                                                                                        pageRequest);
                 eventPage.getElements().forEach(value->responseBuilder.addEvent(MarketDataRpcUtil.getRpcEvent(value)));
                 responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
                                                                               eventPage));

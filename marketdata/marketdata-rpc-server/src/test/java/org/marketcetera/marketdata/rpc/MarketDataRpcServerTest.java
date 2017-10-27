@@ -3,14 +3,18 @@ package org.marketcetera.marketdata.rpc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.math.BigDecimal;
 import java.util.Deque;
 import java.util.EnumSet;
 
 import org.junit.Test;
 import org.marketcetera.admin.User;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataClient;
@@ -20,8 +24,11 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.manual.ManualFeedModuleFactory;
 import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
 import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -206,19 +213,135 @@ public class MarketDataRpcServerTest
     public void testMarketDataSnapshot()
             throws Exception
     {
-        // test empty snapshot, no page
         Instrument instrument = new Equity("METC");
+        // test empty snapshot, no page
+        doSnapshotTest(instrument);
+        // generate a trade
+        TradeEvent tradeEvent = EventTestBase.generateTradeEvent(instrument);
+        // send trade to all market data requests
+        feedMarketDataCache(tradeEvent);
+        doSnapshotTest(instrument);
+        // generate a top-of-book
+        BidEvent topBid = EventTestBase.generateBidEvent(instrument);
+        feedMarketDataCache(topBid);
+        doSnapshotTest(instrument);
+        AskEvent topAsk = EventTestBase.generateAskEvent(instrument);
+        feedMarketDataCache(topAsk);
+        doSnapshotTest(instrument);
+        // generate a bunch of lesser bids
+        for(int i=1;i<100;i++) {
+            BidEvent otherBid = EventTestBase.generateBidEvent(instrument,
+                                                               topBid.getPrice().subtract(PlatformServices.ONE_PENNY.multiply(new BigDecimal(1))));
+            feedMarketDataCache(otherBid);
+        }
+        doSnapshotTest(instrument);
+        // generate a bunch of lesser asks
+        for(int i=1;i<100;i++) {
+            AskEvent otherAsk = EventTestBase.generateAskEvent(instrument,
+                                                               topAsk.getPrice().add(PlatformServices.ONE_PENNY.multiply(new BigDecimal(1))));
+            feedMarketDataCache(otherAsk);
+        }
+        doSnapshotTest(instrument);
+    }
+    /**
+     * Execute a snapshot test with the given values.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void doSnapshotTest(Instrument inInstrument)
+            throws Exception
+    {
         for(Content content : Content.values()) {
             if(content == Content.DIVIDEND) {
                 // TODO see MATP-997
                 continue;
             }
-            Deque<Event> expectedEvents = cacheManager.getSnapshot(instrument,
+            SLF4JLoggerProxy.debug(this,
+                                   "Unpaged snapshot test for {} {}",
+                                   inInstrument,
+                                   content);
+            Deque<Event> expectedEvents = cacheManager.getSnapshot(inInstrument,
                                                                    content);
-            Deque<Event> actualEvents = marketDataClient.getSnapshot(instrument,
+            Deque<Event> actualEvents = marketDataClient.getSnapshot(inInstrument,
                                                                      content);
             assertEquals(expectedEvents,
                          actualEvents);
+            // repeat with one large page
+            SLF4JLoggerProxy.debug(this,
+                                   "One large page snapshot test for {} {}",
+                                   inInstrument,
+                                   content);
+            PageRequest pageRequest = PageRequest.ALL;
+            CollectionPageResponse<Event> expectedEventsPage = cacheManager.getSnapshot(inInstrument,
+                                                                                        content,
+                                                                                        pageRequest);
+            CollectionPageResponse<Event> actualEventsPage = marketDataClient.getSnapshot(inInstrument,
+                                                                                         content,
+                                                                                         pageRequest);
+            verifyPageResponse(pageRequest,
+                               expectedEventsPage,
+                               actualEventsPage);
+            // repeat with one page of one
+            SLF4JLoggerProxy.debug(this,
+                                   "First page of one snapshot test for {} {}",
+                                   inInstrument,
+                                   content);
+            pageRequest = new PageRequest(0,
+                                          1);
+            expectedEventsPage = cacheManager.getSnapshot(inInstrument,
+                                                          content,
+                                                          pageRequest);
+            actualEventsPage = marketDataClient.getSnapshot(inInstrument,
+                                                            content,
+                                                            pageRequest);
+            verifyPageResponse(pageRequest,
+                               expectedEventsPage,
+                               actualEventsPage);
+            // repeat with second page of one
+            SLF4JLoggerProxy.debug(this,
+                                   "Second page of one snapshot test for {} {}",
+                                   inInstrument,
+                                   content);
+            pageRequest = new PageRequest(1,
+                                          1);
+            expectedEventsPage = cacheManager.getSnapshot(inInstrument,
+                                                          content,
+                                                          pageRequest);
+            actualEventsPage = marketDataClient.getSnapshot(inInstrument,
+                                                            content,
+                                                            pageRequest);
+            verifyPageResponse(pageRequest,
+                               expectedEventsPage,
+                               actualEventsPage);
         }
+    }
+    /**
+     * Verify the expected page matches the actual page.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @param inExpectedResults a <code>CollectionPageResponse&lt;T&gt;</code> value
+     * @param inActualResults a <code>CollectionPageResponse&lt;T&gt;</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private <T> void verifyPageResponse(PageRequest inPageRequest,
+                                        CollectionPageResponse<T> inExpectedResults,
+                                        CollectionPageResponse<T> inActualResults)
+            throws Exception
+    {
+        assertEquals(inExpectedResults.getElements(),
+                     inActualResults.getElements());
+        assertEquals(inExpectedResults.getPageMaxSize(),
+                     inActualResults.getPageMaxSize());
+        assertEquals(inExpectedResults.getPageNumber(),
+                     inActualResults.getPageNumber());
+        assertEquals(inExpectedResults.getPageSize(),
+                     inActualResults.getPageSize());
+        assertEquals(inExpectedResults.getSortOrder(),
+                     inActualResults.getSortOrder());
+        assertEquals(inExpectedResults.getTotalPages(),
+                     inActualResults.getTotalPages());
+        assertEquals(inExpectedResults.getTotalSize(),
+                     inActualResults.getTotalSize());
     }
 }

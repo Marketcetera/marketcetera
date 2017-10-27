@@ -150,8 +150,10 @@ public class MarketDataRpcClient
                     throws Exception
             {
                 SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
-                                       "{} getting snapshot",
-                                       getSessionId());
+                                       "{} getting snapshot for {} {}",
+                                       getSessionId(),
+                                       inInstrument,
+                                       inContent);
                 MarketDataRpc.SnapshotRequest.Builder requestBuilder = MarketDataRpc.SnapshotRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setContent(MarketDataRpcUtil.getRpcContent(inContent));
@@ -172,6 +174,7 @@ public class MarketDataRpcClient
                     MarketDataRpcUtil.getEvent(rpcEvent).ifPresent(value->events.add(value));
                 }
                 CollectionPageResponse<Event> eventPage = new CollectionPageResponse<>();
+                eventPage.setElements(events);
                 PagingRpcUtil.setPageResponse(inPage,
                                               response.getPageResponse(),
                                               eventPage);

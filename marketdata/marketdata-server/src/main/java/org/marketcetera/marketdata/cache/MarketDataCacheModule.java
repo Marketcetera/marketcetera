@@ -13,7 +13,9 @@ import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -60,6 +62,10 @@ public class MarketDataCacheModule
         if(marketDataCacheManager != null) {
             marketDataCacheManager.addMarketDataCacheProvider(this);
         }
+        SLF4JLoggerProxy.debug(this,
+                               "Starting {} with async mode {}",
+                               getClass().getSimpleName(),
+                               asyncMode);
         eventProcessor = new EventProcessor();
         eventProcessor.start();
         super.preStart();
@@ -89,8 +95,16 @@ public class MarketDataCacheModule
     protected Object onReceiveData(Object inData,
                                    DataEmitterSupport inDataSupport)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "{} received {}",
+                               getURN(),
+                               inData);
         if(inData instanceof Event) {
-            eventProcessor.add((Event)inData);
+            if(asyncMode) {
+                eventProcessor.add((Event)inData);
+            } else {
+                processEvent((Event)inData);
+            }
         }
         return inData;
     }
@@ -103,6 +117,24 @@ public class MarketDataCacheModule
     {
         super(inInstanceUrn,
               true);
+    }
+    /**
+     * Process the given event.
+     *
+     * @param inEvent an <code>Event</code> value
+     */
+    private void processEvent(Event inEvent)
+    {
+        if(inEvent instanceof HasInstrument) {
+            HasInstrument hasInstrument = (HasInstrument)inEvent;
+            MarketDataCacheElement marketDataCacheElement = marketDataCache.getUnchecked(hasInstrument.getInstrument());
+            for(Content content : Content.values()) {
+                if(content.isRelevantTo(inEvent.getClass())) {
+                    marketDataCacheElement.update(content,
+                                                  inEvent);
+                }
+            }
+        }
     }
     /**
      * Processes events for the cache.
@@ -129,16 +161,7 @@ public class MarketDataCacheModule
         protected void processData(Event inData)
                 throws Exception
         {
-            if(inData instanceof HasInstrument) {
-                HasInstrument hasInstrument = (HasInstrument)inData;
-                MarketDataCacheElement marketDataCacheElement = marketDataCache.getUnchecked(hasInstrument.getInstrument());
-                for(Content content : Content.values()) {
-                    if(content.isRelevantTo(inData.getClass())) {
-                        marketDataCacheElement.update(content,
-                                                      inData);
-                    }
-                }
-            }
+            processEvent(inData);
         }
         /**
          * Create a new EventProcessor instance.
@@ -168,4 +191,9 @@ public class MarketDataCacheModule
      */
     @Autowired(required=false)
     private MarketDataCacheManager marketDataCacheManager;
+    /**
+     * indicates whether the cache is operation in async mode or not
+     */
+    @Value("${metc.marketdata.cache.asyncmode:true}")
+    private boolean asyncMode;
 }

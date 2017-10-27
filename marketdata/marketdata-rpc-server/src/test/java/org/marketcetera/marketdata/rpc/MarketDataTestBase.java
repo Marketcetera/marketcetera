@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Deque;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -26,11 +27,17 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
+import org.marketcetera.marketdata.cache.MarketDataCacheModuleFactory;
 import org.marketcetera.marketdata.manual.ManualFeedModule;
 import org.marketcetera.marketdata.manual.ManualFeedModuleFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientParameters;
 import org.marketcetera.marketdata.service.MarketDataCacheManager;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.modules.headwater.HeadwaterModule;
+import org.marketcetera.modules.headwater.HeadwaterModuleFactory;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -87,6 +94,7 @@ public abstract class MarketDataTestBase
     public void cleanup()
             throws Exception
     {
+        stopMarketDataCacheFlow();
         if(marketDataClient != null) {
             try {
                 marketDataClient.stop();
@@ -259,6 +267,37 @@ public abstract class MarketDataTestBase
                           id);
             moduleInstance.emit(id,
                                 inEvent);
+        }
+    }
+    protected void feedMarketDataCache(Event inEvent)
+    {
+        startMarketDataCacheFlow();
+        HeadwaterModule headwaterModule = HeadwaterModule.getInstance(cacheHeadwaterName);
+        headwaterModule.emit(inEvent,
+                             cacheHeadwaterDataFlow);
+    }
+    protected void startMarketDataCacheFlow()
+    {
+        if(cacheHeadwaterUrn == null) {
+            cacheHeadwaterName = "marketDataCache_" + getClass().getSimpleName();
+            cacheHeadwaterUrn = moduleManager.createModule(HeadwaterModuleFactory.PROVIDER_URN,
+                                                           cacheHeadwaterName);
+            List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+            dataRequestBuilder.add(new DataRequest(cacheHeadwaterUrn));
+            dataRequestBuilder.add(new DataRequest(MarketDataCacheModuleFactory.INSTANCE_URN));
+            cacheHeadwaterDataFlow = moduleManager.createDataFlow(dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]));
+        }
+    }
+    protected void stopMarketDataCacheFlow()
+    {
+        if(cacheHeadwaterDataFlow != null) {
+            moduleManager.cancel(cacheHeadwaterDataFlow);
+            cacheHeadwaterDataFlow = null;
+        }
+        if(cacheHeadwaterUrn != null) {
+            moduleManager.stop(cacheHeadwaterUrn);
+            moduleManager.deleteModule(cacheHeadwaterUrn);
+            cacheHeadwaterUrn = null;
         }
     }
     /**
@@ -550,6 +589,9 @@ public abstract class MarketDataTestBase
          */
         private final Deque<Throwable> marketDataErrors = Lists.newLinkedList();
     }
+    protected DataFlowID cacheHeadwaterDataFlow;
+    protected String cacheHeadwaterName;
+    protected ModuleURN cacheHeadwaterUrn;
     /**
      * listens for market data events
      */
