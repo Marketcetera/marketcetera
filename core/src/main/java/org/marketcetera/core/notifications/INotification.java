@@ -30,7 +30,6 @@ public interface INotification
     {
         LOW,
         MEDIUM,
-        MEDIUM_HIGH,
         HIGH
     }
     /**
