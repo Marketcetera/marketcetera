@@ -58,6 +58,11 @@
     </dependency>
     <!-- runtime -->
     <!-- test -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
