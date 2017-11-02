@@ -43,7 +43,7 @@ import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
@@ -104,24 +104,6 @@ public class MarketDataRecorderModule
         super.receiveData(inFlowID,
                           inData);
     }
-    /**
-     * Get the config value.
-     *
-     * @return a <code>MarketDataRecorderModuleConfiguration</code> value
-     */
-    public MarketDataRecorderModuleConfiguration getConfig()
-    {
-        return config;
-    }
-    /**
-     * Sets the config value.
-     *
-     * @param a <code>MarketDataRecorderModuleConfiguration</code> value
-     */
-    public void setConfig(MarketDataRecorderModuleConfiguration inConfig)
-    {
-        config = inConfig;
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStart()
      */
@@ -135,8 +117,11 @@ public class MarketDataRecorderModule
                         Messages.NOT_A_DIRECTORY.getText(directoryName));
         Validate.isTrue(outputDirectoryFile.canWrite(),
                         Messages.NOT_A_DIRECTORY.getText(directoryName));
-        Validate.notNull(config);
-        sessionResetTimestamp = config.getSessionResetTimestamp();
+        if(sessionReset == null) {
+            sessionResetTimestamp = null;
+        }
+        sessionResetTimestamp = sessionResetFormatter.parseDateTime(sessionReset);
+        sessionResetTimestamp = new DateTime().withTimeAtStartOfDay().plusMillis(sessionResetTimestamp.getMillisOfDay());
         SLF4JLoggerProxy.debug(this,
                                "Session reset is {}", //$NON-NLS-1$
                                sessionResetTimestamp);
@@ -350,10 +335,10 @@ public class MarketDataRecorderModule
         return symbolKey.toString();
     }
     /**
-     * provides configuration values common to all module instances
+     * indicates the time time the session should reset
      */
-    @Autowired
-    private MarketDataRecorderModuleConfiguration config;
+    @Value("${metc.marketdata.recorder.session.reset:00:00:00}")
+    private String sessionReset;
     /**
      * caches current filenames in use for symbol keys
      */
@@ -399,6 +384,10 @@ public class MarketDataRecorderModule
      */
     private static final DateTimeFormatter marketDataTimestampFormatter = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(DASH)
             .append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).append(PERIOD).append(MILLISECOND).toFormatter();
+    /**
+     * used to parse the {@link #sessionReset} value
+     */
+    private static final DateTimeFormatter sessionResetFormatter = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).toFormatter();
     /**
      * suffix to use for output files
      */

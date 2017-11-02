@@ -1,7 +1,6 @@
 package org.marketcetera.marketdata.recorder;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.marketcetera.core.time.TimeFactoryImpl.COLON;
 import static org.marketcetera.core.time.TimeFactoryImpl.HOUR;
@@ -26,11 +25,11 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.event.EventType;
-import org.marketcetera.event.LocalTimezoneTimestampGenerator;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.marketdata.AssetClass;
@@ -49,9 +48,12 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.collect.Lists;
 
@@ -64,8 +66,25 @@ import com.google.common.collect.Lists;
  * @version $Id$
  * @since $Release$
  */
+@RunWith(SpringRunner.class)
 public class MarketDataRecorderModuleTest
 {
+    @TestConfiguration
+    public static class MarketDataRecorderModuleTestConfiguration
+    {
+        /**
+         * Get the module manager value.
+         *
+         * @return a <code>ModuleManager</code> value
+         */
+        @Bean
+        public ModuleManager getModuleManager()
+        {
+            ModuleManager moduleManager = new ModuleManager();
+            moduleManager.init();
+            return moduleManager;
+        }
+    }
     /**
      * Run before each test.
      *
@@ -75,8 +94,6 @@ public class MarketDataRecorderModuleTest
     public void setup()
             throws Exception
     {
-        moduleManager = new ModuleManager();
-        moduleManager.init();
         moduleManager.start(TestFeedModuleFactory.INSTANCE_URN);
         moduleManager.start(BogusFeedModuleFactory.INSTANCE_URN);
         testMarketDataFeed = TestFeed.instance;
@@ -91,9 +108,9 @@ public class MarketDataRecorderModuleTest
         gcInstrument = Future.fromString("GC-201609");
         // try to catch the almost impossible case that the session reset we're using is after right now
         sessionReset = "00:00:00";
-        while(generateConfig(sessionReset).getSessionResetTimestamp().isAfterNow()) {
-            Thread.sleep(1000);
-        }
+//        while(generateConfig(sessionReset).getSessionResetTimestamp().isAfterNow()) {
+//            Thread.sleep(1000);
+//        }
     }
     /**
      * Run after each test.
@@ -117,9 +134,9 @@ public class MarketDataRecorderModuleTest
             throws Exception
     {
         String sessionReset = "00:00:00";
-        while(generateConfig(sessionReset).getSessionResetTimestamp().isAfterNow()) {
-            Thread.sleep(1000);
-        }
+//        while(generateConfig(sessionReset).getSessionResetTimestamp().isAfterNow()) {
+//            Thread.sleep(1000);
+//        }
         ModuleURN instanceUrn = getRecorderModule(testDirectory.getAbsolutePath(),
                                                   sessionReset);
         establishDataFlow(generateMarketDataRequest(Lists.newArrayList(gcInstrument.getFullSymbol()),
@@ -145,9 +162,9 @@ public class MarketDataRecorderModuleTest
     public void testInvalidSessionReset()
             throws Exception
     {
-        MarketDataRecorderModuleConfiguration config = generateConfig(null);
-        assertNull(config.getSessionReset());
-        assertNull(config.getSessionResetTimestamp());
+//        MarketDataRecorderModuleConfiguration config = generateConfig(null);
+//        assertNull(config.getSessionReset());
+//        assertNull(config.getSessionResetTimestamp());
         new ExpectedFailure<IllegalArgumentException>(Messages.SESSION_RESET_REQUIRED.getText()) {
             @Override
             protected void run()
@@ -800,7 +817,7 @@ public class MarketDataRecorderModuleTest
     private ModuleURN getRecorderModule(String inDirectoryName,
                                         String inSessionReset)
     {
-        ApplicationContext applicationContext = generateApplicationContext(generateConfig(inSessionReset));
+        ApplicationContext applicationContext = generateApplicationContext(inSessionReset);
         moduleManager.setApplicationContext(applicationContext);
         ModuleURN recorderUrn = moduleManager.createModule(MarketDataRecorderModuleFactory.PROVIDER_URN,
                                                            inDirectoryName);
@@ -813,13 +830,13 @@ public class MarketDataRecorderModuleTest
      * @param inSessionReset a <code>String</code> value
      * @return a <code>MarketDataRecorderModuleConfiguration</code> value
      */
-    private MarketDataRecorderModuleConfiguration generateConfig(String inSessionReset)
+    private void generateConfig(String inSessionReset)
     {
-        MarketDataRecorderModuleConfiguration config = new MarketDataRecorderModuleConfiguration();
-        config.setSessionReset(inSessionReset);
-        config.setTimestampGenerator(new LocalTimezoneTimestampGenerator());
-        config.start();
-        return config;
+//        MarketDataRecorderModuleConfiguration config = new MarketDataRecorderModuleConfiguration();
+//        config.setSessionReset(inSessionReset);
+//        config.setTimestampGenerator(new LocalTimezoneTimestampGenerator());
+//        config.start();
+//        return config;
     }
     /**
      * Generates an application context including the given config.
@@ -827,12 +844,12 @@ public class MarketDataRecorderModuleTest
      * @param inConfig a <code>MarketDataRecorderModuleConfiguration</code> value
      * @return an <code>ApplicationContext</code> value
      */
-    private ApplicationContext generateApplicationContext(MarketDataRecorderModuleConfiguration inConfig)
+    private ApplicationContext generateApplicationContext(String inConfig)
     {
         GenericApplicationContext context = new GenericApplicationContext();
-        ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-        beanFactory.registerSingleton(inConfig.getClass().getSimpleName(),
-                                      inConfig);
+//        ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+//        beanFactory.registerSingleton(inConfig.getClass().getSimpleName(),
+//                                      inConfig);
         context.refresh();
         context.start();
         return context;
@@ -919,6 +936,7 @@ public class MarketDataRecorderModuleTest
     /**
      * manages modules
      */
+    @Autowired
     private ModuleManager moduleManager;
     /**
      * test session reset value
