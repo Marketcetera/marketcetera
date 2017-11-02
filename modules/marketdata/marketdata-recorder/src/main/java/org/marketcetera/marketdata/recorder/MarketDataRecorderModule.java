@@ -117,11 +117,16 @@ public class MarketDataRecorderModule
                         Messages.NOT_A_DIRECTORY.getText(directoryName));
         Validate.isTrue(outputDirectoryFile.canWrite(),
                         Messages.NOT_A_DIRECTORY.getText(directoryName));
+        sessionReset = StringUtils.trimToNull(sessionReset);
         if(sessionReset == null) {
             sessionResetTimestamp = null;
+        } else {
+            try {
+                sessionResetTimestamp = generateSessionResetTimestamp(sessionReset);
+            } catch (Exception e) {
+                throw new IllegalArgumentException(Messages.SESSION_RESET_REQUIRED.getText());
+            }
         }
-        sessionResetTimestamp = sessionResetFormatter.parseDateTime(sessionReset);
-        sessionResetTimestamp = new DateTime().withTimeAtStartOfDay().plusMillis(sessionResetTimestamp.getMillisOfDay());
         SLF4JLoggerProxy.debug(this,
                                "Session reset is {}", //$NON-NLS-1$
                                sessionResetTimestamp);
@@ -157,6 +162,18 @@ public class MarketDataRecorderModule
                             instance + counter.incrementAndGet()),
               false);
         directoryName = StringUtils.trimToNull(inDirectoryName);
+    }
+    /**
+     * Generate the session reset timestamp from the given session reset value.
+     *
+     * @param inSessionReset a <code>String</code> value
+     * @return a <code>String</code> value
+     */
+    static DateTime generateSessionResetTimestamp(String inSessionReset)
+    {
+        DateTime sessionResetTimestamp = sessionResetFormatter.parseDateTime(inSessionReset);
+        sessionResetTimestamp = new DateTime().withTimeAtStartOfDay().plusMillis(sessionResetTimestamp.getMillisOfDay());
+        return sessionResetTimestamp;
     }
     /**
      * Processes the given quote event.

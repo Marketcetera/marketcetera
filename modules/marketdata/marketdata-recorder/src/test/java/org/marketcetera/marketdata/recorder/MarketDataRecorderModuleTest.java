@@ -14,18 +14,19 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.assertj.core.util.Sets;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
@@ -39,6 +40,7 @@ import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.marketdata.module.TestFeed;
 import org.marketcetera.marketdata.module.TestFeedModuleFactory;
+import org.marketcetera.marketdata.rpc.MarketDataTestBase;
 import org.marketcetera.module.DataFlowExceptionHandler;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
@@ -49,11 +51,9 @@ import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.mock.env.MockPropertySource;
 
 import com.google.common.collect.Lists;
 
@@ -66,25 +66,9 @@ import com.google.common.collect.Lists;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SpringRunner.class)
 public class MarketDataRecorderModuleTest
+        extends MarketDataTestBase
 {
-    @TestConfiguration
-    public static class MarketDataRecorderModuleTestConfiguration
-    {
-        /**
-         * Get the module manager value.
-         *
-         * @return a <code>ModuleManager</code> value
-         */
-        @Bean
-        public ModuleManager getModuleManager()
-        {
-            ModuleManager moduleManager = new ModuleManager();
-            moduleManager.init();
-            return moduleManager;
-        }
-    }
     /**
      * Run before each test.
      *
@@ -94,11 +78,13 @@ public class MarketDataRecorderModuleTest
     public void setup()
             throws Exception
     {
-        moduleManager.start(TestFeedModuleFactory.INSTANCE_URN);
-        moduleManager.start(BogusFeedModuleFactory.INSTANCE_URN);
+        super.setup();
+        ModuleManager.startModulesIfNecessary(moduleManager,
+                                              TestFeedModuleFactory.INSTANCE_URN,
+                                              BogusFeedModuleFactory.INSTANCE_URN);
         testMarketDataFeed = TestFeed.instance;
         testDirectory = new File(FileUtils.getTempDirectory(),
-                                 MarketDataRecorderModuleTest.class.getSimpleName());
+                                 MarketDataRecorderModuleTest.class.getSimpleName()+System.nanoTime());
         FileUtils.deleteQuietly(testDirectory);
         FileUtils.forceMkdir(testDirectory);
         SLF4JLoggerProxy.info(this,
@@ -108,9 +94,9 @@ public class MarketDataRecorderModuleTest
         gcInstrument = Future.fromString("GC-201609");
         // try to catch the almost impossible case that the session reset we're using is after right now
         sessionReset = "00:00:00";
-//        while(generateConfig(sessionReset).getSessionResetTimestamp().isAfterNow()) {
-//            Thread.sleep(1000);
-//        }
+        while(MarketDataRecorderModule.generateSessionResetTimestamp(sessionReset).isAfterNow()) {
+            Thread.sleep(1000);
+        }
     }
     /**
      * Run after each test.
@@ -121,8 +107,15 @@ public class MarketDataRecorderModuleTest
     public void cleanup()
             throws Exception
     {
-        moduleManager.stop();
+        for(DataFlowID dataFlowId : dataFlows) {
+            try {
+                moduleManager.cancel(dataFlowId);
+            } catch (Exception ignored) {}
+        }
+        dataFlows.clear();
+        moduleManager.stop(TestFeedModuleFactory.INSTANCE_URN);
         FileUtils.deleteQuietly(testDirectory);
+        super.cleanup();
     }
     /**
      * Tests that an error while processing quotes triggers exception handling.
@@ -134,9 +127,9 @@ public class MarketDataRecorderModuleTest
             throws Exception
     {
         String sessionReset = "00:00:00";
-//        while(generateConfig(sessionReset).getSessionResetTimestamp().isAfterNow()) {
-//            Thread.sleep(1000);
-//        }
+        while(MarketDataRecorderModule.generateSessionResetTimestamp(sessionReset).isAfterNow()) {
+            Thread.sleep(1000);
+        }
         ModuleURN instanceUrn = getRecorderModule(testDirectory.getAbsolutePath(),
                                                   sessionReset);
         establishDataFlow(generateMarketDataRequest(Lists.newArrayList(gcInstrument.getFullSymbol()),
@@ -162,15 +155,13 @@ public class MarketDataRecorderModuleTest
     public void testInvalidSessionReset()
             throws Exception
     {
-//        MarketDataRecorderModuleConfiguration config = generateConfig(null);
-//        assertNull(config.getSessionReset());
-//        assertNull(config.getSessionResetTimestamp());
         new ExpectedFailure<IllegalArgumentException>(Messages.SESSION_RESET_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
             {
-                generateConfig("25:00:00");
+                getRecorderModule(testDirectory.getAbsolutePath(),
+                                  "25:00:00");
             }
         };
         new ExpectedFailure<IllegalArgumentException>(Messages.SESSION_RESET_REQUIRED.getText()) {
@@ -178,7 +169,8 @@ public class MarketDataRecorderModuleTest
             protected void run()
                     throws Exception
             {
-                generateConfig("01:00");
+                getRecorderModule(testDirectory.getAbsolutePath(),
+                                  "01:00");
             }
         };
         new ExpectedFailure<IllegalArgumentException>(Messages.SESSION_RESET_REQUIRED.getText()) {
@@ -186,15 +178,8 @@ public class MarketDataRecorderModuleTest
             protected void run()
                     throws Exception
             {
-                generateConfig("");
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>(Messages.SESSION_RESET_REQUIRED.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                generateConfig("xyz-pdq");
+                getRecorderModule(testDirectory.getAbsolutePath(),
+                                  "xyz-pdq");
             }
         };
     }
@@ -787,6 +772,7 @@ public class MarketDataRecorderModuleTest
                                                                                              testExceptionHandler,
                                                                                              null) },
                                                          false);
+        dataFlows.add(flowId);
         return flowId;
     }
     /**
@@ -817,42 +803,14 @@ public class MarketDataRecorderModuleTest
     private ModuleURN getRecorderModule(String inDirectoryName,
                                         String inSessionReset)
     {
-        ApplicationContext applicationContext = generateApplicationContext(inSessionReset);
-        moduleManager.setApplicationContext(applicationContext);
         ModuleURN recorderUrn = moduleManager.createModule(MarketDataRecorderModuleFactory.PROVIDER_URN,
                                                            inDirectoryName);
+        MutablePropertySources propertySources = environment.getPropertySources();
+        MockPropertySource mockEnvVars = new MockPropertySource().withProperty("metc.marketdata.recorder.session.reset",
+                                                                               inSessionReset==null?"":inSessionReset);
+        propertySources.addFirst(mockEnvVars);
         moduleManager.start(recorderUrn);
         return recorderUrn;
-    }
-    /**
-     * Generates a module configuration value.
-     *
-     * @param inSessionReset a <code>String</code> value
-     * @return a <code>MarketDataRecorderModuleConfiguration</code> value
-     */
-    private void generateConfig(String inSessionReset)
-    {
-//        MarketDataRecorderModuleConfiguration config = new MarketDataRecorderModuleConfiguration();
-//        config.setSessionReset(inSessionReset);
-//        config.setTimestampGenerator(new LocalTimezoneTimestampGenerator());
-//        config.start();
-//        return config;
-    }
-    /**
-     * Generates an application context including the given config.
-     *
-     * @param inConfig a <code>MarketDataRecorderModuleConfiguration</code> value
-     * @return an <code>ApplicationContext</code> value
-     */
-    private ApplicationContext generateApplicationContext(String inConfig)
-    {
-        GenericApplicationContext context = new GenericApplicationContext();
-//        ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-//        beanFactory.registerSingleton(inConfig.getClass().getSimpleName(),
-//                                      inConfig);
-        context.refresh();
-        context.start();
-        return context;
     }
     /**
      * Receives exceptions generated during data flows.
@@ -938,6 +896,15 @@ public class MarketDataRecorderModuleTest
      */
     @Autowired
     private ModuleManager moduleManager;
+    /**
+     * Spring test env
+     */
+    @Autowired
+    private ConfigurableEnvironment environment;
+    /**
+     * holds data flows
+     */
+    private final Set<DataFlowID> dataFlows = Sets.newHashSet();
     /**
      * test session reset value
      */

@@ -1,5 +1,6 @@
 package org.marketcetera.marketdata.module;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -72,14 +73,16 @@ public class TestFeed
     public void sendEvents(List<Event> inEvents)
     {
         long timestamp = System.currentTimeMillis();
-        for(String handle : requestsByHandle.keySet()) {
-            for(Event event : inEvents) {
-                if(event instanceof HasTimestamps) {
-                    HasTimestamps timestampEvent = (HasTimestamps)event;
-                    timestampEvent.setReceivedTimestamp(timestamp);
+        synchronized(requestsByHandle) {
+            for(String handle : requestsByHandle.keySet()) {
+                for(Event event : inEvents) {
+                    if(event instanceof HasTimestamps) {
+                        HasTimestamps timestampEvent = (HasTimestamps)event;
+                        timestampEvent.setReceivedTimestamp(timestamp);
+                    }
+                    dataReceived(handle,
+                                 event);
                 }
-                dataReceived(handle,
-                             event);
             }
         }
     }
@@ -109,7 +112,9 @@ public class TestFeed
      */
     public Map<String,MarketDataRequest> getRequestsByToken()
     {
-        return requestsByHandle;
+        synchronized(requestsByHandle) {
+            return Collections.unmodifiableMap(requestsByHandle);
+        }
     }
     /**
      * Sets an exception to throw on start.
@@ -145,8 +150,10 @@ public class TestFeed
             throws FeedException
     {
         String handle = UUID.randomUUID().toString();
-        requestsByHandle.put(handle,
-                             inData);
+        synchronized(requestsByHandle) {
+            requestsByHandle.put(handle,
+                                 inData);
+        }
         return Lists.newArrayList(handle);
     }
     /* (non-Javadoc)
@@ -171,12 +178,14 @@ public class TestFeed
     @Override
     protected boolean doLogin(TestFeedCredentials inCredentials)
     {
-        requestsByHandle.clear();
-        if(exceptionOnStart != null) {
-            throw exceptionOnStart;
+        synchronized(requestsByHandle) {
+            requestsByHandle.clear();
+            if(exceptionOnStart != null) {
+                throw exceptionOnStart;
+            }
+            isLoggedIn = true;
+            return true;
         }
-        isLoggedIn = true;
-        return true;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doLogout()
@@ -192,7 +201,9 @@ public class TestFeed
     @Override
     protected void doCancel(String inHandle)
     {
-        requestsByHandle.remove(inHandle);
+        synchronized(requestsByHandle) {
+            requestsByHandle.remove(inHandle);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#getEventTranslator()
@@ -214,5 +225,8 @@ public class TestFeed
      * holds requests by feed-assigned handle
      */
     private final Map<String,MarketDataRequest> requestsByHandle = new HashMap<>();
+    /**
+     * indicate whether to thrown an exception on start or not
+     */
     private RuntimeException exceptionOnStart = null;
 }

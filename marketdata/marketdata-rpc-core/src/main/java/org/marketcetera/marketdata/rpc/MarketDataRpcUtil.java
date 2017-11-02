@@ -39,6 +39,9 @@ public class MarketDataRpcUtil
      */
     public static Optional<Event> getEvent(MarketDataRpc.Event inRpcEvent)
     {
+        if(inRpcEvent == null) {
+            return Optional.empty();
+        }
         try {
             return Optional.of(unmarshall(inRpcEvent.getPayload()));
         } catch (JAXBException e) {
