@@ -57,6 +57,36 @@ public class MarketDataRpcUtilTest
         };
     }
     /**
+     * Test {@link MarketDataRpcUtil#getRpcEvent(Event)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testGetRpcEvent()
+            throws Exception
+    {
+        assertFalse(MarketDataRpcUtil.getRpcEvent(null).isPresent());
+        Event event = EventTestBase.generateAskEvent(new Equity("METC"));
+        MarketDataRpc.Event rpcEvent = MarketDataRpcUtil.getRpcEvent(event).orElse(null);
+        assertNotNull(rpcEvent);
+        verifyRpcEvent(event,
+                       rpcEvent);
+    }
+    /**
+     * Verify the given RPC event matches the given expected event.
+     *
+     * @param inExpectedEvent an <code>Event</code> value
+     * @param inActualEvent a <code>MarketDataRpc.Event</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    public static void verifyRpcEvent(Event inExpectedEvent,
+                                      MarketDataRpc.Event inActualEvent)
+            throws Exception
+    {
+        assertEquals(inExpectedEvent,
+                     unmarshall(inActualEvent.getPayload()));
+    }
+    /**
      * Generate an RPC event with random values.
      *
      * @return a <code>MarketDataRpc.Event</code> value

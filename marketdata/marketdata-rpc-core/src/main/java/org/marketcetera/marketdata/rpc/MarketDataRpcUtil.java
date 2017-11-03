@@ -49,26 +49,18 @@ public class MarketDataRpcUtil
         }
     }
     /**
-     * Set the given event on the given builder.
-     *
-     * @param inEvent an <code>Event</code> value
-     * @param inBuilder a <code>MarketDataRpc.EventsResponse.Builder</code> value
-     */
-    public static void setEvent(Event inEvent,
-                                MarketDataRpc.EventsResponse.Builder inBuilder)
-    {
-        inBuilder.setEvent(getRpcEvent(inEvent));
-    }
-    /**
      * Get the RPC event for the given event.
      *
      * @param inEvent an <code>Event</code> value
-     * @return a <code>MarketDataRpc.Event</code>
+     * @return an <code>Optional&lt;MarketDataRpc.Event&gt;</code>
      */
-    public static MarketDataRpc.Event getRpcEvent(Event inEvent)
+    public static Optional<MarketDataRpc.Event> getRpcEvent(Event inEvent)
     {
+        if(inEvent == null) {
+            return Optional.empty();
+        }
         try {
-            return MarketDataRpc.Event.newBuilder().setPayload(marshall(inEvent)).build();
+            return Optional.of(MarketDataRpc.Event.newBuilder().setPayload(marshall(inEvent)).build());
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
@@ -79,42 +71,34 @@ public class MarketDataRpcUtil
      * @param inRequest a <code>String</code> value
      * @param inServerRequestId a <code>String</code> value
      * @param inClientRequestId a <code>String</code> value
-     * @return a <code>MarketDataRequest</code> value
+     * @return an <code>Optional&lt;MarketDataRequest&gt;</code> value
      */
-    public static MarketDataRequest getMarketDataRequest(String inRequest,
-                                                         String inServerRequestId,
-                                                         String inClientRequestId)
+    public static Optional<MarketDataRequest> getMarketDataRequest(String inRequest,
+                                                                   String inServerRequestId,
+                                                                   String inClientRequestId)
     {
+        if(inRequest == null || inServerRequestId == null || inClientRequestId == null) {
+            return Optional.empty();
+        }
         inRequest = inRequest.replace(inClientRequestId,
                                       inServerRequestId);
-        return MarketDataRequestBuilder.newRequestFromString(inRequest);
-    }
-    /**
-     * Set the given market data status on the given RPC builder.
-     *
-     * @param inMarketDataStatus a <code>MarketDataStatus</code> value
-     * @param inBuilder a <code>MarketDataRpc.MarketDataStatusListenerResponse.Builder</code> value
-     */
-    public static void setMarketDataStatus(MarketDataStatus inMarketDataStatus,
-                                           MarketDataRpc.MarketDataStatusListenerResponse.Builder inBuilder)
-    {
-        if(inMarketDataStatus == null) {
-            return;
-        }
-        inBuilder.setMarketDataStatus(getRpcMarketDataStatus(inMarketDataStatus));
+        return Optional.of(MarketDataRequestBuilder.newRequestFromString(inRequest));
     }
     /**
      * Get the RPC market data status value from the given market data status.
      *
      * @param inMarketDataStatus a <code>MarketDataStatus</code> value
-     * @return a <code>MarketDataRpc.MarketDataStatus</code> value
+     * @return an <code>Optional&lt;MarketDataRpc.MarketDataStatus&gt;</code> value
      */
-    public static MarketDataRpc.MarketDataStatus getRpcMarketDataStatus(MarketDataStatus inMarketDataStatus)
+    public static Optional<MarketDataRpc.MarketDataStatus> getRpcMarketDataStatus(MarketDataStatus inMarketDataStatus)
     {
+        if(inMarketDataStatus == null) {
+            return Optional.empty();
+        }
         MarketDataRpc.MarketDataStatus.Builder builder = MarketDataRpc.MarketDataStatus.newBuilder();
         builder.setFeedStatus(getRpcFeedStatus(inMarketDataStatus.getFeedStatus()));
         builder.setProvider(inMarketDataStatus.getProvider());
-        return builder.build();
+        return Optional.of(builder.build());
     }
     /**
      * Get the RPC feed status value from the given feed status.

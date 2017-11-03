@@ -162,10 +162,11 @@ public class MarketDataRpcService<SessionClazz>
                     listenerProxiesById.put(serverRequestId,
                                             marketDataListenerProxy);
                     // we're going to remap the request id from the client request id to the server request id here
-                    marketDataService.request(MarketDataRpcUtil.getMarketDataRequest(inRequest.getRequest(),
-                                                                                     serverRequestId,
-                                                                                     clientRequestId),
-                                              (MarketDataListener)marketDataListenerProxy);
+                    final MarketDataListener listenerProxy = (MarketDataListener)marketDataListenerProxy;
+                    MarketDataRpcUtil.getMarketDataRequest(inRequest.getRequest(),
+                                                           serverRequestId,
+                                                           clientRequestId).ifPresent(value->marketDataService.request(value,
+                                                                                                                       listenerProxy));
                 } else {
                     throw new IllegalArgumentException("Duplicate market data request id: " + clientRequestId);
                 }
@@ -235,7 +236,7 @@ public class MarketDataRpcService<SessionClazz>
                 CollectionPageResponse<Event> eventPage = marketDataService.getSnapshot(instrument,
                                                                                         content,
                                                                                         pageRequest);
-                eventPage.getElements().forEach(value->responseBuilder.addEvent(MarketDataRpcUtil.getRpcEvent(value)));
+                eventPage.getElements().forEach(value->MarketDataRpcUtil.getRpcEvent(value).ifPresent(innerValue->responseBuilder.addEvent(innerValue)));
                 responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
                                                                               eventPage));
                 MarketDataRpc.SnapshotResponse response = responseBuilder.build();
@@ -368,8 +369,7 @@ public class MarketDataRpcService<SessionClazz>
         @Override
         public void receiveMarketDataStatus(MarketDataStatus inMarketDataStatus)
         {
-            MarketDataRpcUtil.setMarketDataStatus(inMarketDataStatus,
-                                                  responseBuilder);
+            MarketDataRpcUtil.getRpcMarketDataStatus(inMarketDataStatus).ifPresent(value->responseBuilder.setMarketDataStatus(value));
             MarketDataRpc.MarketDataStatusListenerResponse response = responseBuilder.build();
             SLF4JLoggerProxy.trace(MarketDataRpcService.class,
                                    "{} received market data status {}, sending {}",
@@ -413,8 +413,7 @@ public class MarketDataRpcService<SessionClazz>
         @Override
         public void receiveMarketData(Event inEvent)
         {
-            MarketDataRpcUtil.setEvent(inEvent,
-                                       responseBuilder);
+            MarketDataRpcUtil.getRpcEvent(inEvent).ifPresent(value->responseBuilder.setEvent(value));
             responseBuilder.setRequestId(clientRequestId);
             MarketDataRpc.EventsResponse response = responseBuilder.build();
             SLF4JLoggerProxy.trace(MarketDataRpcService.class,
@@ -422,7 +421,6 @@ public class MarketDataRpcService<SessionClazz>
                                    getId(),
                                    inEvent,
                                    response);
-            // TODO does the user have permissions (including supervisor) to view this event?
             getObserver().onNext(response);
             responseBuilder.clear();
         }
