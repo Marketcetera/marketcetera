@@ -566,27 +566,30 @@ public abstract class TradeRpcUtil
         if(!inRpcOrder.hasInstrument() || inRpcOrder.getInstrument().getSymbol() == null) {
             return Optional.empty();
         }
-        return Optional.of(getInstrument(inRpcOrder.getInstrument()));
+        return getInstrument(inRpcOrder.getInstrument());
     }
     /**
      * Get the instrument value from the given RPC instrument object.
      *
      * @param inRpcInstrument a <code>TradingTypesRpc.Instrument</code> value
-     * @return an <code>Instrument</code> value
+     * @return an <code>Optional&lt;Instrument&gt;</code> value
      */
-    public static Instrument getInstrument(TradingTypesRpc.Instrument inRpcInstrument)
+    public static Optional<Instrument> getInstrument(TradingTypesRpc.Instrument inRpcInstrument)
     {
+        if(inRpcInstrument == null) {
+            return Optional.empty();
+        }
         switch(inRpcInstrument.getSecurityType()) {
             case CommonStock:
-                return new Equity(inRpcInstrument.getSymbol());
+                return Optional.of(new Equity(inRpcInstrument.getSymbol()));
             case ConvertibleBond:
-                return new ConvertibleBond(inRpcInstrument.getSymbol());
+                return Optional.of(new ConvertibleBond(inRpcInstrument.getSymbol()));
             case Currency:
-                return new Currency(inRpcInstrument.getSymbol());
+                return Optional.of(new Currency(inRpcInstrument.getSymbol()));
             case Future:
-                return Future.fromString(inRpcInstrument.getSymbol());
+                return Optional.of(Future.fromString(inRpcInstrument.getSymbol()));
             case Option:
-                return OptionUtils.getOsiOptionFromString(inRpcInstrument.getSymbol());
+                return Optional.of(OptionUtils.getOsiOptionFromString(inRpcInstrument.getSymbol()));
             default:
             case UnknownSecurityType:
             case UNRECOGNIZED:
@@ -604,7 +607,7 @@ public abstract class TradeRpcUtil
         if(!inRpcOrderSummary.hasInstrument() || inRpcOrderSummary.getInstrument().getSymbol() == null) {
             return Optional.empty();
         }
-        return Optional.of(getInstrument(inRpcOrderSummary.getInstrument()));
+        return getInstrument(inRpcOrderSummary.getInstrument());
     }
     /**
      * Set the RPC custom fields from the given order.
@@ -2720,7 +2723,7 @@ public abstract class TradeRpcUtil
      */
     public static PositionKey<? extends Instrument> getPositionKey(TradingTypesRpc.PositionKey inRpcPositionKey)
     {
-        return PositionKeyFactory.createKey(getInstrument(inRpcPositionKey.getInstrument()),
+        return PositionKeyFactory.createKey(getInstrument(inRpcPositionKey.getInstrument()).orElse(null),
                                             StringUtils.trimToNull(inRpcPositionKey.getAccount()),
                                             StringUtils.trimToNull(inRpcPositionKey.getTraderId()));
     }

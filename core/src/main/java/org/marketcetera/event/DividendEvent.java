@@ -86,16 +86,4 @@ public interface DividendEvent
      * @return a <code>DividendType</code> value
      */
     public DividendType getType();
-    /**
-     * Gets the type of the event.
-     *
-     * @return an <code>EventType</code> value
-     */
-    public EventType getEventType();
-    /**
-     * Sets the type of the event.
-     *
-     * @param inEventType an <code>EventType</code> value
-     */
-    public void setEventType(EventType inEventType);
 }

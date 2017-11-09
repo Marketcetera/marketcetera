@@ -6,15 +6,14 @@ option java_generic_services = true;
 option java_package = "org.marketcetera.marketdata.core.rpc";
 option java_outer_classname = "MarketDataTypesRpc";
 
-message Event {
-    string payload = 1;
-}
-
 message EventHolder {
     TradeEvent tradeEvent = 1;
+    QuoteEvent quoteEvent = 2;
+    DividendEvent dividendEvent = 3;
+    LogEvent logEvent = 4;
 }
 
-message NewEvent {
+message Event {
     int64 messageId = 1;
     google.protobuf.Timestamp timestamp = 2;
     string source = 3;
@@ -22,8 +21,13 @@ message NewEvent {
     int64 requestId = 5;
 }
 
+message LogEvent {
+    LogEventLevel logEventLevel = 1;
+    string message = 2;
+}
+
 message MarketDataEvent {
-    NewEvent event = 1;
+    Event event = 1;
     string exchange = 2;
     Qty price = 3;
     Qty size = 4;
@@ -38,6 +42,63 @@ message TradeEvent {
     MarketDataEvent marketDataEvent = 1;
     google.protobuf.Timestamp tradeDate = 2;
     string tradeCondition = 3;
+}
+
+message QuoteEvent {
+    MarketDataEvent marketDataEvent = 1;
+    google.protobuf.Timestamp quoteDate = 2;
+    QuoteAction quoteAction = 3;
+    int32 level = 4;
+    int32 count = 5;
+    bool isEmpty = 6;
+    bool isBid = 7;
+}
+
+message DividendEvent {
+    Qty amount = 1;
+    string currency = 2;
+    string declareDate = 3;
+    string executionDate = 4;
+    DividendFrequency frequency = 5;
+    Instrument instrument = 6;
+    string paymentDate = 7;
+    string recordDate = 8;
+    DividendStatus status = 9;
+    DividendType type = 10;
+}
+
+enum LogEventLevel {
+    DEBUG_LOG_EVENT_LEVEL = 0;
+    INFO_LOG_EVENT_LEVEL = 1;
+    WARN_LOG_EVENT_LEVEL = 2;
+    ERROR_LOG_EVENT_LEVEL = 3;
+}
+
+enum DividendStatus {
+    UNOFFICIAL_DIVIDEND_STATUS = 0;
+    OFFICIAL_DIVIDEND_STATUS = 1;
+    UNKNOWN_DIVIDEND_STATUS = 2;
+}
+
+enum DividendType {
+    CURRENT_DIVIDEND_TYPE = 0;
+    SPECIAL_DIVIDEND_TYPE = 1;
+    FUTURE_DIVIDEND_TYPE = 2;
+    UNKNOWN_DIVIDEND_TYPE = 3;
+}
+
+enum DividendFrequency {
+    ANNUALLY_DIVIDEND_FREQUENCY = 0;
+    MONTHLY_DIVIDEND_FREQUENCY = 1;
+    QUARTERLY_DIVIDEND_FREQUENCY = 2;
+    SEMI_ANNUALLY_DIVIDEND_FREQUENCY = 3;
+    OTHER_DIVIDEND_FREQUENCY = 4;
+}
+
+enum QuoteAction {
+    ADD_QUOTE_ACTION = 0;
+    CHANGE_QUOTE_ACTION = 1;
+    DELETE_QUOTE_ACTION = 2;
 }
 
 enum ContentAndCapability {

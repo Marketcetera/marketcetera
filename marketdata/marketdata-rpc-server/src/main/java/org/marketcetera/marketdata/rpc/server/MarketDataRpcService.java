@@ -231,7 +231,7 @@ public class MarketDataRpcService<SessionClazz>
                 authzService.authorize(sessionHolder.getUser(),
                                        MarketDataPermissions.RequestMarketDataSnapshotAction.name());
                 MarketDataRpc.SnapshotResponse.Builder responseBuilder = MarketDataRpc.SnapshotResponse.newBuilder();
-                Instrument instrument = TradeRpcUtil.getInstrument(inRequest.getInstrument());
+                Instrument instrument = TradeRpcUtil.getInstrument(inRequest.getInstrument()).orElse(null);
                 Content content = MarketDataRpcUtil.getContent(inRequest.getContent());
                 PageRequest pageRequest = inRequest.hasPage()?PagingRpcUtil.getPageRequest(inRequest.getPage()):PageRequest.ALL;
                 CollectionPageResponse<Event> eventPage = marketDataService.getSnapshot(instrument,

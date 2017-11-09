@@ -41,6 +41,19 @@ public abstract class BaseRpcUtil
         return Optional.of(Timestamps.fromMillis(inTimestamp.getTime()));
     }
     /**
+     * Get the date from from the given timestamp.
+     *
+     * @param inTimestamp a <code>com.google.protobuf.Timestamp</code> value
+     * @return an <code>Optional&lt;Date&gt;</code> value
+     */
+    public static Optional<Date> getDateValue(com.google.protobuf.Timestamp inTimestamp)
+    {
+        if(inTimestamp == null) {
+            return Optional.empty();
+        }
+        return Optional.of(new Date(Timestamps.toMillis(inTimestamp)));
+    }
+    /**
      * Get the string value from the given string.
      *
      * @param inValue a <code>String</code> value

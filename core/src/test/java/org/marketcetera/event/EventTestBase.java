@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.marketcetera.event.impl.DividendEventBuilder;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
@@ -1034,6 +1035,20 @@ public class EventTestBase
                                                         .withHighExchange("H")
                                                         .withLowExchange("L")
                                                         .withCloseExchange("C").create();
+    }
+    /**
+     * Generate a <code>LogEvent</code> with random values.
+     *
+     * @return a <code>LogEvent</code> value
+     */
+    public static LogEvent generateLogEvent()
+    {
+        LogEventBuilder builder = LogEventBuilder.error();
+        builder.withRequestId(System.nanoTime());
+        builder.withException(new RuntimeException());
+        builder.withSource(EventTestBase.class);
+        builder.withMessage(Messages.VALIDATION_NULL_AMOUNT);
+        return builder.create();
     }
     /**
      * Generates a <code>DividendEvent</code> with preset values.

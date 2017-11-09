@@ -464,10 +464,7 @@ public class TradeRpcClient
                                        "{} received {}",
                                        getSessionId(),
                                        response);
-                Instrument result = null;
-                if(response.hasInstrument()) {
-                    result = TradeRpcUtil.getInstrument(response.getInstrument());
-                }
+                Instrument result = TradeRpcUtil.getInstrument(response.getInstrument()).orElse(null);
                 SLF4JLoggerProxy.trace(TradeRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),

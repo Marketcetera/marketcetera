@@ -480,10 +480,7 @@ public class TradeClientRpcService<SessionClazz>
                                        sessionHolder);
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.ViewPositionAction.name());
-                Instrument instrument = null;
-                if(inRequest.hasInstrument()) {
-                    instrument = TradeRpcUtil.getInstrument(inRequest.getInstrument());
-                }
+                Instrument instrument = TradeRpcUtil.getInstrument(inRequest.getInstrument()).orElse(null);
                 Date timestamp = null;
                 if(inRequest.hasTimestamp()) {
                     timestamp = new Date(Timestamps.toMillis(inRequest.getTimestamp()));
