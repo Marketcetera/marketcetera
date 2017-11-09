@@ -21,6 +21,7 @@ import org.marketcetera.marketdata.core.rpc.MarketDataRpc.MarketDataStatusListen
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceBlockingStub;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceStub;
+import org.marketcetera.marketdata.core.rpc.MarketDataTypesRpc;
 import org.marketcetera.marketdata.rpc.MarketDataRpcUtil;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
@@ -28,12 +29,12 @@ import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
-import org.marketcetera.rpc.base.BaseUtil;
-import org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy;
+import org.marketcetera.rpc.base.BaseRpcUtil;
+import org.marketcetera.rpc.base.BaseRpcUtil.AbstractClientListenerProxy;
 import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.trading.rpc.TradingUtil;
+import org.marketcetera.trading.rpc.TradeRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
 
@@ -157,7 +158,7 @@ public class MarketDataRpcClient
                 MarketDataRpc.SnapshotRequest.Builder requestBuilder = MarketDataRpc.SnapshotRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setContent(MarketDataRpcUtil.getRpcContent(inContent));
-                requestBuilder.setInstrument(TradingUtil.getRpcInstrument(inInstrument));
+                TradeRpcUtil.getRpcInstrument(inInstrument).ifPresent(instrument->requestBuilder.setInstrument(instrument));
                 requestBuilder.setPage(PagingRpcUtil.buildPageRequest(inPage));
                 MarketDataRpc.SnapshotRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
@@ -170,7 +171,7 @@ public class MarketDataRpcClient
                                        getSessionId(),
                                        response);
                 Deque<Event> events = Lists.newLinkedList();
-                for(MarketDataRpc.Event rpcEvent : response.getEventList()) {
+                for(MarketDataTypesRpc.Event rpcEvent : response.getEventList()) {
                     MarketDataRpcUtil.getEvent(rpcEvent).ifPresent(value->events.add(value));
                 }
                 CollectionPageResponse<Event> eventPage = new CollectionPageResponse<>();
@@ -287,7 +288,7 @@ public class MarketDataRpcClient
                                        getSessionId(),
                                        response);
                 Set<Capability> capabilities = Sets.newHashSet();
-                for(MarketDataRpc.ContentAndCapability capability : response.getCapabilityList()) {
+                for(MarketDataTypesRpc.ContentAndCapability capability : response.getCapabilityList()) {
                     capabilities.add(Capability.valueOf(capability.name()));
                 }
                 SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
@@ -387,7 +388,7 @@ public class MarketDataRpcClient
      * @since $Release$
      */
     private static class MarketDataStatusListenerProxy
-            extends BaseUtil.AbstractClientListenerProxy<MarketDataRpc.MarketDataStatusListenerResponse,MarketDataStatus,MarketDataStatusListener>
+            extends BaseRpcUtil.AbstractClientListenerProxy<MarketDataRpc.MarketDataStatusListenerResponse,MarketDataStatus,MarketDataStatusListener>
     {
         /* (non-Javadoc)
          * @see org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy#translateMessage(java.lang.Object)
@@ -424,7 +425,7 @@ public class MarketDataRpcClient
      * @since $Release$
      */
     private static class MarketDataListenerProxy
-            extends BaseUtil.AbstractClientListenerProxy<MarketDataRpc.EventsResponse,Event,MarketDataListener>
+            extends BaseRpcUtil.AbstractClientListenerProxy<MarketDataRpc.EventsResponse,Event,MarketDataListener>
     {
         /* (non-Javadoc)
          * @see org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy#onError(java.lang.Throwable)
@@ -483,16 +484,16 @@ public class MarketDataRpcClient
     /**
      * holds report listeners by their id or the market data request id
      */
-    private final Cache<String,BaseUtil.AbstractClientListenerProxy<?,?,?>> listenerProxiesById = CacheBuilder.newBuilder().build();
+    private final Cache<String,BaseRpcUtil.AbstractClientListenerProxy<?,?,?>> listenerProxiesById = CacheBuilder.newBuilder().build();
     /**
      * holds listener proxies keyed by the listener
      */
-    private final LoadingCache<Object,BaseUtil.AbstractClientListenerProxy<?,?,?>> listenerProxies = CacheBuilder.newBuilder().build(new CacheLoader<Object,AbstractClientListenerProxy<?,?,?>>() {
+    private final LoadingCache<Object,BaseRpcUtil.AbstractClientListenerProxy<?,?,?>> listenerProxies = CacheBuilder.newBuilder().build(new CacheLoader<Object,AbstractClientListenerProxy<?,?,?>>() {
         @Override
-        public BaseUtil.AbstractClientListenerProxy<?,?,?> load(Object inKey)
+        public BaseRpcUtil.AbstractClientListenerProxy<?,?,?> load(Object inKey)
                 throws Exception
         {
-            BaseUtil.AbstractClientListenerProxy<?,?,?> proxy = getListenerFor(inKey);
+            BaseRpcUtil.AbstractClientListenerProxy<?,?,?> proxy = getListenerFor(inKey);
             listenerProxiesById.put(proxy.getId(),
                                     proxy);
             return proxy;

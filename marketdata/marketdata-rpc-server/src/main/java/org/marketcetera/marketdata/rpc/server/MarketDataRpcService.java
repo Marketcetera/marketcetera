@@ -16,16 +16,17 @@ import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase;
+import org.marketcetera.marketdata.core.rpc.MarketDataTypesRpc;
 import org.marketcetera.marketdata.rpc.MarketDataRpcUtil;
 import org.marketcetera.marketdata.service.MarketDataService;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc;
-import org.marketcetera.rpc.base.BaseUtil;
+import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.trading.rpc.TradingUtil;
+import org.marketcetera.trading.rpc.TradeRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,7 +155,7 @@ public class MarketDataRpcService<SessionClazz>
                 String clientRequestId = request.getRequestId();
                 String serverRequestId = buildRequestId(inRequest.getSessionId(),
                                                         clientRequestId);
-                BaseUtil.AbstractServerListenerProxy<?> marketDataListenerProxy = listenerProxiesById.getIfPresent(serverRequestId);
+                BaseRpcUtil.AbstractServerListenerProxy<?> marketDataListenerProxy = listenerProxiesById.getIfPresent(serverRequestId);
                 if(marketDataListenerProxy == null) {
                     marketDataListenerProxy = new MarketDataListenerProxy(serverRequestId,
                                                                           clientRequestId,
@@ -194,7 +195,7 @@ public class MarketDataRpcService<SessionClazz>
                 String clientRequestId = inRequest.getRequestId();
                 String serverRequestId = buildRequestId(inRequest.getSessionId(),
                                                         clientRequestId);
-                BaseUtil.AbstractServerListenerProxy<?> marketDataListenerProxy = listenerProxiesById.getIfPresent(serverRequestId);
+                BaseRpcUtil.AbstractServerListenerProxy<?> marketDataListenerProxy = listenerProxiesById.getIfPresent(serverRequestId);
                 if(marketDataListenerProxy == null) {
                     throw new IllegalArgumentException("Unknown market data request id: " + clientRequestId);
                 }
@@ -230,7 +231,7 @@ public class MarketDataRpcService<SessionClazz>
                 authzService.authorize(sessionHolder.getUser(),
                                        MarketDataPermissions.RequestMarketDataSnapshotAction.name());
                 MarketDataRpc.SnapshotResponse.Builder responseBuilder = MarketDataRpc.SnapshotResponse.newBuilder();
-                Instrument instrument = TradingUtil.getInstrument(inRequest.getInstrument());
+                Instrument instrument = TradeRpcUtil.getInstrument(inRequest.getInstrument());
                 Content content = MarketDataRpcUtil.getContent(inRequest.getContent());
                 PageRequest pageRequest = inRequest.hasPage()?PagingRpcUtil.getPageRequest(inRequest.getPage()):PageRequest.ALL;
                 CollectionPageResponse<Event> eventPage = marketDataService.getSnapshot(instrument,
@@ -266,7 +267,7 @@ public class MarketDataRpcService<SessionClazz>
                 MarketDataRpc.AvailableCapabilityResponse.Builder responseBuilder = MarketDataRpc.AvailableCapabilityResponse.newBuilder();
                 Set<Capability> capabilities = marketDataService.getAvailableCapability();
                 for(Capability capability : capabilities) {
-                    responseBuilder.addCapability(MarketDataRpc.ContentAndCapability.valueOf(capability.name()));
+                    responseBuilder.addCapability(MarketDataTypesRpc.ContentAndCapability.valueOf(capability.name()));
                 }
                 MarketDataRpc.AvailableCapabilityResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(MarketDataRpcService.this,
@@ -293,7 +294,7 @@ public class MarketDataRpcService<SessionClazz>
                                        "Received add market data status listener request {}",
                                        inRequest);
                 String listenerId = inRequest.getListenerId();
-                BaseUtil.AbstractServerListenerProxy<?> marketDataStatusListenerProxy = listenerProxiesById.getIfPresent(listenerId);
+                BaseRpcUtil.AbstractServerListenerProxy<?> marketDataStatusListenerProxy = listenerProxiesById.getIfPresent(listenerId);
                 if(marketDataStatusListenerProxy == null) {
                     marketDataStatusListenerProxy = new MarketDataStatusListenerProxy(listenerId,
                                                                                       inResponseObserver);
@@ -320,7 +321,7 @@ public class MarketDataRpcService<SessionClazz>
                                        "Received market data status listener request {}",
                                        inRequest);
                 String listenerId = inRequest.getListenerId();
-                BaseUtil.AbstractServerListenerProxy<?> marketDataStatusListenerProxy = listenerProxiesById.getIfPresent(listenerId);
+                BaseRpcUtil.AbstractServerListenerProxy<?> marketDataStatusListenerProxy = listenerProxiesById.getIfPresent(listenerId);
                 listenerProxiesById.invalidate(listenerId);
                 if(marketDataStatusListenerProxy != null) {
                     marketDataService.removeMarketDataStatusListener((MarketDataStatusListener)marketDataStatusListenerProxy);
@@ -360,7 +361,7 @@ public class MarketDataRpcService<SessionClazz>
      * @since $Release$
      */
     private static class MarketDataStatusListenerProxy
-            extends BaseUtil.AbstractServerListenerProxy<MarketDataRpc.MarketDataStatusListenerResponse>
+            extends BaseRpcUtil.AbstractServerListenerProxy<MarketDataRpc.MarketDataStatusListenerResponse>
             implements MarketDataStatusListener
     {
         /* (non-Javadoc)
@@ -404,7 +405,7 @@ public class MarketDataRpcService<SessionClazz>
      * @since $Release$
      */
     private static class MarketDataListenerProxy
-            extends BaseUtil.AbstractServerListenerProxy<MarketDataRpc.EventsResponse>
+            extends BaseRpcUtil.AbstractServerListenerProxy<MarketDataRpc.EventsResponse>
             implements MarketDataListener
     {
         /* (non-Javadoc)
@@ -469,5 +470,5 @@ public class MarketDataRpcService<SessionClazz>
     /**
      * holds trade message listeners by id
      */
-    private final Cache<String,BaseUtil.AbstractServerListenerProxy<?>> listenerProxiesById = CacheBuilder.newBuilder().build();
+    private final Cache<String,BaseRpcUtil.AbstractServerListenerProxy<?>> listenerProxiesById = CacheBuilder.newBuilder().build();
 }

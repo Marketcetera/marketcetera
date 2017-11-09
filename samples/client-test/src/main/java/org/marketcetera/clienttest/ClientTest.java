@@ -34,7 +34,7 @@ import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trading.rpc.TradingRpcClientFactory;
 import org.marketcetera.trading.rpc.TradingRpcClientParametersImpl;
-import org.marketcetera.trading.rpc.TradingUtil;
+import org.marketcetera.trading.rpc.TradeRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,10 +89,10 @@ public class ClientTest
             throws Exception
     {
         try {
-            TradingUtil.setFixSessionFactory(fixSessionFactory);
-            TradingUtil.setOrderSummaryFactory(orderSummaryFactory);
-            TradingUtil.setUserFactory(userFactory);
-            TradingUtil.setReportFactory(reportFactory);
+            TradeRpcUtil.setFixSessionFactory(fixSessionFactory);
+            TradeRpcUtil.setOrderSummaryFactory(orderSummaryFactory);
+            TradeRpcUtil.setUserFactory(userFactory);
+            TradeRpcUtil.setReportFactory(reportFactory);
             TradingRpcClientParametersImpl params = new TradingRpcClientParametersImpl();
             params.setHostname(hostname);
             params.setPort(port);

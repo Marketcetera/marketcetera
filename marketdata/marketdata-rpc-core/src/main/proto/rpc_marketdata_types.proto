@@ -1,0 +1,73 @@
+syntax = "proto3";
+import "rpc_base.proto";
+import "rpc_trading_types.proto";
+import "google/protobuf/timestamp.proto";
+option java_generic_services = true;
+option java_package = "org.marketcetera.marketdata.core.rpc";
+option java_outer_classname = "MarketDataTypesRpc";
+
+message Event {
+    string payload = 1;
+}
+
+message EventHolder {
+    TradeEvent tradeEvent = 1;
+}
+
+message NewEvent {
+    int64 messageId = 1;
+    google.protobuf.Timestamp timestamp = 2;
+    string source = 3;
+    string provider = 4;
+    int64 requestId = 5;
+}
+
+message MarketDataEvent {
+    NewEvent event = 1;
+    string exchange = 2;
+    Qty price = 3;
+    Qty size = 4;
+    google.protobuf.Timestamp exchangeTimestamp = 5;
+    int64 processedTimestamp = 6;
+    int64 receivedTimestamp = 7;
+    EventType eventType = 8;
+    Instrument instrument = 9;
+}
+
+message TradeEvent {
+    MarketDataEvent marketDataEvent = 1;
+    google.protobuf.Timestamp tradeDate = 2;
+    string tradeCondition = 3;
+}
+
+enum ContentAndCapability {
+    TOP_OF_BOOK = 0;
+    OPEN_BOOK = 1;
+    MARKET_STAT = 2;
+    TOTAL_VIEW = 3;
+    LEVEL_2 = 4;
+    LATEST_TICK = 5;
+    BBO10 = 6;
+    NBBO = 7;
+    DIVIDEND = 8;
+    AGGREGATED_DEPTH = 9;
+    UNAGGREGATED_DEPTH = 10;
+    IMBALANCE = 11;
+    UNKNOWN = 12;
+    EVENT_BOUNDARY = 13;
+}
+
+enum FeedStatus {
+    OFFLINE_FEED_STATUS = 0;
+    ERROR_FEED_STATUS = 1;
+    AVAILABLE_FEED_STATUS = 2;
+    UNKNOWN_FEED_STATUS = 3;
+}
+
+enum EventType {
+    SNAPSHOT_PART = 0;
+    SNAPSHOT_FINAL = 1;
+    UPDATE_PART = 2;
+    UPDATE_FINAL = 3;
+    UNKNOWN_EVENT_TYPE = 4;
+}

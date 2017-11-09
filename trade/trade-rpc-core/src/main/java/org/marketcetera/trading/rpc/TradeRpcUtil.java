@@ -28,7 +28,7 @@ import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.options.OptionUtils;
 import org.marketcetera.rpc.base.BaseRpc;
-import org.marketcetera.rpc.base.BaseUtil;
+import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
@@ -87,7 +87,7 @@ import quickfix.Message;
  * @version $Id$
  * @since $Release$
  */
-public abstract class TradingUtil
+public abstract class TradeRpcUtil
 {
     /**
      * Get the RPC hierarchy value from the given value.
@@ -523,7 +523,7 @@ public abstract class TradingUtil
         if(inOrder.getInstrument() == null) {
             return;
         }
-        inBuilder.setInstrument(getRpcInstrument(inOrder.getInstrument()));
+        getRpcInstrument(inOrder.getInstrument()).ifPresent(value->inBuilder.setInstrument(value));
     }
     /**
      * Set the instrument value on the given builder.
@@ -537,20 +537,23 @@ public abstract class TradingUtil
         if(inInstrument == null) {
             return;
         }
-        inBuilder.setInstrument(getRpcInstrument(inInstrument));
+        getRpcInstrument(inInstrument).ifPresent(value->inBuilder.setInstrument(value));
     }
     /**
      * Get the RPC instrument from the given instrument.
      *
      * @param inInstrument an <code>Instrument</code> value
-     * @return a <code>TradingTypesRpc.Instrument</code>value
+     * @return an <code>Optional&lt;TradingTypesRpc.Instrument&gt;</code>value
      */
-    public static TradingTypesRpc.Instrument getRpcInstrument(Instrument inInstrument)
+    public static Optional<TradingTypesRpc.Instrument> getRpcInstrument(Instrument inInstrument)
     {
+        if(inInstrument == null) {
+            return Optional.empty();
+        }
         TradingTypesRpc.Instrument.Builder instrumentBuilder = TradingTypesRpc.Instrument.newBuilder();
         instrumentBuilder.setSymbol(inInstrument.getFullSymbol());
         instrumentBuilder.setSecurityType(getRpcSecurityType(inInstrument.getSecurityType()));
-        return instrumentBuilder.build();
+        return Optional.of(instrumentBuilder.build());
     }
     /**
      * Get the instrument on the given RPC order base object.
@@ -795,10 +798,7 @@ public abstract class TradingUtil
     public static void setQuantity(OrderBase inOrder,
                                    TradingTypesRpc.OrderBase.Builder inBuilder)
     {
-        if(inOrder.getQuantity() == null) {
-            return;
-        }
-        inBuilder.setQuantity(BaseUtil.getQtyValueFrom(inOrder.getQuantity()));
+        BaseRpcUtil.getRpcQty(inOrder.getQuantity()).ifPresent(qty->inBuilder.setQuantity(qty));
     }
     /**
      * Get the order quantity from the given RPC order.
@@ -808,7 +808,7 @@ public abstract class TradingUtil
      */
     public static BigDecimal getQuantity(TradingTypesRpc.OrderBase inRpcOrder)
     {
-        return BaseUtil.getScaledQuantity(inRpcOrder.getQuantity());
+        return BaseRpcUtil.getScaledQuantity(inRpcOrder.getQuantity());
     }
     /**
      * Get the order price from the given RPC order.
@@ -818,7 +818,7 @@ public abstract class TradingUtil
      */
     public static BigDecimal getPrice(TradingTypesRpc.OrderBase inRpcOrder)
     {
-        return BaseUtil.getScaledQuantity(inRpcOrder.getPrice());
+        return BaseRpcUtil.getScaledQuantity(inRpcOrder.getPrice());
     }
     /**
      * Get the display quantity of the given order.
@@ -828,7 +828,7 @@ public abstract class TradingUtil
      */
     public static BigDecimal getDisplayQuantity(TradingTypesRpc.OrderBase inRpcOrder)
     {
-        return BaseUtil.getScaledQuantity(inRpcOrder.getDisplayQuantity());
+        return BaseRpcUtil.getScaledQuantity(inRpcOrder.getDisplayQuantity());
     }
     /**
      * Set the side from the given order on the given RPC builder.
@@ -891,7 +891,7 @@ public abstract class TradingUtil
         if(inOrder.getDisplayQuantity() == null || BigDecimal.ZERO.compareTo(inOrder.getDisplayQuantity()) == 0) {
             return;
         }
-        inBuilder.setDisplayQuantity(BaseUtil.getQtyValueFrom(inOrder.getDisplayQuantity()));
+        BaseRpcUtil.getRpcQty(inOrder.getDisplayQuantity()).ifPresent(qty->inBuilder.setDisplayQuantity(qty));
     }
     /**
      * Set the display quantity from the given RPC order on the given order.
@@ -903,7 +903,7 @@ public abstract class TradingUtil
                                           TradingTypesRpc.OrderBase inRpcOrder)
     {
         if(inRpcOrder.hasDisplayQuantity()) {
-            inOrder.setDisplayQuantity(BaseUtil.getScaledQuantity(inRpcOrder.getDisplayQuantity()));
+            inOrder.setDisplayQuantity(BaseRpcUtil.getScaledQuantity(inRpcOrder.getDisplayQuantity()));
         }
     }
     /**
@@ -1061,7 +1061,7 @@ public abstract class TradingUtil
                                 TradingTypesRpc.OrderBase inRpcOrder)
     {
         if(inRpcOrder.hasPrice()) {
-            inOrder.setPrice(BaseUtil.getScaledQuantity(inRpcOrder.getPrice()));
+            inOrder.setPrice(BaseRpcUtil.getScaledQuantity(inRpcOrder.getPrice()));
         }
     }
     /**
@@ -1074,7 +1074,7 @@ public abstract class TradingUtil
                                    TradingTypesRpc.OrderBase inRpcOrder)
     {
         if(inRpcOrder.hasQuantity()) {
-            inOrder.setQuantity(BaseUtil.getScaledQuantity(inRpcOrder.getQuantity()));
+            inOrder.setQuantity(BaseRpcUtil.getScaledQuantity(inRpcOrder.getQuantity()));
         }
     }
     /**
@@ -1128,10 +1128,7 @@ public abstract class TradingUtil
     public static void setPrice(NewOrReplaceOrder inOrder,
                                 TradingTypesRpc.OrderBase.Builder inBuilder)
     {
-        if(inOrder.getPrice() == null) {
-            return;
-        }
-        inBuilder.setPrice(BaseUtil.getQtyValueFrom(inOrder.getPrice()));
+        BaseRpcUtil.getRpcQty(inOrder.getPrice()).ifPresent(qty->inBuilder.setPrice(qty));
     }
     /**
      * Set the time in force on the given RPC builder from the given order.
@@ -1607,10 +1604,7 @@ public abstract class TradingUtil
     public static void setPrice(ExecutionReport inExecutionReport,
                                 TradingTypesRpc.TradeMessage.Builder inBuilder)
     {
-        if(inExecutionReport.getPrice() == null) {
-            return;
-        }
-        inBuilder.setPrice(BaseUtil.getQtyValueFrom(inExecutionReport.getPrice()));
+        BaseRpcUtil.getRpcQty(inExecutionReport.getPrice()).ifPresent(qty->inBuilder.setPrice(qty));
     }
     /**
      * Set the position effect from the given report on the given builder.
@@ -1649,10 +1643,7 @@ public abstract class TradingUtil
     public static void setOrderQuantity(ExecutionReport inExecutionReport,
                                         TradingTypesRpc.TradeMessage.Builder inBuilder)
     {
-        if(inExecutionReport.getOrderQuantity() == null) {
-            return;
-        }
-        inBuilder.setOrderQuantity(BaseUtil.getQtyValueFrom(inExecutionReport.getOrderQuantity()));
+        BaseRpcUtil.getRpcQty(inExecutionReport.getOrderQuantity()).ifPresent(qty->inBuilder.setOrderQuantity(qty));
     }
     /**
      * Set the order display quantity from value the given trade message on the given builder.
@@ -1663,10 +1654,7 @@ public abstract class TradingUtil
     public static void setOrderDisplayQuantity(ExecutionReport inExecutionReport,
                                                TradingTypesRpc.TradeMessage.Builder inBuilder)
     {
-        if(inExecutionReport.getOrderDisplayQuantity() == null) {
-            return;
-        }
-        inBuilder.setOrderDisplayQuantity(BaseUtil.getQtyValueFrom(inExecutionReport.getOrderDisplayQuantity()));
+        BaseRpcUtil.getRpcQty(inExecutionReport.getOrderDisplayQuantity()).ifPresent(qty->inBuilder.setOrderDisplayQuantity(qty));
     }
     /**
      * Set the order capacity from the given report on the given builder.
@@ -1691,10 +1679,7 @@ public abstract class TradingUtil
     public static void setLeavesQuantity(ExecutionReport inExecutionReport,
                                          TradingTypesRpc.TradeMessage.Builder inBuilder)
     {
-        if(inExecutionReport.getLeavesQuantity() == null) {
-            return;
-        }
-        inBuilder.setLeavesQuantity(BaseUtil.getQtyValueFrom(inExecutionReport.getLeavesQuantity()));
+        BaseRpcUtil.getRpcQty(inExecutionReport.getLeavesQuantity()).ifPresent(qty->inBuilder.setLeavesQuantity(qty));
     }
     /**
      * Set the last quantity from value the given trade message on the given builder.
@@ -1705,10 +1690,7 @@ public abstract class TradingUtil
     public static void setLastQuantity(ExecutionReport inExecutionReport,
                                        TradingTypesRpc.TradeMessage.Builder inBuilder)
     {
-        if(inExecutionReport.getLastQuantity() == null) {
-            return;
-        }
-        inBuilder.setLastQuantity(BaseUtil.getQtyValueFrom(inExecutionReport.getLastQuantity()));
+        BaseRpcUtil.getRpcQty(inExecutionReport.getLastQuantity()).ifPresent(qty->inBuilder.setLastQuantity(qty));
     }
     /**
      * Set the last price from value the given trade message on the given builder.
@@ -1719,10 +1701,7 @@ public abstract class TradingUtil
     public static void setLastPrice(ExecutionReport inExecutionReport,
                                     TradingTypesRpc.TradeMessage.Builder inBuilder)
     {
-        if(inExecutionReport.getLastPrice() == null) {
-            return;
-        }
-        inBuilder.setLastPrice(BaseUtil.getQtyValueFrom(inExecutionReport.getLastPrice()));
+        BaseRpcUtil.getRpcQty(inExecutionReport.getLastPrice()).ifPresent(qty->inBuilder.setLastPrice(qty));
     }
     /**
      * Set the last market from the given report on the given builder.
@@ -1751,7 +1730,7 @@ public abstract class TradingUtil
         if(inReport.getInstrument() == null) {
             return;
         }
-        inBuilder.setInstrument(getRpcInstrument(inReport.getInstrument()));
+        getRpcInstrument(inReport.getInstrument()).ifPresent(value->inBuilder.setInstrument(value));
     }
     /**
      * Get the RPC execution type value from the given value.
@@ -1844,10 +1823,7 @@ public abstract class TradingUtil
     public static void setCumulativeQuantity(ExecutionReport inExecutionReport,
                                              TradingTypesRpc.TradeMessage.Builder inBuilder)
     {
-        if(inExecutionReport.getCumulativeQuantity() == null) {
-            return;
-        }
-        inBuilder.setCumulativeQuantity(BaseUtil.getQtyValueFrom(inExecutionReport.getCumulativeQuantity()));
+        BaseRpcUtil.getRpcQty(inExecutionReport.getCumulativeQuantity()).ifPresent(qty->inBuilder.setCumulativeQuantity(qty));
     }
     /**
      * Set the average price from value the given trade message on the given builder.
@@ -1858,10 +1834,7 @@ public abstract class TradingUtil
     public static void setAveragePrice(ExecutionReport inExecutionReport,
                                        TradingTypesRpc.TradeMessage.Builder inBuilder)
     {
-        if(inExecutionReport.getAveragePrice() == null) {
-            return;
-        }
-        inBuilder.setAveragePrice(BaseUtil.getQtyValueFrom(inExecutionReport.getAveragePrice()));
+        BaseRpcUtil.getRpcQty(inExecutionReport.getAveragePrice()).ifPresent(qty->inBuilder.setAveragePrice(qty));
     }
     /**
      * Set the broker ID from value the given trade message on the given builder.
@@ -2227,7 +2200,7 @@ public abstract class TradingUtil
         brokerAlgoTagSpec.setIsMandatory(inRpcAlgoTagSpec.getMandatory());
         brokerAlgoTagSpec.setIsReadOnly(inRpcAlgoTagSpec.getIsReadOnly());
         brokerAlgoTagSpec.setLabel(inRpcAlgoTagSpec.getLabel());
-        brokerAlgoTagSpec.setOptions(BaseUtil.getMap(inRpcAlgoTagSpec.getOptions()));
+        brokerAlgoTagSpec.setOptions(BaseRpcUtil.getMap(inRpcAlgoTagSpec.getOptions()));
         brokerAlgoTagSpec.setPattern(inRpcAlgoTagSpec.getPattern());
         brokerAlgoTagSpec.setTag(inRpcAlgoTagSpec.getTag());
         String validatorValue = inRpcAlgoTagSpec.getValidator();
@@ -2237,7 +2210,7 @@ public abstract class TradingUtil
                 Validator<BrokerAlgoTag> validator = (Validator<BrokerAlgoTag>)Class.forName(validatorValue).newInstance();
                 brokerAlgoTagSpec.setValidator(validator);
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException e) {
-                PlatformServices.handleException(TradingUtil.class,
+                PlatformServices.handleException(TradeRpcUtil.class,
                                                  "Cannot construct validator",
                                                  e);
             }
@@ -2282,15 +2255,15 @@ public abstract class TradingUtil
         Map<String,String> fields = Maps.newHashMap();
         setFieldMap(inMessage.getHeader(),
                     fields);
-        fixMessageBuilder.setHeader(BaseUtil.getRpcMap(fields));
+        fixMessageBuilder.setHeader(BaseRpcUtil.getRpcMap(fields));
         fields.clear();
         setFieldMap(inMessage,
                     fields);
-        fixMessageBuilder.setBody(BaseUtil.getRpcMap(fields));
+        fixMessageBuilder.setBody(BaseRpcUtil.getRpcMap(fields));
         fields.clear();
         setFieldMap(inMessage.getTrailer(),
                     fields);
-        fixMessageBuilder.setFooter(BaseUtil.getRpcMap(fields));
+        fixMessageBuilder.setFooter(BaseRpcUtil.getRpcMap(fields));
         return fixMessageBuilder.build();
     }
     /**
@@ -2317,7 +2290,7 @@ public abstract class TradingUtil
                     inBuilder.setOrderid(message.getString(quickfix.field.OrderID.FIELD));
                 }
             } catch (FieldNotFound e) {
-                PlatformServices.handleException(TradingUtil.class,
+                PlatformServices.handleException(TradeRpcUtil.class,
                                                  "Unable to set order id",
                                                  e);
             }
@@ -2380,7 +2353,7 @@ public abstract class TradingUtil
     {
         Map<String,String> settings = Maps.newHashMap();
         if(inRpcBrokerStatus.hasSettings()) {
-            settings = BaseUtil.getMap(inRpcBrokerStatus.getSettings());
+            settings = BaseRpcUtil.getMap(inRpcBrokerStatus.getSettings());
         }
         settings.put("id",
                      inRpcBrokerStatus.getId());
@@ -2444,7 +2417,7 @@ public abstract class TradingUtil
         inBuilder.setLoggedOn(inStatus.getLoggedOn());
         inBuilder.setName(inStatus.getName());
         inBuilder.setPort(inStatus.getPort());
-        inBuilder.setSettings(BaseUtil.getRpcMap(inStatus.getSettings()));
+        inBuilder.setSettings(BaseRpcUtil.getRpcMap(inStatus.getSettings()));
         inBuilder.setFixSessionStatus(getRpcFixSessionStatus(inStatus.getStatus()));
         if(inStatus instanceof HasClusterData) {
             HasClusterData hasClusterData = (HasClusterData)inStatus;
@@ -2574,7 +2547,7 @@ public abstract class TradingUtil
                 brokerAlgoTagSpecBuilder.setIsReadOnly(tagSpec.isReadOnly());
                 brokerAlgoTagSpecBuilder.setLabel(tagSpec.getLabel());
                 brokerAlgoTagSpecBuilder.setMandatory(tagSpec.getIsMandatory());
-                brokerAlgoTagSpecBuilder.setOptions(BaseUtil.getRpcMap(tagSpec.getOptions()));
+                brokerAlgoTagSpecBuilder.setOptions(BaseRpcUtil.getRpcMap(tagSpec.getOptions()));
                 brokerAlgoTagSpecBuilder.setPattern(tagSpec.getPattern());
                 brokerAlgoTagSpecBuilder.setTag(tagSpec.getTag());
                 brokerAlgoTagSpecBuilder.setValidator(tagSpec.getValidator()==null?null:tagSpec.getValidator().getClass().getName());
@@ -2601,31 +2574,31 @@ public abstract class TradingUtil
                     orderSummary);
         }
         if(inRpcOrderSummary.hasAveragePrice()) {
-            orderSummary.setAveragePrice(BaseUtil.getScaledQuantity(inRpcOrderSummary.getAveragePrice()));
+            orderSummary.setAveragePrice(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getAveragePrice()));
         }
         orderSummary.setBrokerId(getBrokerId(inRpcOrderSummary).orElse(null));
         if(inRpcOrderSummary.hasCumulativeQuantity()) {
-            orderSummary.setCumulativeQuantity(BaseUtil.getScaledQuantity(inRpcOrderSummary.getCumulativeQuantity()));
+            orderSummary.setCumulativeQuantity(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getCumulativeQuantity()));
         }
         if(inRpcOrderSummary.hasInstrument()) {
             orderSummary.setInstrument(getInstrument(inRpcOrderSummary).orElse(null));
         }
         if(inRpcOrderSummary.hasLastPrice()) {
-            orderSummary.setLastPrice(BaseUtil.getScaledQuantity(inRpcOrderSummary.getLastPrice()));
+            orderSummary.setLastPrice(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getLastPrice()));
         }
         if(inRpcOrderSummary.hasLastQuantity()) {
-            orderSummary.setLastQuantity(BaseUtil.getScaledQuantity(inRpcOrderSummary.getLastQuantity()));
+            orderSummary.setLastQuantity(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getLastQuantity()));
         }
         if(inRpcOrderSummary.hasLeavesQuantity()) {
-            orderSummary.setLeavesQuantity(BaseUtil.getScaledQuantity(inRpcOrderSummary.getLeavesQuantity()));
+            orderSummary.setLeavesQuantity(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getLeavesQuantity()));
         }
         setOrderId(inRpcOrderSummary,
                    orderSummary);
         if(inRpcOrderSummary.hasOrderPrice()) {
-            orderSummary.setOrderPrice(BaseUtil.getScaledQuantity(inRpcOrderSummary.getOrderPrice()));
+            orderSummary.setOrderPrice(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getOrderPrice()));
         }
         if(inRpcOrderSummary.hasOrderQuantity()) {
-            orderSummary.setOrderQuantity(BaseUtil.getScaledQuantity(inRpcOrderSummary.getOrderQuantity()));
+            orderSummary.setOrderQuantity(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getOrderQuantity()));
         }
         setOrderStatus(inRpcOrderSummary,
                        orderSummary);
@@ -2659,38 +2632,22 @@ public abstract class TradingUtil
         if(value != null) {
             orderSummaryBuilder.setAccount(value);
         }
-        if(inOrderSummary.getAveragePrice() != null) {
-            orderSummaryBuilder.setAveragePrice(BaseUtil.getQtyValueFrom(inOrderSummary.getAveragePrice()));
-        }
+        BaseRpcUtil.getRpcQty(inOrderSummary.getAveragePrice()).ifPresent(qty->orderSummaryBuilder.setAveragePrice(qty));
         value = StringUtils.trimToNull(inOrderSummary.getBrokerId()==null?null:inOrderSummary.getBrokerId().getValue());
         if(value != null) {
             orderSummaryBuilder.setBrokerId(value);
         }
-        if(inOrderSummary.getCumulativeQuantity() != null) {
-            orderSummaryBuilder.setCumulativeQuantity(BaseUtil.getQtyValueFrom(inOrderSummary.getCumulativeQuantity()));
-        }
-        if(inOrderSummary.getInstrument() != null) {
-            orderSummaryBuilder.setInstrument(getRpcInstrument(inOrderSummary.getInstrument()));
-        }
-        if(inOrderSummary.getLastPrice() != null) {
-            orderSummaryBuilder.setLastPrice(BaseUtil.getQtyValueFrom(inOrderSummary.getLastPrice()));
-        }
-        if(inOrderSummary.getLastQuantity() != null) {
-            orderSummaryBuilder.setLastQuantity(BaseUtil.getQtyValueFrom(inOrderSummary.getLastQuantity()));
-        }
-        if(inOrderSummary.getLeavesQuantity() != null) {
-            orderSummaryBuilder.setLeavesQuantity(BaseUtil.getQtyValueFrom(inOrderSummary.getLeavesQuantity()));
-        }
+        BaseRpcUtil.getRpcQty(inOrderSummary.getCumulativeQuantity()).ifPresent(qty->orderSummaryBuilder.setCumulativeQuantity(qty));
+        getRpcInstrument(inOrderSummary.getInstrument()).ifPresent(instrument->orderSummaryBuilder.setInstrument(instrument));
+        BaseRpcUtil.getRpcQty(inOrderSummary.getLastPrice()).ifPresent(qty->orderSummaryBuilder.setLastPrice(qty));
+        BaseRpcUtil.getRpcQty(inOrderSummary.getLastQuantity()).ifPresent(qty->orderSummaryBuilder.setLastQuantity(qty));
+        BaseRpcUtil.getRpcQty(inOrderSummary.getLeavesQuantity()).ifPresent(qty->orderSummaryBuilder.setLeavesQuantity(qty));
         value = inOrderSummary.getOrderId()==null?null:inOrderSummary.getOrderId().getValue();
         if(value != null) {
             orderSummaryBuilder.setOrderId(value);
         }
-        if(inOrderSummary.getOrderPrice() != null) {
-            orderSummaryBuilder.setOrderPrice(BaseUtil.getQtyValueFrom(inOrderSummary.getOrderPrice()));
-        }
-        if(inOrderSummary.getOrderQuantity() != null) {
-            orderSummaryBuilder.setOrderQuantity(BaseUtil.getQtyValueFrom(inOrderSummary.getOrderQuantity()));
-        }
+        BaseRpcUtil.getRpcQty(inOrderSummary.getOrderPrice()).ifPresent(qty->orderSummaryBuilder.setOrderPrice(qty));
+        BaseRpcUtil.getRpcQty(inOrderSummary.getOrderQuantity()).ifPresent(qty->orderSummaryBuilder.setOrderQuantity(qty));
         if(inOrderSummary.getOrderStatus() != null) {
             orderSummaryBuilder.setOrderStatus(getRpcOrderStatus(inOrderSummary.getOrderStatus()));
         }
@@ -2855,7 +2812,7 @@ public abstract class TradingUtil
                 inFixFieldMap.setString(Integer.parseInt(key),
                                         value);
             } catch (NumberFormatException e) {
-                PlatformServices.handleException(TradingUtil.class,
+                PlatformServices.handleException(TradeRpcUtil.class,
                                                  "Skipping FIX message key/value pair: " + key + "/" + value,
                                                  e);
             }

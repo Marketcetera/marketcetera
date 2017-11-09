@@ -26,7 +26,7 @@ import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
-import org.marketcetera.rpc.base.BaseUtil;
+import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.symbol.SymbolResolverService;
@@ -78,7 +78,7 @@ import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase;
 import org.marketcetera.trading.rpc.TradingTypesRpc;
-import org.marketcetera.trading.rpc.TradingUtil;
+import org.marketcetera.trading.rpc.TradeRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,7 +186,7 @@ public class TradeClientRpcService<SessionClazz>
                 TradingRpc.OpenOrdersResponse.Builder responseBuilder = TradingRpc.OpenOrdersResponse.newBuilder();
                 PageRequest pageRequest = inRequest.hasPageRequest()?PagingRpcUtil.getPageRequest(inRequest.getPageRequest()):PageRequest.ALL;
                 CollectionPageResponse<? extends OrderSummary> orderSummaryPage = orderSummaryService.findOpenOrders(pageRequest);
-                orderSummaryPage.getElements().forEach(value->responseBuilder.addOrders(TradingUtil.getRpcOrderSummary(value)));
+                orderSummaryPage.getElements().forEach(value->responseBuilder.addOrders(TradeRpcUtil.getRpcOrderSummary(value)));
                 responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
                                                                               orderSummaryPage));
                 TradingRpc.OpenOrdersResponse response = responseBuilder.build();
@@ -221,8 +221,8 @@ public class TradeClientRpcService<SessionClazz>
                 TradingRpc.OrderResponse.Builder orderResponseBuilder = TradingRpc.OrderResponse.newBuilder();
                 for(TradingTypesRpc.Order rpcOrder : inRequest.getOrderList()) {
                     try {
-                        Order matpOrder = TradingUtil.getOrder(rpcOrder);
-                        TradingUtil.setOrderId(matpOrder,
+                        Order matpOrder = TradeRpcUtil.getOrder(rpcOrder);
+                        TradeRpcUtil.setOrderId(matpOrder,
                                                orderResponseBuilder);
                         User user = userService.findByName(sessionHolder.getUser());
                         Object result = tradeService.submitOrderToOutgoingDataFlow(new RpcOrderWrapper(user,
@@ -265,7 +265,7 @@ public class TradeClientRpcService<SessionClazz>
                                        inRequest,
                                        sessionHolder);
                 Instrument instrument = symbolResolverService.resolveSymbol(inRequest.getSymbol());
-                TradingUtil.setInstrument(instrument,
+                TradeRpcUtil.setInstrument(instrument,
                                           responseBuilder);
                 TradingRpc.ResolveSymbolResponse response = responseBuilder.build();
                 inResponseObserver.onNext(response);
@@ -290,7 +290,7 @@ public class TradeClientRpcService<SessionClazz>
                                        "Received add trade message listener request {}",
                                        inRequest);
                 String listenerId = inRequest.getListenerId();
-                BaseUtil.AbstractServerListenerProxy<?> tradeMessageListenerProxy = listenerProxiesById.getIfPresent(listenerId);
+                BaseRpcUtil.AbstractServerListenerProxy<?> tradeMessageListenerProxy = listenerProxiesById.getIfPresent(listenerId);
                 if(tradeMessageListenerProxy == null) {
                     tradeMessageListenerProxy = new TradeMessageListenerProxy(listenerId,
                                                                               inResponseObserver);
@@ -318,7 +318,7 @@ public class TradeClientRpcService<SessionClazz>
                                        "Received remove trade message listener request {}",
                                        inRequest);
                 String listenerId = inRequest.getListenerId();
-                BaseUtil.AbstractServerListenerProxy<?> tradeMessageListenerProxy = listenerProxiesById.getIfPresent(listenerId);
+                BaseRpcUtil.AbstractServerListenerProxy<?> tradeMessageListenerProxy = listenerProxiesById.getIfPresent(listenerId);
                 listenerProxiesById.invalidate(listenerId);
                 if(tradeMessageListenerProxy != null) {
                     tradeService.removeTradeMessageListener((TradeMessageListener)tradeMessageListenerProxy);
@@ -353,7 +353,7 @@ public class TradeClientRpcService<SessionClazz>
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.ViewBrokerStatusAction.name());
                 String listenerId = inRequest.getListenerId();
-                BaseUtil.AbstractServerListenerProxy<?> brokerStatusListenerProxy = listenerProxiesById.getIfPresent(listenerId);
+                BaseRpcUtil.AbstractServerListenerProxy<?> brokerStatusListenerProxy = listenerProxiesById.getIfPresent(listenerId);
                 if(brokerStatusListenerProxy == null) {
                     brokerStatusListenerProxy = new BrokerStatusListenerProxy(listenerId,
                                                                               inResponseObserver);
@@ -381,7 +381,7 @@ public class TradeClientRpcService<SessionClazz>
                                        "Received remove broker status listener request {}",
                                        inRequest);
                 String listenerId = inRequest.getListenerId();
-                BaseUtil.AbstractServerListenerProxy<?> brokerStatusListenerProxy = listenerProxiesById.getIfPresent(listenerId);
+                BaseRpcUtil.AbstractServerListenerProxy<?> brokerStatusListenerProxy = listenerProxiesById.getIfPresent(listenerId);
                 listenerProxiesById.invalidate(listenerId);
                 if(brokerStatusListenerProxy != null) {
                     brokerService.removeBrokerStatusListener((BrokerStatusListener)brokerStatusListenerProxy);
@@ -418,7 +418,7 @@ public class TradeClientRpcService<SessionClazz>
                                        TradePermissions.ViewBrokerStatusAction.name());
                 TradingRpc.BrokersStatusResponse.Builder responseBuilder = TradingRpc.BrokersStatusResponse.newBuilder();
                 BrokersStatus brokersStatus = brokerService.getBrokersStatus();
-                TradingUtil.setBrokersStatus(brokersStatus,
+                TradeRpcUtil.setBrokersStatus(brokersStatus,
                                              responseBuilder);
                 TradingRpc.BrokersStatusResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
@@ -482,7 +482,7 @@ public class TradeClientRpcService<SessionClazz>
                                        TradePermissions.ViewPositionAction.name());
                 Instrument instrument = null;
                 if(inRequest.hasInstrument()) {
-                    instrument = TradingUtil.getInstrument(inRequest.getInstrument());
+                    instrument = TradeRpcUtil.getInstrument(inRequest.getInstrument());
                 }
                 Date timestamp = null;
                 if(inRequest.hasTimestamp()) {
@@ -498,7 +498,7 @@ public class TradeClientRpcService<SessionClazz>
                                        instrument,
                                        result,
                                        timestamp);
-                responseBuilder.setPosition(BaseUtil.getQtyValueFrom(result));
+                BaseRpcUtil.getRpcQty(result).ifPresent(qty->responseBuilder.setPosition(qty));
                 TradingRpc.GetPositionAsOfResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Returning {}",
@@ -548,9 +548,7 @@ public class TradeClientRpcService<SessionClazz>
                     if(key.getAccount() != null) {
                         positionKeyBuilder.setAccount(key.getAccount());
                     }
-                    if(key.getInstrument() != null) {
-                        positionKeyBuilder.setInstrument(TradingUtil.getRpcInstrument(key.getInstrument()));
-                    }
+                    TradeRpcUtil.getRpcInstrument(key.getInstrument()).ifPresent(instrument->positionKeyBuilder.setInstrument(instrument));
                     if(key.getTraderId() != null) {
                         String traderName = String.valueOf(key.getTraderId());
                         try {
@@ -568,7 +566,7 @@ public class TradeClientRpcService<SessionClazz>
                         positionKeyBuilder.setTraderId(traderName);
                     }
                     positionBuilder.setPositionKey(positionKeyBuilder.build());
-                    positionBuilder.setPosition(BaseUtil.getQtyValueFrom(value));
+                    BaseRpcUtil.getRpcQty(value).ifPresent(qty->positionBuilder.setPosition(qty));
                     responseBuilder.addPosition(positionBuilder.build());
                     positionKeyBuilder.clear();
                     positionBuilder.clear();
@@ -623,9 +621,7 @@ public class TradeClientRpcService<SessionClazz>
                     if(key.getAccount() != null) {
                         positionKeyBuilder.setAccount(key.getAccount());
                     }
-                    if(key.getInstrument() != null) {
-                        positionKeyBuilder.setInstrument(TradingUtil.getRpcInstrument(key.getInstrument()));
-                    }
+                    TradeRpcUtil.getRpcInstrument(key.getInstrument()).ifPresent(instrument->positionKeyBuilder.setInstrument(instrument));
                     if(key.getTraderId() != null) {
                         String traderName = String.valueOf(key.getTraderId());
                         try {
@@ -643,7 +639,7 @@ public class TradeClientRpcService<SessionClazz>
                         positionKeyBuilder.setTraderId(traderName);
                     }
                     positionBuilder.setPositionKey(positionKeyBuilder.build());
-                    positionBuilder.setPosition(BaseUtil.getQtyValueFrom(value));
+                    BaseRpcUtil.getRpcQty(value).ifPresent(qty->positionBuilder.setPosition(qty));
                     responseBuilder.addPosition(positionBuilder.build());
                     positionKeyBuilder.clear();
                     positionBuilder.clear();
@@ -679,9 +675,9 @@ public class TradeClientRpcService<SessionClazz>
                 TradingRpc.AddReportResponse.Builder responseBuilder = TradingRpc.AddReportResponse.newBuilder();
                 FIXMessageWrapper report = null;
                 if(inRequest.hasMessage()) {
-                    report = new FIXMessageWrapper(TradingUtil.getFixMessage(inRequest.getMessage()));
+                    report = new FIXMessageWrapper(TradeRpcUtil.getFixMessage(inRequest.getMessage()));
                 }
-                BrokerID brokerId = TradingUtil.getBrokerId(inRequest).orElse(null);
+                BrokerID brokerId = TradeRpcUtil.getBrokerId(inRequest).orElse(null);
                 User user = userService.findByName(sessionHolder.getUser());
                 if(user == null) {
                     throw new IllegalArgumentException("Unknown user: " + user);
@@ -751,7 +747,7 @@ public class TradeClientRpcService<SessionClazz>
      * @since $Release$
      */
     private static class BrokerStatusListenerProxy
-            extends BaseUtil.AbstractServerListenerProxy<BrokerStatusListenerResponse>
+            extends BaseRpcUtil.AbstractServerListenerProxy<BrokerStatusListenerResponse>
             implements BrokerStatusListener
     {
         /* (non-Javadoc)
@@ -760,7 +756,7 @@ public class TradeClientRpcService<SessionClazz>
         @Override
         public void receiveBrokerStatus(BrokerStatus inStatus)
         {
-            TradingUtil.setBrokerStatus(inStatus,
+            TradeRpcUtil.setBrokerStatus(inStatus,
                                         responseBuilder);
             BrokerStatusListenerResponse response = responseBuilder.build();
             SLF4JLoggerProxy.trace(TradeClientRpcService.class,
@@ -797,7 +793,7 @@ public class TradeClientRpcService<SessionClazz>
      * @since $Release$
      */
     private static class TradeMessageListenerProxy
-            extends BaseUtil.AbstractServerListenerProxy<TradeMessageListenerResponse>
+            extends BaseRpcUtil.AbstractServerListenerProxy<TradeMessageListenerResponse>
             implements TradeMessageListener
     {
         /* (non-Javadoc)
@@ -806,7 +802,7 @@ public class TradeClientRpcService<SessionClazz>
         @Override
         public void receiveTradeMessage(TradeMessage inTradeMessage)
         {
-            TradingUtil.setTradeMessage(inTradeMessage,
+            TradeRpcUtil.setTradeMessage(inTradeMessage,
                                         responseBuilder);
             TradeMessageListenerResponse response = responseBuilder.build();
             SLF4JLoggerProxy.trace(TradeClientRpcService.class,
@@ -984,5 +980,5 @@ public class TradeClientRpcService<SessionClazz>
     /**
      * holds trade message listeners by id
      */
-    private final Cache<String,BaseUtil.AbstractServerListenerProxy<?>> listenerProxiesById = CacheBuilder.newBuilder().build();
+    private final Cache<String,BaseRpcUtil.AbstractServerListenerProxy<?>> listenerProxiesById = CacheBuilder.newBuilder().build();
 }

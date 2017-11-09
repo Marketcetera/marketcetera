@@ -22,8 +22,8 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc;
-import org.marketcetera.rpc.base.BaseUtil;
-import org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy;
+import org.marketcetera.rpc.base.BaseRpcUtil;
+import org.marketcetera.rpc.base.BaseRpcUtil.AbstractClientListenerProxy;
 import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -668,7 +668,7 @@ public class DataFlowRpcClient
      * @since $Release$
      */
     private static class DataReceiverProxy
-            extends BaseUtil.AbstractClientListenerProxy<DataFlowRpc.DataReceiverResponse,Object,DataReceiver>
+            extends BaseRpcUtil.AbstractClientListenerProxy<DataFlowRpc.DataReceiverResponse,Object,DataReceiver>
     {
         /* (non-Javadoc)
          * @see org.marketcetera.rpc.base.BaseUtil.AbstractClientListenerProxy#translateMessage(java.lang.Object)
@@ -712,16 +712,16 @@ public class DataFlowRpcClient
     /**
      * holds listeners by their id
      */
-    private final Cache<String,BaseUtil.AbstractClientListenerProxy<?,?,?>> listenerProxiesById = CacheBuilder.newBuilder().build();
+    private final Cache<String,BaseRpcUtil.AbstractClientListenerProxy<?,?,?>> listenerProxiesById = CacheBuilder.newBuilder().build();
     /**
      * holds listener proxies keyed by the listener
      */
-    private final LoadingCache<Object,BaseUtil.AbstractClientListenerProxy<?,?,?>> listenerProxies = CacheBuilder.newBuilder().build(new CacheLoader<Object,AbstractClientListenerProxy<?,?,?>>() {
+    private final LoadingCache<Object,BaseRpcUtil.AbstractClientListenerProxy<?,?,?>> listenerProxies = CacheBuilder.newBuilder().build(new CacheLoader<Object,AbstractClientListenerProxy<?,?,?>>() {
         @Override
-        public BaseUtil.AbstractClientListenerProxy<?,?,?> load(Object inKey)
+        public BaseRpcUtil.AbstractClientListenerProxy<?,?,?> load(Object inKey)
                 throws Exception
         {
-            BaseUtil.AbstractClientListenerProxy<?,?,?> proxy = getListenerFor(inKey);
+            BaseRpcUtil.AbstractClientListenerProxy<?,?,?> proxy = getListenerFor(inKey);
             listenerProxiesById.put(proxy.getId(),
                                     proxy);
             return proxy;

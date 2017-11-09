@@ -22,7 +22,7 @@ import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.persist.PageResponse;
 import org.marketcetera.rpc.base.BaseRpc;
-import org.marketcetera.rpc.base.BaseUtil;
+import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -603,7 +603,7 @@ public class DataFlowRpcService<SessionClazz>
                                        "Received add data receiver request {}",
                                        inRequest);
                 String listenerId = inRequest.getListenerId();
-                BaseUtil.AbstractServerListenerProxy<?> dataReceiverProxy = receiverProxiesById.getIfPresent(listenerId);
+                BaseRpcUtil.AbstractServerListenerProxy<?> dataReceiverProxy = receiverProxiesById.getIfPresent(listenerId);
                 if(dataReceiverProxy == null) {
                     dataReceiverProxy = new DataReceiverListenerProxy(listenerId,
                                                                       inResponseObserver);
@@ -631,7 +631,7 @@ public class DataFlowRpcService<SessionClazz>
                                        "Received remove data receiver request {}",
                                        inRequest);
                 String listenerId = inRequest.getListenerId();
-                BaseUtil.AbstractServerListenerProxy<?> dataReceiverProxy = receiverProxiesById.getIfPresent(listenerId);
+                BaseRpcUtil.AbstractServerListenerProxy<?> dataReceiverProxy = receiverProxiesById.getIfPresent(listenerId);
                 receiverProxiesById.invalidate(listenerId);
                 if(dataReceiverProxy != null) {
                     dataFlowService.removeDataReceiver((DataReceiver)dataReceiverProxy);
@@ -660,7 +660,7 @@ public class DataFlowRpcService<SessionClazz>
      * @since $Release$
      */
     private static class DataReceiverListenerProxy
-            extends BaseUtil.AbstractServerListenerProxy<DataFlowRpc.DataReceiverResponse>
+            extends BaseRpcUtil.AbstractServerListenerProxy<DataFlowRpc.DataReceiverResponse>
             implements DataReceiver
     {
         /* (non-Javadoc)
@@ -724,5 +724,5 @@ public class DataFlowRpcService<SessionClazz>
     /**
      * holds data listeners by id
      */
-    private final Cache<String,BaseUtil.AbstractServerListenerProxy<?>> receiverProxiesById = CacheBuilder.newBuilder().build();
+    private final Cache<String,BaseRpcUtil.AbstractServerListenerProxy<?>> receiverProxiesById = CacheBuilder.newBuilder().build();
 }

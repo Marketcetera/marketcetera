@@ -2,13 +2,17 @@ package org.marketcetera.rpc.base;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Maps;
+import com.google.protobuf.util.Timestamps;
 
 import io.grpc.stub.StreamObserver;
 
@@ -21,8 +25,35 @@ import io.grpc.stub.StreamObserver;
  * @version $Id$
  * @since $Release$
  */
-public abstract class BaseUtil
+public abstract class BaseRpcUtil
 {
+    /**
+     * Get the timestamp value from the given date.
+     *
+     * @param inTimestamp a <code>Date</code> value
+     * @return an <code>Optional&lt;com.google.protobuf.Timestamp&gt;</code> value
+     */
+    public static Optional<com.google.protobuf.Timestamp> getTimestampValue(Date inTimestamp)
+    {
+        if(inTimestamp == null) {
+            return Optional.empty();
+        }
+        return Optional.of(Timestamps.fromMillis(inTimestamp.getTime()));
+    }
+    /**
+     * Get the string value from the given string.
+     *
+     * @param inValue a <code>String</code> value
+     * @return an <code>Optional&lt;String&gt;</code> value
+     */
+    public static Optional<String> getStringValue(String inValue)
+    {
+        inValue = StringUtils.trimToNull(inValue);
+        if(inValue == null) {
+            return Optional.empty();
+        }
+        return Optional.of(inValue);
+    }
     /**
      * Get the value represented by the given qty object.
      *
@@ -42,17 +73,20 @@ public abstract class BaseUtil
      * Get a qty value from the given input.
      *
      * @param inValue a <code>BigDecimal</code>value
-     * @return a <code>BaseRpc.Qty</code> value
+     * @return an <code>Optional&lt;BaseRpc.Qty&gt;</code> value
      */
-    public static BaseRpc.Qty getQtyValueFrom(BigDecimal inValue)
+    public static Optional<BaseRpc.Qty> getRpcQty(BigDecimal inValue)
     {
+        if(inValue == null) {
+            return Optional.empty();
+        }
         BigDecimal quantity = inValue.setScale(6,
                                                RoundingMode.HALF_UP);
         quantity = quantity.movePointRight(6);
         BaseRpc.Qty.Builder qtyBuilder = BaseRpc.Qty.newBuilder();
         qtyBuilder.setQty(quantity.longValue());
         qtyBuilder.setScale(6);
-        return qtyBuilder.build();
+        return Optional.of(qtyBuilder.build());
     }
     /**
      * Get an RPC map from the given map.

@@ -19,8 +19,8 @@ public class TradingRpcClientFactory
      * @see org.marketcetera.rpc.client.RpcClientFactory#create(org.marketcetera.rpc.client.RpcClientParameters)
      */
     @Override
-    public TradingRpcClient create(TradingRpcClientParameters inParameters)
+    public TradeRpcClient create(TradingRpcClientParameters inParameters)
     {
-        return new TradingRpcClient(inParameters);
+        return new TradeRpcClient(inParameters);
     }
 }
