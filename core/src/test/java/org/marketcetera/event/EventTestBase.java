@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import org.marketcetera.event.impl.DividendEventBuilder;
+import org.marketcetera.event.impl.ImbalanceEventBuilder;
 import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
@@ -999,6 +1001,7 @@ public class EventTestBase
                                                               .withPreviousCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
                                                               .withTradeHighTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
                                                               .withTradeLowTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                                              .withValue(generateDecimalValue())
                                                               .withOpenExchange("O")
                                                               .withHighExchange("H")
                                                               .withLowExchange("L")
@@ -1045,9 +1048,43 @@ public class EventTestBase
     {
         LogEventBuilder builder = LogEventBuilder.error();
         builder.withRequestId(System.nanoTime());
-        builder.withException(new RuntimeException());
+        builder.withException(new RuntimeException("This exception is expected"));
         builder.withSource(EventTestBase.class);
         builder.withMessage(Messages.VALIDATION_NULL_AMOUNT);
+        return builder.create();
+    }
+    /**
+     * Generate an <code>ImbalanceEvent</code> with random values.
+     *
+     * @return an <code>ImbalanceEvent</code> value
+     */
+    public static ImbalanceEvent generateImbalanceEvent()
+    {
+        return generateImbalanceEvent(new Equity("METC"));
+    }
+    /**
+     * Generate an <code>ImbalanceEvent</code> with random values and the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @return an <code>ImbalanceEvent</code> value
+     */
+    public static ImbalanceEvent generateImbalanceEvent(Instrument inInstrument)
+    {
+        ImbalanceEventBuilder builder = ImbalanceEventBuilder.Imbalance(inInstrument);
+        builder.withTimestamp(new Date());
+        builder.withAmountOutstanding(EventTestBase.generateDecimalValue());
+        builder.withAuctionType(AuctionType.values()[random.nextInt(AuctionType.values().length)]);
+        builder.withExchange(UUID.randomUUID().toString());
+        builder.withEventType(EventType.values()[random.nextInt(EventType.values().length)]);
+        builder.withFarPrice(EventTestBase.generateDecimalValue());
+        builder.withImbalanceVolume(EventTestBase.generateDecimalValue());
+        builder.withInstrumentStatus(InstrumentStatus.values()[random.nextInt(InstrumentStatus.values().length)]);
+        builder.withMarketStatus(MarketStatus.values()[random.nextInt(MarketStatus.values().length)]);
+        builder.withNearPrice(EventTestBase.generateDecimalValue());
+        builder.withPairedVolume(EventTestBase.generateDecimalValue());
+        builder.withReferencePrice(EventTestBase.generateDecimalValue());
+        builder.withImbalanceType(ImbalanceType.values()[random.nextInt(ImbalanceType.values().length)]);
+        builder.withShortSaleRestricted(random.nextBoolean());
         return builder.create();
     }
     /**

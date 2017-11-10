@@ -9,7 +9,7 @@ import com.google.common.collect.Maps;
 /* $License$ */
 
 /**
- *
+ * Defines market imbalance types.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

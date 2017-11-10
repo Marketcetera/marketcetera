@@ -18,6 +18,10 @@ message Qty {
     int32 scale = 2;
 }
 
+message Object {
+    bytes data = 1;
+}
+
 message LoginRequest {
     string appId = 1;
     string clientId = 2;

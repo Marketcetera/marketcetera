@@ -2,6 +2,7 @@ package org.marketcetera.marketdata.rpc;
 
 import java.util.Optional;
 
+import org.marketcetera.event.AuctionType;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.DividendFrequency;
@@ -9,8 +10,14 @@ import org.marketcetera.event.DividendStatus;
 import org.marketcetera.event.DividendType;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventType;
+import org.marketcetera.event.ImbalanceEvent;
+import org.marketcetera.event.ImbalanceType;
+import org.marketcetera.event.InstrumentStatus;
 import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.LogEventLevel;
 import org.marketcetera.event.MarketDataEvent;
+import org.marketcetera.event.MarketStatus;
+import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TradeEvent;
@@ -67,10 +74,133 @@ public class MarketDataRpcUtil
             getRpcDividendEvent((DividendEvent)inEvent).ifPresent(value->builder.setDividendEvent(value));
         } else if(inEvent instanceof LogEvent) {
             getRpcLogEvent((LogEvent)inEvent).ifPresent(value->builder.setLogEvent(value));
+        } else if(inEvent instanceof ImbalanceEvent) {
+            getRpcImbalanceEvent((ImbalanceEvent)inEvent).ifPresent(value->builder.setImbalanceEvent(value));
+        } else if(inEvent instanceof MarketstatEvent) {
+            getRpcMarketstatEvent((MarketstatEvent)inEvent).ifPresent(value->builder.setMarketstatEvent(value));
         } else {
             throw new UnsupportedOperationException(inEvent.getClass().getSimpleName());
         }
         return Optional.of(builder.build());
+    }
+    /**
+     * Get the RPC imbalance event from the given value.
+     *
+     * @param inImbalanceEvent an <code>ImbalanceEvent</code> value
+     * @return an <code>Optional&lt;MarketDataTypesRpc.ImbalanceEvent&gt;</code> value
+     */
+    public static Optional<MarketDataTypesRpc.ImbalanceEvent> getRpcImbalanceEvent(ImbalanceEvent inImbalanceEvent)
+    {
+        if(inImbalanceEvent == null) {
+            return Optional.empty();
+        }
+        MarketDataTypesRpc.ImbalanceEvent.Builder builder = MarketDataTypesRpc.ImbalanceEvent.newBuilder();
+        getRpcAuctionType(inImbalanceEvent.getAuctionType()).ifPresent(value->builder.setAuctionType(value));
+        getRpcEvent(inImbalanceEvent).ifPresent(value->builder.setEvent(value));
+        getRpcEventType(inImbalanceEvent.getEventType()).ifPresent(eventType->builder.setEventType(eventType));
+        BaseRpcUtil.getStringValue(inImbalanceEvent.getExchange()).ifPresent(exchange->builder.setExchange(exchange));
+        BaseRpcUtil.getRpcQty(inImbalanceEvent.getFarPrice()).ifPresent(value->builder.setFarPrice(value));
+        getRpcImbalanceType(inImbalanceEvent.getImbalanceType()).ifPresent(value->builder.setImbalanceType(value));
+        BaseRpcUtil.getRpcQty(inImbalanceEvent.getImbalanceVolume()).ifPresent(value->builder.setImbalanceVolume(value));
+        TradeRpcUtil.getRpcInstrument(inImbalanceEvent.getInstrument()).ifPresent(instrument->builder.setInstrument(instrument));
+        getRpcInstrumentStatus(inImbalanceEvent.getInstrumentStatus()).ifPresent(value->builder.setInstrumentStatus(value));
+        builder.setIsShortSaleRestricted(inImbalanceEvent.isShortSaleRestricted());
+        getRpcMarketStatus(inImbalanceEvent.getMarketStatus()).ifPresent(value->builder.setMarketStatus(value));
+        BaseRpcUtil.getRpcQty(inImbalanceEvent.getNearPrice()).ifPresent(value->builder.setNearPrice(value));
+        BaseRpcUtil.getRpcQty(inImbalanceEvent.getPairedVolume()).ifPresent(value->builder.setPairedVolume(value));
+        BaseRpcUtil.getRpcQty(inImbalanceEvent.getReferencePrice()).ifPresent(value->builder.setReferencePrice(value));
+        return Optional.of(builder.build());
+    }
+    /**
+     * Get the RPC market status from the given value.
+     *
+     * @param inMarketStatus a <code>MarketStatus</code> value
+     * @return an <code>Optional&lt;MarketDataTypesRpc.MarketStatus&gt;</code> value
+     */
+    public static Optional<MarketDataTypesRpc.MarketStatus> getRpcMarketStatus(MarketStatus inMarketStatus)
+    {
+        if(inMarketStatus == null) {
+            return Optional.empty();
+        }
+        return Optional.of(MarketDataTypesRpc.MarketStatus.values()[inMarketStatus.ordinal()]);
+    }
+    /**
+     * Get the market status from the given RPC value.
+     *
+     * @param inMarketStatus a <code>MarketDataTypesRpc.MarketStatus</code> value
+     * @return an <code>Optional&lt;MarketStatus&gt;</code> value
+     */
+    public static Optional<MarketStatus> getMarketStatus(MarketDataTypesRpc.MarketStatus inMarketStatus)
+    {
+        if(inMarketStatus == null) {
+            return Optional.empty();
+        }
+        return Optional.of(MarketStatus.values()[inMarketStatus.ordinal()]);
+    }
+    /**
+     * Get the RPC instrument status from the given value.
+     *
+     * @param inInstrumentStatus an <code>InstrumentStatus</code> value
+     * @return an <code>Optional&lt;MarketDataTypesRpc.InstrumentStatus&gt;</code> value
+     */
+    public static Optional<MarketDataTypesRpc.InstrumentStatus> getRpcInstrumentStatus(InstrumentStatus inInstrumentStatus)
+    {
+        if(inInstrumentStatus == null) {
+            return Optional.empty();
+        }
+        return Optional.of(MarketDataTypesRpc.InstrumentStatus.values()[inInstrumentStatus.ordinal()]);
+    }
+    /**
+     * Get the RPC imbalance type from the given value.
+     *
+     * @param inImbalanceType an <code>ImbalanceType</code> value
+     * @return an <code>Optional&lt;MarketDataTypesRpc.ImbalanceType&gt;</code> value
+     */
+    public static Optional<MarketDataTypesRpc.ImbalanceType> getRpcImbalanceType(ImbalanceType inImbalanceType)
+    {
+        if(inImbalanceType == null) {
+            return Optional.empty();
+        }
+        return Optional.of(MarketDataTypesRpc.ImbalanceType.values()[inImbalanceType.ordinal()]);
+    }
+    /**
+     * Get the imbalance type from the given RPC value.
+     *
+     * @param inImbalanceType a <code>MarketDataTypesRpc.ImbalanceType</code> value
+     * @return an <code>Optional&lt;ImbalanceType&gt;</code> value
+     */
+    public static Optional<ImbalanceType> getImbalanceType(MarketDataTypesRpc.ImbalanceType inImbalanceType)
+    {
+        if(inImbalanceType == null) {
+            return Optional.empty();
+        }
+        return Optional.of(ImbalanceType.values()[inImbalanceType.ordinal()]);
+    }
+    /**
+     * Get the RPC auction type from the given value.
+     *
+     * @param inAuctionType an <code>AuctionType</code> value
+     * @return an <code>Optional&lt;MarketDataTypesRpc.AuctionType&gt;</code> value
+     */
+    public static Optional<MarketDataTypesRpc.AuctionType> getRpcAuctionType(AuctionType inAuctionType)
+    {
+        if(inAuctionType == null) {
+            return Optional.empty();
+        }
+        return Optional.of(MarketDataTypesRpc.AuctionType.values()[inAuctionType.ordinal()]);
+    }
+    /**
+     * Get the auction type from the given RPC value.
+     *
+     * @param inAuctionType a <code>MarketDataTypesRpc.AuctionType</code> value
+     * @return an <code>Optional&lt;AuctionType&gt;</code> value
+     */
+    public static Optional<AuctionType> getAuctionType(MarketDataTypesRpc.AuctionType inAuctionType)
+    {
+        if(inAuctionType == null) {
+            return Optional.empty();
+        }
+        return Optional.of(AuctionType.values()[inAuctionType.ordinal()]);
     }
     /**
      * Get the RPC log event from the given value.
@@ -84,8 +214,59 @@ public class MarketDataRpcUtil
             return Optional.empty();
         }
         MarketDataTypesRpc.LogEvent.Builder builder = MarketDataTypesRpc.LogEvent.newBuilder();
-//        return Optional.of(builder.build());
-        throw new UnsupportedOperationException(); // TODO
+        BaseRpcUtil.getRpcObject(inLogEvent.getException()).ifPresent(value->builder.setException(value));
+        getRpcLogEventLevel(inLogEvent.getLevel()).ifPresent(value->builder.setLogEventLevel(value));
+        BaseRpcUtil.getStringValue(inLogEvent.getMessage()).ifPresent(value->builder.setMessage(value));
+        return Optional.of(builder.build());
+    }
+    /**
+     * Get the RPC log event level for the given value.
+     *
+     * @param inLevel a <code>LogEventLevel</code> value
+     * @return an <code>Optional&lt;MarketDataTypesRpc.LogEventLevel&gt;</code> value
+     */
+    public static Optional<MarketDataTypesRpc.LogEventLevel> getRpcLogEventLevel(LogEventLevel inLevel)
+    {
+        if(inLevel == null) {
+            return Optional.empty();
+        }
+        switch(inLevel) {
+            case DEBUG:
+                return Optional.of(MarketDataTypesRpc.LogEventLevel.DEBUG_LOG_EVENT_LEVEL);
+            case ERROR:
+                return Optional.of(MarketDataTypesRpc.LogEventLevel.ERROR_LOG_EVENT_LEVEL);
+            case INFO:
+                return Optional.of(MarketDataTypesRpc.LogEventLevel.INFO_LOG_EVENT_LEVEL);
+            case WARN:
+                return Optional.of(MarketDataTypesRpc.LogEventLevel.WARN_LOG_EVENT_LEVEL);
+            default:
+                throw new UnsupportedOperationException(inLevel.name());
+        }
+    }
+    /**
+     * Get the log event level for the given RPC value.
+     *
+     * @param inLevel a <code>MarketDataTypesRpc.LogEventLevel</code> value
+     * @return an <code>Optional&lt;LogEventLevel&gt;</code> value
+     */
+    public static Optional<LogEventLevel> getLogEventLevel(MarketDataTypesRpc.LogEventLevel inLevel)
+    {
+        if(inLevel == null) {
+            return Optional.empty();
+        }
+        switch(inLevel) {
+            case DEBUG_LOG_EVENT_LEVEL:
+                return Optional.of(LogEventLevel.DEBUG);
+            case ERROR_LOG_EVENT_LEVEL:
+                return Optional.of(LogEventLevel.ERROR);
+            case INFO_LOG_EVENT_LEVEL:
+                return Optional.of(LogEventLevel.INFO);
+            case WARN_LOG_EVENT_LEVEL:
+                return Optional.of(LogEventLevel.WARN);
+            case UNRECOGNIZED:
+            default:
+                throw new UnsupportedOperationException(inLevel.name());
+        }
     }
     /**
      * Get the RPC dividend event from the given value.
@@ -360,6 +541,38 @@ public class MarketDataRpcUtil
     public static Optional<String> getTradeCondition(TradeEvent inTradeEvent)
     {
         return BaseRpcUtil.getStringValue(inTradeEvent.getTradeCondition());
+    }
+    /**
+     * Get the RPC market stat event from the given value.
+     *
+     * @param inEvent a <code>MarketstatEvent</code> value
+     * @return an <code>Optional&lt;MarketDataTypesRpc.MarketstatEvent&gt;</code> value
+     */
+    public static Optional<MarketDataTypesRpc.MarketstatEvent> getRpcMarketstatEvent(MarketstatEvent inEvent)
+    {
+        if(inEvent == null) {
+            return Optional.empty();
+        }
+        MarketDataTypesRpc.MarketstatEvent.Builder builder = MarketDataTypesRpc.MarketstatEvent.newBuilder();
+        BaseRpcUtil.getRpcQty(inEvent.getClose()).ifPresent(qty->builder.setClose(qty));
+        BaseRpcUtil.getStringValue(inEvent.getCloseDate()).ifPresent(value->builder.setCloseDate(value));
+        BaseRpcUtil.getStringValue(inEvent.getCloseExchange()).ifPresent(exchange->builder.setCloseExchange(exchange));
+        getRpcEvent(inEvent).ifPresent(value->builder.setEvent(value));
+        getRpcEventType(inEvent.getEventType()).ifPresent(eventType->builder.setEventType(eventType));
+        BaseRpcUtil.getRpcQty(inEvent.getHigh()).ifPresent(qty->builder.setHigh(qty));
+        BaseRpcUtil.getStringValue(inEvent.getHighExchange()).ifPresent(exchange->builder.setHighExchange(exchange));
+        TradeRpcUtil.getRpcInstrument(inEvent.getInstrument()).ifPresent(instrument->builder.setInstrument(instrument));
+        BaseRpcUtil.getRpcQty(inEvent.getLow()).ifPresent(qty->builder.setLow(qty));
+        BaseRpcUtil.getStringValue(inEvent.getLowExchange()).ifPresent(exchange->builder.setLowExchange(exchange));
+        BaseRpcUtil.getRpcQty(inEvent.getOpen()).ifPresent(qty->builder.setOpen(qty));
+        BaseRpcUtil.getStringValue(inEvent.getOpenExchange()).ifPresent(exchange->builder.setOpenExchange(exchange));
+        BaseRpcUtil.getRpcQty(inEvent.getPreviousClose()).ifPresent(qty->builder.setPreviousClose(qty));
+        BaseRpcUtil.getStringValue(inEvent.getPreviousCloseDate()).ifPresent(value->builder.setPreviousCloseDate(value));
+        BaseRpcUtil.getStringValue(inEvent.getTradeHighTime()).ifPresent(value->builder.setTradeHighTime(value));
+        BaseRpcUtil.getStringValue(inEvent.getTradeLowTime()).ifPresent(value->builder.setTradeLowTime(value));
+        BaseRpcUtil.getRpcQty(inEvent.getValue()).ifPresent(qty->builder.setValue(qty));
+        BaseRpcUtil.getRpcQty(inEvent.getVolume()).ifPresent(qty->builder.setVolume(qty));
+        return Optional.of(builder.build());
     }
     /**
      * Get the RPC market data event from the given value.

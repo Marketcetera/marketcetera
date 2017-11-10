@@ -1,5 +1,6 @@
 package org.marketcetera.rpc.base;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
@@ -7,11 +8,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Maps;
+import com.google.protobuf.ByteString;
 import com.google.protobuf.util.Timestamps;
 
 import io.grpc.stub.StreamObserver;
@@ -81,6 +84,34 @@ public abstract class BaseRpcUtil
                              RoundingMode.HALF_UP);
         base = base.movePointLeft(scale);
         return base;
+    }
+    /**
+     * Get the arbitrary object contained in the given RPC value.
+     *
+     * @param inRpcObject a <code>BaseRpc.Object</code> value
+     * @return a <code>Clazz</code> value
+     */
+    public static <Clazz extends Serializable> Optional<Clazz> getObject(BaseRpc.Object inRpcObject)
+    {
+        if(inRpcObject == null) {
+            return Optional.empty();
+        }
+        return Optional.of(SerializationUtils.deserialize(inRpcObject.getData().toByteArray()));
+    }
+    /**
+     * Get the RPC value of an arbitrary serializable object.
+     *
+     * @param inObject a <code>Serializable</code> value
+     * @return an <code>Optional&lt;BaseRpc.Object&gt;</code> value
+     */
+    public static Optional<BaseRpc.Object> getRpcObject(Serializable inObject)
+    {
+        if(inObject == null) {
+            return Optional.empty();
+        }
+        BaseRpc.Object.Builder builder = BaseRpc.Object.newBuilder();
+        builder.setData(ByteString.copyFrom(SerializationUtils.serialize(inObject)));
+        return Optional.of(builder.build());
     }
     /**
      * Get a qty value from the given input.
