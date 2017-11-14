@@ -22,7 +22,7 @@ message CancelResponse {
 
 message EventsResponse {
     string requestId = 1;
-    Event event = 2;
+    EventHolder event = 2;
 }
 
 message SnapshotRequest {
@@ -33,7 +33,7 @@ message SnapshotRequest {
 }
 
 message SnapshotResponse {
-    repeated Event event = 1;
+    repeated EventHolder event = 1;
     PageResponse pageResponse = 2;
 }
 

@@ -171,7 +171,7 @@ public class MarketDataRpcClient
                                        getSessionId(),
                                        response);
                 Deque<Event> events = Lists.newLinkedList();
-                for(MarketDataTypesRpc.Event rpcEvent : response.getEventList()) {
+                for(MarketDataTypesRpc.EventHolder rpcEvent : response.getEventList()) {
                     MarketDataRpcUtil.getEvent(rpcEvent).ifPresent(value->events.add(value));
                 }
                 CollectionPageResponse<Event> eventPage = new CollectionPageResponse<>();

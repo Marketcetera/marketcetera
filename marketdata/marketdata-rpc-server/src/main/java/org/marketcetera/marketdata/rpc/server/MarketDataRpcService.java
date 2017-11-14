@@ -237,7 +237,7 @@ public class MarketDataRpcService<SessionClazz>
                 CollectionPageResponse<Event> eventPage = marketDataService.getSnapshot(instrument,
                                                                                         content,
                                                                                         pageRequest);
-                eventPage.getElements().forEach(value->MarketDataRpcUtil.getRpcEvent(value).ifPresent(innerValue->responseBuilder.addEvent(innerValue)));
+                eventPage.getElements().forEach(value->MarketDataRpcUtil.getRpcEventHolder(value).ifPresent(innerValue->responseBuilder.addEvent(innerValue)));
                 responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
                                                                               eventPage));
                 MarketDataRpc.SnapshotResponse response = responseBuilder.build();
@@ -414,7 +414,7 @@ public class MarketDataRpcService<SessionClazz>
         @Override
         public void receiveMarketData(Event inEvent)
         {
-            MarketDataRpcUtil.getRpcEvent(inEvent).ifPresent(value->responseBuilder.setEvent(value));
+            MarketDataRpcUtil.getRpcEventHolder(inEvent).ifPresent(value->responseBuilder.setEvent(value));
             responseBuilder.setRequestId(clientRequestId);
             MarketDataRpc.EventsResponse response = responseBuilder.build();
             SLF4JLoggerProxy.trace(MarketDataRpcService.class,

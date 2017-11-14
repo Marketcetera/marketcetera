@@ -807,9 +807,9 @@ public abstract class TradeRpcUtil
      * Get the order quantity from the given RPC order.
      *
      * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
-     * @return a <code>BigDecimal</code> value
+     * @return an <code>Optional&lt;BigDecimal&gt;</code> value
      */
-    public static BigDecimal getQuantity(TradingTypesRpc.OrderBase inRpcOrder)
+    public static Optional<BigDecimal> getQuantity(TradingTypesRpc.OrderBase inRpcOrder)
     {
         return BaseRpcUtil.getScaledQuantity(inRpcOrder.getQuantity());
     }
@@ -817,9 +817,9 @@ public abstract class TradeRpcUtil
      * Get the order price from the given RPC order.
      *
      * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
-     * @return a <code>BigDecimal</code> value
+     * @return an <code>Optional&lt;BigDecimal&gt;</code> value
      */
-    public static BigDecimal getPrice(TradingTypesRpc.OrderBase inRpcOrder)
+    public static Optional<BigDecimal> getPrice(TradingTypesRpc.OrderBase inRpcOrder)
     {
         return BaseRpcUtil.getScaledQuantity(inRpcOrder.getPrice());
     }
@@ -827,9 +827,9 @@ public abstract class TradeRpcUtil
      * Get the display quantity of the given order.
      *
      * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
-     * @return a <code>BigDecimal</code> value or <code>null</code>
+     * @return an <code>Optional&lt;BigDecimal&gt;</code> value
      */
-    public static BigDecimal getDisplayQuantity(TradingTypesRpc.OrderBase inRpcOrder)
+    public static Optional<BigDecimal> getDisplayQuantity(TradingTypesRpc.OrderBase inRpcOrder)
     {
         return BaseRpcUtil.getScaledQuantity(inRpcOrder.getDisplayQuantity());
     }
@@ -905,9 +905,7 @@ public abstract class TradeRpcUtil
     public static void setDisplayQuantity(NewOrReplaceOrder inOrder,
                                           TradingTypesRpc.OrderBase inRpcOrder)
     {
-        if(inRpcOrder.hasDisplayQuantity()) {
-            inOrder.setDisplayQuantity(BaseRpcUtil.getScaledQuantity(inRpcOrder.getDisplayQuantity()));
-        }
+        BaseRpcUtil.getScaledQuantity(inRpcOrder.getDisplayQuantity()).ifPresent(value->inOrder.setDisplayQuantity(value));
     }
     /**
      * Set the order ID from the given RPC order.
@@ -1063,9 +1061,7 @@ public abstract class TradeRpcUtil
     public static void setPrice(NewOrReplaceOrder inOrder,
                                 TradingTypesRpc.OrderBase inRpcOrder)
     {
-        if(inRpcOrder.hasPrice()) {
-            inOrder.setPrice(BaseRpcUtil.getScaledQuantity(inRpcOrder.getPrice()));
-        }
+        BaseRpcUtil.getScaledQuantity(inRpcOrder.getPrice()).ifPresent(value->inOrder.setPrice(value));
     }
     /**
      * Set the quantity from the given RPC order.
@@ -1076,9 +1072,7 @@ public abstract class TradeRpcUtil
     public static void setQuantity(OrderBase inOrder,
                                    TradingTypesRpc.OrderBase inRpcOrder)
     {
-        if(inRpcOrder.hasQuantity()) {
-            inOrder.setQuantity(BaseRpcUtil.getScaledQuantity(inRpcOrder.getQuantity()));
-        }
+        BaseRpcUtil.getScaledQuantity(inRpcOrder.getQuantity()).ifPresent(value->inOrder.setQuantity(value));
     }
     /**
      * Set the order capacity from the given order on the given builder.
@@ -2576,33 +2570,19 @@ public abstract class TradeRpcUtil
             setUser(inRpcOrderSummary.getUser(),
                     orderSummary);
         }
-        if(inRpcOrderSummary.hasAveragePrice()) {
-            orderSummary.setAveragePrice(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getAveragePrice()));
-        }
+        BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getAveragePrice()).ifPresent(value->orderSummary.setAveragePrice(value));
         orderSummary.setBrokerId(getBrokerId(inRpcOrderSummary).orElse(null));
-        if(inRpcOrderSummary.hasCumulativeQuantity()) {
-            orderSummary.setCumulativeQuantity(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getCumulativeQuantity()));
-        }
+        BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getCumulativeQuantity()).ifPresent(value->orderSummary.setCumulativeQuantity(value));
         if(inRpcOrderSummary.hasInstrument()) {
             orderSummary.setInstrument(getInstrument(inRpcOrderSummary).orElse(null));
         }
-        if(inRpcOrderSummary.hasLastPrice()) {
-            orderSummary.setLastPrice(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getLastPrice()));
-        }
-        if(inRpcOrderSummary.hasLastQuantity()) {
-            orderSummary.setLastQuantity(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getLastQuantity()));
-        }
-        if(inRpcOrderSummary.hasLeavesQuantity()) {
-            orderSummary.setLeavesQuantity(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getLeavesQuantity()));
-        }
+        BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getLastPrice()).ifPresent(value->orderSummary.setLastPrice(value));
+        BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getLastQuantity()).ifPresent(value->orderSummary.setLastQuantity(value));
+        BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getLeavesQuantity()).ifPresent(value->orderSummary.setLeavesQuantity(value));
         setOrderId(inRpcOrderSummary,
                    orderSummary);
-        if(inRpcOrderSummary.hasOrderPrice()) {
-            orderSummary.setOrderPrice(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getOrderPrice()));
-        }
-        if(inRpcOrderSummary.hasOrderQuantity()) {
-            orderSummary.setOrderQuantity(BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getOrderQuantity()));
-        }
+        BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getOrderPrice()).ifPresent(value->orderSummary.setOrderPrice(value));
+        BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getOrderQuantity()).ifPresent(value->orderSummary.setOrderQuantity(value));
         setOrderStatus(inRpcOrderSummary,
                        orderSummary);
         if(inRpcOrderSummary.hasReport()) {

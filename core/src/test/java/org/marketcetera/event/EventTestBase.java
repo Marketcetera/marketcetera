@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import org.marketcetera.event.impl.DepthOfBookEventBuilder;
 import org.marketcetera.event.impl.DividendEventBuilder;
 import org.marketcetera.event.impl.ImbalanceEventBuilder;
 import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
+import org.marketcetera.event.impl.TopOfBookEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.options.ExpirationType;
@@ -23,6 +25,8 @@ import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.SecurityType;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -35,6 +39,58 @@ import org.marketcetera.trade.SecurityType;
  */
 public class EventTestBase
 {
+    /**
+     * Generate a depth-of-book-event for the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>DepthOfBookEvent</code> value
+     */
+    public static DepthOfBookEvent generateDepthOfBookEvent(Instrument inInstrument)
+    {
+        DepthOfBookEventBuilder builder = DepthOfBookEventBuilder.depthOfBook();
+        BigDecimal bidPrice = generateDecimalValue();
+        BigDecimal askPrice = bidPrice.add(new BigDecimal("0.02"));
+        int bidDepth = random.nextInt(20);
+        int askDepth = random.nextInt(20);
+        BigDecimal PENNY = new BigDecimal("0.01");
+        List<BidEvent> bids = Lists.newArrayList();
+        List<AskEvent> asks = Lists.newArrayList();
+        for(int i=0;i<bidDepth;i++) {
+            bidPrice = bidPrice.subtract(PENNY.multiply(new BigDecimal(i)));
+            BidEvent bid = generateBidEvent(inInstrument,
+                                            bidPrice);
+            bid.setLevel(i+1);
+            bids.add(bid);
+        }
+        for(int i=0;i<askDepth;i++) {
+            askPrice = askPrice.add(PENNY.multiply(new BigDecimal(i)));
+            AskEvent ask = generateAskEvent(inInstrument,
+                                            askPrice);
+            ask.setLevel(i+1);
+            asks.add(ask);
+        }
+        builder.withAsks(asks).withBids(bids).withInstrument(inInstrument);
+        return builder.create();
+    }
+    /**
+     * Generate a top-of-book-event for the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>TopOfBookEvent</code> value
+     */
+    public static TopOfBookEvent generateTopOfBookEvent(Instrument inInstrument)
+    {
+        TopOfBookEventBuilder builder = TopOfBookEventBuilder.topOfBookEvent();
+        DepthOfBookEvent depthOfBookEvent = generateDepthOfBookEvent(inInstrument);
+        if(!depthOfBookEvent.getAsks().isEmpty()) {
+            builder.withAsk(depthOfBookEvent.getAsks().get(0));
+        }
+        if(!depthOfBookEvent.getBids().isEmpty()) {
+            builder.withBid(depthOfBookEvent.getBids().get(0));
+        }
+        builder.withInstrument(inInstrument);
+        return builder.create();
+    }
     /**
      * Generates an <code>AskEvent</code> for the given instrument.
      *
@@ -752,6 +808,10 @@ public class EventTestBase
                 .withExchange(generateExchange())
                 .withPrice(generateDecimalValue())
                 .withSize(generateDecimalValue())
+                .withTradeCondition("0xACAE")
+                .withProvider("test")
+                .withProviderSymbol(inInstrument.getFullSymbol())
+                .withSource(EventTestBase.class)
                 .withTradeDate(generateQuoteDate()).create();
     }
     /**

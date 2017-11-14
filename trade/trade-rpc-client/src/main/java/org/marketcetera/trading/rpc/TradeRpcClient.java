@@ -294,10 +294,7 @@ public class TradeRpcClient
                                        "{} received {}",
                                        getSessionId(),
                                        response);
-                BigDecimal result = BigDecimal.ZERO;
-                if(response.hasPosition()) {
-                    result = BaseRpcUtil.getScaledQuantity(response.getPosition());
-                }
+                BigDecimal result = BaseRpcUtil.getScaledQuantity(response.getPosition()).orElse(BigDecimal.ZERO);
                 SLF4JLoggerProxy.trace(TradeRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
@@ -332,13 +329,10 @@ public class TradeRpcClient
                 Map<PositionKey<? extends Instrument>,BigDecimal> result = Maps.newHashMap();
                 for(TradingTypesRpc.Position rpcPosition : response.getPositionList()) {
                     PositionKey<? extends Instrument> positionKey = null;
-                    BigDecimal position = BigDecimal.ZERO;
                     if(rpcPosition.hasPositionKey()) {
                         positionKey = TradeRpcUtil.getPositionKey(rpcPosition.getPositionKey());
                     }
-                    if(rpcPosition.hasPosition()) {
-                        position = BaseRpcUtil.getScaledQuantity(rpcPosition.getPosition());
-                    }
+                    BigDecimal position = BaseRpcUtil.getScaledQuantity(rpcPosition.getPosition()).orElse(BigDecimal.ZERO);
                     if(positionKey != null) {
                         result.put(positionKey,
                                    position);
@@ -380,13 +374,10 @@ public class TradeRpcClient
                 Map<PositionKey<Option>,BigDecimal> result = Maps.newHashMap();
                 for(TradingTypesRpc.Position rpcPosition : response.getPositionList()) {
                     PositionKey<Option> positionKey = null;
-                    BigDecimal position = BigDecimal.ZERO;
                     if(rpcPosition.hasPositionKey()) {
                         positionKey = (PositionKey<Option>)TradeRpcUtil.getPositionKey(rpcPosition.getPositionKey());
                     }
-                    if(rpcPosition.hasPosition()) {
-                        position = BaseRpcUtil.getScaledQuantity(rpcPosition.getPosition());
-                    }
+                    BigDecimal position = BaseRpcUtil.getScaledQuantity(rpcPosition.getPosition()).orElse(BigDecimal.ZERO);
                     if(positionKey != null) {
                         result.put(positionKey,
                                    position);

@@ -13,6 +13,8 @@ message EventHolder {
     LogEvent logEvent = 4;
     ImbalanceEvent imbalanceEvent = 5;
     MarketstatEvent marketstatEvent = 6;
+    DepthOfBookEvent depthOfBookEvent = 7;
+    TopOfBookEvent topOfBookEvent = 8;
 }
 
 message Event {
@@ -178,6 +180,18 @@ message TradeEvent {
     MarketDataEvent marketDataEvent = 1;
     google.protobuf.Timestamp tradeDate = 2;
     string tradeCondition = 3;
+}
+
+message DepthOfBookEvent {
+    Instrument instrument = 1;
+    repeated QuoteEvent bids = 2;
+    repeated QuoteEvent asks = 3;
+}
+
+message TopOfBookEvent {
+    Instrument instrument = 1;
+    QuoteEvent bid = 2;
+    QuoteEvent ask = 3;
 }
 
 message QuoteEvent {

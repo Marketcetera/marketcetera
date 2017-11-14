@@ -74,16 +74,19 @@ public abstract class BaseRpcUtil
      * Get the value represented by the given qty object.
      *
      * @param inQty a <code>BaseRpc.Qty</code> value
-     * @return a <code>BigDecimal</code> value
+     * @return an <code>Optional&lt;BigDecimal&gt;</code> value
      */
-    public static BigDecimal getScaledQuantity(BaseRpc.Qty inQty)
+    public static Optional<BigDecimal> getScaledQuantity(BaseRpc.Qty inQty)
     {
+        if(inQty == null) {
+            return Optional.empty();
+        }
         BigDecimal base = new BigDecimal(inQty.getQty());
         int scale = inQty.getScale();
         base = base.setScale(scale,
                              RoundingMode.HALF_UP);
         base = base.movePointLeft(scale);
-        return base;
+        return Optional.of(base);
     }
     /**
      * Get the arbitrary object contained in the given RPC value.

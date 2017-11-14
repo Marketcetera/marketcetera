@@ -3,12 +3,16 @@ package org.marketcetera.marketdata.rpc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Iterator;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DepthOfBookEvent;
 import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
@@ -17,6 +21,7 @@ import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
@@ -51,6 +56,10 @@ public class MarketDataRpcUtilTest
         assertNotNull(rpcEvent);
         verifyRpcEventHolder(event,
                              rpcEvent);
+        Event newEvent = MarketDataRpcUtil.getEvent(rpcEvent).orElse(null);
+        assertNotNull(newEvent);
+        verifyEvent(rpcEvent,
+                    newEvent);
     }
     /**
      * Test {@link MarketDataRpcUtil#getRpcEventHolder(Event)} for {@link QuoteEvent} types.
@@ -61,17 +70,27 @@ public class MarketDataRpcUtilTest
     public void testGetRpcQuoteEvent()
             throws Exception
     {
+        // test ask
         Event event = EventTestBase.generateAskEvent(new Equity("METC"));
         assertFalse(MarketDataRpcUtil.getRpcEventHolder(null).isPresent());
         MarketDataTypesRpc.EventHolder rpcEvent = MarketDataRpcUtil.getRpcEventHolder(event).orElse(null);
         assertNotNull(rpcEvent);
         verifyRpcEventHolder(event,
                              rpcEvent);
+        Event newEvent = MarketDataRpcUtil.getEvent(rpcEvent).orElse(null);
+        assertNotNull(newEvent);
+        verifyEvent(rpcEvent,
+                    newEvent);
+        // test bid
         event = EventTestBase.generateBidEvent(new Equity("METC"));
         rpcEvent = MarketDataRpcUtil.getRpcEventHolder(event).orElse(null);
         assertNotNull(rpcEvent);
         verifyRpcEventHolder(event,
                              rpcEvent);
+        newEvent = MarketDataRpcUtil.getEvent(rpcEvent).orElse(null);
+        assertNotNull(newEvent);
+        verifyEvent(rpcEvent,
+                    newEvent);
     }
     /**
      * Test {@link MarketDataRpcUtil#getRpcEventHolder(Event)} for {@link DividendEvent} types.
@@ -104,6 +123,10 @@ public class MarketDataRpcUtilTest
         assertNotNull(rpcEvent);
         verifyRpcEventHolder(event,
                              rpcEvent);
+//        Event newEvent = MarketDataRpcUtil.getEvent(rpcEvent).orElse(null);
+//        assertNotNull(newEvent);
+//        verifyEvent(rpcEvent,
+//                    newEvent);
     }
     /**
      * Test {@link MarketDataRpcUtil#getRpcEventHolder(Event)} for {@link ImbalanceEvent} types.
@@ -137,7 +160,38 @@ public class MarketDataRpcUtilTest
         verifyRpcEventHolder(event,
                              rpcEvent);
     }
-    // aggregate event, top-of-book event, depth-of-book event?
+    /**
+     * Test {@link MarketDataRpcUtil#getRpcEventHolder(Event)} for {@link DepthOfBookEvent} types.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testGetDepthOfBookEvent()
+            throws Exception
+    {
+        Event event = EventTestBase.generateDepthOfBookEvent(new Equity("METC"));
+        assertFalse(MarketDataRpcUtil.getRpcEventHolder(null).isPresent());
+        MarketDataTypesRpc.EventHolder rpcEvent = MarketDataRpcUtil.getRpcEventHolder(event).orElse(null);
+        assertNotNull(rpcEvent);
+        verifyRpcEventHolder(event,
+                             rpcEvent);
+    }
+    /**
+     * Test {@link MarketDataRpcUtil#getRpcEventHolder(Event)} for {@link TopOfBookEvent} types.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testGetTopOfBookEvent()
+            throws Exception
+    {
+        Event event = EventTestBase.generateTopOfBookEvent(new Equity("METC"));
+        assertFalse(MarketDataRpcUtil.getRpcEventHolder(null).isPresent());
+        MarketDataTypesRpc.EventHolder rpcEvent = MarketDataRpcUtil.getRpcEventHolder(event).orElse(null);
+        assertNotNull(rpcEvent);
+        verifyRpcEventHolder(event,
+                             rpcEvent);
+    }
     /**
      * Test {@link MarketDataRpcUtil#getMarketDataRequest(String, String, String)}.
      *
@@ -159,6 +213,29 @@ public class MarketDataRpcUtilTest
         assertFalse(MarketDataRpcUtil.getMarketDataRequest(null,
                                                            UUID.randomUUID().toString(),
                                                            UUID.randomUUID().toString()).isPresent());
+    }
+    /**
+     * Verify the given event matches the given RPC event.
+     *
+     * @param inExpectedEvent an <code>MarketDataTypesRpc.EventHolder</code> value
+     * @param inActualEvent an <code>Event</code> value
+     */
+    public static void verifyEvent(MarketDataTypesRpc.EventHolder inExpectedEvent,
+                                   Event inActualEvent)
+    {
+        if(inExpectedEvent.hasTradeEvent()) {
+            assertTrue("Expected: " + TradeEvent.class.getSimpleName() + " Actual: " + inActualEvent.getClass().getSimpleName(),
+                       inActualEvent instanceof TradeEvent);
+            verifyTradeEvent(inExpectedEvent.getTradeEvent(),
+                             (TradeEvent)inActualEvent);
+        } else if(inExpectedEvent.hasQuoteEvent()) {
+                assertTrue("Expected: " + QuoteEvent.class.getSimpleName() + " Actual: " + inActualEvent.getClass().getSimpleName(),
+                           inActualEvent instanceof QuoteEvent);
+                verifyQuoteEvent(inExpectedEvent.getQuoteEvent(),
+                                 (QuoteEvent)inActualEvent);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
     /**
      * Verify the given RPC event matches the given expected event.
@@ -199,8 +276,18 @@ public class MarketDataRpcUtilTest
                        inExpectedEvent instanceof MarketstatEvent);
             verifyRpcMarketstatEvent((MarketstatEvent)inExpectedEvent,
                                      inActualEvent.getMarketstatEvent());
+        } else if(inActualEvent.hasDepthOfBookEvent()) {
+            assertTrue("Expected: " + DepthOfBookEvent.class.getSimpleName() + " Actual: " + inExpectedEvent.getClass().getSimpleName(),
+                       inExpectedEvent instanceof DepthOfBookEvent);
+            verifyRpcDepthOfBookEvent((DepthOfBookEvent)inExpectedEvent,
+                                      inActualEvent.getDepthOfBookEvent());
+        } else if(inActualEvent.hasTopOfBookEvent()) {
+            assertTrue("Expected: " + TopOfBookEvent.class.getSimpleName() + " Actual: " + inExpectedEvent.getClass().getSimpleName(),
+                       inExpectedEvent instanceof TopOfBookEvent);
+            verifyRpcTopOfBookEvent((TopOfBookEvent)inExpectedEvent,
+                                    inActualEvent.getTopOfBookEvent());
         } else {
-            throw new UnsupportedOperationException(inActualEvent.toString());
+            throw new UnsupportedOperationException();
         }
     }
     /**
@@ -221,11 +308,11 @@ public class MarketDataRpcUtilTest
         assertEquals(inExpectedEvent.getExchange(),
                      BaseRpcUtil.getStringValue(inActualEvent.getExchange()).orElse(null));
         assertTrue("Expected: " + inExpectedEvent.getFarPrice() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getFarPrice()),
-                   inExpectedEvent.getFarPrice().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getFarPrice())) == 0);
+                   inExpectedEvent.getFarPrice().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getFarPrice()).orElse(null)) == 0);
         assertEquals(inExpectedEvent.getImbalanceType(),
                      MarketDataRpcUtil.getImbalanceType(inActualEvent.getImbalanceType()).orElse(null));
         assertTrue("Expected: " + inExpectedEvent.getImbalanceVolume() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getImbalanceVolume()),
-                   inExpectedEvent.getImbalanceVolume().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getImbalanceVolume())) == 0);
+                   inExpectedEvent.getImbalanceVolume().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getImbalanceVolume()).orElse(null)) == 0);
         assertEquals(inExpectedEvent.getInstrument(),
                      TradeRpcUtil.getInstrument(inActualEvent.getInstrument()).orElse(null));
         assertEquals(inExpectedEvent.isShortSaleRestricted(),
@@ -233,11 +320,11 @@ public class MarketDataRpcUtilTest
         assertEquals(inExpectedEvent.getMarketStatus(),
                      MarketDataRpcUtil.getMarketStatus(inActualEvent.getMarketStatus()).orElse(null));
         assertTrue("Expected: " + inExpectedEvent.getNearPrice() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getNearPrice()),
-                   inExpectedEvent.getNearPrice().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getNearPrice())) == 0);
+                   inExpectedEvent.getNearPrice().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getNearPrice()).orElse(null)) == 0);
         assertTrue("Expected: " + inExpectedEvent.getPairedVolume() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getPairedVolume()),
-                   inExpectedEvent.getPairedVolume().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getPairedVolume())) == 0);
+                   inExpectedEvent.getPairedVolume().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getPairedVolume()).orElse(null)) == 0);
         assertTrue("Expected: " + inExpectedEvent.getReferencePrice() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getReferencePrice()),
-                   inExpectedEvent.getReferencePrice().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getReferencePrice())) == 0);
+                   inExpectedEvent.getReferencePrice().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getReferencePrice()).orElse(null)) == 0);
     }
     /**
      * Verify that the given RPC event matches the given expected event.
@@ -270,7 +357,7 @@ public class MarketDataRpcUtilTest
                                               MarketDataTypesRpc.DividendEvent inActualEvent)
     {
         assertTrue("Expected: " + inExpectedEvent.getAmount() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getAmount()),
-                   inExpectedEvent.getAmount().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getAmount())) == 0);
+                   inExpectedEvent.getAmount().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getAmount()).orElse(null)) == 0);
         assertEquals(inExpectedEvent.getCurrency(),
                      BaseRpcUtil.getStringValue(inActualEvent.getCurrency()).orElse(null));
         assertEquals(inExpectedEvent.getDeclareDate(),
@@ -289,6 +376,54 @@ public class MarketDataRpcUtilTest
                      MarketDataRpcUtil.getDividendStatus(inActualEvent.getStatus()).orElse(null));
         assertEquals(inExpectedEvent.getType(),
                      MarketDataRpcUtil.getDividendType(inActualEvent.getType()).orElse(null));
+    }
+    /**
+     * Verify the given RPC depth-of-book event matches the given expected event.
+     *
+     * @param inExpectedEvent a <code>DepthOfBookEvent</code> value
+     * @param inActualEvent a <code>MarketDataTypesRpc.DepthOfBookEvent</code> value
+     */
+    public static void verifyRpcDepthOfBookEvent(DepthOfBookEvent inExpectedEvent,
+                                                 MarketDataTypesRpc.DepthOfBookEvent inActualEvent)
+    {
+        assertEquals(inExpectedEvent.getAsks().size(),
+                     inActualEvent.getAsksCount());
+        final Iterator<MarketDataTypesRpc.QuoteEvent> askIterator = inActualEvent.getAsksList().iterator();
+        inExpectedEvent.getAsks().stream().forEach(ask->verifyRpcQuoteEvent(ask,
+                                                                            askIterator.next()));
+        assertEquals(inExpectedEvent.getBids().size(),
+                     inActualEvent.getBidsCount());
+        final Iterator<MarketDataTypesRpc.QuoteEvent> bidIterator = inActualEvent.getBidsList().iterator();
+        inExpectedEvent.getBids().stream().forEach(bid->verifyRpcQuoteEvent(bid,
+                                                                            bidIterator.next()));
+        assertEquals(inExpectedEvent.getInstrument(),
+                     TradeRpcUtil.getInstrument(inActualEvent.getInstrument()).orElse(null));
+    }
+    /**
+     * Verify the given RPC top-of-book event matches the given expected event.
+     *
+     * @param inExpectedEvent a <code>TopOfBookEvent</code> value
+     * @param inActualEvent a <code>MarketDataTypesRpc.DepthOfBookEvent</code> value
+     */
+    public static void verifyRpcTopOfBookEvent(TopOfBookEvent inExpectedEvent,
+                                               MarketDataTypesRpc.TopOfBookEvent inActualEvent)
+    {
+        if(inActualEvent.hasAsk()) {
+            assertNotNull(inExpectedEvent.getAsk());
+            verifyRpcQuoteEvent(inExpectedEvent.getAsk(),
+                                inActualEvent.getAsk());
+        } else {
+            assertNull(inExpectedEvent.getAsk());
+        }
+        if(inActualEvent.hasBid()) {
+            assertNotNull(inExpectedEvent.getBid());
+            verifyRpcQuoteEvent(inExpectedEvent.getBid(),
+                                inActualEvent.getBid());
+        } else {
+            assertNull(inExpectedEvent.getBid());
+        }
+        assertEquals(inExpectedEvent.getInstrument(),
+                     TradeRpcUtil.getInstrument(inActualEvent.getInstrument()).orElse(null));
     }
     /**
      * Verify the given RPC quote event matches the given expected event.
@@ -322,7 +457,7 @@ public class MarketDataRpcUtilTest
                                                 MarketDataTypesRpc.MarketstatEvent inActualEvent)
     {
         assertTrue("Expected: " + inExpectedEvent.getClose() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getClose()),
-                   inExpectedEvent.getClose().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getClose())) == 0);
+                   inExpectedEvent.getClose().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getClose()).orElse(null)) == 0);
         assertEquals(inExpectedEvent.getCloseDate(),
                      BaseRpcUtil.getStringValue(inActualEvent.getCloseDate()).orElse(null));
         assertEquals(inExpectedEvent.getCloseExchange(),
@@ -332,21 +467,21 @@ public class MarketDataRpcUtilTest
         assertEquals(inExpectedEvent.getEventType(),
                      MarketDataRpcUtil.getEventType(inActualEvent.getEventType()).orElse(null));
         assertTrue("Expected: " + inExpectedEvent.getHigh() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getHigh()),
-                   inExpectedEvent.getHigh().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getHigh())) == 0);
+                   inExpectedEvent.getHigh().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getHigh()).orElse(null)) == 0);
         assertEquals(inExpectedEvent.getHighExchange(),
                      BaseRpcUtil.getStringValue(inActualEvent.getHighExchange()).orElse(null));
         assertEquals(inExpectedEvent.getInstrument(),
                      TradeRpcUtil.getInstrument(inActualEvent.getInstrument()).orElse(null));
         assertTrue("Expected: " + inExpectedEvent.getLow() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getLow()),
-                   inExpectedEvent.getLow().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getLow())) == 0);
+                   inExpectedEvent.getLow().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getLow()).orElse(null)) == 0);
         assertEquals(inExpectedEvent.getLowExchange(),
                      BaseRpcUtil.getStringValue(inActualEvent.getLowExchange()).orElse(null));
         assertTrue("Expected: " + inExpectedEvent.getOpen() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getOpen()),
-                   inExpectedEvent.getOpen().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getOpen())) == 0);
+                   inExpectedEvent.getOpen().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getOpen()).orElse(null)) == 0);
         assertEquals(inExpectedEvent.getOpenExchange(),
                      BaseRpcUtil.getStringValue(inActualEvent.getOpenExchange()).orElse(null));
         assertTrue("Expected: " + inExpectedEvent.getPreviousClose() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getPreviousClose()),
-                   inExpectedEvent.getPreviousClose().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getPreviousClose())) == 0);
+                   inExpectedEvent.getPreviousClose().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getPreviousClose()).orElse(null)) == 0);
         assertEquals(inExpectedEvent.getPreviousCloseDate(),
                      BaseRpcUtil.getStringValue(inActualEvent.getPreviousCloseDate()).orElse(null));
         assertEquals(inExpectedEvent.getTradeHighTime(),
@@ -354,9 +489,9 @@ public class MarketDataRpcUtilTest
         assertEquals(inExpectedEvent.getTradeLowTime(),
                      BaseRpcUtil.getStringValue(inActualEvent.getTradeLowTime()).orElse(null));
         assertTrue("Expected: " + inExpectedEvent.getValue() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getValue()),
-                   inExpectedEvent.getValue().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getValue())) == 0);
+                   inExpectedEvent.getValue().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getValue()).orElse(null)) == 0);
         assertTrue("Expected: " + inExpectedEvent.getVolume() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getVolume()),
-                   inExpectedEvent.getVolume().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getVolume())) == 0);
+                   inExpectedEvent.getVolume().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getVolume()).orElse(null)) == 0);
     }
     /**
      * Verify the given RPC market data event matches the given market data event.
@@ -378,13 +513,61 @@ public class MarketDataRpcUtilTest
         assertEquals(inExpectedEvent.getInstrument(),
                      TradeRpcUtil.getInstrument(inActualEvent.getInstrument()).orElse(null));
         assertTrue("Expected: " + inExpectedEvent.getPrice() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getPrice()),
-                   inExpectedEvent.getPrice().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getPrice())) == 0);
+                   inExpectedEvent.getPrice().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getPrice()).orElse(null)) == 0);
         assertEquals(inExpectedEvent.getProcessedTimestamp(),
                      inActualEvent.getProcessedTimestamp());
         assertEquals(inExpectedEvent.getReceivedTimestamp(),
                      inActualEvent.getReceivedTimestamp());
         assertTrue("Expected: " + inExpectedEvent.getSize() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getSize()),
-                   inExpectedEvent.getSize().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getSize())) == 0);
+                   inExpectedEvent.getSize().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getSize()).orElse(null)) == 0);
+    }
+    /**
+     * Verify the given RPC market data event matches the given market data event.
+     *
+     * @param inExpectedEvent a <code>MarketDataTypesRpc.MarketDataEvent</code> value
+     * @param inActualEvent a <code>MarketDataEvent</code> value
+     */
+    public static void verifyMarketDataEvent(MarketDataTypesRpc.MarketDataEvent inExpectedEvent,
+                                             MarketDataEvent inActualEvent)
+    {
+        verifyEvent(inExpectedEvent.getEvent(),
+                    inActualEvent);
+        assertEquals(MarketDataRpcUtil.getEventType(inExpectedEvent.getEventType()).orElse(null),
+                     inActualEvent.getEventType());
+        assertEquals(inExpectedEvent.getExchange(),
+                     BaseRpcUtil.getStringValue(inActualEvent.getExchange()).orElse(null));
+        assertEquals(BaseRpcUtil.getDateValue(inExpectedEvent.getExchangeTimestamp()).orElse(null),
+                     inActualEvent.getExchangeTimestamp());
+        assertEquals(TradeRpcUtil.getInstrument(inExpectedEvent.getInstrument()).orElse(null),
+                     inActualEvent.getInstrument());
+        assertTrue("Expected: " + BaseRpcUtil.getScaledQuantity(inExpectedEvent.getPrice()) + " actual: " + inActualEvent.getPrice(),
+                   BaseRpcUtil.getScaledQuantity(inExpectedEvent.getPrice()).orElse(null).compareTo(inActualEvent.getPrice()) == 0);
+        assertEquals(inExpectedEvent.getProcessedTimestamp(),
+                     inActualEvent.getProcessedTimestamp());
+        assertEquals(inExpectedEvent.getReceivedTimestamp(),
+                     inActualEvent.getReceivedTimestamp());
+        assertTrue("Expected: " + BaseRpcUtil.getScaledQuantity(inExpectedEvent.getSize()) + " actual: " + inActualEvent.getSize(),
+                   BaseRpcUtil.getScaledQuantity(inExpectedEvent.getSize()).orElse(null).compareTo(inActualEvent.getSize()) == 0);
+    }
+    /**
+     * Verify the given RPC event matches the given event.
+     *
+     * @param inEvent a <code>MarketDataTypesRpc.Event</code> value
+     * @param inActualEvent an <code>Event</code> value
+     */
+    public static void verifyEvent(MarketDataTypesRpc.Event inExpectedEvent,
+                                   Event inActualEvent)
+    {
+        assertEquals(inExpectedEvent.getMessageId(),
+                     inActualEvent.getMessageId());
+        assertEquals(StringUtils.trimToNull(inExpectedEvent.getProvider()),
+                     BaseRpcUtil.getStringValue(inActualEvent.getProvider()).orElse(null));
+        assertEquals(inExpectedEvent.getRequestId(),
+                     inActualEvent.getRequestId());
+        assertEquals(BaseRpcUtil.getStringValue(inExpectedEvent.getSource()).orElse(null),
+                     inActualEvent.getSource()==null?null:String.valueOf(inExpectedEvent.getSource()));
+        assertEquals(BaseRpcUtil.getDateValue(inExpectedEvent.getTimestamp()).orElse(null),
+                     inActualEvent.getTimestamp());
     }
     /**
      * Verify the given RPC event matches the given event.
@@ -393,7 +576,7 @@ public class MarketDataRpcUtilTest
      * @param inActualEvent a <code>MarketDataTypesRpc.Event</code> value
      */
     public static void verifyRpcEvent(Event inExpectedEvent,
-                                         MarketDataTypesRpc.Event inActualEvent)
+                                      MarketDataTypesRpc.Event inActualEvent)
     {
         assertEquals(inExpectedEvent.getMessageId(),
                      inActualEvent.getMessageId());
@@ -405,6 +588,42 @@ public class MarketDataRpcUtilTest
                      BaseRpcUtil.getStringValue(inActualEvent.getSource()).orElse(null));
         assertEquals(inExpectedEvent.getTimestamp(),
                      BaseRpcUtil.getDateValue(inActualEvent.getTimestamp()).orElse(null));
+    }
+    /**
+     * Verify the given event matches the given expected RPC event.
+     *
+     * @param inExpectedEvent a <code>MarketDataTypesRpc.QuoteEvent</code> value
+     * @param inActualEvent a <code>QuoteEvent</code> value
+     */
+    public static void verifyQuoteEvent(MarketDataTypesRpc.QuoteEvent inExpectedEvent,
+                                        QuoteEvent inActualEvent)
+    {
+        verifyMarketDataEvent(inExpectedEvent.getMarketDataEvent(),
+                              inActualEvent);
+        assertEquals(MarketDataRpcUtil.getQuoteAction(inExpectedEvent.getQuoteAction()).orElse(null),
+                     inActualEvent.getAction());
+        assertEquals(inExpectedEvent.getCount(),
+                     inActualEvent.getCount());
+        assertEquals(inExpectedEvent.getLevel(),
+                     inActualEvent.getLevel());
+        assertEquals(BaseRpcUtil.getDateValue(inExpectedEvent.getQuoteDate()).orElse(null),
+                     inActualEvent.getQuoteDate());
+    }
+    /**
+     * Verify the given event matches the given expected RPC event.
+     *
+     * @param inExpectedEvent a <code>MarketDataTypesRpc.TradeEvent</code> value
+     * @param inActualEvent a <code>TradeEvent</code> value
+     */
+    public static void verifyTradeEvent(MarketDataTypesRpc.TradeEvent inExpectedEvent,
+                                        TradeEvent inActualEvent)
+    {
+        verifyMarketDataEvent(inExpectedEvent.getMarketDataEvent(),
+                              inActualEvent);
+        assertEquals(BaseRpcUtil.getStringValue(inExpectedEvent.getTradeCondition()).orElse(null),
+                     inActualEvent.getTradeCondition());
+        assertEquals(BaseRpcUtil.getDateValue(inExpectedEvent.getTradeDate()).orElse(null),
+                     inActualEvent.getTradeDate());
     }
     /**
      * Verify that the given RPC trade event matches the given trade event.
