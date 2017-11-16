@@ -14,6 +14,7 @@ import org.marketcetera.event.impl.DividendEventBuilder;
 import org.marketcetera.event.impl.ImbalanceEventBuilder;
 import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
+import org.marketcetera.event.impl.OptionEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TopOfBookEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
@@ -128,11 +129,14 @@ public class EventTestBase
     public static AskEvent generateAskEvent(Instrument inInstrument,
                                             BigDecimal inAskPrice)
     {
-        return QuoteEventBuilder.askEvent(inInstrument)
+        QuoteEventBuilder<AskEvent> builder = QuoteEventBuilder.askEvent(inInstrument)
                 .withExchange(generateExchange())
                 .withPrice(inAskPrice)
                 .withSize(generateDecimalValue())
-                .withQuoteDate(generateQuoteDate()).create();
+                .withQuoteDate(generateQuoteDate());
+        addOptionAttributes(builder,
+                            inInstrument);
+        return builder.create();
     }
     /**
      * Generates a <code>BidEvent</code> for the given instrument.
@@ -171,11 +175,14 @@ public class EventTestBase
     public static BidEvent generateBidEvent(Instrument inInstrument,
                                             BigDecimal inBidPrice)
     {
-        return QuoteEventBuilder.bidEvent(inInstrument)
+        QuoteEventBuilder<BidEvent> builder = QuoteEventBuilder.bidEvent(inInstrument)
                 .withExchange(generateExchange())
                 .withPrice(inBidPrice)
                 .withSize(generateDecimalValue())
-                .withQuoteDate(generateQuoteDate()).create();
+                .withQuoteDate(generateQuoteDate());
+        addOptionAttributes(builder,
+                            inInstrument);
+        return builder.create();
     }
     /**
      * Generates an <code>AskEvent</code> for the given <code>Equity</code>.
@@ -804,6 +811,10 @@ public class EventTestBase
      */
     public static TradeEvent generateTradeEvent(Instrument inInstrument)
     {
+        if(inInstrument instanceof Option) {
+            return generateOptionTradeEvent((Option)inInstrument,
+                                            new Equity(inInstrument.getSymbol()));
+        }
         return TradeEventBuilder.tradeEvent(inInstrument)
                 .withExchange(generateExchange())
                 .withPrice(generateDecimalValue())
@@ -848,6 +859,7 @@ public class EventTestBase
                                                    .withExpirationType(ExpirationType.AMERICAN)
                                                    .withMultiplier(BigDecimal.ZERO)
                                                    .withUnderlyingInstrument(inUnderlyingInstrument)
+                                                   .withProviderSymbol(inInstrument.getFullSymbol())
                                                    .withTradeDate(new Date()).create();
     }
     /**
@@ -1048,6 +1060,10 @@ public class EventTestBase
      */
     public static MarketstatEvent generateMarketstatEvent(Instrument inInstrument)
     {
+        if(inInstrument instanceof Option) {
+            return generateOptionMarketstatEvent((Option)inInstrument,
+                                                 new Equity("METC"));
+        }
         long startMillis = System.currentTimeMillis();
         long oneDay = 1000 * 60 * 60 * 24;
         int counter = 0;
@@ -1086,6 +1102,7 @@ public class EventTestBase
                                                         .withLowPrice(generateDecimalValue())
                                                         .withClosePrice(generateDecimalValue())
                                                         .withPreviousClosePrice(generateDecimalValue())
+                                                        .withValue(generateDecimalValue())
                                                         .withVolume(generateDecimalValue())
                                                         .withCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
                                                         .withPreviousCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
@@ -1145,7 +1162,40 @@ public class EventTestBase
         builder.withReferencePrice(EventTestBase.generateDecimalValue());
         builder.withImbalanceType(ImbalanceType.values()[random.nextInt(ImbalanceType.values().length)]);
         builder.withShortSaleRestricted(random.nextBoolean());
+        addOptionAttributes(builder,
+                            inInstrument);
         return builder.create();
+    }
+    /**
+     * Add option attributes to the given builder, if appropriate.
+     *
+     * @param inBuilder an <code>OptionEventBuilder&lt;?&gt;</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     */
+    public static void addOptionAttributes(OptionEventBuilder<?> inBuilder,
+                                           Instrument inInstrument)
+    {
+        addOptionAttributes(inBuilder,
+                            inInstrument,
+                            new Equity("METC"));
+    }
+    /**
+     * Add option attributes to the given builder, if appropriate.
+     *
+     * @param inBuilder an <code>OptionEventBuilder&lt;?&gt;</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inUnderlyingInstrument an <code>Instrument</code> value
+     */
+    public static void addOptionAttributes(OptionEventBuilder<?> inBuilder,
+                                           Instrument inInstrument,
+                                           Instrument inUnderlyingInstrument)
+    {
+        if(inInstrument instanceof Option) {
+            inBuilder.withExpirationType(ExpirationType.AMERICAN);
+            inBuilder.withMultiplier(EventTestBase.generateDecimalValue());
+            inBuilder.withUnderlyingInstrument(inUnderlyingInstrument);
+            inBuilder.withProviderSymbol(inInstrument.getFullSymbol());
+        }
     }
     /**
      * Generates a <code>DividendEvent</code> with preset values.

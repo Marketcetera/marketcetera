@@ -63,6 +63,10 @@
       <artifactId>core</artifactId>
       <type>test-jar</type>
     </dependency>
+    <dependency>
+      <groupId>pl.pragmatists</groupId>
+      <artifactId>JUnitParams</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

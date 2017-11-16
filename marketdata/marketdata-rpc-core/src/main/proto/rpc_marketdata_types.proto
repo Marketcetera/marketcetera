@@ -44,6 +44,7 @@ message MarketstatEvent {
     string highExchange = 16;
     string lowExchange = 17;
     string closeExchange = 18;
+    OptionAttributes optionAttributes = 19;
 }
 
 message ImbalanceEvent {
@@ -61,6 +62,7 @@ message ImbalanceEvent {
     Qty referencePrice = 12;
     ImbalanceType imbalanceType = 13;
     bool isShortSaleRestricted = 14;
+    OptionAttributes optionAttributes = 15;
 }
 
 enum AuctionType {
@@ -179,6 +181,7 @@ message MarketDataEvent {
     EventType eventType = 6;
     Instrument instrument = 7;
     EventTimestamps eventTimestamps = 8;
+    OptionAttributes optionAttributes = 9;
 }
 
 message TradeEvent {
@@ -210,16 +213,19 @@ message QuoteEvent {
 }
 
 message DividendEvent {
-    Qty amount = 1;
-    string currency = 2;
-    string declareDate = 3;
-    string executionDate = 4;
-    DividendFrequency frequency = 5;
-    Instrument instrument = 6;
-    string paymentDate = 7;
-    string recordDate = 8;
-    DividendStatus status = 9;
-    DividendType type = 10;
+    Event event = 1;
+    Qty amount = 2;
+    string currency = 3;
+    string declareDate = 4;
+    string executionDate = 5;
+    DividendFrequency frequency = 6;
+    Instrument instrument = 7;
+    string paymentDate = 8;
+    string recordDate = 9;
+    DividendStatus status = 10;
+    DividendType type = 11;
+    EventType eventType = 12;
+    OptionAttributes optionAttributes = 13;
 }
 
 enum LogEventLevel {
@@ -286,4 +292,18 @@ enum EventType {
     UPDATE_PART = 2;
     UPDATE_FINAL = 3;
     UNKNOWN_EVENT_TYPE = 4;
+}
+
+enum ExpirationType {
+    EUROPEAN_EXPIRATION_TYPE = 0;
+    AMERICAN_EXPIRATION_TYPE = 1;
+    UNKNOWN_EXPIRATION_TYPE = 2;
+}
+
+message OptionAttributes {
+    Instrument underlyingInstrument = 1;
+    ExpirationType expirationType = 2;
+    Qty multiplier = 3;
+    bool hasDeliverable = 4;
+    string providerSymbol = 5;
 }

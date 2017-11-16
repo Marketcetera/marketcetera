@@ -1,7 +1,9 @@
 package org.marketcetera.marketdata.rpc;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.AuctionType;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.DepthOfBookEvent;
@@ -20,11 +22,17 @@ import org.marketcetera.event.LogEventLevel;
 import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.event.MarketStatus;
 import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.OptionEvent;
 import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.impl.DepthOfBookEventBuilder;
+import org.marketcetera.event.impl.DividendEventBuilder;
+import org.marketcetera.event.impl.ImbalanceEventBuilder;
 import org.marketcetera.event.impl.LogEventBuilder;
+import org.marketcetera.event.impl.MarketstatEventBuilder;
+import org.marketcetera.event.impl.OptionEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.Content;
@@ -35,9 +43,13 @@ import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataTypesRpc;
+import org.marketcetera.options.ExpirationType;
 import org.marketcetera.rpc.base.BaseRpcUtil;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trading.rpc.TradeRpcUtil;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -62,15 +74,15 @@ public class MarketDataRpcUtil
             return Optional.empty();
         }
         if(inRpcEvent.hasDepthOfBookEvent()) {
-            throw new UnsupportedOperationException(); // TODO
+            return getDepthOfBookEvent(inRpcEvent.getDepthOfBookEvent());
         } else if(inRpcEvent.hasDividendEvent()) {
             return getDividendEvent(inRpcEvent.getDividendEvent());
         } else if(inRpcEvent.hasImbalanceEvent()) {
-            throw new UnsupportedOperationException(); // TODO
+            return getImbalanceEvent(inRpcEvent.getImbalanceEvent());
         } else if(inRpcEvent.hasLogEvent()) {
             return getLogEvent(inRpcEvent.getLogEvent());
         } else if(inRpcEvent.hasMarketstatEvent()) {
-            throw new UnsupportedOperationException(); // TODO
+            return getMarketstatEvent(inRpcEvent.getMarketstatEvent());
         } else if(inRpcEvent.hasQuoteEvent()) {
             return getQuoteEvent(inRpcEvent.getQuoteEvent());
         } else if(inRpcEvent.hasTopOfBookEvent()) {
@@ -114,6 +126,51 @@ public class MarketDataRpcUtil
         return Optional.of(builder.build());
     }
     /**
+     * Get the RPC option attributes from the given option event value.
+     *
+     * @param inEvent an <code>Event</code> value
+     * @return an <code>Optional&lt;MarketDataTypesRpc.OptionAttributes&gt;</code> value
+     */
+    public static Optional<MarketDataTypesRpc.OptionAttributes> getRpcOptionAttributes(Event inEvent)
+    {
+        if(inEvent == null || !(inEvent instanceof OptionEvent)) {
+            return Optional.empty();
+        }
+        OptionEvent optionEvent = (OptionEvent)inEvent;
+        MarketDataTypesRpc.OptionAttributes.Builder builder = MarketDataTypesRpc.OptionAttributes.newBuilder();
+        TradeRpcUtil.getRpcInstrument(optionEvent.getUnderlyingInstrument()).ifPresent(value->builder.setUnderlyingInstrument(value));
+        getRpcExpirationType(optionEvent.getExpirationType()).ifPresent(value->builder.setExpirationType(value));
+        BaseRpcUtil.getRpcQty(optionEvent.getMultiplier()).ifPresent(value->builder.setMultiplier(value));
+        builder.setHasDeliverable(optionEvent.hasDeliverable());
+        return Optional.of(builder.build());
+    }
+    /**
+     * Get the RPC expiration type from the given expiration type value.
+     *
+     * @param inExpirationType an <code>ExpirationType</code> value
+     * @return an <code>Optional&lt;MarketDataTypes.ExpirationType&gt;</code> value
+     */
+    public static Optional<MarketDataTypesRpc.ExpirationType> getRpcExpirationType(ExpirationType inExpirationType)
+    {
+        if(inExpirationType == null) {
+            return Optional.empty();
+        }
+        return Optional.of(MarketDataTypesRpc.ExpirationType.values()[(inExpirationType.ordinal())]);
+    }
+    /**
+     * Get the expiration type from the given RPC expiration type value.
+     *
+     * @param inExpirationType a <code>MarketDataTypes.ExpirationType</code> value
+     * @return an <code>Optional&lt;ExpirationType&gt;</code> value
+     */
+    public static Optional<ExpirationType> getExpirationType(MarketDataTypesRpc.ExpirationType inExpirationType)
+    {
+        if(inExpirationType == null) {
+            return Optional.empty();
+        }
+        return Optional.of(ExpirationType.values()[(inExpirationType.ordinal())]);
+    }
+    /**
      * Get the RPC imbalance event from the given value.
      *
      * @param inImbalanceEvent an <code>ImbalanceEvent</code> value
@@ -133,6 +190,7 @@ public class MarketDataRpcUtil
         getRpcImbalanceType(inImbalanceEvent.getImbalanceType()).ifPresent(value->builder.setImbalanceType(value));
         BaseRpcUtil.getRpcQty(inImbalanceEvent.getImbalanceVolume()).ifPresent(value->builder.setImbalanceVolume(value));
         TradeRpcUtil.getRpcInstrument(inImbalanceEvent.getInstrument()).ifPresent(instrument->builder.setInstrument(instrument));
+        getRpcOptionAttributes(inImbalanceEvent).ifPresent(value->builder.setOptionAttributes(value));
         getRpcInstrumentStatus(inImbalanceEvent.getInstrumentStatus()).ifPresent(value->builder.setInstrumentStatus(value));
         builder.setIsShortSaleRestricted(inImbalanceEvent.isShortSaleRestricted());
         getRpcMarketStatus(inImbalanceEvent.getMarketStatus()).ifPresent(value->builder.setMarketStatus(value));
@@ -179,6 +237,19 @@ public class MarketDataRpcUtil
             return Optional.empty();
         }
         return Optional.of(MarketDataTypesRpc.InstrumentStatus.values()[inInstrumentStatus.ordinal()]);
+    }
+    /**
+     * Get the instrument status from the given RPC value.
+     *
+     * @param inInstrumentStatus a <code>MarketDataTypesRpc.InstrumentStatus</code> value
+     * @return an <code>Optional&lt;InstrumentStatus&gt;</code> value
+     */
+    public static Optional<InstrumentStatus> getInstrumentStatus(MarketDataTypesRpc.InstrumentStatus inInstrumentStatus)
+    {
+        if(inInstrumentStatus == null) {
+            return Optional.empty();
+        }
+        return Optional.of(InstrumentStatus.values()[inInstrumentStatus.ordinal()]);
     }
     /**
      * Get the RPC imbalance type from the given value.
@@ -354,6 +425,7 @@ public class MarketDataRpcUtil
         BaseRpcUtil.getStringValue(inDividendEvent.getExecutionDate()).ifPresent(value->builder.setExecutionDate(value));
         getRpcDividendFrequency(inDividendEvent.getFrequency()).ifPresent(value->builder.setFrequency(value));
         TradeRpcUtil.getRpcInstrument(inDividendEvent.getInstrument()).ifPresent(value->builder.setInstrument(value));
+        getRpcOptionAttributes(inDividendEvent).ifPresent(value->builder.setOptionAttributes(value));
         BaseRpcUtil.getStringValue(inDividendEvent.getPaymentDate()).ifPresent(value->builder.setPaymentDate(value));
         BaseRpcUtil.getStringValue(inDividendEvent.getRecordDate()).ifPresent(value->builder.setRecordDate(value));
         getRpcDividendStatus(inDividendEvent.getStatus()).ifPresent(value->builder.setStatus(value));
@@ -608,81 +680,232 @@ public class MarketDataRpcUtil
         }
     }
     /**
-    *
-    *
-    * @param inDividendEvent
-    * @return
-    */
-   private static Optional<DividendEvent> getDividendEvent(MarketDataTypesRpc.DividendEvent inDividendEvent)
-   {
-       throw new UnsupportedOperationException(); // TODO
-   }
+     * Get the imbalance event from the given RPC value.
+     *
+     * @param inEvent a <code>MarketDataTypesRpc.ImbalanceEvent</code> value
+     * @return an <code>Optional&lt;ImbalanceEvent&gt;</code> value
+     */
+    public static Optional<ImbalanceEvent> getImbalanceEvent(MarketDataTypesRpc.ImbalanceEvent inEvent)
+    {
+        if(inEvent == null) {
+            return Optional.empty();
+        }
+        Instrument instrument = TradeRpcUtil.getInstrument(inEvent.getInstrument()).orElse(null);
+        if(instrument == null) {
+            return Optional.empty();
+        }
+        ImbalanceEventBuilder builder = ImbalanceEventBuilder.Imbalance(instrument);
+        builder.withMessageId(inEvent.getEvent().getMessageId());
+        BaseRpcUtil.getStringValue(inEvent.getEvent().getProvider()).ifPresent(value->builder.withProvider(value));
+        BaseRpcUtil.getStringValue(inEvent.getEvent().getSource()).ifPresent(value->builder.withSource(value));
+        BaseRpcUtil.getDateValue(inEvent.getEvent().getTimestamp()).ifPresent(value->builder.withTimestamp(value));
+        getAuctionType(inEvent.getAuctionType()).ifPresent(value->builder.withAuctionType(value));
+        getEventType(inEvent.getEventType()).ifPresent(value->builder.withEventType(value));
+        BaseRpcUtil.getStringValue(inEvent.getExchange()).ifPresent(value->builder.withExchange(value));
+        BaseRpcUtil.getScaledQuantity(inEvent.getFarPrice()).ifPresent(value->builder.withFarPrice(value));
+        getImbalanceType(inEvent.getImbalanceType()).ifPresent(value->builder.withImbalanceType(value));
+        BaseRpcUtil.getScaledQuantity(inEvent.getImbalanceVolume()).ifPresent(value->builder.withImbalanceVolume(value));
+        getInstrumentStatus(inEvent.getInstrumentStatus()).ifPresent(value->builder.withInstrumentStatus(value));
+        builder.withShortSaleRestricted(inEvent.getIsShortSaleRestricted());
+        getMarketStatus(inEvent.getMarketStatus()).ifPresent(value->builder.withMarketStatus(value));
+        BaseRpcUtil.getScaledQuantity(inEvent.getNearPrice()).ifPresent(value->builder.withNearPrice(value));
+        BaseRpcUtil.getScaledQuantity(inEvent.getPairedVolume()).ifPresent(value->builder.withPairedVolume(value));
+        BaseRpcUtil.getScaledQuantity(inEvent.getReferencePrice()).ifPresent(value->builder.withReferencePrice(value));
+        if(inEvent.hasOptionAttributes()) {
+            setOptionAttributes(inEvent.getOptionAttributes(),
+                                builder);
+        }
+        return Optional.of(builder.create());
+    }
+    /**
+     * Get the marketstat event from the given RPC value.
+     *
+     * @param inEvent a <code>MarketDataTypesRpc.MarketstatEvent</code> value
+     * @return an <code>Optional&lt;MarketstatEvent&gt;</code> value
+     */
+    public static Optional<MarketstatEvent> getMarketstatEvent(MarketDataTypesRpc.MarketstatEvent inEvent)
+    {
+        if(inEvent == null) {
+            return Optional.empty();
+        }
+        Instrument instrument = TradeRpcUtil.getInstrument(inEvent.getInstrument()).orElse(null);
+        if(instrument == null) {
+            return Optional.empty();
+        }
+        MarketstatEventBuilder builder = MarketstatEventBuilder.marketstat(instrument);
+        // event attributes
+        builder.withMessageId(inEvent.getEvent().getMessageId());
+        BaseRpcUtil.getStringValue(inEvent.getEvent().getProvider()).ifPresent(value->builder.withProvider(value));
+        BaseRpcUtil.getStringValue(inEvent.getEvent().getSource()).ifPresent(value->builder.withSource(value));
+        BaseRpcUtil.getDateValue(inEvent.getEvent().getTimestamp()).ifPresent(value->builder.withTimestamp(value));
+        // marketstat attributes
+        BaseRpcUtil.getScaledQuantity(inEvent.getClose()).ifPresent(value->builder.withClosePrice(value));
+        BaseRpcUtil.getStringValue(inEvent.getCloseDate()).ifPresent(value->builder.withCloseDate(value));
+        BaseRpcUtil.getStringValue(inEvent.getCloseExchange()).ifPresent(value->builder.withCloseExchange(value));
+        getEventType(inEvent.getEventType()).ifPresent(value->builder.withEventType(value));
+        BaseRpcUtil.getScaledQuantity(inEvent.getHigh()).ifPresent(value->builder.withHighPrice(value));
+        BaseRpcUtil.getStringValue(inEvent.getHighExchange()).ifPresent(value->builder.withHighExchange(value));
+        BaseRpcUtil.getScaledQuantity(inEvent.getLow()).ifPresent(value->builder.withLowPrice(value));
+        BaseRpcUtil.getStringValue(inEvent.getLowExchange()).ifPresent(value->builder.withLowExchange(value));
+        BaseRpcUtil.getScaledQuantity(inEvent.getOpen()).ifPresent(value->builder.withOpenPrice(value));
+        BaseRpcUtil.getStringValue(inEvent.getOpenExchange()).ifPresent(value->builder.withOpenExchange(value));
+        BaseRpcUtil.getScaledQuantity(inEvent.getPreviousClose()).ifPresent(value->builder.withPreviousClosePrice(value));
+        BaseRpcUtil.getStringValue(inEvent.getPreviousCloseDate()).ifPresent(value->builder.withPreviousCloseDate(value));
+        BaseRpcUtil.getStringValue(inEvent.getTradeHighTime()).ifPresent(value->builder.withTradeHighTime(value));
+        BaseRpcUtil.getStringValue(inEvent.getTradeLowTime()).ifPresent(value->builder.withTradeLowTime(value));
+        BaseRpcUtil.getScaledQuantity(inEvent.getValue()).ifPresent(value->builder.withValue(value));
+        BaseRpcUtil.getScaledQuantity(inEvent.getVolume()).ifPresent(value->builder.withVolume(value));
+        if(inEvent.hasOptionAttributes()) {
+            setOptionAttributes(inEvent.getOptionAttributes(),
+                                builder);
+        }
+        return Optional.of(builder.create());
+    }
+    /**
+     * Get the dividend event from the given RPC value.
+     *
+     * @param inDividendEvent a <code>DividendEvent</code> value
+     * @return an <code>Optional&lt;DividendEvent&gt;</code> value
+     */
+    public static Optional<DividendEvent> getDividendEvent(MarketDataTypesRpc.DividendEvent inDividendEvent)
+    {
+        if(inDividendEvent == null) {
+            return Optional.empty();
+        }
+        DividendEventBuilder builder = DividendEventBuilder.dividend();
+        BaseRpcUtil.getScaledQuantity(inDividendEvent.getAmount()).ifPresent(value->builder.withAmount(value));
+        BaseRpcUtil.getStringValue(inDividendEvent.getCurrency()).ifPresent(value->builder.withCurrency(value));
+        BaseRpcUtil.getStringValue(inDividendEvent.getDeclareDate()).ifPresent(value->builder.withDeclareDate(value));
+        TradeRpcUtil.getInstrument(inDividendEvent.getInstrument()).ifPresent(value->builder.withEquity((Equity)value));
+        getEventType(inDividendEvent.getEventType()).ifPresent(value->builder.withEventType(value));
+        BaseRpcUtil.getStringValue(inDividendEvent.getExecutionDate()).ifPresent(value->builder.withExecutionDate(value));
+        getDividendFrequency(inDividendEvent.getFrequency()).ifPresent(value->builder.withFrequency(value));
+        builder.withMessageId(inDividendEvent.getEvent().getMessageId());
+        BaseRpcUtil.getStringValue(inDividendEvent.getPaymentDate()).ifPresent(value->builder.withPaymentDate(value));
+        BaseRpcUtil.getStringValue(inDividendEvent.getRecordDate()).ifPresent(value->builder.withRecordDate(value));
+        BaseRpcUtil.getStringValue(inDividendEvent.getEvent().getSource()).ifPresent(value->builder.withSource(value));
+        getDividendStatus(inDividendEvent.getStatus()).ifPresent(value->builder.withStatus(value));
+        BaseRpcUtil.getDateValue(inDividendEvent.getEvent().getTimestamp()).ifPresent(value->builder.withTimestamp(value));
+        getDividendType(inDividendEvent.getType()).ifPresent(value->builder.withType(value));
+        return Optional.of(builder.create());
+    }
+    /**
+     * Get the depth-of-book event from the given RPC value.
+     *
+     * @param inEvent a <code>MarketDataTypesRpc.DepthOfBookEvent</code> value
+     * @return an <code>Optional&lt;DepthOfBookEvent&gt;</code> value
+     */
+    public static Optional<DepthOfBookEvent> getDepthOfBookEvent(MarketDataTypesRpc.DepthOfBookEvent inEvent)
+    {
+        if(inEvent == null) {
+            return Optional.empty();
+        }
+        Instrument instrument = TradeRpcUtil.getInstrument(inEvent.getInstrument()).orElse(null);
+        if(instrument == null) {
+            return Optional.empty();
+        }
+        DepthOfBookEventBuilder builder = DepthOfBookEventBuilder.depthOfBook();
+        builder.withInstrument(instrument);
+        List<AskEvent> asks = Lists.newArrayList();
+        for(MarketDataTypesRpc.QuoteEvent ask : inEvent.getAsksList()) {
+            getQuoteEvent(ask).ifPresent(value->asks.add((AskEvent)value));
+        }
+        builder.withAsks(asks);
+        List<BidEvent> bids = Lists.newArrayList();
+        for(MarketDataTypesRpc.QuoteEvent bid : inEvent.getBidsList()) {
+            getQuoteEvent(bid).ifPresent(value->bids.add((BidEvent)value));
+        }
+        builder.withBids(bids);
+        return Optional.of(builder.create());
+    }
     /**
      * Get the quote event from the given RPC value.
      *
-     * @param inQuoteEvent a <code>MarketDataTypesRpc.QuoteEvent</code> value
+     * @param inEvent a <code>MarketDataTypesRpc.QuoteEvent</code> value
      * @return an <code>Optional&lt;QuoteEvent&gt;</code> value
      */
-    public static Optional<QuoteEvent> getQuoteEvent(MarketDataTypesRpc.QuoteEvent inQuoteEvent)
+    public static Optional<? extends QuoteEvent> getQuoteEvent(MarketDataTypesRpc.QuoteEvent inEvent)
     {
-        if(inQuoteEvent == null) {
+        if(inEvent == null) {
             return Optional.empty();
         }
-        Instrument instrument = TradeRpcUtil.getInstrument(inQuoteEvent.getMarketDataEvent().getInstrument()).orElse(null);
+        Instrument instrument = TradeRpcUtil.getInstrument(inEvent.getMarketDataEvent().getInstrument()).orElse(null);
         if(instrument == null) {
             return Optional.empty();
         }
         final QuoteEventBuilder<? extends QuoteEvent> builder;
-        if(inQuoteEvent.getIsBid()) {
+        if(inEvent.getIsBid()) {
             builder = QuoteEventBuilder.bidEvent(instrument);
         } else {
             builder = QuoteEventBuilder.askEvent(instrument);
         }
-        getQuoteAction(inQuoteEvent.getQuoteAction()).ifPresent(value->builder.withAction(value));
-        builder.withCount(inQuoteEvent.getCount());
-        getEventType(inQuoteEvent.getMarketDataEvent().getEventType()).ifPresent(value->builder.withEventType(value));
-        BaseRpcUtil.getStringValue(inQuoteEvent.getMarketDataEvent().getExchange()).ifPresent(value->builder.withExchange(value));
-        builder.withLevel(inQuoteEvent.getLevel());
-        builder.withMessageId(inQuoteEvent.getMarketDataEvent().getEvent().getMessageId());
-        BaseRpcUtil.getScaledQuantity(inQuoteEvent.getMarketDataEvent().getPrice()).ifPresent(value->builder.withPrice(value));
-        builder.withProcessedTimestamp(inQuoteEvent.getMarketDataEvent().getEventTimestamps().getProcessedTimestamp());
-        BaseRpcUtil.getStringValue(inQuoteEvent.getMarketDataEvent().getEvent().getProvider()).ifPresent(value->builder.withProvider(value));
-        BaseRpcUtil.getDateValue(inQuoteEvent.getQuoteDate()).ifPresent(value->builder.withQuoteDate(value));
-        builder.withReceivedTimestamp(inQuoteEvent.getMarketDataEvent().getEventTimestamps().getReceivedTimestamp());
-        BaseRpcUtil.getScaledQuantity(inQuoteEvent.getMarketDataEvent().getSize()).ifPresent(value->builder.withSize(value));
-        BaseRpcUtil.getStringValue(inQuoteEvent.getMarketDataEvent().getEvent().getSource()).ifPresent(value->builder.withSource(value));
-        BaseRpcUtil.getDateValue(inQuoteEvent.getMarketDataEvent().getEvent().getTimestamp()).ifPresent(value->builder.withTimestamp(value));
+        getQuoteAction(inEvent.getQuoteAction()).ifPresent(value->builder.withAction(value));
+        builder.withCount(inEvent.getCount());
+        getEventType(inEvent.getMarketDataEvent().getEventType()).ifPresent(value->builder.withEventType(value));
+        BaseRpcUtil.getStringValue(inEvent.getMarketDataEvent().getExchange()).ifPresent(value->builder.withExchange(value));
+        builder.withLevel(inEvent.getLevel());
+        builder.withMessageId(inEvent.getMarketDataEvent().getEvent().getMessageId());
+        BaseRpcUtil.getScaledQuantity(inEvent.getMarketDataEvent().getPrice()).ifPresent(value->builder.withPrice(value));
+        builder.withProcessedTimestamp(inEvent.getMarketDataEvent().getEventTimestamps().getProcessedTimestamp());
+        BaseRpcUtil.getStringValue(inEvent.getMarketDataEvent().getEvent().getProvider()).ifPresent(value->builder.withProvider(value));
+        BaseRpcUtil.getDateValue(inEvent.getQuoteDate()).ifPresent(value->builder.withQuoteDate(value));
+        builder.withReceivedTimestamp(inEvent.getMarketDataEvent().getEventTimestamps().getReceivedTimestamp());
+        BaseRpcUtil.getScaledQuantity(inEvent.getMarketDataEvent().getSize()).ifPresent(value->builder.withSize(value));
+        BaseRpcUtil.getStringValue(inEvent.getMarketDataEvent().getEvent().getSource()).ifPresent(value->builder.withSource(value));
+        BaseRpcUtil.getDateValue(inEvent.getMarketDataEvent().getEvent().getTimestamp()).ifPresent(value->builder.withTimestamp(value));
+        if(inEvent.getMarketDataEvent().hasOptionAttributes()) {
+            setOptionAttributes(inEvent.getMarketDataEvent().getOptionAttributes(),
+                                builder);
+        }
         return Optional.of(builder.create());
     }
     /**
      * Get the trade event from the given RPC value.
      *
-     * @param inTradeEvent a <code>MarketDataTypesRpc.TradeEvent</code> value
+     * @param inEvent a <code>MarketDataTypesRpc.TradeEvent</code> value
      * @return an <code>Optional&lt;TradeEvent&gt;</code> value
      */
-    public static Optional<TradeEvent> getTradeEvent(MarketDataTypesRpc.TradeEvent inTradeEvent)
+    public static Optional<TradeEvent> getTradeEvent(MarketDataTypesRpc.TradeEvent inEvent)
     {
-        if(inTradeEvent == null) {
+        if(inEvent == null) {
             return Optional.empty();
         }
-        Instrument instrument = TradeRpcUtil.getInstrument(inTradeEvent.getMarketDataEvent().getInstrument()).orElse(null);
+        Instrument instrument = TradeRpcUtil.getInstrument(inEvent.getMarketDataEvent().getInstrument()).orElse(null);
         if(instrument == null) {
             return Optional.empty();
         }
         TradeEventBuilder<TradeEvent> builder = TradeEventBuilder.tradeEvent(instrument);
-        getEventType(inTradeEvent.getMarketDataEvent().getEventType()).ifPresent(value->builder.withEventType(value));
-        BaseRpcUtil.getStringValue(inTradeEvent.getMarketDataEvent().getExchange()).ifPresent(value->builder.withExchange(value));
-        builder.withMessageId(inTradeEvent.getMarketDataEvent().getEvent().getMessageId());
-        BaseRpcUtil.getScaledQuantity(inTradeEvent.getMarketDataEvent().getPrice()).ifPresent(value->builder.withPrice(value));
-        builder.withProcessedTimestamp(inTradeEvent.getMarketDataEvent().getEventTimestamps().getProcessedTimestamp());
-        BaseRpcUtil.getStringValue(inTradeEvent.getMarketDataEvent().getEvent().getProvider()).ifPresent(value->builder.withProvider(value));
-        builder.withReceivedTimestamp(inTradeEvent.getMarketDataEvent().getEventTimestamps().getReceivedTimestamp());
-        BaseRpcUtil.getScaledQuantity(inTradeEvent.getMarketDataEvent().getSize()).ifPresent(value->builder.withSize(value));
-        BaseRpcUtil.getStringValue(inTradeEvent.getMarketDataEvent().getEvent().getSource()).ifPresent(value->builder.withSource(value));
-        BaseRpcUtil.getDateValue(inTradeEvent.getMarketDataEvent().getEvent().getTimestamp()).ifPresent(value->builder.withTimestamp(value));
-        BaseRpcUtil.getStringValue(inTradeEvent.getTradeCondition()).ifPresent(value->builder.withTradeCondition(value));
-        BaseRpcUtil.getDateValue(inTradeEvent.getTradeDate()).ifPresent(value->builder.withTradeDate(value));
+        getEventType(inEvent.getMarketDataEvent().getEventType()).ifPresent(value->builder.withEventType(value));
+        BaseRpcUtil.getStringValue(inEvent.getMarketDataEvent().getExchange()).ifPresent(value->builder.withExchange(value));
+        builder.withMessageId(inEvent.getMarketDataEvent().getEvent().getMessageId());
+        BaseRpcUtil.getScaledQuantity(inEvent.getMarketDataEvent().getPrice()).ifPresent(value->builder.withPrice(value));
+        builder.withProcessedTimestamp(inEvent.getMarketDataEvent().getEventTimestamps().getProcessedTimestamp());
+        BaseRpcUtil.getStringValue(inEvent.getMarketDataEvent().getEvent().getProvider()).ifPresent(value->builder.withProvider(value));
+        builder.withReceivedTimestamp(inEvent.getMarketDataEvent().getEventTimestamps().getReceivedTimestamp());
+        BaseRpcUtil.getScaledQuantity(inEvent.getMarketDataEvent().getSize()).ifPresent(value->builder.withSize(value));
+        BaseRpcUtil.getStringValue(inEvent.getMarketDataEvent().getEvent().getSource()).ifPresent(value->builder.withSource(value));
+        BaseRpcUtil.getDateValue(inEvent.getMarketDataEvent().getEvent().getTimestamp()).ifPresent(value->builder.withTimestamp(value));
+        BaseRpcUtil.getStringValue(inEvent.getTradeCondition()).ifPresent(value->builder.withTradeCondition(value));
+        BaseRpcUtil.getDateValue(inEvent.getTradeDate()).ifPresent(value->builder.withTradeDate(value));
+        if(inEvent.getMarketDataEvent().hasOptionAttributes()) {
+            setOptionAttributes(inEvent.getMarketDataEvent().getOptionAttributes(),
+                                builder);
+        }
         return Optional.of(builder.create());
+    }
+    /**
+     * Set the values from the given RPC option attributes on the given option event builder.
+     *
+     * @param inOptionAttributes a <code>MarketDataTypesRpc.OptionAttributes</code> value
+     * @param inBuilder an <code>OptionEventBuilder&lt;?&gt;</code> value
+     */
+    public static void setOptionAttributes(MarketDataTypesRpc.OptionAttributes inOptionAttributes,
+                                           OptionEventBuilder<?> inBuilder)
+    {
+        getExpirationType(inOptionAttributes.getExpirationType()).ifPresent(value->inBuilder.withExpirationType(value));
+        BaseRpcUtil.getScaledQuantity(inOptionAttributes.getMultiplier()).ifPresent(value->inBuilder.withMultiplier(value));
+        BaseRpcUtil.getStringValue(inOptionAttributes.getProviderSymbol()).ifPresent(value->inBuilder.withProviderSymbol(value));
+        TradeRpcUtil.getInstrument(inOptionAttributes.getUnderlyingInstrument()).ifPresent(value->inBuilder.withUnderlyingInstrument(value));
     }
     /**
      * Get the RPC trade event from the given value.
@@ -741,6 +964,7 @@ public class MarketDataRpcUtil
         BaseRpcUtil.getRpcQty(inEvent.getHigh()).ifPresent(qty->builder.setHigh(qty));
         BaseRpcUtil.getStringValue(inEvent.getHighExchange()).ifPresent(exchange->builder.setHighExchange(exchange));
         TradeRpcUtil.getRpcInstrument(inEvent.getInstrument()).ifPresent(instrument->builder.setInstrument(instrument));
+        getRpcOptionAttributes(inEvent).ifPresent(value->builder.setOptionAttributes(value));
         BaseRpcUtil.getRpcQty(inEvent.getLow()).ifPresent(qty->builder.setLow(qty));
         BaseRpcUtil.getStringValue(inEvent.getLowExchange()).ifPresent(exchange->builder.setLowExchange(exchange));
         BaseRpcUtil.getRpcQty(inEvent.getOpen()).ifPresent(qty->builder.setOpen(qty));
@@ -770,6 +994,7 @@ public class MarketDataRpcUtil
         BaseRpcUtil.getStringValue(inMarketDataEvent.getExchange()).ifPresent(exchange->builder.setExchange(exchange));
         BaseRpcUtil.getTimestampValue(inMarketDataEvent.getExchangeTimestamp()).ifPresent(exchangeTimestamp->builder.setExchangeTimestamp(exchangeTimestamp));
         TradeRpcUtil.getRpcInstrument(inMarketDataEvent.getInstrument()).ifPresent(instrument->builder.setInstrument(instrument));
+        getRpcOptionAttributes(inMarketDataEvent).ifPresent(value->builder.setOptionAttributes(value));
         BaseRpcUtil.getRpcQty(inMarketDataEvent.getPrice()).ifPresent(qty->builder.setPrice(qty));
         getRpcEventTimestamps(inMarketDataEvent).ifPresent(value->builder.setEventTimestamps(value));
         BaseRpcUtil.getRpcQty(inMarketDataEvent.getSize()).ifPresent(qty->builder.setSize(qty));
