@@ -159,9 +159,15 @@ enum ImbalanceType {
 }
 
 message LogEvent {
-    LogEventLevel logEventLevel = 1;
-    string message = 2;
-    Object exception = 3;
+    Event event = 1;
+    LogEventLevel logEventLevel = 2;
+    string message = 3;
+    Object exception = 4;
+}
+
+message EventTimestamps {
+    int64 processedTimestamp = 1;
+    int64 receivedTimestamp = 2;
 }
 
 message MarketDataEvent {
@@ -170,10 +176,9 @@ message MarketDataEvent {
     Qty price = 3;
     Qty size = 4;
     google.protobuf.Timestamp exchangeTimestamp = 5;
-    int64 processedTimestamp = 6;
-    int64 receivedTimestamp = 7;
-    EventType eventType = 8;
-    Instrument instrument = 9;
+    EventType eventType = 6;
+    Instrument instrument = 7;
+    EventTimestamps eventTimestamps = 8;
 }
 
 message TradeEvent {

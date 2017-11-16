@@ -11,6 +11,7 @@ import org.marketcetera.event.DividendStatus;
 import org.marketcetera.event.DividendType;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventType;
+import org.marketcetera.event.HasTimestamps;
 import org.marketcetera.event.ImbalanceEvent;
 import org.marketcetera.event.ImbalanceType;
 import org.marketcetera.event.InstrumentStatus;
@@ -23,6 +24,7 @@ import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.Content;
@@ -62,7 +64,7 @@ public class MarketDataRpcUtil
         if(inRpcEvent.hasDepthOfBookEvent()) {
             throw new UnsupportedOperationException(); // TODO
         } else if(inRpcEvent.hasDividendEvent()) {
-            throw new UnsupportedOperationException(); // TODO
+            return getDividendEvent(inRpcEvent.getDividendEvent());
         } else if(inRpcEvent.hasImbalanceEvent()) {
             throw new UnsupportedOperationException(); // TODO
         } else if(inRpcEvent.hasLogEvent()) {
@@ -241,7 +243,32 @@ public class MarketDataRpcUtil
         if(inLogEvent == null) {
             return Optional.empty();
         }
-        throw new UnsupportedOperationException(); // TODO
+        final LogEventBuilder builder;
+        switch(inLogEvent.getLogEventLevel()) {
+            case DEBUG_LOG_EVENT_LEVEL:
+                builder = LogEventBuilder.debug();
+                break;
+            case ERROR_LOG_EVENT_LEVEL:
+                builder = LogEventBuilder.error();
+                break;
+            case INFO_LOG_EVENT_LEVEL:
+                builder = LogEventBuilder.info();
+                break;
+            case WARN_LOG_EVENT_LEVEL:
+                builder = LogEventBuilder.warn();
+                break;
+            case UNRECOGNIZED:
+            default:
+                throw new UnsupportedOperationException(String.valueOf(inLogEvent.getLogEventLevel()));
+        }
+        BaseRpcUtil.getObject(inLogEvent.getException()).ifPresent(value->builder.withException((Throwable)value));
+        builder.withMessage(Messages.MESSAGE_HOLDER,
+                            inLogEvent.getMessage());
+        builder.withMessageId(inLogEvent.getEvent().getMessageId());
+        builder.withRequestId(inLogEvent.getEvent().getRequestId());
+        BaseRpcUtil.getStringValue(inLogEvent.getEvent().getSource()).ifPresent(value->builder.withSource(value));
+        BaseRpcUtil.getDateValue(inLogEvent.getEvent().getTimestamp()).ifPresent(value->builder.withTimestamp(value));
+        return Optional.of(builder.create());
     }
     /**
      * Get the RPC log event from the given value.
@@ -581,6 +608,16 @@ public class MarketDataRpcUtil
         }
     }
     /**
+    *
+    *
+    * @param inDividendEvent
+    * @return
+    */
+   private static Optional<DividendEvent> getDividendEvent(MarketDataTypesRpc.DividendEvent inDividendEvent)
+   {
+       throw new UnsupportedOperationException(); // TODO
+   }
+    /**
      * Get the quote event from the given RPC value.
      *
      * @param inQuoteEvent a <code>MarketDataTypesRpc.QuoteEvent</code> value
@@ -608,10 +645,10 @@ public class MarketDataRpcUtil
         builder.withLevel(inQuoteEvent.getLevel());
         builder.withMessageId(inQuoteEvent.getMarketDataEvent().getEvent().getMessageId());
         BaseRpcUtil.getScaledQuantity(inQuoteEvent.getMarketDataEvent().getPrice()).ifPresent(value->builder.withPrice(value));
-        builder.withProcessedTimestamp(inQuoteEvent.getMarketDataEvent().getProcessedTimestamp());
+        builder.withProcessedTimestamp(inQuoteEvent.getMarketDataEvent().getEventTimestamps().getProcessedTimestamp());
         BaseRpcUtil.getStringValue(inQuoteEvent.getMarketDataEvent().getEvent().getProvider()).ifPresent(value->builder.withProvider(value));
         BaseRpcUtil.getDateValue(inQuoteEvent.getQuoteDate()).ifPresent(value->builder.withQuoteDate(value));
-        builder.withReceivedTimestamp(inQuoteEvent.getMarketDataEvent().getReceivedTimestamp());
+        builder.withReceivedTimestamp(inQuoteEvent.getMarketDataEvent().getEventTimestamps().getReceivedTimestamp());
         BaseRpcUtil.getScaledQuantity(inQuoteEvent.getMarketDataEvent().getSize()).ifPresent(value->builder.withSize(value));
         BaseRpcUtil.getStringValue(inQuoteEvent.getMarketDataEvent().getEvent().getSource()).ifPresent(value->builder.withSource(value));
         BaseRpcUtil.getDateValue(inQuoteEvent.getMarketDataEvent().getEvent().getTimestamp()).ifPresent(value->builder.withTimestamp(value));
@@ -637,9 +674,9 @@ public class MarketDataRpcUtil
         BaseRpcUtil.getStringValue(inTradeEvent.getMarketDataEvent().getExchange()).ifPresent(value->builder.withExchange(value));
         builder.withMessageId(inTradeEvent.getMarketDataEvent().getEvent().getMessageId());
         BaseRpcUtil.getScaledQuantity(inTradeEvent.getMarketDataEvent().getPrice()).ifPresent(value->builder.withPrice(value));
-        builder.withProcessedTimestamp(inTradeEvent.getMarketDataEvent().getProcessedTimestamp());
+        builder.withProcessedTimestamp(inTradeEvent.getMarketDataEvent().getEventTimestamps().getProcessedTimestamp());
         BaseRpcUtil.getStringValue(inTradeEvent.getMarketDataEvent().getEvent().getProvider()).ifPresent(value->builder.withProvider(value));
-        builder.withReceivedTimestamp(inTradeEvent.getMarketDataEvent().getReceivedTimestamp());
+        builder.withReceivedTimestamp(inTradeEvent.getMarketDataEvent().getEventTimestamps().getReceivedTimestamp());
         BaseRpcUtil.getScaledQuantity(inTradeEvent.getMarketDataEvent().getSize()).ifPresent(value->builder.withSize(value));
         BaseRpcUtil.getStringValue(inTradeEvent.getMarketDataEvent().getEvent().getSource()).ifPresent(value->builder.withSource(value));
         BaseRpcUtil.getDateValue(inTradeEvent.getMarketDataEvent().getEvent().getTimestamp()).ifPresent(value->builder.withTimestamp(value));
@@ -734,9 +771,24 @@ public class MarketDataRpcUtil
         BaseRpcUtil.getTimestampValue(inMarketDataEvent.getExchangeTimestamp()).ifPresent(exchangeTimestamp->builder.setExchangeTimestamp(exchangeTimestamp));
         TradeRpcUtil.getRpcInstrument(inMarketDataEvent.getInstrument()).ifPresent(instrument->builder.setInstrument(instrument));
         BaseRpcUtil.getRpcQty(inMarketDataEvent.getPrice()).ifPresent(qty->builder.setPrice(qty));
-        builder.setProcessedTimestamp(inMarketDataEvent.getProcessedTimestamp());
-        builder.setReceivedTimestamp(inMarketDataEvent.getReceivedTimestamp());
+        getRpcEventTimestamps(inMarketDataEvent).ifPresent(value->builder.setEventTimestamps(value));
         BaseRpcUtil.getRpcQty(inMarketDataEvent.getSize()).ifPresent(qty->builder.setSize(qty));
+        return Optional.of(builder.build());
+    }
+    /**
+     * Get the RPC timestamp value from the given value.
+     *
+     * @param inHasTimestamps a <code>HasTimestamps</code> value
+     * @return an <code>Optional&lt;MarketDataTypesRpc.EventTimestamps&gt;</code> value
+     */
+    public static Optional<MarketDataTypesRpc.EventTimestamps> getRpcEventTimestamps(HasTimestamps inHasTimestamps)
+    {
+        if(inHasTimestamps == null) {
+            return Optional.empty();
+        }
+        MarketDataTypesRpc.EventTimestamps.Builder builder = MarketDataTypesRpc.EventTimestamps.newBuilder();
+        builder.setProcessedTimestamp(inHasTimestamps.getProcessedTimestamp());
+        builder.setReceivedTimestamp(inHasTimestamps.getReceivedTimestamp());
         return Optional.of(builder.build());
     }
     /**

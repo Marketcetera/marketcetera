@@ -16,6 +16,7 @@ import org.marketcetera.event.DepthOfBookEvent;
 import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.HasTimestamps;
 import org.marketcetera.event.ImbalanceEvent;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.MarketDataEvent;
@@ -107,6 +108,10 @@ public class MarketDataRpcUtilTest
         assertNotNull(rpcEvent);
         verifyRpcEventHolder(event,
                              rpcEvent);
+//        Event newEvent = MarketDataRpcUtil.getEvent(rpcEvent).orElse(null);
+//        assertNotNull(newEvent);
+//        verifyEvent(rpcEvent,
+//                    newEvent);
     }
     /**
      * Test {@link MarketDataRpcUtil#getRpcEventHolder(Event)} for {@link LogEvent} types.
@@ -123,10 +128,10 @@ public class MarketDataRpcUtilTest
         assertNotNull(rpcEvent);
         verifyRpcEventHolder(event,
                              rpcEvent);
-//        Event newEvent = MarketDataRpcUtil.getEvent(rpcEvent).orElse(null);
-//        assertNotNull(newEvent);
-//        verifyEvent(rpcEvent,
-//                    newEvent);
+        Event newEvent = MarketDataRpcUtil.getEvent(rpcEvent).orElse(null);
+        assertNotNull(newEvent);
+        verifyEvent(rpcEvent,
+                    newEvent);
     }
     /**
      * Test {@link MarketDataRpcUtil#getRpcEventHolder(Event)} for {@link ImbalanceEvent} types.
@@ -229,10 +234,15 @@ public class MarketDataRpcUtilTest
             verifyTradeEvent(inExpectedEvent.getTradeEvent(),
                              (TradeEvent)inActualEvent);
         } else if(inExpectedEvent.hasQuoteEvent()) {
-                assertTrue("Expected: " + QuoteEvent.class.getSimpleName() + " Actual: " + inActualEvent.getClass().getSimpleName(),
-                           inActualEvent instanceof QuoteEvent);
-                verifyQuoteEvent(inExpectedEvent.getQuoteEvent(),
-                                 (QuoteEvent)inActualEvent);
+            assertTrue("Expected: " + QuoteEvent.class.getSimpleName() + " Actual: " + inActualEvent.getClass().getSimpleName(),
+                       inActualEvent instanceof QuoteEvent);
+            verifyQuoteEvent(inExpectedEvent.getQuoteEvent(),
+                             (QuoteEvent)inActualEvent);
+        } else if(inExpectedEvent.hasLogEvent()) {
+            assertTrue("Expected: " + LogEvent.class.getSimpleName() + " Actual: " + inActualEvent.getClass().getSimpleName(),
+                       inActualEvent instanceof LogEvent);
+            verifyLogEvent(inExpectedEvent.getLogEvent(),
+                           (LogEvent)inActualEvent);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -514,12 +524,57 @@ public class MarketDataRpcUtilTest
                      TradeRpcUtil.getInstrument(inActualEvent.getInstrument()).orElse(null));
         assertTrue("Expected: " + inExpectedEvent.getPrice() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getPrice()),
                    inExpectedEvent.getPrice().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getPrice()).orElse(null)) == 0);
-        assertEquals(inExpectedEvent.getProcessedTimestamp(),
-                     inActualEvent.getProcessedTimestamp());
-        assertEquals(inExpectedEvent.getReceivedTimestamp(),
-                     inActualEvent.getReceivedTimestamp());
+        if(inActualEvent.hasEventTimestamps()) {
+            verifyRpcTimestamps(inExpectedEvent,
+                                inActualEvent.getEventTimestamps());
+        } else {
+            verifyRpcTimestamps(inExpectedEvent,
+                                null);
+        }
         assertTrue("Expected: " + inExpectedEvent.getSize() + " actual: " + BaseRpcUtil.getScaledQuantity(inActualEvent.getSize()),
                    inExpectedEvent.getSize().compareTo(BaseRpcUtil.getScaledQuantity(inActualEvent.getSize()).orElse(null)) == 0);
+    }
+    /**
+     * Verify the given timestamp holder matches the given RPC expected value.
+     *
+     * @param inExpectedTimestamps a <code>MarketDataTypesRpc.EventTimestamps</code> value or <code>null</code>
+     * @param inActualTimestamps a <code>HasTimestamps</code> value
+     */
+    public static void verifyTimestamps(MarketDataTypesRpc.EventTimestamps inExpectedTimestamps,
+                                        HasTimestamps inActualTimestamps)
+    {
+        if(inExpectedTimestamps == null) {
+            assertEquals(0,
+                         inActualTimestamps.getProcessedTimestamp());
+            assertEquals(0,
+                         inActualTimestamps.getReceivedTimestamp());
+        } else {
+            assertEquals(inExpectedTimestamps.getProcessedTimestamp(),
+                         inActualTimestamps.getProcessedTimestamp());
+            assertEquals(inExpectedTimestamps.getReceivedTimestamp(),
+                         inActualTimestamps.getReceivedTimestamp());
+        }
+    }
+    /**
+     * Verify the given RPC timestamp holder matches the given expected value.
+     *
+     * @param inExpectedTimestamps a <code>HasTimestamps</code> value
+     * @param inActualTimestamps a <code>MarketDataTypesRpc.EventTimestamps</code> value or <code>null</code>
+     */
+    public static void verifyRpcTimestamps(HasTimestamps inExpectedTimestamps,
+                                           MarketDataTypesRpc.EventTimestamps inActualTimestamps)
+    {
+        if(inActualTimestamps == null) {
+            assertEquals(0,
+                         inExpectedTimestamps.getProcessedTimestamp());
+            assertEquals(0,
+                         inExpectedTimestamps.getReceivedTimestamp());
+        } else {
+            assertEquals(inActualTimestamps.getProcessedTimestamp(),
+                         inExpectedTimestamps.getProcessedTimestamp());
+            assertEquals(inActualTimestamps.getReceivedTimestamp(),
+                         inExpectedTimestamps.getReceivedTimestamp());
+        }
     }
     /**
      * Verify the given RPC market data event matches the given market data event.
@@ -542,10 +597,13 @@ public class MarketDataRpcUtilTest
                      inActualEvent.getInstrument());
         assertTrue("Expected: " + BaseRpcUtil.getScaledQuantity(inExpectedEvent.getPrice()) + " actual: " + inActualEvent.getPrice(),
                    BaseRpcUtil.getScaledQuantity(inExpectedEvent.getPrice()).orElse(null).compareTo(inActualEvent.getPrice()) == 0);
-        assertEquals(inExpectedEvent.getProcessedTimestamp(),
-                     inActualEvent.getProcessedTimestamp());
-        assertEquals(inExpectedEvent.getReceivedTimestamp(),
-                     inActualEvent.getReceivedTimestamp());
+        if(inExpectedEvent.hasEventTimestamps()) {
+            verifyTimestamps(inExpectedEvent.getEventTimestamps(),
+                             inActualEvent);
+        } else {
+            verifyTimestamps(null,
+                             inActualEvent);
+        }
         assertTrue("Expected: " + BaseRpcUtil.getScaledQuantity(inExpectedEvent.getSize()) + " actual: " + inActualEvent.getSize(),
                    BaseRpcUtil.getScaledQuantity(inExpectedEvent.getSize()).orElse(null).compareTo(inActualEvent.getSize()) == 0);
     }
@@ -588,6 +646,28 @@ public class MarketDataRpcUtilTest
                      BaseRpcUtil.getStringValue(inActualEvent.getSource()).orElse(null));
         assertEquals(inExpectedEvent.getTimestamp(),
                      BaseRpcUtil.getDateValue(inActualEvent.getTimestamp()).orElse(null));
+    }
+    /**
+     * Verify the given event matches the given expected RPC event.
+     *
+     * @param inExpectedEvent a <code>MarketDataTypesRpc.LogEvent</code> value
+     * @param inActualEvent a <code>LogEvent</code> value
+     */
+    public static void verifyLogEvent(MarketDataTypesRpc.LogEvent inExpectedEvent,
+                                      LogEvent inActualEvent)
+    {
+        verifyEvent(inExpectedEvent.getEvent(),
+                    inActualEvent);
+        if(inExpectedEvent.hasException()) {
+            assertEquals(((Throwable)BaseRpcUtil.getObject(inExpectedEvent.getException()).orElse(null)).getMessage(),
+                         inActualEvent.getException().getMessage());
+        } else {
+            assertNull(inActualEvent.getException());
+        }
+        assertEquals(MarketDataRpcUtil.getLogEventLevel(inExpectedEvent.getLogEventLevel()).orElse(null),
+                     inActualEvent.getLevel());
+        assertEquals(BaseRpcUtil.getStringValue(inExpectedEvent.getMessage()).orElse(null),
+                     inActualEvent.getMessage());
     }
     /**
      * Verify the given event matches the given expected RPC event.
