@@ -34,6 +34,7 @@ import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.event.impl.OptionEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
+import org.marketcetera.event.impl.TopOfBookEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.FeedStatus;
@@ -86,7 +87,7 @@ public class MarketDataRpcUtil
         } else if(inRpcEvent.hasQuoteEvent()) {
             return getQuoteEvent(inRpcEvent.getQuoteEvent());
         } else if(inRpcEvent.hasTopOfBookEvent()) {
-            throw new UnsupportedOperationException(); // TODO
+            return getTopOfBookEvent(inRpcEvent.getTopOfBookEvent());
         } else if(inRpcEvent.hasTradeEvent()) {
             return getTradeEvent(inRpcEvent.getTradeEvent());
         } else {
@@ -787,6 +788,31 @@ public class MarketDataRpcUtil
         getDividendStatus(inDividendEvent.getStatus()).ifPresent(value->builder.withStatus(value));
         BaseRpcUtil.getDateValue(inDividendEvent.getEvent().getTimestamp()).ifPresent(value->builder.withTimestamp(value));
         getDividendType(inDividendEvent.getType()).ifPresent(value->builder.withType(value));
+        return Optional.of(builder.create());
+    }
+    /**
+     * Get the top-of-book event from the given RPC value.
+     *
+     * @param inEvent a <code>MarketDataTypesRpc.TopOfBookEvent</code> value
+     * @return an <code>Optional&lt;TopOfBookEvent&gt;</code> value
+     */
+    public static Optional<TopOfBookEvent> getTopOfBookEvent(MarketDataTypesRpc.TopOfBookEvent inEvent)
+    {
+        if(inEvent == null) {
+            return Optional.empty();
+        }
+        Instrument instrument = TradeRpcUtil.getInstrument(inEvent.getInstrument()).orElse(null);
+        if(instrument == null) {
+            return Optional.empty();
+        }
+        TopOfBookEventBuilder builder = TopOfBookEventBuilder.topOfBookEvent();
+        builder.withInstrument(instrument);
+        if(inEvent.hasAsk()) {
+            getQuoteEvent(inEvent.getAsk()).ifPresent(value->builder.withAsk((AskEvent)value));
+        }
+        if(inEvent.hasBid()) {
+            getQuoteEvent(inEvent.getBid()).ifPresent(value->builder.withBid((BidEvent)value));
+        }
         return Optional.of(builder.create());
     }
     /**
