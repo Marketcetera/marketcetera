@@ -1,13 +1,13 @@
-package org.marketcetera.marketdata.rpc;
+package org.marketcetera.test.marketdata;
 
 import java.util.List;
 
-import org.marketcetera.admin.rpc.MockSession;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
 import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
 import org.marketcetera.rpc.server.RpcServer;
+import org.marketcetera.test.admin.MockSession;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,11 @@
-package org.marketcetera.admin.rpc;
+package org.marketcetera.test.admin;
 
 import java.util.List;
 
 import org.marketcetera.admin.AdminRpcClientFactory;
 import org.marketcetera.admin.UserAttributeFactory;
 import org.marketcetera.admin.dao.PersistentUserAttributeFactory;
+import org.marketcetera.admin.rpc.AdminRpcService;
 import org.marketcetera.admin.service.UserAttributeService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserAttributeServiceImpl;

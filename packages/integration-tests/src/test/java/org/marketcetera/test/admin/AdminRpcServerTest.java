@@ -1,4 +1,4 @@
-package org.marketcetera.admin.rpc;
+package org.marketcetera.test.admin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,6 +19,8 @@ import org.marketcetera.admin.Role;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeType;
+import org.marketcetera.admin.rpc.AdminRpcService;
+import org.marketcetera.admin.rpc.AdminRpcUtilTest;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.module.ExpectedFailure;
 

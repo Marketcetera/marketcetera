@@ -1,4 +1,4 @@
-package org.marketcetera.trade.service;
+package org.marketcetera.test.trade;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -8,14 +8,15 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.fix.FixSessionStatus;
-import org.marketcetera.modules.fix.FixModuleTestBase;
+import org.marketcetera.test.fix.FixModuleTestBase;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
-import org.marketcetera.trade.TradeServerTestConfiguration;
+import org.marketcetera.trade.service.TestBrokerSelector;
+import org.marketcetera.trade.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;

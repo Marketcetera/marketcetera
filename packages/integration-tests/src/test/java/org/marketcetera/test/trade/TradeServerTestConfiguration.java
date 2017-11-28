@@ -1,11 +1,11 @@
-package org.marketcetera.trade;
+package org.marketcetera.test.trade;
 
 import org.assertj.core.util.Lists;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.brokers.SessionCustomization;
-import org.marketcetera.fix.FixServerTestConfiguration;
 import org.marketcetera.fix.provisioning.SimpleSessionCustomization;
+import org.marketcetera.test.fix.FixServerTestConfiguration;
 import org.marketcetera.trade.service.FieldSetterMessageModifier;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.TestBrokerSelector;
@@ -13,6 +13,7 @@ import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
 /* $License$ */
 
@@ -25,6 +26,7 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootConfiguration
 @EnableAutoConfiguration
+@ComponentScan(basePackages={"org.marketcetera"})
 public class TradeServerTestConfiguration
         extends FixServerTestConfiguration
 {

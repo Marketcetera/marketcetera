@@ -1,4 +1,4 @@
-package org.marketcetera.marketdata.rpc;
+package org.marketcetera.test.marketdata;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -15,7 +15,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
-import org.marketcetera.admin.rpc.AdminTestBase;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.event.Event;
@@ -38,6 +37,7 @@ import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.modules.headwater.HeadwaterModuleFactory;
+import org.marketcetera.test.admin.AdminTestBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

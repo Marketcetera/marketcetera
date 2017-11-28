@@ -1,4 +1,4 @@
-package org.marketcetera.trade.modules;
+package org.marketcetera.test.trade;
 
 import static org.junit.Assert.assertEquals;
 
@@ -20,7 +20,12 @@ import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradeMessagePublisher;
-import org.marketcetera.trade.service.TradeServerTestBase;
+import org.marketcetera.trade.modules.OrderConverterModuleFactory;
+import org.marketcetera.trade.modules.OutgoingMessageCachingModuleFactory;
+import org.marketcetera.trade.modules.OutgoingMessagePersistenceModuleFactory;
+import org.marketcetera.trade.modules.TradeMessageBroadcastModuleFactory;
+import org.marketcetera.trade.modules.TradeMessageConverterModuleFactory;
+import org.marketcetera.trade.modules.TradeMessagePersistenceModuleFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;

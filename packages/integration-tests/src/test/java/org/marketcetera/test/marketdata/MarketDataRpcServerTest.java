@@ -1,4 +1,4 @@
-package org.marketcetera.marketdata.rpc;
+package org.marketcetera.test.marketdata;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

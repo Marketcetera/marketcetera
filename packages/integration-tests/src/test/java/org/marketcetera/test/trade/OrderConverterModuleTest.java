@@ -1,4 +1,4 @@
-package org.marketcetera.trade.modules;
+package org.marketcetera.test.trade;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -17,6 +17,8 @@ import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.modules.OrderConverterModule;
+import org.marketcetera.trade.modules.OwnedOrder;
 import org.marketcetera.trade.service.TestBrokerSelector;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;

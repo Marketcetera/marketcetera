@@ -1,4 +1,4 @@
-package org.marketcetera.trade;
+package org.marketcetera.test.trade;
 
 import java.util.ArrayList;
 import java.util.HashMap;

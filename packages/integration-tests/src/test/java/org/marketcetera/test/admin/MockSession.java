@@ -1,4 +1,4 @@
-package org.marketcetera.admin.rpc;
+package org.marketcetera.test.admin;
 
 /* $License$ */
 

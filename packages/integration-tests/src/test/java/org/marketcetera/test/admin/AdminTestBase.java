@@ -1,4 +1,4 @@
-package org.marketcetera.admin.rpc;
+package org.marketcetera.test.admin;
 
 import static org.junit.Assert.assertTrue;
 
@@ -17,6 +17,7 @@ import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.PersistentPermissionDao;
+import org.marketcetera.admin.rpc.AdminRpcUtilTest;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.core.PlatformServices;

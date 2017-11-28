@@ -1,6 +1,5 @@
-package org.marketcetera.modules.fix;
+package org.marketcetera.test.fix;
 
-import org.marketcetera.fix.FixServerTestConfiguration;
 import org.marketcetera.module.ModuleManager;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

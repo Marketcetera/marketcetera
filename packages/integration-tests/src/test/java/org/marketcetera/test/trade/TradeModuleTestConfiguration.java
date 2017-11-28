@@ -1,6 +1,5 @@
-package org.marketcetera.trade.modules;
+package org.marketcetera.test.trade;
 
-import org.marketcetera.trade.TradeServerTestConfiguration;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 

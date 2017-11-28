@@ -1,4 +1,4 @@
-package org.marketcetera.modules.fix;
+package org.marketcetera.test.fix;
 
 import static org.junit.Assert.assertEquals;
 
@@ -22,6 +22,10 @@ import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.modules.fix.FixAcceptorModuleFactory;
+import org.marketcetera.modules.fix.FixDataRequest;
+import org.marketcetera.modules.fix.FixInitiatorModuleFactory;
+import org.marketcetera.modules.fix.FixMessageBroadcastModuleFactory;
 import org.marketcetera.modules.headwater.HeadwaterModuleFactory;
 import org.marketcetera.modules.publisher.PublisherModuleFactory;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

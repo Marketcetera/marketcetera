@@ -1,7 +1,8 @@
-package org.marketcetera.fix;
+package org.marketcetera.test.fix;
 
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.brokers.service.InMemoryFixSessionProvider;
+import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

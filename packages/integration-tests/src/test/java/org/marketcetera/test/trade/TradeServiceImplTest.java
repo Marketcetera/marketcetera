@@ -1,4 +1,4 @@
-package org.marketcetera.trade.service.impl;
+package org.marketcetera.test.trade;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -23,7 +23,7 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.trade.service.FieldSetterMessageModifier;
 import org.marketcetera.trade.service.Messages;
 import org.marketcetera.trade.service.TestBrokerSelector;
-import org.marketcetera.trade.service.TradeServerTestBase;
+import org.marketcetera.trade.service.impl.TradeServiceImpl;
 
 import com.google.common.collect.Maps;
 

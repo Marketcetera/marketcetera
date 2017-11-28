@@ -1,4 +1,4 @@
-package org.marketcetera.modules.fix;
+package org.marketcetera.test.fix;
 
 import java.math.BigDecimal;
 import java.util.Deque;
@@ -7,6 +7,10 @@ import java.util.UUID;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.modules.fix.FIXMessageHolder;
+import org.marketcetera.modules.fix.FixAcceptorModule;
+import org.marketcetera.modules.fix.FixDataRequest;
+import org.marketcetera.modules.fix.FixInitiatorModule;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;

@@ -1,4 +1,4 @@
-package org.marketcetera.brokers.service;
+package org.marketcetera.test.fix;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.brokers.Broker;
-import org.marketcetera.fix.FixServerTestConfiguration;
+import org.marketcetera.brokers.service.BrokerServiceImpl;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.module.ExpectedFailure;
