@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Deque;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.modules.fix.FIXMessageHolder;
@@ -22,8 +21,6 @@ import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.modules.OwnedOrder;
 import org.marketcetera.trade.modules.TradeMessageConverterModule;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.collect.Lists;
 
@@ -38,8 +35,6 @@ import quickfix.Message;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes=TradeModuleTestConfiguration.class)
 public class TradeMessageConverterModuleTest
         extends TradeModulesTestBase
 {

@@ -9,17 +9,15 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.service.BrokerServiceImpl;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.test.trade.TradeServerTestBase;
 import org.marketcetera.trade.BrokerID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.collect.Maps;
 
@@ -34,9 +32,8 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes=FixServerTestConfiguration.class)
 public class BrokerServiceTest
+        extends TradeServerTestBase
 {
     /**
      * Run before each test.
@@ -47,6 +44,7 @@ public class BrokerServiceTest
     public void setup()
             throws Exception
     {
+        super.setup();
         initiators = Maps.newHashMap();
         acceptors = Maps.newHashMap();
         for(Broker broker : brokerService.getBrokers()) {

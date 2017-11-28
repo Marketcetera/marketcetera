@@ -5,7 +5,6 @@ import java.util.Deque;
 import java.util.UUID;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.modules.fix.FIXMessageHolder;
 import org.marketcetera.modules.fix.FixAcceptorModule;
@@ -21,8 +20,6 @@ import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.collect.Lists;
 
@@ -37,8 +34,6 @@ import quickfix.Message;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes={FixModuleTestConfiguration.class})
 public class FixModuleTest
         extends FixModuleTestBase
 {
