@@ -14,6 +14,7 @@ import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.test.IntegrationTestBase;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
@@ -39,7 +40,7 @@ import quickfix.Message;
  * @since $Release$
  */
 public class TradeServiceImplTest
-        extends TradeServerTestBase
+        extends IntegrationTestBase
 {
     /**
      * Test the ability to select a broker for an order.

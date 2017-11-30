@@ -3,10 +3,12 @@ package org.marketcetera.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.marketcetera.core.PlatformServices.divisionContext;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
@@ -22,49 +24,90 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
+import org.marketcetera.admin.AdminClient;
+import org.marketcetera.admin.AdminRpcClientFactory;
+import org.marketcetera.admin.AdminRpcClientParameters;
+import org.marketcetera.admin.MutableUser;
+import org.marketcetera.admin.MutableUserFactory;
+import org.marketcetera.admin.Permission;
+import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.User;
+import org.marketcetera.admin.dao.PersistentPermissionDao;
+import org.marketcetera.admin.rpc.AdminRpcUtilTest;
+import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.PriceQtyTuple;
 import org.marketcetera.core.instruments.InstrumentToMessage;
+import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.time.TimeFactoryImpl;
+import org.marketcetera.fix.FixMessageHandler;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
+import org.marketcetera.fix.IncomingMessagePublisher;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.modules.fix.FixAcceptorModuleFactory;
+import org.marketcetera.modules.fix.FixDataRequest;
+import org.marketcetera.modules.fix.FixInitiatorModuleFactory;
+import org.marketcetera.modules.fix.FixMessageBroadcastModuleFactory;
+import org.marketcetera.modules.headwater.HeadwaterModuleFactory;
+import org.marketcetera.modules.publisher.PublisherModuleFactory;
+import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.test.trade.Receiver;
 import org.marketcetera.test.trade.Sender;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionType;
+import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Messages;
 import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
+import org.marketcetera.trade.TradeMessagePublisher;
+import org.marketcetera.trade.modules.OrderConverterModuleFactory;
+import org.marketcetera.trade.modules.OutgoingMessageCachingModuleFactory;
+import org.marketcetera.trade.modules.OutgoingMessagePersistenceModuleFactory;
+import org.marketcetera.trade.modules.TradeMessageBroadcastModuleFactory;
+import org.marketcetera.trade.modules.TradeMessageConverterModuleFactory;
+import org.marketcetera.trade.modules.TradeMessagePersistenceModuleFactory;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
+import org.marketcetera.trade.service.TestBrokerSelector;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
+import io.grpc.StatusRuntimeException;
 import junitparams.JUnitParamsRunner;
 import quickfix.DataDictionary;
 import quickfix.Message;
@@ -100,8 +143,37 @@ public class IntegrationTestBase
         SLF4JLoggerProxy.info(this,
                               "{} beginning setup",
                               name.getMethodName());
+        adminClient = generateAdminClient("test",
+                                          "test");
+        orderConverterModuleUrn = OrderConverterModuleFactory.INSTANCE_URN;
+        tradeMessageConverterModuleUrn = TradeMessageConverterModuleFactory.INSTANCE_URN;
+        tradeMessagePersistenceModuleUrn = TradeMessagePersistenceModuleFactory.INSTANCE_URN;
+        transactionModuleUrn = TransactionModuleFactory.INSTANCE_URN;
         tradeMessages.clear();
         tradeService.addTradeMessageListener(tradeMessageListener);
+        Broker target = null;
+        for(Broker broker : brokerService.getBrokers()) {
+            if(!broker.getFixSession().isAcceptor() && broker.getMappedBrokerId() == null) {
+                target = broker;
+                break;
+            }
+        }
+        assertNotNull(target);
+        selector.setSelectedBrokerId(target.getBrokerId());
+        selector.setChooseBrokerException(null);
+        acceptorModuleUrn = FixAcceptorModuleFactory.INSTANCE_URN;
+        initiatorModuleUrn = FixInitiatorModuleFactory.INSTANCE_URN;
+        acceptorSessions.clear();
+        initiatorSessions.clear();
+        for(Broker broker : brokerService.getBrokers()) {
+            if(broker.getFixSession().isAcceptor()) {
+                acceptorSessions.add(new SessionID(broker.getFixSession().getSessionId()));
+            } else {
+                initiatorSessions.add(new SessionID(broker.getFixSession().getSessionId()));
+            }
+        }
+        startModulesIfNecessary();
+        verifySessionsConnected();
         verifyAllBrokersReady();
         SLF4JLoggerProxy.info(this,
                               "{} beginning",
@@ -119,6 +191,13 @@ public class IntegrationTestBase
         SLF4JLoggerProxy.info(this,
                               "{} cleanup beginning",
                               name.getMethodName());
+        reset();
+        if(adminClient != null) {
+            try {
+                adminClient.stop();
+            } catch (Exception ignored) {}
+            adminClient = null;
+        }
         try {
             tradeService.removeTradeMessageListener(tradeMessageListener);
             tradeMessages.clear();
@@ -127,6 +206,448 @@ public class IntegrationTestBase
                                   "{} done",
                                   name.getMethodName());
         }
+    }
+    /**
+     * Generate an {@link AdminClient} owned by user "trader".
+     *
+     * @return an <code>AdminClient</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected AdminClient generateTraderAdminClient()
+            throws Exception
+    {
+        return generateAdminClient("trader",
+                                   "trader");
+    }
+    /**
+     * Verify the given exception is for lack of the given permission.
+     *
+     * @param inThrowable a <code>Throwable</code> value
+     * @param inPermissionName a <code>String</code> value
+     */
+    protected void assertNotAuthorized(Throwable inThrowable,
+                                       String inPermissionName)
+    {
+        assertTrue(inThrowable instanceof StatusRuntimeException);
+        assertTrue(inThrowable.getMessage().contains("not authorized"));
+        assertTrue(inThrowable.getMessage().contains(inPermissionName));
+    }
+    /**
+     * Generate and create a user with no permissions.
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inPassword a <code>String</code> value
+     * @return a <code>User</code> value
+     */
+    protected User generateUserNoPermissions(String inUsername,
+                                             String inPassword)
+    {
+        User noPermissionUser = AdminRpcUtilTest.generateUser(inUsername,
+                                                              PlatformServices.generateId());
+        noPermissionUser = adminClient.createUser(noPermissionUser,
+                                                  inPassword);
+        return noPermissionUser;
+    }
+    /**
+     * Generate an <code>AdminClient</code> with the given user/password.
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inPassword a <code>String</code> value
+     * @return an <code>AdminClient</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected AdminClient generateAdminClient(String inUsername,
+                                              String inPassword)
+            throws Exception
+    {
+        AdminRpcClientParameters params = new AdminRpcClientParameters();
+        params.setHostname(rpcHostname);
+        params.setPort(rpcPort);
+        params.setUsername(inUsername);
+        params.setPassword(inPassword);
+        AdminClient adminClient = adminClientFactory.create(params);
+        adminClient.start();
+        return adminClient;
+    }
+    /**
+     * Generate a unique headwater instance name.
+     *
+     * @return a <code>String</code> value
+     */
+    protected String generateHeadwaterInstanceName()
+    {
+        return "hw"+System.nanoTime();
+    }
+    /**
+     * Wait for at least the given number of messages to be received.
+     *
+     * @param inCount an <code>int</code> value
+     * @throws Exception if an unexpected failure occurs
+     */
+    protected void waitForMessages(final int inCount,
+                                 Deque<Object> inReceivedData)
+            throws Exception
+    {
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return inReceivedData.size() >= inCount;
+            }}
+        );
+    }
+    /**
+     * Build a send data request for the acceptor module.
+     *
+     * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inHeadwaterInstance a <code>String</code> value
+     * @return a <code>DataRequest[]</code> value
+     */
+    protected DataRequest[] getAcceptorSendDataRequest(FixDataRequest inFixDataRequest,
+                                                       String inHeadwaterInstance)
+    {
+        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+        ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
+        dataRequestBuilder.add(new DataRequest(headwaterUrn));
+        dataRequestBuilder.add(new DataRequest(FixAcceptorModuleFactory.INSTANCE_URN,
+                                               inFixDataRequest));
+        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
+    }
+    /**
+     * Build a receive data request for the acceptor module.
+     *
+     * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inReceivedData a <code>Deque&lt;Object&gt;</code> value
+     * @return a <code>DataRequest[]</code> value
+     */
+    protected DataRequest[] getAcceptorReceiveDataRequest(FixDataRequest inFixDataRequest,
+                                                          final Deque<Object> inReceivedData)
+    {
+        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+        dataRequestBuilder.add(new DataRequest(FixAcceptorModuleFactory.INSTANCE_URN,
+                                               inFixDataRequest));
+        dataRequestBuilder.add(new DataRequest(FixMessageBroadcastModuleFactory.INSTANCE_URN));
+        incomingMessagePublisher.addMessageListener(new FixMessageHandler() {
+            @Override
+            public void handleMessage(SessionID inSessionId,
+                                      Message inMessage)
+                                              throws Exception
+            {
+                inReceivedData.add(inMessage);
+            }
+        });
+        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
+    }
+    /**
+     * Build a send data request for the initiator module.
+     *
+     * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inHeadwaterInstance a <code>String</code> value
+     * @return a <code>DataRequest[]</code> value
+     */
+    protected DataRequest[] getInitiatorSendDataRequest(FixDataRequest inFixDataRequest,
+                                                        String inHeadwaterInstance)
+     {
+         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+         ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
+         dataRequestBuilder.add(new DataRequest(headwaterUrn));
+         dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
+                                                inFixDataRequest));
+         return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
+     }
+    /**
+     * Build a receive data request for the initiator module.
+     *
+     * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inReceivedData a <code>Deque&lt;Object&gt;</code> value
+     * @return a <code>DataRequest[]</code> value
+     */
+    protected DataRequest[] getInitiatorReceiveDataRequest(FixDataRequest inFixDataRequest,
+                                                           Deque<Object> inReceivedData)
+    {
+        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+        dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
+                                               inFixDataRequest));
+        ModuleURN publisherUrn = createPublisherModule(inReceivedData);
+        dataRequestBuilder.add(new DataRequest(publisherUrn));
+        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
+    }
+    /**
+     * Create a headwater module.
+     *
+     * @param inHeadwaterInstance a <code>String</code> value
+     * @return a <code>ModuleURN</code> value
+     */
+    protected ModuleURN createHeadwaterModule(String inHeadwaterInstance)
+    {
+        ModuleURN headwaterUrn = moduleManager.createModule(HeadwaterModuleFactory.PROVIDER_URN,
+                                                            inHeadwaterInstance);
+        return headwaterUrn;
+    }
+    /**
+     * Create a publisher module.
+     *
+     * @return a <code>ModuleURN</code> value
+     */
+    protected ModuleURN createPublisherModule(final Deque<Object> inDataContainer)
+    {
+        ModuleURN publisherUrn = moduleManager.createModule(PublisherModuleFactory.PROVIDER_URN,
+                                                            new ISubscriber(){
+            @Override
+            public boolean isInteresting(Object inData)
+            {
+                return true;
+            }
+            @Override
+            public void publishTo(Object inData)
+            {
+                SLF4JLoggerProxy.debug(IntegrationTestBase.this,
+                                       "Received {}",
+                                       inData);
+                synchronized(inDataContainer) {
+                    inDataContainer.add(inData);
+                    inDataContainer.notifyAll();
+                }
+            }}
+        );
+        return publisherUrn;
+    }
+    /**
+     * Verify that all test sessions are connected.
+     *
+     * @throws Exception if an unexpected failure occurs
+     */
+    protected void verifySessionsConnected()
+            throws Exception
+    {
+        for(final Broker broker : brokerService.getBrokers()) {
+            MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    BrokerStatus brokerStatus = brokerService.getBrokerStatus(broker.getBrokerId());
+                    if(brokerStatus == null) {
+                        return false;
+                    }
+                    return brokerStatus.getLoggedOn();
+                }}
+            );
+        }
+    }
+    /**
+     * Reset the test objects.
+     */
+    protected void reset()
+    {
+        synchronized(dataFlows) {
+            for(DataFlowID dataFlow : dataFlows) {
+                try {
+                    moduleManager.cancel(dataFlow);
+                } catch (Exception ignored) {}
+            }
+            dataFlows.clear();
+        }
+    }
+    /**
+     * Build a data request that includes the order converter and the FIX initiator.
+     *
+     * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inHeadwaterInstance a <code>String</code> value
+     * @return a <code>DataRequest[]</code> value
+     */
+    protected DataRequest[] getFullInitiatorDataSendRequest(FixDataRequest inFixDataRequest,
+                                                            String inHeadwaterInstance)
+    {
+        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+        ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
+        dataRequestBuilder.add(new DataRequest(headwaterUrn));
+        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(OrderConverterModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(OutgoingMessageCachingModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(OutgoingMessagePersistenceModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
+                                               inFixDataRequest));
+        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
+    }
+    /**
+     * Build a data request that includes the order converter and the FIX initiator.
+     *
+     * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inReceivedData a <code>Deque&lt;Object&gt;</code> value
+     * @return a <code>DataRequest[]</code> value
+     */
+    protected DataRequest[] getFullInitiatorReceiveDataRequest(FixDataRequest inFixDataRequest,
+                                                               final Deque<Object> inReceivedData)
+    {
+        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+        dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
+                                               inFixDataRequest));
+        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TradeMessagePersistenceModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TradeMessageBroadcastModuleFactory.INSTANCE_URN));
+        for(TradeMessagePublisher tradeMessagePublisher : tradeMessagePublishers) {
+            tradeMessagePublisher.addTradeMessageListener(new TradeMessageListener() {
+                @Override
+                public void receiveTradeMessage(TradeMessage inTradeMessage)
+                {
+                    inReceivedData.addLast(inTradeMessage);
+                }
+            });
+        }
+        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
+    }
+    /**
+     * Build a data request for the order converter module.
+     *
+     * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inHeadwaterInstance a <code>String</code> value
+     * @return a <code>DataRequest[]</code> value
+     */
+    protected DataRequest[] getOrderConverterDataRequest(String inHeadwaterInstance,
+                                                         Deque<Object> inReceivedData)
+    {
+        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+        ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
+        ModuleURN publisherUrn = createPublisherModule(inReceivedData);
+        dataRequestBuilder.add(new DataRequest(headwaterUrn));
+        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(OrderConverterModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(publisherUrn));
+        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
+    }
+    /**
+     * Build a data request for the order converter module.
+     *
+     * @param inFixDataRequest a <code>FixDataRequest</code> value
+     * @param inHeadwaterInstance a <code>String</code> value
+     * @return a <code>DataRequest[]</code> value
+     */
+    protected DataRequest[] getTradeMessageConverterDataRequest(String inHeadwaterInstance,
+                                                                Deque<Object> inReceivedData)
+    {
+        List<DataRequest> dataRequestBuilder = Lists.newArrayList();
+        ModuleURN headwaterUrn = createHeadwaterModule(inHeadwaterInstance);
+        ModuleURN publisherUrn = createPublisherModule(inReceivedData);
+        dataRequestBuilder.add(new DataRequest(headwaterUrn));
+        dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(TradeMessagePersistenceModuleFactory.INSTANCE_URN));
+        dataRequestBuilder.add(new DataRequest(publisherUrn));
+        return dataRequestBuilder.toArray(new DataRequest[dataRequestBuilder.size()]);
+    }
+    /**
+     * Start the test modules, if necessary.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void startModulesIfNecessary()
+            throws Exception
+    {
+        if(!moduleManager.getModuleInfo(acceptorModuleUrn).getState().isStarted()) {
+            moduleManager.start(acceptorModuleUrn);
+            assertEquals(ModuleState.STARTED,
+                         moduleManager.getModuleInfo(acceptorModuleUrn).getState());
+        }
+        if(!moduleManager.getModuleInfo(initiatorModuleUrn).getState().isStarted()) {
+            moduleManager.start(initiatorModuleUrn);
+            assertEquals(ModuleState.STARTED,
+                         moduleManager.getModuleInfo(initiatorModuleUrn).getState());
+        }
+        if(!moduleManager.getModuleInfo(orderConverterModuleUrn).getState().isStarted()) {
+            moduleManager.start(orderConverterModuleUrn);
+            assertEquals(ModuleState.STARTED,
+                         moduleManager.getModuleInfo(orderConverterModuleUrn).getState());
+        }
+        if(!moduleManager.getModuleInfo(tradeMessageConverterModuleUrn).getState().isStarted()) {
+            moduleManager.start(tradeMessageConverterModuleUrn);
+            assertEquals(ModuleState.STARTED,
+                         moduleManager.getModuleInfo(tradeMessageConverterModuleUrn).getState());
+        }
+        if(!moduleManager.getModuleInfo(tradeMessagePersistenceModuleUrn).getState().isStarted()) {
+            moduleManager.start(tradeMessagePersistenceModuleUrn);
+            assertEquals(ModuleState.STARTED,
+                         moduleManager.getModuleInfo(tradeMessagePersistenceModuleUrn).getState());
+        }
+        if(!moduleManager.getModuleInfo(transactionModuleUrn).getState().isStarted()) {
+            moduleManager.start(transactionModuleUrn);
+            assertEquals(ModuleState.STARTED,
+                         moduleManager.getModuleInfo(transactionModuleUrn).getState());
+        }
+    }
+    /**
+     * Generate a test user.
+     *
+     * @return a <code>User</code> value
+     */
+    protected User generateUser()
+    {
+        User user = userFactory.create("test-user-"+System.nanoTime(),
+                                  "password",
+                                  "Description of the test user",
+                                  true);
+        user = userService.save(user);
+        return user;
+    }
+    /**
+     * Makes the given broker available.
+     *
+     * @param inBrokerId a <code>BrokerID</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void makeBrokerAvailable(BrokerID inBrokerId)
+            throws Exception
+    {
+        Broker broker = brokerService.getBroker(inBrokerId);
+        assertNotNull(broker);
+        reportBrokerStatus(broker,
+                           FixSessionStatus.CONNECTED,
+                           true);
+    }
+    /**
+     * Reports the broker status as indicated.
+     *
+     * @param inBroker a <code>Broker</code> value
+     * @param inFixSessionStatus a <code>FixSessionStatus</code> value
+     * @param inIsLoggedOn a <code>boolean</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void reportBrokerStatus(Broker inBroker,
+                                    FixSessionStatus inFixSessionStatus,
+                                    boolean inIsLoggedOn)
+            throws Exception
+    {
+        brokerService.reportBrokerStatus(brokerService.generateBrokerStatus(inBroker.getFixSession(),
+                                                                            clusterService.getInstanceData(),
+                                                                            FixSessionStatus.CONNECTED,
+                                                                            true));
+    }
+    /**
+     * Generate a test order single.
+     *
+     * @return an <code>OrderSingle</code> value
+     */
+    protected OrderSingle generateOrder()
+    {
+        return generateOrder(null);
+    }
+    /**
+     * Generate a test order single with the given broker.
+     *
+     * @param inBrokerId a <code>BrokerID</code> value
+     * @return an <code>OrderSingle</code> value
+     */
+    protected OrderSingle generateOrder(BrokerID inBrokerId)
+    {
+        OrderSingle order = Factory.getInstance().createOrderSingle();
+        order.setBrokerID(inBrokerId);
+        order.setInstrument(new Equity("METC"));
+        order.setOrderType(OrderType.Market);
+        order.setQuantity(BigDecimal.TEN);
+        order.setSide(Side.Buy);
+        return order;
     }
     /**
      * Verify that the order status is NEW for the given root/order id pair exists.
@@ -911,6 +1432,55 @@ public class IntegrationTestBase
         }
     };
     /**
+     * RPC hostname
+     */
+    @Value("${metc.rpc.hostname}")
+    protected String rpcHostname = "127.0.0.1";
+    /**
+     * RPC port
+     */
+    @Value("${metc.rpc.port}")
+    protected int rpcPort = 18999;
+    /**
+     * provides access to admin services
+     */
+    protected AdminClient adminClient;
+    /**
+     * provides data store access to permission objects
+     */
+    @Autowired
+    protected PersistentPermissionDao permissionDao;
+    /**
+     * creates {@link Permission} objects
+     */
+    @Autowired
+    protected PermissionFactory permissionFactory;
+    /**
+     * creates {@link AdminClient} objects
+     */
+    @Autowired
+    protected AdminRpcClientFactory adminClientFactory;
+    /**
+     * provides access to authorization services
+     */
+    @Autowired
+    protected AuthorizationService authorizationService;
+    /**
+     * creates {@link MutableUser} objects
+     */
+    @Autowired
+    protected MutableUserFactory userFactory;
+    /**
+     * provides access to module services
+     */
+    @Autowired
+    protected ModuleManager moduleManager;
+    /**
+     * broker selector
+     */
+    @Autowired
+    protected TestBrokerSelector selector;
+    /**
      * test FIX brokers (receives requests from initiators)
      */
     @Autowired
@@ -945,6 +1515,62 @@ public class IntegrationTestBase
      */
     @Autowired
     protected OrderSummaryService orderSummaryService;
+    /**
+     * provides access to cluster services
+     */
+    @Autowired
+    protected ClusterService clusterService;
+    /**
+     * test application context
+     */
+    @Autowired
+    protected ApplicationContext applicationContext;
+    /**
+     * trade message publishers value
+     */
+    @Autowired
+    protected Collection<TradeMessagePublisher> tradeMessagePublishers = Lists.newArrayList();
+    /**
+     * test order converter module
+     */
+    protected ModuleURN orderConverterModuleUrn;
+    /**
+     * test trade message converter module
+     */
+    protected ModuleURN tradeMessageConverterModuleUrn;
+    /**
+     * test trade message persistence module
+     */
+    protected ModuleURN tradeMessagePersistenceModuleUrn;
+    /**
+     * transaction module URN
+     */
+    protected ModuleURN transactionModuleUrn;
+    /**
+     * acceptor sessions
+     */
+    protected static final Collection<SessionID> acceptorSessions = Sets.newHashSet();
+    /**
+     * initiator sessions
+     */
+    protected static final Collection<SessionID> initiatorSessions = Sets.newHashSet();
+    /**
+     * data flows created during the test
+     */
+    protected final Collection<DataFlowID> dataFlows = Lists.newArrayList();
+    /**
+     * test acceptor module
+     */
+    protected ModuleURN acceptorModuleUrn;
+    /**
+     * test initiator module
+     */
+    protected ModuleURN initiatorModuleUrn;
+    /**
+     * provides access to incoming messages
+     */
+    @Autowired
+    private IncomingMessagePublisher incomingMessagePublisher;
     /**
      * test artifact used to identify the current test case
      */

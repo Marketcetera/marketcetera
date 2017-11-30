@@ -14,6 +14,7 @@ import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.test.IntegrationTestBase;
 import org.marketcetera.trade.ExecutionTransType;
 import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.OrderSingle;
@@ -36,7 +37,7 @@ import quickfix.Message;
  * @since $Release$
  */
 public class TradeMessageConverterModuleTest
-        extends TradeModulesTestBase
+        extends IntegrationTestBase
 {
     /**
      * Test the wrong data type.

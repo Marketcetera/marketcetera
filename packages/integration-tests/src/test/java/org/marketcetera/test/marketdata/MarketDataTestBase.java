@@ -37,7 +37,7 @@ import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.modules.headwater.HeadwaterModuleFactory;
-import org.marketcetera.test.admin.AdminTestBase;
+import org.marketcetera.test.IntegrationTestBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -67,7 +67,7 @@ import junitparams.JUnitParamsRunner;
 @EntityScan(basePackages={"org.marketcetera"})
 @EnableJpaRepositories(basePackages={"org.marketcetera"})
 public abstract class MarketDataTestBase
-        extends AdminTestBase
+        extends IntegrationTestBase
 {
     /**
      * Run before each test.

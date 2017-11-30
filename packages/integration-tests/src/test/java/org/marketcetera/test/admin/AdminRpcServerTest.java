@@ -23,6 +23,7 @@ import org.marketcetera.admin.rpc.AdminRpcService;
 import org.marketcetera.admin.rpc.AdminRpcUtilTest;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.test.IntegrationTestBase;
 
 /* $License$ */
 
@@ -34,7 +35,7 @@ import org.marketcetera.module.ExpectedFailure;
  * @since $Release$
  */
 public class AdminRpcServerTest
-        extends AdminTestBase
+        extends IntegrationTestBase
 {
     /**
      * Test {@link AdminClient#getPermissionsForUsername(String)}.

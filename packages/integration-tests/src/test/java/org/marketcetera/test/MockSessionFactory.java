@@ -1,4 +1,4 @@
-package org.marketcetera.test.admin;
+package org.marketcetera.test;
 
 import org.marketcetera.util.ws.stateful.SessionFactory;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;

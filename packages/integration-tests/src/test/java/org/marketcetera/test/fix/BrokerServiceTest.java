@@ -15,7 +15,7 @@ import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.test.trade.TradeServerTestBase;
+import org.marketcetera.test.IntegrationTestBase;
 import org.marketcetera.trade.BrokerID;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,7 +33,7 @@ import quickfix.SessionID;
  * @since $Release$
  */
 public class BrokerServiceTest
-        extends TradeServerTestBase
+        extends IntegrationTestBase
 {
     /**
      * Run before each test.

@@ -7,11 +7,11 @@ import java.math.BigDecimal;
 import java.util.Deque;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.modules.headwater.HeadwaterModule;
+import org.marketcetera.test.IntegrationTestBase;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderSingle;
@@ -20,8 +20,6 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.trade.modules.OrderConverterModule;
 import org.marketcetera.trade.modules.OwnedOrder;
 import org.marketcetera.trade.service.TestBrokerSelector;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.collect.Lists;
 
@@ -36,10 +34,8 @@ import quickfix.Message;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes=TradeModuleTestConfiguration.class)
 public class OrderConverterModuleTest
-        extends TradeModulesTestBase
+        extends IntegrationTestBase
 {
     /**
      * Test the wrong data type.

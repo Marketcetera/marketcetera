@@ -14,6 +14,7 @@ import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.test.IntegrationTestBase;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionTransType;
 import org.marketcetera.trade.ExecutionType;
@@ -35,7 +36,7 @@ import quickfix.Message;
  * @since $Release$
  */
 public class FixModuleTest
-        extends FixModuleTestBase
+        extends IntegrationTestBase
 {
     /**
      * Test starting and connecting the acceptors and initiators.

@@ -1,4 +1,4 @@
-package org.marketcetera.test.admin;
+package org.marketcetera.test;
 
 /* $License$ */
 

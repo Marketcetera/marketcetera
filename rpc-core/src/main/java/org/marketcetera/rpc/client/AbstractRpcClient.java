@@ -311,8 +311,8 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
             .setVersionId(getVersionInfo().getVersionInfo())
             .setClientId(NodeId.generate().getValue())
             .setLocale(BaseRpc.Locale.newBuilder().setCountry(locale.getCountry())
-                   .setLanguage(locale.getLanguage())
-                   .setVariant(locale.getVariant()).build())
+            .setLanguage(locale.getLanguage())
+            .setVariant(locale.getVariant()).build())
             .setUsername(parameters.getUsername())
             .setPassword(parameters.getPassword()).build();
         try {
@@ -322,14 +322,6 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
             notifyStatusChange(true);
         } catch (Exception e) {
             alive.set(false);
-            if(SLF4JLoggerProxy.isDebugEnabled(this)) {
-                SLF4JLoggerProxy.warn(this,
-                                      e,
-                                      ExceptionUtils.getRootCauseMessage(e));
-            } else {
-                SLF4JLoggerProxy.warn(this,
-                                      ExceptionUtils.getRootCauseMessage(e));
-            }
             sessionId = null;
             notifyStatusChange(false);
             if(e instanceof RuntimeException) {
