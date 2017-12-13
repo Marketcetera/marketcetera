@@ -10,7 +10,7 @@
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>public-parent</artifactId>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>4.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Marketcetera Public Sources Parent POM</name>
   <description>The root of Marketcetera public sources.</description>
@@ -54,173 +54,173 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>admin-api</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>admin-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>admin-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>admin-rpc-client</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>admin-rpc-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>admin-rpc-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <!-- fix modules -->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>fix-api</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>fix-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>fix-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>fix-modules</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>trade-api</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>trade-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>trade-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>trade-modules</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cluster-api</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>simple-cluster</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cluster-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>orderloader</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategyagent</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-csv</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-bogus</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-manual</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-exsim</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-recorder</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>rpc-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-marketcetera</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-yahoo</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-csv</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>misc</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategy</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-esper</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <exclusions>
           <exclusion>
             <groupId>log4j</groupId>
@@ -231,107 +231,107 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>tensorflow</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>remote-receiver</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>remote-emitter</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dataflow-api</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dataflow-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dataflow-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dataflow-rpc-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dataflow-rpc-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dataflow-rpc-client</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-api</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-rpc-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-rpc-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-rpc-client</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-ws-client</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-ws-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-ws-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>trade-rpc-client</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>trade-rpc-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>trade-rpc-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <!-- Compile: QuickFIX/J -->
       <dependency>
@@ -415,7 +415,7 @@
       <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-i18n</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate.javax.persistence</groupId>
@@ -591,35 +591,35 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>admin-rpc-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>admin-rpc-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-rpc-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
 	<type>test-jar</type>
 	<scope>test</scope>
       </dependency>
@@ -628,81 +628,81 @@
         <artifactId>marketdata-rpc-client</artifactId>
 	<type>test-jar</type>
 	<scope>test</scope>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-server</artifactId>
 	<type>test-jar</type>
 	<scope>test</scope>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dataflow-rpc-client</artifactId>
 	<type>test-jar</type>
 	<scope>test</scope>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
       </dependency>      
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>rpc-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>trade-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>fix-server</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>fix-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>fix-modules</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cluster-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util-test</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>integration-tests</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>

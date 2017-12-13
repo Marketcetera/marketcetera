@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>marketdata-parent</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>marketdata-rpc-server</artifactId>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>4.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <licenses>
     <license>
