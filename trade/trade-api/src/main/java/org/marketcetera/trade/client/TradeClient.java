@@ -144,4 +144,18 @@ public interface TradeClient
      * @return an <code>OrderID</code> value
      */
     OrderID findRootOrderIdFor(OrderID inOrderID);
+    /**
+     * Get the option roots for the given underlying.
+     *
+     * @param inUnderlying a <code>String</code> value
+     * @return a <code>Collection&lt;String&gt;</code> value
+     */
+    Collection<String> getOptionRoots(String inUnderlying);
+    /**
+     * Get the underlying for the given root.
+     *
+     * @param inOptionRoot a <code>String</code> value
+     * @return a <code>String</code> value
+     */
+    String getUnderlying(String inOptionRoot);
 }

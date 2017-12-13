@@ -7,8 +7,6 @@ import static org.marketcetera.strategy.Messages.CEP_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.COMBINED_DATA_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.EMPTY_INSTANCE_ERROR;
 import static org.marketcetera.strategy.Messages.EMPTY_NAME_ERROR;
-import static org.marketcetera.strategy.Messages.EXECUTION_REPORT_REQUEST_FAILED;
-import static org.marketcetera.strategy.Messages.FAILED_TO_START;
 import static org.marketcetera.strategy.Messages.FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE;
 import static org.marketcetera.strategy.Messages.INVALID_CEP_REQUEST;
 import static org.marketcetera.strategy.Messages.INVALID_COMBINED_DATA_REQUEST;
@@ -20,7 +18,6 @@ import static org.marketcetera.strategy.Messages.INVALID_MARKET_DATA_REQUEST;
 import static org.marketcetera.strategy.Messages.INVALID_MESSAGE;
 import static org.marketcetera.strategy.Messages.INVALID_NOTIFICATION;
 import static org.marketcetera.strategy.Messages.INVALID_TRADE_SUGGESTION;
-import static org.marketcetera.strategy.Messages.MARKET_DATA_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.MESSAGE_1P;
 import static org.marketcetera.strategy.Messages.NO_DATA_HANDLE;
 import static org.marketcetera.strategy.Messages.NULL_PARAMETER_ERROR;
@@ -59,7 +56,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.brokers.BrokerStatus;
-import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.CloseableLock;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.notifications.Notification;
@@ -71,8 +67,8 @@ import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.LogEventLevel;
 import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.core.manager.MarketDataManager;
 import org.marketcetera.metrics.ThreadedMetric;
+import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
@@ -95,25 +91,23 @@ import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.Suggestion;
-import org.marketcetera.trade.client.TradingClient;
-import org.marketcetera.trade.client.TradingClientFactory;
+import org.marketcetera.trade.client.TradeClient;
+import org.marketcetera.trade.client.TradeClientFactory;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.sun.mail.iap.ConnectionException;
 
 import quickfix.Message;
 
@@ -138,6 +132,7 @@ import quickfix.Message;
  * @version $Id$
  * @since 1.0.0
  */
+@AutowiredModule
 @ClassVersion("$Id$")
 final class StrategyModule
         extends Module
@@ -645,7 +640,7 @@ final class StrategyModule
     @Override
     public List<BrokerStatus> getBrokers()
     {
-        return clientFactory.getClient().getBrokersStatus().getBrokers();
+        return tradeClient.getBrokersStatus().getBrokers();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.InboundServicesProvider#getEquityPositionAsOf(java.util.Date, org.marketcetera.trade.Equity)
@@ -653,28 +648,25 @@ final class StrategyModule
     @Override
     public BigDecimal getPositionAsOf(Date inDate,
                                       Equity inEquity)
-        throws ConnectionException, ClientInitException
     {
-        return clientFactory.getClient().getEquityPositionAsOf(inDate,
-                                                               inEquity);
+        return tradeClient.getPositionAsOf(inDate,
+                                           inEquity);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#getAllOptionPositionsAsOf(java.util.Date)
      */
     @Override
-    public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf(Date inDate)
-            throws ConnectionException, ClientInitException
+    public Map<PositionKey<? extends Instrument>,BigDecimal> getAllOptionPositionsAsOf(Date inDate)
     {
-        return clientFactory.getClient().getAllOptionPositionsAsOf(inDate);
+        return tradeClient.getAllPositionsAsOf(inDate);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#getAllFuturePositionsAsOf(java.util.Date)
      */
     @Override
-    public Map<PositionKey<Future>, BigDecimal> getAllFuturePositionsAsOf(Date inDate)
-            throws ConnectionException, ClientInitException
+    public Map<PositionKey<? extends Instrument>,BigDecimal> getAllFuturePositionsAsOf(Date inDate)
     {
-        return clientFactory.getClient().getAllFuturePositionsAsOf(inDate);
+        return tradeClient.getAllPositionsAsOf(inDate);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#getFuturePositionAsOf(java.util.Date, org.marketcetera.trade.Future)
@@ -682,19 +674,17 @@ final class StrategyModule
     @Override
     public BigDecimal getFuturePositionAsOf(Date inDate,
                                             Future inFuture)
-            throws ConnectionException, ClientInitException
     {
-        return clientFactory.getClient().getFuturePositionAsOf(inDate,
-                                                               inFuture);
+        return tradeClient.getPositionAsOf(inDate,
+                                           inFuture);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#getAllCurrencyPositionsAsOf(java.util.Date)
      */
     @Override
-    public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(Date inDate)
-            throws ConnectionException, ClientInitException
+    public Map<PositionKey<? extends Instrument>,BigDecimal> getAllCurrencyPositionsAsOf(Date inDate)
     {
-        return clientFactory.getClient().getAllCurrencyPositionsAsOf(inDate);
+        return tradeClient.getAllPositionsAsOf(inDate);
     }    
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#getCurrencyPositionAsOf(java.util.Date, org.marketcetera.trade.Currency)
@@ -702,10 +692,9 @@ final class StrategyModule
     @Override
     public BigDecimal getCurrencyPositionAsOf(Date inDate,
                                             Currency inCurrency)
-            throws ConnectionException, ClientInitException
     {
-        return clientFactory.getClient().getCurrencyPositionAsOf(inDate,
-        														inCurrency);
+        return tradeClient.getPositionAsOf(inDate,
+                                           inCurrency);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionAsOf(java.util.Date, org.marketcetera.trade.Option)
@@ -713,48 +702,43 @@ final class StrategyModule
     @Override
     public BigDecimal getOptionPositionAsOf(Date inDate,
                                             Option inOption)
-            throws ConnectionException, ClientInitException
     {
-        return clientFactory.getClient().getOptionPositionAsOf(inDate,
-                                                               inOption);
+        return tradeClient.getPositionAsOf(inDate,
+                                           inOption);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionsAsOf(java.util.Date, java.lang.String[])
      */
     @Override
-    public Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf(Date inDate,
-                                                                       String... inOptionRoots)
-            throws ConnectionException, ClientInitException
+    public Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
+                                                                      String... inOptionRoots)
     {
-        return clientFactory.getClient().getOptionPositionsAsOf(inDate,
-                                                                inOptionRoots);
+        return tradeClient.getOptionPositionsAsOf(inDate,
+                                                  inOptionRoots);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#getOptionRoots(java.lang.String)
      */
     @Override
     public Collection<String> getOptionRoots(String inUnderlying)
-            throws ConnectionException, ClientInitException
     {
-        return clientFactory.getClient().getOptionRoots(inUnderlying);
+        return tradeClient.getOptionRoots(inUnderlying);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#getAllPositionsAsOf(java.util.Date)
      */
     @Override
-    public Map<PositionKey<Equity>, BigDecimal> getAllPositionsAsOf(Date inDate)
-            throws ConnectionException, ClientInitException
+    public Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(Date inDate)
     {
-        return clientFactory.getClient().getAllEquityPositionsAsOf(inDate);
+        return tradeClient.getAllPositionsAsOf(inDate);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#getUnderlying(java.lang.String)
      */
     @Override
     public String getUnderlying(String inOptionRoot)
-            throws ConnectionException, ClientInitException
     {
-        return clientFactory.getClient().getUnderlying(inOptionRoot);
+        return tradeClient.getUnderlying(inOptionRoot);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.StrategyMXBean#getStatus()
@@ -862,19 +846,19 @@ final class StrategyModule
      */
     @Override
     public Properties getUserData()
-            throws ConnectionException, ClientInitException
     {
-        Properties data = clientFactory.getClient().getUserData();
-        return data == null ? new Properties() : data;
+        throw new UnsupportedOperationException(); // TODO
+//        Properties data = clientFactory.getClient().getUserData();
+//        return data == null ? new Properties() : data;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#setUserData(java.util.Properties)
      */
     @Override
     public void setUserData(Properties inData)
-            throws ConnectionException, ClientInitException
     {
-        clientFactory.getClient().setUserData(inData);
+        throw new UnsupportedOperationException(); // TODO
+//        clientFactory.getClient().setUserData(inData);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -1127,43 +1111,44 @@ final class StrategyModule
             disconnectORSRouting();
         }
         // request execution reports from the ORS client
-        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
-            closeableLock.lock();
-            try {
-                DataFlowID reportsDataFlow = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(ClientModuleFactory.INSTANCE_URN),
-                                                                                            new DataRequest(getURN()) },
-                                                                        false);
-                new RequestContainer(reportsDataFlow,
-                                     counter.incrementAndGet());
-            } catch (Exception e) {
-                EXECUTION_REPORT_REQUEST_FAILED.warn(StrategyModule.class,
-                                                     name,
-                                                     ClientModuleFactory.INSTANCE_URN);
-            }
-        }
-        @SuppressWarnings("resource")
-        ApplicationContext context = ApplicationContainer.getInstance()==null?null:ApplicationContainer.getInstance().getContext();
-        if(context != null) {
-            try {
-                marketDataManager = context.getBean(MarketDataManager.class);
-            } catch (NoSuchBeanDefinitionException e) {
-                SLF4JLoggerProxy.debug(this,
-                                       "No market data manager, falling back on market data module framework"); //$NON-NLS-1$
-            }
-        }
-        try {
-            strategy = new StrategyImpl(name,
-                                        getURN().getValue(),
-                                        type,
-                                        source,
-                                        parameters,
-                                        getURN().instanceName(),
-                                        this);
-            strategy.start();
-        } catch (Exception e) {
-            throw new ModuleException(e,
-                                      FAILED_TO_START);
-        }
+//        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+//            closeableLock.lock();
+//            try {
+//                DataFlowID reportsDataFlow = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(ClientModuleFactory.INSTANCE_URN),
+//                                                                                                new DataRequest(getURN()) },
+//                                                                        false);
+//                new RequestContainer(reportsDataFlow,
+//                                     counter.incrementAndGet());
+//            } catch (Exception e) {
+//                EXECUTION_REPORT_REQUEST_FAILED.warn(StrategyModule.class,
+//                                                     name,
+//                                                     ClientModuleFactory.INSTANCE_URN);
+//            }
+//        }
+//        @SuppressWarnings("resource")
+//        ApplicationContext context = ApplicationContainer.getInstance()==null?null:ApplicationContainer.getInstance().getContext();
+//        if(context != null) {
+//            try {
+//                marketDataManager = context.getBean(MarketDataManager.class);
+//            } catch (NoSuchBeanDefinitionException e) {
+//                SLF4JLoggerProxy.debug(this,
+//                                       "No market data manager, falling back on market data module framework"); //$NON-NLS-1$
+//            }
+//        }
+//        try {
+//            strategy = new StrategyImpl(name,
+//                                        getURN().getValue(),
+//                                        type,
+//                                        source,
+//                                        parameters,
+//                                        getURN().instanceName(),
+//                                        this);
+//            strategy.start();
+//        } catch (Exception e) {
+//            throw new ModuleException(e,
+//                                      FAILED_TO_START);
+//        }
+        throw new UnsupportedOperationException(); //TODO
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -1395,56 +1380,57 @@ final class StrategyModule
      */
     private int doMarketDataRequest(MarketDataRequest inRequest)
     {
-        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
-            closeableLock.lock();
-            // this is the internal request ID that we pass back to the requester so it knows how to refer to this request
-            final int internalRequestId = counter.incrementAndGet();
-            // there are two ways to request market data: the first (and preferable) is to use the marketDataManager, if available. if not available, the second method
-            //  is to use the module framework
-            try {
-                if(marketDataManager != null) {
-                    // hooray, we've got option #1 working for us, let's do that
-                    long marketDataManagerRequestId = marketDataManager.requestMarketData(inRequest,
-                                                                                          new ISubscriber() {
-                        @Override
-                        public boolean isInteresting(Object inData)
-                        {
-                            return true;
-                        }
-                        @Override
-                        public void publishTo(Object inData)
-                        {
-                            if(inData instanceof Event) {
-                                ((Event)inData).setSource(internalRequestId);
-                            }
-                            strategy.dataReceived(inData);
-                        }
-                    });
-                    new RequestContainer(marketDataManagerRequestId,
-                                         internalRequestId);
-                } else {
-                    ModuleURN marketDataURN = constructMarketDataUrn(inRequest.getProvider());
-                    SLF4JLoggerProxy.debug(StrategyModule.class,
-                                           "{} received a market data request {} for data from {}", //$NON-NLS-1$
-                                           strategy,
-                                           inRequest,
-                                           marketDataURN);
-                    DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(marketDataURN,
-                                                                                                               inRequest),
-                                                                                               new DataRequest(getURN()) },
-                                                                                                               false);
-                    new RequestContainer(dataFlowID,
-                                         internalRequestId);
-                }
-            } catch (Exception e) {
-                StrategyModule.log(LogEventBuilder.warn().withMessage(MARKET_DATA_REQUEST_FAILED,
-                                                                      inRequest)
-                                                                      .withException(e).create(),
-                                                                      strategy);
-                return 0;
-            }
-            return internalRequestId;
-        }
+//        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+//            closeableLock.lock();
+//            // this is the internal request ID that we pass back to the requester so it knows how to refer to this request
+//            final int internalRequestId = counter.incrementAndGet();
+//            // there are two ways to request market data: the first (and preferable) is to use the marketDataManager, if available. if not available, the second method
+//            //  is to use the module framework
+//            try {
+//                if(marketDataManager != null) {
+//                    // hooray, we've got option #1 working for us, let's do that
+//                    long marketDataManagerRequestId = marketDataManager.requestMarketData(inRequest,
+//                                                                                          new ISubscriber() {
+//                        @Override
+//                        public boolean isInteresting(Object inData)
+//                        {
+//                            return true;
+//                        }
+//                        @Override
+//                        public void publishTo(Object inData)
+//                        {
+//                            if(inData instanceof Event) {
+//                                ((Event)inData).setSource(internalRequestId);
+//                            }
+//                            strategy.dataReceived(inData);
+//                        }
+//                    });
+//                    new RequestContainer(marketDataManagerRequestId,
+//                                         internalRequestId);
+//                } else {
+//                    ModuleURN marketDataURN = constructMarketDataUrn(inRequest.getProvider());
+//                    SLF4JLoggerProxy.debug(StrategyModule.class,
+//                                           "{} received a market data request {} for data from {}", //$NON-NLS-1$
+//                                           strategy,
+//                                           inRequest,
+//                                           marketDataURN);
+//                    DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(marketDataURN,
+//                                                                                                               inRequest),
+//                                                                                               new DataRequest(getURN()) },
+//                                                                                                               false);
+//                    new RequestContainer(dataFlowID,
+//                                         internalRequestId);
+//                }
+//            } catch (Exception e) {
+//                StrategyModule.log(LogEventBuilder.warn().withMessage(MARKET_DATA_REQUEST_FAILED,
+//                                                                      inRequest)
+//                                                                      .withException(e).create(),
+//                                                                      strategy);
+//                return 0;
+//            }
+//            return internalRequestId;
+//        }
+        throw new UnsupportedOperationException(); // TODO
     }
     /**
      * Sets the event source on the given event.
@@ -1522,20 +1508,21 @@ final class StrategyModule
     private void establishORSRouting()
         throws ModuleException
     {
-        SLF4JLoggerProxy.debug(this,
-                               "Establishing connection to ORS"); //$NON-NLS-1$
-        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
-            closeableLock.lock();
-            if(orsFlow == null) {
-                // no current routing, establish one
-                orsFlow = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),
-                                                                                             OutputType.ORDERS),
-                                                                                             new DataRequest(ClientModuleFactory.INSTANCE_URN) },
-                                                                                             false);
-                new RequestContainer(orsFlow,
-                                     counter.incrementAndGet());
-            }
-        }
+//        SLF4JLoggerProxy.debug(this,
+//                               "Establishing connection to ORS"); //$NON-NLS-1$
+//        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+//            closeableLock.lock();
+//            if(orsFlow == null) {
+//                // no current routing, establish one
+//                orsFlow = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),
+//                                                                                             OutputType.ORDERS),
+//                                                                                             new DataRequest(ClientModuleFactory.INSTANCE_URN) },
+//                                                                                             false);
+//                new RequestContainer(orsFlow,
+//                                     counter.incrementAndGet());
+//            }
+//        }
+        throw new UnsupportedOperationException(); // TODO
     }
     /**
      * Request for data that comes from within strategy to strategy.
@@ -1652,21 +1639,22 @@ final class StrategyModule
          */
         private void cancel()
         {
-            if(dataFlowId != null) {
-                try {
-                    dataFlowSupport.cancel(dataFlowId);
-                } finally {
-                    requestsByDataFlowId.remove(dataFlowId);
-                }
-            } else {
-                try {
-                    if(marketDataManager != null) {
-                        marketDataManager.cancelMarketDataRequest(marketDataRequestId);
-                    }
-                } finally {
-                    requestsByInternalId.remove(internalRequestId);
-                }
-            }
+//            if(dataFlowId != null) {
+//                try {
+//                    dataFlowSupport.cancel(dataFlowId);
+//                } finally {
+//                    requestsByDataFlowId.remove(dataFlowId);
+//                }
+//            } else {
+//                try {
+//                    if(marketDataManager != null) {
+//                        marketDataManager.cancelMarketDataRequest(marketDataRequestId);
+//                    }
+//                } finally {
+//                    requestsByInternalId.remove(internalRequestId);
+//                }
+//            }
+            throw new UnsupportedOperationException(); // TODO
         }
         /**
          * Get the internalRequestId value.
@@ -1852,11 +1840,11 @@ final class StrategyModule
      * provides access to the trading client
      */
     @Autowired
-    private TradingClientFactory tradingClientFactory;
+    private TradeClientFactory<?> tradingClientFactory;
     /**
      * provides access to trading client services
      */
-    private TradingClient tradingClient;
+    private TradeClient tradeClient;
     /**
      * counter used to guarantee unique identifiers
      */
@@ -1873,10 +1861,6 @@ final class StrategyModule
      * counter used for JMX notifications
      */
     private final AtomicLong jmxNotificationCounter = new AtomicLong();
-    /**
-     * provides access to new market data services
-     */
-    private MarketDataManager marketDataManager;
     /**
      * guards access to data flow structures
      */

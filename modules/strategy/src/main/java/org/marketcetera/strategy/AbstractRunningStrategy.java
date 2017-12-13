@@ -1,16 +1,92 @@
 package org.marketcetera.strategy;
 
-import static org.marketcetera.strategy.Messages.*;
+import static org.marketcetera.strategy.Messages.BROKER_STATUS_PROCESS_FAILED;
+import static org.marketcetera.strategy.Messages.CALLBACK_ERROR;
+import static org.marketcetera.strategy.Messages.CANCELING_ALL_DATA_REQUESTS;
+import static org.marketcetera.strategy.Messages.CANCELING_DATA_REQUEST;
+import static org.marketcetera.strategy.Messages.CANCEL_REQUEST_SUBMITTED;
+import static org.marketcetera.strategy.Messages.CANNOT_REQUEST_DATA;
+import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_BROKERS;
+import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_CURRENCY_POSITION;
+import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_EQUITY_POSITION;
+import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_FUTURE_POSITION;
+import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_OPTION_POSITION;
+import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_OPTION_ROOTS;
+import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_POSITIONS;
+import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_POSITIONS_BY_OPTION_ROOTS;
+import static org.marketcetera.strategy.Messages.CANNOT_RETRIEVE_UNDERLYING;
+import static org.marketcetera.strategy.Messages.CEP_REQUEST_FAILED;
+import static org.marketcetera.strategy.Messages.COMBINED_DATA_REQUEST_FAILED;
+import static org.marketcetera.strategy.Messages.DATA_REQUEST_CANCEL_FAILED;
+import static org.marketcetera.strategy.Messages.DATA_REQUEST_FAILED;
+import static org.marketcetera.strategy.Messages.EXECUTING_CALLBACK;
+import static org.marketcetera.strategy.Messages.FAILED_TO_RETRIEVE_USER_DATA;
+import static org.marketcetera.strategy.Messages.FAILED_TO_SET_USER_DATA;
+import static org.marketcetera.strategy.Messages.INVALID_CANCEL;
+import static org.marketcetera.strategy.Messages.INVALID_CEP_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_CURRENCY_POSITION_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_DATA;
+import static org.marketcetera.strategy.Messages.INVALID_DATA_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_DATA_REQUEST_CANCEL;
+import static org.marketcetera.strategy.Messages.INVALID_EQUITY_POSITION_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_EVENT;
+import static org.marketcetera.strategy.Messages.INVALID_EVENT_TO_CEP;
+import static org.marketcetera.strategy.Messages.INVALID_FUTURE_POSITION_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_LOG;
+import static org.marketcetera.strategy.Messages.INVALID_MARKET_DATA_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_MESSAGE;
+import static org.marketcetera.strategy.Messages.INVALID_NOTIFICATION;
+import static org.marketcetera.strategy.Messages.INVALID_OPTION_POSITION_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_OPTION_ROOTS_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_ORDER;
+import static org.marketcetera.strategy.Messages.INVALID_ORDERID;
+import static org.marketcetera.strategy.Messages.INVALID_POSITIONS_BY_OPTION_ROOTS_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_POSITIONS_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_REPLACEMENT_ORDER;
+import static org.marketcetera.strategy.Messages.INVALID_TRADE_SUGGESTION;
+import static org.marketcetera.strategy.Messages.INVALID_UNDERLYING_REQUEST;
+import static org.marketcetera.strategy.Messages.MESSAGE_1P;
+import static org.marketcetera.strategy.Messages.NO_PARAMETERS;
+import static org.marketcetera.strategy.Messages.NULL_PROPERTY_KEY;
+import static org.marketcetera.strategy.Messages.ORDER_CANCEL_FAILED;
+import static org.marketcetera.strategy.Messages.ORDER_VALIDATION_FAILED;
+import static org.marketcetera.strategy.Messages.RECEIVED_BROKERS;
+import static org.marketcetera.strategy.Messages.RECEIVED_OPTION_ROOTS;
+import static org.marketcetera.strategy.Messages.RECEIVED_POSITION;
+import static org.marketcetera.strategy.Messages.RECEIVED_POSITIONS;
+import static org.marketcetera.strategy.Messages.RECEIVED_UNDERLYING;
+import static org.marketcetera.strategy.Messages.SUBMITTING_CANCEL_ALL_ORDERS_REQUEST;
+import static org.marketcetera.strategy.Messages.SUBMITTING_CANCEL_ORDER_REQUEST;
+import static org.marketcetera.strategy.Messages.SUBMITTING_CANCEL_REPLACE_REQUEST;
+import static org.marketcetera.strategy.Messages.SUBMITTING_CEP_REQUEST;
+import static org.marketcetera.strategy.Messages.SUBMITTING_EVENT_TO_CEP;
+import static org.marketcetera.strategy.Messages.SUBMITTING_FIX_MESSAGE;
+import static org.marketcetera.strategy.Messages.SUBMITTING_MARKET_DATA_REQUEST;
+import static org.marketcetera.strategy.Messages.SUBMITTING_ORDER;
+import static org.marketcetera.strategy.Messages.SUBMITTING_PROCESSED_MARKET_DATA_REQUEST;
+import static org.marketcetera.strategy.Messages.SUBMITTING_TRADE_SUGGESTION;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.Validate;
 import org.marketcetera.brokers.BrokerStatus;
-import org.marketcetera.client.ClientInitException;
-import org.marketcetera.client.ClientManager;
+import org.marketcetera.brokers.BrokerStatusPublisher;
 import org.marketcetera.client.Validations;
 import org.marketcetera.client.utils.LiveOrderHistoryManager;
 import org.marketcetera.core.notifications.Notification;
@@ -23,8 +99,25 @@ import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataFlowSupport;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderSingleSuggestion;
+import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.client.OrderValidationException;
 import org.marketcetera.util.collections.UnmodifiableDeque;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -80,19 +173,36 @@ public abstract class AbstractRunningStrategy
         strategy = inStrategy;
     }
     /**
+     * Get the brokerStatusPublisher value.
+     *
+     * @return a <code>BrokerStatusPublisher</code> value
+     */
+    BrokerStatusPublisher getBrokerStatusPublisher()
+    {
+        return brokerStatusPublisher;
+    }
+    /**
+     * Sets the brokerStatusPublisher value.
+     *
+     * @param inBrokerStatusPublisher a <code>BrokerStatusPublisher</code> value
+     */
+    void setBrokerStatusPublisher(BrokerStatusPublisher inBrokerStatusPublisher)
+    {
+        brokerStatusPublisher = inBrokerStatusPublisher;
+    }
+    /**
      * Called when the <code>AbstractRunningStrategy</code> starts.
-     * @throws ClientInitException if an error occurs during start 
      */
     final void start()
-            throws ClientInitException
     {
+        Validate.notNull(brokerStatusPublisher);
         synchronized(AbstractRunningStrategy.class) {
             if(orderHistoryManager == null) {
                 initializeReportHistoryManager();
             }
         }
         // Add the strategy as a broker status listener
-        ClientManager.getInstance().addBrokerStatusListener(this);
+        brokerStatusPublisher.addBrokerStatusListener(this);
     }
     /**
      * Indicates to the <code>AbstractRunningStrategy</code> that it should stop running now.
@@ -104,11 +214,7 @@ public abstract class AbstractRunningStrategy
         // terminate existing callbacks, best effort
         callbackService.shutdownNow();
         // Delete the strategy as a broker status listener
-        try {
-        	ClientManager.getInstance().removeBrokerStatusListener(this);
-        } catch(ClientInitException e) {
-        	throw new RuntimeException(e);
-        }
+        brokerStatusPublisher.removeBrokerStatusListener(this);
     }
     /**
      * Provides a non-overridable route for {@link ExecutionReport} data to
@@ -143,14 +249,14 @@ public abstract class AbstractRunningStrategy
      */
     public void receiveBrokerStatus(BrokerStatus inStatus) 
     {
-    	try {
-    		// notify the strategy
-    		onReceiveBrokerStatus(inStatus);
-    	} catch (Exception e) {
-    		StrategyModule.log(LogEventBuilder.warn().withMessage(BROKER_STATUS_PROCESS_FAILED,
-    				String.valueOf(strategy), String.valueOf(inStatus)).create(),
-    				strategy);
-    	}
+        try {
+            // notify the strategy
+            onReceiveBrokerStatus(inStatus);
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(BROKER_STATUS_PROCESS_FAILED,
+                                                                  String.valueOf(strategy), String.valueOf(inStatus)).create(),
+                                                                  strategy);
+        }
     }
     /**
      * Returns the list of open orders created during this session in the order they
@@ -1070,9 +1176,9 @@ public abstract class AbstractRunningStrategy
      * Gets all open <code>Equity</code> positions at the given point in time.
      *
      * @param inDate a <code>Date</code> value indicating the point in time for which to search
-     * @return a <code>Map&lt;PositionKey&lt;Equity&gt;,BigDecimal&gt;</code> value
+     * @return a <code>Map&lt;PositionKey&lt;? extends Instrument&gt;,BigDecimal&gt;</code> value
      */
-    protected final Map<PositionKey<Equity>,BigDecimal> getAllPositionsAsOf(Date inDate)
+    protected final Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(Date inDate)
     {
         if(!canReceiveData()) {
             StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
@@ -1088,7 +1194,7 @@ public abstract class AbstractRunningStrategy
             return null;
         }
         try {
-            Map<PositionKey<Equity>,BigDecimal> result = strategy.getServicesProvider().getAllPositionsAsOf(inDate); 
+            Map<PositionKey<? extends Instrument>,BigDecimal> result = strategy.getServicesProvider().getAllPositionsAsOf(inDate); 
             StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_POSITIONS,
                                                                    String.valueOf(strategy),
                                                                    String.valueOf(result),
@@ -1713,15 +1819,11 @@ public abstract class AbstractRunningStrategy
             Date origin = getReportHistoryOriginDate();
             Messages.USING_ORDER_HISTORY_ORIGIN.info(AbstractRunningStrategy.class,
                                                      origin);
-            try {
-                if(orderHistoryManager != null) {
-                    orderHistoryManager.stop();
-                }
-                orderHistoryManager = new LiveOrderHistoryManager(origin);
-                orderHistoryManager.start();
-            } catch (ClientInitException e) {
-                throw new RuntimeException(e);
+            if(orderHistoryManager != null) {
+                orderHistoryManager.stop();
             }
+            orderHistoryManager = new LiveOrderHistoryManager(origin);
+            orderHistoryManager.start();
         }
     }
     /**
@@ -1757,6 +1859,10 @@ public abstract class AbstractRunningStrategy
      * static strategy object of which this object is a running representation
      */
     private Strategy strategy;
+    /**
+     * provides broker status
+     */
+    private BrokerStatusPublisher brokerStatusPublisher;
     /**
      * empty collection used to indicate the lack of reports for an order
      */

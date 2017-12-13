@@ -715,6 +715,22 @@ public class TradeRpcClient
             }}
         );
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#getOptionRoots(java.lang.String)
+     */
+    @Override
+    public Collection<String> getOptionRoots(String inUnderlying)
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#getUnderlying(java.lang.String)
+     */
+    @Override
+    public String getUnderlying(String inOptionRoot)
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
     /**
      * Create a new TradingRpcClient instance.
      *
