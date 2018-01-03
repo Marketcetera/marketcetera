@@ -11,6 +11,7 @@ import org.marketcetera.photon.module.IDataFlowLabelProvider;
 import org.marketcetera.photon.module.ISinkDataHandler;
 import org.marketcetera.photon.module.ISinkDataManager;
 import org.marketcetera.photon.module.ModuleSupport;
+import org.marketcetera.trade.HasSuggestionCommand;
 import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -48,7 +49,10 @@ public final class TradeSuggestionManager implements ISinkDataHandler {
 	 */
 	TradeSuggestionManager() {
 		mSinkDataManager = ModuleSupport.getSinkDataManager();
-		mSinkDataManager.register(this, OrderSingleSuggestion.class);
+        mSinkDataManager.register(this,
+                                  OrderSingleSuggestion.class);
+        mSinkDataManager.register(this,
+                                  HasSuggestionCommand.class);
 	}
 
 	/**
@@ -87,19 +91,44 @@ public final class TradeSuggestionManager implements ISinkDataHandler {
 	 *            suggestion to remove
 	 */
 	public void removeSuggestion(TradeSuggestion suggestion) {
+        // TODO need to send this to the SE that sent us the suggestion
 		mSuggestions.remove(suggestion);
 	}
-
-	@Override
-	public void receivedData(DataFlowID inFlowID, Object inData) {
-		OrderSingleSuggestion suggestion = (OrderSingleSuggestion) inData;
-		if (suggestion.getOrder() != null) {
-            addSuggestion(suggestion, getLabel(inFlowID));
-		} else {
-			Messages.TRADE_SUGGESTION_MANAGER_INVALID_DATA_NO_ORDER.error(this);
-		}
-	}
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.module.SinkDataListener#receivedData(org.marketcetera.module.DataFlowID, java.lang.Object)
+     */
+    @Override
+    public void receivedData(DataFlowID inFlowID,
+                             Object inData)
+    {
+        if(inData instanceof HasSuggestionCommand) {
+            switch(((HasSuggestionCommand)inData).getSuggestionCommand()) {
+                case CLEAR:
+                    PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            mSuggestions.clear();
+                        }
+                    });
+                    break;
+                case DELETE:
+                case REFRESH:
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        } else if(inData instanceof OrderSingleSuggestion) {
+            OrderSingleSuggestion suggestion = (OrderSingleSuggestion)inData;
+            if(suggestion.getOrder() != null) {
+                addSuggestion(suggestion,
+                              getLabel(inFlowID));
+            } else {
+                Messages.TRADE_SUGGESTION_MANAGER_INVALID_DATA_NO_ORDER.error(this);
+            }
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
     private String getLabel(DataFlowID dataFlowId) {
         IDataFlowLabelProvider labelProvider = ModuleSupport.getDataFlowLabelProvider();
         if (labelProvider != null) {
@@ -110,5 +139,4 @@ public final class TradeSuggestionManager implements ISinkDataHandler {
         }
         return dataFlowId.getValue();
     }
-
 }

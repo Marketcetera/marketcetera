@@ -36,7 +36,7 @@ public abstract class AbstractStrategyEnginesSupport {
 
     private WritableList mEngines;
 
-    private ServiceRegistration mRegistration;
+    private ServiceRegistration<?> mRegistration;
 
     private final AtomicBoolean mDisposed = new AtomicBoolean();
 

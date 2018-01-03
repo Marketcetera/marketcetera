@@ -13,34 +13,33 @@ import java.io.Serializable;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public interface Suggestion extends Serializable {
+@ClassVersion("$Id$")
+public interface Suggestion
+        extends Serializable
+{
     /**
      * The identifier for this suggestion.
      *
      * @return the identifier for this suggestion.
      */
-    public String getIdentifier();
-
+    String getIdentifier();
     /**
      * Sets the identifier for this suggestion.
      *
      * @param inIdentifier the identifier value.
      */
-    public void  setIdentifier(String inIdentifier);
-
+    void setIdentifier(String inIdentifier);
     /**
      * The score for this suggestion. Higher the value, the stronger
      * is the recommendation for this order. 
      *
      * @return the score for this suggestion.
      */
-    public BigDecimal getScore();
-
+    BigDecimal getScore();
     /**
      * The score for this suggestion.
      *
      * @param inScore the score value.
      */
-    public void setScore(BigDecimal inScore);
+    void setScore(BigDecimal inScore);
 }
