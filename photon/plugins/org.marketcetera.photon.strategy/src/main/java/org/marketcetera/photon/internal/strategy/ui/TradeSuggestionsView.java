@@ -60,12 +60,10 @@ public class TradeSuggestionsView extends ViewPart implements IColumnProvider {
 
     private TableConfiguration getTableConfiguration() {
         ColumnConfiguration[] columns = new ColumnConfiguration[] {
-                ColumnConfiguration.hidden().beanProperty("identifier") //$NON-NLS-1$
-                        .heading(
-                                Messages.TRADE_SUGGESTION_IDENTIFIER_LABEL
-                                        .getText()),
                 ColumnConfiguration.defaults().beanProperty("source").heading( //$NON-NLS-1$
                         Messages.TRADE_SUGGESTION_SOURCE_LABEL.getText()),
+                 ColumnConfiguration.defaults().beanProperty("identifier") //$NON-NLS-1$
+                        .heading(Messages.TRADE_SUGGESTION_IDENTIFIER_LABEL.getText()),
                 ColumnConfiguration.defaults().beanProperty("side").heading( //$NON-NLS-1$
                         Messages.TRADE_SUGGESTION_SIDE_LABEL.getText()),
                 ColumnConfiguration.hidden().beanProperty("securityType") //$NON-NLS-1$

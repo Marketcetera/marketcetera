@@ -2,7 +2,7 @@
 <feature
       id="org.marketcetera.photon.feature"
       label="%featureName"
-      version="3.0.12"
+      version="3.1.0"
       provider-name="%providerName"
       plugin="org.marketcetera.photon">
 
