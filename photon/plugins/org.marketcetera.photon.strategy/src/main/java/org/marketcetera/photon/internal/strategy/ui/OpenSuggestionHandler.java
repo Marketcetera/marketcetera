@@ -40,7 +40,7 @@ public class OpenSuggestionHandler extends AbstractHandler {
 
         try {
             PhotonPlugin.getDefault().showOrderInTicket(order);
-            TradeSuggestionManager.getCurrent().removeSuggestion(suggestion);
+            TradeSuggestionManager.getCurrent().suggestionOpened(suggestion);
         } catch (WorkbenchException e) {
             SLF4JLoggerProxy.error(this, e);
             Shell shell = HandlerUtil.getActiveShellChecked(event);

@@ -1,9 +1,9 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-
-import java.math.BigDecimal;
 import java.io.Serializable;
+import java.math.BigDecimal;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -15,14 +15,8 @@ import java.io.Serializable;
  */
 @ClassVersion("$Id$")
 public interface Suggestion
-        extends Serializable
+        extends Serializable,HasSuggestionIdentifier
 {
-    /**
-     * The identifier for this suggestion.
-     *
-     * @return the identifier for this suggestion.
-     */
-    String getIdentifier();
     /**
      * Sets the identifier for this suggestion.
      *

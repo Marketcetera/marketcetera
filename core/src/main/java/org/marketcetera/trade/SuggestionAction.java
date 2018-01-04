@@ -9,8 +9,12 @@ package org.marketcetera.trade;
  * @version $Id$
  * @since $Release$
  */
-public enum SuggestionCommand
+public enum SuggestionAction
 {
+    /**
+     * add the suggestion to the suggestion list (server-to-client command)
+     */
+    ADD,
     /**
      * clear all suggestions (server-to-client command)
      */
@@ -20,7 +24,11 @@ public enum SuggestionCommand
      */
     DELETE,
     /**
-     * send all suggestions (client-to-server command)
+     * resend all suggestions (client-to-server command)
      */
-    REFRESH;
+    REFRESH,
+    /**
+     * indicates a suggestion was sent (client-to-server command)
+     */
+    SEND;
 }

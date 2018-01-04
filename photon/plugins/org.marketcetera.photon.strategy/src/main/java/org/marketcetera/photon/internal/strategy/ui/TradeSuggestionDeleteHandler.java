@@ -25,7 +25,7 @@ public class TradeSuggestionDeleteHandler extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getCurrentSelectionChecked(event);
 		for (Object obj : selection.toArray()) {
-			TradeSuggestionManager.getCurrent().removeSuggestion((TradeSuggestion) obj);
+			TradeSuggestionManager.getCurrent().suggestionDeleted((TradeSuggestion) obj);
 		}
 		return null;
 	}

@@ -1,20 +1,22 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-
 import java.math.BigDecimal;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
  * Implementation for Single Order Suggestions.
  *
  * @author anshul@marketcetera.com
+ * @author <a href="mailto:colin@marketcetera.com>Colin DuPlantis</a>
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-class OrderSingleSuggestionImpl
-        implements OrderSingleSuggestion {
+@ClassVersion("$Id$")
+public class OrderSingleSuggestionImpl
+        implements OrderSingleSuggestion,HasSuggestionAction
+{
     @Override
     public String getIdentifier() {
         return mIdentifier;
@@ -48,7 +50,22 @@ class OrderSingleSuggestionImpl
                 ? null
                 : inOrder.clone();
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasSuggestionAction#getSuggestionAction()
+     */
+    @Override
+    public SuggestionAction getSuggestionAction()
+    {
+        return suggestionAction;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasSuggestionAction#setSuggestionAction(org.marketcetera.trade.SuggestionAction)
+     */
+    @Override
+    public void setSuggestionAction(SuggestionAction inAction)
+    {
+        suggestionAction = inAction;
+    }
     @Override
     public String toString() {
         return Messages.ORDER_SINGLE_SUGGESTION_TO_STRING.getText(
@@ -57,9 +74,9 @@ class OrderSingleSuggestionImpl
                 String.valueOf(getOrder())
         );
     }
-
     private String mIdentifier;
     private BigDecimal mScore;
     private OrderSingle mOrder;
-    private static final long serialVersionUID = 1L;
+    private SuggestionAction suggestionAction = SuggestionAction.ADD;
+    private static final long serialVersionUID = 6304005195360225079L;
 }
