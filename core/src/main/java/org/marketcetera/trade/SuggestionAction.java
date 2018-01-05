@@ -16,10 +16,6 @@ public enum SuggestionAction
      */
     ADD,
     /**
-     * clear all suggestions (server-to-client command)
-     */
-    CLEAR,
-    /**
      * indicates a suggestion was deleted (client-to-server and server-to-client command)
      */
     DELETE,

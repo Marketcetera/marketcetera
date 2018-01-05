@@ -2,7 +2,7 @@ package org.marketcetera.saclient.rpc;
 
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.saclient.CreateStrategyParameters;
-import org.marketcetera.trade.DeleteSuggestionAction;
+import org.marketcetera.trade.OrderSingleSuggestionImpl;
 import org.marketcetera.trade.RefreshSuggestionAction;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
@@ -31,7 +31,7 @@ public class SAClientContextClassProvider
     /**
      * class list to return
      */
-    private static final Class<?>[] CLASSES = new Class<?>[] { ModuleInfo.class, XmlValue.class, CreateStrategyParameters.class, DeleteSuggestionAction.class, RefreshSuggestionAction.class };
+    private static final Class<?>[] CLASSES = new Class<?>[] { ModuleInfo.class, XmlValue.class, CreateStrategyParameters.class, RefreshSuggestionAction.class, OrderSingleSuggestionImpl.class };
     /**
      * instance value
      */

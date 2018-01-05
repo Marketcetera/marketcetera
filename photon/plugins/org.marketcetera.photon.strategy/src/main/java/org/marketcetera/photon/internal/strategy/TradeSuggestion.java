@@ -24,172 +24,224 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public class TradeSuggestion {
-
-	private final OrderSingleSuggestion mSuggestion;
-
-	private final String mSource;
-
-    private final Date mTimestamp;
-
+public class TradeSuggestion
+{
     /**
-     * Constructor.
+     * Create a new TradeSuggestion instance.
      * 
-     * @param suggestion
-     *            the trade suggestion
-     * @param source
-     *            the source of the suggestion
-     * @param timestamp
-     *            the time the suggestion was received
+     * @param inSuggestion an <code>OrderSingleSuggestion</code> value
+     * @param inSource the source of the suggestion
+     * @param inTimestamp the time the suggestion was received
      */
-	TradeSuggestion(OrderSingleSuggestion suggestion, String source, Date timestamp) {
-		Validate.notNull(suggestion);
-		mSuggestion = suggestion;
-		mSource = source;
-		mTimestamp = timestamp;
-	}
-
-	/**
-	 * Returns the underlying order.
-	 * 
-	 * @return the underlying order
-	 */
-	public OrderSingle getOrder() {
-		return mSuggestion.getOrder();
-	}
-
-	/**
-	 * Returns the identifier.
-	 * 
-	 * @return the identifier
-	 */
-	public String getIdentifier() {
-		return mSuggestion.getIdentifier();
-	}
-
-	/**
-	 * Returns the side.
-	 * 
-	 * @return the side
-	 */
-	public Side getSide() {
-		return getOrder().getSide();
-	}
-
-	/**
-	 * Returns the security type.
-	 * 
-	 * @return the security type
-	 */
-	public SecurityType getSecurityType() {
-		return getOrder().getSecurityType();
-	}
-
-	/**
-	 * Returns the quantity.
-	 * 
-	 * @return the quantity
-	 */
-	public BigDecimal getQuantity() {
-		return getOrder().getQuantity();
-	}
-
-	/**
-	 * Returns the instrument.
-	 * 
-	 * @return the instrument
-	 */
-	public Instrument getInstrument() {
-		return getOrder().getInstrument();
-	}
-
-	/**
-	 * Returns the price.
-	 * 
-	 * @return the price
-	 */
-	public BigDecimal getPrice() {
-		return getOrder().getPrice();
-	}
-
-	/**
-	 * Returns the order type.
-	 * 
-	 * @return the order type
-	 */
-	public OrderType getOrderType() {
-		return getOrder().getOrderType();
-	}
-
-	/**
-	 * Returns the time in force.
-	 * 
-	 * @return the time in force
-	 */
-	public TimeInForce getTimeInForce() {
-		return getOrder().getTimeInForce();
-	}
-
-	/**
-	 * Returns the order capacity.
-	 * 
-	 * @return the order capacity
-	 */
-	public OrderCapacity getOrderCapacity() {
-		return getOrder().getOrderCapacity();
-	}
-
-	/**
-	 * Returns the position effect.
-	 * 
-	 * @return the position effect
-	 */
-	public PositionEffect getPositionEffect() {
-		return getOrder().getPositionEffect();
-	}
-
-	/**
-	 * Returns the score.
-	 * 
-	 * @return the score
-	 */
-	public BigDecimal getScore() {
-		return mSuggestion.getScore();
-	}
-
-	/**
-	 * Returns the account.
-	 * 
-	 * @return the account
-	 */
-	public String getAccount() {
-		return getOrder().getAccount();
-	}
-
-	/**
-	 * Returns the broker ID.
-	 * 
-	 * @return the broker ID
-	 */
-	public BrokerID getBrokerID() {
-		return getOrder().getBrokerID();
-	}
-	
-	/**
+    TradeSuggestion(OrderSingleSuggestion inSuggestion,
+                    String inSource,
+                    Date inTimestamp)
+    {
+        Validate.notNull(inSuggestion);
+        suggestion = inSuggestion;
+        source = inSource;
+        timestamp = inTimestamp;
+        identifier = suggestion.getIdentifier();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TradeSuggestion [source=").append(source).append(", timestamp=").append(timestamp)
+                .append(", suggestion=").append(suggestion).append("]");
+        return builder.toString();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((identifier == null) ? 0 : identifier.hashCode());
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof TradeSuggestion)) {
+            return false;
+        }
+        TradeSuggestion other = (TradeSuggestion) obj;
+        if (identifier == null) {
+            if (other.identifier != null) {
+                return false;
+            }
+        } else if (!identifier.equals(other.identifier)) {
+            return false;
+        }
+        return true;
+    }
+    /**
+     * Returns the underlying order.
+     * 
+     * @return the underlying order
+     */
+    public OrderSingle getOrder() {
+        return suggestion.getOrder();
+    }
+    /**
+     * Get the suggestion value.
+     *
+     * @return an <code>OrderSingleSuggestion</code> value
+     */
+    public OrderSingleSuggestion getSuggestion()
+    {
+        return suggestion;
+    }
+    /**
+     * Returns the identifier.
+     * 
+     * @return the identifier
+     */
+    public String getIdentifier()
+    {
+        return identifier;
+    }
+    /**
+     * Returns the side.
+     * 
+     * @return the side
+     */
+    public Side getSide() {
+        return getOrder().getSide();
+    }
+    /**
+     * Returns the security type.
+     * 
+     * @return the security type
+     */
+    public SecurityType getSecurityType() {
+        return getOrder().getSecurityType();
+    }
+    /**
+     * Returns the quantity.
+     * 
+     * @return the quantity
+     */
+    public BigDecimal getQuantity() {
+        return getOrder().getQuantity();
+    }
+    /**
+     * Returns the instrument.
+     * 
+     * @return the instrument
+     */
+    public Instrument getInstrument() {
+        return getOrder().getInstrument();
+    }
+    /**
+     * Returns the price.
+     * 
+     * @return the price
+     */
+    public BigDecimal getPrice() {
+        return getOrder().getPrice();
+    }
+    /**
+     * Returns the order type.
+     * 
+     * @return the order type
+     */
+    public OrderType getOrderType() {
+        return getOrder().getOrderType();
+    }
+    /**
+     * Returns the time in force.
+     * 
+     * @return the time in force
+     */
+    public TimeInForce getTimeInForce() {
+        return getOrder().getTimeInForce();
+    }
+    /**
+     * Returns the order capacity.
+     * 
+     * @return the order capacity
+     */
+    public OrderCapacity getOrderCapacity() {
+        return getOrder().getOrderCapacity();
+    }
+    /**
+     * Returns the position effect.
+     * 
+     * @return the position effect
+     */
+    public PositionEffect getPositionEffect() {
+        return getOrder().getPositionEffect();
+    }
+    /**
+     * Returns the score.
+     * 
+     * @return the score
+     */
+    public BigDecimal getScore() {
+        return suggestion.getScore();
+    }
+    /**
+     * Returns the account.
+     * 
+     * @return the account
+     */
+    public String getAccount() {
+        return getOrder().getAccount();
+    }
+    /**
+     * Returns the broker ID.
+     * 
+     * @return the broker ID
+     */
+    public BrokerID getBrokerID() {
+        return getOrder().getBrokerID();
+    }
+    /**
      * Returns the source.
      * 
      * @return the source
      */
     public String getSource() {
-        return mSource;
+        return source;
     }
-
-	/**
-	 * Returns the timestamp.
-	 * 
-	 * @return the timestamp
-	 */
-	public Date getTimestamp() {
-		return mTimestamp;
-	}
+    /**
+     * Returns the timestamp.
+     * 
+     * @return the timestamp
+     */
+    public Date getTimestamp() {
+        return timestamp;
+    }
+    /**
+     * underlying suggestion value
+     */
+    private final OrderSingleSuggestion suggestion;
+    /**
+     * source value
+     */
+    private final String source;
+    /**
+     * timestamp value
+     */
+    private final Date timestamp;
+    /**
+     * identifier value
+     */
+    private final String identifier;
 }

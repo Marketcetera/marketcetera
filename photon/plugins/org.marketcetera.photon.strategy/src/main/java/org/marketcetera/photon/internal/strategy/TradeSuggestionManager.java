@@ -15,10 +15,10 @@ import org.marketcetera.photon.module.ISinkDataManager;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
-import org.marketcetera.trade.DeleteSuggestionAction;
-import org.marketcetera.trade.RefreshSuggestionAction;
 import org.marketcetera.trade.HasSuggestionAction;
 import org.marketcetera.trade.OrderSingleSuggestion;
+import org.marketcetera.trade.RefreshSuggestionAction;
+import org.marketcetera.trade.SuggestionAction;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -73,32 +73,10 @@ public final class TradeSuggestionManager
                 synchronized(activeStrategyEngines) {
                     activeStrategyEngines.remove(strategyEngine);
                 }
-                mSuggestions.clear();
-                requestRefreshFromAll();
+                clearAndRequestRefreshFromAll();
                 break;
             default:
                 throw new UnsupportedOperationException();
-        }
-    }
-    /**
-     * This object should only be constructed by {@link Activator}.
-     * 
-     * @param inStrategyEngineMonitor a <code>StrategyEngineMonitor</code> value
-     */
-    TradeSuggestionManager(StrategyEngineMonitor inStrategyEngineMonitor)
-    {
-        mSinkDataManager = ModuleSupport.getSinkDataManager();
-        strategyEngineMonitor = inStrategyEngineMonitor;
-        strategyEngineMonitor.subscribe(this);
-        mSinkDataManager.register(this,
-                                  OrderSingleSuggestion.class);
-        mSinkDataManager.register(this,
-                                  HasSuggestionAction.class);
-        IObservableList currentStrategyEngines = strategyEngineMonitor.getStrategyEngineList();
-        if(currentStrategyEngines != null) {
-            for(Object o : currentStrategyEngines) {
-                publishTo(o);
-            }
         }
     }
 	/**
@@ -109,70 +87,46 @@ public final class TradeSuggestionManager
 	public IObservableList getTradeSuggestions() {
 		return Observables.unmodifiableObservableList(mSuggestions);
 	}
-
     /**
-     * Adds a trade suggestion to the managed collection.
-     * 
-     * @param suggestion
-     *            new suggestion to add.
-     * @param source
-     *            the source of the suggestion
+     * Indicates that the given suggestion was opened.
+     *
+     * @param inSuggestion a <code>TradeSuggestion</code> value
      */
-	public void addSuggestion(final OrderSingleSuggestion suggestion, final String source) {
-		final Date timestamp = new Date();
-		// Ensure the update is performed in the main UI thread
-		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-
-			@Override
-			public void run() {
-				mSuggestions.add(new TradeSuggestion(suggestion, source, timestamp));
-			}
-		});
-	}
-	/**
-	 * 
-	 *
-	 *
-	 * @param inSuggestion
-	 */
     public void suggestionOpened(TradeSuggestion inSuggestion)
     {
-        // TODO remove suggestion from list
-        // TODO send suggestion delete
-        removeSuggestion(inSuggestion);
+        suggestionSent(inSuggestion);
     }
     /**
-     * 
+     * Indicates that the given suggestion was sent.
      *
-     *
-     * @param inSuggestion
+     * @param inSuggestion a <code>TradeSuggestion</code> value
      */
     public void suggestionSent(TradeSuggestion inSuggestion)
     {
-        // TODO remove suggestion from list
-        // TODO send suggestion delete
-        removeSuggestion(inSuggestion);
+        OrderSingleSuggestion underlyingSuggestion = inSuggestion.getSuggestion();
+        if(underlyingSuggestion instanceof HasSuggestionAction) {
+            removeSuggestion(inSuggestion);
+            ((HasSuggestionAction)underlyingSuggestion).setSuggestionAction(SuggestionAction.SEND);
+            sendToAll((HasSuggestionAction)underlyingSuggestion);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
     /**
-     * 
+     * Indicates that the given suggestion was deleted.
      *
-     *
-     * @param inSuggestion
+     * @param inSuggestion a <code>TradeSuggestion</code> value
      */
     public void suggestionDeleted(TradeSuggestion inSuggestion)
     {
-        sendToAll(new DeleteSuggestionAction(inSuggestion.getIdentifier()));
-        removeSuggestion(inSuggestion);
-    }
-    /**
-     * Remove the given trade suggestion from the managed collection.
-     * 
-     * @param inSuggestion a <code>TradeSuggestion</code> value
-     */
-    private void removeSuggestion(TradeSuggestion inSuggestion)
-    {
-        mSuggestions.remove(inSuggestion);
-        requestRefreshFromAll();
+        OrderSingleSuggestion underlyingSuggestion = inSuggestion.getSuggestion();
+        if(underlyingSuggestion instanceof HasSuggestionAction) {
+            removeSuggestion(inSuggestion);
+            ((HasSuggestionAction)underlyingSuggestion).setSuggestionAction(SuggestionAction.DELETE);
+            sendToAll((HasSuggestionAction)underlyingSuggestion);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.SinkDataListener#receivedData(org.marketcetera.module.DataFlowID, java.lang.Object)
@@ -181,46 +135,88 @@ public final class TradeSuggestionManager
     public void receivedData(DataFlowID inFlowID,
                              Object inData)
     {
-        if(inData instanceof HasSuggestionAction) {
-            switch(((HasSuggestionAction)inData).getSuggestionAction()) {
-                case CLEAR:
-                    PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-                        @Override
-                        public void run()
-                        {
-                            mSuggestions.clear();
-                        }
-                    });
-                    break;
-                case ADD:
-                    // do nothing yet, allow the block below to catch this
-                    break;
-                case DELETE:
-                    // TODO remove the trade suggestion from the list (this supports a suggestion being deleted by someone else)
-                    break;
-                case SEND:
-                case REFRESH:
-                default:
-                    throw new UnsupportedOperationException();
-            }
-        }
+        TradeSuggestion photonTradeSuggestion;
         if(inData instanceof OrderSingleSuggestion) {
             OrderSingleSuggestion suggestion = (OrderSingleSuggestion)inData;
             if(suggestion.getOrder() != null) {
-                addSuggestion(suggestion,
-                              getLabel(inFlowID));
+                photonTradeSuggestion = new TradeSuggestion(suggestion,
+                                                            getLabel(inFlowID),
+                                                            new Date());
             } else {
                 Messages.TRADE_SUGGESTION_MANAGER_INVALID_DATA_NO_ORDER.error(this);
+                return;
+            }
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        if(inData instanceof HasSuggestionAction) {
+            switch(((HasSuggestionAction)inData).getSuggestionAction()) {
+                case ADD:
+                    addSuggestion(photonTradeSuggestion);
+                    break;
+                case DELETE:
+                    removeSuggestion(photonTradeSuggestion);
+                    break;
+                case REFRESH:
+                    // this is a client-to-server action, so cannot be processed here
+                default:
+                    throw new UnsupportedOperationException();
             }
         } else {
             throw new UnsupportedOperationException();
         }
     }
     /**
+     * This object should only be constructed by {@link Activator}.
      * 
+     * @param inStrategyEngineMonitor a <code>StrategyEngineMonitor</code> value
+     */
+    TradeSuggestionManager(StrategyEngineMonitor inStrategyEngineMonitor)
+    {
+        mSinkDataManager = ModuleSupport.getSinkDataManager();
+        inStrategyEngineMonitor.subscribe(this);
+        mSinkDataManager.register(this,
+                                  OrderSingleSuggestion.class);
+        IObservableList currentStrategyEngines = inStrategyEngineMonitor.getStrategyEngineList();
+        if(currentStrategyEngines != null) {
+            for(Object o : currentStrategyEngines) {
+                publishTo(o);
+            }
+        }
+    }
+    /**
+     * Adds a trade suggestion to the managed collection.
      *
+     * @param inSuggestion a <code>TradeSuggestion</code> value
+     */
+    private void addSuggestion(final TradeSuggestion inSuggestion)
+    {
+        PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                mSuggestions.add(inSuggestion);
+            }
+        });
+    }
+    /**
+     * Remove the given trade suggestion from the managed collection.
+     * 
+     * @param inSuggestion a <code>TradeSuggestion</code> value
+     */
+    private void removeSuggestion(final TradeSuggestion inSuggestion)
+    {
+        PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+            @Override
+            public void run()
+            {
+                mSuggestions.remove(inSuggestion);
+            }
+        });
+    }
+    /**
+     * Send the given action to all active strategy engines.
      *
-     * @param inSuggestionAction
+     * @param inSuggestionAction a <code>HasSuggestionAction</code> value
      */
     private void sendToAll(HasSuggestionAction inSuggestionAction)
     {
@@ -232,20 +228,31 @@ public final class TradeSuggestionManager
         }
     }
     /**
-     * 
-     *
-     *
+     * Clear current suggestions and request each engine to send all active suggestions.
      */
-    private void requestRefreshFromAll()
+    private void clearAndRequestRefreshFromAll()
     {
-        // TODO we can't allow the server to push CLEAR because there may be multiple sources
+        clearSuggestions();
         sendToAll(RefreshSuggestionAction.instance);
     }
     /**
+     * Clear suggestions from the local store.
+     */
+    private void clearSuggestions()
+    {
+        PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+            @Override
+            public void run()
+            {
+                mSuggestions.clear();
+            }
+        });
+    }
+    /**
+     * Send the given action to the given engine if the engine if appropriate.
      *
-     *
-     * @param inStrategyEngine
-     * @param inAction
+     * @param inStrategyEngine a <code>StrategyEngine</code> value
+     * @param inAction a <code>HasSuggestionAction</code> value
      */
     private void sendAction(StrategyEngine inStrategyEngine,
                             HasSuggestionAction inAction)
@@ -281,11 +288,6 @@ public final class TradeSuggestionManager
         }
         return inDataFlowId.getValue();
     }
-    /**
-    /**
-     * monitors strategy engine changes
-     */
-    private final StrategyEngineMonitor strategyEngineMonitor;
     /**
      * Sink data manager
      */
