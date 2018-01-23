@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>ml-parent</artifactId>
-    <version>3.0.12</version>
+    <version>3.0.13</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>tensorflow</artifactId>
-  <version>3.0.12</version>
+  <version>3.0.13</version>
   <name>TensorFlow Module</name>
   <url>http://maven.apache.org</url>
   <properties>
