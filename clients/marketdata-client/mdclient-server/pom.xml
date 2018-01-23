@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>mdclient-parent</artifactId>
-    <version>3.1.0</version>
+    <version>3.0.13</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>mdclient-server</artifactId>
-  <version>3.1.0</version>
+  <version>3.0.13</version>
   <name>Market Data Server</name>
   <url>http://maven.apache.org</url>
   <properties>

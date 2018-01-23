@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>tradingclient-parent</artifactId>
-    <version>3.1.0</version>
+    <version>3.0.13</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>tradingclient-rpc-core</artifactId>
-  <version>3.1.0</version>
+  <version>3.0.13</version>
   <name>Trading Client RPC Core</name>
   <url>http://maven.apache.org</url>
   <properties>

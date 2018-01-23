@@ -4,11 +4,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>clients-parent</artifactId>
-    <version>3.1.0</version>
+    <version>3.0.13</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>mdclient-parent</artifactId>
-  <version>3.1.0</version>
+  <version>3.0.13</version>
   <packaging>pom</packaging>
   <name>Market Data Client Parent</name>
   <url>http://maven.apache.org</url>

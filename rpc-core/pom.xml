@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>public-parent</artifactId>
-    <version>3.1.0</version>
+    <version>3.0.13</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>rpc-core</artifactId>
-  <version>3.1.0</version>
+  <version>3.0.13</version>
   <name>RPC Core Library</name>
   <url>http://maven.apache.org</url>
   <properties>
