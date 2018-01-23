@@ -85,6 +85,7 @@ public final class QuoteBean
         quote.setEventType(inQuoteEvent.getEventType());
         quote.setLevel(inQuoteEvent.getLevel());
         quote.setCount(inQuoteEvent.getCount());
+        quote.setIsEmpty(inQuoteEvent.isEmpty());
         return quote;
     }
     /**
@@ -155,6 +156,24 @@ public final class QuoteBean
     public void setLevel(int inLevel)
     {
         level = inLevel;
+    }
+    /**
+     * Get the isEmpty value.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isEmpty()
+    {
+        return isEmpty;
+    }
+    /**
+     * Sets the isEmpty value.
+     *
+     * @param inIsEmpty a <code>boolean</code> value
+     */
+    public void setIsEmpty(boolean inIsEmpty)
+    {
+        isEmpty = inIsEmpty;
     }
     /**
      * Performs validation of the attributes.
@@ -239,8 +258,14 @@ public final class QuoteBean
                                       inRecipient);
         inRecipient.setAction(inDonor.getAction());
         inRecipient.setCount(inDonor.getCount());
+        inRecipient.setIsEmpty(inDonor.isEmpty());
         inRecipient.setLevel(inDonor.getLevel());
     }
+    /**
+     * indicates if the book is empty
+     */
+    @XmlAttribute
+    private boolean isEmpty = false;
     /**
      * the action of the quote
      */
@@ -256,5 +281,5 @@ public final class QuoteBean
      */
     @XmlAttribute
     private int level;
-    private static final long serialVersionUID = 5047421010518073372L;
+    private static final long serialVersionUID = -9073507264607915378L;
 }

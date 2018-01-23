@@ -54,8 +54,8 @@ public class JMSXMLConverterTest {
             OrderSingle i = ClientTest.createOrderSingle();
             i.setInstrument(instrument);
             i.setCustomFields(generateCustomFields());
-            OrderEnvelope o=(OrderEnvelope)roundTrip
-                (new OrderEnvelope(i,SESSION_ID));
+            DataEnvelope o=(DataEnvelope)roundTrip
+                (new DataEnvelope(i,SESSION_ID));
             assertEquals(SESSION_ID,o.getSessionId());
             TypesTestBase.assertOrderSingleEquals
             (i,(OrderSingle)o.getOrder());
@@ -68,8 +68,8 @@ public class JMSXMLConverterTest {
             OrderCancel i = ClientTest.createOrderCancel();
             i.setInstrument(instrument);
             i.setCustomFields(generateCustomFields());
-            OrderEnvelope o=(OrderEnvelope)roundTrip
-                (new OrderEnvelope(i,SESSION_ID));
+            DataEnvelope o=(DataEnvelope)roundTrip
+                (new DataEnvelope(i,SESSION_ID));
             assertEquals(SESSION_ID,o.getSessionId());
             TypesTestBase.assertOrderCancelEquals
             (i,(OrderCancel)o.getOrder());
@@ -81,8 +81,8 @@ public class JMSXMLConverterTest {
             OrderReplace i = ClientTest.createOrderReplace();
             i.setInstrument(instrument);
             i.setCustomFields(generateCustomFields());
-            OrderEnvelope o=(OrderEnvelope)roundTrip
-                (new OrderEnvelope(i,SESSION_ID));
+            DataEnvelope o=(DataEnvelope)roundTrip
+                (new DataEnvelope(i,SESSION_ID));
             assertEquals(SESSION_ID,o.getSessionId());
             TypesTestBase.assertOrderReplaceEquals
             (i,(OrderReplace)o.getOrder());
@@ -91,8 +91,8 @@ public class JMSXMLConverterTest {
     @Test
     public void verifyFIXOrder() throws Exception {
         FIXOrder i = ClientTest.createOrderFIX();
-        OrderEnvelope o=(OrderEnvelope)roundTrip
-            (new OrderEnvelope(i,SESSION_ID));
+        DataEnvelope o=(DataEnvelope)roundTrip
+            (new DataEnvelope(i,SESSION_ID));
         assertEquals(SESSION_ID,o.getSessionId());
         TypesTestBase.assertOrderFIXEquals
             (i,(FIXOrder)o.getOrder());

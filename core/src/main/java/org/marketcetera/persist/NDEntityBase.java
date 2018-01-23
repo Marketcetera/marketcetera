@@ -110,7 +110,7 @@ public abstract class NDEntityBase
     /**
      * The pattern for validating name attribute values
      */
-    static final Pattern namePattern = Pattern.compile("^[\\p{L}\\p{N}- ]{1,255}$"); //$NON-NLS-1$
+    public static final Pattern namePattern = Pattern.compile("^[\\p{L}\\p{N}- ]{1,255}$"); //$NON-NLS-1$
     /**
      * entity name value
      */

@@ -19,6 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import javax.jms.JMSException;
 import javax.security.auth.login.LoginException;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.Test;
 import org.marketcetera.client.ClientTest;
 import org.marketcetera.core.Pair;
@@ -347,10 +348,11 @@ public class RemoteDataEmitterTest extends RemoteEmitterTestBase {
         }
         //Verify we have no extra objects
         assertTrue(adapter.toString(), adapter.hasNoObjects());
-        //Verify that we did get any serialization failures etc.
-        assertNotNull(emitter.getLastFailure().toString(), emitter.getLastFailure());
+        //Verify that we received a serialization failure
+        assertNotNull(emitter.getLastFailure().toString(),
+                      emitter.getLastFailure());
         assertTrue(emitter.getLastFailure().toString(),
-                emitter.getLastFailure().getCause() instanceof NotSerializableException);
+                   ExceptionUtils.getRootCause(emitter.getLastFailure()) instanceof NotSerializableException);
         //This failure should result in the client be marked as closed
         assertFalse(emitter.isConnected());
         //And we should see a connection status notification for that.

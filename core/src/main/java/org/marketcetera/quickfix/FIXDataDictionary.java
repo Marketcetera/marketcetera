@@ -1,11 +1,12 @@
 package org.marketcetera.quickfix;
 
+import java.io.InputStream;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
+
 import quickfix.ConfigError;
 import quickfix.DataDictionary;
-
-import java.io.InputStream;
 
 /**
  * Converts the standard FIX field (integers) to their english names
@@ -23,6 +24,9 @@ public class FIXDataDictionary {
     public static final String FIX_4_2_BEGIN_STRING = "FIX.4.2"; //$NON-NLS-1$
     public static final String FIX_4_3_BEGIN_STRING = "FIX.4.3"; //$NON-NLS-1$
     public static final String FIX_4_4_BEGIN_STRING = "FIX.4.4"; //$NON-NLS-1$
+    public static final String FIX_5_0_BEGIN_STRING = "FIX.5.0"; //$NON-NLS-1$
+    public static final String FIX_5_0_SP1_BEGIN_STRING = "FIX.5.0SP1"; //$NON-NLS-1$
+    public static final String FIX_5_0_SP2_BEGIN_STRING = "FIX.5.0SP2"; //$NON-NLS-1$
 
     private final DataDictionary mDictionary;
 
@@ -42,15 +46,13 @@ public class FIXDataDictionary {
         DataDictionary theDict;
         try {
             theDict = new DataDictionary(fixDataDictionaryPath);
-        } catch (DataDictionary.Exception ddex) {
+        } catch(ConfigError ddex) {
             InputStream input = FIXDataDictionary.class.getClassLoader().getResourceAsStream(fixDataDictionaryPath);
             try {
                 theDict = new DataDictionary(input);
             } catch (ConfigError configError1) {
                 throw new FIXFieldConverterNotAvailable(ddex, Messages.ERROR_COULD_NOT_CREATE_FIX_DATA_DICTIONARY);
             }
-        } catch (ConfigError configError) {
-            throw new FIXFieldConverterNotAvailable(configError, Messages.ERROR_COULD_NOT_CREATE_FIX_DATA_DICTIONARY);
         }
 
         mDictionary = theDict;

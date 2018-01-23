@@ -29,12 +29,12 @@ public class FIXVersionsTest extends TestCase {
     }
 
     public void testNOS() throws Exception {
-        DataDictionary dict0 = new DataDictionary(FIXVersion.FIX40.getDataDictionaryURL());
-        DataDictionary dict1 = new DataDictionary(FIXVersion.FIX41.getDataDictionaryURL());
-        DataDictionary dict2 = new DataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
-        DataDictionary dict3 = new DataDictionary(FIXVersion.FIX43.getDataDictionaryURL());
-        DataDictionary dict4 = new DataDictionary(FIXVersion.FIX44.getDataDictionaryURL());
-        DataDictionary dict5 = new DataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryURL());
+        DataDictionary dict0 = new DataDictionary(FIXVersion.FIX40.getDataDictionaryName());
+        DataDictionary dict1 = new DataDictionary(FIXVersion.FIX41.getDataDictionaryName());
+        DataDictionary dict2 = new DataDictionary(FIXVersion.FIX42.getDataDictionaryName());
+        DataDictionary dict3 = new DataDictionary(FIXVersion.FIX43.getDataDictionaryName());
+        DataDictionary dict4 = new DataDictionary(FIXVersion.FIX44.getDataDictionaryName());
+        DataDictionary dict5 = new DataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryName());
 
         dict0.validate(createNOSHelper(FIXVersion.FIX40, "toli", 33, Side.BUY), true); //$NON-NLS-1$
         dict1.validate(createNOSHelper(FIXVersion.FIX41, "toli", 33, Side.BUY), true); //$NON-NLS-1$

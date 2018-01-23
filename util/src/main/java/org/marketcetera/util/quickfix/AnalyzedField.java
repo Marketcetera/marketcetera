@@ -3,8 +3,10 @@ package org.marketcetera.util.quickfix;
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.DataDictionary;
 import quickfix.Field;
 import quickfix.FieldMap;
@@ -64,7 +66,7 @@ public class AnalyzedField
          Field<?> qField)
     {
         mQField=qField;
-        mQType=nameQDict.getFieldTypeEnum(getQFieldTag());
+        mQType = nameQDict.getFieldType(getQFieldTag());
         mName=nameQDict.getFieldName(getQFieldTag());
         mRequired=scopeQDict.isRequiredField(msgType,getQFieldTag());
 
@@ -91,7 +93,7 @@ public class AnalyzedField
         }
         int count=Integer.valueOf(value);
         for (int i=0;i<count;i++) {
-            Group group=new Group(getQFieldTag(),info.getDelimeterField());
+            Group group=new Group(getQFieldTag(),info.getDelimiterField());
             try {
                 qMap.getGroup(i+1,group);
             } catch (FieldNotFound ex) {

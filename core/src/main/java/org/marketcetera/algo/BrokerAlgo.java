@@ -5,7 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -13,6 +17,7 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.Validator;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -101,6 +106,10 @@ public class BrokerAlgo
         if(algoTags == null) {
             return;
         }
+        SLF4JLoggerProxy.debug(this,
+                               "Broker algo {} being applied to {}",
+                               algoSpec.getName(),
+                               inOrder);
         Map<String,String> customFields = inOrder.getCustomFields();
         if(customFields == null) {
             customFields = new HashMap<String,String>();
@@ -110,6 +119,10 @@ public class BrokerAlgo
                              algoTag.getValue());
         }
         inOrder.setCustomFields(customFields);
+        SLF4JLoggerProxy.debug(this,
+                               "Broker algo {} done being applied to {}",
+                               algoSpec.getName(),
+                               inOrder);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

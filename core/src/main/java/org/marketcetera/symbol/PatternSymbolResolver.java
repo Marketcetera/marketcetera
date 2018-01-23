@@ -2,6 +2,7 @@ package org.marketcetera.symbol;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.options.OptionUtils;
+import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Future;
@@ -38,8 +39,30 @@ public class PatternSymbolResolver
         try {
             return OptionUtils.getOsiOptionFromString(inSymbol);
         } catch (IllegalArgumentException ignored) {}
+        try {
+            return new ConvertibleBond(inSymbol);
+        } catch (IllegalArgumentException ignored) {}
         if(inSymbol.contains("/")) { //$NON-NLS-1$
             return new Currency(inSymbol);
+        }
+        String symbol = null;
+        String symbolSfx = null;
+        int pos = inSymbol.indexOf('.');
+        if(pos == -1) {
+            symbol = StringUtils.trimToNull(inSymbol);
+            symbolSfx = null;
+        } else {
+            symbol = StringUtils.trimToNull(inSymbol.substring(0,
+                                                               pos));
+            symbolSfx = StringUtils.trimToNull(inSymbol.substring(pos+1));
+        }
+        if(symbol != null) {
+            if(symbolSfx == null) {
+                return new Equity(symbol);
+            } else {
+                return new Equity(symbol,
+                                  symbolSfx);
+            }
         }
         return new Equity(inSymbol);
     }

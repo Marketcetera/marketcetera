@@ -19,6 +19,7 @@ import org.marketcetera.util.ws.stateless.StatelessServer;
 @ClassVersion("$Id$")
 public class Server<SessionClazz>
         extends StatelessServer
+        implements ServerProvider<SessionClazz>
 {
     /**
      * Creates a new server node with the given server host name,
@@ -142,6 +143,14 @@ public class Server<SessionClazz>
         if (getAuthService()!=null) {
             getAuthService().stop();
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.util.ws.stateful.ServerProvider#getServer()
+     */
+    @Override
+    public Server<SessionClazz> getServer()
+    {
+        return this;
     }
     private final Authenticator mAuthenticator;
     private final SessionManager<SessionClazz> mSessionManager;

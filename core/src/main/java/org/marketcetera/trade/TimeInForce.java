@@ -37,17 +37,22 @@ public enum TimeInForce {
      * Immediate order execution or cancel.
      */
     ImmediateOrCancel(quickfix.field.TimeInForce.IMMEDIATE_OR_CANCEL),
-
     /**
      * Fill or Kill.
      */
     FillOrKill(quickfix.field.TimeInForce.FILL_OR_KILL),
-
+    /**
+     * Good till crossing
+     */
+    GoodTillCrossing(quickfix.field.TimeInForce.GOOD_TILL_CROSSING),
+    /**
+     * Good till date
+     */
+    GoodTillDate(quickfix.field.TimeInForce.GOOD_TILL_DATE),
     /**
      * At market close.
      */
     AtTheClose(quickfix.field.TimeInForce.AT_THE_CLOSE);
-
     /**
      * The FIX char value for this instance.
      *

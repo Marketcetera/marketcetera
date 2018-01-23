@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
 /* $License$ */
 
 /**
@@ -25,6 +27,9 @@ public class MultiMethodNotificationExecutor
     @Override
     public void notify(INotification inNotification)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Notification: {}",
+                               inNotification);
         super.notify(inNotification);
         for(NotificationExecutorMethod executor : executorMethods) {
             executor.notify(inNotification);

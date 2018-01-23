@@ -4,6 +4,8 @@ import java.util.*;
 
 import org.marketcetera.util.misc.ClassVersion;
 
+import quickfix.FieldNotFound;
+import quickfix.Message;
 import quickfix.field.ExecType;
 
 /* $License$ */
@@ -62,6 +64,21 @@ public enum ExecutionType {
         return type == null
                 ? Unknown
                 : type;
+    }
+    /**
+     * Return the ExecutionType instance on the supplied FIX message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @return an <code>ExecutionType</code> value
+     * @throws IllegalArgumentException if the message does not contain an ExecType value
+     */
+    public static ExecutionType getInstanceForFIXMessage(Message inMessage)
+    {
+        try {
+            return getInstanceForFIXValue(inMessage.getChar(quickfix.field.ExecType.FIELD));
+        } catch (FieldNotFound e) {
+            throw new IllegalArgumentException(e);
+        }
     }
     /**
      * Indicates if this execution type is related to a fill.

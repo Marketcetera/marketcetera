@@ -1,12 +1,13 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Equity;
-import quickfix.Message;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
+
+import quickfix.FieldMap;
 import quickfix.FieldNotFound;
-import quickfix.field.SecurityType;
 import quickfix.field.CFICode;
+import quickfix.field.SecurityType;
 
 /* $License$ */
 /**
@@ -19,22 +20,46 @@ import quickfix.field.CFICode;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class EquityFromMessage extends InstrumentFromMessage {
-
+public class EquityFromMessage
+        extends InstrumentFromMessage
+{
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.instruments.InstrumentFromMessage#extract(quickfix.FieldMap)
+     */
     @Override
-    public Instrument extract(Message inMessage) {
+    public Instrument extract(FieldMap inMessage)
+    {
         String symbol = getSymbol(inMessage);
-        return symbol == null ? null : new Equity(symbol);
+        String symbolSfx = getSymbolSfx(inMessage);
+        return symbol == null ? null : new Equity(symbol,
+                                                  symbolSfx);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.instruments.DynamicInstrumentHandler#isHandled(java.lang.Object)
+     */
     @Override
-    protected boolean isHandled(Message inValue) {
+    protected boolean isHandled(FieldMap inValue)
+    {
         try {
-            return (!(inValue.isSetField(CFICode.FIELD))) &&
-                    ((!inValue.isSetField(SecurityType.FIELD)) ||
-                            SecurityType.COMMON_STOCK.equals(inValue.getString(SecurityType.FIELD)));
+            return (!(inValue.isSetField(CFICode.FIELD))) && ((!inValue.isSetField(SecurityType.FIELD)) || SecurityType.COMMON_STOCK.equals(inValue.getString(SecurityType.FIELD)));
         } catch (FieldNotFound ignore) {
             return false;
         }
+    }
+    /**
+     * Fetches the symbolSfx field value from the supplied FIX message.
+     *
+     * @param inMessage a <code>FieldMap</code> value
+     * @return the symbolSfx field value or <code>null</code>
+     */
+    protected static String getSymbolSfx(FieldMap inMessage)
+    {
+        if(inMessage.isSetField(quickfix.field.SymbolSfx.FIELD)) {
+            try {
+                return inMessage.getString(quickfix.field.SymbolSfx.FIELD);
+            } catch (FieldNotFound ignore) {
+            }
+        }
+        return null;
     }
 }

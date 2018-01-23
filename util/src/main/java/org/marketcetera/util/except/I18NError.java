@@ -81,16 +81,22 @@ public class I18NError
         super(LogUtils.getSimpleMessage(message),cause);
         mMessage=message;
     }
-
-
-    // I18NThrowable.
-
     @Override
     public String getLocalizedMessage()
     {
-        return I18NExceptUtils.getLocalizedMessage(this);
+        if(getI18NBoundMessage() == null) {
+            return super.getMessage();
+        }
+        return getI18NBoundMessage().getText();
     }
-
+    /* (non-Javadoc)
+     * @see java.lang.Throwable#getMessage()
+     */
+    @Override
+    public String getMessage()
+    {
+        return getLocalizedMessage();
+    }
     @Override
     public String getDetail()
     {

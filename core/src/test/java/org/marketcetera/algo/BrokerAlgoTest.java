@@ -485,7 +485,8 @@ public class BrokerAlgoTest
         testSpec.setPattern("\\d*");
         new ExpectedFailure<CoreException>(Messages.ALGO_TAG_VALUE_PATTERN_MISMATCH,
                                            testSpec.getLabel(),
-                                           testTag.getValue()) {
+                                           testTag.getValue(),
+                                           testTag.getTagSpec().getAdvice()) {
             @Override
             protected void run()
                     throws Exception

@@ -145,7 +145,7 @@ public class NotificationManagerTest
             return mBody;
         }
         @Override
-        public Date getDate()
+        public Date getTimestamp()
         {
             return mDate;
         }

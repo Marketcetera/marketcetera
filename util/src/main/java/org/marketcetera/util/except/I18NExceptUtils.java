@@ -15,28 +15,6 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 final class I18NExceptUtils
 {
-
-    // CLASS METHODS.
-
-    /**
-     * Returns the localized message of the given internationalized
-     * throwable, as implemented by {@link
-     * Throwable#getLocalizedMessage()}.
-     *
-     * @param t The throwable.
-     *
-     * @return The message.
-     */
-
-    static String getLocalizedMessage
-        (I18NThrowable t)
-    {
-        if (t.getI18NBoundMessage()==null) {
-            return t.getMessage();
-        }
-        return t.getI18NBoundMessage().getText();
-    }
-
     /**
      * Returns the raw message of the given internationalized
      * throwable, possibly combined with the raw message of the

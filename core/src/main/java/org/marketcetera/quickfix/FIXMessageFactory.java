@@ -5,12 +5,17 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.Validate;
+import org.joda.time.DateTime;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentToMessage;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 
+import com.google.common.collect.Lists;
+
+import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
@@ -30,12 +35,9 @@ import quickfix.field.ExecID;
 import quickfix.field.HandlInst;
 import quickfix.field.LastPx;
 import quickfix.field.LastShares;
-import quickfix.field.MDEntryType;
 import quickfix.field.MDReqID;
-import quickfix.field.MarketDepth;
 import quickfix.field.MsgSeqNum;
 import quickfix.field.MsgType;
-import quickfix.field.NoMDEntryTypes;
 import quickfix.field.NoRelatedSym;
 import quickfix.field.OrdRejReason;
 import quickfix.field.OrdStatus;
@@ -46,15 +48,12 @@ import quickfix.field.OrigClOrdID;
 import quickfix.field.Price;
 import quickfix.field.RefMsgType;
 import quickfix.field.RefSeqNum;
-import quickfix.field.SecurityExchange;
 import quickfix.field.SecurityListRequestType;
 import quickfix.field.SecurityReqID;
 import quickfix.field.SenderCompID;
 import quickfix.field.SendingTime;
 import quickfix.field.SessionRejectReason;
 import quickfix.field.Side;
-import quickfix.field.SubscriptionRequestType;
-import quickfix.field.Symbol;
 import quickfix.field.TargetCompID;
 import quickfix.field.Text;
 import quickfix.field.TimeInForce;
@@ -70,21 +69,32 @@ import quickfix.field.TransactTime;
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class FIXMessageFactory {
-
+public class FIXMessageFactory
+{
     private MessageFactory msgFactory;
     private FIXMessageAugmentor msgAugmentor;
     private String beginString;
+    /**
+     * FIX version, may be <code>null</code> - do not initialize in constructor!
+     */
+    private volatile FIXVersion fixVersion;
     /*package */static final char SOH_REPLACE_CHAR = '|';
     private static final char SOH_CHAR = '\001';
-
-    public FIXMessageFactory(String beginString, MessageFactory inFactory, FIXMessageAugmentor augmentor) {
-        this.beginString = beginString;
+    /**
+     * Create a new FIXMessageFactory instance.
+     *
+     * @param inBeginString a <code>String</code> value
+     * @param inFactory a <code>MessageFactory</code> value
+     * @param inAugmentor a <code>FIXMessageAugmentor</code> value
+     */
+    public FIXMessageFactory(String inBeginString,
+                             MessageFactory inFactory,
+                             FIXMessageAugmentor inAugmentor)
+    {
+        beginString = inBeginString;
         msgFactory = inFactory;
-        msgAugmentor = augmentor;
+        msgAugmentor = inAugmentor;
     }
-
-
     /**
      * Creates a message representing an ExecutionReport (type {@link MsgType#ORDER_CANCEL_REJECT}
      * @return  appropriately versioned message object
@@ -92,12 +102,14 @@ public class FIXMessageFactory {
     public Message newOrderCancelReject()
     {
         Message msg = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REJECT);
+        addApplicationVersion(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
     }
 
     public Message newCancelReplaceShares(String orderID, String origOrderID, BigDecimal quantity) {
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
+        addApplicationVersion(aMessage);
         addTransactionTimeIfNeeded(aMessage);
         aMessage.setField(new ClOrdID(orderID));
         aMessage.setField(new OrigClOrdID(origOrderID));
@@ -116,6 +128,7 @@ public class FIXMessageFactory {
             BigDecimal price
     ) {
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
+        addApplicationVersion(aMessage);
         addTransactionTimeIfNeeded(aMessage);
         aMessage.setField(new ClOrdID(orderID));
         aMessage.setField(new OrigClOrdID(origOrderID));
@@ -127,31 +140,54 @@ public class FIXMessageFactory {
     public Message newCancelFromMessage(Message oldMessage) throws FieldNotFound {
     	return newCancelHelper(MsgType.ORDER_CANCEL_REQUEST, oldMessage, false);
     }
-
-	public Message newCancelReplaceFromMessage(Message oldMessage) throws FieldNotFound {
-    	Message cancelMessage = newCancelHelper(MsgType.ORDER_CANCEL_REPLACE_REQUEST, oldMessage, false);
-		if (oldMessage.isSetField(Price.FIELD)){
-			cancelMessage.setField(oldMessage.getField(new Price()));
-		}
+    /**
+     * Create a new cancel replace from the given message.
+     *
+     * @param inOldMessage a <code>Message</code> value
+     * @return a <code>Message</code> value
+     * @throws FieldNotFound
+     */
+    public Message newCancelReplaceFromMessage(Message inOldMessage)
+            throws FieldNotFound
+    {
+        Message cancelMessage = newCancelHelper(MsgType.ORDER_CANCEL_REPLACE_REQUEST,
+                                                inOldMessage,
+                                                false);
+        if(inOldMessage.isSetField(Price.FIELD)) {
+            cancelMessage.setField(inOldMessage.getField(new Price()));
+        }
         addHandlingInst(cancelMessage);
         return cancelMessage;
 	}
-	
-	public Message newCancelHelper(String msgType, Message oldMessage, boolean onlyCopyRequiredFields) throws FieldNotFound {
-        Message cancelMessage = msgFactory.create(beginString, msgType);
-		cancelMessage.setField(new OrigClOrdID(oldMessage.getString(ClOrdID.FIELD)));
-        fillFieldsFromExistingMessage(oldMessage, onlyCopyRequiredFields, cancelMessage);
-        if (oldMessage.isSetField(OrderQty.FIELD)){
-			cancelMessage.setField(oldMessage.getField(new OrderQty()));
-		}
+    /**
+     * Create a new cancel helper from the given inputs.
+     *
+     * @param inMsgType a <code>String</code> value
+     * @param inOldMessage a <code>Message</code> value
+     * @param inOnlyCopyRequiredFields a <code>boolean</code> value
+     * @return a <code>Message</code> value
+     * @throws FieldNotFound
+     */
+    public Message newCancelHelper(String inMsgType,
+                                   Message inOldMessage,
+                                   boolean inOnlyCopyRequiredFields)
+            throws FieldNotFound
+    {
+        Message cancelMessage = msgFactory.create(beginString,
+                                                  inMsgType);
+        addApplicationVersion(cancelMessage);
+        cancelMessage.setField(new OrigClOrdID(inOldMessage.getString(ClOrdID.FIELD)));
+        fillFieldsFromExistingMessage(inOldMessage, inOnlyCopyRequiredFields, cancelMessage);
+        if (inOldMessage.isSetField(OrderQty.FIELD)){
+            cancelMessage.setField(inOldMessage.getField(new OrderQty()));
+        }
         addTransactionTimeIfNeeded(cancelMessage);
         addSendingTime(cancelMessage);
         return cancelMessage;
-
-	}
+    }
 
     protected void addSendingTime(Message inCancelMessage) {
-        inCancelMessage.getHeader().setField(new SendingTime(new Date())); //non-i18n
+        inCancelMessage.getHeader().setField(new SendingTime(new Date()));
     }
 
     protected void fillFieldsFromExistingMessage(Message oldMessage,
@@ -160,57 +196,318 @@ public class FIXMessageFactory {
         FIXMessageUtil.fillFieldsFromExistingMessage(inCancelMessage,
                 oldMessage, onlyCopyRequiredFields);
     }
-
-    private final int TOP_OF_BOOK_DEPTH = 1;
+    /**
+     * Create a new market data snapshow (35=W) message.
+     *
+     * @param inRequestId a <code>String</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>Message</code> value
+     * @throws FieldNotFound if the message could not be built
+     */
+    public Message newMarketDataSnapshot(String inRequestId,
+                                         Instrument inInstrument)
+            throws FieldNotFound
+    {
+        Message snapshot = msgFactory.create(beginString,
+                                             MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH);
+        addApplicationVersion(snapshot);
+        DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(snapshot);
+        InstrumentToMessage<?> instrumentFunction = InstrumentToMessage.SELECTOR.forInstrument(inInstrument);
+        instrumentFunction.set(inInstrument,
+                               fixDictionary,
+                               quickfix.field.MsgType.ORDER_SINGLE,
+                               snapshot);
+        // some weirdness for currencies
+        snapshot.removeField(quickfix.field.Currency.FIELD);
+        snapshot.removeField(quickfix.field.OrdType.FIELD);
+        snapshot.setField(new quickfix.field.MDReqID(inRequestId));
+        return snapshot;
+    }
+    /**
+     * Create a new market data incremental refresh (35=X) message.
+     *
+     * @param inRequestId a <code>String</code> value
+     */
+    public Message newMarketDataIncrementalRefresh(String inRequestId)
+    {
+        Message request = msgFactory.create(beginString,
+                                            MsgType.MARKET_DATA_INCREMENTAL_REFRESH);
+        addApplicationVersion(request);
+        request.setField(new quickfix.field.MDReqID(inRequestId));
+        return request;
+    }
+    /**
+     * Create an MDEntry group.
+     *
+     * @param inMessageFactory a <code>FIXMessageFactory</code> value
+     * @param inMdEntryType a <code>char</code> value
+     * @return a <code>Group</code> value
+     */
+    public Group createMdEntryGroup(String inMsgType,
+                                    char inMdEntryType)
+    {
+        Group newGroup = createGroup(inMsgType,
+                                     quickfix.field.NoMDEntries.FIELD);
+        newGroup.setField(new quickfix.field.MDEntryType(inMdEntryType));
+        return newGroup;
+    }
+    /**
+     * Get the MDEntry groups from the given message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @return a <code>List&lt:Group&gt;</code> value
+     * @throws FieldNotFound if the groups could not be extracted
+     */
+    public List<Group> getMdEntriesFromMessage(Message inMessage)
+            throws FieldNotFound
+    {
+        List<Group> mdEntries = Lists.newArrayList();
+        int noMdEntries = inMessage.getInt(quickfix.field.NoMDEntries.FIELD);
+        for(int i=1;i<=noMdEntries;i++) {
+            Group mdEntryGroup = createGroup(inMessage.getHeader().getString(quickfix.field.MsgType.FIELD),
+                                             quickfix.field.NoMDEntries.FIELD);
+            mdEntryGroup = inMessage.getGroup(i,
+                                              mdEntryGroup);
+            mdEntries.add(mdEntryGroup);
+        }
+        return mdEntries;
+    }
+    /**
+     * Populate the MDEntry given group with the given date time value.
+     *
+     * @param inGroup a <code>Group</code> value
+     * @param inDateTime a <code>DateTime</code> value
+     */
+    public void populateMdEntryGroupWithDateTime(Group inGroup,
+                                                 DateTime inDateTime)
+    {
+        if(inDateTime == null) {
+            return;
+        }
+        // TODO the time doesn't seem quite right
+        inGroup.setField(new quickfix.field.MDEntryDate(inDateTime.minusMillis(inDateTime.getMillisOfDay()).toDate()));
+        inGroup.setField(new quickfix.field.MDEntryTime(inDateTime.minusYears(inDateTime.getYear()).minusDays(inDateTime.getDayOfYear()).toDate()));
+    }
+    /**
+     * Create a new market data request that cancels the market data request based on the given original request.
+     *
+     * @param inOriginalMessage a <code>String</code> value
+     * @return a <code>Message</code> value
+     * @throws FieldNotFound if the message could not be constructed
+     */
+    public Message newMarketDataRequestCancel(Message inOriginalMessage)
+            throws FieldNotFound
+    {
+        Message cancelRequest = inOriginalMessage;
+        addApplicationVersion(cancelRequest);
+        cancelRequest.setField(new quickfix.field.SubscriptionRequestType(quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
+        return cancelRequest;
+    }
+    /**
+     * Create a new market data request with the given parameters.
+     *
+     * @param inRequestId a <code>String</code> value
+     * @param inInstruments a <code>List&lt;Instrument&gt;</code> value, may be empty for "all instruments"
+     * @param inExchange a <code>String</code> value, may be <code>null</code> for "all exchanges"
+     * @param inContent a <code>List&lt;Content&gt;</code> value
+     * @param inSubscriptionType a <code>char</code> value
+     * @return a <code>Message</code> value
+     * @throws FieldNotFound if the message could not be constructed
+     * @throws IllegalArgumentException if the provided content is contradictory, eg. aggregated depth and unaggregated depth or top of book and bbo10
+     */
+    public Message newMarketDataRequest(String inRequestId,
+                                        List<Instrument> inInstruments,
+                                        String inExchange,
+                                        List<Content> inContent,
+                                        char inSubscriptionType)
+            throws FieldNotFound
+    {
+        // TODO add support for content in non 4.2 if dictionary supports it (imbalance, eg)
+        Message request = msgFactory.create(beginString,
+                                            MsgType.MARKET_DATA_REQUEST);
+        addApplicationVersion(request);
+        DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(request);
+        request.setField(new MDReqID(inRequestId));
+        int contentCount = 0;
+        Integer maxDepth = null;
+        Boolean aggregatedBook = null;
+        if(inContent != null) {
+            for(Content content : inContent) {
+                switch(content) {
+                    case AGGREGATED_DEPTH:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               Integer.MAX_VALUE,
+                                               maxDepth);
+                        aggregatedBook = setAggregatedBook(request,
+                                                           true,
+                                                           aggregatedBook);
+                        break;
+                    case BBO10:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               10,
+                                               maxDepth);
+                        aggregatedBook = setAggregatedBook(request,
+                                                           true,
+                                                           aggregatedBook);
+                        break;
+                    case OPEN_BOOK:
+                    case TOTAL_VIEW:
+                    case UNAGGREGATED_DEPTH:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               Integer.MAX_VALUE,
+                                               maxDepth);
+                        aggregatedBook = setAggregatedBook(request,
+                                                           false,
+                                                           aggregatedBook);
+                        break;
+                    case LATEST_TICK:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADE,contentCount);
+                        break;
+                    case LEVEL_2:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.INDEX_VALUE,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               Integer.MAX_VALUE,
+                                               maxDepth);
+                        aggregatedBook = setAggregatedBook(request,
+                                                           false,
+                                                           aggregatedBook);
+                        break;
+                    case MARKET_STAT:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OPENING_PRICE,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.CLOSING_PRICE,contentCount);
+                        if(fixDictionary.isFieldValue(quickfix.field.MDEntryType.FIELD,
+                                                      String.valueOf(quickfix.field.MDEntryType.TRADE_VOLUME))) {
+                            contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADE_VOLUME,contentCount);
+                        }
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_HIGH_PRICE,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_LOW_PRICE,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_VWAP_PRICE,contentCount);
+                        break;
+                    case NBBO:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.INDEX_VALUE,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               TOP_OF_BOOK_DEPTH,
+                                               maxDepth);
+                        break;
+                    case TOP_OF_BOOK:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               TOP_OF_BOOK_DEPTH,
+                                               maxDepth);
+                        break;
+                    case IMBALANCE:
+                    case DIVIDEND:
+                    default:
+                        throw new UnsupportedOperationException("Unsupported content: " + content);
+                }
+            }
+        }
+        if(!request.isSetField(quickfix.field.MarketDepth.FIELD)) {
+            maxDepth = setMaxDepth(request,
+                                   1,
+                                   maxDepth);
+        }
+        request.setField(new quickfix.field.NoMDEntryTypes(contentCount));
+        request.setChar(quickfix.field.SubscriptionRequestType.FIELD,
+                        inSubscriptionType);
+        request.setField(new quickfix.field.MDUpdateType(quickfix.field.MDUpdateType.FULL_REFRESH));
+        int numSymbols = 0;
+        if(inInstruments != null) {
+            numSymbols = inInstruments.size();
+            if(numSymbols == 0){
+                request.setInt(quickfix.field.NoRelatedSym.FIELD,
+                               numSymbols);
+            }
+            for(Instrument instrument : inInstruments) {
+                if(instrument != null) {
+                    InstrumentToMessage<?> instrumentFunction = InstrumentToMessage.SELECTOR.forInstrument(instrument);
+                    Group symbolGroup =  msgFactory.create(beginString,
+                                                           MsgType.MARKET_DATA_REQUEST,
+                                                           NoRelatedSym.FIELD);
+                    instrumentFunction.set(instrument,
+                                           fixDictionary,
+                                           quickfix.field.MsgType.ORDER_SINGLE,
+                                           symbolGroup);
+                    // some weirdness for currencies
+                    symbolGroup.removeField(quickfix.field.Currency.FIELD);
+                    symbolGroup.removeField(quickfix.field.OrdType.FIELD);
+                    if(inExchange != null && !inExchange.isEmpty()) {
+                        symbolGroup.setField(new quickfix.field.SecurityExchange(inExchange));
+                    }
+                    request.addGroup(symbolGroup);
+                }
+            }
+        } else {
+            request.setInt(quickfix.field.NoRelatedSym.FIELD,
+                           0);
+        }
+        return request;
+    }
     /**
      * Returns a Market Data Request for the given symbols from the given exchange.
      *
-     * @param reqID a <code>String</code> value containing the identifier to assign to the message
-     * @param symbols a <code>List&lt;MSymbol&gt;</code> value containing the symbols for which to request data
+     * @param inRequestId a <code>String</code> value containing the identifier to assign to the message
+     * @param inInstruments a <code>List&lt;Instrument&gt;</code> value containing the symbols for which to request data
      * @param inExchange a <code>String</code> value containing the exchange from which to request data or <code>null</code> to not specify an exchange
      * @return a <code>Message</code> value
+     * @throws FieldNotFound if the message could not be constructed
      */
-    public Message newMarketDataRequest(String reqID,
-                                        List<Equity> symbols,
+    public Message newMarketDataRequest(String inRequestId,
+                                        List<Instrument> inInstruments,
                                         String inExchange)
+            throws FieldNotFound
     {
-        Message request = msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST);
-        request.setField(new MarketDepth(TOP_OF_BOOK_DEPTH));
-        request.setField(new MDReqID(reqID));
-        request.setChar(SubscriptionRequestType.FIELD, SubscriptionRequestType.SNAPSHOT);
-        Group entryTypeGroup =  msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST, NoMDEntryTypes.FIELD);
-        entryTypeGroup.setField(new MDEntryType(MDEntryType.BID));
-        request.addGroup(entryTypeGroup);
-        entryTypeGroup.setField(new MDEntryType(MDEntryType.OFFER));
-        request.addGroup(entryTypeGroup);
-
-        int numSymbols = symbols.size();
-        if (numSymbols == 0){
-            request.setInt(NoRelatedSym.FIELD, numSymbols);
-        }
-        for (Equity oneSymbol : symbols) {
-            if(oneSymbol != null) {
-                Group symbolGroup =  msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
-                symbolGroup.setField(new Symbol(oneSymbol.getSymbol()));
-                if(inExchange != null &&
-                   !inExchange.isEmpty()) {
-                    symbolGroup.setField(new SecurityExchange(inExchange));
-                }
-                request.addGroup(symbolGroup);
-            }
-        }
-        return request;
+        return newMarketDataRequest(inRequestId,
+                                    inInstruments,
+                                    inExchange,
+                                    Lists.newArrayList(Content.TOP_OF_BOOK,Content.LATEST_TICK),
+                                    quickfix.field.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
     }
     /** Creates a new MarketDataRequest for the specified symbols.
      * Setting the incoming symbols array to empty results in a "get all" request
      * @param reqID request id to assign to this
-     * @param symbols   List of symbols, or an empty list to get all available
+     * @param inInstruments   List of symbols, or an empty list to get all available
      * @return Message corresponding to the market data request
+     * @throws FieldNotFound if the message could not be constructed
      */
-    public Message newMarketDataRequest(String reqID, List<Equity> symbols) {
+    public Message newMarketDataRequest(String reqID,
+                                        List<Instrument> inInstruments)
+            throws FieldNotFound
+    {
         return newMarketDataRequest(reqID,
-                                    symbols,
+                                    inInstruments,
                                     null);
+    }
+    /**
+     * Create a new market data request reject message.
+     *
+     * @param inRequestId a <code>String</code> value
+     * @param inRejectReason a <code>Character</code> value or <code>null</code>
+     * @param inMessage a <code>String</code> value or <code>null</code>
+     * @return a <code>Message</code> value
+     */
+    public Message newMarketDataRequestReject(String inRequestId,
+                                              Character inRejectReason,
+                                              String inMessage)
+    {
+        Message reject = msgFactory.create(beginString,
+                                           quickfix.field.MsgType.MARKET_DATA_REQUEST_REJECT);
+        addApplicationVersion(reject);
+        reject.setField(new quickfix.field.MDReqID(inRequestId));
+        if(inRejectReason != null) {
+            reject.setField(new quickfix.field.MDReqRejReason(inRejectReason));
+        }
+        if(inMessage != null) {
+            reject.setField(new quickfix.field.Text(inMessage));
+        }
+        return reject;
     }
     /**
      * Generates a <code>Security List Request</code> FIX message.
@@ -225,8 +522,9 @@ public class FIXMessageFactory {
            thisVersion.equals(FIXVersion.FIX44)) {
             Message request = msgFactory.create(beginString, 
                                                 MsgType.SECURITY_LIST_REQUEST);
+            addApplicationVersion(request);
             request.setField(new SecurityReqID(inReqID));
-            request.setField(new SecurityListRequestType(SecurityListRequestType.SYMBOL));            
+            request.setField(new SecurityListRequestType(SecurityListRequestType.SYMBOL));
             return request;
         }
         throw new IllegalStateException();
@@ -244,8 +542,9 @@ public class FIXMessageFactory {
            thisVersion.equals(FIXVersion.FIX44)) {
             Message request = msgFactory.create(beginString, 
                                                 MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
+            addApplicationVersion(request);
             request.setField(new SecurityReqID(inReqID));
-            request.setField(new SecurityListRequestType(SecurityListRequestType.SYMBOL));            
+            request.setField(new SecurityListRequestType(SecurityListRequestType.SYMBOL));
             return request;
         }
         throw new IllegalStateException();
@@ -308,40 +607,6 @@ public class FIXMessageFactory {
         newMessage.setField(new OrdType(OrdType.MARKET));
         return newMessage;
     }
-
-    /**
-     * Creates a new FIX order
-     * <p>
-     * <b>NOTE:</b> This method is only meant to be used for unit testing.
-     *
-     * @param clOrderID     Internally generated clOrderID that will become the {@link ClOrdID} that
-     *                    uniquely identifies this orderlater
-     * @param side        Buy/Sell side
-     * @param quantity    # of shares being bought/sold
-     * @param instrument      instrument
-     * @param timeInForce How long the order is in effect
-     * @param account     Account ID
-     * @return Message representing this new order
-     */
-    private Message newOrderHelper(String clOrderID, char side, BigDecimal quantity, 
-    		Instrument instrument, char timeInForce, String account) {
-        Message aMessage = msgFactory.create(beginString, MsgType.ORDER_SINGLE);
-        aMessage.setField(new ClOrdID(clOrderID));
-        addHandlingInst(aMessage);
-        InstrumentToMessage.SELECTOR.forInstrument(instrument).
-                set(instrument, beginString, aMessage);
-        aMessage.setField(new Side(side));
-
-        aMessage.setField(new OrderQty(quantity));
-        aMessage.setField(new TimeInForce(timeInForce));
-        if (account != null) {
-            aMessage.setField(new Account(account));
-        }
-        addTransactionTimeIfNeeded(aMessage);
-        msgAugmentor.newOrderSingleAugment(aMessage);
-        return aMessage;
-    }
-
     /**
      * Helps create a cancel order for an existing cancel request
      * <p>
@@ -365,8 +630,8 @@ public class FIXMessageFactory {
             Instrument instrument,
             String counterpartyOrderID) {
         Message aMessage = msgFactory.create(beginString,MsgType.ORDER_CANCEL_REQUEST);
-
         addTransactionTimeIfNeeded(aMessage);
+        addApplicationVersion(aMessage);
         aMessage.setField(new ClOrdID(clOrderId));
         aMessage.setField(new OrigClOrdID(origClOrderID));
         aMessage.setField(new Side(side));
@@ -405,6 +670,7 @@ public class FIXMessageFactory {
             String inText) throws FieldNotFound {
         Message aMessage = msgFactory.create(beginString, MsgType.EXECUTION_REPORT);
         addTransactionTimeIfNeeded(aMessage);
+        addApplicationVersion(aMessage);
         if (orderID != null) aMessage.setField(new OrderID(orderID));
         aMessage.setField(new ClOrdID(clOrderID));
         aMessage.setField(new ExecID(execID));
@@ -471,6 +737,7 @@ public class FIXMessageFactory {
         bmReject.setField(new RefMsgType(refMsgType));
         bmReject.setField(new BusinessRejectReason(rejReason));
         bmReject.setField(new Text(textReason));
+        addApplicationVersion(bmReject);
         return bmReject;
     }
 
@@ -490,7 +757,7 @@ public class FIXMessageFactory {
         if(cxlRejReason!=null) {
             reject.setField(cxlRejReason);
         }
-
+        addApplicationVersion(reject);
         return reject;
     }
 
@@ -499,6 +766,7 @@ public class FIXMessageFactory {
      */
     public Message newBasicOrder() {
         Message msg =  msgFactory.create(beginString, MsgType.ORDER_SINGLE);
+        addApplicationVersion(msg);
         addHandlingInst(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
@@ -515,6 +783,7 @@ public class FIXMessageFactory {
     {
         Message msg = msgFactory.create(beginString, msgType);
         addTransactionTimeIfNeeded(msg);
+        addApplicationVersion(msg);
         return msg;
     }
 
@@ -542,44 +811,55 @@ public class FIXMessageFactory {
             msg.setField(new TransactTime(new Date())); //non-i18n
         }
     }
-
-
-	public Message newResendRequest(BigInteger beginSeqNo, BigInteger endSeqNo) {
-		Message rr = msgFactory.create(beginString, MsgType.RESEND_REQUEST);
-		if (beginSeqNo == null){
-			// from 0
-			rr.setField(new BeginSeqNo(0));
-		} else {
-			rr.setField(new StringField(BeginSeqNo.FIELD,beginSeqNo.toString()));//i18n_number
-		}
-		if (endSeqNo == null){
-			// to infinity 
-			rr.setField(new EndSeqNo(0));
-		} else {
-			rr.setField(new StringField(EndSeqNo.FIELD,endSeqNo.toString()));//i18n_number
-		}
-		return rr;
-	}
-
-    /** Creates a new session-level reject with the given reason to return
-     * to the sender of the incomingMsg
-     * @param incomingMsg   Message that generated this session-level reject
-     * @param rejectReason  Reason for reject
+    /**
+     * Create a new resend request.
+     *
+     * @param inBeginSeqNo a <code>BigInteger</code> value
+     * @param inEndSeqNo a <code>BigInteger</code> value
+     * @return a <code>Message</code> value
+     */
+    public Message newResendRequest(BigInteger inBeginSeqNo,
+                                    BigInteger inEndSeqNo)
+    {
+        Message rr = msgFactory.create(beginString,
+                                       MsgType.RESEND_REQUEST);
+        addApplicationVersion(rr);
+        if (inBeginSeqNo == null){
+            // from 0
+            rr.setField(new BeginSeqNo(0));
+        } else {
+            rr.setField(new StringField(BeginSeqNo.FIELD,inBeginSeqNo.toString()));//i18n_number
+        }
+        if (inEndSeqNo == null){
+            // to infinity 
+            rr.setField(new EndSeqNo(0));
+        } else {
+            rr.setField(new StringField(EndSeqNo.FIELD,inEndSeqNo.toString()));//i18n_number
+        }
+        return rr;
+    }
+    /**
+     * Create a new session-level reject with the given reason to return to the sender of the incomingMsg.
+     * 
+     * @param inIncomingMsg   Message that generated this session-level reject
+     * @param inRejectReason  Reason for reject
      * @return Session-level reject message to send out
      * @throws FieldNotFound
      * @throws SessionNotFound
      */
-    public Message createSessionReject(Message incomingMsg, int rejectReason) throws FieldNotFound,
-            SessionNotFound {
+    public Message createSessionReject(Message inIncomingMsg,
+                                       int inRejectReason)
+            throws FieldNotFound,SessionNotFound
+    {
         Message reply = createMessage(MsgType.REJECT);
-        reverseRoute(incomingMsg, reply);
-        String refSeqNum = incomingMsg.getHeader().getString(MsgSeqNum.FIELD);
+        addApplicationVersion(reply);
+        reverseRoute(inIncomingMsg, reply);
+        String refSeqNum = inIncomingMsg.getHeader().getString(MsgSeqNum.FIELD);
         reply.setString(RefSeqNum.FIELD, refSeqNum);
-        reply.setString(RefMsgType.FIELD, incomingMsg.getHeader().getString(MsgType.FIELD));
-        reply.setInt(SessionRejectReason.FIELD, rejectReason);
+        reply.setString(RefMsgType.FIELD, inIncomingMsg.getHeader().getString(MsgType.FIELD));
+        reply.setInt(SessionRejectReason.FIELD, inRejectReason);
         return reply;
     }
-
     /** Reverses the sender/target compIDs from reply and sets them in the outgoing outgoingMsg */
     public void reverseRoute(Message outgoingMsg, Message reply) throws FieldNotFound {
         reply.getHeader().setString(SenderCompID.FIELD,
@@ -587,48 +867,190 @@ public class FIXMessageFactory {
         reply.getHeader().setString(TargetCompID.FIELD,
                 outgoingMsg.getHeader().getString(SenderCompID.FIELD));
     }
-
-
-
+    /**
+     * Create a new empty cancel replace.
+     *
+     * @return a <code>Message</code> value
+     */
     public Message newCancelReplaceEmpty()
     {
-        Message msg=msgFactory.create
-            (beginString,MsgType.ORDER_CANCEL_REPLACE_REQUEST);
+        Message msg = msgFactory.create(beginString,
+                                        MsgType.ORDER_CANCEL_REPLACE_REQUEST);
+        addApplicationVersion(msg);
         addTransactionTimeIfNeeded(msg);
         addHandlingInst(msg);
         return msg;
     }
-
+    /**
+     * Create a new empty cancel.
+     *
+     * @return a <code>Message</code> value
+     */
     public Message newCancelEmpty()
     {
-        Message msg=msgFactory.create
-            (beginString,MsgType.ORDER_CANCEL_REQUEST);
+        Message msg = msgFactory.create(beginString,
+                                        MsgType.ORDER_CANCEL_REQUEST);
+        addApplicationVersion(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
     }
-
+    /**
+     * Create a new empty order single.
+     *
+     * @return a <code>Message</code> value
+     */
     public Message newOrderEmpty()
     {
-        Message msg=msgFactory.create
-            (beginString,MsgType.ORDER_SINGLE);
+        Message msg = msgFactory.create(beginString,
+                                        MsgType.ORDER_SINGLE);
+        addApplicationVersion(msg);
         addHandlingInst(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
     }
-
+    /**
+     * Create an empty order cancel reject.
+     *
+     * @return a <code>Message</code> value
+     */
     public Message newOrderCancelRejectEmpty()
     {
-        Message msg = msgFactory.create
-            (beginString,MsgType.ORDER_CANCEL_REJECT);
+        Message msg = msgFactory.create(beginString,
+                                        MsgType.ORDER_CANCEL_REJECT);
+        addApplicationVersion(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
     }
-
+    /**
+     * Create an empty execution report.
+     *
+     * @return a <code>Message</code> value
+     */
     public Message newExecutionReportEmpty()
     {
-        Message msg = msgFactory.create
-            (beginString,MsgType.EXECUTION_REPORT);
+        Message msg = msgFactory.create(beginString,
+                                        MsgType.EXECUTION_REPORT);
+        addApplicationVersion(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
     }
+    /**
+     * Add an MDEntry to the given message with the given type.
+     *
+     * @param inMarketDataRequest a <code>Message</code> value
+     * @param inMdEntryType a <code>char</code> value
+     * @param inCurrentContentCount an <code>int</code> value
+     * @return an <code>int</code> value
+     * @throws FieldNotFound if the given message is invalid
+     */
+    private int addMdEntry(Message inMarketDataRequest,
+                           char inMdEntryType,
+                           int inCurrentContentCount)
+            throws FieldNotFound
+    {
+        Group newGroup =  msgFactory.create(beginString,
+                                            inMarketDataRequest.getHeader().getString(quickfix.field.MsgType.FIELD),
+                                            quickfix.field.NoMDEntryTypes.FIELD);
+        newGroup.setField(new quickfix.field.MDEntryType(inMdEntryType));
+        inMarketDataRequest.addGroup(newGroup);
+        return inCurrentContentCount + 1;
+    }
+    /**
+     * Set the AggregatedBook value on the given message based on the inputs.
+     *
+     * @param inMarketDataRequest a <code>Message</code> value
+     * @param inNewAggregatedBookValue a <code>boolean</code> value
+     * @param inCurrentAggregatedBookValue a <code>Boolean</code> value or <code>null</code> if the value has not yet been set
+     * @return a <code>boolean</code> value holding the new AggregatedBook value for the message
+     * @throws IllegalArgumentException if the new aggregated book value conflicts with the old aggregated book value
+     */
+    private boolean setAggregatedBook(Message inMarketDataRequest,
+                                      boolean inNewAggregatedBookValue,
+                                      Boolean inCurrentAggregatedBookValue)
+    {
+        Validate.isTrue(inCurrentAggregatedBookValue == null || inNewAggregatedBookValue == inCurrentAggregatedBookValue,
+                        "Request has conflicting implied aggregated book");
+        inMarketDataRequest.setField(new quickfix.field.AggregatedBook(inNewAggregatedBookValue));
+        return inNewAggregatedBookValue;
+    }
+    /**
+     * Set the MaxDepth value on the given message based on the inputs.
+     *
+     * @param inMarketDataRequest a <code>Message</code> value
+     * @param inNewDepthValue an <code>int</code> value
+     * @param inCurrentDepthValue an <code>Integer</code> value or <code>null</code> if the value has not yet been set 
+     * @return an <code>int</code> value containing the new MaxDepth value for the message
+     * @throws IllegalArgumentException if the new MaxDepth value conflicts with the old MaxDepth value
+     */
+    private int setMaxDepth(Message inMarketDataRequest,
+                            int inNewDepthValue,
+                            Integer inCurrentDepthValue)
+    {
+        Validate.isTrue(inCurrentDepthValue == null || inNewDepthValue == inCurrentDepthValue,
+                        "Request has conflicting implied market depth");
+        inMarketDataRequest.setField(new quickfix.field.MarketDepth(inNewDepthValue));
+        return inNewDepthValue;
+    }
+    /**
+     * Creates a new FIX order
+     * <p>
+     * <b>NOTE:</b> This method is only meant to be used for unit testing.
+     *
+     * @param clOrderID     Internally generated clOrderID that will become the {@link ClOrdID} that
+     *                    uniquely identifies this orderlater
+     * @param side        Buy/Sell side
+     * @param quantity    # of shares being bought/sold
+     * @param instrument      instrument
+     * @param timeInForce How long the order is in effect
+     * @param account     Account ID
+     * @return Message representing this new order
+     */
+    private Message newOrderHelper(String clOrderID, char side, BigDecimal quantity, 
+            Instrument instrument, char timeInForce, String account) {
+        Message aMessage = msgFactory.create(beginString, MsgType.ORDER_SINGLE);
+        aMessage.setField(new ClOrdID(clOrderID));
+        addHandlingInst(aMessage);
+        addApplicationVersion(aMessage);
+        InstrumentToMessage.SELECTOR.forInstrument(instrument).
+                set(instrument, beginString, aMessage);
+        aMessage.setField(new Side(side));
+
+        aMessage.setField(new OrderQty(quantity));
+        aMessage.setField(new TimeInForce(timeInForce));
+        if (account != null) {
+            aMessage.setField(new Account(account));
+        }
+        addTransactionTimeIfNeeded(aMessage);
+        msgAugmentor.newOrderSingleAugment(aMessage);
+        return aMessage;
+    }
+    /**
+     * Add the application version to the given message, if applicable.
+     *
+     * @param inMessage a <code>Message</code> value
+     */
+    private void addApplicationVersion(Message inMessage)
+    {
+        FIXVersion fixVersion = getFixVersion();
+        if(!fixVersion.isFixT()) {
+            return;
+        }
+        inMessage.getHeader().setField(new quickfix.field.ApplVerID(fixVersion.getApplicationVersion()));
+    }
+    /**
+     * Get the underlying FIX version.
+     *
+     * @return a <code>FIXVersion</code> value
+     */
+    private FIXVersion getFixVersion()
+    {
+        if(fixVersion == null) {
+            fixVersion = FIXVersion.getFIXVersion(beginString);
+        }
+        return fixVersion;
+    }
+    /**
+     * value used to indicate top of book only
+     */
+    private final int TOP_OF_BOOK_DEPTH = 1;
 }

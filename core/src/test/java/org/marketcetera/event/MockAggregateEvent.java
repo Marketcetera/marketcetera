@@ -93,6 +93,22 @@ public class MockAggregateEvent
         event.setProvider(inProvider);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#getRequestId()
+     */
+    @Override
+    public long getRequestId()
+    {
+        return event.getRequestId();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#setRequestId(long)
+     */
+    @Override
+    public void setRequestId(long inRequestId)
+    {
+        event.setRequestId(inRequestId);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()
      */
     @Override

@@ -1,0 +1,173 @@
+// protoc -I=src/main/resources --java_out=src/main/java src/main/resources/rpc_sa.proto
+option java_generic_services = true;
+
+option java_package = "org.marketcetera.saclient.rpc";
+option java_outer_classname = "RpcSAClient";
+
+message LoginRequest {
+    required string appId = 1;
+    required string clientId = 2;
+    required Locale locale = 3;
+    required string versionId = 4;
+    required string username = 5;
+    required string password = 6;
+}
+
+message Locale {
+    required string country = 1;
+    required string language = 2;
+    optional string variant = 3;
+}
+
+message LoginResponse {
+    required string sessionId = 1;
+}
+
+message LogoutRequest {
+    required string sessionId = 1;
+}
+
+message LogoutResponse {
+    required bool status = 1;
+}
+
+message HeartbeatRequest {
+    required int64 id = 1;
+}
+
+message HeartbeatResponse {
+    required int64 id = 1;
+}
+
+message ModuleURN {
+    required string value = 1;
+}
+
+message ModuleInfo {
+    required string payload = 1;
+}
+
+message ProvidersRequest {
+    required string sessionId = 1;
+}
+
+message ProvidersResponse {
+    repeated ModuleURN provider = 1;
+}
+
+message InstancesRequest {
+    required string sessionId = 1;
+    required ModuleURN provider = 2;
+}
+
+message InstancesResponse {
+    repeated ModuleURN instance = 1;
+}
+
+message ModuleInfoRequest {
+    required string sessionId = 1;
+    required ModuleURN instance = 2;
+}
+
+message ModuleInfoResponse {
+    optional ModuleInfo info = 1;
+}
+
+message StartRequest {
+    required string sessionId = 1;
+    required ModuleURN instance = 2;
+}
+
+message StartResponse {
+}
+
+message StopRequest {
+    required string sessionId = 1;
+    required ModuleURN instance = 2;
+}
+
+message StopResponse {
+}
+
+message DeleteRequest {
+    required string sessionId = 1;
+    required ModuleURN instance = 2;
+}
+
+message DeleteResponse {
+}
+
+message GetPropertiesRequest {
+    required string sessionId = 1;
+    required ModuleURN instance = 2;
+}
+
+message GetPropertiesResponse {
+    required Properties properties = 1;
+}
+
+message SetPropertiesRequest {
+    required string sessionId = 1;
+    required ModuleURN instance = 2;
+    required Properties properties = 4;
+}
+
+message SetPropertiesResponse {
+    required Properties properties = 1;
+}
+
+message CreateStrategyRequest {
+    required string sessionId = 1;
+    required CreateStrategyParameters createStrategyParameters = 2;
+}
+
+message CreateStrategyResponse {
+    required ModuleURN instance = 1;
+}
+
+message StrategyCreateParmsRequest {
+    required string sessionId = 1;
+    required ModuleURN instance = 2;
+}
+
+message StrategyCreateParmsResponse {
+    required CreateStrategyParameters createStrategyParameters = 1;
+}
+
+message SendDataRequest {
+    required string sessionId = 1;
+    required string payload = 2;
+}
+
+message SendDataResponse {
+}
+
+message Properties {
+    repeated Entry entry = 1;
+}
+
+message Entry {
+    required string key = 1;
+    required string value = 2;
+}
+
+message CreateStrategyParameters {
+    required string payload = 1;
+}
+
+service RpcSAClientService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc getProviders(ProvidersRequest) returns (ProvidersResponse);
+    rpc getInstances(InstancesRequest) returns (InstancesResponse);
+    rpc getModuleInfo(ModuleInfoRequest) returns (ModuleInfoResponse);
+    rpc start(StartRequest) returns (StartResponse);
+    rpc stop(StopRequest) returns (StopResponse);
+    rpc delete(DeleteRequest) returns (DeleteResponse);
+    rpc getProperties(GetPropertiesRequest) returns (GetPropertiesResponse);
+    rpc setProperties(SetPropertiesRequest) returns (SetPropertiesResponse);
+    rpc createStrategy(CreateStrategyRequest) returns (CreateStrategyResponse);
+    rpc getStrategyCreateParms(StrategyCreateParmsRequest) returns (StrategyCreateParmsResponse);
+    rpc sendData(SendDataRequest) returns (SendDataResponse);
+}

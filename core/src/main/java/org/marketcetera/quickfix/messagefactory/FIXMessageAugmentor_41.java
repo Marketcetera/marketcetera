@@ -2,6 +2,8 @@ package org.marketcetera.quickfix.messagefactory;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.util.misc.ClassVersion;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -24,7 +26,18 @@ public class FIXMessageAugmentor_41 extends FIXMessageAugmentor_40 {
     public FIXMessageAugmentor_41() {
         applicableMsgTypes.addAll(Arrays.asList(TT_APPLICABLE_MESSAGE_CODES));
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_40#newOrderSingleAugment(quickfix.Message)
+     */
+    @Override
+    public Message newOrderSingleAugment(Message inMessage)
+    {
+        inMessage = super.newOrderSingleAugment(inMessage);
+        if(inMessage.getHeader().isSetField(quickfix.field.TransactTime.FIELD)) {
+            inMessage.removeField(quickfix.field.TransactTime.FIELD);
+        }
+        return inMessage;
+    }
     /** Starting with FIX41 we now need to calculate {@link quickfix.field.LeavesQty}
      * which is basically just initial - {@link quickfix.field.CumQty}
      */
@@ -51,9 +64,18 @@ public class FIXMessageAugmentor_41 extends FIXMessageAugmentor_40 {
                 inMessage.setField(new LeavesQty(initial.subtract(cumQty)));
                 break;
         }
-
         // set the execType to be same as OrdStatus
-        inMessage.setField(new ExecType(ordStatus));
+        if(!inMessage.isSetField(quickfix.field.ExecType.FIELD)) {
+            inMessage.setField(new ExecType(ordStatus));
+        }
         return inMessage;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.quickfix.messagefactory.NoOpFIXMessageAugmentor#getFixVersion()
+     */
+    @Override
+    protected FIXVersion getFixVersion()
+    {
+        return FIXVersion.FIX41;
     }
 }

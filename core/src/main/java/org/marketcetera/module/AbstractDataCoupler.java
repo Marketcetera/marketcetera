@@ -50,7 +50,7 @@ abstract class AbstractDataCoupler
 
     @Override
     public final void dataEmitError(I18NBoundMessage inMessage,
-                              boolean inStopDataFlow) {
+                                    boolean inStopDataFlow) {
         if(mRequestCanceled) {
             return;
         }
@@ -230,6 +230,7 @@ abstract class AbstractDataCoupler
     final void initiateRequest(RequestID inRequestID, DataRequest inRequest)
             throws RequestDataException {
         mRequestID = inRequestID;
+        preInitiate();
         sNestedFlowCall.set(Boolean.TRUE);
         try {
             ((DataEmitter)mEmitter).requestData(inRequest, this);
@@ -237,7 +238,22 @@ abstract class AbstractDataCoupler
             sNestedFlowCall.set(Boolean.FALSE);
         }
     }
-
+    /**
+     * Called before a data request is begun.
+     *
+     * <p>If this method throws an exception, the data flow will not be started
+     */
+    protected void preInitiate()
+    {
+    }
+    /**
+     * Called after a data request is canceled.
+     *
+     * <p>Throwing an exception will not prevent the data flow from being canceled
+     */
+    protected void postCancel()
+    {
+    }
     /**
      * Cancels the request with the emitter module and
      * disables all the communication through the coupling
@@ -255,6 +271,7 @@ abstract class AbstractDataCoupler
                     this,t, mRequestID);
         } finally {
             mRequestCanceled = true;
+            postCancel();
         }
     }
 

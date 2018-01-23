@@ -45,7 +45,7 @@ public class TypesTestBase {
     @BeforeClass
     public static void before() throws Exception {
         FIXDataDictionaryManager.initialize(FIXVersion.FIX_SYSTEM,
-                FIXVersion.FIX_SYSTEM.getDataDictionaryURL());
+                FIXVersion.FIX_SYSTEM.getDataDictionaryName());
     }
 
     /**
@@ -494,24 +494,23 @@ public class TypesTestBase {
         assertEquals(inViewerID, inReport.getViewerID());
     }
 
-    public static void assertExecReportValues
-        (ExecutionReport inReport,
-         String inAccount,
-         BigDecimal inAvgPrice,
-         BigDecimal inCumQty,
-         ExecutionType inExecType,
-         String inLastMarket,
-         BigDecimal inLastPrice,
-         BigDecimal inLastShares,
-         BigDecimal inLeavesQty,
-         BigDecimal inOrderQty,
-         OrderType inOrderType,
-         Side inSide,
-         Instrument inInstrument,
-         TimeInForce inTimeInForce,
-         OrderCapacity inOrderCapacity,
-         PositionEffect inPositionEffect,
-         boolean inIsCancelable)
+    public static void assertExecReportValues(ExecutionReport inReport,
+                                              String inAccount,
+                                              BigDecimal inAvgPrice,
+                                              BigDecimal inCumQty,
+                                              ExecutionType inExecType,
+                                              String inLastMarket,
+                                              BigDecimal inLastPrice,
+                                              BigDecimal inLastShares,
+                                              BigDecimal inLeavesQty,
+                                              BigDecimal inOrderQty,
+                                              OrderType inOrderType,
+                                              Side inSide,
+                                              Instrument inInstrument,
+                                              TimeInForce inTimeInForce,
+                                              OrderCapacity inOrderCapacity,
+                                              PositionEffect inPositionEffect,
+                                              boolean inIsCancelable)
     {
         assertEquals(inAccount, inReport.getAccount());
         assertEquals(inAvgPrice, inReport.getAveragePrice());

@@ -70,15 +70,15 @@ class JarClassLoader
         }
         //Initialize the directory containing all the module jars
         mJarDir = new File(inAppInfoProvider.getModulesDir(),
-                           "jars");  //$NON-NLS-1$
+                "jars");  //$NON-NLS-1$
         if(!mJarDir.isDirectory()) {
             throw new FileNotFoundException(Messages.JAR_DIR_DOES_NOT_EXIST.
-                    getText(mJarDir.getAbsolutePath()));
+                                            getText(mJarDir.getAbsolutePath()));
         }
         //The directory containing the module default configuration
         //properties files.
         File jarConfDir = new File(inAppInfoProvider.getModulesDir(),
-                                   "conf");  //$NON-NLS-1$
+                "conf");  //$NON-NLS-1$
         if(!jarConfDir.isDirectory()) {
             throw new FileNotFoundException(Messages.JAR_DIR_DOES_NOT_EXIST.getText(jarConfDir.getAbsolutePath()));
         }

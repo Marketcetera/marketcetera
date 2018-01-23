@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>modules</artifactId>
-    <version>3.0.13</version>
+    <version>3.0.12</version>
   </parent>
   <artifactId>strategy</artifactId>
   <packaging>jar</packaging>
@@ -41,12 +41,8 @@
       <artifactId>client</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>mdclient-server</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>bsf</groupId>
-      <artifactId>bsf</artifactId>
+      <groupId>org.apache.bsf</groupId>
+      <artifactId>com.springsource.org.apache.bsf</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jruby</groupId>

@@ -170,6 +170,14 @@ public class MarketstatEventCache
         }
         return builder.create();
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return String.valueOf(get());
+    }
     /**
      * the event builder used to cache the values
      */

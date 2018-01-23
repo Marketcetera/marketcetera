@@ -55,7 +55,7 @@ public interface INotification
      *
      * @return a <code>Date</code> value
      */
-    public Date getDate();
+    public Date getTimestamp();
     /**
      * Gets a description of the originator of the <code>INotification</code>.
      *

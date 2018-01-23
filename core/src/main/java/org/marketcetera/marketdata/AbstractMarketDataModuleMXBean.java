@@ -41,6 +41,11 @@ public interface AbstractMarketDataModuleMXBean
     @DisplayName("Causes the feed to resubmit existing queries")
     public void reconnect();
     /**
+     * Disconnect from the feed.
+     */
+    @DisplayName("Causes the feed to disconnect")
+    public void disconnect();
+    /**
      * Gets the set of capabilities for this market data feed.
      *
      * @return a <code>Set&lt;Capability&gt;</code> value

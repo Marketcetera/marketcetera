@@ -81,6 +81,8 @@ public interface Messages {
         new I18NMessage0P(LOGGER,"no_account"); //$NON-NLS-1$
     static final I18NMessage0P UNSUPPORTED_ACCOUNT=
         new I18NMessage0P(LOGGER,"unsupported_account"); //$NON-NLS-1$
+    static final I18NMessage0P NO_EXECUTION_DESTINATION = new I18NMessage0P(LOGGER,"no_execution_destination"); //$NON-NLS-1$
+    static final I18NMessage0P UNSUPPORTED_EXECUTION_DESTINATION = new I18NMessage0P(LOGGER,"unsupported_execution_destination"); //$NON-NLS-1$
     static final I18NMessage0P NO_TEXT=
         new I18NMessage0P(LOGGER,"no_text"); //$NON-NLS-1$
     static final I18NMessage0P UNSUPPORTED_TEXT=

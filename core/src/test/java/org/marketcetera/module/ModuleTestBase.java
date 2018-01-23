@@ -293,7 +293,6 @@ public class ModuleTestBase {
         assertEquals(inRequesterURN, inInfo.getRequesterURN());
         assertEquals(inStopperURN, inInfo.getStopperURN());
     }
-
     /**
      * Verifies contents of a data flow step
      *
@@ -308,21 +307,23 @@ public class ModuleTestBase {
      * @param inNumReceiveErrors number of receive errors encountered
      * @param inLastReceiveError the last receive error encountered
      * @param inRequestURN the module URN specified in the data request
-     * @param inRequestParam the request parameter specified in the
-     * data request
+     * @param inDataCoupling the data coupling used
+     * @param inRequestParam the request parameter specified in the data request
      */
     protected static void assertFlowStep(DataFlowStep inStep,
-                                       ModuleURN inURN,
-                                       boolean inEmitter,
-                                       int inNumEmitted,
-                                       int inNumEmitErrors,
-                                       String inLastEmitError,
-                                       boolean inReceiver,
-                                       int inNumReceived,
-                                       int inNumReceiveErrors,
-                                       String inLastReceiveError,
-                                       ModuleURN inRequestURN,
-                                       Object inRequestParam) {
+                                         ModuleURN inURN,
+                                         boolean inEmitter,
+                                         int inNumEmitted,
+                                         int inNumEmitErrors,
+                                         String inLastEmitError,
+                                         boolean inReceiver,
+                                         int inNumReceived,
+                                         int inNumReceiveErrors,
+                                         String inLastReceiveError,
+                                         ModuleURN inRequestURN,
+                                         DataCoupling inDataCoupling,
+                                         Object inRequestParam)
+    {
         if (inURN != null) {
             assertEquals(inURN, inStep.getModuleURN());
         }
@@ -349,10 +350,52 @@ public class ModuleTestBase {
             assertEquals(inRequestURN,inStep.getRequest().getRequestURN());
         }
         assertEquals(inRequestParam,inStep.getRequest().getData());
-        //Only sync data coupling is supported for now.
-        assertEquals(DataCoupling.SYNC, inStep.getRequest().getCoupling());
+        assertEquals(inDataCoupling,
+                     inStep.getRequest().getCoupling());
     }
-
+    /**
+     * Verifies contents of a data flow step
+     *
+     * @param inStep the data flow step
+     * @param inURN the URN of the module in this step
+     * @param inEmitter if the module is an emitter
+     * @param inNumEmitted number of data instances emitted
+     * @param inNumEmitErrors numbers of emit errors encountered
+     * @param inLastEmitError the last emit error encountered
+     * @param inReceiver if the module is a receiver
+     * @param inNumReceived number of data instances received
+     * @param inNumReceiveErrors number of receive errors encountered
+     * @param inLastReceiveError the last receive error encountered
+     * @param inRequestURN the module URN specified in the data request
+     * @param inRequestParam the request parameter specified in the data request
+     */
+    protected static void assertFlowStep(DataFlowStep inStep,
+                                         ModuleURN inURN,
+                                         boolean inEmitter,
+                                         int inNumEmitted,
+                                         int inNumEmitErrors,
+                                         String inLastEmitError,
+                                         boolean inReceiver,
+                                         int inNumReceived,
+                                         int inNumReceiveErrors,
+                                         String inLastReceiveError,
+                                         ModuleURN inRequestURN,
+                                         Object inRequestParam)
+    {
+        assertFlowStep(inStep,
+                       inURN,
+                       inEmitter,
+                       inNumEmitted,
+                       inNumEmitErrors,
+                       inLastEmitError,
+                       inReceiver,
+                       inNumReceived,
+                       inNumReceiveErrors,
+                       inLastReceiveError,
+                       inRequestURN,
+                       DataCoupling.SYNC,
+                       inRequestParam);
+    }
     /**
      * Gets the MBean server to use for all the tests.
      *

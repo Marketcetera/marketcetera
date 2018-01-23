@@ -16,6 +16,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang.StringUtils;
+import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.HashMultimap;
@@ -123,6 +124,26 @@ public class EmailNotificationExecutorMethod
             throws Exception
     {
         Collection<String> recipients = notificationRecipients.get(inNotification.getSeverity());
+        Authenticator authenticatorToUse = authenticator;
+        String configFileToUse = configurationFileName;
+        if(inNotification instanceof EmailNotification) {
+            EmailNotification emailNotification = (EmailNotification)inNotification;
+            if(!emailNotification.shouldEmail()) {
+                SLF4JLoggerProxy.debug(this,
+                                       "Not sending email notification because the notification canceled it");
+                return;
+            }
+            if(emailNotification.getAuthenticator() != null) {
+                authenticatorToUse = emailNotification.getAuthenticator();
+            }
+            if(emailNotification.getConfigurationFileName() != null) {
+                configFileToUse = emailNotification.getConfigurationFileName();
+            }
+            if(emailNotification.getRecipients() != null && !emailNotification.getRecipients().isEmpty()) {
+                recipients.clear();
+                recipients.addAll(emailNotification.getRecipients());
+            }
+        }
         if(recipients == null || recipients.isEmpty()) {
             SLF4JLoggerProxy.warn(this,
                                   "Not sending email notification because there are no recipients defined: {}",
@@ -133,12 +154,12 @@ public class EmailNotificationExecutorMethod
                                    inNotification);
             Properties mailServerConfig;
             try {
-                mailServerConfig = readConfig();
+                mailServerConfig = readConfig(configFileToUse);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             Session session = Session.getDefaultInstance(mailServerConfig,
-                                                         authenticator);
+                                                         authenticatorToUse);
             MimeMessage message = new MimeMessage(session);
             InternetAddress[] addresses = new InternetAddress[recipients.size()];
             int counter = 0;
@@ -155,15 +176,16 @@ public class EmailNotificationExecutorMethod
     /**
      * Reads the email sending configuration.
      *
+     * @param inConfigurationFileName a <code>String</code> value
      * @return a <code>Properties</code> value
      * @throws IOException if the configuration cannot be read
      */
-    private Properties readConfig()
+    private Properties readConfig(String inConfigurationFileName)
             throws IOException
     {
         InputStream input = null;
         try {
-            input = new FileInputStream(configurationFileName);
+            input = new FileInputStream(inConfigurationFileName);
             Properties config = new Properties();
             config.load(input);
             return config;
@@ -184,5 +206,5 @@ public class EmailNotificationExecutorMethod
     /**
      * contains the name of the mail server configuration file
      */
-    private String configurationFileName = "conf" + File.separator + "mail.properties"; //$NON-NLS-1$ //$NON-NLS-2$
+    private String configurationFileName = ApplicationBase.APP_DIR + File.separator + "conf" + File.separator + "mail.properties"; //$NON-NLS-1$ //$NON-NLS-2$
 }

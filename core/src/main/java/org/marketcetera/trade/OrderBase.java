@@ -1,9 +1,8 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-
 import java.math.BigDecimal;
-import java.util.Map;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -16,7 +15,9 @@ import java.util.Map;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public interface OrderBase extends Order {
+public interface OrderBase
+        extends Order,HasCustomFields
+{
     /**
      * The client assigned OrderID for this order. The factory
      * assigns orderIDs when creating orders. 
@@ -75,30 +76,6 @@ public interface OrderBase extends Order {
      * @param inQuantity the quantity.
      */
     void setQuantity(BigDecimal inQuantity);
-
-    /**
-     * Gets the custom fields specified along with this order. Custom
-     * fields may be optionally specified to specify order fields that
-     * are not supported by this type.
-     * <p>
-     * For example, extra FIX field values may be supplied when sending
-     * an order. When sending FIX field values, the map key should be
-     * the integer field tag value and the map value should be the string
-     * value of that field. 
-     *
-     * @return the custom fields for this order.
-     */
-    Map<String,String> getCustomFields();
-
-    /**
-     * Sets the custom fields for this order.
-     *
-     * @param inCustomFields the custom fields for this order.
-     *
-     * @see #getCustomFields() 
-     */
-    void setCustomFields(Map<String,String> inCustomFields);
-
     /**
      * Gets the account for the order. An account may be optionally
      * specified for an order.

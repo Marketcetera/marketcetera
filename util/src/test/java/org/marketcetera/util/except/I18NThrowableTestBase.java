@@ -187,7 +187,7 @@ public class I18NThrowableTestBase
 
         assertEquals(nestedMessage,t2.getMessage());
         assertEquals(nestedMessage,t2.getLocalizedMessage());
-        assertEquals(MID_MSG,t2.getDetail());
+        assertEquals(MID_MSG_EN,t2.getDetail());
         assertEquals(MID_MSG_EN,t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+nestedMessage,
                      t2.toString());
@@ -195,7 +195,7 @@ public class I18NThrowableTestBase
         ActiveLocale.setProcessLocale(Locale.FRENCH);
         assertEquals(nestedMessage,t2.getMessage());
         assertEquals(nestedMessage,t2.getLocalizedMessage());
-        assertEquals(MID_MSG,t2.getDetail());
+        assertEquals(MID_MSG_FR,t2.getDetail());
         assertEquals(MID_MSG_FR,t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+nestedMessage,
                      t2.toString());
@@ -220,17 +220,17 @@ public class I18NThrowableTestBase
              t2.getI18NBoundMessage());
         assertNull(t2.getCause());
 
-        assertEquals(MID_MSG,t2.getMessage());
+        assertEquals(MID_MSG_EN,t2.getMessage());
         assertEquals(MID_MSG_EN,t2.getLocalizedMessage());
-        assertEquals(MID_MSG,t2.getDetail());
+        assertEquals(MID_MSG_EN,t2.getDetail());
         assertEquals(MID_MSG_EN,t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+MID_MSG_EN,
                      t2.toString());
 
         ActiveLocale.setProcessLocale(Locale.FRENCH);
-        assertEquals(MID_MSG,t2.getMessage());
+        assertEquals(MID_MSG_FR,t2.getMessage());
         assertEquals(MID_MSG_FR,t2.getLocalizedMessage());
-        assertEquals(MID_MSG,t2.getDetail());
+        assertEquals(MID_MSG_FR,t2.getDetail());
         assertEquals(MID_MSG_FR,t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+MID_MSG_FR,
                      t2.toString());
@@ -256,17 +256,17 @@ public class I18NThrowableTestBase
              t2.getI18NBoundMessage());
         assertEquals(tNested,t2.getCause());
 
-        assertEquals(MID_MSG,t2.getMessage());
+        assertEquals(MID_MSG_EN,t2.getMessage());
         assertEquals(MID_MSG_EN,t2.getLocalizedMessage());
-        assertEquals(MID_MSG,t2.getDetail());
+        assertEquals(MID_MSG_EN,t2.getDetail());
         assertEquals(MID_MSG_EN,t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+MID_MSG_EN,
                      t2.toString());
 
         ActiveLocale.setProcessLocale(Locale.FRENCH);
-        assertEquals(MID_MSG,t2.getMessage());
+        assertEquals(MID_MSG_FR,t2.getMessage());
         assertEquals(MID_MSG_FR,t2.getLocalizedMessage());
-        assertEquals(MID_MSG,t2.getDetail());
+        assertEquals(MID_MSG_FR,t2.getDetail());
         assertEquals(MID_MSG_FR,t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+MID_MSG_FR,
                      t2.toString());
@@ -274,12 +274,11 @@ public class I18NThrowableTestBase
         equality(t2,t2Comps,sameIndex);
     }
 
-    protected static void myMessageAndCauseWithMessage
-        (Throwable tNested,
-         Throwable t1,
-         I18NThrowable t2,
-         I18NThrowable[] t2Comps,
-         int sameIndex)
+    protected static void myMessageAndCauseWithMessage(Throwable tNested,
+                                                       Throwable t1,
+                                                       I18NThrowable t2,
+                                                       I18NThrowable[] t2Comps,
+                                                       int sameIndex)
     {
         String suffix=" ("+TEST_MSG_2+")";
 
@@ -294,17 +293,17 @@ public class I18NThrowableTestBase
              t2.getI18NBoundMessage());
         assertEquals(tNested,t2.getCause());
 
-        assertEquals(MID_MSG,t2.getMessage());
+        assertEquals(MID_MSG_EN,t2.getMessage());
         assertEquals(MID_MSG_EN,t2.getLocalizedMessage());
-        assertEquals(MID_MSG+suffix,t2.getDetail());
+        assertEquals(MID_MSG_EN+suffix,t2.getDetail());
         assertEquals(MID_MSG_EN+suffix,t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+MID_MSG_EN,
                      t2.toString());
 
         ActiveLocale.setProcessLocale(Locale.FRENCH);
-        assertEquals(MID_MSG,t2.getMessage());
+        assertEquals(MID_MSG_FR,t2.getMessage());
         assertEquals(MID_MSG_FR,t2.getLocalizedMessage());
-        assertEquals(MID_MSG+suffix,t2.getDetail());
+        assertEquals(MID_MSG_FR+suffix,t2.getDetail());
         assertEquals(MID_MSG_FR+suffix,t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+MID_MSG_FR,
                      t2.toString());
@@ -330,17 +329,17 @@ public class I18NThrowableTestBase
              t2.getI18NBoundMessage());
         assertEquals(tNested,t2.getCause());
 
-        assertEquals(MID_MSG,t2.getMessage());
+        assertEquals(MID_MSG_EN,t2.getMessage());
         assertEquals(MID_MSG_EN,t2.getLocalizedMessage());
-        assertEquals(MID_MSG+" ("+BOT_MSG+")",t2.getDetail());
+        assertEquals(MID_MSG_EN+" ("+BOT_MSG_EN+")",t2.getDetail());
         assertEquals(MID_MSG_EN+" ("+BOT_MSG_EN+")",t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+MID_MSG_EN,
                      t2.toString());
 
         ActiveLocale.setProcessLocale(Locale.FRENCH);
-        assertEquals(MID_MSG,t2.getMessage());
+        assertEquals(MID_MSG_FR,t2.getMessage());
         assertEquals(MID_MSG_FR,t2.getLocalizedMessage());
-        assertEquals(MID_MSG+" ("+BOT_MSG+")",t2.getDetail());
+        assertEquals(MID_MSG_FR+" ("+BOT_MSG_FR+")",t2.getDetail());
         assertEquals(MID_MSG_FR+" ("+BOT_MSG_FR+")",t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+MID_MSG_FR,
                      t2.toString());
@@ -353,28 +352,28 @@ public class I18NThrowableTestBase
          I18NThrowable tMid,
          I18NThrowable tTop)
     {
-        assertEquals(BOT_MSG,tBot.getDetail());
+        assertEquals(BOT_MSG_EN,tBot.getDetail());
         assertEquals(BOT_MSG_EN,tBot.getLocalizedDetail());
         assertEquals
-            (MID_MSG+" ("+BOT_MSG+")",tMid.getDetail());
+            (MID_MSG_EN+" ("+BOT_MSG_EN+")",tMid.getDetail());
         assertEquals
             (MID_MSG_EN+" ("+BOT_MSG_EN+")",tMid.getLocalizedDetail());
         assertEquals
-            (TOP_MSG+" ("+MID_MSG+" ("+BOT_MSG+"))",
+            (TOP_MSG_ALL+" ("+MID_MSG_EN+" ("+BOT_MSG_EN+"))",
              tTop.getDetail());
         assertEquals
             (TOP_MSG_ALL+" ("+MID_MSG_EN+" ("+BOT_MSG_EN+"))",
              tTop.getLocalizedDetail());
 
         ActiveLocale.setProcessLocale(Locale.FRENCH);
-        assertEquals(BOT_MSG,tBot.getDetail());
+        assertEquals(BOT_MSG_FR,tBot.getDetail());
         assertEquals(BOT_MSG_FR,tBot.getLocalizedDetail());
         assertEquals
-            (MID_MSG+" ("+BOT_MSG+")",tMid.getDetail());
+            (MID_MSG_FR+" ("+BOT_MSG_FR+")",tMid.getDetail());
         assertEquals
             (MID_MSG_FR+" ("+BOT_MSG_FR+")",tMid.getLocalizedDetail());
         assertEquals
-            (TOP_MSG+" ("+MID_MSG+" ("+BOT_MSG+"))",
+            (TOP_MSG_ALL+" ("+MID_MSG_FR+" ("+BOT_MSG_FR+"))",
              tTop.getDetail());
         assertEquals
             (TOP_MSG_ALL+" ("+MID_MSG_FR+" ("+BOT_MSG_FR+"))",

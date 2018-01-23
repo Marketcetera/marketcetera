@@ -36,10 +36,6 @@ public enum DataCoupling {
      * Data is communicated asynchronously, ie. the data receiver
      * receivers the data in a separate thread from the one emitting
      * data.
-     *
-     * <b>this coupling is currently not supported, attempts to use
-     * this coupling will result in {@link UnsupportedOperationException}</b>
-     *
      */
     ASYNC {
         AbstractDataCoupler createCoupler(ModuleManager inManager,
@@ -48,7 +44,11 @@ public enum DataCoupling {
                                           DataFlowID inFlowID,
                                           DataFlowExceptionHandler inExceptionHandler)
         {
-            throw new UnsupportedOperationException();
+            return new AsyncCoupler(inManager,
+                                    inEmitter,
+                                    inReceiver,
+                                    inFlowID,
+                                    inExceptionHandler);
         }
     };
 

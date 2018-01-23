@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>marketdata</artifactId>
-    <version>3.0.13</version>
+    <version>3.0.12</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>marketdata-recorder</artifactId>
-  <version>3.0.13</version>
+  <version>3.0.12</version>
   <packaging>jar</packaging>
   <licenses>
     <license>
@@ -37,9 +37,13 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>mdclient-server</artifactId>
-      <type>test-jar</type>
+      <artifactId>marketdata-core</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-core</artifactId>
+      <type>test-jar</type>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

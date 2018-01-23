@@ -6,7 +6,7 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.DataDictionary;
-import quickfix.Message;
+import quickfix.FieldMap;
 import quickfix.field.CFICode;
 import quickfix.field.MaturityDay;
 import quickfix.field.MaturityMonthYear;
@@ -40,9 +40,7 @@ public class FutureToMessage
                                String inMsgType)
     {
         // dictionary supports means to specify the 2 attributes of a future
-        return (inDictionary.isMsgField(inMsgType,Symbol.FIELD)) &&
-                inDictionary.isMsgField(inMsgType,
-                                        MaturityMonthYear.FIELD);
+        return (inDictionary.isMsgField(inMsgType,Symbol.FIELD)) && inDictionary.isMsgField(inMsgType,MaturityMonthYear.FIELD);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.instruments.InstrumentToMessage#set(org.marketcetera.trade.Instrument, java.lang.String, quickfix.Message)
@@ -50,7 +48,7 @@ public class FutureToMessage
     @Override
     public void set(Instrument inInstrument,
                     String inBeginString,
-                    Message inMessage)
+                    FieldMap inMessage)
     {
         if(FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(inBeginString))) {
             throw new IllegalArgumentException(
@@ -85,6 +83,15 @@ public class FutureToMessage
                     inMessage.setField(new MaturityDay(String.valueOf(maturityDay)));
                 }
                 break;
+            case FIX50:
+            case FIX50SP1:
+            case FIX50SP2:
+                setCFICode(inMessage,
+                           future);
+                if(maturityDay != -1) {
+                    inMessage.setField(new MaturityDay(String.valueOf(maturityDay)));
+                }
+                break;
             default:
                 setCFICode(inMessage,
                            future);
@@ -98,7 +105,7 @@ public class FutureToMessage
     public void set(Instrument inInstrument,
                     DataDictionary inDictionary,
                     String inMsgType,
-                    Message inMessage)
+                    FieldMap inMessage)
     {
         setSecurityType(inInstrument,
                         inDictionary,
@@ -122,10 +129,10 @@ public class FutureToMessage
     /**
      * Sets the CFI Code on the given <code>Message</code> for the given <code>Future</code>.
      *
-     * @param inMessage a <code>Message</code> value
+     * @param inMessage a <code>FieldMap</code> value
      * @param inFuture a <code>Future</code> value
      */
-    private static void setCFICode(Message inMessage,
+    private static void setCFICode(FieldMap inMessage,
                                    Future inFuture)
     {
         String cfiCode = CFICodeUtils.getCFICode(inFuture);

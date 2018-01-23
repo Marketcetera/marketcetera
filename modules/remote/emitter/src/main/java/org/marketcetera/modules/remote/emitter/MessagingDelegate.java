@@ -1,11 +1,13 @@
 package org.marketcetera.modules.remote.emitter;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.apache.activemq.transport.TransportListener;
+import java.io.IOException;
 
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
-import java.io.IOException;
+
+import org.apache.activemq.transport.TransportListener;
+import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.util.ErrorHandler;
 
 /* $License$ */
 /**
@@ -18,7 +20,8 @@ import java.io.IOException;
  */
 @ClassVersion("$Id$")
 public class MessagingDelegate
-        implements ExceptionListener, TransportListener {
+        implements ExceptionListener,TransportListener,ErrorHandler
+{
     /**
      * Receives an object
      *
@@ -38,7 +41,16 @@ public class MessagingDelegate
     public void onException(IOException inException) {
         mDataEmitter.onException(inException);
     }
-
+    /* (non-Javadoc)
+     * @see org.springframework.util.ErrorHandler#handleError(java.lang.Throwable)
+     */
+    @Override
+    public void handleError(Throwable inT)
+    {
+        if(inT instanceof Exception) {
+            mDataEmitter.onException((Exception)inT);
+        }
+    }
     @Override
     public void onCommand(Object inObject) {
         //do nothing.

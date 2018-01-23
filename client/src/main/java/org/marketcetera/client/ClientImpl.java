@@ -19,15 +19,16 @@ import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.config.SpringConfig;
+import org.marketcetera.client.jms.DataEnvelope;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.JmsUtils;
-import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.event.Event;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Currency;
@@ -82,7 +83,9 @@ import org.springframework.jms.listener.SimpleMessageListenerContainer;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public class ClientImpl implements Client, javax.jms.ExceptionListener {
+public class ClientImpl
+        implements Client,javax.jms.ExceptionListener
+{
 
     @Override
     public void sendOrder(OrderSingle inOrderSingle)
@@ -114,7 +117,15 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
         Validations.validate(inFIXOrder);
         convertAndSend(inFIXOrder);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#sendEvent(org.marketcetera.event.Event)
+     */
+    @Override
+    public void sendEvent(Event inEvent)
+            throws ConnectionException
+    {
+        convertAndSend(inEvent);
+    }
     @Override
     public void addReportListener(ReportListener inListener) {
         failIfClosed();
@@ -171,7 +182,6 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
             mServerStatusListeners.removeFirstOccurrence(listener);
         }
     }
-
     @Override
     public ReportBase[] getReportsSince
         (Date inDate)
@@ -604,6 +614,26 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
     {
         return getServiceContext().getSessionId();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#addOrderModifier(org.marketcetera.client.OrderModifier)
+     */
+    @Override
+    public void addOrderModifier(OrderModifier inOrderModifier)
+    {
+        synchronized(orderModifiers) {
+            orderModifiers.addLast(inOrderModifier);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#removeOrderModifier(org.marketcetera.client.OrderModifier)
+     */
+    @Override
+    public void removeOrderModifier(OrderModifier inOrderModifier)
+    {
+        synchronized(orderModifiers) {
+            orderModifiers.remove(inOrderModifier);
+        }
+    }
     /**
      * Creates an instance given the parameters and connects to the server.
      *
@@ -619,27 +649,6 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
         setParameters(inParameters);
         connect();
     }
-
-    // TradeMessage reception; public scope required by Spring.
-
-    public class TradeMessageReceiver
-        implements ReceiveOnlyHandler<TradeMessage>
-    {
-        @Override
-        public void receiveMessage
-            (TradeMessage inReport)
-        {
-            if (inReport instanceof ExecutionReport) {
-                notifyExecutionReport((ExecutionReport)inReport);
-            } else if (inReport instanceof OrderCancelReject) {
-                notifyCancelReject((OrderCancelReject)inReport);
-            } else {
-                Messages.LOG_RECEIVED_FIX_REPORT.warn
-                    (this,ObjectUtils.toString(inReport));
-            }
-        }
-    }
-
     void notifyExecutionReport(ExecutionReport inReport) {
         SLF4JLoggerProxy.debug(TRAFFIC, "Received Exec Report:{}", inReport);  //$NON-NLS-1$
         synchronized (mReportListeners) {
@@ -1009,6 +1018,19 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
                                                                        false);
     }
     /**
+     * Modify the given order.
+     *
+     * @param inOrder an <code>Order</code> value
+     */
+    private void modifyOrder(Order inOrder)
+    {
+        synchronized(orderModifiers) {
+            for(OrderModifier orderModifier : orderModifiers) {
+                orderModifier.modify(inOrder);
+            }
+        }
+    }
+    /**
      * Connects the client to the server.
      *
      * @throws ConnectionException if an error occurs connecting to the server
@@ -1089,8 +1111,15 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
     private void setContext(AbstractApplicationContext inContext) {
         mContext = inContext;
     }
-
-    private void convertAndSend(Order inOrder) throws ConnectionException {
+    /**
+     * Convert the given order and send it to the server.
+     *
+     * @param inOrder an <code>Order</code> value
+     * @throws ConnectionException if the order could not be sent to the server
+     */
+    private void convertAndSend(Order inOrder)
+            throws ConnectionException
+    {
         ThreadedMetric.event("client-OUT",  //$NON-NLS-1$ 
                 inOrder instanceof OrderBase
                         ? ((OrderBase) inOrder).getOrderID()
@@ -1102,25 +1131,55 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
                 throw new ClientInitException(Messages.NOT_CONNECTED_TO_SERVER);
             }
             failIfDisconnected();
-            SpringConfig cfg = SpringConfig.getSingleton();
-            Collection<OrderModifier> orderModifiers = cfg.getOrderModifiers();
-            for(OrderModifier modifier : orderModifiers) {
-                modifier.modify(inOrder);
-            }
-            mToServer.convertAndSend(new OrderEnvelope(inOrder,
-                                                       getSessionId()));
+            modifyOrder(inOrder);
+            mToServer.convertAndSend(new DataEnvelope(inOrder,
+                                                      getSessionId()));
         } catch (Exception e) {
             ConnectionException exception;
-            exception = new ConnectionException(e, new I18NBoundMessage1P(
-                    Messages.ERROR_SEND_MESSAGE, ObjectUtils.toString(inOrder)));
-            Messages.LOG_ERROR_SEND_EXCEPTION.warn(this, exception,
-                    ObjectUtils.toString(inOrder));
+            exception = new ConnectionException(e, new I18NBoundMessage1P(Messages.ERROR_SEND_MESSAGE,
+                                                                          ObjectUtils.toString(inOrder)));
+            Messages.LOG_ERROR_SEND_EXCEPTION.warn(this,
+                                                   exception,
+                                                   ObjectUtils.toString(inOrder));
             ExceptUtils.interrupt(e);
             exceptionThrown(exception);
             throw exception;
         }
     }
-
+    /**
+     * Convert the given event and send it to the server.
+     *
+     * @param inEvent an <code>Event</code> value
+     * @throws ConnectionException if the client is closed
+     */
+    private void convertAndSend(Event inEvent)
+            throws ConnectionException
+    {
+        ThreadedMetric.event("client-OUT",  //$NON-NLS-1$ 
+                             inEvent.getMessageId());
+        failIfClosed();
+        SLF4JLoggerProxy.debug(TRAFFIC,
+                               "Sending: {}",  //$NON-NLS-1$
+                               inEvent);
+        try {
+            if(mToServer == null) {
+                throw new ClientInitException(Messages.NOT_CONNECTED_TO_SERVER);
+            }
+            failIfDisconnected();
+            mToServer.convertAndSend(new DataEnvelope(inEvent,
+                                                       getSessionId()));
+        } catch (Exception e) {
+            ConnectionException exception;
+            exception = new ConnectionException(e, new I18NBoundMessage1P(Messages.ERROR_SEND_MESSAGE,
+                                                                          ObjectUtils.toString(inEvent)));
+            Messages.LOG_ERROR_SEND_EXCEPTION.warn(this,
+                                                   exception,
+                                                   ObjectUtils.toString(inEvent));
+            ExceptUtils.interrupt(e);
+            exceptionThrown(exception);
+            throw exception;
+        }
+    }
     /**
      * Checks to see if the client is closed and fails if the client
      * is closed.
@@ -1161,33 +1220,39 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
         }
         mParameters = inParameters;
     }
-
+    /**
+     * Stop JMSoperations.
+     */
     private void stopJms()
     {
-        if (mToServer==null) {
+        if(mToServer==null) {
             return;
         }
-        try {
-            if (mTradeMessageListener!=null) {
-                mTradeMessageListener.shutdown();
-            }
-        } catch (Exception ex) {
-            SLF4JLoggerProxy.debug
-                (this,"Error when closing trade message listener",ex); //$NON-NLS-1$
-            ExceptUtils.interrupt(ex);
-        } finally {
+        if(mTradeMessageListener != null) {
             try {
-                if (mBrokerStatusListener!=null) {
-                    mBrokerStatusListener.shutdown();
-                }
+                mTradeMessageListener.shutdown();
             } catch (Exception ex) {
-                SLF4JLoggerProxy.debug
-                    (this,"Error when closing broker status listener",ex); //$NON-NLS-1$
+                SLF4JLoggerProxy.debug(this,
+                                       ex,
+                                       "Error when closing trade message listener"); //$NON-NLS-1$
                 ExceptUtils.interrupt(ex);
             } finally {
-                mToServer = null;
+                mTradeMessageListener = null;
             }
         }
+        if(mBrokerStatusListener != null) {
+            try {
+                mBrokerStatusListener.shutdown();
+            } catch (Exception ex) {
+                SLF4JLoggerProxy.debug(this,
+                                       ex,
+                                       "Error when closing broker status listener"); //$NON-NLS-1$
+                ExceptUtils.interrupt(ex);
+            } finally {
+                mBrokerStatusListener = null;
+            }
+        }
+        mToServer = null;
     }
     /**
      * Sets the server connection status. If the status changed, the
@@ -1214,7 +1279,31 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
         mServerAlive=serverAlive;
         notifyServerStatus(isServerAlive());
     }
-
+    // TradeMessage and MarketDataRequest reception; public scope required by Spring.
+    /**
+     * Receives <code>TradeMessage</code> objects from the server.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    public class TradeMessageReceiver
+            implements ReceiveOnlyHandler<TradeMessage>
+    {
+        @Override
+        public void receiveMessage
+            (TradeMessage inReport)
+        {
+            if (inReport instanceof ExecutionReport) {
+                notifyExecutionReport((ExecutionReport)inReport);
+            } else if (inReport instanceof OrderCancelReject) {
+                notifyCancelReject((OrderCancelReject)inReport);
+            } else {
+                Messages.LOG_RECEIVED_FIX_REPORT.warn
+                    (this,ObjectUtils.toString(inReport));
+            }
+        }
+    }
     private volatile AbstractApplicationContext mContext;
     private volatile JmsManager mJmsMgr;
     private volatile SimpleMessageListenerContainer mTradeMessageListener;
@@ -1223,20 +1312,15 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
     protected volatile ClientParameters mParameters;
     private volatile boolean mClosed = false;
     private volatile boolean mServerAlive = false;
-    private final Deque<ReportListener> mReportListeners =
-            new LinkedList<ReportListener>();
-    private final Deque<BrokerStatusListener> mBrokerStatusListeners=
-        new LinkedList<BrokerStatusListener>();
-    private final Deque<ServerStatusListener> mServerStatusListeners=
-        new LinkedList<ServerStatusListener>();
-    private final Deque<ExceptionListener> mExceptionListeners =
-            new LinkedList<ExceptionListener>();
+    private final Deque<ReportListener> mReportListeners = new LinkedList<ReportListener>();
+    private final Deque<BrokerStatusListener> mBrokerStatusListeners = new LinkedList<BrokerStatusListener>();
+    private final Deque<ServerStatusListener> mServerStatusListeners = new LinkedList<ServerStatusListener>();
+    private final Deque<ExceptionListener> mExceptionListeners = new LinkedList<ExceptionListener>();
+    private final Deque<OrderModifier> orderModifiers = new LinkedList<OrderModifier>();
     private Date mLastConnectTime;
-    private final Map<UserID,UserInfo> mUserInfoCache=
-        new HashMap<UserID,UserInfo>();
+    private final Map<UserID,UserInfo> mUserInfoCache = new HashMap<UserID,UserInfo>();
     private final Map<String,String> mUnderlyingToRootCache= new HashMap<String, String>();
-    private final Map<String,Collection<String>> mRootToUnderlyingCache=
-            new HashMap<String, Collection<String>>();
+    private final Map<String,Collection<String>> mRootToUnderlyingCache = new HashMap<String,Collection<String>>();
 
     private static final long RECONNECT_WAIT_INTERVAL = 10000;
 

@@ -36,6 +36,5 @@ public interface Messages {
     static final I18NMessage1P ERROR_JMS_MESSAGE_CONVERSION = 
         new I18NMessage1P(LOGGER,"error_jms_message_conversion"); //$NON-NLS-1$
 
-    static final I18NMessage2P ORDER_ENVELOPE_TO_STRING =
-        new I18NMessage2P(LOGGER,"order_envelope_to_string"); //$NON-NLS-1$
+    static final I18NMessage3P DATA_ENVELOPE_TO_STRING = new I18NMessage3P(LOGGER,"data_envelope_to_string"); //$NON-NLS-1$
 }

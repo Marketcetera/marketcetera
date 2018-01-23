@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -55,7 +56,7 @@ public class InstrumentFromMessageTest {
     @BeforeClass
     public static void logSetup() throws Exception {
         FIXDataDictionaryManager.initialize(FIX_VERSION,
-                FIX_VERSION.getDataDictionaryURL());
+                FIX_VERSION.getDataDictionaryName());
     }
     
     @Test
@@ -92,7 +93,21 @@ public class InstrumentFromMessageTest {
         assertEquals(new Equity("PQR"), InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
         //security type set, symbol set
         msg.setField(new SecurityType(SecurityType.COMMON_STOCK));
-        assertEquals(new Equity("PQR"), InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+        Instrument pqr = InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg);
+        Equity pqrEquity = new Equity("PQR");
+        assertEquals(pqr,
+                     pqrEquity);
+        assertEquals(pqrEquity,pqr);
+        // test sfx
+        assertFalse(msg.isSetField(quickfix.field.SymbolSfx.FIELD));
+        msg.setField(new quickfix.field.SymbolSfx("PRJ"));
+        Equity pqrSfxEquity = new Equity("PQR","PRJ");
+        Instrument pqrSfx = InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg);
+        assertEquals(pqrSfxEquity,
+                     pqrSfx);
+        assertEquals("PRJ",
+                     ((Equity)pqrSfx).getSymbolSfx());
+        assertFalse(pqrSfxEquity.equals(pqrEquity));
     }
     
     @Test

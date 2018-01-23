@@ -76,6 +76,9 @@ message BrokerAlgoTagSpec {
     required bool mandatory = 4;
     optional string pattern = 5;
     optional string options = 6;
+    required bool readOnly = 7;
+    optional string defaultValue = 8;
+    optional string advice = 9;
 }
 
 message OpenOrdersRequest {

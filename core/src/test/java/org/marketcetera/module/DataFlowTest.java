@@ -201,6 +201,15 @@ public class DataFlowTest extends ModuleTestBase {
         //data flow with sink module auto-appended
         checkDataFlowModule(module, null, true, false, new DataRequest(procURN,
                 String.class.getName()));
+        // async data flow
+        checkDataFlowModule(module,
+                            null,
+                            true,
+                            false,
+                            DataCoupling.ASYNC,
+                            new DataRequest(procURN,
+                                            DataCoupling.ASYNC,
+                                            String.class.getName()));
         //data flow with sink explicitly requested to be auto-appended
         checkDataFlowModule(module, null, false, true, new DataRequest(procURN,
                 String.class.getName()));
@@ -533,7 +542,7 @@ public class DataFlowTest extends ModuleTestBase {
         //try creating a data flow such that the specified URN matches multiple
         //modules, verify it fails.
         final ModuleURN multiMatchURN = receiver2URN.parent();
-        HashSet actualParams = new HashSet<Object>(Arrays.asList(
+        HashSet<?> actualParams = new HashSet<Object>(Arrays.asList(
                 new ExpectedFailure<ModuleNotFoundException>(
                         Messages.MULTIPLE_MODULES_MATCH_URN){
                     protected void run() throws Exception {
@@ -543,7 +552,7 @@ public class DataFlowTest extends ModuleTestBase {
                         });
                     }
                 }.getException().getI18NBoundMessage().getParams()));
-        HashSet expectedParams = new HashSet<Object>(Arrays.asList(
+        HashSet<?> expectedParams = new HashSet<Object>(Arrays.asList(
                 multiMatchURN.getValue(), receiverURN.getValue(),
                 receiver2URN.getValue()));
         //verify the message parameters
@@ -1104,12 +1113,10 @@ public class DataFlowTest extends ModuleTestBase {
      *
      * @param inModule The flow requester module instance
      * @param inEmitterURN the Emitter URN, if null the default value is used
-     * @param inInvokeDefault if the API that defaults append sink flag
-     * should be invoked.
-     * @param inAppendSink the value of append sink flag, if inInvokeDefault
-     *  is false.
-     * @param inDataRequests the data requests, emitter module is
-     *  automatically prepended to it. @throws Exception if there are errors
+     * @param inInvokeDefault if the API that defaults append sink flag should be invoked.
+     * @param inAppendSink the value of append sink flag, if inInvokeDefault is false.
+     * @param inDataCoupling the type of the request data coupling
+     * @param inDataRequests the data requests, emitter module is automatically prepended to it. @throws Exception if there are errors
      *
      * @throws Exception if there's a failure
      */
@@ -1117,8 +1124,10 @@ public class DataFlowTest extends ModuleTestBase {
                                      ModuleURN inEmitterURN,
                                      boolean inInvokeDefault,
                                      boolean inAppendSink,
+                                     DataCoupling inDataCoupling,
                                      DataRequest... inDataRequests)
-            throws Exception {
+            throws Exception
+    {
         int numFlowHistory = sManager.getDataFlowHistory().size();
         List<DataFlowID> flows;
         //Initialize the request parameter for emitter.
@@ -1132,7 +1141,9 @@ public class DataFlowTest extends ModuleTestBase {
         if(inEmitterURN == null) {
             inEmitterURN = EmitterModuleFactory.INSTANCE_URN;
         }
-        requests[0] = new DataRequest(inEmitterURN, param);
+        requests[0] = new DataRequest(inEmitterURN,
+                                      inDataCoupling,
+                                      param);
         System.arraycopy(inDataRequests,0,requests,1, inDataRequests.length);
         //The processor module is always the second one, get its URL
         ModuleURN procModuleURN = requests[1].getRequestURN();
@@ -1158,9 +1169,13 @@ public class DataFlowTest extends ModuleTestBase {
         DataFlowInfo flowInfo = sManager.getDataFlowInfo(flowID);
         //now verify the flow info
         assertFlowInfo(flowInfo,flowID, 3, true, false, inModule.getURN(), null);
-        ModuleURN actualProcURN = verifyFlowSteps(param, inEmitterURN,
-                procModuleURN, flowInfo, false, false);
-
+        ModuleURN actualProcURN = verifyFlowSteps(param,
+                                                  inEmitterURN,
+                                                  procModuleURN,
+                                                  flowInfo,
+                                                  false,
+                                                  false,
+                                                  inDataCoupling);
         //verify module infos
         ModuleTestBase.assertModuleInfo(sManager.getModuleInfo(
                 EmitterModuleFactory.INSTANCE_URN),
@@ -1223,63 +1238,108 @@ public class DataFlowTest extends ModuleTestBase {
                 inModule.isSkipCancel()
                         ? null
                         : inModule.getURN());
-        verifyFlowSteps(param, inEmitterURN, procModuleURN,
-                history.get(0), false, false);
+        verifyFlowSteps(param,
+                        inEmitterURN,
+                        procModuleURN,
+                        history.get(0),
+                        false,
+                        false,
+                        inDataCoupling);
     }
-
+    /**
+     * Checks simple data flow of 3 modules, emitter, processor and sink.
+     *
+     * @param inModule The flow requester module instance
+     * @param inEmitterURN the Emitter URN, if null the default value is used
+     * @param inInvokeDefault if the API that defaults append sink flag should be invoked.
+     * @param inAppendSink the value of append sink flag, if inInvokeDefault is false.
+     * @param inDataRequests the data requests, emitter module is automatically prepended to it. @throws Exception if there are errors
+     *
+     * @throws Exception if there's a failure
+     */
+    private void checkDataFlowModule(FlowRequesterModule inModule,
+                                     ModuleURN inEmitterURN,
+                                     boolean inInvokeDefault,
+                                     boolean inAppendSink,
+                                     DataRequest... inDataRequests)
+            throws Exception
+    {
+        checkDataFlowModule(inModule,
+                            inEmitterURN,
+                            inInvokeDefault,
+                            inAppendSink,
+                            DataCoupling.SYNC,
+                            inDataRequests);
+    }
     private ModuleURN verifyFlowSteps(Map<String, Object> inParam,
                                       ModuleURN inEmitterURN,
                                       ModuleURN inProcModuleURN,
                                       DataFlowInfo inFlowInfo,
                                       boolean inEmitStop,
-                                      boolean inReceiveStop) {
+                                      boolean inReceiveStop,
+                                      DataCoupling inDataCoupling)
+    {
         assertFlowStep(inFlowInfo.getFlowSteps()[0],
-                EmitterModuleFactory.INSTANCE_URN,
-                true,
-                NUM_TIMES + 1 + (inReceiveStop? 1:0),
-                NUM_TIMES + (inEmitStop? 1:0),
-                inEmitStop
-                        ? TestMessages.STOP_DATA_FLOW.getText()
-                        : TestMessages.EMIT_DATA_ERROR.getText(),
-                false,
-                0,
-                0,
-                null,
-                inEmitterURN,
-                inParam.toString());
+                       EmitterModuleFactory.INSTANCE_URN,
+                       true,
+                       NUM_TIMES + 1 + (inReceiveStop? 1:0),
+                       NUM_TIMES + (inEmitStop? 1:0),
+                       inEmitStop ? TestMessages.STOP_DATA_FLOW.getText() : TestMessages.EMIT_DATA_ERROR.getText(),
+                       false,
+                       0,
+                       0,
+                       null,
+                       inEmitterURN,
+                       inDataCoupling,
+                       inParam.toString());
         assertFlowStep(inFlowInfo.getFlowSteps()[1],
-                // The actual URN may be different from the
-                // supplied one, if the supplied one was
-                // abbreviated, do not check
-                null,
-                true,
-                NUM_TIMES / 2 + 1,
-                0,
-                null,
-                true,
-                NUM_TIMES + 1 + (inReceiveStop? 1: 0),
-                NUM_TIMES / 2 + (inReceiveStop? 1: 0),
-                inReceiveStop
-                        ? TestMessages.STOP_DATA_FLOW.getText()
-                        : TestMessages.BAD_DATA.getText(),
-                inProcModuleURN,
-                String.class.getName());
+                       // The actual URN may be different from the
+                       // supplied one, if the supplied one was
+                       // abbreviated, do not check
+                       null,
+                       true,
+                       NUM_TIMES / 2 + 1,
+                       0,
+                       null,
+                       true,
+                       NUM_TIMES + 1 + (inReceiveStop? 1: 0),
+                       NUM_TIMES / 2 + (inReceiveStop? 1: 0),
+                       inReceiveStop ? TestMessages.STOP_DATA_FLOW.getText() : TestMessages.BAD_DATA.getText(),
+                       inProcModuleURN,
+                       inDataCoupling,
+                       String.class.getName());
         ModuleURN actualProcURN = inFlowInfo.getFlowSteps()[1].getModuleURN();
         assertFlowStep(inFlowInfo.getFlowSteps()[2],
-                SinkModuleFactory.INSTANCE_URN,
-                false,
-                0,
-                0,
-                null,
-                true,
-                NUM_TIMES / 2 + 1,
-                0,
-                null,
-                //Requested URN may be an abbreviated one
-                //skip the check
-                null,
-                null);
+                       SinkModuleFactory.INSTANCE_URN,
+                       false,
+                       0,
+                       0,
+                       null,
+                       true,
+                       NUM_TIMES / 2 + 1,
+                       0,
+                       null,
+                       //Requested URN may be an abbreviated one
+                       //skip the check
+                       null,
+                       DataCoupling.SYNC,
+                       null);
         return actualProcURN;
+    }
+    private ModuleURN verifyFlowSteps(Map<String, Object> inParam,
+                                      ModuleURN inEmitterURN,
+                                      ModuleURN inProcModuleURN,
+                                      DataFlowInfo inFlowInfo,
+                                      boolean inEmitStop,
+                                      boolean inReceiveStop)
+    {
+        return verifyFlowSteps(inParam,
+                               inEmitterURN,
+                               inProcModuleURN,
+                               inFlowInfo,
+                               inEmitStop,
+                               inReceiveStop,
+                               DataCoupling.SYNC);
     }
     private static ModuleManager sManager;
     private static final int NUM_TIMES = 6;

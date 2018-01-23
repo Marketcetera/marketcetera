@@ -210,6 +210,22 @@ public class DividendEventImpl
         return dividend.getType();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#getRequestId()
+     */
+    @Override
+    public long getRequestId()
+    {
+        return dividend.getRequestId();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#setRequestId(long)
+     */
+    @Override
+    public void setRequestId(long inRequestId)
+    {
+        dividend.setRequestId(inRequestId);
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override

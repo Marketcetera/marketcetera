@@ -1,6 +1,6 @@
 package org.marketcetera.client;
 
-import org.marketcetera.client.jms.OrderEnvelope;
+import org.marketcetera.client.jms.DataEnvelope;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.module.*;
@@ -173,25 +173,25 @@ public class ClientModuleTestBase extends ModuleTestBase {
             getSessionId();
         assertEquals(4, sServer.getHandler().numReceived());
 
-        OrderEnvelope e=(OrderEnvelope)sServer.getHandler().removeReceived();
+        DataEnvelope e=(DataEnvelope)sServer.getHandler().removeReceived();
         assertEquals(id, e.getSessionId());
         Order order = (Order) e.getOrder();
         assert(order instanceof OrderSingle);
         assertOrderSingleEquals((OrderSingle)orders[0], (OrderSingle) order);
 
-        e=(OrderEnvelope)sServer.getHandler().removeReceived();
+        e=(DataEnvelope)sServer.getHandler().removeReceived();
         assertEquals(id, e.getSessionId());
         order = (Order) e.getOrder();
         assert(order instanceof OrderReplace);
         assertOrderReplaceEquals((OrderReplace)orders[1], (OrderReplace) order);
 
-        e=(OrderEnvelope)sServer.getHandler().removeReceived();
+        e=(DataEnvelope)sServer.getHandler().removeReceived();
         assertEquals(id, e.getSessionId());
         order = (Order) e.getOrder();
         assert(order instanceof OrderCancel);
         assertOrderCancelEquals((OrderCancel)orders[2], (OrderCancel) order);
 
-        e=(OrderEnvelope)sServer.getHandler().removeReceived();
+        e=(DataEnvelope)sServer.getHandler().removeReceived();
         assertEquals(id, e.getSessionId());
         order = (Order) e.getOrder();
         assert(order instanceof FIXOrder);
