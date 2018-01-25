@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Deque;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.module.DataFlowID;
@@ -36,6 +37,7 @@ import quickfix.Message;
  * @version $Id$
  * @since $Release$
  */
+@Ignore
 public class TradeMessageConverterModuleTest
         extends IntegrationTestBase
 {

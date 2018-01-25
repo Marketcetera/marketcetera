@@ -295,7 +295,7 @@ public class IntegrationTestBase
             {
                 return inReceivedData.size() >= inCount;
             }}
-        );
+        ,10);
     }
     /**
      * Build a send data request for the acceptor module.
