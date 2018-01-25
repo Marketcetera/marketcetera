@@ -1,6 +1,7 @@
 package org.marketcetera.rpc.server;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -9,6 +10,11 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.rpc.Messages;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.ws.stateful.PortDescriptor;
+import org.marketcetera.util.ws.stateful.UsesPort;
+
+import com.google.common.collect.Lists;
 
 import io.grpc.BindableService;
 import io.grpc.Server;
@@ -24,7 +30,16 @@ import io.grpc.ServerBuilder;
  * @since $Release$
  */
 public class RpcServer
+        implements UsesPort
 {
+    /* (non-Javadoc)
+     * @see org.marketcetera.util.ws.stateful.UsesPort#getPortDescriptors()
+     */
+    @Override
+    public Collection<PortDescriptor> getPortDescriptors()
+    {
+        return ports;
+    }
     /**
      * Validate and start the server.
      *
@@ -46,6 +61,8 @@ public class RpcServer
         }
         server = serverBuilder.build();
         server.start();
+        ports.add(new PortDescriptor(port,
+                "RPC Service"));
         alive.set(true);
     }
     /**
@@ -60,7 +77,8 @@ public class RpcServer
                 try {
                     server.shutdownNow();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    SLF4JLoggerProxy.warn(this,
+                                          e);
                 }
                 server = null;
             }
@@ -151,4 +169,8 @@ public class RpcServer
      * collection of services to provide
      */
     private List<BindableService> serverServiceDefinitions = new ArrayList<>();
+    /**
+     * indicates ports in use
+     */
+    private final Collection<PortDescriptor> ports = Lists.newArrayList();
 }

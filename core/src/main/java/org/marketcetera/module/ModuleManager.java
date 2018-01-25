@@ -39,6 +39,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -1285,6 +1286,19 @@ public final class ModuleManager
                     SLF4JLoggerProxy.debug(this,
                                            "Autowiring {} complete",
                                            inModule);
+                    if(beanFactory instanceof ConfigurableListableBeanFactory) {
+                        String safeBeanName = inModule.getURN().getValue().replaceAll(":","_");
+                        SLF4JLoggerProxy.debug(this,
+                                               "Registering {} as {}",
+                                               inModule,
+                                               safeBeanName);
+                        ((ConfigurableListableBeanFactory)beanFactory).registerSingleton(safeBeanName,
+                                                                                         inModule);
+                    } else {
+                        SLF4JLoggerProxy.warn(this,
+                                              "Unable to register bean {}",
+                                              inModule);
+                    }
                 } catch (RuntimeException e) {
                     Messages.CANNOT_AUTOWIRE_MODULE.warn(this,
                                                          e,

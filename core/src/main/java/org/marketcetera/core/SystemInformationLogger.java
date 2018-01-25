@@ -14,12 +14,13 @@ import org.marketcetera.util.ws.stateful.PortDescriptor;
 import org.marketcetera.util.ws.stateful.UsesPort;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
+import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
-import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
 
@@ -32,6 +33,7 @@ import com.google.common.collect.Sets;
  * @version $Id$
  * @since $Release$
  */
+@Component
 public class SystemInformationLogger
         implements ApplicationContextAware
 {
@@ -148,7 +150,7 @@ public class SystemInformationLogger
                               table.render());
     }
     /**
-     * 
+     * describes the current port users
      */
     private final SortedSet<PortDescriptor> portUsers = Sets.newTreeSet();
     /**

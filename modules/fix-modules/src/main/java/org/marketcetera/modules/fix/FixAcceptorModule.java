@@ -6,6 +6,8 @@ import org.marketcetera.brokers.Broker;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.util.ws.stateful.PortDescriptor;
+import org.marketcetera.util.ws.stateful.UsesPort;
 
 import com.google.common.collect.Lists;
 
@@ -26,7 +28,16 @@ import quickfix.mina.SessionConnector;
  */
 public class FixAcceptorModule
         extends AbstractFixModule
+        implements UsesPort
 {
+    /* (non-Javadoc)
+     * @see org.marketcetera.util.ws.stateful.UsesPort#getPortDescriptors()
+     */
+    @Override
+    public Collection<PortDescriptor> getPortDescriptors()
+    {
+        return ports;
+    }
     /**
      * Create a new FixAcceptor instance.
      *
@@ -46,6 +57,8 @@ public class FixAcceptorModule
                                             SessionSettings inSessionSettings)
             throws ConfigError
     {
+        ports.add(new PortDescriptor(inFixSettingsProvider.getAcceptorPort(),
+                                     "FIX Acceptor Service"));
         SocketAcceptor socketAcceptor = new SocketAcceptor(inApplication,
                                                            inFixSettingsProvider.getMessageStoreFactory(inSessionSettings),
                                                            inSessionSettings,
@@ -71,4 +84,8 @@ public class FixAcceptorModule
      * static reference to this singleton object
      */
     static FixAcceptorModule instance;
+    /**
+     * indicates ports in use
+     */
+    private final Collection<PortDescriptor> ports = Lists.newArrayList();
 }
