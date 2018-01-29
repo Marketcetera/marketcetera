@@ -1078,6 +1078,7 @@
     <module>util</module>
     <module>util-test</module>
     <module>tools</module>
+    <module>webui</module>
   </modules>
   <repositories>
     <repository>
