@@ -14,26 +14,20 @@
   <packaging>pom</packaging>
   <name>Web UI Parent</name>
   <properties>
-    <mvn.vaadin.version>7.7.13</mvn.vaadin.version>
+    <mvn.vaadin.version>8.3.0</mvn.vaadin.version>
+    <vaadin.plugin.version>8.3.0</vaadin.plugin.version>
+    <jetty.plugin.version>9.3.9.v20160517</jetty.plugin.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <!-- If there are no local customizations, this can also be "fetch" or "cdn" -->
+    <vaadin.widgetset.mode>local</vaadin.widgetset.mode>
   </properties>
   <modules>
-    <module>webui-admin</module>
-    <module>webui-core</module>
     <module>webui-package</module>
   </modules>
   <dependencyManagement>
     <dependencies>
-      <!-- local compile -->
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-admin</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
       <!-- vaadin compile -->
       <dependency>
         <groupId>com.vaadin</groupId>
@@ -43,14 +37,14 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>org.vaadin.crudui</groupId>
-        <artifactId>crudui</artifactId>
-        <version>1.6.0</version>
+	<groupId>com.vaadin</groupId>
+	<artifactId>vaadin-server</artifactId>
+        <version>${mvn.vaadin.version}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-spring-boot-starter</artifactId>
-        <version>1.1.1</version>
+        <version>3.0.0</version>
         <exclusions>
           <exclusion>
             <groupId>ch.qos.logback</groupId>
@@ -59,16 +53,23 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.vaadin.addons</groupId>
-        <artifactId>wizards-for-vaadin</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-      <dependency>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-push</artifactId>
         <version>${mvn.vaadin.version}</version>
         <scope>runtime</scope>
       </dependency>
+      <dependency>
+	<groupId>javax.servlet</groupId>
+	<artifactId>javax.servlet-api</artifactId>
+	<version>3.0.1</version>
+	<scope>provided</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
+  <repositories>
+    <repository>
+      <id>vaadin-addons</id>
+      <url>http://maven.vaadin.com/vaadin-addons</url>
+    </repository>
+  </repositories>
 </project>

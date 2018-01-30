@@ -35,7 +35,7 @@
     <mvn.javaee.version>8</mvn.javaee.version>
     <mvn.cxf.version>3.1.11</mvn.cxf.version>
     <mvn.log4j.version>2.7</mvn.log4j.version>
-    <mvn.spring.boot.version>1.5.6.RELEASE</mvn.spring.boot.version>
+    <mvn.spring.boot.version>1.5.9.RELEASE</mvn.spring.boot.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
   </properties>
@@ -620,28 +620,28 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-rpc-server</artifactId>
         <version>4.0.0-SNAPSHOT</version>
-	<type>test-jar</type>
-	<scope>test</scope>
+        <type>test-jar</type>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-rpc-client</artifactId>
-	<type>test-jar</type>
-	<scope>test</scope>
+        <type>test-jar</type>
+        <scope>test</scope>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-server</artifactId>
-	<type>test-jar</type>
-	<scope>test</scope>
+        <type>test-jar</type>
+        <scope>test</scope>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dataflow-rpc-client</artifactId>
-	<type>test-jar</type>
-	<scope>test</scope>
+        <type>test-jar</type>
+        <scope>test</scope>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>      
       <dependency>
