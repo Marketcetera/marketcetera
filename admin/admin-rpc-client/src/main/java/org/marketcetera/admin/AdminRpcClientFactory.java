@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since $Release$
  */
 public class AdminRpcClientFactory
-        implements RpcClientFactory<AdminRpcClientParameters,AdminRpcClient>
+        implements RpcClientFactory<AdminRpcClientParameters,AdminRpcClient>,AdminClientFactory<AdminRpcClientParameters>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.RpcClientFactory#create(org.marketcetera.rpc.client.RpcClientParameters)
