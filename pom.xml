@@ -33,7 +33,7 @@
   <properties>
     <mvn.javase.version>8</mvn.javase.version>
     <mvn.javaee.version>8</mvn.javaee.version>
-    <mvn.cxf.version>3.1.11</mvn.cxf.version>
+    <mvn.cxf.version>3.2.1</mvn.cxf.version>
     <mvn.log4j.version>2.7</mvn.log4j.version>
     <mvn.spring.boot.version>1.5.9.RELEASE</mvn.spring.boot.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
@@ -545,6 +545,31 @@
         <version>${mvn.cxf.version}</version>
         <scope>runtime</scope>
         <exclusions>
+	  <!-- there's a bug in jetty 9.4.7 that causes "locker not reentrant" in web client/server calls -->
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-io</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-security</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-continuation</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-http</artifactId>
+          </exclusion>
           <!-- Exclude slf4j-jdk14, let application choose slf4j binding. -->
           <exclusion>
             <groupId>org.slf4j</groupId>
@@ -557,6 +582,46 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <!-- these jetty dependencies are transitively included from cxf-rt-transports-http, but the included version, 9.4.7, is buggy -->
+      <!-- we include the specific dependencies because we're manually overriding the version to 9.4.8 -->
+      <!-- these can be removed when the transitive dependencies are changed to a fixed jetty version in cxf -->
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
+        <version>9.4.8.v20171121</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-util</artifactId>
+        <version>9.4.8.v20171121</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-io</artifactId>
+        <version>9.4.8.v20171121</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-security</artifactId>
+        <version>9.4.8.v20171121</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-continuation</artifactId>
+        <version>9.4.8.v20171121</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-http</artifactId>
+        <version>9.4.8.v20171121</version>
+        <scope>runtime</scope>
+      </dependency>
+      <!-- end jetty dependencies -->
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
         <artifactId>geronimo-jta_1.1_spec</artifactId>

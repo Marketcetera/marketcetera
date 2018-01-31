@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-      <groupId>org.marketcetera</groupId>
-      <artifactId>public-parent</artifactId>
-      <version>4.0.0-SNAPSHOT</version>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>public-parent</artifactId>
+    <version>4.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>util</artifactId>
   <packaging>jar</packaging>
@@ -25,6 +25,34 @@
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http</artifactId>
     </dependency>
+    <!-- these jetty dependencies are transitively included from cxf-rt-transports-http, but the included version, 9.4.7, is buggy -->
+    <!-- we include the specific dependencies because we're manually overriding the version to 9.4.8 -->
+    <!-- these can be removed when the transitive dependencies are changed to a fixed jetty version in cxf -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-continuation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-http</artifactId>
+    </dependency>
+    <!-- end jetty dependencies -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -177,12 +205,12 @@
             <configuration>
               <mainClass>org.marketcetera.util.ws.sample.SampleClient</mainClass>
               <!--
-                - -Dexec.args="-user user -password password -argument World"
-                - Try 'badPassword' for password.
-                - Try 'World', 'I18NException', 'AssertionError',
-                -  'IllegalArgumentException' for argument.
-                - Try non-default locale '-language fr -country CA'.
-                -->
+                  - -Dexec.args="-user user -password password -argument World"
+                  - Try 'badPassword' for password.
+                  - Try 'World', 'I18NException', 'AssertionError',
+                  -  'IllegalArgumentException' for argument.
+                  - Try non-default locale '-language fr -country CA'.
+              -->
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>

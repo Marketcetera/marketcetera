@@ -1288,6 +1288,7 @@ public final class ModuleManager
                                            inModule);
                     if(beanFactory instanceof ConfigurableListableBeanFactory) {
                         String safeBeanName = inModule.getURN().getValue().replaceAll(":","_");
+                        safeBeanName += String.valueOf(System.nanoTime());
                         SLF4JLoggerProxy.debug(this,
                                                "Registering {} as {}",
                                                inModule,
