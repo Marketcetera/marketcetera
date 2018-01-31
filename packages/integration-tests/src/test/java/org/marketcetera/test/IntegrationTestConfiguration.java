@@ -532,12 +532,12 @@ public class IntegrationTestConfiguration
     /**
      * RPC hostname
      */
-    @Value("${metc.rpc.hostname}")
+    @Value("${metc.rpc.hostname:127.0.0.1}")
     private String rpcHostname = "127.0.0.1";
     /**
      * RPC port
      */
-    @Value("${metc.rpc.port}")
+    @Value("${metc.rpc.port:8999}")
     private int rpcPort = 8999;
     /**
      * session life value in millis

@@ -17,15 +17,27 @@
     <!-- local compile -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>admin-api</artifactId>
-    </dependency>    
+      <artifactId>fix-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>fix-api</artifactId>
-    </dependency>    
+      <artifactId>admin-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>admin-rpc-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-rpc-client</artifactId>
     </dependency>
     <!-- other runtime -->
     <dependency>

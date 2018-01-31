@@ -1434,12 +1434,12 @@ public class IntegrationTestBase
     /**
      * RPC hostname
      */
-    @Value("${metc.rpc.hostname}")
+    @Value("${metc.rpc.hostname:127.0.0.1}")
     protected String rpcHostname = "127.0.0.1";
     /**
      * RPC port
      */
-    @Value("${metc.rpc.port}")
+    @Value("${metc.rpc.port:18999}")
     protected int rpcPort = 18999;
     /**
      * provides access to admin services

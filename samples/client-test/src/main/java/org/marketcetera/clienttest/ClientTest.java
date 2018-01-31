@@ -32,8 +32,8 @@ import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradeClient;
-import org.marketcetera.trading.rpc.TradingRpcClientFactory;
-import org.marketcetera.trading.rpc.TradingRpcClientParametersImpl;
+import org.marketcetera.trading.rpc.TradeRpcClientFactory;
+import org.marketcetera.trading.rpc.TradeRpcClientParametersImpl;
 import org.marketcetera.trading.rpc.TradeRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +93,7 @@ public class ClientTest
             TradeRpcUtil.setOrderSummaryFactory(orderSummaryFactory);
             TradeRpcUtil.setUserFactory(userFactory);
             TradeRpcUtil.setReportFactory(reportFactory);
-            TradingRpcClientParametersImpl params = new TradingRpcClientParametersImpl();
+            TradeRpcClientParametersImpl params = new TradeRpcClientParametersImpl();
             params.setHostname(hostname);
             params.setPort(port);
             params.setUsername(username);
@@ -232,9 +232,9 @@ public class ClientTest
      * @return a <code>TradingRpcClientFactory</code> value
      */
     @Bean
-    public TradingRpcClientFactory getTradingClientFactory()
+    public TradeRpcClientFactory getTradingClientFactory()
     {
-        TradingRpcClientFactory tradingClientFactory = new TradingRpcClientFactory();
+        TradeRpcClientFactory tradingClientFactory = new TradeRpcClientFactory();
         return tradingClientFactory;
     }
     /**
@@ -324,7 +324,7 @@ public class ClientTest
      * creates {@link TradeClient} objects
      */
     @Autowired
-    private TradingRpcClientFactory tradeClientFactory;
+    private TradeRpcClientFactory tradeClientFactory;
     /**
      * creates {@link MutableOrderSummary} objects
      */

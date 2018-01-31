@@ -12,7 +12,7 @@ import org.marketcetera.trade.client.TradeClientParameters;
  * @version $Id$
  * @since $Release$
  */
-public interface TradingRpcClientParameters
+public interface TradeRpcClientParameters
         extends TradeClientParameters,RpcClientParameters
 {
 }

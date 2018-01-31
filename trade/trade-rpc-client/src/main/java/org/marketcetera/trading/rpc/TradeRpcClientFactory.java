@@ -12,14 +12,14 @@ import org.marketcetera.trade.client.TradeClientFactory;
  * @version $Id$
  * @since $Release$
  */
-public class TradingRpcClientFactory
-        implements TradeClientFactory<TradingRpcClientParameters>
+public class TradeRpcClientFactory
+        implements TradeClientFactory<TradeRpcClientParameters>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.RpcClientFactory#create(org.marketcetera.rpc.client.RpcClientParameters)
      */
     @Override
-    public TradeRpcClient create(TradingRpcClientParameters inParameters)
+    public TradeRpcClient create(TradeRpcClientParameters inParameters)
     {
         return new TradeRpcClient(inParameters);
     }

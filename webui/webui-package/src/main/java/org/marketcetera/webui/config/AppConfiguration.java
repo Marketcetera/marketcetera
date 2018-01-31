@@ -11,7 +11,16 @@ import org.marketcetera.admin.impl.SimpleRoleFactory;
 import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
 import org.marketcetera.core.ContextClassAggregator;
+import org.marketcetera.fix.FixSessionFactory;
+import org.marketcetera.fix.impl.SimpleFixSessionFactory;
+import org.marketcetera.trade.MutableOrderSummaryFactory;
+import org.marketcetera.trade.MutableReportFactory;
+import org.marketcetera.trade.SimpleOrderSummaryFactory;
+import org.marketcetera.trade.SimpleReportFactory;
+import org.marketcetera.trade.client.TradeClientFactory;
+import org.marketcetera.trading.rpc.TradeRpcClientFactory;
 import org.marketcetera.util.ws.ContextClassProvider;
+import org.marketcetera.webui.service.TradeClientService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -42,6 +51,57 @@ public class AppConfiguration
     public static AdminClientFactory<?> getAdminClientFactory()
     {
         return (AdminClientFactory<?>)new AdminRpcClientFactory();
+    }
+    /**
+     * Get the trade client factory value.
+     *
+     * @return a <code>TradeClientFactory</code> value
+     */
+    @Bean
+    public static TradeClientFactory<?> getTradeClientFactory()
+    {
+        return (TradeClientFactory<?>)new TradeRpcClientFactory();
+    }
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    @Bean
+    public static TradeClientService getTradeClientService()
+    {
+        return new TradeClientService();
+    }
+    /**
+     * Get the mutable order summary factory value.
+     *
+     * @return a <code>MutableOrderSummaryFactory</code> value
+     */
+    @Bean
+    public MutableOrderSummaryFactory getMutableOrderSummaryFactory()
+    {
+        return new SimpleOrderSummaryFactory();
+    }
+    /**
+     * Get the FIX session factory value.
+     *
+     * @return a <code>FixSessionFactory</code> value
+     */
+    @Bean
+    public FixSessionFactory getFixSessionFactory()
+    {
+        return new SimpleFixSessionFactory();
+    }
+    /**
+     * Get the report factory value.
+     *
+     * @return a <code>MutableReportFactory</code> value
+     */
+    @Bean
+    public MutableReportFactory getReportFactory()
+    {
+        return new SimpleReportFactory();
     }
 //    /**
 //     * Get the SA client factory value.

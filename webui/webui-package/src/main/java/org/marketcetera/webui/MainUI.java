@@ -1,6 +1,14 @@
 package org.marketcetera.webui;
 
+import org.marketcetera.admin.User;
+import org.marketcetera.admin.UserFactory;
 import org.marketcetera.core.CloseableLock;
+import org.marketcetera.fix.FixSessionFactory;
+import org.marketcetera.trade.MutableOrderSummary;
+import org.marketcetera.trade.MutableOrderSummaryFactory;
+import org.marketcetera.trade.MutableReport;
+import org.marketcetera.trade.MutableReportFactory;
+import org.marketcetera.trading.rpc.TradeRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.webui.view.ApplicationMenu;
 import org.marketcetera.webui.view.LoginView;
@@ -16,7 +24,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -46,10 +53,13 @@ public class MainUI
    @Override
    protected void init(VaadinRequest inRequest)
    {
+       TradeRpcUtil.setFixSessionFactory(fixSessionFactory);
+       TradeRpcUtil.setOrderSummaryFactory(orderSummaryFactory);
+       TradeRpcUtil.setUserFactory(userFactory);
+       TradeRpcUtil.setReportFactory(reportFactory);
        //           setContent(new Label(myService.sayHi()));
-       final VerticalLayout headerLayout = new VerticalLayout(new Label("HEADER"));
-       final VerticalLayout footerLayout = new VerticalLayout(new Label("FOOTER"));
-
+       final VerticalLayout headerLayout = new VerticalLayout();
+       final VerticalLayout footerLayout = new VerticalLayout();
        final VerticalLayout contentLayout = new VerticalLayout();
        // XXX: place the center layout into a panel, which allows scrollbars
        final Panel contentPanel = new Panel(contentLayout);
@@ -111,5 +121,25 @@ public class MainUI
     */
    @Autowired
    private SpringViewProvider viewProvider;
+   /**
+    * creates {@link MutableOrderSummary} objects
+    */
+   @Autowired
+   private MutableOrderSummaryFactory orderSummaryFactory;
+   /**
+    * creates {@link FixSessionFactory} objects
+    */
+   @Autowired
+   private FixSessionFactory fixSessionFactory;
+   /**
+    * creates {@link User} objects
+    */
+   @Autowired
+   private UserFactory userFactory;
+   /**
+    * creates {@link MutableReport} objects
+    */
+   @Autowired
+   private MutableReportFactory reportFactory;
    private static final long serialVersionUID = 5112718563577745283L;
 }

@@ -47,6 +47,7 @@ import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.Authenticator;
+import org.marketcetera.util.ws.stateful.PortUserProxy;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -375,6 +376,20 @@ public class ServerApplication
         return new UserAttributeServiceImpl();
     }
     /**
+     * 
+     *
+     *
+     * @return
+     */
+    @Bean
+    public PortUserProxy getWebServerPortUserProxy()
+    {
+        PortUserProxy proxy = new PortUserProxy();
+        proxy.setDescription("Web Service");
+        proxy.setPort(webServerPort);
+        return proxy;
+    }
+    /**
      * provides data flows
      */
     @Autowired(required=false)
@@ -382,21 +397,26 @@ public class ServerApplication
     /**
      * message owner value
      */
-    @Value("${metc.default.message.owner}")
-    private String defaultMessageOwner = "trader";
+    @Value("${metc.default.message.owner:trader}")
+    private String defaultMessageOwner;
     /**
      * session life value in millis
      */
-    @Value("${metc.session.life.mills}")
-    private long sessionLife = SessionManager.INFINITE_SESSION_LIFESPAN;
+    @Value("${metc.session.life.mills:-1}")
+    private long sessionLife;
     /**
      * RPC hostname
      */
-    @Value("${metc.rpc.hostname}")
-    private String rpcHostname = "127.0.0.1";
+    @Value("${metc.rpc.hostname:127.0.0.1}")
+    private String rpcHostname;
     /**
      * RPC port
      */
-    @Value("${metc.rpc.port}")
-    private int rpcPort = 8999;
+    @Value("${metc.rpc.port:8998}")
+    private int rpcPort;
+    /**
+     * web services port
+     */
+    @Value("${server.port:8999}")
+    private int webServerPort;
 }

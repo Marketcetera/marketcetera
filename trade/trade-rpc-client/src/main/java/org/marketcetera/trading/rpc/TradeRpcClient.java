@@ -73,7 +73,7 @@ import io.grpc.Channel;
  * @since $Release$
  */
 public class TradeRpcClient
-        extends AbstractRpcClient<TradingRpcServiceBlockingStub,TradingRpcServiceStub,TradingRpcClientParameters>
+        extends AbstractRpcClient<TradingRpcServiceBlockingStub,TradingRpcServiceStub,TradeRpcClientParameters>
         implements TradeClient
 {
     /* (non-Javadoc)
@@ -736,7 +736,7 @@ public class TradeRpcClient
      *
      * @param inParameters a <code>TradingRpcClientParameters</code> value
      */
-    TradeRpcClient(TradingRpcClientParameters inParameters)
+    TradeRpcClient(TradeRpcClientParameters inParameters)
     {
         super(inParameters);
     }

@@ -33,6 +33,7 @@ import com.vaadin.server.VaadinSession;
  * @since $Release$
  */
 public class AdminClientService
+        implements ConnectableService
 {
     /**
      * Get the <code>AdminClientService</code> instance for the current session.
@@ -91,6 +92,17 @@ public class AdminClientService
         adminClient = adminClientFactory.create(params);
         adminClient.start();
         return adminClient.isRunning();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.webui.service.ConnectableService#connect(java.lang.String, java.lang.String, java.lang.String, int)
+     */
+    @Override
+    public boolean connect(String inUsername,
+                           String inPassword,
+                           String inHostname,
+                           int inPort)
+    {
+        throw new UnsupportedOperationException(); // TODO
     }
     /**
      * Create the given user.
