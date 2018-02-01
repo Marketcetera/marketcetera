@@ -111,16 +111,15 @@
               <goal>update-widgetset</goal>
               <goal>compile</goal>
               <!-- Comment out compile-theme goal to use on-the-fly theme compilation -->
-              <goal>compile-theme</goal>
+              <!--goal>compile-theme</goal-->
             </goals>
           </execution>
         </executions>
       </plugin>
-      <plugin>
+      <!--plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <version>3.0.0</version>
-        <!-- Clean up also any pre-compiled themes -->
         <configuration>
           <filesets>
             <fileset>
@@ -132,7 +131,7 @@
             </fileset>
           </filesets>
         </configuration>
-      </plugin>
+      </plugin-->
 
       <!-- The Jetty plugin allows us to easily test the development build by
            running jetty:run on the command line. -->

@@ -3,10 +3,13 @@ package org.marketcetera.webui.view;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.marketcetera.algo.BrokerAlgoSpec;
+import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.trade.Instrument;
@@ -28,7 +31,9 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -237,6 +242,35 @@ public class OrderTicketView
         pegToMidpointLocked.setValue(false);
         pegLayout.addComponent(pegToMidpointLocked);
         row2Block1.addComponent(pegLayout);
+        // broker algos
+        VerticalLayout row2Block2Layout = new VerticalLayout();
+        row2.addComponent(row2Block2Layout);
+        // broker algo selector
+        brokerAlgoSelect = new ComboBox<>("Broker Algo");
+        brokerAlgoSelect.setPlaceholder("Select broker algo");
+        brokerAlgoSelect.setItemCaptionGenerator(BrokerAlgoSpec::getName);
+        brokerAlgoSelect.setEmptySelectionAllowed(true);
+        brokerAlgoSelect.setEmptySelectionCaption("Select broker algo");
+        brokerAlgoSelect.setRequiredIndicatorVisible(false);
+        row2Block2Layout.addComponent(brokerAlgoSelect);
+        // broker algo grid
+        brokerAlgoTagGrid = new Grid<>();
+        brokerAlgoTagGrid.addColumn(BrokerAlgoTag::getLabel)
+                .setId("BrokerAlgoTagLabelColumn")
+                .setCaption("Tag");
+        brokerAlgoTagGrid.addColumn(BrokerAlgoTag::getValue)
+                .setId("BrokerAlgoTagValueColumn")
+                .setCaption("Value");
+        brokerAlgoTagGrid.addColumn(algoTag -> algoTag.getTagSpec().getDescription()).setCaption("Description").setId("BrokerAlgoTagDescriptionColumn");
+        row2Block2Layout.addComponent(brokerAlgoTagGrid);
+        // custom fields
+        VerticalLayout row2Block3Layout = new VerticalLayout();
+        row2.addComponent(row2Block3Layout);
+        row2Block3Layout.addComponent(new Label("Custom Fields"));
+        customFieldsGrid = new Grid<>();
+        customFieldsGrid.addColumn(Map.Entry::getKey).setId("Key").setCaption("Key");
+        customFieldsGrid.addColumn(Map.Entry::getValue).setId("Value").setCaption("Value");
+        row2Block3Layout.addComponent(customFieldsGrid);
         // send button
         sendButton = new Button("Send");
         buttonLayout.addComponent(sendButton);
@@ -244,6 +278,7 @@ public class OrderTicketView
         // clear button
         clearButton = new Button("Clear");
         clearButton.setEnabled(true);
+        clearButton.setVisible(true);
         buttonLayout.addComponent(clearButton);
     }
     /* (non-Javadoc)
@@ -320,6 +355,18 @@ public class OrderTicketView
      * 
      */
     private ComboBox<TimeInForce> timeInForceSelect;
+    /**
+     * 
+     */
+    private ComboBox<BrokerAlgoSpec> brokerAlgoSelect;
+    /**
+     * 
+     */
+    private Grid<BrokerAlgoTag> brokerAlgoTagGrid;
+    /**
+     * 
+     */
+    private Grid<Map.Entry<String,String>> customFieldsGrid;
     /**
      * 
      */

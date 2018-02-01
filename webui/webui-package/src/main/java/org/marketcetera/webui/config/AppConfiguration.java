@@ -63,10 +63,9 @@ public class AppConfiguration
         return (TradeClientFactory<?>)new TradeRpcClientFactory();
     }
     /**
-     * 
+     * Get the trade client service value.
      *
-     *
-     * @return
+     * @return a <code>TradeClientService</code> value
      */
     @Bean
     public static TradeClientService getTradeClientService()
