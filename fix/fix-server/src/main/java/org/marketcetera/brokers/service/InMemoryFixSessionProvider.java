@@ -90,7 +90,7 @@ public class InMemoryFixSessionProvider
                                             int inInstance,
                                             int inTotalInstances)
     {
-        List<FixSession> allFixSessions = findFixSessions();
+        List<FixSession> allFixSessions = Lists.newArrayList(findFixSessions());
         Iterator<FixSession> allFixSessionIterator = allFixSessions.iterator();
         while(allFixSessionIterator.hasNext()) {
             FixSession session = allFixSessionIterator.next();
@@ -102,6 +102,8 @@ public class InMemoryFixSessionProvider
                 if(brokerInstanceAffinity != inInstance) {
                     allFixSessionIterator.remove();
                 }
+            } else {
+                allFixSessionIterator.remove();
             }
         }
         return allFixSessions;

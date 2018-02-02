@@ -48,6 +48,9 @@ public class BasicSelector
                     List<FixSession> initiatorSessions = brokerService.findFixSessions(false,
                                                                                        instanceData.getInstanceNumber(),
                                                                                        instanceData.getTotalInstances());
+                    SLF4JLoggerProxy.debug(this,
+                                           "Retrieve sessions to choose from: {}",
+                                           initiatorSessions);
                     if(initiatorSessions != null && !initiatorSessions.isEmpty()) {
                         FixSession chosenSession = initiatorSessions.get(0);
                         defaultBroker = new BrokerID(chosenSession.getBrokerId());

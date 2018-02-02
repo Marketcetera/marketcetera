@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.admin.HasUser;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.AuthorizationService;
@@ -18,6 +17,7 @@ import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.module.HasMutableStatus;
+import org.marketcetera.module.HasStatus;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
@@ -46,6 +46,7 @@ import org.marketcetera.trade.UserID;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.trade.service.TradeService;
+import org.marketcetera.trading.rpc.TradeRpcUtil;
 import org.marketcetera.trading.rpc.TradingRpc;
 import org.marketcetera.trading.rpc.TradingRpc.AddBrokerStatusListenerRequest;
 import org.marketcetera.trading.rpc.TradingRpc.AddReportRequest;
@@ -78,7 +79,6 @@ import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase;
 import org.marketcetera.trading.rpc.TradingTypesRpc;
-import org.marketcetera.trading.rpc.TradeRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,8 +87,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.protobuf.util.Timestamps;
 
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 /* $License$ */
@@ -196,10 +194,8 @@ public class TradeClientRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
         /* (non-Javadoc)
@@ -230,12 +226,18 @@ public class TradeClientRpcService<SessionClazz>
                         SLF4JLoggerProxy.debug(TradeClientRpcService.this,
                                                "Order submission returned {}",
                                                result);
+                        if(result instanceof HasStatus) {
+                            HasStatus hasStatus = (HasStatus)result;
+                            if(hasStatus.getFailed()) {
+                                throw new RuntimeException(hasStatus.getErrorMessage());
+                            }
+                        }
                     } catch (Exception e) {
                         SLF4JLoggerProxy.warn(TradeClientRpcService.this,
                                               e,
                                               "Unable to submit order {}",
                                               rpcOrder);
-                        inResponseObserver.onError(e);
+                        throw e;
                     }
                     responseBuilder.addOrderResponse(orderResponseBuilder.build());
                     orderResponseBuilder.clear();
@@ -244,10 +246,8 @@ public class TradeClientRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
         /* (non-Javadoc)
@@ -271,10 +271,8 @@ public class TradeClientRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
         /* (non-Javadoc)
@@ -299,10 +297,8 @@ public class TradeClientRpcService<SessionClazz>
                     tradeService.addTradeMessageListener((TradeMessageListener)tradeMessageListenerProxy);
                 }
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
         /* (non-Javadoc)
@@ -332,10 +328,8 @@ public class TradeClientRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
         /* (non-Javadoc)
@@ -362,10 +356,8 @@ public class TradeClientRpcService<SessionClazz>
                     brokerService.addBrokerStatusListener((BrokerStatusListener)brokerStatusListenerProxy);
                 }
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
         /* (non-Javadoc)
@@ -395,10 +387,8 @@ public class TradeClientRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
         /* (non-Javadoc)
@@ -427,10 +417,8 @@ public class TradeClientRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
         /* (non-Javadoc)
@@ -458,10 +446,8 @@ public class TradeClientRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
         /* (non-Javadoc)
@@ -503,10 +489,8 @@ public class TradeClientRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
         /* (non-Javadoc)
@@ -575,10 +559,8 @@ public class TradeClientRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
         /* (non-Javadoc)
@@ -648,10 +630,8 @@ public class TradeClientRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
         /* (non-Javadoc)
@@ -694,10 +674,8 @@ public class TradeClientRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
         /* (non-Javadoc)
@@ -729,10 +707,8 @@ public class TradeClientRpcService<SessionClazz>
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
-                if(e instanceof StatusRuntimeException) {
-                    throw (StatusRuntimeException)e;
-                }
-                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                handleError(e,
+                            inResponseObserver);
             }
         }
     }

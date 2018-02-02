@@ -44,10 +44,8 @@
       <AppenderRef ref="STDOUT"/>
     </Root>
     <logger name="org.marketcetera" level="info"/>
-    <logger name="org.marketcetera.dataflow.server.rpc" level="trace"/>
-    <logger name="org.marketcetera.dataflow.modules" level="trace"/>
-    <logger name="org.marketcetera.modules.ticktock" level="trace"/>
-    <logger name="org.marketcetera.module.AbstractDataReemitterModule" level="trace"/>
+    <logger name="org.marketcetera.client.rpc.server" level="trace"/>
+    <logger name="org.marketcetera.trade" level="debug"/>
     <logger name="fix.prettyprint" level="debug"/>
     <logger name="metc.brokers" level="info" additivity="false">
       <AppenderRef ref="BROKERS"/>
