@@ -2,18 +2,12 @@ package org.marketcetera.webui.view;
 
 import javax.annotation.PostConstruct;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.UI;
 
 /* $License$ */
 
@@ -27,7 +21,7 @@ import com.vaadin.ui.UI;
 @SpringView(name=MainView.NAME)
 public class MainView
         extends HorizontalLayout
-        implements View, MenuContent
+        implements View
 {
     /**
      * Validate and start the object.
@@ -46,53 +40,6 @@ public class MainView
     @Override
     public void enter(ViewChangeEvent inEvent)
     {
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getWeight()
-     */
-    @Override
-    public int getWeight()
-    {
-        return 0;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getCategory()
-     */
-    @Override
-    public MenuContent getCategory()
-    {
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuIcon()
-     */
-    @Override
-    public Resource getMenuIcon()
-    {
-        return VaadinIcons.HOME;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getCommand()
-     */
-    @Override
-    public Command getCommand()
-    {
-        return new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuItem inSelectedItem)
-            {
-                UI.getCurrent().getNavigator().navigateTo(NAME);
-            }
-            private static final long serialVersionUID = 4428163823587293946L;
-        };
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
-     */
-    @Override
-    public String getMenuCaption()
-    {
-        return "Home";
     }
     /**
      * main layout component of this view

@@ -12,7 +12,6 @@ import org.apache.commons.lang.StringUtils;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.brokers.BrokerStatus;
-import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Instrument;
@@ -21,7 +20,6 @@ import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.client.SendOrderResponse;
-import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.webui.service.TradeClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +28,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.vaadin.data.HasValue;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
@@ -38,7 +38,6 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -63,7 +62,7 @@ import com.vaadin.ui.Window;
 @SpringView(name=OrderTicketView.NAME)
 public class OrderTicketView
         extends VerticalLayout
-        implements View, MenuContent, BrokerStatusListener
+        implements View,MenuContent
 {
     /* (non-Javadoc)
      * @see org.marketcetera.webui.view.MenuContent#getMenuCaption()
@@ -104,9 +103,6 @@ public class OrderTicketView
     public void attach()
     {
         final Collection<HasValue<?>> clearOnClearComponents = Lists.newArrayList();
-        // TODO move this earlier in the lifecycle?
-        TradeClient tradeClient = tradeClientService.getTradeClient();
-        tradeClient.addBrokerStatusListener(this);
         HorizontalLayout row1 = new HorizontalLayout();
         addComponent(row1);
         HorizontalLayout row2 = new HorizontalLayout();
@@ -116,6 +112,7 @@ public class OrderTicketView
         HorizontalLayout buttonLayout = new HorizontalLayout();
         addComponent(buttonLayout);
         // broker
+        brokerCollection.addAll(tradeClientService.getAllCachedBrokerStatus());
         brokerSelect = new ComboBox<>("Broker",
                                       brokerCollection);
         brokerSelect.setPlaceholder("Auto Select");
@@ -325,6 +322,7 @@ public class OrderTicketView
            // TODO unclick all items in the custom fields grid, but don't empty
         });
         buttonLayout.addComponent(clearButton);
+        eventBus.register(this);
     }
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractComponent#detach()
@@ -332,7 +330,7 @@ public class OrderTicketView
     @Override
     public void detach()
     {
-        tradeClientService.getTradeClient().removeBrokerStatusListener(this);
+        eventBus.unregister(this);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.webui.view.MenuContent#getCommand()
@@ -354,10 +352,12 @@ public class OrderTicketView
             private static final long serialVersionUID = -8828829733639273416L;
         };
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.brokers.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.brokers.BrokerStatus)
+    /**
+     * Receive an updated broker status.
+     *
+     * @param inStatus a <code>BrokerStatus</code> value
      */
-    @Override
+    @Subscribe
     public void receiveBrokerStatus(BrokerStatus inStatus)
     {
         SLF4JLoggerProxy.debug(this,
@@ -473,6 +473,11 @@ public class OrderTicketView
         }
         return true;
     }
+    /**
+     * 
+     */
+    @Autowired
+    private EventBus eventBus;
     /**
      * 
      */

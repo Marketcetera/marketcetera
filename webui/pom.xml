@@ -37,8 +37,8 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-	<groupId>com.vaadin</groupId>
-	<artifactId>vaadin-server</artifactId>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-server</artifactId>
         <version>${mvn.vaadin.version}</version>
       </dependency>
       <dependency>

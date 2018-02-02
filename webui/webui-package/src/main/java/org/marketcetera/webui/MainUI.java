@@ -1,14 +1,6 @@
 package org.marketcetera.webui;
 
-import org.marketcetera.admin.User;
-import org.marketcetera.admin.UserFactory;
 import org.marketcetera.core.CloseableLock;
-import org.marketcetera.fix.FixSessionFactory;
-import org.marketcetera.trade.MutableOrderSummary;
-import org.marketcetera.trade.MutableOrderSummaryFactory;
-import org.marketcetera.trade.MutableReport;
-import org.marketcetera.trade.MutableReportFactory;
-import org.marketcetera.trading.rpc.TradeRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.webui.view.ApplicationMenu;
 import org.marketcetera.webui.view.LoginView;
@@ -37,10 +29,9 @@ public class MainUI
         extends UI
 {
     /**
-     * 
+     * Main entry method.
      *
-     *
-     * @param inArgs
+     * @param inArgs a <code>String[]</code> value
      */
    public static void main(String[] inArgs)
    {
@@ -53,11 +44,6 @@ public class MainUI
    @Override
    protected void init(VaadinRequest inRequest)
    {
-       TradeRpcUtil.setFixSessionFactory(fixSessionFactory);
-       TradeRpcUtil.setOrderSummaryFactory(orderSummaryFactory);
-       TradeRpcUtil.setUserFactory(userFactory);
-       TradeRpcUtil.setReportFactory(reportFactory);
-       //           setContent(new Label(myService.sayHi()));
        final VerticalLayout headerLayout = new VerticalLayout();
        final VerticalLayout footerLayout = new VerticalLayout();
        final VerticalLayout contentLayout = new VerticalLayout();
@@ -121,25 +107,5 @@ public class MainUI
     */
    @Autowired
    private SpringViewProvider viewProvider;
-   /**
-    * creates {@link MutableOrderSummary} objects
-    */
-   @Autowired
-   private MutableOrderSummaryFactory orderSummaryFactory;
-   /**
-    * creates {@link FixSessionFactory} objects
-    */
-   @Autowired
-   private FixSessionFactory fixSessionFactory;
-   /**
-    * creates {@link User} objects
-    */
-   @Autowired
-   private UserFactory userFactory;
-   /**
-    * creates {@link MutableReport} objects
-    */
-   @Autowired
-   private MutableReportFactory reportFactory;
    private static final long serialVersionUID = 5112718563577745283L;
 }
