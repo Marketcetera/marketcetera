@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.algo.BrokerAlgoSpec;
@@ -112,7 +113,7 @@ public class OrderTicketView
         HorizontalLayout buttonLayout = new HorizontalLayout();
         addComponent(buttonLayout);
         // broker
-        brokerCollection.addAll(tradeClientService.getAllCachedBrokerStatus());
+        brokerCollection.addAll(tradeClientService.getAllCachedBrokerStatus().stream().filter(broker->broker.isInitiator()).collect(Collectors.toList()));
         brokerSelect = new ComboBox<>("Broker",
                                       brokerCollection);
         brokerSelect.setPlaceholder("Auto Select");
@@ -360,6 +361,9 @@ public class OrderTicketView
     @Subscribe
     public void receiveBrokerStatus(BrokerStatus inStatus)
     {
+        if(!inStatus.isInitiator()) {
+            return;
+        }
         SLF4JLoggerProxy.debug(this,
                                "{} received {}",
                                this,

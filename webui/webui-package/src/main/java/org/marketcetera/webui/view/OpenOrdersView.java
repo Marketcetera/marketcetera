@@ -1,5 +1,6 @@
 package org.marketcetera.webui.view;
 
+import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,6 +26,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.NumberRenderer;
 
 /* $License$ */
 
@@ -109,18 +111,19 @@ public class OpenOrdersView
         openOrderGrid.setColumnReorderingAllowed(true);
         openOrderGrid.removeAllColumns();
         DateRenderer dateRenderer = new DateRenderer("%1$tY%1$tm%1$td-%1$tT.%1$tL",Locale.ENGLISH);
+        NumberRenderer wholeNumberRenderer = new NumberRenderer(NumberFormat.getIntegerInstance());
         openOrderGrid.addColumn(OrderSummary::getSendingTime,dateRenderer).setId("OpenOrderSendingTime").setCaption("Sending Time");
         openOrderGrid.addColumn(OrderSummary::getOrderId).setId("OpenOrderOrderId").setCaption("ClOrdId");
         openOrderGrid.addColumn(OrderSummary::getOrderStatus).setId("OpenOrderOrderStatus").setCaption("OrdStatus");
         openOrderGrid.addColumn(OrderSummary::getSide).setId("OpenOrderOrderSide").setCaption("Side");
         openOrderGrid.addColumn(OrderSummary::getInstrument).setId("OpenOrderOrderInstrument").setCaption("Symbol");
-        openOrderGrid.addColumn(OrderSummary::getOrderQuantity).setId("OpenOrderOrderQuantity").setCaption("OrderQty");
-        openOrderGrid.addColumn(OrderSummary::getCumulativeQuantity).setId("OpenOrderCumulativeQuantity").setCaption("CumQty");
-        openOrderGrid.addColumn(OrderSummary::getLeavesQuantity).setId("OpenOrderLeavesQuantity").setCaption("LeavesQty");
+        openOrderGrid.addColumn(OrderSummary::getOrderQuantity,wholeNumberRenderer).setId("OpenOrderOrderQuantity").setCaption("OrderQty");
+        openOrderGrid.addColumn(OrderSummary::getCumulativeQuantity,wholeNumberRenderer).setId("OpenOrderCumulativeQuantity").setCaption("CumQty");
+        openOrderGrid.addColumn(OrderSummary::getLeavesQuantity,wholeNumberRenderer).setId("OpenOrderLeavesQuantity").setCaption("LeavesQty");
         openOrderGrid.addColumn(OrderSummary::getOrderPrice).setId("OpenOrderOrderPrice").setCaption("OrderPrice");
         openOrderGrid.addColumn(OrderSummary::getAveragePrice).setId("OpenOrderAveragePrice").setCaption("AvgPx");
         openOrderGrid.addColumn(OrderSummary::getAccount).setId("OpenOrderAccount").setCaption("Account");
-        openOrderGrid.addColumn(OrderSummary::getLastQuantity).setId("OpenOrderLastQuantity").setCaption("LastQty");
+        openOrderGrid.addColumn(OrderSummary::getLastQuantity,wholeNumberRenderer).setId("OpenOrderLastQuantity").setCaption("LastQty");
         openOrderGrid.addColumn(OrderSummary::getLastPrice).setId("OpenOrderLastPrice").setCaption("LastPx");
         openOrderGrid.addColumn(OrderSummary::getBrokerId).setId("OpenOrderBrokerId").setCaption("BrokerID");
         openOrderGrid.addColumn(OrderSummary::getActor).setId("OpenOrderActor").setCaption("Trader");

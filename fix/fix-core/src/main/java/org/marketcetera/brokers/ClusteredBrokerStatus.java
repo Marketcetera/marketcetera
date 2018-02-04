@@ -22,6 +22,8 @@ import org.marketcetera.trade.BrokerID;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import quickfix.SessionFactory;
+
 /* $License$ */
 
 /**
@@ -60,9 +62,9 @@ public class ClusteredBrokerStatus
         host = inFixSession.getHost();
         port = inFixSession.getPort();
         settings.putAll(inFixSession.getSessionSettings());
+        initiator = SessionFactory.INITIATOR_CONNECTION_TYPE.equals(settings.get(SessionFactory.SETTING_CONNECTION_TYPE));
         // TODO broker algo spec
     }
-    
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.BrokerStatus#getName()
      */
@@ -101,7 +103,6 @@ public class ClusteredBrokerStatus
     @Override
     public Map<String,String> getSettings()
     {
-        
         return settings;
     }
     /**
@@ -120,6 +121,14 @@ public class ClusteredBrokerStatus
     public ClusterData getClusterData()
     {
         return clusterData;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.BrokerStatus#isInitiator()
+     */
+    @Override
+    public boolean isInitiator()
+    {
+        return initiator;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -232,6 +241,7 @@ public class ClusteredBrokerStatus
         name = null;
         loggedOn = false;
         brokerId = null;
+        initiator = false;
     }
     /**
      * status value
@@ -262,6 +272,10 @@ public class ClusteredBrokerStatus
      */
     private final boolean loggedOn;
     /**
+     * initiator value
+     */
+    private final boolean initiator;
+    /**
      * broker algos value
      */
     private final Set<BrokerAlgoSpec> brokerAlgos = Sets.newHashSet();
@@ -269,5 +283,5 @@ public class ClusteredBrokerStatus
      * broker settings value
      */
     private final Map<String,String> settings = Maps.newHashMap();
-    private static final long serialVersionUID = -1837912946225621L;
+    private static final long serialVersionUID = -5372126846303720917L;
 }

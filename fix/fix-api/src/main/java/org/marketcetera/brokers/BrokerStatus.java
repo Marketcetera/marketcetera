@@ -39,6 +39,12 @@ public interface BrokerStatus
      */
     boolean getLoggedOn();
     /**
+     * Indicate if the broker is an initiator.
+     *
+     * @return a <code>boolean</code> value
+     */
+    boolean isInitiator();
+    /**
      * Get the brokerAlgos value.
      *
      * @return a <code>Set&lt;BrokerAlgoSpec&gt;</code> value
