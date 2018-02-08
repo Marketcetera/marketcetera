@@ -535,7 +535,7 @@ public class OrderBook
         /**
          * Update/reset the levels of the book.
          */
-        private void updateLevels()
+        private synchronized void updateLevels()
         {
             if(mBookOrder == null) {
                 return;
