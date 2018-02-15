@@ -81,26 +81,32 @@ public enum Content
     public boolean isRelevantTo(Class<? extends Event> inEventClass)
     {
         switch(this) {
-            case TOP_OF_BOOK :
-                return QuoteEvent.class.isAssignableFrom(inEventClass);
-            case OPEN_BOOK :
-                return QuoteEvent.class.isAssignableFrom(inEventClass);
-            case MARKET_STAT :
-                return MarketstatEvent.class.isAssignableFrom(inEventClass);
-            case TOTAL_VIEW :
-                return QuoteEvent.class.isAssignableFrom(inEventClass);
-            case LEVEL_2 :
+            case AGGREGATED_DEPTH :
                 return QuoteEvent.class.isAssignableFrom(inEventClass);
             case BBO10 :
                 return QuoteEvent.class.isAssignableFrom(inEventClass);
-            case LATEST_TICK :
-                return TradeEvent.class.isAssignableFrom(inEventClass);
             case DIVIDEND :
                 return DividendEvent.class.isAssignableFrom(inEventClass);
             case IMBALANCE :
                 return ImbalanceEvent.class.isAssignableFrom(inEventClass);
+            case LATEST_TICK :
+                return TradeEvent.class.isAssignableFrom(inEventClass);
+            case LEVEL_2 :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
+            case NBBO :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
+            case MARKET_STAT :
+                return MarketstatEvent.class.isAssignableFrom(inEventClass);
+            case OPEN_BOOK :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
+            case TOP_OF_BOOK :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
+            case TOTAL_VIEW :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
+            case UNAGGREGATED_DEPTH :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
             default :
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException(inEventClass.getSimpleName());
         }
     }
     /**
