@@ -745,8 +745,21 @@ public class EventTestBase
      */
     public static TradeEvent generateTradeEvent(Instrument inInstrument)
     {
+        return generateTradeEvent(inInstrument,
+                                  generateExchange());
+    }
+    /**
+     * Generates a <code>TradeEvent</code> with the given value.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inExchange a <code>String</code> value
+     * @return a <code>TradeEvent</code> value
+     */
+    public static TradeEvent generateTradeEvent(Instrument inInstrument,
+                                                String inExchange)
+    {
         return TradeEventBuilder.tradeEvent(inInstrument)
-                .withExchange(generateExchange())
+                .withExchange(inExchange)
                 .withPrice(generateDecimalValue())
                 .withSize(generateDecimalValue())
                 .withTradeDate(generateQuoteDate()).create();
