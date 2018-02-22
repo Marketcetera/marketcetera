@@ -82,7 +82,7 @@ public class MarketDataManagerModule
         try {
             while(subscriber == null && System.currentTimeMillis() < (timestamp+subscriberTimeout)) {
                 synchronized(subscribersByDataFlowId) {
-                    subscribersByDataFlowId.wait();
+                    subscribersByDataFlowId.wait(100);
                 }
             }
             if(subscriber == null) {
