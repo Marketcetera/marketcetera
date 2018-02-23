@@ -84,6 +84,7 @@ public class MarketDataManagerModule
                 synchronized(subscribersByDataFlowId) {
                     subscribersByDataFlowId.wait(100);
                 }
+                subscriber = subscribersByDataFlowId.get(inFlowId);
             }
             if(subscriber == null) {
                 throw new StopDataFlowException(new I18NBoundMessage1P(Messages.NO_SUBSCRIBER,
@@ -462,7 +463,7 @@ public class MarketDataManagerModule
     /**
      * time to wait for a subscriber to become available before timing out
      */
-    private long subscriberTimeout = 500;
+    private long subscriberTimeout = 5000;
     /**
      * holds active subscribers by data flow id
      */
