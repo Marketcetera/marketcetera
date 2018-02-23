@@ -8,6 +8,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -496,7 +497,7 @@ public final class MarketDataView
      */
     public void addSymbol(final Instrument inInstrument)
     {
-        if (mItemMap.containsKey(inInstrument)) {
+        if(mItemMap.containsKey(inInstrument)) {
             PhotonPlugin.getMainConsoleLogger().warn(Messages.DUPLICATE_SYMBOL.getText(inInstrument));
         } else {
             busyRun(new Runnable() {
@@ -588,10 +589,7 @@ public final class MarketDataView
             case EXCHANGE:
                 String exchange1 = item1.getLatestTick().getExchange();
                 String exchange2 = item2.getLatestTick().getExchange();
-                compare = compareNulls(exchange1,exchange2);
-                if (compare == 0) {
-                    compare = exchange1.compareTo(exchange2);
-                }
+                compare = new CompareToBuilder().append(exchange1,exchange2).toComparison();
                 break;
             case LAST_PX:
                 BigDecimal tradePrice1 = item1.getLatestTick().getPrice();
