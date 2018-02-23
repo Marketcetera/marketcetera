@@ -431,7 +431,7 @@ public class MarketDataManagerImpl
     /**
      * time to wait for a subscriber to become available before timing out
      */
-    private long subscriberTimeout = 500;
+    private long subscriberTimeout = 5000;
     /**
      * provides an entry point into the module system
      */

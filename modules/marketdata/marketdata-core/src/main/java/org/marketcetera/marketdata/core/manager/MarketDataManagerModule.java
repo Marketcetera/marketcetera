@@ -79,8 +79,9 @@ public class MarketDataManagerModule
     {
         RequestWrapper subscriber = subscribersByDataFlowId.get(inFlowId);
         long timestamp = System.currentTimeMillis();
+        long timeout = timestamp+subscriberTimeout;
         try {
-            while(subscriber == null && System.currentTimeMillis() < (timestamp+subscriberTimeout)) {
+            while(subscriber == null && System.currentTimeMillis() < timeout) {
                 synchronized(subscribersByDataFlowId) {
                     subscribersByDataFlowId.wait(100);
                 }
