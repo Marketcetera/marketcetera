@@ -201,6 +201,10 @@ public final class MarketDataView
                                                                             listener));
         symbolColumn.setEditingSupport(new SymbolEditingSupport());
         createColumn(table,
+                     FIXFieldLocalizer.getLocalizedFIXFieldName(quickfix.field.LastMkt.class.getSimpleName()),
+                     SWT.LEFT,
+                     listener);
+        createColumn(table,
                      FIXFieldLocalizer.getLocalizedFIXFieldName(LastPx.class.getSimpleName()),
                      SWT.RIGHT,
                      listener);
@@ -262,6 +266,9 @@ public final class MarketDataView
             BeansObservables.observeMap(domain,
                                         MarketDataViewItem.class,
                                         "symbol"), //$NON-NLS-1$
+            createCompositeMap(domain,
+                               "latestTick", //$NON-NLS-1$
+                               MDPackage.Literals.MD_LATEST_TICK__EXCHANGE),
             createCompositeMap(domain,
                                "latestTick", //$NON-NLS-1$
                                MDPackage.Literals.MD_LATEST_TICK__PRICE),
@@ -341,29 +348,34 @@ public final class MarketDataView
                 int col_count = table.getColumnCount();
                 for (int i = 0; i < col_count; i++) {
                     Rectangle rect = item.getBounds(i);
-                    if (rect.contains(pt)) {
+                    if(rect.contains(pt)) {
                         MD_TABLE_COLUMNS enum_col = MD_TABLE_COLUMNS.values()[i];
-                        MarketDataViewItem mdi = (MarketDataViewItem) item
-                                .getData();
+                        MarketDataViewItem mdi = (MarketDataViewItem)item.getData();
                         if (mdi != null && mdi.getTopOfBook() != null)
                             switch (enum_col) {
                             case BID_PX: // hit the bid
-                                newOrder(mdi, Side.Sell, mdi.getTopOfBook()
-                                        .getBidPrice(), mdi.getTopOfBook()
-                                        .getBidSize());
+                                newOrder(mdi,
+                                         Side.Sell,
+                                         mdi.getTopOfBook().getBidPrice(),
+                                         mdi.getTopOfBook().getBidSize());
                                 break;
                             case BID_SZ: // join the bid
-                                newOrder(mdi, Side.Buy, mdi.getTopOfBook()
-                                        .getBidPrice(), null);
+                                newOrder(mdi,
+                                         Side.Buy,
+                                         mdi.getTopOfBook().getBidPrice(),
+                                         null);
                                 break;
                             case OFFER_PX: // lift the offer
-                                newOrder(mdi, Side.Buy, mdi.getTopOfBook()
-                                        .getAskPrice(), mdi.getTopOfBook()
-                                        .getAskSize());
+                                newOrder(mdi,
+                                         Side.Buy,
+                                         mdi.getTopOfBook().getAskPrice(),
+                                         mdi.getTopOfBook().getAskSize());
                                 break;
                             case OFFER_SZ: // join the ask
-                                newOrder(mdi, Side.Sell, mdi.getTopOfBook()
-                                        .getAskPrice(), null);
+                                newOrder(mdi,
+                                         Side.Sell,
+                                         mdi.getTopOfBook().getAskPrice(),
+                                         null);
                                 break;
                            default:
                         	   break;
@@ -373,25 +385,33 @@ public final class MarketDataView
             }
         });
     }
-    private void newOrder(final MarketDataViewItem mdi,
-                          final Side side,
-                          final BigDecimal Px,
-                          final BigDecimal ordSz)
+    /**
+     * Generate a new order with the given attributes.
+     *
+     * @param inMarketDataViewItem a <code>MarketDataViewItem</code> value
+     * @param inSide a <code>Side</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @param inQuantity a <code>BigDecimal</code> value
+     */
+    private void newOrder(final MarketDataViewItem inMarketDataViewItem,
+                          final Side inSide,
+                          final BigDecimal inPrice,
+                          final BigDecimal inQuantity)
     {
         busyRun(new Runnable() {
             public void run() {
-                BigDecimal defaultOrderSize = getDefaultOrderSize(mdi.getInstrument(),
-                                                                  Px);
-                Instrument instrument = mdi.getInstrument();
+                BigDecimal defaultOrderSize = getDefaultOrderSize(inMarketDataViewItem.getInstrument(),
+                                                                  inPrice);
+                Instrument instrument = inMarketDataViewItem.getInstrument();
                 OrderSingle newOrder = Factory.getInstance().createOrderSingle();
                 newOrder.setInstrument(instrument);
                 newOrder.setOrderType(OrderType.Limit);
-                newOrder.setSide(side);
+                newOrder.setSide(inSide);
                 newOrder.setQuantity(defaultOrderSize);
-                if (ordSz != null && ordSz.compareTo(defaultOrderSize) == -1) {
-                    newOrder.setQuantity(ordSz);
+                if (inQuantity != null && inQuantity.compareTo(defaultOrderSize) == -1) {
+                    newOrder.setQuantity(inQuantity);
                 }
-                newOrder.setPrice(Px);
+                newOrder.setPrice(inPrice);
                 newOrder.setTimeInForce(TimeInForce.Day);
                 try {
                     PhotonPlugin.getDefault().showOrderInTicket(newOrder);
@@ -563,6 +583,14 @@ public final class MarketDataView
                 compare = compareNulls(symbol1, symbol2);
                 if (compare == 0) {
                     compare = symbol1.compareTo(symbol2);
+                }
+                break;
+            case EXCHANGE:
+                String exchange1 = item1.getLatestTick().getExchange();
+                String exchange2 = item2.getLatestTick().getExchange();
+                compare = compareNulls(exchange1,exchange2);
+                if (compare == 0) {
+                    compare = exchange1.compareTo(exchange2);
                 }
                 break;
             case LAST_PX:
@@ -993,7 +1021,7 @@ public final class MarketDataView
     private final static String INSTRUMENT_LIST = "Instrument_List"; //$NON-NLS-1$
 
     public static enum MD_TABLE_COLUMNS {
-        MD_SYMBOL, LAST_PX, LAST_SZ, BID_SZ, BID_PX, OFFER_PX, OFFER_SZ, PREV_CLOSE, OPEN_PX, HIGH_PX, LOW_PX, TRD_VOLUME,
+        MD_SYMBOL, EXCHANGE, LAST_PX, LAST_SZ, BID_SZ, BID_PX, OFFER_PX, OFFER_SZ, PREV_CLOSE, OPEN_PX, HIGH_PX, LOW_PX, TRD_VOLUME,
     }
     /**
      * indicates the initial symbol list to use

@@ -25,6 +25,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>
  * The following features are implemented:
  * <ul>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl#getExchange <em>Exchange</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl#getPrice <em>Price</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl#getSize <em>Size</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl#getMultiplier <em>Multiplier</em>}</li>
@@ -39,6 +40,26 @@ public class MDLatestTickImpl
         extends MDItemImpl
         implements MDLatestTick
 {
+    /**
+     * The default value of the '{@link #getExchange() <em>Exchange</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getExchange()
+     * @generated
+     * @ordered
+     */
+    protected static final String EXCHANGE_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getExchange() <em>Exchange</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getExchange()
+     * @generated
+     * @ordered
+     */
+    protected volatile String exchange = EXCHANGE_EDEFAULT;
+
     /**
      * The default value of the '{@link #getPrice() <em>Price</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -118,6 +139,33 @@ public class MDLatestTickImpl
     protected EClass eStaticClass()
     {
         return MDPackage.Literals.MD_LATEST_TICK;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public String getExchange()
+    {
+        return exchange;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setExchange(String newExchange)
+    {
+        String oldExchange = exchange;
+        exchange = newExchange;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_LATEST_TICK__EXCHANGE,
+                                          oldExchange,
+                                          exchange));
     }
 
     /**
@@ -212,6 +260,8 @@ public class MDLatestTickImpl
                        boolean coreType)
     {
         switch (featureID) {
+            case MDPackage.MD_LATEST_TICK__EXCHANGE:
+                return getExchange();
             case MDPackage.MD_LATEST_TICK__PRICE:
                 return getPrice();
             case MDPackage.MD_LATEST_TICK__SIZE:
@@ -234,6 +284,9 @@ public class MDLatestTickImpl
                      Object newValue)
     {
         switch (featureID) {
+            case MDPackage.MD_LATEST_TICK__EXCHANGE:
+                setExchange((String) newValue);
+                return;
             case MDPackage.MD_LATEST_TICK__PRICE:
                 setPrice((BigDecimal) newValue);
                 return;
@@ -257,6 +310,9 @@ public class MDLatestTickImpl
     public void eUnset(int featureID)
     {
         switch (featureID) {
+            case MDPackage.MD_LATEST_TICK__EXCHANGE:
+                setExchange(EXCHANGE_EDEFAULT);
+                return;
             case MDPackage.MD_LATEST_TICK__PRICE:
                 setPrice(PRICE_EDEFAULT);
                 return;
@@ -279,6 +335,8 @@ public class MDLatestTickImpl
     public boolean eIsSet(int featureID)
     {
         switch (featureID) {
+            case MDPackage.MD_LATEST_TICK__EXCHANGE:
+                return EXCHANGE_EDEFAULT == null ? exchange != null : !EXCHANGE_EDEFAULT.equals(exchange);
             case MDPackage.MD_LATEST_TICK__PRICE:
                 return PRICE_EDEFAULT == null ? price != null : !PRICE_EDEFAULT.equals(price);
             case MDPackage.MD_LATEST_TICK__SIZE:
@@ -301,7 +359,9 @@ public class MDLatestTickImpl
             return super.toString();
 
         StringBuffer result = new StringBuffer(super.toString());
-        result.append(" (price: "); //$NON-NLS-1$
+        result.append(" (exchange: "); //$NON-NLS-1$
+        result.append(exchange);
+        result.append(", price: "); //$NON-NLS-1$
         result.append(price);
         result.append(", size: "); //$NON-NLS-1$
         result.append(size);

@@ -17,6 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>
  * The following features are supported:
  * <ul>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.MDLatestTick#getExchange <em>Exchange</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDLatestTick#getPrice <em>Price</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDLatestTick#getSize <em>Size</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDLatestTick#getMultiplier <em>Multiplier</em>}</li>
@@ -32,6 +33,21 @@ import org.marketcetera.util.misc.ClassVersion;
 public interface MDLatestTick
         extends MDItem
 {
+    /**
+     * Returns the value of the '<em><b>Exchange</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Exchange</em>' attribute isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Exchange</em>' attribute.
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDLatestTick_Exchange()
+     * @model suppressedSetVisibility="true"
+     * @generated
+     */
+    String getExchange();
+
     /**
      * Returns the value of the '<em><b>Price</b></em>' attribute.
      * <!-- begin-user-doc -->

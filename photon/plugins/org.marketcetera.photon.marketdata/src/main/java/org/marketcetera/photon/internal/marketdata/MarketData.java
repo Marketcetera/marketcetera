@@ -917,6 +917,7 @@ public class MarketData
                 if(event instanceof TradeEvent) {
                     TradeEvent trade = (TradeEvent)event;
                     inItem.setInstrument(trade.getInstrument());
+                    inItem.setExchange(trade.getExchange());
                     inItem.setPrice(trade.getPrice());
                     inItem.setSize(trade.getSize());
                 }

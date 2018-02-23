@@ -113,13 +113,22 @@ public interface MDPackage
     int MD_LATEST_TICK__INSTRUMENT = MD_ITEM__INSTRUMENT;
 
     /**
+     * The feature id for the '<em><b>Exchange</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int MD_LATEST_TICK__EXCHANGE = MD_ITEM_FEATURE_COUNT + 0;
+
+    /**
      * The feature id for the '<em><b>Price</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int MD_LATEST_TICK__PRICE = MD_ITEM_FEATURE_COUNT + 0;
+    int MD_LATEST_TICK__PRICE = MD_ITEM_FEATURE_COUNT + 1;
 
     /**
      * The feature id for the '<em><b>Size</b></em>' attribute.
@@ -128,7 +137,7 @@ public interface MDPackage
      * @generated
      * @ordered
      */
-    int MD_LATEST_TICK__SIZE = MD_ITEM_FEATURE_COUNT + 1;
+    int MD_LATEST_TICK__SIZE = MD_ITEM_FEATURE_COUNT + 2;
 
     /**
      * The feature id for the '<em><b>Multiplier</b></em>' attribute.
@@ -137,7 +146,7 @@ public interface MDPackage
      * @generated
      * @ordered
      */
-    int MD_LATEST_TICK__MULTIPLIER = MD_ITEM_FEATURE_COUNT + 2;
+    int MD_LATEST_TICK__MULTIPLIER = MD_ITEM_FEATURE_COUNT + 3;
 
     /**
      * The number of structural features of the '<em>Latest Tick</em>' class.
@@ -146,7 +155,7 @@ public interface MDPackage
      * @generated
      * @ordered
      */
-    int MD_LATEST_TICK_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 3;
+    int MD_LATEST_TICK_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 4;
 
     /**
      * The meta object id for the '{@link org.marketcetera.photon.model.marketdata.impl.MDTopOfBookImpl <em>Top Of Book</em>}' class.
@@ -484,6 +493,17 @@ public interface MDPackage
      * @generated
      */
     EClass getMDLatestTick();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDLatestTick#getExchange <em>Exchange</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Exchange</em>'.
+     * @see org.marketcetera.photon.model.marketdata.MDLatestTick#getExchange()
+     * @see #getMDLatestTick()
+     * @generated
+     */
+    EAttribute getMDLatestTick_Exchange();
 
     /**
      * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDLatestTick#getPrice <em>Price</em>}'.
@@ -839,6 +859,14 @@ public interface MDPackage
          * @generated
          */
         EClass MD_LATEST_TICK = eINSTANCE.getMDLatestTick();
+
+        /**
+         * The meta object literal for the '<em><b>Exchange</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute MD_LATEST_TICK__EXCHANGE = eINSTANCE.getMDLatestTick_Exchange();
 
         /**
          * The meta object literal for the '<em><b>Price</b></em>' attribute feature.

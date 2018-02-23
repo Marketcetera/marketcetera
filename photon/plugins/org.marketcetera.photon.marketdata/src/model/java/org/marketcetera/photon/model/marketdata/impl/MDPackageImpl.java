@@ -196,7 +196,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDLatestTick_Price()
+    public EAttribute getMDLatestTick_Exchange()
     {
         return (EAttribute) mdLatestTickEClass.getEStructuralFeatures().get(0);
     }
@@ -206,7 +206,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDLatestTick_Size()
+    public EAttribute getMDLatestTick_Price()
     {
         return (EAttribute) mdLatestTickEClass.getEStructuralFeatures().get(1);
     }
@@ -216,9 +216,19 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDLatestTick_Multiplier()
+    public EAttribute getMDLatestTick_Size()
     {
         return (EAttribute) mdLatestTickEClass.getEStructuralFeatures().get(2);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getMDLatestTick_Multiplier()
+    {
+        return (EAttribute) mdLatestTickEClass.getEStructuralFeatures().get(3);
     }
 
     /**
@@ -492,6 +502,8 @@ public class MDPackageImpl
 
         mdLatestTickEClass = createEClass(MD_LATEST_TICK);
         createEAttribute(mdLatestTickEClass,
+                         MD_LATEST_TICK__EXCHANGE);
+        createEAttribute(mdLatestTickEClass,
                          MD_LATEST_TICK__PRICE);
         createEAttribute(mdLatestTickEClass,
                          MD_LATEST_TICK__SIZE);
@@ -596,6 +608,9 @@ public class MDPackageImpl
         initEClass(mdLatestTickEClass,
                    MDLatestTick.class,
                    "MDLatestTick", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+        initEAttribute(getMDLatestTick_Exchange(),
+                       ecorePackage.getEString(),
+                       "exchange", null, 0, 1, MDLatestTick.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
         initEAttribute(getMDLatestTick_Price(),
                        ecorePackage.getEBigDecimal(),
                        "price", null, 0, 1, MDLatestTick.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
