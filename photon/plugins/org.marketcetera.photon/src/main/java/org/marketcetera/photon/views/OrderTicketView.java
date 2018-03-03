@@ -361,7 +361,8 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                 if(instrument == null) {
                     return false;
                 } else {
-                    topOfBookReference = marketDataManager.getMarketData().getTopOfBook(instrument);
+                    topOfBookReference = marketDataManager.getMarketData().getTopOfBook(instrument,
+                                                                                        null);
                     topOfBook = topOfBookReference.get();
                     // TODO need to hook up some kind of listener here to changes in top of book
                     priceUpdateFuture = priceUpdateService.scheduleAtFixedRate(new Runnable() {

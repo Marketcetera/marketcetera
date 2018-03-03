@@ -313,6 +313,7 @@ public class MarketDataRpcClientServerTest
         Equity equity = new Equity("AAPL");
         Deque<Event> events = serviceAdapter.getSnapshot(equity,
                                                          Content.LATEST_TICK,
+                                                         null,
                                                          null);
         assertTrue(events.isEmpty());
         Deque<Event> eventsToReturn = serviceAdapter.getSnapshotEventsToReturn();
@@ -337,6 +338,7 @@ public class MarketDataRpcClientServerTest
             }
             events = client.getSnapshot(instrument,
                                         Content.LATEST_TICK,
+                                        null,
                                         "provider");
             assertEquals(eventsToReturn.size(),
                          events.size());
@@ -354,6 +356,7 @@ public class MarketDataRpcClientServerTest
         Equity equity = new Equity("AAPL");
         Deque<Event> events = serviceAdapter.getSnapshotPage(equity,
                                                              Content.LATEST_TICK,
+                                                             null,
                                                              null,
                                                              new PageRequest(1,1));
         assertTrue(events.isEmpty());
@@ -379,6 +382,7 @@ public class MarketDataRpcClientServerTest
             }
             events = client.getSnapshotPage(instrument,
                                             Content.LATEST_TICK,
+                                            null,
                                             "provider",
                                             new PageRequest(1,Integer.MAX_VALUE));
             assertEquals(eventsToReturn.size(),

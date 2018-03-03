@@ -74,11 +74,13 @@ public interface MarketDataServiceClient
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
+     * @param inExchange a <code>String</code> value or <code>null</code>
      * @param inProvider a <code>String</code> value or <code>null</code>
      * @return a <code>Deque&lt;Event&gt;</code>
      */
     Deque<Event> getSnapshot(Instrument inInstrument,
                              Content inContent,
+                             String inExchange,
                              String inProvider);
     /**
      * Gets a subset of the most recent snapshot available of the given market data.
@@ -87,12 +89,14 @@ public interface MarketDataServiceClient
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
+     * @param inExchange a <code>String</code> value or <code>null</code>
      * @param inProvider a <code>String</code> value or <code>null</code>
      * @param inPage a <code>PageRequest</code> value indicating what subset to return
      * @return a <code>Deque&lt;Event&gt;</code>
      */
     Deque<Event> getSnapshotPage(Instrument inInstrument,
                                  Content inContent,
+                                 String inExchange,
                                  String inProvider,
                                  PageRequest inPage);
     /**

@@ -124,11 +124,12 @@ public class MarketDataServiceClientImpl
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String)
+     * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, java.lang.String)
      */
     @Override
     public Deque<Event> getSnapshot(Instrument inInstrument,
                                     Content inContent,
+                                    String inExchange,
                                     String inProvider)
     {
         try {
@@ -136,17 +137,19 @@ public class MarketDataServiceClientImpl
             return marketDataService.getSnapshot(serviceClient.getContext(),
                                                  inInstrument,
                                                  inContent,
+                                                 inExchange,
                                                  inProvider);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, org.springframework.data.domain.PageRequest)
+     * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, java.lang.String, org.marketcetera.marketdata.core.webservice.PageRequest)
      */
     @Override
     public Deque<Event> getSnapshotPage(Instrument inInstrument,
                                         Content inContent,
+                                        String inExchange,
                                         String inProvider,
                                         PageRequest inPage)
     {
@@ -155,6 +158,7 @@ public class MarketDataServiceClientImpl
             return marketDataService.getSnapshotPage(serviceClient.getContext(),
                                                      inInstrument,
                                                      inContent,
+                                                     inExchange,
                                                      inProvider,
                                                      inPage);
         } catch (Exception e) {

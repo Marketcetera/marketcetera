@@ -16,14 +16,8 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public interface MarketDataEvent
-        extends Event, HasInstrument, HasEventType, HasTimestamps
+        extends Event, HasInstrument, HasEventType, HasTimestamps, HasExchange
 {
-    /**
-     * Gets the exchange on which the market data event occurred.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getExchange();
     /**
      * Gets the price of the market data event. 
      *

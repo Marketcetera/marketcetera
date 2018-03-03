@@ -10,6 +10,8 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
+import com.google.common.base.Optional;
+
 /* $License$ */
 
 /**
@@ -48,13 +50,15 @@ public interface MarketDataManager
      * 
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
+     * @param inExchange a <code>String</code> value or <code>null</code>
      * @param inProvider a <code>String</code> value or <code>null</code> for the most recently received venue
-     * @return an <code>Event</code> value or <code>null</code> if market data for the given criteria is not available
+     * @return an <code>Optional&lt;Event&gt;</code> value
      * @throws MarketDataRequestFailed if the request could not be executed
      */
-    public Event requestMarketDataSnapshot(Instrument inInstrument,
-                                           Content inContent,
-                                           String inProvider);
+    public Optional<Event> requestMarketDataSnapshot(Instrument inInstrument,
+                                                     Content inContent,
+                                                     String inExchange,
+                                                     String inProvider);
     /**
      * Cancels all market data requests for the given subscriber.
      *

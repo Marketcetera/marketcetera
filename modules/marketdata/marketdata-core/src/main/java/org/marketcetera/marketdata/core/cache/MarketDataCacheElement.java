@@ -1,4 +1,4 @@
-package org.marketcetera.marketdata.core.provider;
+package org.marketcetera.marketdata.core.cache;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +23,6 @@ import org.marketcetera.event.util.MarketstatEventCache;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.OrderBook;
 import org.marketcetera.marketdata.core.Messages;
-import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -43,18 +42,18 @@ import com.google.common.collect.Maps;
  * @since 2.4.0
  */
 @ClassVersion("$Id$")
-public class MarketdataCacheElement
+public class MarketDataCacheElement
 {
     /**
      * Create a new MarketdataCacheElement instance.
      *
-     * @param inInstrument an <code>Instrument</code> value
+     * @param inInstrumentExchange an <code>InstrumentExchange</code> value
      * @throws IllegalArgumentException if the given instrument is <code>null</code>
      */
-    public MarketdataCacheElement(Instrument inInstrument)
+    public MarketDataCacheElement(InstrumentExchange inInstrumentExchange)
     {
-        Validate.notNull(inInstrument);
-        instrument = inInstrument;
+        Validate.notNull(inInstrumentExchange);
+        instrumentExchange = inInstrumentExchange;
         clear();
     }
     /* (non-Javadoc)
@@ -64,7 +63,7 @@ public class MarketdataCacheElement
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("MarketdataCacheElement [").append(instrument.getFullSymbol()).append("]").append(System.lineSeparator());
+        builder.append("MarketdataCacheElement [").append(instrumentExchange.getFullSymbol()).append("]").append(System.lineSeparator());
         for(Map.Entry<Content,OrderBook> entry : orderbooks.entrySet()) {
             builder.append(entry.getKey()).append(System.lineSeparator());
             builder.append(entry.getValue()).append(System.lineSeparator());
@@ -80,7 +79,7 @@ public class MarketdataCacheElement
      */
     public void clear()
     {
-        marketstatCache = new MarketstatEventCache(instrument,
+        marketstatCache = new MarketstatEventCache(instrumentExchange.getInstrument(),
                                                    true);
         trade = null;
         imbalance = null;
@@ -214,7 +213,7 @@ public class MarketdataCacheElement
                 for(Event event : inEvents) {
                     if(event instanceof MarketstatEvent) {
                         if(marketstatCache == null) {
-                            marketstatCache = new MarketstatEventCache(instrument);
+                            marketstatCache = new MarketstatEventCache(instrumentExchange.getInstrument());
                         }
                         marketstatCache.cache((MarketstatEvent)event);
                     } else {
@@ -289,7 +288,7 @@ public class MarketdataCacheElement
     {
         OrderBook book = orderbooks.get(inContent);
         if(book == null) {
-            book = new OrderBook(instrument,
+            book = new OrderBook(instrumentExchange.getInstrument(),
                                  true);
             orderbooks.put(inContent,
                            book);
@@ -313,7 +312,7 @@ public class MarketdataCacheElement
                 if(resetOnSnapshot) {
                     SLF4JLoggerProxy.debug(this,
                                            "{} cache invalidating {} on {}",
-                                           instrument,
+                                           instrumentExchange,
                                            inContent,
                                            inEvent);
                     invalidate(inContent);
@@ -335,9 +334,9 @@ public class MarketdataCacheElement
             return false;
         }});
     /**
-     * instrument for which market data is cached
+     * instrument/exchange for which market data is cached
      */
-    private final Instrument instrument;
+    private final InstrumentExchange instrumentExchange;
     /**
      * order book structures, by content
      */

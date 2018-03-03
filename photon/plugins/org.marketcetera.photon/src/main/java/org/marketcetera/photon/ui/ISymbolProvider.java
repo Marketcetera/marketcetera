@@ -1,7 +1,6 @@
 package org.marketcetera.photon.ui;
 
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -12,12 +11,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
-public interface ISymbolProvider {
-
-	/**
-	 * @return an equity, should not be null
-	 */
-	Instrument getInstrument();
-	
+public interface ISymbolProvider
+{
+    /**
+     * Get the instrument value.
+     *
+     * @return an <code>Instrument</code> value
+     */
+    Instrument getInstrument();
 }

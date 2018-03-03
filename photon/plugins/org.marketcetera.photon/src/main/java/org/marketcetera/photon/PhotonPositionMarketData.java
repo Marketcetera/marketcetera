@@ -137,7 +137,8 @@ public class PhotonPositionMarketData implements MarketDataSupport {
             if(mDisposed.get()) return;
             IMarketDataReference<MDLatestTick> ref = mLatestTickReferences.get(inInstrument);
             if(ref == null) {
-                ref = mMarketData.getLatestTick(inInstrument);
+                ref = mMarketData.getLatestTick(inInstrument,
+                                                null);
                 if(ref != null && ref.get() != null) {
                     mLatestTickReferences.put(inInstrument,
                                               ref);
@@ -146,7 +147,8 @@ public class PhotonPositionMarketData implements MarketDataSupport {
             }
             IMarketDataReference<MDMarketstat> statRef = mStatReferences.get(inInstrument);
             if(statRef == null) {
-                statRef = mMarketData.getMarketstat(inInstrument);
+                statRef = mMarketData.getMarketstat(inInstrument,
+                                                    null);
                 mStatReferences.put(inInstrument,
                                     statRef);
                 if(statRef != null && statRef.get() != null) {

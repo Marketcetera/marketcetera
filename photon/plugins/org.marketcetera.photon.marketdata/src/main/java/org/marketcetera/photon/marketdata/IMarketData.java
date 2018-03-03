@@ -59,6 +59,7 @@ public interface IMarketData
      * 
      * @param instrument
      *            the instrument
+     * @param inExchange 
      * @return a reference to the data
      * @throws IllegalArgumentException
      *             if instrument is null
@@ -66,7 +67,8 @@ public interface IMarketData
      *             if the module framework is in an unexpected state, or if an
      *             unrecoverable error occurs
      */
-    IMarketDataReference<MDLatestTick> getLatestTick(Instrument instrument);
+    IMarketDataReference<MDLatestTick> getLatestTick(Instrument instrument,
+                                                     String inExchange);
     /**
      * Returns a reference to the top of book data for the given instrument. If
      * the data does not exist, it will be created and wired up. The
@@ -75,6 +77,7 @@ public interface IMarketData
      * 
      * @param instrument
      *            the instrument
+     * @param inExchange 
      * @return a reference to the data
      * @throws IllegalArgumentException
      *             if instrument is null
@@ -82,7 +85,8 @@ public interface IMarketData
      *             if the module framework is in an unexpected state, or if an
      *             unrecoverable error occurs
      */
-    IMarketDataReference<MDTopOfBook> getTopOfBook(Instrument instrument);
+    IMarketDataReference<MDTopOfBook> getTopOfBook(Instrument instrument,
+                                                   String inExchange);
     /**
      * Returns a reference to the market statistic data for the given
      * instrument. If the data does not exist, it will be created and wired up.
@@ -91,6 +95,7 @@ public interface IMarketData
      * 
      * @param instrument
      *            the instrument
+     * @param inExchange 
      * @return a reference to the data
      * @throws IllegalArgumentException
      *             if instrument is null
@@ -98,7 +103,8 @@ public interface IMarketData
      *             if the module framework is in an unexpected state, or if an
      *             unrecoverable error occurs
      */
-    IMarketDataReference<MDMarketstat> getMarketstat(Instrument instrument);
+    IMarketDataReference<MDMarketstat> getMarketstat(Instrument instrument,
+                                                     String inExchange);
     /**
      * Returns a reference to the market depth data for the given instrument and
      * product. If the data does not exist, it will be created and wired up. The

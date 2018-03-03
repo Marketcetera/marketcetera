@@ -67,23 +67,27 @@ public interface MarketDataServiceAdapter
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
+     * @param inExchange a <code>String</code> value or <code>null</code>
      * @param inProvider a <code>String</code> value or <code>null</code>
      * @return a <code>Deque&lt;Event&gt;</code> value
      */
     Deque<Event> getSnapshot(Instrument inInstrument,
                              Content inContent,
+                             String inExchange,
                              String inProvider);
     /**
      * Gets the most recent snapshot page for the given attributes.
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
+     * @param inExchange a <code>String</code> value or <code>null</code>
      * @param inProvider a <code>String</code> value or <code>null</code>
      * @param inPageRequest a <code>PageRequest</code> value
      * @return a <code>Deque&lt;Event&gt;</code> value
      */
     Deque<Event> getSnapshotPage(Instrument inInstrument,
                                  Content inContent,
+                                 String inExchange,
                                  String inProvider,
                                  PageRequest inPageRequest);
     /**

@@ -102,6 +102,7 @@ public interface MarketDataService
      *
      * @param inContext a <code>ClientContext</code> value
      * @param inInstrument an <code>Instrument</code> value
+     * @param inExchange a <code>String</code> value or <code>null</code>
      * @param inContent a <code>Content</code> value
      * @param inProvider a <code>String</code> value or <code>null</code>
      * @return a <code>Deque&lt;Event&gt;</code>
@@ -110,6 +111,7 @@ public interface MarketDataService
     Deque<Event> getSnapshot(@WebParam(name="context")ClientContext inContext,
                              @WebParam(name="instrument")Instrument inInstrument,
                              @WebParam(name="content")Content inContent,
+                             @WebParam(name="exchange")String inExchange,
                              @WebParam(name="provider")String inProvider)
             throws RemoteException;
     /**
@@ -120,6 +122,7 @@ public interface MarketDataService
      * @param inContext a <code>ClientContext</code> value
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
+     * @param inExchange a <code>String</code> value or <code>null</code>
      * @param inProvider a <code>String</code> value or <code>null</code>
      * @param inPage a <code>PageRequest</code> value indicating what subset to return
      * @return a <code>Deque&lt;Event&gt;</code>
@@ -128,6 +131,7 @@ public interface MarketDataService
     Deque<Event> getSnapshotPage(@WebParam(name="context")ClientContext inContext,
                                  @WebParam(name="instrument")Instrument inInstrument,
                                  @WebParam(name="content")Content inContent,
+                                 @WebParam(name="exchange")String inExchange,
                                  @WebParam(name="provider")String inProvider,
                                  @WebParam(name="page")PageRequest inPage)
             throws RemoteException;

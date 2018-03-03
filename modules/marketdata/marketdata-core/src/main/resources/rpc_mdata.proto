@@ -119,7 +119,8 @@ message SnapshotRequest {
     required string sessionId = 1;
     required Instrument instrument = 2;
     required ContentAndCapability content = 3;
-    optional string provider = 4;
+    optional string exchange = 4;
+    optional string provider = 5;
 }
 
 message SnapshotResponse {
@@ -132,8 +133,9 @@ message SnapshotPageRequest {
     required string sessionId = 1;
     required Instrument instrument = 2;
     required ContentAndCapability content = 3;
-    optional string provider = 4;
-    required PageRequest page = 5;
+    optional string exchange = 4;
+    optional string provider = 5;
+    required PageRequest page = 6;
 }
 
 message SnapshotPageResponse {

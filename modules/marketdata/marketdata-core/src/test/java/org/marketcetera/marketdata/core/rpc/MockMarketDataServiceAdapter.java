@@ -78,29 +78,33 @@ public class MockMarketDataServiceAdapter
         return allEventsToReturn;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, java.lang.String)
      */
     @Override
     public Deque<Event> getSnapshot(Instrument inInstrument,
                                     Content inContent,
+                                    String inExchange,
                                     String inProvider)
     {
         snapshotRequests.add(new SnapshotRequest(inInstrument,
                                                  inContent,
+                                                 inExchange,
                                                  inProvider));
         return snapshotEventsToReturn;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, org.marketcetera.marketdata.core.webservice.PageRequest)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, java.lang.String, org.marketcetera.marketdata.core.webservice.PageRequest)
      */
     @Override
     public Deque<Event> getSnapshotPage(Instrument inInstrument,
                                         Content inContent,
+                                        String inExchange,
                                         String inProvider,
                                         PageRequest inPageRequest)
     {
         snapshotRequests.add(new SnapshotRequest(inInstrument,
                                                  inContent,
+                                                 inExchange,
                                                  inProvider,
                                                  inPageRequest));
         return snapshotEventsToReturn;
@@ -246,14 +250,17 @@ public class MockMarketDataServiceAdapter
          *
          * @param inInstrument an <code>Instrument</code> value
          * @param inContent a <code>Content</code> value
+         * @param inExchange a <code>String</code> value
          * @param inProvider a <code>String</code> value
          */
         public SnapshotRequest(Instrument inInstrument,
                                Content inContent,
+                               String inExchange,
                                String inProvider)
         {
             this(inInstrument,
                  inContent,
+                 inExchange,
                  inProvider,
                  null);
         }
@@ -262,18 +269,30 @@ public class MockMarketDataServiceAdapter
          *
          * @param inInstrument an <code>Instrument</code> value
          * @param inContent a <code>Content</code> value
+         * @param inExchange a <code>String</code> value
          * @param inProvider a <code>String</code> value
          * @param inPageRequest a <code>PageRequest</code> value
          */
         public SnapshotRequest(Instrument inInstrument,
                                Content inContent,
+                               String inExchange,
                                String inProvider,
                                PageRequest inPageRequest)
         {
             instrument = inInstrument;
             content = inContent;
+            exchange = inExchange;
             provider = inProvider;
             pageRequest = inPageRequest;
+        }
+        /**
+         * Get the exchange value.
+         *
+         * @return a <code>String</code> value
+         */
+        public String getExchange()
+        {
+            return exchange;
         }
         /**
          * Get the instrument value.
@@ -319,6 +338,10 @@ public class MockMarketDataServiceAdapter
          * content value
          */
         private final Content content;
+        /**
+         * exchange value
+         */
+        private final String exchange;
         /**
          * provider value
          */

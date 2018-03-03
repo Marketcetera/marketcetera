@@ -12924,15 +12924,29 @@ public final class RpcMarketdata {
     org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getContent();
 
     /**
-     * <code>optional string provider = 4;</code>
+     * <code>optional string exchange = 4;</code>
+     */
+    boolean hasExchange();
+    /**
+     * <code>optional string exchange = 4;</code>
+     */
+    java.lang.String getExchange();
+    /**
+     * <code>optional string exchange = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getExchangeBytes();
+
+    /**
+     * <code>optional string provider = 5;</code>
      */
     boolean hasProvider();
     /**
-     * <code>optional string provider = 4;</code>
+     * <code>optional string provider = 5;</code>
      */
     java.lang.String getProvider();
     /**
-     * <code>optional string provider = 4;</code>
+     * <code>optional string provider = 5;</code>
      */
     com.google.protobuf.ByteString
         getProviderBytes();
@@ -13022,6 +13036,12 @@ public final class RpcMarketdata {
             case 34: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000008;
+              exchange_ = bs;
+              break;
+            }
+            case 42: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000010;
               provider_ = bs;
               break;
             }
@@ -13143,16 +13163,58 @@ public final class RpcMarketdata {
       return content_;
     }
 
-    public static final int PROVIDER_FIELD_NUMBER = 4;
-    private java.lang.Object provider_;
+    public static final int EXCHANGE_FIELD_NUMBER = 4;
+    private java.lang.Object exchange_;
     /**
-     * <code>optional string provider = 4;</code>
+     * <code>optional string exchange = 4;</code>
      */
-    public boolean hasProvider() {
+    public boolean hasExchange() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>optional string provider = 4;</code>
+     * <code>optional string exchange = 4;</code>
+     */
+    public java.lang.String getExchange() {
+      java.lang.Object ref = exchange_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          exchange_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string exchange = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getExchangeBytes() {
+      java.lang.Object ref = exchange_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        exchange_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int PROVIDER_FIELD_NUMBER = 5;
+    private java.lang.Object provider_;
+    /**
+     * <code>optional string provider = 5;</code>
+     */
+    public boolean hasProvider() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional string provider = 5;</code>
      */
     public java.lang.String getProvider() {
       java.lang.Object ref = provider_;
@@ -13169,7 +13231,7 @@ public final class RpcMarketdata {
       }
     }
     /**
-     * <code>optional string provider = 4;</code>
+     * <code>optional string provider = 5;</code>
      */
     public com.google.protobuf.ByteString
         getProviderBytes() {
@@ -13189,6 +13251,7 @@ public final class RpcMarketdata {
       sessionId_ = "";
       instrument_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance();
       content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
+      exchange_ = "";
       provider_ = "";
     }
     private byte memoizedIsInitialized = -1;
@@ -13230,7 +13293,10 @@ public final class RpcMarketdata {
         output.writeEnum(3, content_.getNumber());
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, getProviderBytes());
+        output.writeBytes(4, getExchangeBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, getProviderBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -13255,7 +13321,11 @@ public final class RpcMarketdata {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getProviderBytes());
+          .computeBytesSize(4, getExchangeBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getProviderBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -13385,8 +13455,10 @@ public final class RpcMarketdata {
         bitField0_ = (bitField0_ & ~0x00000002);
         content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
         bitField0_ = (bitField0_ & ~0x00000004);
-        provider_ = "";
+        exchange_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
+        provider_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -13434,6 +13506,10 @@ public final class RpcMarketdata {
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
+        result.exchange_ = exchange_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
         result.provider_ = provider_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -13462,8 +13538,13 @@ public final class RpcMarketdata {
         if (other.hasContent()) {
           setContent(other.getContent());
         }
-        if (other.hasProvider()) {
+        if (other.hasExchange()) {
           bitField0_ |= 0x00000008;
+          exchange_ = other.exchange_;
+          onChanged();
+        }
+        if (other.hasProvider()) {
+          bitField0_ |= 0x00000010;
           provider_ = other.provider_;
           onChanged();
         }
@@ -13737,15 +13818,91 @@ public final class RpcMarketdata {
         return this;
       }
 
-      private java.lang.Object provider_ = "";
+      private java.lang.Object exchange_ = "";
       /**
-       * <code>optional string provider = 4;</code>
+       * <code>optional string exchange = 4;</code>
        */
-      public boolean hasProvider() {
+      public boolean hasExchange() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>optional string provider = 4;</code>
+       * <code>optional string exchange = 4;</code>
+       */
+      public java.lang.String getExchange() {
+        java.lang.Object ref = exchange_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            exchange_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string exchange = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getExchangeBytes() {
+        java.lang.Object ref = exchange_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          exchange_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string exchange = 4;</code>
+       */
+      public Builder setExchange(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        exchange_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string exchange = 4;</code>
+       */
+      public Builder clearExchange() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        exchange_ = getDefaultInstance().getExchange();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string exchange = 4;</code>
+       */
+      public Builder setExchangeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        exchange_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object provider_ = "";
+      /**
+       * <code>optional string provider = 5;</code>
+       */
+      public boolean hasProvider() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional string provider = 5;</code>
        */
       public java.lang.String getProvider() {
         java.lang.Object ref = provider_;
@@ -13762,7 +13919,7 @@ public final class RpcMarketdata {
         }
       }
       /**
-       * <code>optional string provider = 4;</code>
+       * <code>optional string provider = 5;</code>
        */
       public com.google.protobuf.ByteString
           getProviderBytes() {
@@ -13778,36 +13935,36 @@ public final class RpcMarketdata {
         }
       }
       /**
-       * <code>optional string provider = 4;</code>
+       * <code>optional string provider = 5;</code>
        */
       public Builder setProvider(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000008;
+  bitField0_ |= 0x00000010;
         provider_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string provider = 4;</code>
+       * <code>optional string provider = 5;</code>
        */
       public Builder clearProvider() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         provider_ = getDefaultInstance().getProvider();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string provider = 4;</code>
+       * <code>optional string provider = 5;</code>
        */
       public Builder setProviderBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000008;
+  bitField0_ |= 0x00000010;
         provider_ = value;
         onChanged();
         return this;
@@ -14602,29 +14759,43 @@ public final class RpcMarketdata {
     org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getContent();
 
     /**
-     * <code>optional string provider = 4;</code>
+     * <code>optional string exchange = 4;</code>
+     */
+    boolean hasExchange();
+    /**
+     * <code>optional string exchange = 4;</code>
+     */
+    java.lang.String getExchange();
+    /**
+     * <code>optional string exchange = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getExchangeBytes();
+
+    /**
+     * <code>optional string provider = 5;</code>
      */
     boolean hasProvider();
     /**
-     * <code>optional string provider = 4;</code>
+     * <code>optional string provider = 5;</code>
      */
     java.lang.String getProvider();
     /**
-     * <code>optional string provider = 4;</code>
+     * <code>optional string provider = 5;</code>
      */
     com.google.protobuf.ByteString
         getProviderBytes();
 
     /**
-     * <code>required .PageRequest page = 5;</code>
+     * <code>required .PageRequest page = 6;</code>
      */
     boolean hasPage();
     /**
-     * <code>required .PageRequest page = 5;</code>
+     * <code>required .PageRequest page = 6;</code>
      */
     org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest getPage();
     /**
-     * <code>required .PageRequest page = 5;</code>
+     * <code>required .PageRequest page = 6;</code>
      */
     org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder getPageOrBuilder();
   }
@@ -14713,12 +14884,18 @@ public final class RpcMarketdata {
             case 34: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000008;
-              provider_ = bs;
+              exchange_ = bs;
               break;
             }
             case 42: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000010;
+              provider_ = bs;
+              break;
+            }
+            case 50: {
               org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000010) == 0x00000010)) {
+              if (((bitField0_ & 0x00000020) == 0x00000020)) {
                 subBuilder = page_.toBuilder();
               }
               page_ = input.readMessage(org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.PARSER, extensionRegistry);
@@ -14726,7 +14903,7 @@ public final class RpcMarketdata {
                 subBuilder.mergeFrom(page_);
                 page_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000010;
+              bitField0_ |= 0x00000020;
               break;
             }
           }
@@ -14847,16 +15024,58 @@ public final class RpcMarketdata {
       return content_;
     }
 
-    public static final int PROVIDER_FIELD_NUMBER = 4;
-    private java.lang.Object provider_;
+    public static final int EXCHANGE_FIELD_NUMBER = 4;
+    private java.lang.Object exchange_;
     /**
-     * <code>optional string provider = 4;</code>
+     * <code>optional string exchange = 4;</code>
      */
-    public boolean hasProvider() {
+    public boolean hasExchange() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>optional string provider = 4;</code>
+     * <code>optional string exchange = 4;</code>
+     */
+    public java.lang.String getExchange() {
+      java.lang.Object ref = exchange_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          exchange_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string exchange = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getExchangeBytes() {
+      java.lang.Object ref = exchange_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        exchange_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int PROVIDER_FIELD_NUMBER = 5;
+    private java.lang.Object provider_;
+    /**
+     * <code>optional string provider = 5;</code>
+     */
+    public boolean hasProvider() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional string provider = 5;</code>
      */
     public java.lang.String getProvider() {
       java.lang.Object ref = provider_;
@@ -14873,7 +15092,7 @@ public final class RpcMarketdata {
       }
     }
     /**
-     * <code>optional string provider = 4;</code>
+     * <code>optional string provider = 5;</code>
      */
     public com.google.protobuf.ByteString
         getProviderBytes() {
@@ -14889,22 +15108,22 @@ public final class RpcMarketdata {
       }
     }
 
-    public static final int PAGE_FIELD_NUMBER = 5;
+    public static final int PAGE_FIELD_NUMBER = 6;
     private org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest page_;
     /**
-     * <code>required .PageRequest page = 5;</code>
+     * <code>required .PageRequest page = 6;</code>
      */
     public boolean hasPage() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>required .PageRequest page = 5;</code>
+     * <code>required .PageRequest page = 6;</code>
      */
     public org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest getPage() {
       return page_;
     }
     /**
-     * <code>required .PageRequest page = 5;</code>
+     * <code>required .PageRequest page = 6;</code>
      */
     public org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder getPageOrBuilder() {
       return page_;
@@ -14914,6 +15133,7 @@ public final class RpcMarketdata {
       sessionId_ = "";
       instrument_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance();
       content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
+      exchange_ = "";
       provider_ = "";
       page_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.getDefaultInstance();
     }
@@ -14964,10 +15184,13 @@ public final class RpcMarketdata {
         output.writeEnum(3, content_.getNumber());
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, getProviderBytes());
+        output.writeBytes(4, getExchangeBytes());
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeMessage(5, page_);
+        output.writeBytes(5, getProviderBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeMessage(6, page_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -14992,11 +15215,15 @@ public final class RpcMarketdata {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getProviderBytes());
+          .computeBytesSize(4, getExchangeBytes());
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, page_);
+          .computeBytesSize(5, getProviderBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, page_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -15127,14 +15354,16 @@ public final class RpcMarketdata {
         bitField0_ = (bitField0_ & ~0x00000002);
         content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
         bitField0_ = (bitField0_ & ~0x00000004);
-        provider_ = "";
+        exchange_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
+        provider_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
         if (pageBuilder_ == null) {
           page_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.getDefaultInstance();
         } else {
           pageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -15182,9 +15411,13 @@ public final class RpcMarketdata {
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.provider_ = provider_;
+        result.exchange_ = exchange_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
+        }
+        result.provider_ = provider_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
         }
         if (pageBuilder_ == null) {
           result.page_ = page_;
@@ -15218,8 +15451,13 @@ public final class RpcMarketdata {
         if (other.hasContent()) {
           setContent(other.getContent());
         }
-        if (other.hasProvider()) {
+        if (other.hasExchange()) {
           bitField0_ |= 0x00000008;
+          exchange_ = other.exchange_;
+          onChanged();
+        }
+        if (other.hasProvider()) {
+          bitField0_ |= 0x00000010;
           provider_ = other.provider_;
           onChanged();
         }
@@ -15504,15 +15742,91 @@ public final class RpcMarketdata {
         return this;
       }
 
-      private java.lang.Object provider_ = "";
+      private java.lang.Object exchange_ = "";
       /**
-       * <code>optional string provider = 4;</code>
+       * <code>optional string exchange = 4;</code>
        */
-      public boolean hasProvider() {
+      public boolean hasExchange() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>optional string provider = 4;</code>
+       * <code>optional string exchange = 4;</code>
+       */
+      public java.lang.String getExchange() {
+        java.lang.Object ref = exchange_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            exchange_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string exchange = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getExchangeBytes() {
+        java.lang.Object ref = exchange_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          exchange_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string exchange = 4;</code>
+       */
+      public Builder setExchange(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        exchange_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string exchange = 4;</code>
+       */
+      public Builder clearExchange() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        exchange_ = getDefaultInstance().getExchange();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string exchange = 4;</code>
+       */
+      public Builder setExchangeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        exchange_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object provider_ = "";
+      /**
+       * <code>optional string provider = 5;</code>
+       */
+      public boolean hasProvider() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional string provider = 5;</code>
        */
       public java.lang.String getProvider() {
         java.lang.Object ref = provider_;
@@ -15529,7 +15843,7 @@ public final class RpcMarketdata {
         }
       }
       /**
-       * <code>optional string provider = 4;</code>
+       * <code>optional string provider = 5;</code>
        */
       public com.google.protobuf.ByteString
           getProviderBytes() {
@@ -15545,36 +15859,36 @@ public final class RpcMarketdata {
         }
       }
       /**
-       * <code>optional string provider = 4;</code>
+       * <code>optional string provider = 5;</code>
        */
       public Builder setProvider(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000008;
+  bitField0_ |= 0x00000010;
         provider_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string provider = 4;</code>
+       * <code>optional string provider = 5;</code>
        */
       public Builder clearProvider() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         provider_ = getDefaultInstance().getProvider();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string provider = 4;</code>
+       * <code>optional string provider = 5;</code>
        */
       public Builder setProviderBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000008;
+  bitField0_ |= 0x00000010;
         provider_ = value;
         onChanged();
         return this;
@@ -15584,13 +15898,13 @@ public final class RpcMarketdata {
       private com.google.protobuf.SingleFieldBuilder<
           org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder> pageBuilder_;
       /**
-       * <code>required .PageRequest page = 5;</code>
+       * <code>required .PageRequest page = 6;</code>
        */
       public boolean hasPage() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>required .PageRequest page = 5;</code>
+       * <code>required .PageRequest page = 6;</code>
        */
       public org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest getPage() {
         if (pageBuilder_ == null) {
@@ -15600,7 +15914,7 @@ public final class RpcMarketdata {
         }
       }
       /**
-       * <code>required .PageRequest page = 5;</code>
+       * <code>required .PageRequest page = 6;</code>
        */
       public Builder setPage(org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest value) {
         if (pageBuilder_ == null) {
@@ -15612,11 +15926,11 @@ public final class RpcMarketdata {
         } else {
           pageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000020;
         return this;
       }
       /**
-       * <code>required .PageRequest page = 5;</code>
+       * <code>required .PageRequest page = 6;</code>
        */
       public Builder setPage(
           org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder builderForValue) {
@@ -15626,15 +15940,15 @@ public final class RpcMarketdata {
         } else {
           pageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000020;
         return this;
       }
       /**
-       * <code>required .PageRequest page = 5;</code>
+       * <code>required .PageRequest page = 6;</code>
        */
       public Builder mergePage(org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest value) {
         if (pageBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) == 0x00000010) &&
+          if (((bitField0_ & 0x00000020) == 0x00000020) &&
               page_ != org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.getDefaultInstance()) {
             page_ =
               org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.newBuilder(page_).mergeFrom(value).buildPartial();
@@ -15645,11 +15959,11 @@ public final class RpcMarketdata {
         } else {
           pageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000020;
         return this;
       }
       /**
-       * <code>required .PageRequest page = 5;</code>
+       * <code>required .PageRequest page = 6;</code>
        */
       public Builder clearPage() {
         if (pageBuilder_ == null) {
@@ -15658,19 +15972,19 @@ public final class RpcMarketdata {
         } else {
           pageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
       /**
-       * <code>required .PageRequest page = 5;</code>
+       * <code>required .PageRequest page = 6;</code>
        */
       public org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder getPageBuilder() {
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000020;
         onChanged();
         return getPageFieldBuilder().getBuilder();
       }
       /**
-       * <code>required .PageRequest page = 5;</code>
+       * <code>required .PageRequest page = 6;</code>
        */
       public org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder getPageOrBuilder() {
         if (pageBuilder_ != null) {
@@ -15680,7 +15994,7 @@ public final class RpcMarketdata {
         }
       }
       /**
-       * <code>required .PageRequest page = 5;</code>
+       * <code>required .PageRequest page = 6;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
           org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder> 
@@ -19254,48 +19568,49 @@ public final class RpcMarketdata {
       "(\t\022\016\n\006failed\030\004 \001(\010\"1\n\020AllEventsRequest\022\021" +
       "\n\tsessionId\030\001 \002(\t\022\n\n\002id\030\002 \003(\003\"U\n\021AllEven" +
       "tsResponse\022\037\n\006events\030\001 \003(\0132\017.EventsRespo" +
-      "nse\022\017\n\007message\030\002 \001(\t\022\016\n\006failed\030\003 \001(\010\"\177\n\017" +
-      "SnapshotRequest\022\021\n\tsessionId\030\001 \002(\t\022\037\n\nin",
-      "strument\030\002 \002(\0132\013.Instrument\022&\n\007content\030\003" +
-      " \002(\0162\025.ContentAndCapability\022\020\n\010provider\030" +
-      "\004 \001(\t\"D\n\020SnapshotResponse\022\017\n\007payload\030\001 \003" +
-      "(\t\022\017\n\007message\030\002 \001(\t\022\016\n\006failed\030\003 \001(\010\"\237\001\n\023" +
-      "SnapshotPageRequest\022\021\n\tsessionId\030\001 \002(\t\022\037" +
-      "\n\ninstrument\030\002 \002(\0132\013.Instrument\022&\n\007conte" +
-      "nt\030\003 \002(\0162\025.ContentAndCapability\022\020\n\010provi" +
-      "der\030\004 \001(\t\022\032\n\004page\030\005 \002(\0132\014.PageRequest\"H\n" +
-      "\024SnapshotPageResponse\022\017\n\007payload\030\001 \003(\t\022\017" +
-      "\n\007message\030\002 \001(\t\022\016\n\006failed\030\003 \001(\010\")\n\013PageR",
-      "equest\022\014\n\004page\030\001 \002(\005\022\014\n\004size\030\002 \002(\005\"/\n\032Av" +
-      "ailableCapabilityRequest\022\021\n\tsessionId\030\001 " +
-      "\002(\t\"i\n\033AvailableCapabilityResponse\022)\n\nca" +
-      "pability\030\001 \003(\0162\025.ContentAndCapability\022\017\n" +
-      "\007message\030\002 \001(\t\022\016\n\006failed\030\003 \001(\010*B\n\016Instru" +
-      "mentType\022\n\n\006EQUITY\020\000\022\n\n\006OPTION\020\001\022\n\n\006FUTU" +
-      "RE\020\002\022\014\n\010CURRENCY\020\003*\366\001\n\024ContentAndCapabil" +
-      "ity\022\017\n\013TOP_OF_BOOK\020\000\022\r\n\tOPEN_BOOK\020\001\022\017\n\013M" +
-      "ARKET_STAT\020\002\022\016\n\nTOTAL_VIEW\020\003\022\013\n\007LEVEL_2\020" +
-      "\004\022\017\n\013LATEST_TICK\020\005\022\t\n\005BBO10\020\006\022\010\n\004NBBO\020\007\022",
-      "\014\n\010DIVIDEND\020\010\022\024\n\020AGGREGATED_DEPTH\020\t\022\026\n\022U" +
-      "NAGGREGATED_DEPTH\020\n\022\r\n\tIMBALANCE\020\013\022\013\n\007UN" +
-      "KNOWN\020\014\022\022\n\016EVENT_BOUNDARY\020\r2\344\004\n\024RpcMarke" +
-      "tDataService\022&\n\005login\022\r.LoginRequest\032\016.L" +
-      "oginResponse\022)\n\006logout\022\016.LogoutRequest\032\017" +
-      ".LogoutResponse\0222\n\theartbeat\022\021.Heartbeat" +
-      "Request\032\022.HeartbeatResponse\0222\n\007request\022\022" +
-      ".MarketDataRequest\032\023.MarketDataResponse\022" +
-      "8\n\rgetLastUpdate\022\022.LastUpdateRequest\032\023.L" +
-      "astUpdateResponse\022)\n\006cancel\022\016.CancelRequ",
-      "est\032\017.CancelResponse\022,\n\tgetEvents\022\016.Even" +
-      "tsRequest\032\017.EventsResponse\0225\n\014getAllEven" +
-      "ts\022\021.AllEventsRequest\032\022.AllEventsRespons" +
-      "e\0222\n\013getSnapshot\022\020.SnapshotRequest\032\021.Sna" +
-      "pshotResponse\022>\n\017getSnapshotPage\022\024.Snaps" +
-      "hotPageRequest\032\025.SnapshotPageResponse\022S\n" +
-      "\026getAvailableCapability\022\033.AvailableCapab" +
-      "ilityRequest\032\034.AvailableCapabilityRespon" +
-      "seB8\n$org.marketcetera.marketdata.core.r" +
-      "pcB\rRpcMarketdata\210\001\001"
+      "nse\022\017\n\007message\030\002 \001(\t\022\016\n\006failed\030\003 \001(\010\"\221\001\n" +
+      "\017SnapshotRequest\022\021\n\tsessionId\030\001 \002(\t\022\037\n\ni",
+      "nstrument\030\002 \002(\0132\013.Instrument\022&\n\007content\030" +
+      "\003 \002(\0162\025.ContentAndCapability\022\020\n\010exchange" +
+      "\030\004 \001(\t\022\020\n\010provider\030\005 \001(\t\"D\n\020SnapshotResp" +
+      "onse\022\017\n\007payload\030\001 \003(\t\022\017\n\007message\030\002 \001(\t\022\016" +
+      "\n\006failed\030\003 \001(\010\"\261\001\n\023SnapshotPageRequest\022\021" +
+      "\n\tsessionId\030\001 \002(\t\022\037\n\ninstrument\030\002 \002(\0132\013." +
+      "Instrument\022&\n\007content\030\003 \002(\0162\025.ContentAnd" +
+      "Capability\022\020\n\010exchange\030\004 \001(\t\022\020\n\010provider" +
+      "\030\005 \001(\t\022\032\n\004page\030\006 \002(\0132\014.PageRequest\"H\n\024Sn" +
+      "apshotPageResponse\022\017\n\007payload\030\001 \003(\t\022\017\n\007m",
+      "essage\030\002 \001(\t\022\016\n\006failed\030\003 \001(\010\")\n\013PageRequ" +
+      "est\022\014\n\004page\030\001 \002(\005\022\014\n\004size\030\002 \002(\005\"/\n\032Avail" +
+      "ableCapabilityRequest\022\021\n\tsessionId\030\001 \002(\t" +
+      "\"i\n\033AvailableCapabilityResponse\022)\n\ncapab" +
+      "ility\030\001 \003(\0162\025.ContentAndCapability\022\017\n\007me" +
+      "ssage\030\002 \001(\t\022\016\n\006failed\030\003 \001(\010*B\n\016Instrumen" +
+      "tType\022\n\n\006EQUITY\020\000\022\n\n\006OPTION\020\001\022\n\n\006FUTURE\020" +
+      "\002\022\014\n\010CURRENCY\020\003*\366\001\n\024ContentAndCapability" +
+      "\022\017\n\013TOP_OF_BOOK\020\000\022\r\n\tOPEN_BOOK\020\001\022\017\n\013MARK" +
+      "ET_STAT\020\002\022\016\n\nTOTAL_VIEW\020\003\022\013\n\007LEVEL_2\020\004\022\017",
+      "\n\013LATEST_TICK\020\005\022\t\n\005BBO10\020\006\022\010\n\004NBBO\020\007\022\014\n\010" +
+      "DIVIDEND\020\010\022\024\n\020AGGREGATED_DEPTH\020\t\022\026\n\022UNAG" +
+      "GREGATED_DEPTH\020\n\022\r\n\tIMBALANCE\020\013\022\013\n\007UNKNO" +
+      "WN\020\014\022\022\n\016EVENT_BOUNDARY\020\r2\344\004\n\024RpcMarketDa" +
+      "taService\022&\n\005login\022\r.LoginRequest\032\016.Logi" +
+      "nResponse\022)\n\006logout\022\016.LogoutRequest\032\017.Lo" +
+      "goutResponse\0222\n\theartbeat\022\021.HeartbeatReq" +
+      "uest\032\022.HeartbeatResponse\0222\n\007request\022\022.Ma" +
+      "rketDataRequest\032\023.MarketDataResponse\0228\n\r" +
+      "getLastUpdate\022\022.LastUpdateRequest\032\023.Last",
+      "UpdateResponse\022)\n\006cancel\022\016.CancelRequest" +
+      "\032\017.CancelResponse\022,\n\tgetEvents\022\016.EventsR" +
+      "equest\032\017.EventsResponse\0225\n\014getAllEvents\022" +
+      "\021.AllEventsRequest\032\022.AllEventsResponse\0222" +
+      "\n\013getSnapshot\022\020.SnapshotRequest\032\021.Snapsh" +
+      "otResponse\022>\n\017getSnapshotPage\022\024.Snapshot" +
+      "PageRequest\032\025.SnapshotPageResponse\022S\n\026ge" +
+      "tAvailableCapability\022\033.AvailableCapabili" +
+      "tyRequest\032\034.AvailableCapabilityResponseB" +
+      "8\n$org.marketcetera.marketdata.core.rpcB",
+      "\rRpcMarketdata\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -19428,7 +19743,7 @@ public final class RpcMarketdata {
     internal_static_SnapshotRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_SnapshotRequest_descriptor,
-        new java.lang.String[] { "SessionId", "Instrument", "Content", "Provider", });
+        new java.lang.String[] { "SessionId", "Instrument", "Content", "Exchange", "Provider", });
     internal_static_SnapshotResponse_descriptor =
       getDescriptor().getMessageTypes().get(20);
     internal_static_SnapshotResponse_fieldAccessorTable = new
@@ -19440,7 +19755,7 @@ public final class RpcMarketdata {
     internal_static_SnapshotPageRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_SnapshotPageRequest_descriptor,
-        new java.lang.String[] { "SessionId", "Instrument", "Content", "Provider", "Page", });
+        new java.lang.String[] { "SessionId", "Instrument", "Content", "Exchange", "Provider", "Page", });
     internal_static_SnapshotPageResponse_descriptor =
       getDescriptor().getMessageTypes().get(22);
     internal_static_SnapshotPageResponse_fieldAccessorTable = new

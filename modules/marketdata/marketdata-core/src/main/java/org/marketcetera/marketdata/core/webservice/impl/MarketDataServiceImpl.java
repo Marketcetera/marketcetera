@@ -276,12 +276,13 @@ public class MarketDataServiceImpl
         }.execute(inContext);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.webservice.MarketDataService#getSnapshot(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String)
+     * @see org.marketcetera.marketdata.core.webservice.MarketDataService#getSnapshot(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, java.lang.String)
      */
     @Override
     public Deque<Event> getSnapshot(ClientContext inContext,
                                     final Instrument inInstrument,
                                     final Content inContent,
+                                    final String inExchange,
                                     final String inProvider)
             throws RemoteException
     {
@@ -292,28 +293,32 @@ public class MarketDataServiceImpl
                     throws Exception
             {
                 SLF4JLoggerProxy.debug(this,
-                                       "{} requesting snapshot for {} {} from {}",
+                                       "{} requesting snapshot for {} {} from {} {}",
                                        inContext.getSessionId(),
                                        inContent,
                                        inInstrument,
+                                       inExchange,
                                        inProvider);
                 checkConnection();
                 return doGetSnapshot(inInstrument,
                                      inContent,
+                                     inExchange,
                                      inProvider);
             }
         }.execute(inContext);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, java.lang.String)
      */
     @Override
     public Deque<Event> getSnapshot(Instrument inInstrument,
                                     Content inContent,
+                                    String inExchange,
                                     String inProvider)
     {
         return doGetSnapshot(inInstrument,
                              inContent,
+                             inExchange,
                              inProvider);
     }
     /* (non-Javadoc)
@@ -323,6 +328,7 @@ public class MarketDataServiceImpl
     public Deque<Event> getSnapshotPage(ClientContext inContext,
                                         final Instrument inInstrument,
                                         final Content inContent,
+                                        final String inExchange,
                                         final String inProvider,
                                         final PageRequest inPage)
             throws RemoteException
@@ -334,31 +340,35 @@ public class MarketDataServiceImpl
                     throws Exception
             {
                 SLF4JLoggerProxy.debug(this,
-                                       "{} requesting snapshot page {} for {} {} from {}",
+                                       "{} requesting snapshot page {} for {} {} from {} {}",
                                        inContext.getSessionId(),
                                        inPage,
                                        inContent,
                                        inInstrument,
+                                       inExchange,
                                        inProvider);
                 checkConnection();
                 return doGetSnapshotPage(inInstrument,
                                          inContent,
+                                         inExchange,
                                          inProvider,
                                          inPage);
             }
         }.execute(inContext);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, org.marketcetera.marketdata.core.webservice.PageRequest)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, java.lang.String, org.marketcetera.marketdata.core.webservice.PageRequest)
      */
     @Override
     public Deque<Event> getSnapshotPage(Instrument inInstrument,
                                         Content inContent,
+                                        String inExchange,
                                         String inProvider,
                                         PageRequest inPageRequest)
     {
         return doGetSnapshotPage(inInstrument,
                                  inContent,
+                                 inExchange,
                                  inProvider,
                                  inPageRequest);
     }
@@ -574,16 +584,19 @@ public class MarketDataServiceImpl
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
+     * @param inExchange a <code>String</code> value or <code>null</code>
      * @param inProvider a <code>String</code> value or <code>null</code>
      * @return a <code>Deque&lt;Event&gt;</code> value
      */
     private Deque<Event> doGetSnapshot(Instrument inInstrument,
                                        Content inContent,
+                                       String inExchange,
                                        String inProvider)
     {
         Event event = marketDataManager.requestMarketDataSnapshot(inInstrument,
                                                                   inContent,
-                                                                  inProvider);
+                                                                  inExchange,
+                                                                  inProvider).orNull();
         if(event == null) {
             return new LinkedList<>();
         }
@@ -600,18 +613,21 @@ public class MarketDataServiceImpl
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
+     * @param inExchange a <code>String</code> value or <code>null</code>
      * @param inProvider a <code>String</code> value or <code>null</code>
      * @param inPageRequest a <code>PageRequest</code> value
      * @return a <code>Deque&lt;Event&gt;</code> value
      */
     private Deque<Event> doGetSnapshotPage(Instrument inInstrument,
                                            Content inContent,
+                                           String inExchange,
                                            String inProvider,
                                            PageRequest inPageRequest)
     {
         Event event = marketDataManager.requestMarketDataSnapshot(inInstrument,
                                                                   inContent,
-                                                                  inProvider);
+                                                                  inExchange,
+                                                                  inProvider).orNull();
         if(event == null) {
             return new LinkedList<>();
         }

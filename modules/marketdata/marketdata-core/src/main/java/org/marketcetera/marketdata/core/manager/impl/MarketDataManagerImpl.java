@@ -35,6 +35,7 @@ import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.Order;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
+import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Sets;
@@ -116,23 +117,26 @@ public class MarketDataManagerImpl
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.manager.MarketDataManager#requestMarketDataSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String)
+     * @see org.marketcetera.marketdata.core.manager.MarketDataManager#requestMarketDataSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, java.lang.String)
      */
     @Override
-    public Event requestMarketDataSnapshot(Instrument inInstrument,
-                                           Content inContent,
-                                           String inProvider)
+    public Optional<Event> requestMarketDataSnapshot(Instrument inInstrument,
+                                                     Content inContent,
+                                                     String inExchange,
+                                                     String inProvider)
     {
         SLF4JLoggerProxy.debug(this,
-                               "Requesting market data snapshot: {} {} {}",
+                               "Requesting market data snapshot: {} {} {} {}",
                                inInstrument,
                                inContent,
+                               inExchange,
                                inProvider);
         if(useModuleFramework) {
             initMarketDataManagerModule();
-            Event snapshot = marketDataManagerModule.requestMarketDataSnapshot(inInstrument,
-                                                                               inContent,
-                                                                               inProvider);
+            Optional<Event> snapshot = marketDataManagerModule.requestMarketDataSnapshot(inInstrument,
+                                                                                         inContent,
+                                                                                         inExchange,
+                                                                                         inProvider);
             SLF4JLoggerProxy.debug(this,
                                    "Returning market data snapshot: {} {} {}: {}",
                                    inInstrument,
@@ -148,7 +152,8 @@ public class MarketDataManagerImpl
                     if(status.isRunning()) {
                         if(inProvider == null || inProvider.equals(provider.getProviderName())) {
                             return provider.getSnapshot(inInstrument,
-                                                        inContent);
+                                                        inContent,
+                                                        inExchange);
                         }
                     }
                 } catch (Exception e) {
@@ -392,7 +397,8 @@ public class MarketDataManagerImpl
                 if(newOrReplaceOrder.getPegToMidpoint()) {
                     Event marketData = requestMarketDataSnapshot(newOrReplaceOrder.getInstrument(),
                                                                  Content.TOP_OF_BOOK,
-                                                                 null);
+                                                                 null,
+                                                                 null).orNull();
                     if(marketData == null) {
                         throw new IllegalArgumentException("No market data available for " + newOrReplaceOrder.getInstrument().getFullSymbol());
                     }

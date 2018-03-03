@@ -13,7 +13,8 @@ import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.Messages;
-import org.marketcetera.marketdata.core.provider.MarketdataCacheElement;
+import org.marketcetera.marketdata.core.cache.MarketDataCache;
+import org.marketcetera.marketdata.core.cache.MarketDataCacheImpl;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataFlowRequester;
@@ -31,9 +32,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -108,13 +107,12 @@ public class MarketDataManagerModule
                                                 inFlowId,
                                                 inData);
                 } else {
-                    MarketdataCacheElement marketdataCache = cachedMarketdata.getUnchecked(eventInstrument);
                     Collection<Content> requestContent = contentByDataFlowId.get(inFlowId);
                     if(requestContent != null) {
                         for(Content content : requestContent) {
                             if(content.isRelevantTo(event.getClass())) {
-                                marketdataCache.update(content,
-                                                       event);
+                                cachedMarketdata.update(content,
+                                                        event);
                             }
                         }
                     }
@@ -258,19 +256,18 @@ public class MarketDataManagerModule
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
-     * @param inProvider a <code>String</code> value
-     * @return an <code>Event</code> value
+     * @param inExchange a <code>String</code> value or <code>null</code>
+     * @param inProvider a <code>String</code> value or <code>null</code>
+     * @return an <code>Optional&lt;Event&gt;</code> value
      */
-    public Event requestMarketDataSnapshot(Instrument inInstrument,
-                                           Content inContent,
-                                           String inProvider)
+    public Optional<Event> requestMarketDataSnapshot(Instrument inInstrument,
+                                                     Content inContent,
+                                                     String inExchange,
+                                                     String inProvider)
     {
-        MarketdataCacheElement cachedData = cachedMarketdata.getIfPresent(inInstrument);
-        if(cachedData != null) {
-            Event event = cachedData.getSnapshot(inContent);
-            return event;
-        }
-        return null;
+        return cachedMarketdata.getSnapshot(inInstrument,
+                                            inContent,
+                                            inExchange);
     }
     /**
      * Get the singleton instance.
@@ -325,13 +322,7 @@ public class MarketDataManagerModule
         super(inURN,
               true);
         instance = this;
-        cachedMarketdata = CacheBuilder.newBuilder().build(new CacheLoader<Instrument,MarketdataCacheElement>() {
-            @Override
-            public MarketdataCacheElement load(Instrument inKey)
-                    throws Exception
-            {
-                return new MarketdataCacheElement(inKey);
-            }});
+        cachedMarketdata = new MarketDataCacheImpl();
     }
     /**
      * Get the instance URN for the given market data provider name.
@@ -482,7 +473,7 @@ public class MarketDataManagerModule
      */
     private final Map<String,ModuleURN> instanceUrnsByProviderName = new HashMap<>();
     /**
-     * tracks cached market data by the instrument
+     * holds cached market data
      */
-    private LoadingCache<Instrument,MarketdataCacheElement> cachedMarketdata;
+    private MarketDataCache cachedMarketdata;
 }

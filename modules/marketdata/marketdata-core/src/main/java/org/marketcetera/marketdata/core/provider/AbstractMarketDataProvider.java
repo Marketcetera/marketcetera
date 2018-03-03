@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingDeque;
@@ -20,8 +21,6 @@ import javax.annotation.PreDestroy;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventType;
@@ -33,6 +32,7 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.MarketDataProvider;
 import org.marketcetera.marketdata.core.ProviderStatus;
 import org.marketcetera.marketdata.core.cache.MarketDataCache;
+import org.marketcetera.marketdata.core.cache.MarketDataCacheImpl;
 import org.marketcetera.marketdata.core.manager.MarketDataException;
 import org.marketcetera.marketdata.core.manager.MarketDataProviderNotAvailable;
 import org.marketcetera.marketdata.core.manager.MarketDataProviderRegistry;
@@ -46,6 +46,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.Lifecycle;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -69,24 +70,31 @@ public abstract class AbstractMarketDataProvider
      * @see org.marketcetera.marketdata.cache.MarketdataCache#getSnapshot(org.marketcetera.core.trade.Instrument, org.marketcetera.marketdata.Content)
      */
     @Override
-    public Event getSnapshot(Instrument inInstrument,
-                             Content inContent)
+    public Optional<Event> getSnapshot(Instrument inInstrument,
+                                       Content inContent,
+                                       String inExchange)
 {
-        Lock snapshotLock = marketdataLock.readLock();
-        try {
-            snapshotLock.lockInterruptibly();
-            MarketdataCacheElement cachedData = cachedMarketdata.get(inInstrument);
-            if(cachedData != null) {
-                return cachedData.getSnapshot(inContent);
-            }
-            return null;
-        } catch (InterruptedException e) {
-            org.marketcetera.marketdata.core.Messages.UNABLE_TO_ACQUIRE_LOCK.error(this);
-            stop();
-            throw new MarketDataRequestFailed(e);
-        } finally {
-            snapshotLock.unlock();
-        }
+        return cachedMarketdata.getSnapshot(inInstrument,
+                                            inContent,
+                                            inExchange);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.cache.MarketDataCache#update(org.marketcetera.marketdata.Content, org.marketcetera.event.Event[])
+     */
+    @Override
+    public List<Event> update(Content inContent,
+                              Event... inEvents)
+    {
+        return cachedMarketdata.update(inContent,
+                                       inEvents);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.Cacheable#clear()
+     */
+    @Override
+    public void clear()
+    {
+        cachedMarketdata.clear();
     }
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#start()
@@ -191,7 +199,8 @@ public abstract class AbstractMarketDataProvider
                                                atom.getSymbol());
                     } else {
                         Event snapshotEvent = getSnapshot(snapshotInstrument,
-                                                          atom.getContent());
+                                                          atom.getContent(),
+                                                          atom.getExchange()).orNull();
                         if(snapshotEvent instanceof HasEventType) {
                             HasEventType eventTypeSnapshot = (HasEventType)snapshotEvent;
                             eventTypeSnapshot.setEventType(EventType.SNAPSHOT_FINAL);
@@ -287,7 +296,8 @@ public abstract class AbstractMarketDataProvider
                         instrumentRequests.remove(inRequestToken);
                         if(instrumentRequests.isEmpty()) {
                             // no more requests for this instrument, which means this instrument will no longer be updated - clear the cache for it
-                            cachedMarketdata.remove(mappedInstrument);
+                            cachedMarketdata.invalidate(mappedInstrument,
+                                                        atom.getExchange());
                         }
                     }
                 }
@@ -298,6 +308,16 @@ public abstract class AbstractMarketDataProvider
         } finally {
             cancelLock.unlock();
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.cache.MarketDataCache#invalidate(org.marketcetera.trade.Instrument, java.lang.String)
+     */
+    @Override
+    public void invalidate(Instrument inInstrument,
+                           String inExchange)
+    {
+        cachedMarketdata.invalidate(inInstrument,
+                                    inExchange);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataProvider#getFeedStatus()
@@ -364,10 +384,12 @@ public abstract class AbstractMarketDataProvider
      *
      * @param inContent a <code>Content</code> value
      * @param inInstrument an <code>Instrument</code> value
+     * @param inExchange a <code>String</code> value
      * @param inEvents an <code>Event[]</code> value
      */
     protected void publishEvents(Content inContent,
                                  Instrument inInstrument,
+                                 String inExchange,
                                  Event...inEvents)
     {
         // TODO validation: make sure each event has the proper content and instrument (don't do this every time, just if the provider requests validation)
@@ -375,6 +397,7 @@ public abstract class AbstractMarketDataProvider
         totalEvents += inEvents.length;
         notifications.add(new EventNotification(inContent,
                                                 inInstrument,
+                                                inExchange,
                                                 inEvents));
     }
     /**
@@ -546,15 +569,8 @@ public abstract class AbstractMarketDataProvider
                         // sort out where to apply these events. the key to the cached market data is the instrument
                         Instrument eventInstrument = notification.instrument;
                         // there is at least one event to process. let the market data cache process each event
-                        MarketdataCacheElement marketdataCache = cachedMarketdata.get(eventInstrument);
-                        if(marketdataCache == null) {
-                            marketdataCache = new MarketdataCacheElement(eventInstrument);
-                            cachedMarketdata.put(eventInstrument,
-                                                 marketdataCache);
-                        }
-                        // we now have the market data cache object to use - give it the incoming events
-                        Collection<Event> outgoingEvents = marketdataCache.update(notification.content,
-                                                                                  events);
+                        Collection<Event> outgoingEvents = cachedMarketdata.update(notification.content,
+                                                                                   events);
                         // find subscribers to this instrument
                         requests.clear();
                         Lock requestLock = marketdataLock.readLock();
@@ -674,23 +690,29 @@ public abstract class AbstractMarketDataProvider
         @Override
         public String toString()
         {
-            return new ToStringBuilder(this,ToStringStyle.SHORT_PREFIX_STYLE).append("instrument",instrument).append("content",content).append(" [") //$NON-NLS-1$ //$NON-NLS-2$
-                                                                             .append(Arrays.toString(events)).append(" ]").toString(); //$NON-NLS-1$
+            StringBuilder builder = new StringBuilder();
+            builder.append("EventNotification [instrument=").append(instrument).append(", content=").append(content)
+                    .append(", exchange=").append(exchange).append(", events=").append(Arrays.toString(events))
+                    .append("]");
+            return builder.toString();
         }
         /**
          * Create a new EventNotification instance.
          *
          * @param inContent a <code>Content</code> value
          * @param inInstrument an <code>Instrument</code> value
+         * @param inExchange a <code>String</code> value
          * @param inEvents an <code>Event[]</code> value
          */
         private EventNotification(Content inContent,
                                   Instrument inInstrument,
+                                  String inExchange,
                                   Event... inEvents)
         {
             events = inEvents;
             content = inContent;
             instrument = inInstrument;
+            exchange = inExchange;
         }
         /**
          * content value
@@ -700,6 +722,10 @@ public abstract class AbstractMarketDataProvider
          * instrument value
          */
         private final Instrument instrument;
+        /**
+         * exchange value
+         */
+        private final String exchange;
         /**
          * events to notify
          */
@@ -761,8 +787,7 @@ public abstract class AbstractMarketDataProvider
     /**
      * tracks cached market data by the instrument
      */
-    @GuardedBy("marketdataLock")
-    private final Map<Instrument,MarketdataCacheElement> cachedMarketdata = new HashMap<Instrument,MarketdataCacheElement>();
+    private final MarketDataCache cachedMarketdata = new MarketDataCacheImpl();
     /**
      * maps the capabilities needed to honor a request of a particular content type
      */

@@ -2,7 +2,8 @@ package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -29,13 +30,9 @@ import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
@@ -76,8 +73,6 @@ import org.marketcetera.photon.marketdata.IFeedStatusChangedListener;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.ui.TextContributionItem;
-import org.marketcetera.symbol.PatternSymbolResolver;
-import org.marketcetera.symbol.SymbolResolver;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Future;
@@ -104,7 +99,7 @@ import quickfix.field.Symbol;
 import quickfix.field.TradeVolume;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /* $License$ */
 
@@ -126,7 +121,7 @@ public final class MarketDataView
             throws PartInitException
     {
         super.init(site);
-        mViewState = memento;
+        viewState = memento;
     }
     /**
      * Returns the clipboard for this view.
@@ -135,15 +130,15 @@ public final class MarketDataView
      */
     public Clipboard getClipboard()
     {
-        if (mClipboard == null) {
-            mClipboard = new Clipboard(mViewer.getControl().getDisplay());
+        if (clipboard == null) {
+            clipboard = new Clipboard(itemTableViewer.getControl().getDisplay());
         }
-        return mClipboard;
+        return clipboard;
     }
 
     @Override
     public Table getColumnWidget() {
-        return mViewer != null ? mViewer.getTable() : null;
+        return itemTableViewer != null ? itemTableViewer.getTable() : null;
     }
 
     @Override
@@ -151,9 +146,9 @@ public final class MarketDataView
     {
         final IActionBars actionBars = getViewSite().getActionBars();
         IToolBarManager toolbar = actionBars.getToolBarManager();
-        mSymbolEntryText = new TextContributionItem(""); //$NON-NLS-1$
-        toolbar.add(mSymbolEntryText);
-        toolbar.add(new AddSymbolAction(mSymbolEntryText, this));
+        symbolEntryText = new TextContributionItem(""); //$NON-NLS-1$
+        toolbar.add(symbolEntryText);
+        toolbar.add(new AddSymbolAction(symbolEntryText, this));
         PhotonPlugin.getDefault().getMarketDataManager().addActiveFeedStatusChangedListener(new IFeedStatusChangedListener() {
             @Override
             public void feedStatusChanged(final IFeedStatusEvent inEvent)
@@ -162,17 +157,17 @@ public final class MarketDataView
                     @Override
                     public void run()
                     {
-                        mSymbolEntryText.setEnabled(inEvent.getNewStatus() == FeedStatus.AVAILABLE);
+                        symbolEntryText.setEnabled(inEvent.getNewStatus() == FeedStatus.AVAILABLE);
                     }
                 });
             }
         });
         final Table table = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER);
         table.setHeaderVisible(true);
-        mViewer = new TableViewer(table);
+        itemTableViewer = new TableViewer(table);
         GridDataFactory.defaultsFor(table).applyTo(table);
         final MarketDataItemComparator comparator = new MarketDataItemComparator();
-        mViewer.setComparator(comparator);
+        itemTableViewer.setComparator(comparator);
         SelectionListener listener = new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -190,17 +185,21 @@ public final class MarketDataView
                 table.setSortDirection(dir);
                 comparator.setSort(dir == SWT.UP ? 1 : -1);
                 comparator.setIndex(index);
-                mViewer.refresh();
+                itemTableViewer.refresh();
             }
         };
 
         // create columns, using FIXFieldLocalizer to preserve backwards compatibility
-        TableViewerColumn symbolColumn = new TableViewerColumn(mViewer,
-                                                               createColumn(table,
-                                                                            FIXFieldLocalizer.getLocalizedFIXFieldName(Symbol.class.getSimpleName()),
-                                                                            SWT.LEFT,
-                                                                            listener));
-        symbolColumn.setEditingSupport(new SymbolEditingSupport());
+//        TableViewerColumn symbolColumn = new TableViewerColumn(mViewer,
+//                                                               createColumn(table,
+//                                                                            FIXFieldLocalizer.getLocalizedFIXFieldName(Symbol.class.getSimpleName()),
+//                                                                            SWT.LEFT,
+//                                                                            listener));
+//        symbolColumn.setEditingSupport(new SymbolEditingSupport());
+        createColumn(table,
+                     FIXFieldLocalizer.getLocalizedFIXFieldName(Symbol.class.getSimpleName()),
+                     SWT.LEFT,
+                     listener);
         createColumn(table,
                      FIXFieldLocalizer.getLocalizedFIXFieldName(quickfix.field.LastMkt.class.getSimpleName()),
                      SWT.LEFT,
@@ -250,8 +249,8 @@ public final class MarketDataView
                      SWT.RIGHT,
                      listener);
         // restore table state if it exists
-        if(mViewState != null) {
-            ColumnState.restore(table, mViewState);
+        if(viewState != null) {
+            ColumnState.restore(table, viewState);
             for(TableColumn column : table.getColumns()) {
                 if(column.getWidth() == 0) {
                     column.setResizable(false);
@@ -259,14 +258,14 @@ public final class MarketDataView
             }
         }
         registerContextMenu();
-        getSite().setSelectionProvider(mViewer);
+        getSite().setSelectionProvider(itemTableViewer);
         ObservableListContentProvider content = new ObservableListContentProvider();
-        mViewer.setContentProvider(content);
+        itemTableViewer.setContentProvider(content);
         IObservableSet domain = content.getKnownElements();
         IObservableMap[] maps = new IObservableMap[] {
             BeansObservables.observeMap(domain,
                                         MarketDataViewItem.class,
-                                        "symbol"), //$NON-NLS-1$
+                                        "symbolPattern"), //$NON-NLS-1$
             createCompositeMap(domain,
                                "latestTick", //$NON-NLS-1$
                                MDPackage.Literals.MD_LATEST_TICK__EXCHANGE),
@@ -304,39 +303,39 @@ public final class MarketDataView
                                "marketStat", //$NON-NLS-1$
                                MDPackage.Literals.MD_MARKETSTAT__VOLUME_TRADED)
         };
-        mViewer.setLabelProvider(new ObservableMapLabelProvider(maps));
-        mViewer.setUseHashlookup(true);
-        mItems = WritableList.withElementType(MarketDataViewItem.class);
-        mViewer.setInput(mItems);
-        if(mViewState == null ) {
+        itemTableViewer.setLabelProvider(new ObservableMapLabelProvider(maps));
+        itemTableViewer.setUseHashlookup(true);
+        viewItems = WritableList.withElementType(MarketDataViewItem.class);
+        itemTableViewer.setInput(viewItems);
+        List<String> symbolPatternsToAdd = Lists.newArrayList();
+        if(viewState == null) {
+            // this block is entered if this is the first time the market data view has ever been entered
             ScopedPreferenceStore preferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
             String instrumentList = StringUtils.trimToNull(preferenceStore.getString(preferenceSymbolKey));
-            SymbolResolver symbolResolver = new PatternSymbolResolver();
             if(instrumentList != null) {
                 for(String symbol : instrumentList.split(",")) {
                     symbol = StringUtils.trimToNull(symbol);
                     if(symbol != null) {
-                        Instrument instrument = symbolResolver.resolveSymbol(symbol);
-                        if(instrument != null) {
-                            instrumentsToAdd.add(instrument);
-                        }
+                        symbolPatternsToAdd.add(symbol);
                     }
                 }
-                addInstrumentJobToken = addInstrumentService.scheduleAtFixedRate(new AddInstrumentAgent(),
-                                                                                 1000,
-                                                                                 1000,
-                                                                                 TimeUnit.MILLISECONDS);
+                // schedule the job with the symbol patterns from the installation config
+                addSymbolPatternJobToken = addSymbolPatternService.scheduleAtFixedRate(new AddSymbolPatternAgent(symbolPatternsToAdd),
+                                                                                       1000,
+                                                                                       1000,
+                                                                                       TimeUnit.MILLISECONDS);
             }
         } else {
-            IMemento[] instrumentList = mViewState.getChildren(INSTRUMENT_LIST);
-            if(instrumentList != null) {
-                for(IMemento symbolMemo : instrumentList) {
-                    instrumentsToAdd.add(InstrumentFromMemento.restore(symbolMemo));
+            IMemento[] symbolPatternList = viewState.getChildren(SYMBOL_PATTERN_LIST);
+            if(symbolPatternList != null) {
+                for(IMemento symbolMemoParent : symbolPatternList) {
+                    String symbolPattern = symbolMemoParent.getString(SYMBOL_ATTRIBUTE);
+                    symbolPatternsToAdd.add(symbolPattern);
                 }
-                addInstrumentJobToken = addInstrumentService.scheduleAtFixedRate(new AddInstrumentAgent(),
-                                                                                 1000,
-                                                                                 1000,
-                                                                                 TimeUnit.MILLISECONDS);
+                addSymbolPatternJobToken = addSymbolPatternService.scheduleAtFixedRate(new AddSymbolPatternAgent(symbolPatternsToAdd),
+                                                                                       1000,
+                                                                                       1000,
+                                                                                       TimeUnit.MILLISECONDS);
             }
         }
         table.addListener(SWT.MouseDoubleClick, new Listener() {
@@ -452,8 +451,8 @@ public final class MarketDataView
     private void registerContextMenu() {
         MenuManager contextMenu = new MenuManager();
         contextMenu.setRemoveAllWhenShown(true);
-        getSite().registerContextMenu(contextMenu, mViewer);
-        Control control = mViewer.getControl();
+        getSite().registerContextMenu(contextMenu, itemTableViewer);
+        Control control = itemTableViewer.getControl();
         Menu menu = contextMenu.createContextMenu(control);
         control.setMenu(menu);
     }
@@ -466,80 +465,124 @@ public final class MarketDataView
         ColumnState.save(getColumnWidget(),
                          inMemento);
         if(inMemento != null) {
-            for(Instrument instrument : mItemMap.keySet()) {
-                IMemento instrumentMemento = inMemento.createChild(INSTRUMENT_LIST);
-                InstrumentToMemento.save(instrument,
-                                         instrumentMemento);
+            for(String symbolPattern : requestedSymbols) {
+                IMemento symbolMemento = inMemento.createChild(SYMBOL_PATTERN_LIST);
+                symbolMemento.putString(SYMBOL_ATTRIBUTE,
+                                        symbolPattern);
             }
         }
     }
 
     @Override
     public void setFocus() {
-        if (mSymbolEntryText.isEnabled())
-            mSymbolEntryText.setFocus();
+        if (symbolEntryText.isEnabled())
+            symbolEntryText.setFocus();
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.views.IMSymbolListener#onAddSymbol(java.lang.String)
+     */
     @Override
-    public boolean isListeningSymbol(Instrument instrument) {
-        return false;
+    public void onAddSymbol(String inSymbolPattern)
+    {
+        if(requestedSymbols.contains(inSymbolPattern)) {
+            PhotonPlugin.getMainConsoleLogger().warn(Messages.DUPLICATE_SYMBOL.getText(inSymbolPattern));
+            return;
+        }
+        requestedSymbols.add(inSymbolPattern);
+        String[] symbolComponents = inSymbolPattern.split("\\.");
+        Instrument instrument = PhotonPlugin.getDefault().getSymbolResolver().resolveSymbol(symbolComponents[0]);
+        String exchange = symbolComponents.length > 1 ? symbolComponents[1]:null;
+        addSymbol(instrument,
+                  exchange,
+                  inSymbolPattern);
     }
-
-    @Override
-    public void onAssertSymbol(Instrument instrument) {
-        addSymbol(instrument);
-    }
-
     /**
      * Adds a new row in the view for the given instrument (if one does not already exist).
      * 
      * @param inInstrument an <code>Instrument</code> value
+     * @param inExchange a <code>String</code> value or <code>null</code>
+     * @param inSymbolPattern a <code>String</code> value
      */
-    public void addSymbol(final Instrument inInstrument)
+    public void addSymbol(final Instrument inInstrument,
+                          final String inExchange,
+                          final String inSymbolPattern)
     {
-        if(mItemMap.containsKey(inInstrument)) {
-            PhotonPlugin.getMainConsoleLogger().warn(Messages.DUPLICATE_SYMBOL.getText(inInstrument));
-        } else {
-            busyRun(new Runnable() {
-                @Override
-                public void run()
-                {
-                    // the item was generated by the passed instrument and will generate multiple market data requests to fulfill it
-                    // the symbol resolver should be deterministic, so we can use the instrument as the key for the items collection
-                    MarketDataViewItem item = new MarketDataViewItem(mMarketDataManager.getMarketData(),
-                                                                     inInstrument);
-                    mItemMap.put(inInstrument,
-                                 item);
-                    mItems.add(item);
-                }
-            });
-        }
+        busyRun(new Runnable() {
+            @Override
+            public void run()
+            {
+                MarketDataViewItem item = new MarketDataViewItem(marketDataManager.getMarketData(),
+                                                                 inInstrument,
+                                                                 inExchange,
+                                                                 inSymbolPattern);
+                viewItems.add(item);
+            }
+        });
     }
-    private void busyRun(Runnable runnable)
-    {
-        BusyIndicator.showWhile(getViewSite().getShell().getDisplay(),
-                                runnable);
-    }
-
-    private void remove(final MarketDataViewItem item) {
-        mItemMap.remove(item.getInstrument());
-        mItems.remove(item);
-        item.dispose();
-    }
-
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+     */
     @Override
-    public void dispose() {
-        for (MarketDataViewItem item : mItemMap.values()) {
+    public void dispose()
+    {
+        @SuppressWarnings("unchecked")
+        Iterator<Object> itemIterator = viewItems.iterator();
+        while(itemIterator.hasNext()) {
+            MarketDataViewItem item = (MarketDataViewItem)itemIterator.next();
             item.dispose();
         }
-        mItemMap = null;
-        mItems = null;
-        if (mClipboard != null) {
-            mClipboard.dispose();
+        requestedSymbols.clear();
+        viewItems = null;
+        if(clipboard != null) {
+            clipboard.dispose();
         }
         super.dispose();
     }
-
+    /**
+     * Get the default order size for the given instrument at the given price.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @return a <code>BigDecimal</code> value
+     */
+    static BigDecimal getDefaultOrderSize(Instrument inInstrument,
+                                          BigDecimal inPrice)
+    {
+        BigDecimal defaultOrderSize = null;
+        if (inPrice == null)
+            return defaultOrderSize;
+        if (inInstrument instanceof Equity) {
+            defaultOrderSize = new BigDecimal(100);
+        } else if (inInstrument instanceof Future) {
+            defaultOrderSize = new BigDecimal(1);
+        } else if (inInstrument instanceof Option) {
+            defaultOrderSize = new BigDecimal(1);
+        } else if (inInstrument instanceof org.marketcetera.trade.Currency) {
+            defaultOrderSize = new BigDecimal(1);
+        }
+        return defaultOrderSize;
+    }
+    /**
+     * Runs the given command while displaying an hourglass.
+     *
+     * @param inRunnable a <code>Runnable</code> value
+     */
+    private void busyRun(Runnable inRunnable)
+    {
+        BusyIndicator.showWhile(getViewSite().getShell().getDisplay(),
+                                inRunnable);
+    }
+    /**
+     * Remove the given view item.
+     *
+     * @param inViewItem a <code>MarketDataViewItem</code> value
+     */
+    private void remove(MarketDataViewItem inViewItem)
+    {
+        requestedSymbols.remove(inViewItem.getSymbolPattern());
+        viewItems.remove(inViewItem);
+        inViewItem.dispose();
+    }
     /**
      * Handles column sorting.
      * 
@@ -547,12 +590,11 @@ public final class MarketDataView
      * @version $Id$
      * @since 1.0.0
      */
-    @ClassVersion("$Id$")//$NON-NLS-1$
-    private static class MarketDataItemComparator extends ViewerComparator {
-
+    private static class MarketDataItemComparator
+            extends ViewerComparator
+    {
         private int mIndex = -1;
         private int mDirection = 0;
-
         /**
          * @param index
          *            index of sort column
@@ -647,7 +689,6 @@ public final class MarketDataView
                 compare = compareNulls(closeSize1, closeSize2);
                 if (compare == 0) {
                     compare = closeSize1.compareTo(closeSize2);
-
                 }
                 break;
             case OPEN_PX:
@@ -700,68 +741,6 @@ public final class MarketDataView
             return 0;
         }
     }
-
-    /**
-     * Provides support for editing symbols in-line
-     * 
-     * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-     * @version $Id$
-     * @since 1.0.0
-     */
-    @ClassVersion("$Id$")
-    private final class SymbolEditingSupport
-            extends EditingSupport
-    {
-        private final TextCellEditor mTextCellEditor;
-        private SymbolEditingSupport() {
-            super(mViewer);
-            this.mTextCellEditor = new TextCellEditor(mViewer.getTable());
-        }
-
-        @Override
-        protected void setValue(Object inElement,
-                                Object inValue)
-        {
-            if(StringUtils.isBlank(inValue.toString())) {
-                return;
-            }
-            final MarketDataViewItem item = (MarketDataViewItem) inElement;
-            final Instrument instrument = item.getInstrument();
-            if(instrument.getSymbol().equals(inValue)) {
-                return;
-            }
-            final Instrument newInstrument = PhotonPlugin.getDefault().getSymbolResolver().resolveSymbol(inValue.toString());
-            if(mItemMap.containsKey(newInstrument)) {
-                PhotonPlugin.getMainConsoleLogger().warn(Messages.DUPLICATE_SYMBOL.getText(newInstrument.getSymbol()));
-                return;
-            }
-            busyRun(new Runnable() {
-                @Override
-                public void run() {
-                    mItemMap.remove(instrument);
-                    item.setInstrument(newInstrument);
-                    mItemMap.put(newInstrument,
-                                 item);
-                }
-            });
-        }
-
-        @Override
-        protected Object getValue(Object element) {
-            return ((MarketDataViewItem) element).getInstrument().getSymbol();
-        }
-
-        @Override
-        protected CellEditor getCellEditor(Object element) {
-            return mTextCellEditor;
-        }
-
-        @Override
-        protected boolean canEdit(Object element) {
-            return true;
-        }
-    }
-
     /**
      * Handles the delete command for this view.
      * 
@@ -770,24 +749,25 @@ public final class MarketDataView
      * @since 1.0.0
      */
     @ClassVersion("$Id$")
-    public static final class DeleteCommandHandler extends AbstractHandler
-            implements IHandler {
-
+    public static final class DeleteCommandHandler
+            extends AbstractHandler
+            implements IHandler
+    {
         @Override
-        public Object execute(ExecutionEvent event) throws ExecutionException {
+        public Object execute(ExecutionEvent event)
+                throws ExecutionException
+        {
             IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
-            ISelection selection = HandlerUtil
-                    .getCurrentSelectionChecked(event);
-            if (part instanceof MarketDataView
-                    && selection instanceof IStructuredSelection) {
+            ISelection selection = HandlerUtil.getCurrentSelectionChecked(event);
+            if (part instanceof MarketDataView && selection instanceof IStructuredSelection) {
                 final MarketDataView view = (MarketDataView) part;
                 final IStructuredSelection sselection = (IStructuredSelection) selection;
                 // this can take some time
                 view.busyRun(new Runnable() {
                     public void run() {
                         for (Object obj : sselection.toArray()) {
-                            if (obj instanceof MarketDataViewItem) {
-                                view.remove((MarketDataViewItem) obj);
+                            if(obj instanceof MarketDataViewItem) {
+                                view.remove((MarketDataViewItem)obj);
                             }
                         }
                     }
@@ -796,47 +776,46 @@ public final class MarketDataView
             return null;
         }
     }
-
-    @ClassVersion("$Id$")
-    public static final class BuyCommandHandler extends OrderCommandHandler
-            implements IHandler {
+    /**
+     * Handles the buy command for the view.
+     *
+     * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+     * @version $Id$
+     * @since 1.0.0
+     */
+    public static final class BuyCommandHandler
+            extends OrderCommandHandler
+            implements IHandler
+    {
         @Override
-        public Object execute(ExecutionEvent event) throws ExecutionException {
+        public Object execute(ExecutionEvent event)
+                throws ExecutionException
+        {
             super.setSide(Side.Buy);
             return super.execute(event);
         }
     }
-
-    @ClassVersion("$Id$")
-    public static final class SellCommandHandler extends OrderCommandHandler
-            implements IHandler {
+    /**
+     * Handles the sell command for the view.
+     *
+     * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+     * @version $Id$
+     * @since 1.0.0
+     */
+    public static final class SellCommandHandler
+            extends OrderCommandHandler
+            implements IHandler
+    {
         @Override
-        public Object execute(ExecutionEvent event) throws ExecutionException {
+        public Object execute(ExecutionEvent event)
+                throws ExecutionException
+        {
             super.setSide(Side.Sell);
             return super.execute(event);
         }
     }
-
-    public static BigDecimal getDefaultOrderSize(Instrument instr,
-                                                 BigDecimal Px) {
-        BigDecimal defaultOrderSize = null;
-        if (Px == null)
-            return defaultOrderSize;
-        if (instr instanceof Equity) {
-            defaultOrderSize = new BigDecimal(100);
-        } else if (instr instanceof Future) {
-            defaultOrderSize = new BigDecimal(1);
-        } else if (instr instanceof Option) {
-            defaultOrderSize = new BigDecimal(1);
-        } else if (instr instanceof org.marketcetera.trade.Currency) {
-            defaultOrderSize = new BigDecimal(1);
-        }
-        return defaultOrderSize;
-    }
-
     /**
      * Handles the send order command for this view.
-     * 
      */
     @ClassVersion("$Id$")
     public static class OrderCommandHandler extends AbstractHandler implements
@@ -944,83 +923,147 @@ public final class MarketDataView
         }
     }
     /**
-     *
+     * Adds instruments on start from the last market data session.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
      * @since 2.4.0
      */
-    private class AddInstrumentAgent
+    private class AddSymbolPatternAgent
             implements Runnable
     {
+        /**
+         * Create a new AddSymbolPatternAgent instance.
+         *
+         * @param inSymbolPatternsToAdd a <code>List&lt;String&gt;</code> value
+         */
+        public AddSymbolPatternAgent(List<String> inSymbolPatternsToAdd)
+        {
+            symbolPatternsToAdd = inSymbolPatternsToAdd;
+        }
         /* (non-Javadoc)
          * @see java.lang.Runnable#run()
          */
         @Override
         public void run()
         {
-            if(!mMarketDataManager.isRunning()) {
+            if(!marketDataManager.isRunning()) {
                 return;
             }
             try {
-                if(instrumentsToAdd.isEmpty()) {
+                if(symbolPatternsToAdd.isEmpty()) {
                     return;
                 }
                 Display.getDefault().asyncExec(new Runnable() {
                     @Override
                     public void run()
                     {
-                        Iterator<Instrument> instrumentToAddIterator = instrumentsToAdd.iterator();
-                        while(instrumentToAddIterator.hasNext()) {
-                            Instrument instrumentToAdd = instrumentToAddIterator.next();
+                        Iterator<String> symbolPatternToAddIterator = symbolPatternsToAdd.iterator();
+                        while(symbolPatternToAddIterator.hasNext()) {
+                            String symbolPatternToAdd = symbolPatternToAddIterator.next();
                             try {
-                                addSymbol(instrumentToAdd);
+                                String[] symbolComponents = symbolPatternToAdd.split("\\.");
+                                String symbol = symbolComponents[0];
+                                String exchange = null;
+                                if(symbolComponents.length > 1) {
+                                    exchange = symbolComponents[1];
+                                }
+                                Instrument instrument = PhotonPlugin.getDefault().getSymbolResolver().resolveSymbol(symbol);
+                                addSymbol(instrument,
+                                          exchange,
+                                          symbolPatternToAdd);
                             } catch (Exception e) {
                                 SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
                                                        "A problem occurred restoring market data for {}",
-                                                       instrumentToAdd);
+                                                       symbolPatternToAdd);
                                 SLF4JLoggerProxy.error(MarketDataView.this,
                                                        e);
                             }
-                            instrumentToAddIterator.remove();
+                            symbolPatternToAddIterator.remove();
                         }
                     }
                 });
             } finally {
-                addInstrumentJobToken.cancel(true);
-                addInstrumentJobToken = null;
+                addSymbolPatternJobToken.cancel(true);
+                addSymbolPatternJobToken = null;
             }
         }
+        /**
+         * symbol patterns to add
+         */
+        private final List<String> symbolPatternsToAdd;
     }
     /**
-     * 
+     * Identifies the columns in the view.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
      */
-    private ScheduledExecutorService addInstrumentService = Executors.newScheduledThreadPool(1);
+    private static enum MD_TABLE_COLUMNS
+    {
+        MD_SYMBOL,
+        EXCHANGE,
+        LAST_PX,
+        LAST_SZ,
+        BID_SZ,
+        BID_PX,
+        OFFER_PX,
+        OFFER_SZ,
+        PREV_CLOSE,
+        OPEN_PX,
+        HIGH_PX,
+        LOW_PX,
+        TRD_VOLUME
+    }
+    /**
+     * service used to asynchronously add instruments from the last session after start
+     */
+    private ScheduledExecutorService addSymbolPatternService = Executors.newScheduledThreadPool(1);
     /**
      * The view ID.
      */
     public static final String ID = "org.marketcetera.photon.views.MarketDataView"; //$NON-NLS-1$
-
-    private Map<Instrument,MarketDataViewItem> mItemMap = Maps.newLinkedHashMap();
-    private final java.util.List<Instrument> instrumentsToAdd = Lists.newArrayList();
-    private java.util.concurrent.Future<?> addInstrumentJobToken; 
-    private TextContributionItem mSymbolEntryText;
-
-    private final IMarketDataManager mMarketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
-
-    private TableViewer mViewer;
-
-    private WritableList mItems;
-
-    private IMemento mViewState;
-
-    private Clipboard mClipboard;
-
-    private final static String INSTRUMENT_LIST = "Instrument_List"; //$NON-NLS-1$
-
-    public static enum MD_TABLE_COLUMNS {
-        MD_SYMBOL, EXCHANGE, LAST_PX, LAST_SZ, BID_SZ, BID_PX, OFFER_PX, OFFER_SZ, PREV_CLOSE, OPEN_PX, HIGH_PX, LOW_PX, TRD_VOLUME,
-    }
+    /**
+     * token which identifies the job which adds symbols from the last session
+     */
+    private java.util.concurrent.Future<?> addSymbolPatternJobToken;
+    /**
+     * text control used to accept new market data requests
+     */
+    private TextContributionItem symbolEntryText;
+    /**
+     * provides access to market data services
+     */
+    private final IMarketDataManager marketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
+    /**
+     * main table view artifact
+     */
+    private TableViewer itemTableViewer;
+    /**
+     * holds the items (table rows) in the view
+     */
+    private WritableList viewItems;
+    /**
+     * used to preserve the state of the view between sessions
+     */
+    private IMemento viewState;
+    /**
+     * clipboard object, used to cut and paste
+     */
+    private Clipboard clipboard;
+    /**
+     * key used to store market data requests from the last session (used for memento)
+     */
+    private static final String SYMBOL_PATTERN_LIST = "Symbol_Pattern_List"; //$NON-NLS-1$
+    /**
+     * symbol pattern attribute (used for memento)
+     */
+    private static final String SYMBOL_ATTRIBUTE = "symbol"; //$NON-NLS-1$
+    /**
+     * holds the symbol patterns already requested
+     */
+    private final Set<String> requestedSymbols = Sets.newHashSet();
     /**
      * indicates the initial symbol list to use
      */

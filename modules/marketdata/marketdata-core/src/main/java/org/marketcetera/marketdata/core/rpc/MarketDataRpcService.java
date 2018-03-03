@@ -235,12 +235,17 @@ public class MarketDataRpcService<SessionClazz>
             serverServices.validateAndReturnSession(inRequest.getSessionId());
             Instrument instrument = serverServices.unmarshall(inRequest.getInstrument().getPayload());
             Content content = Content.valueOf(inRequest.getContent().name());
+            String exchange = null;
+            if(inRequest.hasExchange()) {
+                exchange = inRequest.getExchange();
+            }
             String provider = null;
             if(inRequest.hasProvider()) {
                 provider = inRequest.getProvider();
             }
             Deque<Event> events = serviceAdapter.getSnapshot(instrument,
                                                              content,
+                                                             exchange,
                                                              provider);
             for(Event event : events) {
                 responseBuilder.addPayload(serverServices.marshal(event));
@@ -263,12 +268,17 @@ public class MarketDataRpcService<SessionClazz>
             serverServices.validateAndReturnSession(inRequest.getSessionId());
             Instrument instrument = serverServices.unmarshall(inRequest.getInstrument().getPayload());
             Content content = Content.valueOf(inRequest.getContent().name());
+            String exchange = null;
+            if(inRequest.hasExchange()) {
+                exchange = inRequest.getExchange();
+            }
             String provider = null;
             if(inRequest.hasProvider()) {
                 provider = inRequest.getProvider();
             }
             Deque<Event> events = serviceAdapter.getSnapshotPage(instrument,
                                                                  content,
+                                                                 exchange,
                                                                  provider,
                                                                  new PageRequest(inRequest.getPage().getPage(),
                                                                                  inRequest.getPage().getSize()));

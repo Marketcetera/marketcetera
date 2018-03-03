@@ -44,19 +44,20 @@ public class AddSymbolAction
 		}
 	}
 	
-	@Override
-	public void run() {
-		String theInputString = StringUtils.trimToNull(text.getText());
-		if (theInputString != null) {
-			String[] symbols = theInputString.split(","); //$NON-NLS-1$
-			for (String string : symbols) {
-				String trimmed = StringUtils.trimToNull(string);
-				if (trimmed != null) {
-					listener.onAssertSymbol(PhotonPlugin.getDefault().getSymbolResolver().resolveSymbol(trimmed));
-				}
-			}
-		}
-		text.setText(""); //$NON-NLS-1$
-	}
+    @Override
+    public void run()
+    {
+        String theInputString = StringUtils.trimToNull(text.getText());
+        if(theInputString != null) {
+            String[] symbols = theInputString.split(","); //$NON-NLS-1$
+            for(String string : symbols) {
+                String trimmed = StringUtils.trimToNull(string);
+                if(trimmed != null) {
+                    listener.onAddSymbol(trimmed);
+                }
+            }
+        }
+        text.setText(""); //$NON-NLS-1$
+    }
 	
 }

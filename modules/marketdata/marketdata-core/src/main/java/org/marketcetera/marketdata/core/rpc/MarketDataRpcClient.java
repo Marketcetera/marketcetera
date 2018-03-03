@@ -285,24 +285,29 @@ public class MarketDataRpcClient
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String)
+     * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, java.lang.String)
      */
     @Override
     public Deque<Event> getSnapshot(Instrument inInstrument,
                                     Content inContent,
+                                    String inExchange,
                                     String inProvider)
     {
         SLF4JLoggerProxy.debug(this,
-                               "GetSnapshot: {}/{}/{}", //$NON-NLS-1$
+                               "GetSnapshot: {}/{}/{}/{}", //$NON-NLS-1$
                                inInstrument,
                                inContent,
+                               inExchange,
                                inProvider);
         try(CloseableLock requestLock = CloseableLock.create(serviceLock.readLock())) {
             requestLock.lock();
             RpcMarketdata.SnapshotRequest.Builder requestBuilder = RpcMarketdata.SnapshotRequest.newBuilder().setSessionId(sessionId.getValue());
             requestBuilder.setContent(RpcMarketdata.ContentAndCapability.valueOf(inContent.name()))
                 .setInstrument(RpcMarketdata.Instrument.newBuilder().setPayload(marshall(inInstrument)));
-            if(inProvider != null){
+            if(inExchange != null) {
+                requestBuilder.setExchange(inExchange);
+            }
+            if(inProvider != null) {
                 requestBuilder.setProvider(inProvider);
             }
             RpcMarketdata.SnapshotResponse response = clientService.getSnapshot(controller,
@@ -320,18 +325,20 @@ public class MarketDataRpcClient
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, org.marketcetera.marketdata.core.webservice.PageRequest)
+     * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, java.lang.String, org.marketcetera.marketdata.core.webservice.PageRequest)
      */
     @Override
     public Deque<Event> getSnapshotPage(Instrument inInstrument,
                                         Content inContent,
+                                        String inExchange,
                                         String inProvider,
                                         PageRequest inPage)
     {
         SLF4JLoggerProxy.debug(this,
-                               "GetSnapshotPage: {}/{}/{}/{}", //$NON-NLS-1$
+                               "GetSnapshotPage: {}/{}/{}/{}/{}", //$NON-NLS-1$
                                inInstrument,
                                inContent,
+                               inExchange,
                                inProvider,
                                inPage);
         try(CloseableLock requestLock = CloseableLock.create(serviceLock.readLock())) {
@@ -340,6 +347,9 @@ public class MarketDataRpcClient
             requestBuilder.setContent(RpcMarketdata.ContentAndCapability.valueOf(inContent.name()))
                 .setInstrument(RpcMarketdata.Instrument.newBuilder().setPayload(marshall(inInstrument)))
                 .setPage(RpcMarketdata.PageRequest.newBuilder().setPage(inPage.getPage()).setSize(inPage.getSize()));
+            if(inExchange != null) {
+                requestBuilder.setExchange(inExchange);
+            }
             if(inProvider != null){
                 requestBuilder.setProvider(inProvider);
             }

@@ -112,34 +112,40 @@ public class MarketData
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.photon.marketdata.IMarketData#getLatestTick(org.marketcetera.trade.Instrument)
+     * @see org.marketcetera.photon.marketdata.IMarketData#getLatestTick(org.marketcetera.trade.Instrument, java.lang.String)
      */
     @Override
-    public IMarketDataReference<MDLatestTick> getLatestTick(Instrument inInstrument)
+    public IMarketDataReference<MDLatestTick> getLatestTick(Instrument inInstrument,
+                                                            String inExchange)
     {
         return getMarketDataReference(inInstrument,
+                                      inExchange,
                                       Content.LATEST_TICK,
                                       latestTickFactory,
                                       latestTickUpdater);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.photon.marketdata.IMarketData#getTopOfBook(org.marketcetera.trade.Instrument)
+     * @see org.marketcetera.photon.marketdata.IMarketData#getTopOfBook(org.marketcetera.trade.Instrument, java.lang.String)
      */
     @Override
-    public IMarketDataReference<MDTopOfBook> getTopOfBook(Instrument inInstrument)
+    public IMarketDataReference<MDTopOfBook> getTopOfBook(Instrument inInstrument,
+                                                          String inExchange)
     {
         return getMarketDataReference(inInstrument,
+                                      inExchange,
                                       Content.TOP_OF_BOOK,
                                       topOfBookFactory,
                                       topOfBookUpdater);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.photon.marketdata.IMarketData#getMarketstat(org.marketcetera.trade.Instrument)
+     * @see org.marketcetera.photon.marketdata.IMarketData#getMarketstat(org.marketcetera.trade.Instrument, java.lang.String)
      */
     @Override
-    public IMarketDataReference<MDMarketstat> getMarketstat(Instrument inInstrument)
+    public IMarketDataReference<MDMarketstat> getMarketstat(Instrument inInstrument,
+                                                            String inExchange)
     {
         return getMarketDataReference(inInstrument,
+                                      inExchange,
                                       Content.MARKET_STAT,
                                       marketstatFactory,
                                       marketstatUpdater);
@@ -154,31 +160,37 @@ public class MarketData
         switch(inProduct) {
             case AGGREGATED_DEPTH:
                 return getMarketDataReference(inInstrument,
+                                              null,
                                               Content.AGGREGATED_DEPTH,
                                               depthOfBookFactory,
                                               aggregatedDepthUpdater);
             case BBO10:
                 return getMarketDataReference(inInstrument,
+                                              null,
                                               Content.BBO10,
                                               depthOfBookFactory,
                                               bbo10DepthUpdater);
             case LEVEL_2:
                 return getMarketDataReference(inInstrument,
+                                              null,
                                               Content.LEVEL_2,
                                               depthOfBookFactory,
                                               level2DepthUpdater);
             case OPEN_BOOK:
                 return getMarketDataReference(inInstrument,
+                                              null,
                                               Content.OPEN_BOOK,
                                               depthOfBookFactory,
                                               openBookDepthUpdater);
             case TOTAL_VIEW:
                 return getMarketDataReference(inInstrument,
+                                              null,
                                               Content.TOTAL_VIEW,
                                               depthOfBookFactory,
                                               totalViewDepthUpdater);
             case UNAGGREGATED_DEPTH:
                 return getMarketDataReference(inInstrument,
+                                              null,
                                               Content.UNAGGREGATED_DEPTH,
                                               depthOfBookFactory,
                                               unaggregatedDepthUpdater);
@@ -209,6 +221,7 @@ public class MarketData
      * Gets a market data reference for the given attributes.
      *
      * @param inInstrument an <code>Instrument</code> value
+     * @param inExchange a <code>String</code> value
      * @param inContent a <code>Content</code> value
      * @param inFactory an <code>ItemFactory&lt;MDMutableType&gt;</code> value
      * @param inUpdater an <code>ItemUpdated&lt;MDMutableType&gt;</code> value
@@ -216,6 +229,7 @@ public class MarketData
      */
     @SuppressWarnings("unchecked")
     private <MDType extends MDItem,MDMutableType extends MDType> IMarketDataReference<MDType> getMarketDataReference(final Instrument inInstrument,
+                                                                                                                     final String inExchange,
                                                                                                                      final Content inContent,
                                                                                                                      ItemFactory<MDMutableType> inFactory,
                                                                                                                      final ItemUpdater<MDMutableType> inUpdater)
@@ -223,6 +237,7 @@ public class MarketData
         Validate.notNull(inInstrument);
         Validate.notNull(inContent);
         final MarketDataReferenceKey key = new MarketDataReferenceKey(inInstrument,
+                                                                      inExchange,
                                                                       inContent);
         MarketDataDetails<?,?> existingMarketDataDetails = requests.getIfPresent(key);
         if(existingMarketDataDetails != null) {
@@ -235,9 +250,13 @@ public class MarketData
             .withAssetClass(AssetClass.getFor(inInstrument.getSecurityType()))
             .withSymbols(inInstrument.getFullSymbol())
             .withContent(inContent);
+        if(inExchange != null) {
+            builder.withExchange(inExchange);
+        }
         MarketDataRequest request = builder.create();
         MDMutableType item = inFactory.create();
         MarketDataDetails<MDType,MDMutableType> newMarketDataDetails = new MarketDataDetails<>(inInstrument,
+                                                                                               inExchange,
                                                                                                inContent,
                                                                                                request,
                                                                                                item,
@@ -299,18 +318,21 @@ public class MarketData
          * Create a new SubscriptionRefreshJob instance.
          *
          * @param inInstrument an <code>Instrument</code> value
+         * @param inExchange a <code>String</code> value
          * @param inContent a <code>Content</code> value
          * @param inId a <code>long</code> value
          * @param inUpdater an <code>ItemUpdater&lt;MDMutableType&gt;</code> value
          * @param inItem an <code>MDMutableType</code> value
          */
         private SubscriptionRefreshJob(Instrument inInstrument,
+                                       String inExchange,
                                        Content inContent,
                                        long inId,
                                        ItemUpdater<MDMutableType> inUpdater,
                                        MDMutableType inItem)
         {
             instrument = inInstrument;
+            exchange = inExchange;
             content = inContent;
             id = inId;
             updater = inUpdater;
@@ -330,6 +352,7 @@ public class MarketData
                 }
                 Deque<Event> events = marketDataClientProvider.getMarketDataClient().getSnapshot(instrument,
                                                                                                  content,
+                                                                                                 exchange,
                                                                                                  null);
                 updater.update(item,
                                events);
@@ -371,6 +394,10 @@ public class MarketData
          */
         private final Instrument instrument;
         /**
+         * exchange requested, may be <code>null</code>
+         */
+        private final String exchange;
+        /**
          * market data request content
          */
         private final Content content;
@@ -407,7 +434,7 @@ public class MarketData
         @Override
         public int hashCode()
         {
-            return new HashCodeBuilder().append(content).append(instrument).toHashCode();
+            return new HashCodeBuilder().append(content).append(instrument).append(exchange).toHashCode();
         }
         /* (non-Javadoc)
          * @see java.lang.Object#equals(java.lang.Object)
@@ -425,18 +452,21 @@ public class MarketData
                 return false;
             }
             MarketDataReferenceKey other = (MarketDataReferenceKey) obj;
-            return new EqualsBuilder().append(other.content,content).append(other.instrument,instrument).isEquals();
+            return new EqualsBuilder().append(other.content,content).append(other.instrument,instrument).append(other.exchange,exchange).isEquals();
         }
         /**
          * Create a new MarketDataReferenceKey instance.
          *
-         * @param inInstrument
-         * @param inContent
+         * @param inInstrument an <code>Instrument</code> value
+         * @param inExchange a <code>String</code> value
+         * @param inContent a <code>Content</code> value
          */
         private MarketDataReferenceKey(Instrument inInstrument,
+                                       String inExchange,
                                        Content inContent)
         {
             instrument = inInstrument;
+            exchange = inExchange;
             content = inContent;
         }
         /**
@@ -447,6 +477,10 @@ public class MarketData
          * market data content requested
          */
         private final Content content;
+        /**
+         * exchange requested, may be <code>null</code>
+         */
+        private final String exchange;
     }
     /**
      * Contains the market data reference for an instrument-content tuple.
@@ -542,6 +576,7 @@ public class MarketData
                 throw new RuntimeException(e);
             }
             refreshJob = new SubscriptionRefreshJob<>(instrument,
+                                                      exchange,
                                                       content,
                                                       requestId,
                                                       updater,
@@ -586,6 +621,7 @@ public class MarketData
          * Create a new MarketDataDetails instance.
          *
          * @param inInstrument an <code>Instrument</code> value
+         * @param inExchange a <code>String</code> value
          * @param inContent a <code>Content</code> value
          * @param inRequest a <code>MarketDataRequest</code> value
          * @param inItem an <code>MDMutableItemType</code> value
@@ -593,6 +629,7 @@ public class MarketData
          * @param inUpdater an <code>ItemUpdated&lt;MDMutableItemType&gt;</code> value
          */
         private MarketDataDetails(Instrument inInstrument,
+                                  String inExchange,
                                   Content inContent,
                                   MarketDataRequest inRequest,
                                   final MDMutableItemType inItem,
@@ -600,6 +637,7 @@ public class MarketData
                                   ItemUpdater<MDMutableItemType> inUpdater)
         {
             instrument = inInstrument;
+            exchange = inExchange;
             content = inContent;
             request = inRequest;
             item = inItem;
@@ -659,6 +697,10 @@ public class MarketData
          * market data instrument requested
          */
         private final Instrument instrument;
+        /**
+         * exchange requested, may be <code>null</code>
+         */
+        private final String exchange;
         /**
          * market data content requested
          */
