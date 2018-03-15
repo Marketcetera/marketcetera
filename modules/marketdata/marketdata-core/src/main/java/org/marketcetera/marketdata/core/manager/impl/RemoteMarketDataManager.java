@@ -17,6 +17,7 @@ import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.manager.MarketDataManager;
 import org.marketcetera.marketdata.core.webservice.MarketDataServiceClient;
+import org.marketcetera.marketdata.core.webservice.MarketDataServiceClientFactory;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ public class RemoteMarketDataManager
         SLF4JLoggerProxy.debug(this,
                                "Received market data request {}",
                                inRequest);
+        verifyClientRunning();
         long requestId = marketDataClient.request(inRequest,
                                                   inSubscriber != null);
         if(inSubscriber != null) {
@@ -73,6 +75,7 @@ public class RemoteMarketDataManager
                                inInstrument,
                                inContent,
                                inProvider);
+        verifyClientRunning();
         Deque<Event> events = marketDataClient.getSnapshot(inInstrument,
                                                            inContent,
                                                            inProvider);
@@ -99,6 +102,7 @@ public class RemoteMarketDataManager
     public void cancelMarketDataRequest(long inRequestId)
     {
         try {
+            verifyClientRunning();
             marketDataClient.cancel(inRequestId);
             EventSubscriber subscriber = subscribersByRequestId.getIfPresent(inRequestId);
             if(subscriber != null) {
@@ -114,6 +118,7 @@ public class RemoteMarketDataManager
     @Override
     public Set<Capability> getAvailableCapability()
     {
+        verifyClientRunning();
         return marketDataClient.getAvailableCapability();
     }
     /**
@@ -122,6 +127,11 @@ public class RemoteMarketDataManager
     @PostConstruct
     public void start()
     {
+        marketDataClient = marketDataClientFactory.create(username,
+                                                          password,
+                                                          hostname,
+                                                          port);
+        marketDataClient.start();
         threadPool = Executors.newScheduledThreadPool(threadPoolSize);
     }
     /**
@@ -135,6 +145,10 @@ public class RemoteMarketDataManager
                 threadPool.shutdownNow();
             } catch (Exception ignored) {}
             threadPool = null;
+        }
+        if(marketDataClient != null) {
+            marketDataClient.stop();
+            marketDataClient = null;
         }
     }
     /**
@@ -174,6 +188,80 @@ public class RemoteMarketDataManager
         eventSubscriptionInterval = inEventSubscriptionInterval;
     }
     /**
+     * Get the username value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getUsername()
+    {
+        return username;
+    }
+    /**
+     * Sets the username value.
+     *
+     * @param inUsername a <code>String</code> value
+     */
+    public void setUsername(String inUsername)
+    {
+        username = inUsername;
+    }
+    /**
+     * Sets the password value.
+     *
+     * @param inPassword a <code>String</code> value
+     */
+    public void setPassword(String inPassword)
+    {
+        password = inPassword;
+    }
+    /**
+     * Get the host value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getHostname()
+    {
+        return hostname;
+    }
+    /**
+     * Sets the host value.
+     *
+     * @param inHostname a <code>String</code> value
+     */
+    public void setHostname(String inHostname)
+    {
+        hostname = inHostname;
+    }
+    /**
+     * Get the port value.
+     *
+     * @return an <code>int</code> value
+     */
+    public int getPort()
+    {
+        return port;
+    }
+    /**
+     * Sets the port value.
+     *
+     * @param inPort an <code>int</code> value
+     */
+    public void setPort(int inPort)
+    {
+        port = inPort;
+    }
+    /**
+     * Verify that the client is running.
+     */
+    private void verifyClientRunning()
+    {
+        if(marketDataClient == null || !marketDataClient.isRunning()) {
+            SLF4JLoggerProxy.warn(this,
+                                  "The market data remote client is not connected");
+            throw new IllegalStateException();
+        }
+    }
+    /**
      * Subscribes to events.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -193,6 +281,7 @@ public class RemoteMarketDataManager
                 SLF4JLoggerProxy.trace(RemoteMarketDataManager.this,
                                        "Retrieving market data events for {}",
                                        requestId);
+                verifyClientRunning();
                 Deque<Event> events = marketDataClient.getEvents(requestId);
                 if(events != null && !events.isEmpty()) {
                     for(Event event : events) {
@@ -262,6 +351,22 @@ public class RemoteMarketDataManager
         private Future<?> subscriptionToken;
     }
     /**
+     * remote client username
+     */
+    private String username;
+    /**
+     * remote client password
+     */
+    private String password;
+    /**
+     * remote client host
+     */
+    private String hostname;
+    /**
+     * remote client port
+     */
+    private int port;
+    /**
      * thread pool used to retrieve subscription events
      */
     private ScheduledExecutorService threadPool;
@@ -276,8 +381,12 @@ public class RemoteMarketDataManager
     /**
      * provides access to market data
      */
-    @Autowired
     private MarketDataServiceClient marketDataClient;
+    /**
+     * create the market data client
+     */
+    @Autowired
+    private MarketDataServiceClientFactory marketDataClientFactory;
     /**
      * holds subscribers by request id
      */
