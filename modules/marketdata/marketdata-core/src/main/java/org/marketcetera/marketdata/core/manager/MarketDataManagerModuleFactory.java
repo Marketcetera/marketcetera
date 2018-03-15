@@ -9,7 +9,19 @@ import org.marketcetera.module.ModuleURN;
 /* $License$ */
 
 /**
- *
+ * The provider / factory that creates the Market Data Module instance.
+ * 
+ * <p>The factory has the following characteristics.
+ * <table>
+ * <tr><th>Provider URN:</th><td><code>metc:mdata:manager</code></td></tr>
+ * <tr><th>Cardinality:</th><td>Singleton</td></tr>
+ * <tr><th>InstanceURN:</th><td><code>metc:mdata:manager:single</code></td></tr>
+ * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>
+ * <tr><th>Auto-Started:</th><td>Yes</td></tr>
+ * <tr><th>Instantiation Arguments:</th><td>None</td></tr>
+ * <tr><th>Management Interface</th><td>None</td></tr>
+ * <tr><th>Module Type</th><td>{@link MarketDataManagerModule}</td></tr>
+ * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
