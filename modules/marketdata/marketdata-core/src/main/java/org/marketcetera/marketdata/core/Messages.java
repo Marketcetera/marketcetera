@@ -38,7 +38,8 @@ public interface Messages
     static final I18NMessage0P UNABLE_TO_ACQUIRE_LOCK = new I18NMessage0P(LOGGER,"unable_to_acquire_lock"); //$NON-NLS-1$
     static final I18NMessage0P NO_SYMBOLS_OR_UNDERLYING_SYMBOLS = new I18NMessage0P(LOGGER,"no_symbols_or_underlying_symbols"); //$NON-NLS-1$
     static final I18NMessage0P NO_CONTENT = new I18NMessage0P(LOGGER,"no_content"); //$NON-NLS-1$
-    static final I18NMessage0P PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,"provider_description"); //$NON-NLS-1$
+    static final I18NMessage0P MANAGER_PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,"manager_provider_description"); //$NON-NLS-1$
+    static final I18NMessage0P REMOTE_PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,"remote_provider_description"); //$NON-NLS-1$
     static final I18NMessage2P CONTENT_REQUIRES_QUOTE_EVENTS = new I18NMessage2P(LOGGER,"content_requires_quote_events"); //$NON-NLS-1$
     static final I18NMessage2P PROVIDER_REPORTS_STATUS = new I18NMessage2P(LOGGER,"provider_reports_status"); //$NON-NLS-1$
     static final I18NMessage1P JMX_REGISTRATION_ERROR = new I18NMessage1P(LOGGER,"jmx_registration_error"); //$NON-NLS-1$

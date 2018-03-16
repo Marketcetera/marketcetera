@@ -9,34 +9,34 @@ import org.marketcetera.module.ModuleURN;
 /* $License$ */
 
 /**
- * The provider / factory that creates the Market Data Module instance.
+ * The provider / factory that creates the Remote Market Data Module instance.
  * 
  * <p>The factory has the following characteristics.
  * <table>
- * <tr><th>Provider URN:</th><td><code>metc:mdata:manager</code></td></tr>
+ * <tr><th>Provider URN:</th><td><code>metc:mdata:remote</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
- * <tr><th>InstanceURN:</th><td><code>metc:mdata:manager:single</code></td></tr>
+ * <tr><th>InstanceURN:</th><td><code>metc:mdata:remote:single</code></td></tr>
  * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>
- * <tr><th>Auto-Started:</th><td>Yes</td></tr>
+ * <tr><th>Auto-Started:</th><td>No</td></tr>
  * <tr><th>Instantiation Arguments:</th><td>None</td></tr>
  * <tr><th>Management Interface</th><td>None</td></tr>
- * <tr><th>Module Type</th><td>{@link MarketDataManagerModule}</td></tr>
+ * <tr><th>Module Type</th><td>{@link MarketDataRemoteModule}</td></tr>
  * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class MarketDataManagerModuleFactory
+public class MarketDataRemoteModuleFactory
         extends ModuleFactory
 {
     /**
-     * Create a new MarketDataManagerModuleFactory instance.
+     * Create a new MarketDataRemoteModuleFactory instance.
      */
-    public MarketDataManagerModuleFactory()
+    public MarketDataRemoteModuleFactory()
     {
         super(PROVIDER_URN,
-              Messages.MANAGER_PROVIDER_DESCRIPTION,
+              Messages.REMOTE_PROVIDER_DESCRIPTION,
               false,
               true);
     }
@@ -47,14 +47,14 @@ public class MarketDataManagerModuleFactory
     public Module create(Object... inParameters)
             throws ModuleCreationException
     {
-        return new MarketDataManagerModule(INSTANCE_URN);
+        return new MarketDataRemoteModule(INSTANCE_URN);
     }
     /**
      * provider name value
      */
-    public static final String PROVIDER_NAME = "manager";  //$NON-NLS-1$
+    public static final String PROVIDER_NAME = "remote";  //$NON-NLS-1$
     /**
-     * unique provider URN for the market data manager provider
+     * unique provider URN for the remote market data provider
      */
     public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdata:" + PROVIDER_NAME);  //$NON-NLS-1$
     /**
