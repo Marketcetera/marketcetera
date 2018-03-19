@@ -100,8 +100,6 @@ public class RpcServer<SessionClazz>
         }
         try {
             reportContext = JAXBContext.newInstance(contextClassProvider==null?new Class<?>[0]:contextClassProvider.getContextClasses());
-            marshaller = reportContext.createMarshaller();
-            unmarshaller = reportContext.createUnmarshaller();
         } catch (JAXBException e) {
             SLF4JLoggerProxy.error(this,
                                    e);
@@ -182,8 +180,6 @@ public class RpcServer<SessionClazz>
             channelToken = null;
             executor = null;
             reportContext = null;
-            marshaller = null;
-            unmarshaller = null;
             running.set(false);
         }
     }
@@ -443,10 +439,9 @@ public class RpcServer<SessionClazz>
             throws JAXBException
     {
         StringWriter output = new StringWriter();
-        synchronized(marshaller) {
-            marshaller.marshal(inObject,
-                               output);
-        }
+        Marshaller marshaller = reportContext.createMarshaller();
+        marshaller.marshal(inObject,
+                           output);
         return output.toString();
     }
     /* (non-Javadoc)
@@ -457,9 +452,8 @@ public class RpcServer<SessionClazz>
     public <Clazz> Clazz unmarshall(String inData)
             throws JAXBException
     {
-        synchronized(unmarshaller) {
-            return (Clazz)unmarshaller.unmarshal(new StringReader(inData));
-        }
+        Unmarshaller unmarshaller = reportContext.createUnmarshaller();
+        return (Clazz)unmarshaller.unmarshal(new StringReader(inData));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.util.ws.stateful.UsesPort#getPortDescriptors()
@@ -552,14 +546,6 @@ public class RpcServer<SessionClazz>
      * context used to control the marshaller and unmarshaller
      */
     private JAXBContext reportContext;
-    /**
-     * marshals data for JAXB
-     */
-    private Marshaller marshaller;
-    /**
-     * unmarshals data for JAXB
-     */
-    private Unmarshaller unmarshaller;
     /**
      * RPC services to manage
      */

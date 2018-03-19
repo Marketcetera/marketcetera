@@ -1,5 +1,7 @@
 package org.marketcetera.marketdata.core.manager;
 
+import org.marketcetera.util.ws.ContextClassProvider;
+
 /* $License$ */
 
 /**
@@ -120,6 +122,24 @@ public class MarketDataRemoteModuleConfig
         port = inPort;
     }
     /**
+     * Get the contextClassProvider value.
+     *
+     * @return a <code>ContextClassProvider</code> value
+     */
+    public ContextClassProvider getContextClassProvider()
+    {
+        return contextClassProvider;
+    }
+    /**
+     * Sets the contextClassProvider value.
+     *
+     * @param inContextClassProvider a <code>ContextClassProvider</code> value
+     */
+    public void setContextClassProvider(ContextClassProvider inContextClassProvider)
+    {
+        contextClassProvider = inContextClassProvider;
+    }
+    /**
      * threadpool size value
      */
     private int threadpoolSize = 10;
@@ -143,4 +163,8 @@ public class MarketDataRemoteModuleConfig
      * port value
      */
     private int port;
+    /**
+     * provides context classes for marshalling and unmarshalling
+     */
+    private ContextClassProvider contextClassProvider;
 }

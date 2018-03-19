@@ -115,11 +115,7 @@ public class MarketDataRpcClient
     {
         shutdownRequested.set(false);
         try {
-            synchronized(contextLock) {
-                context = JAXBContext.newInstance(contextClassProvider==null?new Class<?>[0]:contextClassProvider.getContextClasses());
-                marshaller = context.createMarshaller();
-                unmarshaller = context.createUnmarshaller();
-            }
+            context = JAXBContext.newInstance(contextClassProvider==null?new Class<?>[0]:contextClassProvider.getContextClasses());
             startService();
             heartbeatFuture = heartbeatService.scheduleAtFixedRate(new HeartbeatMonitor(),
                                                                    heartbeatInterval,
@@ -447,10 +443,9 @@ public class MarketDataRpcClient
             throws JAXBException
     {
         StringWriter output = new StringWriter();
-        synchronized(contextLock) {
-            marshaller.marshal(inObject,
-                               output);
-        }
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.marshal(inObject,
+                           output);
         return output.toString();
     }
     /**
@@ -464,9 +459,8 @@ public class MarketDataRpcClient
     private <Clazz> Clazz unmarshall(String inData)
             throws JAXBException
     {
-        synchronized(contextLock) {
-            return (Clazz)unmarshaller.unmarshal(new StringReader(inData));
-        }
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+        return (Clazz)unmarshaller.unmarshal(new StringReader(inData));
     }
     /**
      * Sets the server status to the given value.
@@ -702,24 +696,9 @@ public class MarketDataRpcClient
      */
     private SessionId sessionId;
     /**
-     * guards access to JAXB context objects
-     */
-    private final Object contextLock = new Object();
-    /**
      * context used to serialize and unserialize messages as necessary
      */
-    @GuardedBy("contextLock")
     private JAXBContext context;
-    /**
-     * marshals messages
-     */
-    @GuardedBy("contextLock")
-    private Marshaller marshaller;
-    /**
-     * unmarshals messages
-     */
-    @GuardedBy("contextLock")
-    private Unmarshaller unmarshaller;
     /**
      * interval at which to execute heartbeats
      */

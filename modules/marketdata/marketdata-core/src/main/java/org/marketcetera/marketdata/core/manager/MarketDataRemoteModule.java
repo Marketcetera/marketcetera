@@ -1,10 +1,12 @@
 package org.marketcetera.marketdata.core.manager;
 
 import java.util.Deque;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
@@ -69,11 +71,14 @@ public class MarketDataRemoteModule
             throws ModuleException
     {
         super.preStart();
+        Validate.notNull(config);
+        threadpool = Executors.newScheduledThreadPool(config.getThreadpoolSize());
         subscriberCache.invalidateAll();
         marketDataServiceClient = marketDataServiceClientFactory.create(config.getUsername(),
                                                                         config.getPassword(),
                                                                         config.getHostname(),
-                                                                        config.getPort());
+                                                                        config.getPort(),
+                                                                        config.getContextClassProvider());
         marketDataServiceClient.start();
     }
     /* (non-Javadoc)
