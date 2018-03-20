@@ -1253,7 +1253,8 @@ public final class ModuleManager
             if(applicationContext == null) {
                 Messages.NO_APPLICATION_CONTEXT_MODULE.warn(this,
                                                             inModule.getURN());
-                if(inModule.getClass().isAnnotationPresent(AutowiredModule.class)) {
+                AutowiredModule autowiredModule = inModule.getClass().getAnnotation(AutowiredModule.class);
+                if(autowiredModule != null && autowiredModule.required()) {
                     throw new ModuleException(new I18NBoundMessage1P(Messages.MODULE_REQUIRES_AUTOWIRING,
                                                                      inModule.getURN()));
                 }
