@@ -20,6 +20,7 @@ import org.marketcetera.marketdata.core.webservice.MarketDataServiceClient;
 import org.marketcetera.marketdata.core.webservice.MarketDataServiceClientFactory;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.ws.ContextClassProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.cache.Cache;
@@ -130,7 +131,8 @@ public class RemoteMarketDataManager
         marketDataClient = marketDataClientFactory.create(username,
                                                           password,
                                                           hostname,
-                                                          port);
+                                                          port,
+                                                          contextClassProvider);
         marketDataClient.start();
         threadPool = Executors.newScheduledThreadPool(threadPoolSize);
     }
@@ -251,6 +253,24 @@ public class RemoteMarketDataManager
         port = inPort;
     }
     /**
+     * Get the contextClassProvider value.
+     *
+     * @return a <code>ContextClassProvider</code> value
+     */
+    public ContextClassProvider getContextClassProvider()
+    {
+        return contextClassProvider;
+    }
+    /**
+     * Sets the contextClassProvider value.
+     *
+     * @param inContextClassProvider a <code>ContextClassProvider</code> value
+     */
+    public void setContextClassProvider(ContextClassProvider inContextClassProvider)
+    {
+        contextClassProvider = inContextClassProvider;
+    }
+    /**
      * Verify that the client is running.
      */
     private void verifyClientRunning()
@@ -350,6 +370,10 @@ public class RemoteMarketDataManager
          */
         private Future<?> subscriptionToken;
     }
+    /**
+     * provides context classes for marshalling and unmarshalling
+     */
+    private ContextClassProvider contextClassProvider;
     /**
      * remote client username
      */
