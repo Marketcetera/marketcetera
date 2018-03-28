@@ -1014,6 +1014,7 @@ public class MarketData
                     inItem.setOpenPrice(statEvent.getVolume()); // this is actually trade volume
                     inItem.setVolumeTraded(statEvent.getLow()); // this is actually low price
                     inItem.setPreviousClosePrice(statEvent.getPreviousClose()); // this is right!
+                    inItem.setClosePrice(statEvent.getClose());
                 }
             }
         }
