@@ -24,7 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @Immutable
-@XmlSeeAlso({ Equity.class,Option.class,Future.class,Currency.class,ConvertibleBond.class })
+@XmlSeeAlso({ Equity.class,Option.class,Future.class,Currency.class,ConvertibleBond.class,Spread.class })
 @ClassVersion("$Id$")
 public abstract class Instrument
         implements Serializable

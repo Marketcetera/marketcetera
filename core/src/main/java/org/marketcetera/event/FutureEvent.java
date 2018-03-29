@@ -44,13 +44,6 @@ public interface FutureEvent
      */
     public StandardType getStandardType();
     /**
-     * Returns the original provider symbol of the future, if available. 
-     *
-     * @return a <code>String</code> value or <code>null</code> if the future event
-     *  did not have a provider symbol
-     */
-    public String getProviderSymbol();
-    /**
      * Returns the contract size.
      *
      * @return an <code>int</code> value
