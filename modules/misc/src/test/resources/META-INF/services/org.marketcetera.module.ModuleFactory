@@ -4,3 +4,6 @@ org.marketcetera.modules.async.SimpleAsyncProcessorFactory
 org.marketcetera.modules.publisher.PublisherModuleFactory
 org.marketcetera.modules.headwater.HeadwaterModuleFactory
 org.marketcetera.modules.async.BlockingModuleFactory
+org.marketcetera.modules.csv.CSVEmitterFactory
+org.marketcetera.modules.async.SimpleAsyncProcessorFactory
+org.marketcetera.modules.publisher.PublisherModuleFactory

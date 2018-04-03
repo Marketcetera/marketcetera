@@ -5,6 +5,7 @@ import static org.marketcetera.event.Messages.VALIDATION_CURRENCY_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_SPREAD_REQUIRED;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -17,6 +18,7 @@ import org.marketcetera.event.beans.ConvertibleBondBean;
 import org.marketcetera.event.beans.CurrencyBean;
 import org.marketcetera.event.beans.FutureBean;
 import org.marketcetera.event.beans.OptionBean;
+import org.marketcetera.event.beans.SpreadBean;
 import org.marketcetera.event.beans.TradeBean;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.ConvertibleBond;
@@ -28,6 +30,7 @@ import org.marketcetera.trade.FutureType;
 import org.marketcetera.trade.FutureUnderlyingAssetType;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
+import org.marketcetera.trade.Spread;
 import org.marketcetera.trade.StandardType;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -48,7 +51,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class TradeEventBuilder<E extends TradeEvent>
-        implements EventBuilder<E>, OptionEventBuilder<TradeEventBuilder<E>>, FutureEventBuilder<TradeEventBuilder<E>>,CurrencyEventBuilder<TradeEventBuilder<E>>, ConvertibleBondEventBuilder<TradeEventBuilder<E>>
+        implements EventBuilder<E>,OptionEventBuilder<TradeEventBuilder<E>>,FutureEventBuilder<TradeEventBuilder<E>>,CurrencyEventBuilder<TradeEventBuilder<E>>,ConvertibleBondEventBuilder<TradeEventBuilder<E>>,SpreadEventBuilder<TradeEventBuilder<E>>
 {
     /**
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new <code>TradeEvent</code> object.
@@ -71,6 +74,9 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         }
         if(inInstrument instanceof Future) {
             return futureTradeEvent().withInstrument(inInstrument);
+        }
+        if(inInstrument instanceof Spread) {
+            return spreadTradeEvent().withInstrument(inInstrument);
         }
         if(inInstrument instanceof Currency) {
             return currencyTradeEvent().withInstrument(inInstrument);
@@ -142,6 +148,29 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
                                                     getFuture());
                 }
                 throw new IllegalArgumentException(VALIDATION_FUTURE_REQUIRED.getText());
+            }
+        };
+    }    
+    /**
+     * Returns a <code>TradeEventBuilder</code> suitable for constructing a new Spread <code>TradeEvent</code> object.
+     *
+     * @return a <code>TradeEventBuilder</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Spread}
+     */
+    public static TradeEventBuilder<TradeEvent> spreadTradeEvent()
+    {
+        return new TradeEventBuilder<TradeEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public TradeEvent create()
+            {
+                if(getTradeData().getInstrument() instanceof Spread) {
+                    return new SpreadTradeEventImpl(getTradeData(),
+                                                    getSpread());
+                }
+                throw new IllegalArgumentException(VALIDATION_SPREAD_REQUIRED.getText());
             }
         };
     }    
@@ -282,6 +311,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
+        } else if(inInstrument instanceof Spread) {
+            spread.setInstrument((Spread)inInstrument);
         } else if(inInstrument instanceof Currency) {
             currency.setInstrument((Currency)inInstrument);
         } else if(inInstrument instanceof ConvertibleBond) {
@@ -290,6 +321,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         if(inInstrument == null) {
             option.setInstrument(null);
             future.setInstrument(null);
+            spread.setInstrument(null);
             currency.setInstrument(null);
             convertibleBond.setInstrument(null);
         }
@@ -397,6 +429,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     public final TradeEventBuilder<E> withDeliveryType(DeliveryType inDeliveryType)
     {
         future.setDeliveryType(inDeliveryType);
+        spread.getLeg1Bean().setDeliveryType(inDeliveryType);
+        spread.getLeg2Bean().setDeliveryType(inDeliveryType);
         return this;
     }
     /**
@@ -409,6 +443,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     public final TradeEventBuilder<E> withStandardType(StandardType inStandardType)
     {
         future.setStandardType(inStandardType);
+        spread.getLeg1Bean().setStandardType(inStandardType);
+        spread.getLeg2Bean().setStandardType(inStandardType);
         return this;
     }
     /**
@@ -421,6 +457,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     public final TradeEventBuilder<E> withFutureType(FutureType inFutureType)
     {
         future.setType(inFutureType);
+        spread.getLeg1Bean().setType(inFutureType);
+        spread.getLeg2Bean().setType(inFutureType);
         return this;
     }
     /**
@@ -433,6 +471,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     public final TradeEventBuilder<E> withUnderlyingAssetType(FutureUnderlyingAssetType inUnderlyingAssetType)
     {
         future.setUnderlyingAssetType(inUnderlyingAssetType);
+        spread.getLeg1Bean().setUnderlyingAssetType(inUnderlyingAssetType);
+        spread.getLeg2Bean().setUnderlyingAssetType(inUnderlyingAssetType);
         return this;
     }
     /**
@@ -446,6 +486,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     {
         option.setProviderSymbol(inProviderSymbol);
         future.setProviderSymbol(inProviderSymbol);
+        spread.setProviderSymbol(inProviderSymbol);
         return this;
     }
     /**
@@ -469,6 +510,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     public final TradeEventBuilder<E> withContractSize(int inContractSize)
     {
         future.setContractSize(inContractSize);
+        spread.getLeg1Bean().setContractSize(inContractSize);
+        spread.getLeg2Bean().setContractSize(inContractSize);
         return this;
     }
     /* (non-Javadoc)
@@ -720,11 +763,12 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public String toString()
     {
-        return String.format("TradeEventBuilder [tradeData=%s, option=%s, future=%s, convertibleBond=%s]", //$NON-NLS-1$
+        return String.format("TradeEventBuilder [tradeData=%s, option=%s, future=%s, convertibleBond=%s, spread=%s]", //$NON-NLS-1$
                              tradeData,
                              option,
                              future,
-                             convertibleBond);
+                             convertibleBond,
+                             spread);
     }
     /**
      * Get the tradeData value.
@@ -752,7 +796,16 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     protected final FutureBean getFuture()
     {
         return future;
-    }    
+    }
+    /**
+     * Gets the spread value.
+     *
+     * @return a <code>SpreadBean</code> value
+     */
+    protected final SpreadBean getSpread()
+    {
+        return spread;
+    }
     /**
      * Gets the currency value.
      *
@@ -783,6 +836,10 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * the future attributes
      */
     private final FutureBean future = new FutureBean();
+    /**
+     * spread attributes
+     */
+    private final SpreadBean spread = new SpreadBean();
     /**
      * the currency attributes
      */
