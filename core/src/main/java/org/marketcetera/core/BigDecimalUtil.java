@@ -33,6 +33,9 @@
 package org.marketcetera.core;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.NumberFormat;
 
 /**
@@ -737,5 +740,63 @@ public final class BigDecimalUtil {
      */
     public static BigDecimal decimalPart(final BigDecimal val) {
         return BigDecimalUtil.subtract(val, val.setScale(0, BigDecimal.ROUND_DOWN));
+    }
+    /**
+     * Calculate the log of the given value in the given base.
+     *
+     * @param inBase a <code>BigDecimal</code> value
+     * @param inValue an <code>int</code> value
+     * @return a <code>BigDecimal</code> value
+     */
+    public static BigDecimal log(int inBase,
+                                 BigDecimal inValue)
+    {
+        BigDecimal result = BigDecimal.ZERO;
+
+        BigDecimal input = new BigDecimal(inValue.toString());
+        int decimalPlaces = 100;
+        int scale = input.precision() + decimalPlaces;
+
+        int maxite = 10000;
+        int ite = 0;
+        BigDecimal maxError_BigDecimal = new BigDecimal(BigInteger.ONE,decimalPlaces + 1);
+
+        RoundingMode a_RoundingMode = RoundingMode.UP;
+
+        BigDecimal two_BigDecimal = new BigDecimal("2");
+        BigDecimal base_BigDecimal = new BigDecimal(inBase);
+
+        while (input.compareTo(base_BigDecimal) == 1) {
+            result = result.add(BigDecimal.ONE);
+            input = input.divide(base_BigDecimal, scale, a_RoundingMode);
+        }
+
+        BigDecimal fraction = new BigDecimal("0.5");
+        input = input.multiply(input);
+        BigDecimal resultplusfraction = result.add(fraction);
+        while (((resultplusfraction).compareTo(result) == 1)
+                && (input.compareTo(BigDecimal.ONE) == 1)) {
+            if (input.compareTo(base_BigDecimal) == 1) {
+                input = input.divide(base_BigDecimal, scale, a_RoundingMode);
+                result = result.add(fraction);
+            }
+            input = input.multiply(input);
+            fraction = fraction.divide(two_BigDecimal, scale, a_RoundingMode);
+            resultplusfraction = result.add(fraction);
+            if (fraction.abs().compareTo(maxError_BigDecimal) == -1){
+                break;
+            }
+            if (maxite == ite){
+                break;
+            }
+            ite ++;
+        }
+
+        MathContext a_MathContext = new MathContext(((decimalPlaces - 1) + (result.precision() - result.scale())),RoundingMode.HALF_UP);
+        BigDecimal roundedResult = result.round(a_MathContext);
+        BigDecimal strippedRoundedResult = roundedResult.stripTrailingZeros();
+        //return result;
+        //return result.round(a_MathContext);
+        return strippedRoundedResult;
     }
 }
