@@ -1232,6 +1232,9 @@ public final class ModuleManager
     {
         try(CloseableLock lock = CloseableLock.create(applicationContextLock.writeLock())) {
             applicationContext = inApplicationContext;
+            if(ApplicationContextProvider.getInstance() != null) {
+                ApplicationContextProvider.getInstance().setApplicationContext(applicationContext);
+            }
         }
     }
     /**
