@@ -5,7 +5,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /* $License$ */
 
@@ -18,7 +18,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  */
 @ClassVersion("$Id: UserDao.java 17339 2017-08-10 02:14:34Z colin $")
 public interface UserDao
-        extends JpaRepository<PersistentUser,Long>,QueryDslPredicateExecutor<PersistentUser>
+        extends JpaRepository<PersistentUser,Long>,QuerydslPredicateExecutor<PersistentUser>
 {
     /**
      * Finds the user with the given username.

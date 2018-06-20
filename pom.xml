@@ -35,7 +35,7 @@
     <mvn.javaee.version>8</mvn.javaee.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
     <mvn.log4j.version>2.7</mvn.log4j.version>
-    <mvn.spring.boot.version>1.5.9.RELEASE</mvn.spring.boot.version>
+    <mvn.spring.boot.version>2.0.3.RELEASE</mvn.spring.boot.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
   </properties>
@@ -388,6 +388,21 @@
         <version>1.9.0</version>
       </dependency>
       <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20180130</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>1.9.3</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-collections</groupId>
+        <artifactId>commons-collections</artifactId>
+        <version>3.2.2</version>
+      </dependency>
+      <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>2.4</version>
@@ -472,32 +487,32 @@
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-core</artifactId>
-        <version>1.5.0</version>
+        <version>1.12.0</version>
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-netty</artifactId>
-        <version>1.5.0</version>
+        <version>1.12.0</version>
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-protobuf</artifactId>
-        <version>1.5.0</version>
+        <version>1.12.0</version>
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-stub</artifactId>
-        <version>1.5.0</version>
+        <version>1.12.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>3.4.0</version>
+        <version>3.6.0</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-all</artifactId>
-        <version>4.1.12.Final</version>
+        <version>4.1.25.Final</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -545,7 +560,7 @@
         <version>${mvn.cxf.version}</version>
         <scope>runtime</scope>
         <exclusions>
-	  <!-- there's a bug in jetty 9.4.7 that causes "locker not reentrant" in web client/server calls -->
+          <!-- there's a bug in jetty 9.4.7 that causes "locker not reentrant" in web client/server calls -->
           <exclusion>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
@@ -1143,7 +1158,7 @@
     <module>util</module>
     <module>util-test</module>
     <module>tools</module>
-    <module>webui</module>
+    <module>webui-new</module>
   </modules>
   <repositories>
     <repository>

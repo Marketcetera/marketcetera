@@ -5,7 +5,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 /* $License$ */
@@ -19,7 +19,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  */
 @ClassVersion("$Id: ExecutionReportDao.java 17266 2017-04-28 14:58:00Z colin $")
 public interface ExecutionReportDao
-        extends PagingAndSortingRepository<PersistentExecutionReport,Long>,QueryDslPredicateExecutor<PersistentExecutionReport>
+        extends PagingAndSortingRepository<PersistentExecutionReport,Long>,QuerydslPredicateExecutor<PersistentExecutionReport>
 {
     /**
      * Finds the root orderID for the given order ID.

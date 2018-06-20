@@ -3,7 +3,7 @@ package org.marketcetera.admin.dao;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserAttributeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /* $License$ */
 
@@ -15,7 +15,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  * @since 1.2.0
  */
 public interface PersistentUserAttributeDao
-        extends JpaRepository<PersistentUserAttribute,Long>,QueryDslPredicateExecutor<PersistentUserAttribute>
+        extends JpaRepository<PersistentUserAttribute,Long>,QuerydslPredicateExecutor<PersistentUserAttribute>
 {
     /**
      * Finds the user attribute value with the given attributes.

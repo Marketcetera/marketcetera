@@ -5,7 +5,7 @@ import java.util.Set;
 import org.marketcetera.admin.Permission;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /* $License$ */
 
@@ -17,7 +17,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  * @since 1.0.1
  */
 public interface PersistentPermissionDao
-        extends JpaRepository<PersistentPermission,Long>,QueryDslPredicateExecutor<PersistentPermission>
+        extends JpaRepository<PersistentPermission,Long>,QuerydslPredicateExecutor<PersistentPermission>
 {
     /**
      * Finds the permission with the given name.

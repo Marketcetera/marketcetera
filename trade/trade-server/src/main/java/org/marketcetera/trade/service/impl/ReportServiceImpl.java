@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -303,7 +304,7 @@ public class ReportServiceImpl
         // delete report summaries first - need to use a manual query here to include the list param
         entityManager.createNativeQuery("DELETE FROM exec_reports WHERE report_id IN (:ids)").setParameter("ids",ids).executeUpdate();
         // now, delete the reports
-        persistentReportDao.delete(reports);
+        persistentReportDao.deleteAll(reports);
         return reports.size();
     }
     /* (non-Javadoc)
@@ -743,13 +744,15 @@ public class ReportServiceImpl
             sessionStart = new Date(0);
         }
         where = where.and(QPersistentReport.persistentReport.sendingTime.goe(getSessionStart(newReport.getSessionId())));
-        PersistentReport report = persistentReportDao.findOne(where);
-        if(report != null) {
+        Optional<PersistentReport> reportOption = persistentReportDao.findOne(where);
+        PersistentReport report;
+        if(reportOption.isPresent()) {
             SLF4JLoggerProxy.debug(this,
                                    "Using existing report {} for {}",
-                                   report,
+                                   reportOption,
                                    inReport);
             // reset the report id to the original report id
+            report = reportOption.get();
             ReportBaseImpl.assignReportID((ReportBaseImpl)inReport,
                                           report.getReportID());
             return report;

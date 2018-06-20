@@ -3,7 +3,7 @@ package org.marketcetera.trade.dao;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /* $License$ */
 
@@ -15,7 +15,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  * @since $Release$
  */
 public interface PersistentOutgoingMessageDao
-        extends JpaRepository<PersistentOutgoingMessage,Long>,QueryDslPredicateExecutor<PersistentOutgoingMessage>
+        extends JpaRepository<PersistentOutgoingMessage,Long>,QuerydslPredicateExecutor<PersistentOutgoingMessage>
 {
     /**
      * Finds the outgoing message with the given attributes.

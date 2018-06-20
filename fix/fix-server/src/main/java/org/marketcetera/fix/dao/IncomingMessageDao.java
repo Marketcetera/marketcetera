@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /* $License$ */
 
@@ -21,7 +21,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  * @since $Release$
  */
 public interface IncomingMessageDao
-        extends JpaRepository<PersistentIncomingMessage,Long>,QueryDslPredicateExecutor<PersistentIncomingMessage>
+        extends JpaRepository<PersistentIncomingMessage,Long>,QuerydslPredicateExecutor<PersistentIncomingMessage>
 {
     /**
      * Gets the incoming messages with the given ids.

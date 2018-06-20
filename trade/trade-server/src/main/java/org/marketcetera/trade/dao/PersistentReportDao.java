@@ -10,7 +10,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /* $License$ */
 
@@ -23,7 +23,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  */
 @ClassVersion("$Id: PersistentReportDao.java 17339 2017-08-10 02:14:34Z colin $")
 public interface PersistentReportDao
-        extends JpaRepository<PersistentReport,Long>,QueryDslPredicateExecutor<PersistentReport>
+        extends JpaRepository<PersistentReport,Long>,QuerydslPredicateExecutor<PersistentReport>
 {
     /**
      * Finds the report with the given report id.

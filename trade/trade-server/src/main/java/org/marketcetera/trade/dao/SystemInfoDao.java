@@ -2,7 +2,7 @@ package org.marketcetera.trade.dao;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /* $License$ */
 
@@ -15,7 +15,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  */
 @ClassVersion("$Id: SystemInfoDao.java 16522 2014-12-31 16:33:08Z colin $")
 public interface SystemInfoDao
-        extends JpaRepository<PersistentSystemInfo,Long>,QueryDslPredicateExecutor<PersistentSystemInfo>
+        extends JpaRepository<PersistentSystemInfo,Long>,QuerydslPredicateExecutor<PersistentSystemInfo>
 {
     /**
      * Gets the <code>PersistentSystemInfo</code> value with the given name.

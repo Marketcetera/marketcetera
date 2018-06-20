@@ -139,6 +139,12 @@
       <scope>runtime</scope>
     </dependency>
     <!-- spring runtime -->
+    <!-- remove this after migration to 2.0.0 spring boot -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-properties-migrator</artifactId>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-log4j2</artifactId>

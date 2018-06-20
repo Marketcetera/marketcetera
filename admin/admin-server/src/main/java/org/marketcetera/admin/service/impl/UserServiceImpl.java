@@ -3,6 +3,7 @@ package org.marketcetera.admin.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -151,9 +152,9 @@ public class UserServiceImpl
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public void delete(User inUser)
     {
-        PersistentUser pUser = userDao.findOne(inUser.getId());
-        if(pUser != null) {
-            userDao.delete(pUser);
+        Optional<PersistentUser> pUser = userDao.findById(inUser.getId());
+        if(pUser.isPresent()) {
+            userDao.delete(pUser.get());
             usersByUserId.invalidate(inUser.getUserID());
             usersByUsername.invalidate(inUser.getName());
         }
@@ -184,7 +185,7 @@ public class UserServiceImpl
     @Override
     public PersistentUser findOne(long inValue)
     {
-        return userDao.findOne(inValue);
+        return userDao.findById(inValue).orElse(null);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.UserService#findAll()
@@ -300,7 +301,7 @@ public class UserServiceImpl
             public PersistentUser load(UserID inKey)
                     throws Exception
             {
-                return userDao.findOne(inKey.getValue());
+                return userDao.findById(inKey.getValue()).orElse(null);
             }}
         );
         usersByUsername = CacheBuilder.newBuilder().maximumSize(100).build(new CacheLoader<String,PersistentUser>() {

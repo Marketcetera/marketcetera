@@ -4,7 +4,7 @@ import java.util.Set;
 
 import org.marketcetera.admin.user.PersistentUser;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /* $License$ */
 
@@ -16,7 +16,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  * @since $Release$
  */
 public interface PersistentSupervisorPermissionDao
-        extends JpaRepository<PersistentSupervisorPermission, Long>,QueryDslPredicateExecutor<PersistentSupervisorPermission>
+        extends JpaRepository<PersistentSupervisorPermission, Long>,QuerydslPredicateExecutor<PersistentSupervisorPermission>
 {
     /**
      * Find the supervisor permission with the given name.
