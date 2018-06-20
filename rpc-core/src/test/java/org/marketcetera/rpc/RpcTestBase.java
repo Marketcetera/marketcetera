@@ -130,7 +130,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
     public void testBadServerHostname()
             throws Exception
     {
-        new ExpectedFailure<StatusRuntimeException>("UNAVAILABLE") {
+        new ExpectedFailure<StatusRuntimeException>("UNAVAILABLE: Unable to resolve host not-a-valid-host") {
             @Override
             protected void run()
                     throws Exception
