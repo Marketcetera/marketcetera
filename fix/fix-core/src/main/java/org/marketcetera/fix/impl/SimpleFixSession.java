@@ -15,6 +15,8 @@ import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.MutableFixSession;
 import org.marketcetera.persist.NDEntityBase;
 
+import com.google.common.collect.Maps;
+
 
 /* $License$ */
 
@@ -31,6 +33,37 @@ public class SimpleFixSession
         extends NDEntityBase
         implements FixSession, ActiveFixSession, MutableFixSession
 {
+    /**
+     * Create a new SimpleFixSession instance.
+     */
+    public SimpleFixSession() {}
+    /**
+     * Create a new SimpleFixSession instance.
+     *
+     * @param inFixSession a <code>FixSession</code> value
+     */
+    public SimpleFixSession(FixSession inFixSession)
+    {
+        setAffinity(inFixSession.getAffinity());
+        setBrokerId(inFixSession.getBrokerId());
+        setDescription(inFixSession.getDescription());
+        setHost(inFixSession.getHost());
+        setId(inFixSession.getId());
+//        setInstance(inFixSession.getInstance());
+        setIsAcceptor(inFixSession.isAcceptor());
+        setIsDeleted(inFixSession.isDeleted());
+        setIsEnabled(inFixSession.isEnabled());
+        setLastUpdated(inFixSession.getLastUpdated());
+        setMappedBrokerId(inFixSession.getMappedBrokerId());
+        setName(inFixSession.getName());
+        setPort(inFixSession.getPort());
+//        setSenderSequenceNumber(inFixSession.getSenderSequenceNumber());
+        setSessionId(inFixSession.getSessionId());
+        setSessionSettings(Maps.newHashMap(inFixSession.getSessionSettings()));
+//        setStatus(inFixSession.getStatus());
+//        setTargetSequenceNumber(inFixSession.getTargetSequenceNumber());
+        setUpdateCount(inFixSession.getUpdateCount());
+    }
     /* (non-Javadoc)
      * @see com.marketcetera.fix.FixSession#getAffinity()
      */

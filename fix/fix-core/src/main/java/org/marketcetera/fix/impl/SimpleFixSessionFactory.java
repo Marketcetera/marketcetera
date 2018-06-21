@@ -32,7 +32,7 @@ public class SimpleFixSessionFactory
     @Override
     public SimpleFixSession create(FixSession inFixSession)
     {
-        throw new UnsupportedOperationException(); // TODO
+        return new SimpleFixSession(inFixSession);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.fix.FixSessionFactory#create(java.util.Map)
