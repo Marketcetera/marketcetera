@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>public-parent</artifactId>
+    <version>4.0.0-SNAPSHOT</version>
+  </parent>
+  <groupId>org.marketcetera</groupId>
+  <artifactId>webui-parent</artifactId>
+  <version>4.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Web UI Parent</name>
+  <properties>
+    <vaadin.version>7.7.6</vaadin.version>
+  </properties>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-bom</artifactId>
+        <version>${vaadin.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>webui-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>com.vaadin</groupId>
+	<artifactId>vaadin-spring-boot-starter</artifactId>
+	<version>1.2.0</version>
+	<exclusions>
+	  <exclusion>
+	    <groupId>org.springframework.boot</groupId>
+	    <artifactId>spring-boot-starter-logging</artifactId>
+	  </exclusion>
+	</exclusions>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <modules>
+    <module>webui-core</module>
+    <module>webui-package</module>
+  </modules>
+  <repositories>
+    <repository>
+      <id>snapshot</id>
+      <url>https://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+    </repository>
+    <!-- Essential Vaadin artifacts are in maven central, but maven.vaadin.com 
+         contains a huge set of additional libraries. See vaadin.com/directory -->
+    <repository>
+      <id>vaadin-addons</id>
+      <url>http://maven.vaadin.com/vaadin-addons</url>
+    </repository>
+  </repositories>
+</project>
