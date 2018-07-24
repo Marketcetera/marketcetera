@@ -1,4 +1,4 @@
-package com.marketcetera.web.view;
+package org.marketcetera.web.view;
 
 import java.util.Map;
 import java.util.SortedMap;
@@ -6,9 +6,9 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.marketcetera.web.config.AppConfiguration;
 import org.springframework.context.ApplicationContext;
 
-import com.marketcetera.web.config.AppConfiguration;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;

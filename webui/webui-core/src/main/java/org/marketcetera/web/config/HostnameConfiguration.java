@@ -1,4 +1,4 @@
-package com.marketcetera.web.config;
+package org.marketcetera.web.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

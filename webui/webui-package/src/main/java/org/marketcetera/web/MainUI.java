@@ -1,11 +1,12 @@
-package com.marketcetera.web;
+package org.marketcetera.web;
 
 import org.marketcetera.core.CloseableLock;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.view.ApplicationMenu;
+import org.marketcetera.web.view.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.marketcetera.web.view.ApplicationMenu;
-import com.marketcetera.web.view.LoginView;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;

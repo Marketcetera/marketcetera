@@ -1,4 +1,4 @@
-package com.marketcetera.web;
+package org.marketcetera.web;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

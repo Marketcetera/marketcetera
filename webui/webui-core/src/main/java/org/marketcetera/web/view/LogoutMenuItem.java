@@ -1,8 +1,8 @@
-package com.marketcetera.web.view;
+package org.marketcetera.web.view;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.SessionUser;
 
-import com.marketcetera.web.SessionUser;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinSession;

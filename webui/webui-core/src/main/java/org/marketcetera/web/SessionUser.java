@@ -1,4 +1,4 @@
-package com.marketcetera.web;
+package org.marketcetera.web;
 
 import java.util.Date;
 import java.util.Set;

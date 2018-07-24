@@ -1,4 +1,4 @@
-package com.marketcetera.web.view;
+package org.marketcetera.web.view;
 
 import java.util.Collection;
 import java.util.Map;
@@ -6,13 +6,13 @@ import java.util.Map;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.config.HostnameConfiguration;
+import org.marketcetera.web.services.AdminClientService;
+import org.marketcetera.web.services.ConnectableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import com.marketcetera.web.SessionUser;
-import com.marketcetera.web.config.HostnameConfiguration;
-import com.marketcetera.web.services.AdminClientService;
-import com.marketcetera.web.services.ConnectableService;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinSession;

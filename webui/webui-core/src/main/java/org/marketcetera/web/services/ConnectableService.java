@@ -1,4 +1,4 @@
-package com.marketcetera.web.services;
+package org.marketcetera.web.services;
 
 /* $License$ */
 

@@ -1,4 +1,4 @@
-package com.marketcetera.web.config;
+package org.marketcetera.web.config;
 
 import org.marketcetera.admin.AdminRpcClientFactory;
 import org.marketcetera.admin.PermissionFactory;

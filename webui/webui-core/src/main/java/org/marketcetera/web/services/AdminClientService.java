@@ -1,4 +1,4 @@
-package com.marketcetera.web.services;
+package org.marketcetera.web.services;
 
 import java.util.Collection;
 
@@ -17,10 +17,10 @@ import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.config.AppConfiguration;
+import org.marketcetera.web.config.HostnameConfiguration;
 import org.springframework.context.ApplicationContext;
 
-import com.marketcetera.web.config.AppConfiguration;
-import com.marketcetera.web.config.HostnameConfiguration;
 import com.vaadin.server.VaadinSession;
 
 /* $License$ */

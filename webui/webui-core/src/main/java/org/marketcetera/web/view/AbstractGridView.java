@@ -1,4 +1,4 @@
-package com.marketcetera.web.view;
+package org.marketcetera.web.view;
 
 import java.util.List;
 
