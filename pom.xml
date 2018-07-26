@@ -800,6 +800,11 @@
     <!-- **** PLUGIN MANAGEMENT SECTION **** -->
     <pluginManagement>
       <plugins>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>maven-replacer-plugin</artifactId>
+	<version>1.4.1</version>
+      </plugin>
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>

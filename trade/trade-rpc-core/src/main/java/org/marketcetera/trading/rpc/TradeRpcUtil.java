@@ -160,11 +160,10 @@ public abstract class TradeRpcUtil
         }
     }
     /**
-     * 
+     * Get the time in force value from the given RPC value.
      *
-     *
-     * @param inTimeInForce
-     * @return
+     * @param inTimeInForce a <code>TradingTypeRpc.TimeInForce</code> value
+     * @return a <code>TimeInForce</code> value
      */
     public static TimeInForce getTimeInForce(TradingTypesRpc.TimeInForce inTimeInForce)
     {
