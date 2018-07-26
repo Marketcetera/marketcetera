@@ -297,9 +297,7 @@ public abstract class PagedDataContainer<Clazz>
                 SortDirection sortDirection = sortOrder.getDirection();
                 String property = String.valueOf(sortOrder.getPropertyId());
                 pageRequestSortOrder.add(new org.marketcetera.persist.Sort(property,
-                                                                           sortDirection == SortDirection.ASCENDING?
-                                                                                   org.marketcetera.persist.SortDirection.ASCENDING:
-                                                                                   org.marketcetera.persist.SortDirection.DESCENDING));
+                                                                           sortDirection == SortDirection.ASCENDING?org.marketcetera.persist.SortDirection.ASCENDING:org.marketcetera.persist.SortDirection.DESCENDING));
             }
             pageRequest.setSortOrder(pageRequestSortOrder);
         }

@@ -10,6 +10,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.grid.ColumnResizeMode;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -79,7 +80,7 @@ public abstract class AbstractGridView<Clazz>
         dataContainer.start();
         grid.setContainerDataSource(dataContainer);
         grid.setColumnReorderingAllowed(true);
-//        grid.setColumnResizeMode(ColumnResizeMode.ANIMATED);
+        grid.setColumnResizeMode(ColumnResizeMode.ANIMATED);
         actionSelect = new ComboBox("Actions");
         actionSelect.setTextInputAllowed(false);
         actionSelect.setNewItemsAllowed(false);
