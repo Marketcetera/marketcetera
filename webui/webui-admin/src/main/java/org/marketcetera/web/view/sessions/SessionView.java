@@ -1,4 +1,4 @@
-package com.marketcetera.web.view.sessions;
+package org.marketcetera.web.view.sessions;
 
 import java.net.Socket;
 import java.util.Collection;

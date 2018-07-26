@@ -1,4 +1,4 @@
-package com.marketcetera.web.view.admin;
+package org.marketcetera.web.view.admin;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;

@@ -1,4 +1,4 @@
-package com.marketcetera.web.view.admin;
+package org.marketcetera.web.view.admin;
 
 import java.util.Collection;
 import java.util.SortedSet;

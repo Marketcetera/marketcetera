@@ -46,9 +46,15 @@
 	<artifactId>wizards-for-vaadin</artifactId>
 	<version>1.1.1</version>
       </dependency>
+      <dependency>
+	<groupId>org.vaadin.crudui</groupId>
+	<artifactId>crudui</artifactId>
+	<version>1.6.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <modules>
+    <module>webui-admin</module>
     <module>webui-core</module>
     <module>webui-package</module>
   </modules>

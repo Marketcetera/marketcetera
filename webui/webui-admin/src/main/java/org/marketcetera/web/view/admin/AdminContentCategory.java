@@ -1,4 +1,4 @@
-package com.marketcetera.web.view.admin;
+package org.marketcetera.web.view.admin;
 
 import org.marketcetera.web.view.MenuContent;
 
