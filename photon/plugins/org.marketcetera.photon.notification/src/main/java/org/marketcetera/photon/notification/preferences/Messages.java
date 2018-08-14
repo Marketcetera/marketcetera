@@ -32,14 +32,11 @@ public interface Messages {
 	/*
 	 * UI Text
 	 */
-	static final I18NMessage0P DESKTOP_NOTIFICATIONS_PRIORITY = new I18NMessage0P(
-			LOGGER, "desktop_notifications.priority"); //$NON-NLS-1$
-	static final I18NMessage0P DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_HIGH = new I18NMessage0P(
-			LOGGER, "desktop_notifications.severity_label.HIGH"); //$NON-NLS-1$
-	static final I18NMessage0P DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_MEDIUM = new I18NMessage0P(
-			LOGGER, "desktop_notifications.severity_label.MEDIUM"); //$NON-NLS-1$
-	static final I18NMessage0P DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_LOW = new I18NMessage0P(
-			LOGGER, "desktop_notifications.severity_label.LOW"); //$NON-NLS-1$
+	static final I18NMessage0P DESKTOP_NOTIFICATIONS_PRIORITY = new I18NMessage0P(LOGGER, "desktop_notifications.priority"); //$NON-NLS-1$
+	static final I18NMessage0P DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_ERROR = new I18NMessage0P(LOGGER, "desktop_notifications.severity_label.ERROR"); //$NON-NLS-1$
+	static final I18NMessage0P DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_WARN = new I18NMessage0P(LOGGER, "desktop_notifications.severity_label.WARN"); //$NON-NLS-1$
+    static final I18NMessage0P DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_INFO = new I18NMessage0P(LOGGER, "desktop_notifications.severity_label.INFO"); //$NON-NLS-1$
+	static final I18NMessage0P DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_DEBUG = new I18NMessage0P(LOGGER, "desktop_notifications.severity_label.DEBUG"); //$NON-NLS-1$
 	static final I18NMessage0P DESKTOP_NOTIFICATIONS_FEWEST = new I18NMessage0P(
 			LOGGER, "desktop_notifications.fewest"); //$NON-NLS-1$
 	static final I18NMessage0P DESKTOP_NOTIFICATIONS_MOST = new I18NMessage0P(

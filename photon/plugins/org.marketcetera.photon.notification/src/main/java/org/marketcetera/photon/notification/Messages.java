@@ -49,12 +49,13 @@ public interface Messages {
 			LOGGER, "popup.priority_label"); //$NON-NLS-1$
 	static final I18NMessage0P POPUP_TIMESTAMP_LABEL = new I18NMessage0P(
 			LOGGER, "popup.timestamp_label"); //$NON-NLS-1$
-	static final I18NMessage0P POPUP_SEVERITY_LABEL_HIGH = new I18NMessage0P(
-			LOGGER, "popup.severity_label.HIGH"); //$NON-NLS-1$
-	static final I18NMessage0P POPUP_SEVERITY_LABEL_MEDIUM = new I18NMessage0P(
-			LOGGER, "popup.severity_label.MEDIUM"); //$NON-NLS-1$
-	static final I18NMessage0P POPUP_SEVERITY_LABEL_LOW = new I18NMessage0P(
-			LOGGER, "popup.severity_label.LOW"); //$NON-NLS-1$
+	static final I18NMessage0P POPUP_SEVERITY_LABEL_ERROR = new I18NMessage0P(
+			LOGGER, "popup.severity_label.ERROR"); //$NON-NLS-1$
+	static final I18NMessage0P POPUP_SEVERITY_LABEL_WARN = new I18NMessage0P(
+			LOGGER, "popup.severity_label.WARN"); //$NON-NLS-1$
+    static final I18NMessage0P POPUP_SEVERITY_LABEL_INFO = new I18NMessage0P(LOGGER,"popup.severity_label.INFO"); //$NON-NLS-1$
+	static final I18NMessage0P POPUP_SEVERITY_LABEL_DEBUG = new I18NMessage0P(
+			LOGGER, "popup.severity_label.DEBUG"); //$NON-NLS-1$
 		
 	/*
 	 * INFO Log Messages 

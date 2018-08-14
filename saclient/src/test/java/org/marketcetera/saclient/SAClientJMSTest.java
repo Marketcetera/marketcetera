@@ -356,7 +356,7 @@ public class SAClientJMSTest extends SAClientTestBase {
                 ClientTest.createOrderFIX(),
                 ClientTest.createCancelReject(),
                 ClientTest.createExecutionReport(),
-                org.marketcetera.core.notifications.Notification.high(
+                org.marketcetera.core.notifications.Notification.error(
                         "Subject", "body", "test.notification"),
                 BigInteger.ONE,
                 null,

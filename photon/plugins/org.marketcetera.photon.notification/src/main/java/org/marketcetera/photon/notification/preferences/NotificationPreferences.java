@@ -45,7 +45,7 @@ public class NotificationPreferences extends AbstractPreferenceInitializer {
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = NotificationPlugin.getDefault()
 				.getPreferenceStore();
-		store.setDefault(PRIORITY, Severity.HIGH.name());
+		store.setDefault(PRIORITY, Severity.ERROR.name());
 		for (Severity severity : Severity.values()) {
 			store.setDefault(SOUND_ENABLED_PREFIX + severity.name(), false);
 			store.setDefault(SOUND_ENABLED_PREFIX + severity.name(), ""); //$NON-NLS-1$

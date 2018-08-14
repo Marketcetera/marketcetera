@@ -172,16 +172,18 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 	 * @return label for the severity
 	 */
 	private String getSeverityLabel(Severity severity) {
-		switch (severity) {
-		case HIGH:
-			return Messages.POPUP_SEVERITY_LABEL_HIGH.getText();
-		case MEDIUM:
-			return Messages.POPUP_SEVERITY_LABEL_MEDIUM.getText();
-		case LOW:
-			return Messages.POPUP_SEVERITY_LABEL_LOW.getText();
-		default:
-			return ""; //$NON-NLS-1$
-		}
+	    switch (severity) {
+	        case ERROR:
+	            return Messages.POPUP_SEVERITY_LABEL_ERROR.getText();
+	        case WARN:
+	            return Messages.POPUP_SEVERITY_LABEL_WARN.getText();
+            case INFO:
+                return Messages.POPUP_SEVERITY_LABEL_INFO.getText();
+	        case DEBUG:
+	            return Messages.POPUP_SEVERITY_LABEL_DEBUG.getText();
+	        default:
+	            return ""; //$NON-NLS-1$
+	    }
 	}
 
 	/**
@@ -210,16 +212,19 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 	 * 
 	 * @return the image to display or null for no image
 	 */
-	protected Image getImage(INotification notification) {
-		switch (notification.getSeverity()) {
-		case HIGH:
-			return getSWTImage(SWT.ICON_ERROR);
-		case MEDIUM:
-			return getSWTImage(SWT.ICON_WARNING);
-		default:
-			return getSWTImage(SWT.ICON_INFORMATION);
-		}
-	}
+    protected Image getImage(INotification notification) {
+        switch (notification.getSeverity()) {
+            case DEBUG:
+            case INFO:
+                return getSWTImage(SWT.ICON_INFORMATION);
+            case ERROR:
+                return getSWTImage(SWT.ICON_ERROR);
+            case WARN:
+                return getSWTImage(SWT.ICON_WARNING);
+            default:
+                return getSWTImage(SWT.ICON_INFORMATION);
+        }
+    }
 
 	/**
 	 * Strategy for truncating text to a specified width using ellipsis. The

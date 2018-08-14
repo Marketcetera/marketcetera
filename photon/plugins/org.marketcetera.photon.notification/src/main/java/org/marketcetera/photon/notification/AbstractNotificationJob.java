@@ -104,7 +104,7 @@ public abstract class AbstractNotificationJob extends Job {
  				return Status.CANCEL_STATUS;
  			}
 			// Too many notifications, summarize into one
-			Severity max = Severity.LOW;
+			Severity max = Severity.DEBUG;
 			int count = 0;
 			while (!monitor.isCanceled() && !mQueue.isEmpty()) {
 				while (!mQueue.isEmpty()) {
@@ -221,7 +221,7 @@ public abstract class AbstractNotificationJob extends Job {
 		public ThresholdReachedNotification() {
 			super(Messages.THRESHOLD_NOTIFICATION_SUBJECT.getText(),
 					Messages.THRESHOLD_NOTIFICATION_BODY.getText(), new Date(),
-					Severity.HIGH, AbstractNotificationJob.class.toString());
+					Severity.ERROR, AbstractNotificationJob.class.toString());
 		}
 	}
 	

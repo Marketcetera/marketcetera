@@ -263,7 +263,7 @@ public class ReconnectServerJob
                     details = Messages.BROKER_NOTIFICATION_BROKER_UNAVAILABLE_DETAILS;
                 }
                 NotificationManager.getNotificationManager().publish(
-                        Notification.high(subject.getText(), details
+                        Notification.error(subject.getText(), details
                                 .getText(Messages.BROKER_LABEL_PATTERN.getText(
                                         status.getName(), status.getId())),
                                 getClass().getName()));
@@ -303,7 +303,7 @@ public class ReconnectServerJob
                 // notifications are not necessary if the reconnect job is
                 // running
                 if (!sScheduled.get()) {
-                    NotificationManager.getNotificationManager().publish(Notification.high(text,
+                    NotificationManager.getNotificationManager().publish(Notification.error(text,
                                                                                            text,
                                                                                            getClass().getName()));
                 }

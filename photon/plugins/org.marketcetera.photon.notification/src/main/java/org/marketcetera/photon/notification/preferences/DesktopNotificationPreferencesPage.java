@@ -44,18 +44,10 @@ public class DesktopNotificationPreferencesPage extends
 	 * Labels and values for priority radio group
 	 */
 	private static final String[][] PRIORITY_NAMES_AND_VALUES = {
-			{
-					DESKTOP_NOTIFICATIONS_PARENTHETICAL_PATTERN
-							.getText(DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_HIGH
-									.getText(), DESKTOP_NOTIFICATIONS_FEWEST
-									.getText()), Severity.HIGH.name() },
-			{ DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_MEDIUM.getText(),
-					Severity.MEDIUM.name() },
-			{
-					DESKTOP_NOTIFICATIONS_PARENTHETICAL_PATTERN.getText(
-							DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_LOW.getText(),
-							DESKTOP_NOTIFICATIONS_MOST.getText()),
-					Severity.LOW.name() } };
+	    { DESKTOP_NOTIFICATIONS_PARENTHETICAL_PATTERN.getText(DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_ERROR.getText(), DESKTOP_NOTIFICATIONS_FEWEST.getText()), Severity.ERROR.name() },
+	    { DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_WARN.getText(),Severity.WARN.name() },
+        { DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_INFO.getText(),Severity.INFO.name() },
+	    { DESKTOP_NOTIFICATIONS_PARENTHETICAL_PATTERN.getText(DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_DEBUG.getText(),DESKTOP_NOTIFICATIONS_MOST.getText()),Severity.DEBUG.name() } };
 
 	@Override
 	public void init(IWorkbench workbench) {
@@ -123,14 +115,17 @@ public class DesktopNotificationPreferencesPage extends
 		notificationTypeList.setFont(parent.getFont());
 		GridDataFactory.swtDefaults().applyTo(notificationTypeList);
 		createTableItem(notificationTypeList,
-				DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_HIGH.getText(),
-				Severity.HIGH);
+		                DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_ERROR.getText(),
+		                Severity.ERROR);
 		createTableItem(notificationTypeList,
-				DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_MEDIUM.getText(),
-				Severity.MEDIUM);
+		                DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_WARN.getText(),
+		                Severity.WARN);
+        createTableItem(notificationTypeList,
+                        DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_INFO.getText(),
+                        Severity.INFO);
 		createTableItem(notificationTypeList,
-				DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_LOW.getText(),
-				Severity.LOW);
+		                DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_DEBUG.getText(),
+		                Severity.DEBUG);
 		
 		// sound details section
 		final Composite soundDetails = new Composite(group, SWT.NONE);
@@ -138,20 +133,23 @@ public class DesktopNotificationPreferencesPage extends
 		final StackLayout layout = new StackLayout();
 		soundDetails.setLayout(layout);
 		final Composite empty = new Composite(soundDetails, SWT.NONE);
-		final Composite high = createSoundDetail(soundDetails, Severity.HIGH);
-		final Composite medium = createSoundDetail(soundDetails, Severity.MEDIUM);
-		final Composite low = createSoundDetail(soundDetails, Severity.LOW);
+		final Composite error = createSoundDetail(soundDetails, Severity.ERROR);
+		final Composite warn = createSoundDetail(soundDetails, Severity.WARN);
+        final Composite info = createSoundDetail(soundDetails, Severity.INFO);
+		final Composite debug = createSoundDetail(soundDetails, Severity.DEBUG);
 		layout.topControl = empty;
 		notificationTypeList.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Object data = e.item.getData();
-				if (data.equals(Severity.HIGH))
-					layout.topControl = high;
-				else if (data.equals(Severity.MEDIUM))
-					layout.topControl = medium;
-				else if (data.equals(Severity.LOW))
-					layout.topControl = low;
+				if (data.equals(Severity.ERROR))
+					layout.topControl = error;
+				else if (data.equals(Severity.WARN))
+					layout.topControl = warn;
+                else if (data.equals(Severity.INFO))
+                    layout.topControl = info;
+				else if (data.equals(Severity.DEBUG))
+					layout.topControl = debug;
 				else
 					layout.topControl = empty;
 				soundDetails.layout();

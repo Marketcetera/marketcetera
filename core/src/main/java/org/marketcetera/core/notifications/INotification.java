@@ -16,7 +16,7 @@ import org.marketcetera.core.ClassVersion;
  */
 @ClassVersion("$Id$")
 public interface INotification
-    extends Serializable
+        extends Serializable
 {
     /**
      * Indicates the severity of an <code>INotification</code>.
@@ -28,9 +28,10 @@ public interface INotification
     @ClassVersion("$Id$")
     public enum Severity
     {
-        LOW,
-        MEDIUM,
-        HIGH
+        DEBUG,
+        INFO,
+        WARN,
+        ERROR
     }
     /**
      * Gets the high-level summary of the <code>INotification</code>.
