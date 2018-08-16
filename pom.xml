@@ -1259,7 +1259,7 @@
     </repository>
     <repository>
       <id>internal</id>
-      <url>http://repo.marketcetera.org/maven</url>
+      <url>https://repo.marketcetera.org/maven</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -1275,7 +1275,7 @@
     </pluginRepository>
     <pluginRepository>
       <id>internal</id>
-      <url>http://repo.marketcetera.org/maven</url>
+      <url>https://repo.marketcetera.org/maven</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
