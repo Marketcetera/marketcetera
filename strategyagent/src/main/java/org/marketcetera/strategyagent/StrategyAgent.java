@@ -182,9 +182,9 @@ public class StrategyAgent
     public void stop()
     {
         if(notificationExecutor != null) {
-            notificationExecutor.notify(Notification.debug("Strategy Agent Stopped",
-                                                         "Stategy Agent Stopped at " + new DateTime(),
-                                                         StrategyAgent.class.getSimpleName()));
+            notificationExecutor.notify(Notification.info("Strategy Agent Stopped",
+                                                          "Stategy Agent Stopped at " + new DateTime(),
+                                                          StrategyAgent.class.getSimpleName()));
         }
         stopRemoteService();
     }
