@@ -95,9 +95,9 @@ public class HibernateMessageStore
         where = where.and(m.msgSeqNum.loe(inEndSequence));
         Sort sort = new Sort(Sort.Direction.ASC,
                              QMessageStoreMessage.messageStoreMessage.msgSeqNum.getMetadata().getName());
-        PageRequest pageable = new PageRequest(0,
-                                               Integer.MAX_VALUE,
-                                               sort);
+        PageRequest pageable = PageRequest.of(0,
+                                              Integer.MAX_VALUE,
+                                              sort);
         Page<MessageStoreMessage> messagePage = messageDao.findAll(where,
                                                                    pageable);
         Iterator<MessageStoreMessage> messageIterator = messagePage.iterator();

@@ -20,6 +20,7 @@ import org.marketcetera.dataflow.config.DataFlowProvider;
 import org.marketcetera.dataflow.server.rpc.DataFlowRpcService;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
+import org.marketcetera.fix.rpc.FixAdminRpcService;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
 import org.marketcetera.module.ModuleManager;
@@ -242,6 +243,22 @@ public class ServerApplication
         adminRpcService.setAuthenticator(inAuthenticator);
         adminRpcService.setSessionManager(inSessionManager);
         return adminRpcService;
+    }
+    /**
+     * Get the FIX admin RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return an <code>AdminRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public FixAdminRpcService<ServerSession> getFixAdminRpcService(@Autowired Authenticator inAuthenticator,
+                                                                   @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        FixAdminRpcService<ServerSession> fixAdminRpcService = new FixAdminRpcService<>();
+        fixAdminRpcService.setAuthenticator(inAuthenticator);
+        fixAdminRpcService.setSessionManager(inSessionManager);
+        return fixAdminRpcService;
     }
     /**
      * Get the data flow RPC service.

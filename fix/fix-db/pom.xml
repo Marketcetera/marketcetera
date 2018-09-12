@@ -38,11 +38,11 @@
       <artifactId>cluster-api</artifactId>
     </dependency>
     <!-- local test -->
-    <!--dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>hazelcast-cluster</artifactId>
+      <artifactId>simple-cluster</artifactId>
       <scope>test</scope>
-    </dependency-->
+    </dependency>
     <!-- spring test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
