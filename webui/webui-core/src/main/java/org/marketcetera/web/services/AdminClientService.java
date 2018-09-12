@@ -12,6 +12,8 @@ import org.marketcetera.admin.User;
 import org.marketcetera.cluster.InstanceData;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixAdminClient;
+import org.marketcetera.fix.FixAdminRpcClientFactory;
+import org.marketcetera.fix.FixAdminRpcClientParameters;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.persist.CollectionPageResponse;
@@ -21,8 +23,6 @@ import org.marketcetera.web.config.AppConfiguration;
 import org.marketcetera.web.config.HostnameConfiguration;
 import org.springframework.context.ApplicationContext;
 
-import com.marketcetera.fix.FixAdminRpcClientFactory;
-import com.marketcetera.fix.FixAdminRpcClientParameters;
 import com.vaadin.server.VaadinSession;
 
 /* $License$ */

@@ -1,6 +1,6 @@
 syntax = "proto3";
 option java_generic_services = true;
-option java_package = "com.marketcetera.fix";
+option java_package = "org.marketcetera.fix";
 option java_outer_classname = "FixAdminRpc";
 import "rpc_base.proto";
 import "rpc_paging.proto";
