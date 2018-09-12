@@ -21,6 +21,8 @@ import org.marketcetera.web.config.AppConfiguration;
 import org.marketcetera.web.config.HostnameConfiguration;
 import org.springframework.context.ApplicationContext;
 
+import com.marketcetera.fix.FixAdminRpcClientFactory;
+import com.marketcetera.fix.FixAdminRpcClientParameters;
 import com.vaadin.server.VaadinSession;
 
 /* $License$ */
@@ -90,7 +92,31 @@ public class AdminClientService
         params.setPassword(inPassword);
         adminClient = adminClientFactory.create(params);
         adminClient.start();
-        return adminClient.isRunning();
+        if(fixAdminClient != null) {
+            try {
+                fixAdminClient.stop();
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      "Unable to stop existing fix admin client for {}: {}",
+                                      username,
+                                      ExceptionUtils.getRootCauseMessage(e));
+            } finally {
+                fixAdminClient = null;
+            }
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "Creating fixAdmin client for {} to {}:{}",
+                               username,
+                               hostname,
+                               port);
+        FixAdminRpcClientParameters fixParams = new FixAdminRpcClientParameters();
+        fixParams.setHostname(hostname);
+        fixParams.setPort(port);
+        fixParams.setUsername(username);
+        fixParams.setPassword(inPassword);
+        fixAdminClient = fixAdminClientFactory.create(fixParams);
+        fixAdminClient.start();
+        return adminClient.isRunning() && fixAdminClient.isRunning();
     }
     /**
      * Create the given user.
@@ -414,6 +440,10 @@ public class AdminClientService
      * creates an admin client to connect to the admin server
      */
     private AdminRpcClientFactory adminClientFactory;
+    /**
+     * creates a FIX admin client to connect to the fix admin server
+     */
+    private FixAdminRpcClientFactory fixAdminClientFactory;
     /**
      * client object used to communicate with the server
      */

@@ -1,0 +1,153 @@
+syntax = "proto3";
+option java_generic_services = true;
+option java_package = "com.marketcetera.fix";
+option java_outer_classname = "FixAdminRpc";
+import "rpc_base.proto";
+import "rpc_paging.proto";
+
+message FixSession {
+    string name = 1;
+    string host = 2;
+    uint32 port = 3;
+    uint32 affinity = 4;
+    string brokerId = 5;
+    string description = 6;
+    string sessionId = 7;
+    bool acceptor = 8;
+    Map sessionSettings = 9;
+    string mappedBrokerId = 10;
+}
+
+message ActiveFixSession {
+    FixSession fixSession = 1;
+    string instance = 2;
+    string status = 3;
+    bool enabled = 4;
+    uint32 targetSeqNum = 5;
+    uint32 senderSeqNum = 6;
+}
+
+message CreateFixSessionRequest {
+    string sessionId = 1;
+    FixSession fixSession = 2;
+}
+
+message CreateFixSessionResponse {
+    FixSession fixSession = 1;
+}
+
+message ReadFixSessionsRequest {
+    string sessionId = 1;
+    PageRequest page = 2;
+}
+
+message ReadFixSessionsResponse {
+    PageResponse page = 1;
+    repeated ActiveFixSession fixSession = 2;
+}
+
+message UpdateFixSessionRequest {
+    string sessionId = 1;
+    string name = 2;
+    FixSession fixSession = 3;
+}
+
+message UpdateFixSessionResponse {
+}
+
+message EnableFixSessionRequest {
+    string sessionId = 1;
+    string name = 2;
+}
+
+message EnableFixSessionResponse {
+}
+
+message DisableFixSessionRequest {
+    string sessionId = 1;
+    string name = 2;
+}
+
+message DisableFixSessionResponse {
+}
+
+message DeleteFixSessionRequest {
+    string sessionId = 1;
+    string name = 2;
+}
+
+message DeleteFixSessionResponse {
+}
+
+message StartFixSessionRequest {
+    string sessionId = 1;
+    string name = 2;
+}
+
+message StartFixSessionResponse {
+}
+
+message StopFixSessionRequest {
+    string sessionId = 1;
+    string name = 2;
+}
+
+message StopFixSessionResponse {
+}
+
+message FixSessionAttributeDescriptor {
+    string name = 1;
+    string defaultValue = 2;
+    string description = 3;
+    string pattern = 4;
+    bool required = 5;
+    string advice = 6;
+}
+
+message ReadFixSessionAttributeDescriptorsRequest {
+    string sessionId = 1;
+}
+
+message ReadFixSessionAttributeDescriptorsResponse {
+    repeated FixSessionAttributeDescriptor fixSessionAttributeDescriptors = 1;
+}
+
+message UpdateSequenceNumbersRequest {
+    string sessionId = 1;
+    string name = 2;
+    int32 senderSequenceNumber = 3;
+    int32 targetSequenceNumber = 4;
+}
+
+message UpdateSequenceNumbersResponse {
+}
+message InstanceDataRequest {
+    string sessionId = 1;
+    uint32 affinity = 2;
+}
+
+message InstanceDataResponse {
+    InstanceData instanceData = 1;
+}
+
+message InstanceData {
+    string hostname = 1;
+    uint32 port = 2;
+}
+
+service FixAdminRpcService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc createFixSession(CreateFixSessionRequest) returns (CreateFixSessionResponse);
+    rpc readFixSessions(ReadFixSessionsRequest) returns (ReadFixSessionsResponse);
+    rpc updateFixSession(UpdateFixSessionRequest) returns (UpdateFixSessionResponse);
+    rpc getInstanceData(InstanceDataRequest) returns (InstanceDataResponse);
+    rpc readFixSessionAttributeDescriptors(ReadFixSessionAttributeDescriptorsRequest) returns (ReadFixSessionAttributeDescriptorsResponse);
+    rpc enableFixSession(EnableFixSessionRequest) returns (EnableFixSessionResponse);
+    rpc disableFixSession(DisableFixSessionRequest) returns (DisableFixSessionResponse);
+    rpc deleteFixSession(DeleteFixSessionRequest) returns (DeleteFixSessionResponse);
+    rpc startFixSession(StartFixSessionRequest) returns (StartFixSessionResponse);
+    rpc stopFixSession(StopFixSessionRequest) returns (StopFixSessionResponse);
+    rpc updateSequenceNumbers(UpdateSequenceNumbersRequest) returns (UpdateSequenceNumbersResponse);
+}

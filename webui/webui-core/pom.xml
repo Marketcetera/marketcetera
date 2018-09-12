@@ -24,6 +24,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>fix-rpc-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cluster-api</artifactId>
     </dependency>
     <dependency>
@@ -47,8 +51,8 @@
   <build>
     <plugins>
       <plugin>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-maven-plugin</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
