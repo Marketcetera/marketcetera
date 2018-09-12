@@ -147,6 +147,7 @@ public class LoginView
         } catch (Exception e) {
             String message = ExceptionUtils.getRootCauseMessage(e);
             SLF4JLoggerProxy.warn(this,
+                                  e,
                                   "{} failed to log in: {}",
                                   username,
                                   message);

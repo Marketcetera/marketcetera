@@ -55,6 +55,7 @@ public class AdminClientService
         username = inUsername;
         applicationContext = AppConfiguration.getApplicationContext();
         adminClientFactory = applicationContext.getBean(AdminRpcClientFactory.class);
+        fixAdminClientFactory = applicationContext.getBean(FixAdminRpcClientFactory.class);
         hostname = HostnameConfiguration.getInstance().getHostname();
         port = HostnameConfiguration.getInstance().getPort();
     }

@@ -10,6 +10,7 @@ import org.marketcetera.admin.impl.SimpleRoleFactory;
 import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
 import org.marketcetera.core.ContextClassAggregator;
+import org.marketcetera.fix.FixAdminRpcClientFactory;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -41,6 +42,16 @@ public class AppConfiguration
     public static AdminRpcClientFactory getAdminClientFactory()
     {
         return new AdminRpcClientFactory();
+    }
+    /**
+     * Get the FIX admin client factory value.
+     *
+     * @return a <code>FixAdminClientFactory</code> value
+     */
+    @Bean
+    public static FixAdminRpcClientFactory getFixAdminClientFactory()
+    {
+        return new FixAdminRpcClientFactory();
     }
 //    /**
 //     * Get the SA client factory value.
