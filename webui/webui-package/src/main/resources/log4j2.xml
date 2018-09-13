@@ -11,7 +11,7 @@
     </Root>
     <logger name="com.marketcetera" level="info"/>
     <logger name="org.marketcetera" level="info"/>
-    <logger name="com.marketcetera.web" level="trace"/>
-    <logger name="com.marketcetera.exsim.ExsimRpcClient" level="trace"/>
+    <logger name="org.marketcetera.web" level="debug"/>
+    <logger name="com.marketcetera.web" level="debug"/>
   </Loggers>
 </Configuration>

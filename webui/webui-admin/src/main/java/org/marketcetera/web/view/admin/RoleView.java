@@ -16,7 +16,6 @@ import org.marketcetera.web.view.PagedDataContainer;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
-import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.TwinColSelect;
@@ -30,7 +29,7 @@ import com.vaadin.ui.TwinColSelect;
  * @version $Id$
  * @since $Release$
  */
-@SpringView(name=RoleView.NAME)
+@org.springframework.stereotype.Component
 public class RoleView
         extends AbstractAdminView<Role>
 {
@@ -332,6 +331,6 @@ public class RoleView
     /**
      * global name of this view
      */
-    public static final String NAME = "RoleView";
+    private static final String NAME = "RoleView";
     private static final long serialVersionUID = 1581057023135915756L;
 }

@@ -162,7 +162,7 @@ public class FixAdminRpcService<SessionClazz>
                     Validate.isTrue(null == brokerService.findFixSessionByName(fixSession.getName()),
                                     "FIX Session " + fixSession.getName() + " already exists");
                     fixSession = brokerService.save(fixSession);
-                    responseBuilder.setFixSession(FixRpcUtil.getRpcFixSession(fixSession));
+                    responseBuilder.setFixSession(FixRpcUtil.getRpcActiveFixSession(fixSession));
                 }
                 FixAdminRpc.CreateFixSessionResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(FixAdminRpcService.this,
@@ -203,8 +203,8 @@ public class FixAdminRpcService<SessionClazz>
                 if(pagedResponse != null) {
                     responseBuilder.setPage(PagingRpcUtil.getPageResponse(pageRequest,
                                                                           pagedResponse));
-                    for(FixSession fixSession : pagedResponse.getElements()) {
-                        responseBuilder.addFixSession(FixRpcUtil.getRpcActiveFixSession(fixSession));
+                    for(FixSession activFixSession : pagedResponse.getElements()) {
+                        FixRpcUtil.getRpcActiveFixSession(activFixSession).ifPresent(rpcFixSession->responseBuilder.addFixSession(rpcFixSession));
                     }
                 }
                 FixAdminRpc.ReadFixSessionsResponse response = responseBuilder.build();

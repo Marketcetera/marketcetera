@@ -33,6 +33,7 @@ import com.vaadin.server.VaadinSession;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
+ * TODO separate out FIX admin services
  */
 public class AdminClientService
 {

@@ -27,7 +27,7 @@ import com.vaadin.ui.UI;
 @SpringView(name=MainView.NAME)
 public class MainView
         extends HorizontalLayout
-        implements View, MenuContent
+        implements View,MenuContent
 {
     /**
      * Validate and start the object.
@@ -92,7 +92,7 @@ public class MainView
     @Override
     public String getMenuCaption()
     {
-        return "Home";
+        return "Workspace";
     }
     /**
      * main layout component of this view

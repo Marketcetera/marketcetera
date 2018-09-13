@@ -7,7 +7,6 @@ import org.marketcetera.web.view.PagedDataContainer;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
-import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button.ClickEvent;
 
 /* $License$ */
@@ -19,7 +18,7 @@ import com.vaadin.ui.Button.ClickEvent;
  * @version $Id$
  * @since $Release$
  */
-@SpringView(name=PermissionView.NAME)
+@org.springframework.stereotype.Component
 public class PermissionView
         extends AbstractAdminView<Permission>
 {
@@ -110,6 +109,6 @@ public class PermissionView
     /**
      * global name of this view
      */
-    public static final String NAME = "PermissionView";
+    private static final String NAME = "Permissions";
     private static final long serialVersionUID = 3066342312753582309L;
 }

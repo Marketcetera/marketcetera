@@ -1,6 +1,10 @@
 package org.marketcetera.fix;
 
+import java.util.Map;
+import java.util.Optional;
+
 import org.marketcetera.cluster.InstanceData;
+import org.marketcetera.rpc.base.BaseRpcUtil;
 
 /* $License$ */
 
@@ -13,16 +17,6 @@ import org.marketcetera.cluster.InstanceData;
  */
 public class FixRpcUtil
 {
-    /**
-     *
-     *
-     * @param inFixSession
-     * @return
-     */
-    public static FixAdminRpc.FixSession getRpcFixSession(FixSession inFixSession)
-    {
-        throw new UnsupportedOperationException(); // TODO
-    }
     /**
      *
      *
@@ -66,15 +60,46 @@ public class FixRpcUtil
         
     }
     /**
+     * Get the RPC value from the given value.
      *
-     *
-     * @param inFixSession
-     * @return
+     * @param inActiveFixSession an <code>ActiveFixSession</code> value
+     * @return an <code>Optional&lt;FixAdminRpc.ActiveFixSession&gt;</code> value
      */
-    public static FixAdminRpc.ActiveFixSession getRpcActiveFixSession(FixSession inFixSession)
+    public static Optional<FixAdminRpc.ActiveFixSession> getRpcActiveFixSession(ActiveFixSession inActiveFixSession)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        if(inActiveFixSession == null) {
+            return Optional.empty();
+        }
+        FixAdminRpc.ActiveFixSession.Builder builder = FixAdminRpc.ActiveFixSession.newBuilder();
+        builder.setEnabled(inActiveFixSession.isEnabled());
+        builder.setInstance(inActiveFixSession.getHost());
+//        builder.setSenderSeqNum(inFixSession.get)
+//        builder.setStatus(inFixSession.getS)
+        return Optional.of(builder.build());
+    }
+    /**
+     * Get the RPC value from the given value.
+     *
+     * @param inFixSession a <code>FixSession</code> value
+     * @return an <code>Optional&lt;FixAdminRpc.FixSession&gt;</code> value
+     */
+    public static Optional<FixAdminRpc.FixSession> getRpcFixSession(FixSession inFixSession)
+    {
+        if(inFixSession == null) {
+            return Optional.empty();
+        }
+        FixAdminRpc.FixSession.Builder builder = FixAdminRpc.FixSession.newBuilder();
+        builder.setAcceptor(inFixSession.isAcceptor());
+        builder.setAffinity(inFixSession.getAffinity());
+        builder.setBrokerId(inFixSession.getBrokerId());
+        builder.setDescription(inFixSession.getDescription());
+        builder.setHost(inFixSession.getHost());
+        builder.setMappedBrokerId(inFixSession.getMappedBrokerId());
+        builder.setName(inFixSession.getName());
+        builder.setPort(inFixSession.getPort());
+        builder.setSessionId(inFixSession.getSessionId());
+        builder.setSessionSettings(BaseRpcUtil.getRpcMap(inFixSession.getSessionSettings()));
+        return Optional.of(builder.build());
     }
     /**
      *

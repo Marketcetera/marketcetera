@@ -11,7 +11,6 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
-import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Layout;
@@ -29,7 +28,7 @@ import com.vaadin.ui.PasswordField;
  * @version $Id$
  * @since $Release$
  */
-@SpringView(name=UserView.NAME)
+@org.springframework.stereotype.Component
 public class UserView
         extends AbstractAdminView<User>
 {

@@ -8,7 +8,7 @@ import com.vaadin.ui.MenuBar;
 /* $License$ */
 
 /**
- *
+ * Provides a menu entry.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -17,42 +17,37 @@ import com.vaadin.ui.MenuBar;
 public interface MenuContent
 {
     /**
-     * 
+     * Get the caption value.
      *
-     *
-     * @return
+     * @return a <code>String</code> value
      */
     String getMenuCaption();
     /**
-     * 
+     * Get the menu item weight.
      *
-     *
-     * @return
+     * @return an <code>int</code> value
      */
     int getWeight();
     /**
-     * 
+     * Get the menu category value.
      *
-     *
-     * @return
+     * @return a <code>MenuContent</code> value
      */
     MenuContent getCategory();
     /**
-     * 
+     * Get the menu icon value.
      *
-     *
-     * @return
+     * @return a <code>Resource</code> value
      */
     Resource getMenuIcon();
     /**
-     * 
+     * Get the command value to execute.
      *
-     *
-     * @return
+     * @return a <code>MenuBar.Command</code> value
      */
     MenuBar.Command getCommand();
     /**
-     * 
+     * static comparator used to compare menu items
      */
     static Comparator<MenuContent> comparator = new Comparator<MenuContent>() {
         @Override
@@ -62,5 +57,4 @@ public interface MenuContent
             return new Integer(inO1.getWeight()).compareTo(inO2.getWeight());
         }
     };
-    
 }

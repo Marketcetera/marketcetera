@@ -20,9 +20,13 @@ import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.events.MenuEvent;
 import org.marketcetera.web.services.AdminClientService;
+import org.marketcetera.web.services.WebMessageService;
 import org.marketcetera.web.view.AbstractGridView;
+import org.marketcetera.web.view.MenuContent;
 import org.marketcetera.web.view.PagedDataContainer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.WizardCancelledEvent;
@@ -41,12 +45,16 @@ import com.vaadin.data.validator.NullValidator;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -54,6 +62,7 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.OptionGroup;
@@ -77,9 +86,10 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
-@SpringView(name=SessionView.NAME)
+@SpringComponent
 public class SessionView
         extends AbstractGridView<ActiveFixSession>
+        implements MenuContent
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
@@ -134,6 +144,64 @@ public class SessionView
     public String getViewName()
     {
         return NAME;
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
+     */
+    @Override
+    public String getMenuCaption()
+    {
+        return "FIX Sessions";
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.web.view.MenuContent#getWeight()
+     */
+    @Override
+    public int getWeight()
+    {
+        return 75;
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.web.view.MenuContent#getCategory()
+     */
+    @Override
+    public MenuContent getCategory()
+    {
+        return null;
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.web.view.MenuContent#getMenuIcon()
+     */
+    @Override
+    public Resource getMenuIcon()
+    {
+        return FontAwesome.UNIVERSITY;
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.web.view.MenuContent#getCommand()
+     */
+    @Override
+    public Command getCommand()
+    {
+        return new MenuBar.Command() {
+            @Override
+            public void menuSelected(MenuItem inSelectedItem)
+            {
+                webMessageService.post(new MenuEvent() {
+                    @Override
+                    public String getWindowTitle()
+                    {
+                        return getMenuCaption();
+                    }
+                    @Override
+                    public Component getComponent()
+                    {
+                        return SessionView.this;
+                    }}
+                );
+            }
+            private static final long serialVersionUID = 49365592058433460L;
+        };
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#setGridColumns()
@@ -1303,9 +1371,14 @@ public class SessionView
         private static final long serialVersionUID = 142085523837757672L;
     }
     /**
+     * provides access to web message services
+     */
+    @Autowired
+    private WebMessageService webMessageService;
+    /**
      * global name of this view
      */
-    public static final String NAME = "SessionView";
+    private static final String NAME = "Session View";
     /**
      * edit action label
      */

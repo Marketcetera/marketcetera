@@ -6,9 +6,12 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.persist.SummaryNDEntityBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.events.MenuEvent;
 import org.marketcetera.web.services.AdminClientService;
+import org.marketcetera.web.services.WebMessageService;
 import org.marketcetera.web.view.AbstractGridView;
 import org.marketcetera.web.view.MenuContent;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validatable;
@@ -63,7 +66,7 @@ public abstract class AbstractAdminView<Clazz extends SummaryNDEntityBase>
             @Override
             public void menuSelected(MenuItem inSelectedItem)
             {
-                UI.getCurrent().getNavigator().navigateTo(getViewName());
+                webMessageService.post(new AdminViewMenuEvent());
             }
             private static final long serialVersionUID = -7269505766947455017L;
         };
@@ -245,6 +248,38 @@ public abstract class AbstractAdminView<Clazz extends SummaryNDEntityBase>
     {
         return VaadinSession.getCurrent().getAttribute(AdminClientService.class);
     }
+    /**
+     * Indicates that an admin type has been selected.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private class AdminViewMenuEvent
+            implements MenuEvent
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.events.MenuEvent#getWindowTitle()
+         */
+        @Override
+        public String getWindowTitle()
+        {
+            return getViewName();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.events.MenuEvent#getComponent()
+         */
+        @Override
+        public Component getComponent()
+        {
+            return AbstractAdminView.this;
+        }
+    }
+    /**
+     * provides access to web message services
+     */
+    @Autowired
+    protected WebMessageService webMessageService;
     /**
      * edit action label
      */
