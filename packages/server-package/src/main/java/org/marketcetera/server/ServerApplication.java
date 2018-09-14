@@ -19,6 +19,8 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.dataflow.config.DataFlowProvider;
 import org.marketcetera.dataflow.server.rpc.DataFlowRpcService;
 import org.marketcetera.fix.FixSessionFactory;
+import org.marketcetera.fix.MutableActiveFixSessionFactory;
+import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.fix.rpc.FixAdminRpcService;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
@@ -301,6 +303,16 @@ public class ServerApplication
     public FixSessionProvider getFixSessionProvider()
     {
         return new InMemoryFixSessionProvider();
+    }
+    /**
+     * Get the active FIX session factory value.
+     *
+     * @return a <code>MutableActiveFixSessionFactory</code> value
+     */
+    @Bean
+    public MutableActiveFixSessionFactory getActiveFixSessionFactory()
+    {
+        return new SimpleActiveFixSessionFactory();
     }
     /**
      * Get the FIX session factory value.

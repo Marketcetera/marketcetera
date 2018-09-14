@@ -11,12 +11,8 @@ import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.fix.AcceptorSessionAttributes;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixAdminRpc;
-import org.marketcetera.fix.FixAdminRpcServiceGrpc;
-import org.marketcetera.fix.FixRpcUtil;
-import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionAttributeDescriptor;
-import org.marketcetera.fix.MutableFixSession;
 import org.marketcetera.fix.FixAdminRpc.CreateFixSessionRequest;
 import org.marketcetera.fix.FixAdminRpc.CreateFixSessionResponse;
 import org.marketcetera.fix.FixAdminRpc.DeleteFixSessionRequest;
@@ -39,7 +35,12 @@ import org.marketcetera.fix.FixAdminRpc.UpdateFixSessionRequest;
 import org.marketcetera.fix.FixAdminRpc.UpdateFixSessionResponse;
 import org.marketcetera.fix.FixAdminRpc.UpdateSequenceNumbersRequest;
 import org.marketcetera.fix.FixAdminRpc.UpdateSequenceNumbersResponse;
+import org.marketcetera.fix.FixAdminRpcServiceGrpc;
 import org.marketcetera.fix.FixAdminRpcServiceGrpc.FixAdminRpcServiceImplBase;
+import org.marketcetera.fix.FixRpcUtil;
+import org.marketcetera.fix.FixSession;
+import org.marketcetera.fix.FixSessionAttributeDescriptor;
+import org.marketcetera.fix.MutableFixSession;
 import org.marketcetera.fix.store.MessageStoreSession;
 import org.marketcetera.fix.store.MessageStoreSessionDao;
 import org.marketcetera.persist.CollectionPageResponse;
@@ -162,7 +163,7 @@ public class FixAdminRpcService<SessionClazz>
                     Validate.isTrue(null == brokerService.findFixSessionByName(fixSession.getName()),
                                     "FIX Session " + fixSession.getName() + " already exists");
                     fixSession = brokerService.save(fixSession);
-                    responseBuilder.setFixSession(FixRpcUtil.getRpcActiveFixSession(fixSession));
+                    FixRpcUtil.getRpcFixSession(fixSession).ifPresent(rpcFixSession->responseBuilder.setFixSession(rpcFixSession));
                 }
                 FixAdminRpc.CreateFixSessionResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(FixAdminRpcService.this,
@@ -199,12 +200,12 @@ public class FixAdminRpcService<SessionClazz>
                 } else {
                     pageRequest = new PageRequest(0,Integer.MAX_VALUE);
                 }
-                CollectionPageResponse<FixSession> pagedResponse = brokerService.findFixSessions(pageRequest);
+                CollectionPageResponse<ActiveFixSession> pagedResponse = brokerService.findActiveFixSessions(pageRequest);
                 if(pagedResponse != null) {
                     responseBuilder.setPage(PagingRpcUtil.getPageResponse(pageRequest,
                                                                           pagedResponse));
-                    for(FixSession activFixSession : pagedResponse.getElements()) {
-                        FixRpcUtil.getRpcActiveFixSession(activFixSession).ifPresent(rpcFixSession->responseBuilder.addFixSession(rpcFixSession));
+                    for(ActiveFixSession activeFixSession : pagedResponse.getElements()) {
+                        FixRpcUtil.getRpcActiveFixSession(activeFixSession).ifPresent(rpcFixSession->responseBuilder.addFixSession(rpcFixSession));
                     }
                 }
                 FixAdminRpc.ReadFixSessionsResponse response = responseBuilder.build();

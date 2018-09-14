@@ -14,7 +14,7 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionDay;
-import org.marketcetera.fix.impl.SimpleFixSession;
+import org.marketcetera.fix.impl.SimpleActiveFixSession;
 import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptor;
 import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.quickfix.FIXVersion;
@@ -53,8 +53,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -63,6 +61,8 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.OptionGroup;
@@ -284,7 +284,7 @@ public class SessionView
     protected void onCreateNew(ClickEvent inEvent)
     {
         // create a new FIX session object
-        SimpleFixSession newFixSession = new SimpleFixSession();
+        SimpleActiveFixSession newFixSession = new SimpleActiveFixSession();
         // set defaults for the new session
         newFixSession.setAffinity(1);
         newFixSession.setIsAcceptor(false);

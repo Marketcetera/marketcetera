@@ -3,6 +3,7 @@ package org.marketcetera.fix;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.fix.dao.PersistentFixSessionFactory;
 import org.marketcetera.fix.dao.PersistentFixSessionProvider;
+import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.store.HibernateMessageStoreConfiguration;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -34,6 +35,16 @@ public class FixDbTestConfiguration
         HibernateMessageStoreConfiguration messageStoreConfiguration = new HibernateMessageStoreConfiguration();
         messageStoreConfiguration.getMessageTypeBlacklist().clear();
         return messageStoreConfiguration;
+    }
+    /**
+     * Get the active FIX session factory value.
+     *
+     * @return a <code>MutableActiveFixSessionFactory</code> value
+     */
+    @Bean
+    public MutableActiveFixSessionFactory getActiveFixSessionFactory()
+    {
+        return new SimpleActiveFixSessionFactory();
     }
     /**
      * Get the message factory value.

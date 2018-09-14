@@ -9,9 +9,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.MutableFixSession;
 import org.marketcetera.persist.NDEntityBase;
 
@@ -31,7 +29,7 @@ import com.google.common.collect.Maps;
 @XmlAccessorType(XmlAccessType.NONE)
 public class SimpleFixSession
         extends NDEntityBase
-        implements FixSession, ActiveFixSession, MutableFixSession
+        implements FixSession,MutableFixSession
 {
     /**
      * Create a new SimpleFixSession instance.
@@ -49,7 +47,6 @@ public class SimpleFixSession
         setDescription(inFixSession.getDescription());
         setHost(inFixSession.getHost());
         setId(inFixSession.getId());
-//        setInstance(inFixSession.getInstance());
         setIsAcceptor(inFixSession.isAcceptor());
         setIsDeleted(inFixSession.isDeleted());
         setIsEnabled(inFixSession.isEnabled());
@@ -57,11 +54,8 @@ public class SimpleFixSession
         setMappedBrokerId(inFixSession.getMappedBrokerId());
         setName(inFixSession.getName());
         setPort(inFixSession.getPort());
-//        setSenderSequenceNumber(inFixSession.getSenderSequenceNumber());
         setSessionId(inFixSession.getSessionId());
         setSessionSettings(Maps.newHashMap(inFixSession.getSessionSettings()));
-//        setStatus(inFixSession.getStatus());
-//        setTargetSequenceNumber(inFixSession.getTargetSequenceNumber());
         setUpdateCount(inFixSession.getUpdateCount());
     }
     /* (non-Javadoc)
@@ -209,56 +203,6 @@ public class SimpleFixSession
         return sessionSettings;
     }
     /**
-     * Sets the instance value.
-     *
-     * @param inInstance a <code>String</code> value
-     */
-    public void setInstance(String inInstance)
-    {
-        instance = inInstance;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.fix.ActiveFixSession#getInstance()
-     */
-    @Override
-    public String getInstance()
-    {
-        return instance;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.fix.ActiveFixSession#getTargetSequenceNumber()
-     */
-    @Override
-    public int getTargetSequenceNumber()
-    {
-        return targetSequenceNumber;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.fix.ActiveFixSession#getSenderSequenceNumber()
-     */
-    @Override
-    public int getSenderSequenceNumber()
-    {
-        return senderSequenceNumber;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.fix.ActiveFixSession#getStatus()
-     */
-    @Override
-    public FixSessionStatus getStatus()
-    {
-        return status;
-    }
-    /**
-     * Sets the status value.
-     *
-     * @param inStatus a <code>FixSessionStatus</code> value
-     */
-    public void setStatus(FixSessionStatus inStatus)
-    {
-        status = inStatus;
-    }
-    /**
      * Sets the sessionSettings value.
      *
      * @param inSessionSettings a <code>Map&lt;String,String&gt;</code> value
@@ -276,24 +220,6 @@ public class SimpleFixSession
     {
         isDeleted = inIsDeleted;
     }
-    /**
-     * Sets the senderSequenceNumber value.
-     *
-     * @param inSenderSequenceNumber an <code>int</code> value
-     */
-    public void setSenderSequenceNumber(int inSenderSequenceNumber)
-    {
-        senderSequenceNumber = inSenderSequenceNumber;
-    }
-    /**
-     * Sets the targetSequenceNumber value.
-     *
-     * @param inTargetSequenceNumber an <code>int</code> value
-     */
-    public void setTargetSequenceNumber(int inTargetSequenceNumber)
-    {
-        targetSequenceNumber = inTargetSequenceNumber;
-    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -301,13 +227,11 @@ public class SimpleFixSession
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("SimpleFixSession [port=").append(port).append(", host=").append(host).append(", isEnabled=")
-                .append(isEnabled).append(", isDeleted=").append(isDeleted).append(", isAcceptor=").append(isAcceptor)
+        builder.append("SimpleFixSession [port=").append(port).append(", host=").append(host)
+                .append(", sessionSettings=").append(sessionSettings).append(", isEnabled=").append(isEnabled)
+                .append(", isDeleted=").append(isDeleted).append(", isAcceptor=").append(isAcceptor)
                 .append(", sessionId=").append(sessionId).append(", brokerId=").append(brokerId)
-                .append(", mappedBrokerId=").append(mappedBrokerId).append(", affinity=")
-                .append(affinity).append(", instance=").append(instance).append(", status=").append(status)
-                .append(", senderSequenceNumber=").append(senderSequenceNumber).append(", targetSequenceNumber=")
-                .append(targetSequenceNumber).append(", sessionSettings=").append(sessionSettings).append("]");
+                .append(", mappedBrokerId=").append(mappedBrokerId).append(", affinity=").append(affinity).append("]");
         return builder.toString();
     }
     /**
@@ -360,25 +284,5 @@ public class SimpleFixSession
      */
     @XmlAttribute
     private int affinity;
-    /**
-     * cluster instance value
-     */
-    @XmlAttribute
-    private String instance;
-    /**
-     * FIX session status value
-     */
-    @XmlAttribute
-    private FixSessionStatus status;
-    /**
-     * sender sequence number value
-     */
-    @XmlAttribute
-    private int senderSequenceNumber;
-    /**
-     * target sequence number value
-     */
-    @XmlAttribute
-    private int targetSequenceNumber;
-    private static final long serialVersionUID = 3133259062821595992L;
+    private static final long serialVersionUID = -4759643874016811467L;
 }

@@ -21,7 +21,9 @@ import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
+import org.marketcetera.fix.MutableActiveFixSessionFactory;
 import org.marketcetera.fix.SessionSettingsGenerator;
+import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.fix.provisioning.FixSessionsConfiguration;
 import org.marketcetera.fix.provisioning.SimpleSessionCustomization;
@@ -306,6 +308,16 @@ public class IntegrationTestConfiguration
                                                                    String.valueOf(testAcceptorPort));
         receiver.setSessionSettings(quickfixSessionSettings);
         return receiver;
+    }
+    /**
+     * Get the active FIX session factory value.
+     *
+     * @return a <code>MutableActiveFixSessionFactory</code> value
+     */
+    @Bean
+    public MutableActiveFixSessionFactory getActiveFixSessionFactory()
+    {
+        return new SimpleActiveFixSessionFactory();
     }
     /**
      * Get the FIX session factory value.

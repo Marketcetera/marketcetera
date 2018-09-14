@@ -212,8 +212,8 @@ public class AuthorizationServiceImpl
     public List<Permission> findAllPermissions()
     {
         List<Permission> permissions = new ArrayList<>();
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC,
-                                            QPersistentPermission.persistentPermission.name.getMetadata().getName()));
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC,
+                                           QPersistentPermission.persistentPermission.name.getMetadata().getName()));
         permissions.addAll(permissionDao.findAll(sort));
         return permissions;
     }
@@ -226,8 +226,8 @@ public class AuthorizationServiceImpl
         List<Permission> permissions = new ArrayList<>();
         Sort jpaSort = null;
         if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
-            jpaSort = new Sort(new Sort.Order(Sort.Direction.ASC,
-                                              QPersistentPermission.persistentPermission.name.getMetadata().getName()));
+            jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC,
+                                             QPersistentPermission.persistentPermission.name.getMetadata().getName()));
         } else {
             for(org.marketcetera.persist.Sort sort : inPageRequest.getSortOrder()) {
                 Sort.Direction jpaSortDirection = sort.getDirection()==SortDirection.ASCENDING?Sort.Direction.ASC:Sort.Direction.DESC;
@@ -240,17 +240,17 @@ public class AuthorizationServiceImpl
                     path = property;
                 }
                 if(jpaSort == null) {
-                    jpaSort = new Sort(new Sort.Order(jpaSortDirection,
-                                                      path));
+                    jpaSort = Sort.by(new Sort.Order(jpaSortDirection,
+                                                     path));
                 } else {
-                    jpaSort = jpaSort.and(new Sort(new Sort.Order(jpaSortDirection,
-                                                                  path)));
+                    jpaSort = jpaSort.and(Sort.by(new Sort.Order(jpaSortDirection,
+                                                                 path)));
                 }
             }
         }
-        org.springframework.data.domain.PageRequest pageRequest = new org.springframework.data.domain.PageRequest(inPageRequest.getPageNumber(),
-                                                                                                                  inPageRequest.getPageSize(),
-                                                                                                                  jpaSort);
+        org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(inPageRequest.getPageNumber(),
+                                                                                                                 inPageRequest.getPageSize(),
+                                                                                                                 jpaSort);
         Page<PersistentPermission> result = permissionDao.findAll(pageRequest);
         CollectionPageResponse<Permission> response = new CollectionPageResponse<>();
         response.setPageMaxSize(result.getSize());
@@ -272,8 +272,8 @@ public class AuthorizationServiceImpl
     public List<Role> findAllRoles()
     {
         List<Role> roles = new ArrayList<>();
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC,
-                                            QPersistentRole.persistentRole.name.getMetadata().getName()));
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC,
+                                           QPersistentRole.persistentRole.name.getMetadata().getName()));
         roles.addAll(roleDao.findAll(sort));
         return roles;
     }
@@ -286,8 +286,8 @@ public class AuthorizationServiceImpl
         List<Role> roles = new ArrayList<>();
         Sort jpaSort = null;
         if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
-            jpaSort = new Sort(new Sort.Order(Sort.Direction.ASC,
-                                              QPersistentRole.persistentRole.name.getMetadata().getName()));
+            jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC,
+                                             QPersistentRole.persistentRole.name.getMetadata().getName()));
         } else {
             for(org.marketcetera.persist.Sort sort : inPageRequest.getSortOrder()) {
                 Sort.Direction jpaSortDirection = sort.getDirection()==SortDirection.ASCENDING?Sort.Direction.ASC:Sort.Direction.DESC;
@@ -300,17 +300,17 @@ public class AuthorizationServiceImpl
                     path = property;
                 }
                 if(jpaSort == null) {
-                    jpaSort = new Sort(new Sort.Order(jpaSortDirection,
-                                                      path));
+                    jpaSort = Sort.by(new Sort.Order(jpaSortDirection,
+                                                     path));
                 } else {
-                    jpaSort = jpaSort.and(new Sort(new Sort.Order(jpaSortDirection,
-                                                                  path)));
+                    jpaSort = jpaSort.and(Sort.by(new Sort.Order(jpaSortDirection,
+                                                                 path)));
                 }
             }
         }
-        org.springframework.data.domain.PageRequest pageRequest = new org.springframework.data.domain.PageRequest(inPageRequest.getPageNumber(),
-                                                                                                                  inPageRequest.getPageSize(),
-                                                                                                                  jpaSort);
+        org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(inPageRequest.getPageNumber(),
+                                                                                                                 inPageRequest.getPageSize(),
+                                                                                                                 jpaSort);
         Page<PersistentRole> result = roleDao.findAll(pageRequest);
         CollectionPageResponse<Role> response = new CollectionPageResponse<>();
         response.setPageMaxSize(result.getSize());

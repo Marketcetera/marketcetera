@@ -1,6 +1,5 @@
 package org.marketcetera.fix;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.marketcetera.cluster.InstanceData;
@@ -9,7 +8,7 @@ import org.marketcetera.rpc.base.BaseRpcUtil;
 /* $License$ */
 
 /**
- *
+ * Provides FIX RPC utilities.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -57,7 +56,6 @@ public class FixRpcUtil
     public static FixSessionAttributeDescriptor getFixSessionAttributeDescriptor(FixAdminRpc.FixSessionAttributeDescriptor inRpcFixSessionAttributeDescriptor)
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /**
      * Get the RPC value from the given value.
@@ -73,9 +71,23 @@ public class FixRpcUtil
         FixAdminRpc.ActiveFixSession.Builder builder = FixAdminRpc.ActiveFixSession.newBuilder();
         builder.setEnabled(inActiveFixSession.isEnabled());
         builder.setInstance(inActiveFixSession.getHost());
-//        builder.setSenderSeqNum(inFixSession.get)
-//        builder.setStatus(inFixSession.getS)
+        builder.setSenderSeqNum(inActiveFixSession.getSenderSequenceNumber());
+        FixRpcUtil.getRpcFixSessionStatus(inActiveFixSession.getStatus()).ifPresent(rpcFixSessionStatus->builder.setStatus(rpcFixSessionStatus));
+        getRpcFixSession(inActiveFixSession).ifPresent(rpcFixSession->builder.setFixSession(rpcFixSession));
         return Optional.of(builder.build());
+    }
+    /**
+     * Get the RPC value from the given value.
+     *
+     * @param inStatus a <code>FixSessionStatus</code> value
+     * @return an <code>Optional&lt;String&gt;</code> value
+     */
+    public static Optional<String> getRpcFixSessionStatus(FixSessionStatus inStatus)
+    {
+        if(inStatus == null) {
+            return Optional.empty();
+        }
+        return Optional.of(inStatus.name());
     }
     /**
      * Get the RPC value from the given value.
@@ -94,7 +106,9 @@ public class FixRpcUtil
         builder.setBrokerId(inFixSession.getBrokerId());
         builder.setDescription(inFixSession.getDescription());
         builder.setHost(inFixSession.getHost());
-        builder.setMappedBrokerId(inFixSession.getMappedBrokerId());
+        if(inFixSession.getMappedBrokerId() != null) { 
+            builder.setMappedBrokerId(inFixSession.getMappedBrokerId());
+        }
         builder.setName(inFixSession.getName());
         builder.setPort(inFixSession.getPort());
         builder.setSessionId(inFixSession.getSessionId());
@@ -110,7 +124,6 @@ public class FixRpcUtil
     public static FixAdminRpc.InstanceData getRpcInstanceData(AcceptorSessionAttributes inAcceptorSessionAttributes)
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /**
      *
@@ -121,6 +134,5 @@ public class FixRpcUtil
     public static FixAdminRpc.FixSessionAttributeDescriptor getRpcFixSessionAttributeDescriptor(FixSessionAttributeDescriptor inDescriptor)
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
 }

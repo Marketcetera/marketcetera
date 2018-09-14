@@ -46,6 +46,7 @@ import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.ApplicationContextProvider;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.AcceptorSessionAttributes;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionDay;
@@ -53,6 +54,8 @@ import org.marketcetera.fix.FixSessionListener;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
+import org.marketcetera.fix.MutableActiveFixSession;
+import org.marketcetera.fix.MutableActiveFixSessionFactory;
 import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.fix.SessionSchedule;
 import org.marketcetera.fix.SessionSettingsGenerator;
@@ -116,6 +119,28 @@ public class BrokerServiceImpl
             brokers.add(generateBroker(underlyingFixSession));
         }
         return brokers;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.BrokerService#getActiveFixSession(org.marketcetera.fix.FixSession)
+     */
+    @Override
+    public ActiveFixSession getActiveFixSession(FixSession inFixSession)
+    {
+        ClusteredBrokerStatus brokerStatus = (ClusteredBrokerStatus)getBrokerStatus(new BrokerID(inFixSession.getBrokerId()));
+        MutableActiveFixSession activeFixSession = activeFixSessionFactory.create();
+        activeFixSession.setAffinity(inFixSession.getAffinity());
+        activeFixSession.setBrokerId(inFixSession.getBrokerId());
+        activeFixSession.setDescription(inFixSession.getDescription());
+        activeFixSession.setHost(inFixSession.getHost());
+        activeFixSession.setInstance(brokerStatus.getClusterData().getHostId());
+        activeFixSession.setIsAcceptor(inFixSession.isAcceptor());
+        activeFixSession.setIsEnabled(inFixSession.isEnabled());
+        activeFixSession.setMappedBrokerId(inFixSession.getMappedBrokerId());
+        activeFixSession.setName(inFixSession.getName());
+        activeFixSession.setPort(inFixSession.getPort());
+//        activeFixSession.setSenderSequenceNumber(brokerStatus.);
+        
+        return activeFixSession;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getBrokerStatus(org.marketcetera.trade.BrokerID)
@@ -355,6 +380,25 @@ public class BrokerServiceImpl
     public CollectionPageResponse<FixSession> findFixSessions(PageRequest inPageRequest)
     {
         return fixSessionProvider.findFixSessions(inPageRequest);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.BrokerService#findActiveFixSessions(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public CollectionPageResponse<ActiveFixSession> findActiveFixSessions(PageRequest inPageRequest)
+    {
+        CollectionPageResponse<FixSession> fixSessionResponse = fixSessionProvider.findFixSessions(inPageRequest);
+        CollectionPageResponse<ActiveFixSession> response = new CollectionPageResponse<>();
+        response.setPageMaxSize(fixSessionResponse.getPageMaxSize());
+        response.setPageNumber(fixSessionResponse.getPageNumber());
+        response.setPageSize(fixSessionResponse.getPageSize());
+        response.setTotalPages(fixSessionResponse.getTotalPages());
+        response.setTotalSize(fixSessionResponse.getTotalSize());
+        for(FixSession session : fixSessionResponse.getElements()) {
+            response.getElements().add(getActiveFixSession(session));
+        }
+        response.setSortOrder(inPageRequest.getSortOrder());
+        return response;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#generateBrokerStatus(org.marketcetera.fix.FixSession, org.marketcetera.cluster.ClusterData, org.marketcetera.fix.FixSessionStatus, boolean)
@@ -955,6 +999,11 @@ public class BrokerServiceImpl
      */
     @Autowired
     private FixSettingsProviderFactory fixSettingsProviderFactory;
+    /**
+     * creates {@link MutableActiveFixSession} objects
+     */
+    @Autowired
+    private MutableActiveFixSessionFactory activeFixSessionFactory;
     /**
      * context used to marshal and unmarshal messages
      */

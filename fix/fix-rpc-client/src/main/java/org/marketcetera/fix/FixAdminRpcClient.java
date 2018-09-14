@@ -56,7 +56,7 @@ public class FixAdminRpcClient
                                        inFixSession);
                 FixAdminRpc.CreateFixSessionRequest.Builder requestBuilder = FixAdminRpc.CreateFixSessionRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setFixSession(FixRpcUtil.getRpcFixSession(inFixSession));
+                FixRpcUtil.getRpcFixSession(inFixSession).ifPresent(rpcFixSession->requestBuilder.setFixSession(rpcFixSession));
                 FixAdminRpc.CreateFixSessionRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
                                        "{} sending {}",
@@ -148,7 +148,7 @@ public class FixAdminRpcClient
                 FixAdminRpc.UpdateFixSessionRequest.Builder requestBuilder = FixAdminRpc.UpdateFixSessionRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setName(StringUtils.trimToNull(inIncomingName));
-                requestBuilder.setFixSession(FixRpcUtil.getRpcFixSession(inFixSession));
+                FixRpcUtil.getRpcFixSession(inFixSession).ifPresent(rpcFixSession->requestBuilder.setFixSession(rpcFixSession));
                 FixAdminRpc.UpdateFixSessionRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
                                        "{} sending {}",

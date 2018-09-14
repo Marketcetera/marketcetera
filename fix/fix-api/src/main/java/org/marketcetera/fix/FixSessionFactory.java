@@ -2,7 +2,6 @@ package org.marketcetera.fix;
 
 import java.util.Map;
 
-
 /* $License$ */
 
 /**

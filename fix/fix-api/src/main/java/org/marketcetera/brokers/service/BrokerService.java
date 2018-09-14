@@ -12,6 +12,7 @@ import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.brokers.SessionCustomization;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.fix.AcceptorSessionAttributes;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionListener;
@@ -236,6 +237,20 @@ public interface BrokerService
      * @return a <code>CollectionPageResponse&lt;FixSession&gt;</code> value
      */
     CollectionPageResponse<FixSession> findFixSessions(PageRequest inPageRequest);
+    /**
+     * Find a page of active FIX sessions.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;ActiveFixSession&gt;</code> value
+     */
+    CollectionPageResponse<ActiveFixSession> findActiveFixSessions(PageRequest inPageRequest);
+    /**
+     * Convert the given FIX session to an active FIX session.
+     *
+     * @param inFixSession a <code>FixSession</code> value
+     * @return an <code>ActiveFixSession</code> value
+     */
+    ActiveFixSession getActiveFixSession(FixSession inFixSession);
     /**
      * Finds the fix sessions that match the given criteria.
      * 
