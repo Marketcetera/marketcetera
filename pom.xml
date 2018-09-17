@@ -115,11 +115,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>fix-db</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>fix-core</artifactId>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>

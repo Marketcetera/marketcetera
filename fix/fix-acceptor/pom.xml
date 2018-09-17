@@ -27,7 +27,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>fix-db</artifactId>
+      <artifactId>fix-server</artifactId>
     </dependency>
   </dependencies>
 </project>

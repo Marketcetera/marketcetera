@@ -15,7 +15,6 @@
     <module>fix-acceptor</module>
     <module>fix-api</module>
     <module>fix-core</module>
-    <module>fix-db</module>
     <module>fix-rpc-client</module>
     <module>fix-rpc-core</module>
     <module>fix-rpc-server</module>
