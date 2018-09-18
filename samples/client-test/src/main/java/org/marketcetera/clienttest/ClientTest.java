@@ -6,8 +6,6 @@ import java.util.Date;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
-import org.marketcetera.brokers.BrokerStatus;
-import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
@@ -105,17 +103,6 @@ public class ClientTest
                                   hostname,
                                   port,
                                   username);
-            // add a broker status listener
-            BrokerStatusListener brokerStatusListener = new BrokerStatusListener() {
-                @Override
-                public void receiveBrokerStatus(BrokerStatus inStatus)
-                {
-                    SLF4JLoggerProxy.info(ClientTest.this,
-                                          "Received {}",
-                                          inStatus);
-                }
-            };
-            tradingClient.addBrokerStatusListener(brokerStatusListener);
             // add a trade message listener
             TradeMessageListener tradeMessageListener = new TradeMessageListener() {
                 @Override
@@ -183,12 +170,6 @@ public class ClientTest
                                   "{} -> {}",
                                   convertibleBond.getFullSymbol(),
                                   tradingClient.resolveSymbol(convertibleBond.getFullSymbol()));
-            // test broker status
-            SLF4JLoggerProxy.info(ClientTest.class,
-                                  "Testing brokers status");
-            SLF4JLoggerProxy.info(ClientTest.class,
-                                  "{}",
-                                  tradingClient.getBrokersStatus());
             // test root order ID lookup
             SLF4JLoggerProxy.info(ClientTest.class,
                                   "Testing root order ID lookup");
@@ -212,7 +193,6 @@ public class ClientTest
                                   tradingClient.getOptionPositionsAsOf(new Date(),
                                                                        "METC"));
             tradingClient.removeTradeMessageListener(tradeMessageListener);
-            tradingClient.removeBrokerStatusListener(brokerStatusListener);
         } finally {
             if(tradingClient != null) {
                 tradingClient.stop();

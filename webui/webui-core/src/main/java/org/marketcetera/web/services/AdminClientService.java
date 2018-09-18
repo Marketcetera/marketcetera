@@ -9,6 +9,7 @@ import org.marketcetera.admin.AdminRpcClientParameters;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.Role;
 import org.marketcetera.admin.User;
+import org.marketcetera.cluster.ClusterClient;
 import org.marketcetera.cluster.InstanceData;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixAdminClient;
@@ -284,7 +285,7 @@ public class AdminClientService
      */
     public InstanceData getInstanceData(int inAffinity)
     {
-        return fixAdminClient.getInstanceData(inAffinity);
+        return clusterClient.getInstanceData(inAffinity);
     }
     /**
      * Get the FIX session attribute descriptors.
@@ -454,4 +455,8 @@ public class AdminClientService
      * provides access to FIX admin services
      */
     private FixAdminClient fixAdminClient;
+    /**
+     * provides access to cluster services
+     */
+    private ClusterClient clusterClient;
 }

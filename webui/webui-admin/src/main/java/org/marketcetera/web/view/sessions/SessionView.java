@@ -232,23 +232,23 @@ public class SessionView
                               String.valueOf(VaadinSession.getCurrent().getAttribute(SessionUser.class)),
                               getViewName(),
                               action,
-                              selectedItem.getName());
+                              selectedItem.getFixSession().getName());
         AdminClientService adminClientService = AdminClientService.getInstance();
         switch(action) {
             case ACTION_START:
-                adminClientService.startSession(selectedItem.getName());
+                adminClientService.startSession(selectedItem.getFixSession().getName());
                 break;
             case ACTION_STOP:
-                adminClientService.stopSession(selectedItem.getName());
+                adminClientService.stopSession(selectedItem.getFixSession().getName());
                 break;
             case ACTION_ENABLE:
-                adminClientService.enableSession(selectedItem.getName());
+                adminClientService.enableSession(selectedItem.getFixSession().getName());
                 break;
             case ACTION_DISABLE:
-                adminClientService.disableSession(selectedItem.getName());
+                adminClientService.disableSession(selectedItem.getFixSession().getName());
                 break;
             case ACTION_DELETE:
-                adminClientService.deleteSession(selectedItem.getName());
+                adminClientService.deleteSession(selectedItem.getFixSession().getName());
                 break;
             case ACTION_SEQUENCE:
                 doUpdateSequenceNumbers(selectedItem);
@@ -286,8 +286,8 @@ public class SessionView
         // create a new FIX session object
         SimpleActiveFixSession newFixSession = new SimpleActiveFixSession();
         // set defaults for the new session
-        newFixSession.setAffinity(1);
-        newFixSession.setIsAcceptor(false);
+        newFixSession.getFixSession().getMutableView().setAffinity(1);
+        newFixSession.getFixSession().getMutableView().setIsAcceptor(false);
         createOrEdit(newFixSession,
                      true);
     }
@@ -314,7 +314,7 @@ public class SessionView
         subWindow.setResizable(false);
         // prepare data
         final SortedMap<String,DecoratedDescriptor> sortedDescriptors = new TreeMap<>();
-        final String incomingName = inFixSession.getName();
+        final String incomingName = inFixSession.getFixSession().getName();
         Collection<FixSessionAttributeDescriptor> descriptors = AdminClientService.getInstance().getFixSessionAttributeDescriptors();
         for(FixSessionAttributeDescriptor descriptor : descriptors) {
             DecoratedDescriptor actualDescriptor = new DecoratedDescriptor(descriptor);
@@ -323,7 +323,7 @@ public class SessionView
         }
         if(!inIsNew) {
             for(DecoratedDescriptor descriptor : sortedDescriptors.values()) {
-                String existingValue = inFixSession.getSessionSettings().get(descriptor.getName());
+                String existingValue = inFixSession.getFixSession().getSessionSettings().get(descriptor.getName());
                 if(existingValue == null) {
                     descriptor.setValue(null);
                 } else {
@@ -403,8 +403,8 @@ public class SessionView
              */
             private void initializeFields()
             {
-                connectionTypeOptionGroup.setValue(inFixSession.isAcceptor()?ACCEPTOR:INITIATOR);
-                affinityTextField.setValue(String.valueOf(inFixSession.getAffinity()));
+                connectionTypeOptionGroup.setValue(inFixSession.getFixSession().isAcceptor()?ACCEPTOR:INITIATOR);
+                affinityTextField.setValue(String.valueOf(inFixSession.getFixSession().getAffinity()));
                 connectionTypeOptionGroup.setVisible(true);
                 affinityTextField.setVisible(true);
             }
@@ -413,16 +413,16 @@ public class SessionView
              */
             private void updateFields()
             {
-                connectionTypeOptionGroup.setValue(inFixSession.isAcceptor()?ACCEPTOR:INITIATOR);
-                affinityTextField.setValue(String.valueOf(inFixSession.getAffinity()));
+                connectionTypeOptionGroup.setValue(inFixSession.getFixSession().isAcceptor()?ACCEPTOR:INITIATOR);
+                affinityTextField.setValue(String.valueOf(inFixSession.getFixSession().getAffinity()));
             }
             /**
              * Update the FIX session variable from the UI fields.
              */
             private void updateFixSession()
             {
-                inFixSession.setIsAcceptor(ACCEPTOR.equals(connectionTypeOptionGroup.getValue()));
-                inFixSession.setAffinity(Integer.parseInt(affinityTextField.getValue()));
+                inFixSession.getFixSession().getMutableView().setIsAcceptor(ACCEPTOR.equals(connectionTypeOptionGroup.getValue()));
+                inFixSession.getFixSession().getMutableView().setAffinity(Integer.parseInt(affinityTextField.getValue()));
             }
             /**
              * value for acceptor sessions
@@ -463,8 +463,8 @@ public class SessionView
                     @Override
                     public void buttonClick(ClickEvent inEvent)
                     {
-                        try(Socket s = new Socket(inFixSession.getHost(),
-                                                  inFixSession.getPort())) {
+                        try(Socket s = new Socket(inFixSession.getFixSession().getHost(),
+                                                  inFixSession.getFixSession().getPort())) {
                             testConnectionLabel.setValue("Test connection success");
                             testConnectionLabel.setStyleName(ValoTheme.LABEL_SUCCESS);
                         } catch (Exception e) {
@@ -475,8 +475,8 @@ public class SessionView
                     }
                     private static final long serialVersionUID = -2219835238983724259L;
                 });
-                if(inFixSession.isAcceptor()) {
-                    InstanceData instanceData = AdminClientService.getInstance().getInstanceData(inFixSession.getAffinity());
+                if(inFixSession.getFixSession().isAcceptor()) {
+                    InstanceData instanceData = AdminClientService.getInstance().getInstanceData(inFixSession.getFixSession().getAffinity());
                     hostnameTextField.setValue(instanceData.getHostname());
                     hostnameTextField.setReadOnly(true);
                     hostnameTextField.setDescription("The acceptor hostname is determined by the server and is not modifiable");
@@ -488,18 +488,18 @@ public class SessionView
                     hostnameTextField.setNullRepresentation("");
                     hostnameTextField.setReadOnly(false);
                     hostnameTextField.setDescription("Hostname of the FIX gateway to connect to");
-                    hostnameTextField.setValue(inFixSession.getHost()==null?"exchange.marketcetera.com":inFixSession.getHost());
+                    hostnameTextField.setValue(inFixSession.getFixSession().getHost()==null?"exchange.marketcetera.com":inFixSession.getFixSession().getHost());
                     hostnameTextField.setRequired(true);
                     hostnameTextField.setRequiredError("Hostname is required");
                     hostnameTextField.addValueChangeListener(inEvent -> {
-                        inFixSession.setHost(String.valueOf(inEvent.getProperty().getValue()));
+                        inFixSession.getFixSession().getMutableView().setHost(String.valueOf(inEvent.getProperty().getValue()));
                         if(!hostnameTextField.isEmpty()) {
                             testConnectionButton.setReadOnly(false);
                         }
                     });
                     portTextField.setReadOnly(false);
                     portTextField.setDescription("Port of the FIX gateway to connect to");
-                    portTextField.setValue(inFixSession.getPort()==0?"7001":String.valueOf(inFixSession.getPort()));
+                    portTextField.setValue(inFixSession.getFixSession().getPort()==0?"7001":String.valueOf(inFixSession.getFixSession().getPort()));
                     portTextField.setRequired(true);
                     portTextField.setRequiredError("Port is required");
                     portTextField.addValidator(inValue -> {
@@ -512,7 +512,7 @@ public class SessionView
                     portTextField.addValueChangeListener(inEvent -> {
                         try {
                             int value = Integer.parseInt(String.valueOf(inEvent.getProperty().getValue()));
-                            inFixSession.setPort(value);
+                            inFixSession.getFixSession().getMutableView().setPort(value);
                         } catch (Exception ignored) {}
                     });
                     testConnectionButton.setVisible(true);
@@ -543,8 +543,8 @@ public class SessionView
              */
             private void initializeFields()
             {
-                if(inFixSession.isAcceptor()) {
-                    InstanceData instanceData = AdminClientService.getInstance().getInstanceData(inFixSession.getAffinity());
+                if(inFixSession.getFixSession().isAcceptor()) {
+                    InstanceData instanceData = AdminClientService.getInstance().getInstanceData(inFixSession.getFixSession().getAffinity());
                     hostnameTextField.setValue(instanceData.getHostname());
                     hostnameTextField.setReadOnly(true);
                     hostnameTextField.setDescription("The acceptor hostname is determined by the server and is not modifiable");
@@ -556,18 +556,18 @@ public class SessionView
                     hostnameTextField.setNullRepresentation("");
                     hostnameTextField.setReadOnly(false);
                     hostnameTextField.setDescription("Hostname of the FIX gateway to connect to");
-                    hostnameTextField.setValue(inFixSession.getHost()==null?"exchange.marketcetera.com":inFixSession.getHost());
+                    hostnameTextField.setValue(inFixSession.getFixSession().getHost()==null?"exchange.marketcetera.com":inFixSession.getFixSession().getHost());
                     hostnameTextField.setRequired(true);
                     hostnameTextField.setRequiredError("Hostname is required");
                     hostnameTextField.addValueChangeListener(inEvent -> {
-                        inFixSession.setHost(String.valueOf(inEvent.getProperty().getValue()));
+                        inFixSession.getFixSession().getMutableView().setHost(String.valueOf(inEvent.getProperty().getValue()));
                         if(!hostnameTextField.isEmpty()) {
                             testConnectionButton.setReadOnly(false);
                         }
                     });
                     portTextField.setReadOnly(false);
                     portTextField.setDescription("Port of the FIX gateway to connect to");
-                    portTextField.setValue(inFixSession.getPort()==0?"7001":String.valueOf(inFixSession.getPort()));
+                    portTextField.setValue(inFixSession.getFixSession().getPort()==0?"7001":String.valueOf(inFixSession.getFixSession().getPort()));
                     portTextField.setRequired(true);
                     portTextField.setRequiredError("Port is required");
                     portTextField.addValidator(inValue -> {
@@ -580,7 +580,7 @@ public class SessionView
                     portTextField.addValueChangeListener(inEvent -> {
                         try {
                             int value = Integer.parseInt(String.valueOf(inEvent.getProperty().getValue()));
-                            inFixSession.setPort(value);
+                            inFixSession.getFixSession().getMutableView().setPort(value);
                         } catch (Exception ignored) {}
                     });
                     testConnectionButton.setVisible(true);
@@ -597,8 +597,8 @@ public class SessionView
              */
             private void updateFixSession()
             {
-                inFixSession.setHost(hostnameTextField.getValue());
-                inFixSession.setPort(Integer.parseInt(portTextField.getValue()));
+                inFixSession.getFixSession().getMutableView().setHost(hostnameTextField.getValue());
+                inFixSession.getFixSession().getMutableView().setPort(Integer.parseInt(portTextField.getValue()));
             }
             /**
              * hostname UI widget
@@ -639,8 +639,8 @@ public class SessionView
                     {
                         String computedValue = StringUtils.trimToNull(String.valueOf(inValue));
                         for(ActiveFixSession existingSession : existingSessions) {
-                            if(inIsNew && existingSession.getName().equals(computedValue)) {
-                                throw new Validator.InvalidValueException("'"+existingSession.getName() + "' is already in use");
+                            if(inIsNew && existingSession.getFixSession().getName().equals(computedValue)) {
+                                throw new Validator.InvalidValueException("'"+existingSession.getFixSession().getName() + "' is already in use");
                             }
                         }
                     }
@@ -674,8 +674,8 @@ public class SessionView
                     {
                         String computedValue = StringUtils.trimToNull(String.valueOf(inValue));
                         for(ActiveFixSession existingSession : existingSessions) {
-                            if(inIsNew && existingSession.getBrokerId().equals(computedValue)) {
-                                throw new Validator.InvalidValueException("'"+existingSession.getBrokerId() + "' is already in use");
+                            if(inIsNew && existingSession.getFixSession().getBrokerId().equals(computedValue)) {
+                                throw new Validator.InvalidValueException("'"+existingSession.getFixSession().getBrokerId() + "' is already in use");
                             }
                         }
                     }
@@ -713,8 +713,8 @@ public class SessionView
                                                             senderCompIdTextField.getValue(),
                                                             targetCompIdTextField.getValue());
                         for(ActiveFixSession existingSession : existingSessions) {
-                            if(inIsNew && existingSession.getSessionId().equals(sessionId.toString())) {
-                                throw new Validator.InvalidValueException("'"+existingSession.getSessionId() + "' is already in use");
+                            if(inIsNew && existingSession.getFixSession().getSessionId().equals(sessionId.toString())) {
+                                throw new Validator.InvalidValueException("'"+existingSession.getFixSession().getSessionId() + "' is already in use");
                             }
                         }
                     }
@@ -750,13 +750,13 @@ public class SessionView
              */
             private void initializeFields()
             {
-                nameTextField.setValue(inFixSession.getName()==null?"New Session":inFixSession.getName());
-                descriptionTextField.setValue(inFixSession.getDescription());
-                brokerIdTextField.setValue(inFixSession.getBrokerId()==null?"new-broker":inFixSession.getBrokerId());
-                if(inFixSession.getSessionId() != null) {
-                    SessionID sessionId = new SessionID(inFixSession.getSessionId());
+                nameTextField.setValue(inFixSession.getFixSession().getName()==null?"New Session":inFixSession.getFixSession().getName());
+                descriptionTextField.setValue(inFixSession.getFixSession().getDescription());
+                brokerIdTextField.setValue(inFixSession.getFixSession().getBrokerId()==null?"new-broker":inFixSession.getFixSession().getBrokerId());
+                if(inFixSession.getFixSession().getSessionId() != null) {
+                    SessionID sessionId = new SessionID(inFixSession.getFixSession().getSessionId());
                     if(sessionId.isFIXT()) {
-                        String defaultApplVerId = inFixSession.getSessionSettings().get(Session.SETTING_DEFAULT_APPL_VER_ID);
+                        String defaultApplVerId = inFixSession.getFixSession().getSessionSettings().get(Session.SETTING_DEFAULT_APPL_VER_ID);
                         fixVersionSelect.setValue(defaultApplVerId);
                     } else {
                         fixVersionSelect.setValue(sessionId.getBeginString());
@@ -780,13 +780,13 @@ public class SessionView
              */
             private void updateFixSession()
             {
-                inFixSession.setName(nameTextField.getValue());
-                inFixSession.setDescription(descriptionTextField.getValue());
-                inFixSession.setBrokerId(brokerIdTextField.getValue());
+                inFixSession.getFixSession().getMutableView().setName(nameTextField.getValue());
+                inFixSession.getFixSession().getMutableView().setDescription(descriptionTextField.getValue());
+                inFixSession.getFixSession().getMutableView().setBrokerId(brokerIdTextField.getValue());
                 String fixVersionValue = fixVersionSelect.getValue() == null ? null : String.valueOf(fixVersionSelect.getValue());
                 FIXVersion fixVersion = FIXVersion.getFIXVersion(fixVersionValue);
                 if(fixVersion.isFixT()) {
-                    inFixSession.getSessionSettings().put(Session.SETTING_DEFAULT_APPL_VER_ID,
+                    inFixSession.getFixSession().getSessionSettings().put(Session.SETTING_DEFAULT_APPL_VER_ID,
                                                           fixVersionValue);
                     DecoratedDescriptor defaultApplVerId = sortedDescriptors.get(Session.SETTING_DEFAULT_APPL_VER_ID);
                     defaultApplVerId.setValue(fixVersionValue);
@@ -795,7 +795,7 @@ public class SessionView
                 SessionID sessionId = new SessionID(fixVersionValue,
                                                     senderCompIdTextField.getValue(),
                                                     targetCompIdTextField.getValue());
-                inFixSession.setSessionId(sessionId.toString());
+                inFixSession.getFixSession().getMutableView().setSessionId(sessionId.toString());
             }
             /**
              * session name UI widget
@@ -887,10 +887,10 @@ public class SessionView
             public boolean onAdvance()
             {
                 updateFixSession();
-                if(isContinuousSession(inFixSession)) {
+                if(isContinuousSession(inFixSession.getFixSession())) {
                     return sessionTypeSelect.isValid();
                 }
-                if(isWeeklySession(inFixSession)) {
+                if(isWeeklySession(inFixSession.getFixSession())) {
                     return sessionTypeSelect.isValid() && startTimeField.isValid() && endTimeField.isValid() && timeZoneSelect.isValid() &&
                             startDaySelect.isValid() && endDaySelect.isValid();
                 }
@@ -906,7 +906,7 @@ public class SessionView
              */
             private void initializeFields()
             {
-                Map<String,String> settings = inFixSession.getSessionSettings();
+                Map<String,String> settings = inFixSession.getFixSession().getSessionSettings();
                 startTimeField.setValue(settings.containsKey(Session.SETTING_START_TIME)?settings.get(Session.SETTING_START_TIME):"00:00:00");
                 endTimeField.setValue(settings.containsKey(Session.SETTING_END_TIME)?settings.get(Session.SETTING_END_TIME):"00:00:00");
                 startDaySelect.setValue(settings.containsKey(Session.SETTING_START_DAY)?settings.get(Session.SETTING_START_DAY):FixSessionDay.Monday.name());
@@ -947,7 +947,7 @@ public class SessionView
              */
             private void updateFields()
             {
-                Map<String,String> settings = inFixSession.getSessionSettings();
+                Map<String,String> settings = inFixSession.getFixSession().getSessionSettings();
                 String value = String.valueOf(sessionTypeSelect.getValue());
                 switch(value) {
                     case CONTINUOUS:
@@ -986,7 +986,7 @@ public class SessionView
              */
             private void updateFixSession()
             {
-                Map<String,String> settings = inFixSession.getSessionSettings();
+                Map<String,String> settings = inFixSession.getFixSession().getSessionSettings();
                 String value = String.valueOf(sessionTypeSelect.getValue());
                 switch(value) {
                     case CONTINUOUS:
@@ -1139,7 +1139,7 @@ public class SessionView
                         textField.addValueChangeListener(inEvent -> {
                             ValueChangeEvent valueChangeEvent = (ValueChangeEvent)inEvent;
                             String value = String.valueOf(valueChangeEvent.getProperty().getValue());
-                            inFixSession.getSessionSettings().put(selectedDescriptor.getName(),
+                            inFixSession.getFixSession().getSessionSettings().put(selectedDescriptor.getName(),
                                                                    value);
                         });
                         String pattern = StringUtils.trimToNull(selectedDescriptor.getPattern());
@@ -1166,7 +1166,7 @@ public class SessionView
             {
                 for(DecoratedDescriptor descriptor : sortedDescriptors.values()) {
                     if(StringUtils.trimToNull(descriptor.getValue()) != null) {
-                        inFixSession.getSessionSettings().put(descriptor.getName(),
+                        inFixSession.getFixSession().getSessionSettings().put(descriptor.getName(),
                                                               descriptor.getValue());
                     }
                 }
@@ -1175,13 +1175,13 @@ public class SessionView
                         SLF4JLoggerProxy.debug(SessionView.this,
                                                "Submitting new fix session: {}",
                                                inFixSession);
-                        AdminClientService.getInstance().createFixSession(inFixSession);
+                        AdminClientService.getInstance().createFixSession(inFixSession.getFixSession());
                     } else {
                         SLF4JLoggerProxy.debug(SessionView.this,
                                                "Submitting fix session for update: {}",
                                                inFixSession);
                         AdminClientService.getInstance().updateFixSession(incomingName,
-                                                                          inFixSession);
+                                                                          inFixSession.getFixSession());
                     }
                 } catch (Exception e) {
                     Notification.show("Error Saving Session",
@@ -1267,16 +1267,16 @@ public class SessionView
                 // make rpc client call
                 if(senderChanged && targetChanged) {
                     // change both
-                    AdminClientService.getInstance().updateSequenceNumbers(inSelectedItem.getName(),
+                    AdminClientService.getInstance().updateSequenceNumbers(inSelectedItem.getFixSession().getName(),
                                                                            currentSenderSequenceNumber,
                                                                            currentTargetSequenceNumber);
                 } else {
                     if(senderChanged) {
-                        AdminClientService.getInstance().updateSenderSequenceNumber(inSelectedItem.getName(),
+                        AdminClientService.getInstance().updateSenderSequenceNumber(inSelectedItem.getFixSession().getName(),
                                                                                     currentSenderSequenceNumber);
                     }
                     if(targetChanged) {
-                        AdminClientService.getInstance().updateTargetSequenceNumber(inSelectedItem.getName(),
+                        AdminClientService.getInstance().updateTargetSequenceNumber(inSelectedItem.getFixSession().getName(),
                                                                                     currentTargetSequenceNumber);
                     }
                 }

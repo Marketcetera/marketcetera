@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.brokers.BrokerStatusPublisher;
 import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.core.BaseClient;
 import org.marketcetera.persist.CollectionPageResponse;
@@ -19,7 +20,7 @@ import org.marketcetera.persist.PageRequest;
  * @since $Release$
  */
 public interface FixAdminClient
-        extends BaseClient
+        extends BaseClient,BrokerStatusPublisher
 {
     /**
      * Create the given FIX session.

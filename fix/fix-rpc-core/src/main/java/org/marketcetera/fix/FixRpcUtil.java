@@ -2,6 +2,10 @@ package org.marketcetera.fix;
 
 import java.util.Optional;
 
+import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokersStatus;
+import org.marketcetera.fix.FixAdminRpc.BrokerStatusListenerResponse;
+import org.marketcetera.fix.FixAdminRpc.BrokersStatusResponse.Builder;
 import org.marketcetera.rpc.base.BaseRpcUtil;
 
 /* $License$ */
@@ -113,5 +117,51 @@ public class FixRpcUtil
     public static FixAdminRpc.FixSessionAttributeDescriptor getRpcFixSessionAttributeDescriptor(FixSessionAttributeDescriptor inDescriptor)
     {
         throw new UnsupportedOperationException(); // TODO
+    }
+    /**
+     *
+     *
+     * @param inBrokersStatus
+     * @param inResponseBuilder
+     */
+    public static void setBrokersStatus(BrokersStatus inBrokersStatus,
+                                        Builder inResponseBuilder)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /**
+     *
+     *
+     * @param inStatus
+     * @param inResponseBuilder
+     */
+    public static void setBrokerStatus(BrokerStatus inStatus,
+                                       org.marketcetera.fix.FixAdminRpc.BrokerStatusListenerResponse.Builder inResponseBuilder)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /**
+     *
+     *
+     * @param inResponse
+     * @return
+     */
+    public static Optional<BrokerStatus> getBrokerStatus(BrokerStatusListenerResponse inResponse)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /**
+     *
+     *
+     * @param inRpcBrokerStatus
+     * @return
+     */
+    public static Optional<BrokerStatus> getBrokerStatus(org.marketcetera.fix.FixAdminRpc.BrokerStatus inRpcBrokerStatus)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
     }
 }

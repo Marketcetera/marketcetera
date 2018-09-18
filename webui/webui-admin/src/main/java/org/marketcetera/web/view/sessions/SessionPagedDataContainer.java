@@ -66,9 +66,9 @@ public class SessionPagedDataContainer
     protected boolean isDeepEquals(ActiveFixSession inO1,
                                    ActiveFixSession inO2)
     {
-        return new EqualsBuilder().append(inO1.getName(),inO2.getName())
-                .append(inO1.getSessionId(),inO2.getSessionId())
-                .append(inO1.getInstance(),inO2.getInstance())
+        return new EqualsBuilder().append(inO1.getFixSession().getName(),inO2.getFixSession().getName())
+                .append(inO1.getFixSession().getSessionId(),inO2.getFixSession().getSessionId())
+                .append(inO1.getClusterData().getInstanceNumber(),inO2.getClusterData().getInstanceNumber())
                 .append(inO1.getStatus(),inO2.getStatus())
                 .append(inO1.getSenderSequenceNumber(),inO2.getSenderSequenceNumber())
                 .append(inO1.getTargetSequenceNumber(),inO2.getTargetSequenceNumber()).isEquals();

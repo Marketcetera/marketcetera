@@ -10,11 +10,6 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import org.marketcetera.brokers.BrokerStatus;
-import org.marketcetera.brokers.BrokerStatusListener;
-import org.marketcetera.brokers.BrokersStatus;
-import org.marketcetera.brokers.ClusteredBrokerStatus;
-import org.marketcetera.brokers.ClusteredBrokersStatus;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.Version;
@@ -46,7 +41,6 @@ import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradeClient;
-import org.marketcetera.trading.rpc.TradingRpc.BrokerStatusListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceBlockingStub;
 import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceStub;
@@ -142,80 +136,6 @@ public class TradeRpcClient
                                        getSessionId(),
                                        removeTradeMessageListenerRequest);
                 TradingRpc.RemoveTradeMessageListenerResponse response = getBlockingStub().removeTradeMessageListener(removeTradeMessageListenerRequest);
-                SLF4JLoggerProxy.trace(TradeRpcClient.this,
-                                       "{} received {}",
-                                       getSessionId(),
-                                       response);
-                return null;
-            }
-        });
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradingClient#addBrokerStatusListener(org.marketcetera.brokers.BrokerStatusListener)
-     */
-    @Override
-    public void addBrokerStatusListener(BrokerStatusListener inBrokerStatusListener)
-    {
-        // check to see if this listener is already registered
-        if(listenerProxies.asMap().containsKey(inBrokerStatusListener)) {
-            return;
-        }
-        // make sure that this listener wasn't just whisked out from under us
-        final AbstractClientListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inBrokerStatusListener);
-        if(listener == null) {
-            return;
-        }
-        executeCall(new Callable<Void>() {
-            @Override
-            public Void call()
-                    throws Exception
-            {
-                SLF4JLoggerProxy.trace(TradeRpcClient.this,
-                                       "{} adding broker status listener",
-                                       getSessionId());
-                TradingRpc.AddBrokerStatusListenerRequest.Builder requestBuilder = TradingRpc.AddBrokerStatusListenerRequest.newBuilder();
-                requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setListenerId(listener.getId());
-                TradingRpc.AddBrokerStatusListenerRequest addBrokerStatusListenerRequest = requestBuilder.build();
-                SLF4JLoggerProxy.trace(TradeRpcClient.this,
-                                       "{} sending {}",
-                                       getSessionId(),
-                                       addBrokerStatusListenerRequest);
-                getAsyncStub().addBrokerStatusListener(addBrokerStatusListenerRequest,
-                                                       (BrokerStatusListenerProxy)listener);
-                return null;
-            }
-        });
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradingClient#removeBrokerStatusListener(org.marketcetera.brokers.BrokerStatusListener)
-     */
-    @Override
-    public void removeBrokerStatusListener(BrokerStatusListener inBrokerStatusListener)
-    {
-        final AbstractClientListenerProxy<?,?,?> proxy = listenerProxies.getIfPresent(inBrokerStatusListener);
-        listenerProxies.invalidate(inBrokerStatusListener);
-        if(proxy == null) {
-            return;
-        }
-        listenerProxiesById.invalidate(proxy.getId());
-        executeCall(new Callable<Void>() {
-            @Override
-            public Void call()
-                    throws Exception
-            {
-                SLF4JLoggerProxy.trace(TradeRpcClient.this,
-                                       "{} removing broker status listener",
-                                       getSessionId());
-                TradingRpc.RemoveBrokerStatusListenerRequest.Builder requestBuilder = TradingRpc.RemoveBrokerStatusListenerRequest.newBuilder();
-                requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setListenerId(proxy.getId());
-                TradingRpc.RemoveBrokerStatusListenerRequest removeBrokerStatusListenerRequest = requestBuilder.build();
-                SLF4JLoggerProxy.trace(TradeRpcClient.this,
-                                       "{} sending {}",
-                                       getSessionId(),
-                                       removeBrokerStatusListenerRequest);
-                TradingRpc.RemoveBrokerStatusListenerResponse response = getBlockingStub().removeBrokerStatusListener(removeBrokerStatusListenerRequest);
                 SLF4JLoggerProxy.trace(TradeRpcClient.this,
                                        "{} received {}",
                                        getSessionId(),
@@ -388,43 +308,6 @@ public class TradeRpcClient
                                        getSessionId(),
                                        result);
                 return result;
-            }}
-        );
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradingClient#getBrokersStatus()
-     */
-    @Override
-    public BrokersStatus getBrokersStatus()
-    {
-        return executeCall(new Callable<BrokersStatus>() {
-            @Override
-            public BrokersStatus call()
-                    throws Exception
-            {
-                SLF4JLoggerProxy.trace(TradeRpcClient.this,
-                                       "{} getting brokers status",
-                                       getSessionId());
-                TradingRpc.BrokersStatusRequest.Builder requestBuilder = TradingRpc.BrokersStatusRequest.newBuilder();
-                requestBuilder.setSessionId(getSessionId().getValue());
-                TradingRpc.BrokersStatusResponse response = getBlockingStub().getBrokersStatus(requestBuilder.build());
-                SLF4JLoggerProxy.trace(TradeRpcClient.this,
-                                       "{} received {}",
-                                       getSessionId(),
-                                       response);
-                List<ClusteredBrokerStatus> brokers = Lists.newArrayList();
-                for(TradingTypesRpc.BrokerStatus rpcBrokerStatus : response.getBrokerStatusList()) {
-                    Optional<BrokerStatus> brokerStatus = TradeRpcUtil.getBrokerStatus(rpcBrokerStatus);
-                    if(brokerStatus.isPresent()) {
-                        brokers.add((ClusteredBrokerStatus)brokerStatus.get());
-                    }
-                }
-                BrokersStatus brokersStatus = new ClusteredBrokersStatus(brokers);
-                SLF4JLoggerProxy.trace(TradeRpcClient.this,
-                                       "{} returning {}",
-                                       getSessionId(),
-                                       brokersStatus);
-                return brokersStatus;
             }}
         );
     }
@@ -806,47 +689,8 @@ public class TradeRpcClient
     {
         if(inListener instanceof TradeMessageListener) {
             return new TradeMessageListenerProxy((TradeMessageListener)inListener);
-        } else if(inListener instanceof BrokerStatusListener) {
-            return new BrokerStatusListenerProxy((BrokerStatusListener)inListener);
         } else {
             throw new UnsupportedOperationException();
-        }
-    }
-    /**
-     * Provides an interface between broker message stream listeners and their handlers.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    private static class BrokerStatusListenerProxy
-            extends BaseRpcUtil.AbstractClientListenerProxy<BrokerStatusListenerResponse,BrokerStatus,BrokerStatusListener>
-    {
-        /**
-         * Create a new BrokerStatusListenerProxy instance.
-         *
-         * @param inMessageListener
-         */
-        protected BrokerStatusListenerProxy(BrokerStatusListener inMessageListener)
-        {
-            super(inMessageListener);
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcClient.AbstractListenerProxy#translateMessage(java.lang.Object)
-         */
-        @Override
-        protected BrokerStatus translateMessage(BrokerStatusListenerResponse inResponse)
-        {
-            return TradeRpcUtil.getBrokerStatus(inResponse).orElse(null);
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcClient.AbstractListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
-         */
-        @Override
-        protected void sendMessage(BrokerStatusListener inMessageListener,
-                                   BrokerStatus inMessage)
-        {
-            inMessageListener.receiveBrokerStatus(inMessage);
         }
     }
     /**

@@ -10,9 +10,6 @@ import org.marketcetera.admin.HasUser;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
-import org.marketcetera.brokers.BrokerStatus;
-import org.marketcetera.brokers.BrokerStatusListener;
-import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.position.PositionKey;
@@ -48,13 +45,9 @@ import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.trading.rpc.TradeRpcUtil;
 import org.marketcetera.trading.rpc.TradingRpc;
-import org.marketcetera.trading.rpc.TradingRpc.AddBrokerStatusListenerRequest;
 import org.marketcetera.trading.rpc.TradingRpc.AddReportRequest;
 import org.marketcetera.trading.rpc.TradingRpc.AddReportResponse;
 import org.marketcetera.trading.rpc.TradingRpc.AddTradeMessageListenerRequest;
-import org.marketcetera.trading.rpc.TradingRpc.BrokerStatusListenerResponse;
-import org.marketcetera.trading.rpc.TradingRpc.BrokersStatusRequest;
-import org.marketcetera.trading.rpc.TradingRpc.BrokersStatusResponse;
 import org.marketcetera.trading.rpc.TradingRpc.DeleteReportRequest;
 import org.marketcetera.trading.rpc.TradingRpc.DeleteReportResponse;
 import org.marketcetera.trading.rpc.TradingRpc.FindRootOrderIdRequest;
@@ -67,8 +60,6 @@ import org.marketcetera.trading.rpc.TradingRpc.GetPositionAsOfRequest;
 import org.marketcetera.trading.rpc.TradingRpc.GetPositionAsOfResponse;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersRequest;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersResponse;
-import org.marketcetera.trading.rpc.TradingRpc.RemoveBrokerStatusListenerRequest;
-import org.marketcetera.trading.rpc.TradingRpc.RemoveBrokerStatusListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpc.RemoveTradeMessageListenerRequest;
 import org.marketcetera.trading.rpc.TradingRpc.RemoveTradeMessageListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpc.ResolveSymbolRequest;
@@ -322,95 +313,6 @@ public class TradeClientRpcService<SessionClazz>
                 }
                 TradingRpc.RemoveTradeMessageListenerResponse.Builder responseBuilder = TradingRpc.RemoveTradeMessageListenerResponse.newBuilder();
                 TradingRpc.RemoveTradeMessageListenerResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
-                                       "Returning {}",
-                                       response);
-                inResponseObserver.onNext(response);
-                inResponseObserver.onCompleted();
-            } catch (Exception e) {
-                handleError(e,
-                            inResponseObserver);
-            }
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#addBrokerStatusListener(org.marketcetera.trading.rpc.TradingRpc.AddBrokerStatusListenerRequest, io.grpc.stub.StreamObserver)
-         */
-        @Override
-        public void addBrokerStatusListener(AddBrokerStatusListenerRequest inRequest,
-                                            StreamObserver<BrokerStatusListenerResponse> inResponseObserver)
-        {
-            try {
-                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
-                                       "Received add broker status listener request {}",
-                                       inRequest);
-                authzService.authorize(sessionHolder.getUser(),
-                                       TradePermissions.ViewBrokerStatusAction.name());
-                String listenerId = inRequest.getListenerId();
-                BaseRpcUtil.AbstractServerListenerProxy<?> brokerStatusListenerProxy = listenerProxiesById.getIfPresent(listenerId);
-                if(brokerStatusListenerProxy == null) {
-                    brokerStatusListenerProxy = new BrokerStatusListenerProxy(listenerId,
-                                                                              inResponseObserver);
-                    listenerProxiesById.put(brokerStatusListenerProxy.getId(),
-                                            brokerStatusListenerProxy);
-                    brokerService.addBrokerStatusListener((BrokerStatusListener)brokerStatusListenerProxy);
-                }
-            } catch (Exception e) {
-                handleError(e,
-                            inResponseObserver);
-            }
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#removeBrokerStatusListener(org.marketcetera.trading.rpc.TradingRpc.RemoveBrokerStatusListenerRequest, io.grpc.stub.StreamObserver)
-         */
-        @Override
-        public void removeBrokerStatusListener(RemoveBrokerStatusListenerRequest inRequest,
-                                               StreamObserver<RemoveBrokerStatusListenerResponse> inResponseObserver)
-        {
-            try {
-                validateAndReturnSession(inRequest.getSessionId());
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
-                                       "Received remove broker status listener request {}",
-                                       inRequest);
-                String listenerId = inRequest.getListenerId();
-                BaseRpcUtil.AbstractServerListenerProxy<?> brokerStatusListenerProxy = listenerProxiesById.getIfPresent(listenerId);
-                listenerProxiesById.invalidate(listenerId);
-                if(brokerStatusListenerProxy != null) {
-                    brokerService.removeBrokerStatusListener((BrokerStatusListener)brokerStatusListenerProxy);
-                    brokerStatusListenerProxy.close();
-                }
-                TradingRpc.RemoveBrokerStatusListenerResponse.Builder responseBuilder = TradingRpc.RemoveBrokerStatusListenerResponse.newBuilder();
-                TradingRpc.RemoveBrokerStatusListenerResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
-                                       "Returning {}",
-                                       response);
-                inResponseObserver.onNext(response);
-                inResponseObserver.onCompleted();
-            } catch (Exception e) {
-                handleError(e,
-                            inResponseObserver);
-            }
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#getBrokersStatus(org.marketcetera.trading.rpc.TradingRpc.BrokersStatusRequest, io.grpc.stub.StreamObserver)
-         */
-        @Override
-        public void getBrokersStatus(BrokersStatusRequest inRequest,
-                                     StreamObserver<BrokersStatusResponse> inResponseObserver)
-        {
-            try {
-                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
-                                       "Received get brokers status request {} from {}",
-                                       inRequest,
-                                       sessionHolder);
-                authzService.authorize(sessionHolder.getUser(),
-                                       TradePermissions.ViewBrokerStatusAction.name());
-                TradingRpc.BrokersStatusResponse.Builder responseBuilder = TradingRpc.BrokersStatusResponse.newBuilder();
-                BrokersStatus brokersStatus = brokerService.getBrokersStatus();
-                TradeRpcUtil.setBrokersStatus(brokersStatus,
-                                             responseBuilder);
-                TradingRpc.BrokersStatusResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeClientRpcService.this,
                                        "Returning {}",
                                        response);
@@ -711,52 +613,6 @@ public class TradeClientRpcService<SessionClazz>
                             inResponseObserver);
             }
         }
-    }
-    /**
-     * Provides a connection between broker status requests and the server interface.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    private static class BrokerStatusListenerProxy
-            extends BaseRpcUtil.AbstractServerListenerProxy<BrokerStatusListenerResponse>
-            implements BrokerStatusListener
-    {
-        /* (non-Javadoc)
-         * @see org.marketcetera.brokers.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.brokers.BrokerStatus)
-         */
-        @Override
-        public void receiveBrokerStatus(BrokerStatus inStatus)
-        {
-            TradeRpcUtil.setBrokerStatus(inStatus,
-                                        responseBuilder);
-            BrokerStatusListenerResponse response = responseBuilder.build();
-            SLF4JLoggerProxy.trace(TradeClientRpcService.class,
-                                   "{} received broker status {}, sending {}",
-                                   getId(),
-                                   inStatus,
-                                   response);
-            // TODO does the user have permissions to view this broker?
-            getObserver().onNext(response);
-            responseBuilder.clear();
-        }
-        /**
-         * Create a new BrokerStatusListenerProxy instance.
-         *
-         * @param inId a <code>String</code> value
-         * @param inObserver a <code>StreamObserver&lt;BrokerStatusListenerResponse&gt;</code> value
-         */
-        private BrokerStatusListenerProxy(String inId,
-                                          StreamObserver<BrokerStatusListenerResponse> inObserver)
-        {
-            super(inId,
-                  inObserver);
-        }
-        /**
-         * builder used to construct messages
-         */
-        private final TradingRpc.BrokerStatusListenerResponse.Builder responseBuilder = TradingRpc.BrokerStatusListenerResponse.newBuilder();
     }
     /**
      * Wraps a {@link TradeMessageListener} with the RPC call from the client.

@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.marketcetera.brokers.BrokerStatusPublisher;
 import org.marketcetera.core.BaseClient;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.HasFIXMessage;
@@ -31,7 +30,7 @@ import org.marketcetera.trade.TradeMessagePublisher;
  * @since $Release$
  */
 public interface TradeClient
-        extends BaseClient,TradeMessagePublisher,BrokerStatusPublisher
+        extends BaseClient,TradeMessagePublisher
 {
     /**
      * Get open orders.
