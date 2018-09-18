@@ -23,7 +23,7 @@ public class FixSessionEnabler
     protected void doSessionAction(FixSession inFixSession)
             throws Exception
     {
-        getBrokerService().enableSession(new SessionID(inFixSession.getSessionId()));
+        getFixSessionProvider().enableSession(new SessionID(inFixSession.getSessionId()));
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.brokers.impl.AbstractFixSessionAgent#getSessionActionDescription()

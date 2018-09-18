@@ -1,5 +1,6 @@
 package org.marketcetera.fix.impl;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +12,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.MutableFixSession;
-import org.marketcetera.persist.NDEntityBase;
 
 import com.google.common.collect.Maps;
 
@@ -28,8 +28,7 @@ import com.google.common.collect.Maps;
 @XmlRootElement(name="fixSession")
 @XmlAccessorType(XmlAccessType.NONE)
 public class SimpleFixSession
-        extends NDEntityBase
-        implements FixSession,MutableFixSession
+        implements MutableFixSession,Serializable
 {
     /**
      * Create a new SimpleFixSession instance.
@@ -46,17 +45,14 @@ public class SimpleFixSession
         setBrokerId(inFixSession.getBrokerId());
         setDescription(inFixSession.getDescription());
         setHost(inFixSession.getHost());
-        setId(inFixSession.getId());
         setIsAcceptor(inFixSession.isAcceptor());
         setIsDeleted(inFixSession.isDeleted());
         setIsEnabled(inFixSession.isEnabled());
-        setLastUpdated(inFixSession.getLastUpdated());
         setMappedBrokerId(inFixSession.getMappedBrokerId());
         setName(inFixSession.getName());
         setPort(inFixSession.getPort());
         setSessionId(inFixSession.getSessionId());
         setSessionSettings(Maps.newHashMap(inFixSession.getSessionSettings()));
-        setUpdateCount(inFixSession.getUpdateCount());
     }
     /* (non-Javadoc)
      * @see com.marketcetera.fix.FixSession#getAffinity()
@@ -221,19 +217,70 @@ public class SimpleFixSession
         isDeleted = inIsDeleted;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSession#getName()
+     */
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSession#getDescription()
+     */
+    @Override
+    public String getDescription()
+    {
+        return description;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.MutableFixSession#setName(java.lang.String)
+     */
+    @Override
+    public void setName(String inName)
+    {
+        name = inName;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.MutableFixSession#setDescription(java.lang.String)
+     */
+    @Override
+    public void setDescription(String inDescription)
+    {
+        description = inDescription;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("SimpleFixSession [port=").append(port).append(", host=").append(host)
-                .append(", sessionSettings=").append(sessionSettings).append(", isEnabled=").append(isEnabled)
-                .append(", isDeleted=").append(isDeleted).append(", isAcceptor=").append(isAcceptor)
-                .append(", sessionId=").append(sessionId).append(", brokerId=").append(brokerId)
-                .append(", mappedBrokerId=").append(mappedBrokerId).append(", affinity=").append(affinity).append("]");
+        builder.append("SimpleFixSession [name=").append(name).append(", description=").append(description)
+                .append(", port=").append(port).append(", host=").append(host).append(", sessionSettings=")
+                .append(sessionSettings).append(", isEnabled=").append(isEnabled).append(", isDeleted=")
+                .append(isDeleted).append(", isAcceptor=").append(isAcceptor).append(", sessionId=").append(sessionId)
+                .append(", brokerId=").append(brokerId).append(", mappedBrokerId=").append(mappedBrokerId)
+                .append(", affinity=").append(affinity).append("]");
         return builder.toString();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSession#getMutableView()
+     */
+    @Override
+    public MutableFixSession getMutableView()
+    {
+        return this;
+    }
+    /**
+     * name value
+     */
+    @XmlAttribute
+    private String name;
+    /**
+     * description value
+     */
+    @XmlAttribute
+    private String description;
     /**
      * port value
      */

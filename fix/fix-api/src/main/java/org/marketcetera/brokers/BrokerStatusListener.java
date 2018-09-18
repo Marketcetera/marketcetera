@@ -2,6 +2,10 @@ package org.marketcetera.brokers;
 
 import org.marketcetera.util.misc.ClassVersion;
 
+import com.google.common.eventbus.Subscribe;
+
+/* $License$ */
+
 /**
  * A receiver of broker status changes.
  *
@@ -14,9 +18,6 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
-
-/* $License$ */
-
 @ClassVersion("$Id$")
 public interface BrokerStatusListener
 {
@@ -25,5 +26,6 @@ public interface BrokerStatusListener
      *
      * @param status The status.
      */
+    @Subscribe
     void receiveBrokerStatus(BrokerStatus status);
 }

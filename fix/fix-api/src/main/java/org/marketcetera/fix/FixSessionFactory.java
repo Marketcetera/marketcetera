@@ -2,6 +2,8 @@ package org.marketcetera.fix;
 
 import java.util.Map;
 
+import org.marketcetera.core.DomainObjectFactory;
+
 /* $License$ */
 
 /**
@@ -12,13 +14,8 @@ import java.util.Map;
  * @since $Release$
  */
 public interface FixSessionFactory
+        extends DomainObjectFactory<FixSession>
 {
-    /**
-     * Create a <code>FixSession</code> object.
-     *
-     * @return a <code>FixSession</code> value
-     */
-    FixSession create();
     /**
      * Create a <code>FixSession</code> object.
      *

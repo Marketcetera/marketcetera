@@ -5,6 +5,7 @@ option java_outer_classname = "TradingRpc";
 import "rpc_base.proto";
 import "rpc_paging.proto";
 import "rpc_trading_types.proto";
+import "rpc_fix_admin.proto";
 import "google/protobuf/timestamp.proto";
 
 message OpenOrdersRequest {
@@ -47,23 +48,6 @@ message RemoveTradeMessageListenerRequest {
 message RemoveTradeMessageListenerResponse {
 }
 
-message AddBrokerStatusListenerRequest {
-    string sessionId = 1;
-    string listenerId = 2;
-}
-
-message BrokerStatusListenerResponse {
-    BrokerStatus brokerStatus = 1;
-}
-
-message RemoveBrokerStatusListenerRequest {
-    string sessionId = 1;
-    string listenerId = 2;
-}
-
-message RemoveBrokerStatusListenerResponse {
-}
-
 message ResolveSymbolRequest {
     string sessionId = 1;
     string symbol = 2;
@@ -71,14 +55,6 @@ message ResolveSymbolRequest {
 
 message ResolveSymbolResponse {
     Instrument instrument = 1;
-}
-
-message BrokersStatusRequest {
-    string sessionId = 1;
-}
-
-message BrokersStatusResponse {
-    repeated BrokerStatus brokerStatus = 1;
 }
 
 message FindRootOrderIdRequest {
@@ -145,10 +121,7 @@ service TradingRpcService {
     rpc sendOrders(SendOrderRequest) returns (SendOrderResponse);
     rpc addTradeMessageListener(AddTradeMessageListenerRequest) returns (stream TradeMessageListenerResponse);
     rpc removeTradeMessageListener(RemoveTradeMessageListenerRequest) returns (RemoveTradeMessageListenerResponse);
-    rpc addBrokerStatusListener(AddBrokerStatusListenerRequest) returns (stream BrokerStatusListenerResponse);
-    rpc removeBrokerStatusListener(RemoveBrokerStatusListenerRequest) returns (RemoveBrokerStatusListenerResponse);
     rpc resolveSymbol(ResolveSymbolRequest) returns (ResolveSymbolResponse);
-    rpc getBrokersStatus(BrokersStatusRequest) returns (BrokersStatusResponse);
     rpc findRootOrderId(FindRootOrderIdRequest) returns (FindRootOrderIdResponse);
     rpc getPositionAsOf(GetPositionAsOfRequest) returns (GetPositionAsOfResponse);
     rpc getAllPositionsAsOf(GetAllPositionsAsOfRequest) returns (GetAllPositionsAsOfResponse);

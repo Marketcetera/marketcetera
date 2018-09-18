@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -35,7 +36,7 @@ public class FixSessionAttributeDescriptorInitializer
         }
         for(FixSessionAttributeDescriptor descriptor : descriptors) {
             try {
-                brokerService.save(descriptor);
+                fixSessionProvider.save(descriptor);
             } catch (Exception e) {
                 SLF4JLoggerProxy.debug(this,
                                        "Not adding {}: {}",
@@ -85,6 +86,11 @@ public class FixSessionAttributeDescriptorInitializer
      */
     @Autowired
     private BrokerService brokerService;
+    /**
+     * provides access to FIX sessions
+     */
+    @Autowired
+    private FixSessionProvider fixSessionProvider;
     /**
      * objects to create on start
      */

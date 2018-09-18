@@ -9,10 +9,10 @@ import org.apache.commons.lang.Validate;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
-import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
+import org.marketcetera.fix.MutableFixSession;
+import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.store.MessageStoreSession;
 import org.marketcetera.fix.store.MessageStoreSessionDao;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -68,7 +68,7 @@ public class PromiscuousAcceptorSessionProvider
         }
         // check to see if we already have a session by this name
         MessageStoreSession existingSession = sessionDao.findBySessionId(inSessionId.toString());
-        FixSession session = fixSessionFactory.create();
+        MutableFixSession session = fixSessionFactory.create();
         session.setAffinity(clusterData.getInstanceNumber());
         session.setBrokerId(inSessionId.toString());
         session.setHost(fixSettingsProvider.getAcceptorHost());
@@ -185,7 +185,7 @@ public class PromiscuousAcceptorSessionProvider
      * creates FixSession objects
      */
     @Autowired
-    private FixSessionFactory fixSessionFactory;
+    private MutableFixSessionFactory fixSessionFactory;
     /**
      * provides access to existing sessions
      */

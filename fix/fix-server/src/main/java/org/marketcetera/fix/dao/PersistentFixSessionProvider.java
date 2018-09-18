@@ -20,10 +20,11 @@ import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionAttributeDescriptorFactory;
-import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
+import org.marketcetera.fix.MutableFixSession;
+import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.provisioning.FixSessionsConfiguration;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
@@ -223,7 +224,7 @@ public class PersistentFixSessionProvider
                                inFixSession);
         BooleanBuilder where = new BooleanBuilder();
         where = where.and(QPersistentFixSession.persistentFixSession.isDeleted.isFalse());
-        where = where.and(QPersistentFixSession.persistentFixSession.id.eq(inFixSession.getId()));
+        where = where.and(QPersistentFixSession.persistentFixSession.sessionId.eq(inFixSession.getSessionId()));
         Optional<PersistentFixSession> existingSessionOption = fixSessionDao.findOne(where);
         PersistentFixSession existingSession;
         if(!existingSessionOption.isPresent()) {
@@ -570,7 +571,7 @@ public class PersistentFixSessionProvider
                 Map<String,String> sessionSettings = Maps.newHashMap();
                 sessionSettings.putAll(globalSettings);
                 sessionSettings.putAll(fixSessionDescriptor.getSettings());
-                FixSession fixSession = fixSessionFactory.create();
+                MutableFixSession fixSession = fixSessionFactory.create();
                 fixSession.setAffinity(fixSessionDescriptor.getAffinity());
                 fixSession.setBrokerId(fixSessionDescriptor.getBrokerId());
                 if(fixSessionDescriptor.getMappedBrokerId() != null) {
@@ -656,7 +657,7 @@ public class PersistentFixSessionProvider
      * create {@link FixSession} objects
      */
     @Autowired
-    private FixSessionFactory fixSessionFactory;
+    private MutableFixSessionFactory fixSessionFactory;
     /**
      * transaction manager value
      */

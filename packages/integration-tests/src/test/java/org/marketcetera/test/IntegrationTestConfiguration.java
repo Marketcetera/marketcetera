@@ -22,6 +22,8 @@ import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
+import org.marketcetera.fix.MutableFixSession;
+import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.SessionSettingsGenerator;
 import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
@@ -160,14 +162,14 @@ public class IntegrationTestConfiguration
      * @param inMessageFactory a <code>quickfix.MessageFactory</code> value
      * @param inFixSettingsProviderFactory a <code>FixSettingsProviderFactory</code> value
      * @param inFixSessionsConfiguration a <code>FixSessionsConfiguration</code> value
-     * @param inFixSessionFactory a <code>FixSessionFactory</code> value
+     * @param inFixSessionFactory a <code>MutableFixSessionFactory</code> value
      * @return a <code>Sender</code> value
      */
     @Bean
     public Sender getSender(quickfix.MessageFactory inMessageFactory,
                             FixSettingsProviderFactory inFixSettingsProviderFactory,
                             FixSessionsConfiguration inFixSessionsConfiguration,
-                            FixSessionFactory inFixSessionFactory)
+                            MutableFixSessionFactory inFixSessionFactory)
     {
         Sender sender = new Sender();
         sender.setFixSettingsProviderFactory(inFixSettingsProviderFactory);
@@ -198,7 +200,7 @@ public class IntegrationTestConfiguration
                 Map<String,String> sessionSettings = Maps.newHashMap();
                 sessionSettings.putAll(globalSettings);
                 sessionSettings.putAll(fixSessionDescriptor.getSettings());
-                FixSession fixSession = inFixSessionFactory.create();
+                MutableFixSession fixSession = inFixSessionFactory.create();
                 fixSession.setAffinity(fixSessionDescriptor.getAffinity());
                 fixSession.setBrokerId(fixSessionDescriptor.getBrokerId()+"-counter");
                 if(fixSessionDescriptor.getMappedBrokerId() != null) {
@@ -234,14 +236,14 @@ public class IntegrationTestConfiguration
      * @param inMessageFactory a <code>quickfix.MessageFactory</code> value
      * @param inFixSettingsProviderFactory a <code>FixSettingsProviderFactory</code> value
      * @param inFixSessionsConfiguration a <code>FixSessionsConfiguration</code> value
-     * @param inFixSessionFactory a <code>FixSessionFactory</code> value
+     * @param inFixSessionFactory a <code>MutableFixSessionFactory</code> value
      * @return a <code>Receiver</code> value
      */
     @Bean
     public Receiver getReceiver(quickfix.MessageFactory inMessageFactory,
                                 FixSettingsProviderFactory inFixSettingsProviderFactory,
                                 FixSessionsConfiguration inFixSessionsConfiguration,
-                                FixSessionFactory inFixSessionFactory)
+                                MutableFixSessionFactory inFixSessionFactory)
     {
         Receiver receiver = new Receiver();
         receiver.setFixSettingsProviderFactory(inFixSettingsProviderFactory);
@@ -275,7 +277,7 @@ public class IntegrationTestConfiguration
                 Map<String,String> sessionSettings = Maps.newHashMap();
                 sessionSettings.putAll(globalSettings);
                 sessionSettings.putAll(fixSessionDescriptor.getSettings());
-                FixSession fixSession = inFixSessionFactory.create();
+                MutableFixSession fixSession = inFixSessionFactory.create();
                 fixSession.setAffinity(fixSessionDescriptor.getAffinity());
                 fixSession.setBrokerId(fixSessionDescriptor.getBrokerId()+"-counter");
                 if(fixSessionDescriptor.getMappedBrokerId() != null) {

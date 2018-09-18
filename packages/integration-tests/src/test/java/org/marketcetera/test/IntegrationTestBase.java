@@ -39,6 +39,7 @@ import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.PriceQtyTuple;
@@ -774,7 +775,7 @@ public class IntegrationTestBase
     protected void verifyAllBrokersReady()
             throws Exception
     {
-        for(FixSession fixSession : brokerService.findFixSessions()) {
+        for(FixSession fixSession : fixSessionProvider.findFixSessions()) {
             verifySessionLoggedOn(new BrokerID(fixSession.getBrokerId()));
         }
     }
@@ -958,7 +959,7 @@ public class IntegrationTestBase
      */
     protected Broker getInitiator()
     {
-        for(FixSession fixSession : brokerService.findFixSessions(false,1,1)) {
+        for(FixSession fixSession : fixSessionProvider.findFixSessions(false,1,1)) {
             return brokerService.getBroker(new BrokerID(fixSession.getBrokerId()));
         }
         throw new UnsupportedOperationException("No initiators configured!");
@@ -1505,6 +1506,11 @@ public class IntegrationTestBase
      */
     @Autowired
     protected BrokerService brokerService;
+    /**
+     * provides access to FIX sessions
+     */
+    @Autowired
+    protected FixSessionProvider fixSessionProvider;
     /**
      * provides access to trade services
      */

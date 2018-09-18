@@ -4,6 +4,7 @@ option java_package = "org.marketcetera.trading.rpc";
 option java_outer_classname = "TradingTypesRpc";
 import "rpc_base.proto";
 import "rpc_admin.proto";
+import "rpc_fix_admin.proto";
 import "google/protobuf/timestamp.proto";
 
 enum OrderType {
@@ -135,25 +136,6 @@ message FIXOrder {
     FixMessage message = 2;
 }
 
-message BrokerAlgoTagSpec {
-    uint32 tag = 1;
-    string label = 2;
-    string description = 3;
-    string defaultValue = 4;
-    bool mandatory = 5;
-    bool isReadOnly = 6;
-    string advice = 7;
-    string pattern = 8;
-    Map options = 9;
-    string validator = 10;
-    string value = 11;
-}
-
-message BrokerAlgo {
-    string name = 1;
-    repeated BrokerAlgoTagSpec algoTagSpecs = 2;
-}
-
 enum MatpOrderType {
     OrderSingleType = 0;
     OrderReplaceType = 1;
@@ -262,38 +244,6 @@ message TradeMessage {
     google.protobuf.Timestamp transactTime = 30;
     FixMessage message = 31;
     TradeMessageType tradeMessageType = 32;
-}
-
-enum FixSessionStatus {
-    AffinityMismatchFixSessionStatus = 0;
-    BackupFixSessionStatus = 1;
-    ConnectedFixSessionStatus = 2;
-    DeletedFixSessionStatus = 3;
-    DisabledFixSessionStatus = 4;
-    DisconnectedFixSessionStatus = 5;
-    NotConnectedFixSessionStatus = 6;
-    StoppedFixSessionStatus = 7;
-    UnknownFixSessionStatus = 8;
-}
-
-message ClusterData {
-    string hostId = 1;
-    uint32 hostNumber = 2;
-    uint32 instanceNumber = 3;
-    uint32 totalInstances = 4;
-    string uuid = 5;
-}
-
-message BrokerStatus {
-    repeated BrokerAlgo brokerAlgos = 1;
-    string host = 2;
-    string id = 3;
-    bool loggedOn = 4;
-    string name = 5;
-    uint32 port = 6;
-    Map settings = 7;
-    FixSessionStatus fixSessionStatus = 8;
-    ClusterData clusterData = 9;
 }
 
 message PositionKey {

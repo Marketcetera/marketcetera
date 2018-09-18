@@ -10,6 +10,7 @@ import javax.annotation.concurrent.GuardedBy;
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.brokers.Selector;
 import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.CloseableLock;
@@ -45,9 +46,9 @@ public class BasicSelector
                     SLF4JLoggerProxy.debug(this,
                                            "No default broker yet, checking for brokers accessible to {}",
                                            instanceData);
-                    List<FixSession> initiatorSessions = brokerService.findFixSessions(false,
-                                                                                       instanceData.getInstanceNumber(),
-                                                                                       instanceData.getTotalInstances());
+                    List<FixSession> initiatorSessions = fixSessionProvider.findFixSessions(false,
+                                                                                            instanceData.getInstanceNumber(),
+                                                                                            instanceData.getTotalInstances());
                     SLF4JLoggerProxy.debug(this,
                                            "Retrieve sessions to choose from: {}",
                                            initiatorSessions);
@@ -146,6 +147,11 @@ public class BasicSelector
      */
     @GuardedBy("defaultBrokerLock")
     private volatile BrokerID defaultBroker;
+    /**
+     * provides access to FIX sessions
+     */
+    @Autowired
+    private FixSessionProvider fixSessionProvider;
     /**
      * provides access to broker services
      */

@@ -94,7 +94,7 @@ public class BrokerServiceTest
     public void testBrokerServiceName()
             throws Exception
     {
-        List<FixSession> sessions = brokerService.findFixSessions();
+        List<FixSession> sessions = fixSessionProvider.findFixSessions();
         for(FixSession session : sessions) {
             assertEquals(session.getName(),
                          sessionNameProvider.getSessionName(new SessionID(session.getSessionId())));

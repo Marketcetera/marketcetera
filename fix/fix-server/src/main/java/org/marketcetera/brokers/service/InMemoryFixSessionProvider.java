@@ -11,9 +11,10 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
-import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
+import org.marketcetera.fix.MutableFixSession;
+import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.provisioning.FixSessionsConfiguration;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
@@ -209,7 +210,7 @@ public class InMemoryFixSessionProvider
                 Map<String,String> sessionSettings = Maps.newHashMap();
                 sessionSettings.putAll(globalSettings);
                 sessionSettings.putAll(fixSessionDescriptor.getSettings());
-                FixSession fixSession = fixSessionFactory.create();
+                MutableFixSession fixSession = fixSessionFactory.create();
                 fixSession.setAffinity(fixSessionDescriptor.getAffinity());
                 fixSession.setBrokerId(fixSessionDescriptor.getBrokerId());
                 if(fixSessionDescriptor.getMappedBrokerId() != null) {
@@ -273,5 +274,5 @@ public class InMemoryFixSessionProvider
      * creates {@link FixSession} objects
      */
     @Autowired
-    private FixSessionFactory fixSessionFactory;
+    private MutableFixSessionFactory fixSessionFactory;
 }

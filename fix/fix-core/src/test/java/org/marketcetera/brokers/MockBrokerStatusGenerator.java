@@ -3,8 +3,8 @@ package org.marketcetera.brokers;
 import java.util.UUID;
 
 import org.marketcetera.cluster.ClusterData;
-import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
+import org.marketcetera.fix.MutableFixSession;
 import org.marketcetera.fix.impl.SimpleFixSession;
 import org.marketcetera.trade.BrokerID;
 
@@ -31,7 +31,7 @@ public class MockBrokerStatusGenerator
                                                              BrokerID inBrokerId,
                                                              boolean inIsLoggedOn)
     {
-        FixSession fixSession = new SimpleFixSession();
+        MutableFixSession fixSession = new SimpleFixSession();
         fixSession.setAffinity(1);
         fixSession.setBrokerId(inBrokerId.getValue());
         fixSession.setHost("localhost");

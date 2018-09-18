@@ -40,15 +40,17 @@ import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.core.PriceQtyTuple;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
+import org.marketcetera.fix.MutableFixSession;
+import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.dao.IncomingMessageDao;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -289,12 +291,12 @@ public class MarketceteraTestBase
     protected void resetSessions()
             throws Exception
     {
-        for(FixSession fixSession : brokerService.findFixSessions()) {
+        for(FixSession fixSession : fixSessionProvider.findFixSessions()) {
             SessionID sessionId = new SessionID(fixSession.getSessionId());
             BrokerID brokerId = new BrokerID(fixSession.getBrokerId());
-            brokerService.disableSession(sessionId);
+            fixSessionProvider.disableSession(sessionId);
             verifySessionDisabled(brokerId);
-            brokerService.delete(sessionId);
+            fixSessionProvider.delete(sessionId);
             verifySessionDeleted(brokerId);
         }
     }
@@ -387,7 +389,7 @@ public class MarketceteraTestBase
         final BrokerID testAcceptorBrokerId = new BrokerID("local_acceptor" + inSessionIndex);
         verifyBrokerStatus(testAcceptorBrokerId,
                            null);
-        FixSession testSession = fixSessionFactory.create();
+        MutableFixSession testSession = fixSessionFactory.create();
         testSession.setAffinity(1);
         testSession.setBrokerId(testAcceptorBrokerId.getValue());
         testSession.setHost("localhost");
@@ -416,10 +418,10 @@ public class MarketceteraTestBase
             testSession.getSessionSettings().put(Session.SETTING_DEFAULT_APPL_VER_ID,
                                                  fixVersion.getApplicationVersion());
         }
-        testSession = brokerService.save(testSession);
-        testSession = onCreateAcceptorSession(testSession);
+        fixSessionProvider.save(testSession);
+        onCreateAcceptorSession(testSession);
         SessionID testAcceptorSessionId = new SessionID(testSession.getSessionId());
-        brokerService.enableSession(testAcceptorSessionId);
+        fixSessionProvider.enableSession(testAcceptorSessionId);
         verifySessionEnabled(testAcceptorBrokerId);
         createRemoteSenderSession(inSessionIndex);
         verifySessionLoggedOn(testAcceptorBrokerId);
@@ -472,7 +474,7 @@ public class MarketceteraTestBase
         }
         String session = beginString+":"+senderBase+inSessionIndex+"->"+getHostBase();
         SessionID sessionId = new SessionID(session);
-        FixSession testSession = fixSessionFactory.create();
+        MutableFixSession testSession = fixSessionFactory.create();
         testSession.setAffinity(1);
         testSession.setHost("localhost");
         testSession.setPort(hostAcceptorPort); 
@@ -527,7 +529,7 @@ public class MarketceteraTestBase
         final BrokerID testInitiatorBrokerId = new BrokerID("local_initiator" + inSessionIndex);
         verifyBrokerStatus(testInitiatorBrokerId,
                            null);
-        FixSession testSession = fixSessionFactory.create();
+        MutableFixSession testSession = fixSessionFactory.create();
         testSession.setAffinity(1);
         testSession.setBrokerId(testInitiatorBrokerId.getValue());
         testSession.setHost("localhost");
@@ -560,10 +562,10 @@ public class MarketceteraTestBase
             testSession.getSessionSettings().put(Session.SETTING_DEFAULT_APPL_VER_ID,
                                                  fixVersion.getApplicationVersion());
         }
-        testSession = brokerService.save(testSession);
-        testSession = onCreateInitiatorSession(testSession);
+        testSession = fixSessionProvider.save(testSession).getMutableView();
+        testSession = onCreateInitiatorSession(testSession).getMutableView();
         SessionID testInitiatorSessionId = new SessionID(testSession.getSessionId());
-        brokerService.enableSession(testInitiatorSessionId);
+        fixSessionProvider.enableSession(testInitiatorSessionId);
         verifySessionEnabled(testInitiatorBrokerId);
         createRemoteReceiverSession(inSessionIndex);
         verifySessionLoggedOn(testInitiatorBrokerId);
@@ -590,7 +592,7 @@ public class MarketceteraTestBase
             beginString = FixVersions.BEGINSTRING_FIXT11;
         }
         String session = beginString+":"+receiverBase + inSessionIndex + "->"+getHostBase();
-        FixSession testSession = fixSessionFactory.create();
+        MutableFixSession testSession = fixSessionFactory.create();
         testSession.setAffinity(1);
         testSession.setHost("localhost");
         testSession.setPort(remoteAcceptorPort); 
@@ -1147,7 +1149,7 @@ public class MarketceteraTestBase
     protected void verifyAllBrokersReady()
             throws Exception
     {
-        for(FixSession fixSession : brokerService.findFixSessions()) {
+        for(FixSession fixSession : fixSessionProvider.findFixSessions()) {
             verifySessionLoggedOn(new BrokerID(fixSession.getBrokerId()));
         }
     }
@@ -1181,7 +1183,7 @@ public class MarketceteraTestBase
     }
     protected BrokerID getBrokerIdFor(SessionID inSessionId)
     {
-        FixSession session = brokerService.findFixSessionBySessionId(inSessionId);
+        FixSession session = fixSessionProvider.findFixSessionBySessionId(inSessionId);
         assertNotNull("Unknown FIX session: " + inSessionId,
                       session);
         return new BrokerID(session.getBrokerId());
@@ -2349,7 +2351,7 @@ public class MarketceteraTestBase
      * creates fix sessions
      */
     @Autowired
-    protected FixSessionFactory fixSessionFactory;
+    protected MutableFixSessionFactory fixSessionFactory;
     /**
      * provides access to the exchange report data store
      */
@@ -2384,6 +2386,11 @@ public class MarketceteraTestBase
      */
     @Autowired
     protected BrokerService brokerService;
+    /**
+     * provides access to FIX sessions
+     */
+    @Autowired
+    protected FixSessionProvider fixSessionProvider;
     /**
      * provides access to authorization services
      */

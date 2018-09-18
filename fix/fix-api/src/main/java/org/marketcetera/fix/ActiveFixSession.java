@@ -1,5 +1,9 @@
 package org.marketcetera.fix;
 
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.core.DomainObject;
+import org.marketcetera.core.HasMutableView;
+
 /* $License$ */
 
 /**
@@ -10,14 +14,8 @@ package org.marketcetera.fix;
  * @since $Release$
  */
 public interface ActiveFixSession
-        extends FixSession
+        extends DomainObject,HasMutableView<MutableActiveFixSession>
 {
-    /**
-     * Get the cluster instance on which the session is running.
-     *
-     * @return a <code>String</code> value
-     */
-    String getInstance();
     /**
      * Get the next target sequence number.
      *
@@ -36,4 +34,16 @@ public interface ActiveFixSession
      * @return a <code>FixSessionStatus</code> value
      */
     FixSessionStatus getStatus();
+    /**
+     * Get the cluster data value.
+     *
+     * @return a <code>ClusterData</code> value
+     */
+    ClusterData getClusterData();
+    /**
+     * Get the FIX session value.
+     *
+     * @return a <code>FixSession</code> value
+     */
+    FixSession getFixSession();
 }

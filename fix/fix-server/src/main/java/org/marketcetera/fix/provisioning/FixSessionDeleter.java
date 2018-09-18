@@ -23,7 +23,7 @@ public class FixSessionDeleter
     protected void doSessionAction(FixSession inFixSession)
             throws Exception
     {
-        getBrokerService().delete(new SessionID(inFixSession.getSessionId()));
+        getFixSessionProvider().delete(new SessionID(inFixSession.getSessionId()));
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.brokers.impl.AbstractFixSessionAgent#getSessionActionDescription()

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.marketcetera.fix.FixCoreUtil;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionFactory;
+import org.marketcetera.fix.MutableFixSessionFactory;
 
 /* $License$ */
 
@@ -16,7 +16,7 @@ import org.marketcetera.fix.FixSessionFactory;
  * @since $Release$
  */
 public class SimpleFixSessionFactory
-        implements FixSessionFactory
+        implements MutableFixSessionFactory
 {
     /* (non-Javadoc)
      * @see org.marketcetera.fix.FixSessionFactory#create()

@@ -1,5 +1,8 @@
 package org.marketcetera.fix;
 
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.core.MutableDomainObject;
+
 /* $License$ */
 
 /**
@@ -10,14 +13,8 @@ package org.marketcetera.fix;
  * @since $Release$
  */
 public interface MutableActiveFixSession
-        extends ActiveFixSession,MutableFixSession
+        extends MutableDomainObject<ActiveFixSession>,ActiveFixSession
 {
-    /**
-     * Set the cluster instance on which the session is running.
-     *
-     * @param inInstance a <code>String</code> value
-     */
-    void setInstance(String inInstance);
     /**
      * Set the next target sequence number.
      *
@@ -36,4 +33,16 @@ public interface MutableActiveFixSession
      * @param inSessionStatus a <code>FixSessionStatus</code> value
      */
     void setStatus(FixSessionStatus inFixSessionStatus);
+    /**
+     * Set the FIX session value.
+     *
+     * @param inFixSession a <code>FixSession</code> value
+     */
+    void setFixSession(FixSession inFixSession);
+    /**
+     * Get the cluster data value.
+     *
+     * @param inClusterData a <code>ClusterData</code> value
+     */
+    void setClusterData(ClusterData inClusterData);
 }

@@ -5,11 +5,9 @@ import java.util.Set;
 
 import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.BrokerStatus;
-import org.marketcetera.brokers.BrokerStatusBroadcaster;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
-import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
@@ -37,7 +35,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import quickfix.Application;
@@ -422,15 +419,7 @@ public abstract class AbstractFixModule
                                                                        status,
                                                                        inLoggedOn);
         synchronized(brokerStatusBroadcasterLock) {
-            for(BrokerStatusBroadcaster brokerStatusBroadcaster : brokerStatusBroadcasters) {
-                try {
-                    brokerStatusBroadcaster.reportBrokerStatus(brokerStatus);
-                } catch (Exception e) {
-                    PlatformServices.handleException(this,
-                                                     "Problem reporting broker status",
-                                                     e);
-                }
-            }
+            brokerService.postBrokerStatus(brokerStatus);
         }
     }
     /**
@@ -609,11 +598,6 @@ public abstract class AbstractFixModule
      */
     @Autowired
     private BrokerService brokerService;
-    /**
-     * broker status publishers
-     */
-    @Autowired
-    private Collection<BrokerStatusBroadcaster> brokerStatusBroadcasters = Lists.newArrayList();
     /**
      * underlying FIX engine
      */

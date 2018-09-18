@@ -7,6 +7,7 @@ import java.util.TimerTask;
 import javax.annotation.PostConstruct;
 
 import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.FixSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public abstract class AbstractFixSessionAgent
             {
                 for(String sessionName : sessionNames) {
                     try {
-                        FixSession fixSession = brokerService.findFixSessionByName(sessionName);
+                        FixSession fixSession = fixSessionProvider.findFixSessionByName(sessionName);
                         doSessionAction(fixSession);
                     } catch (Exception e) {
                         PlatformServices.handleException(this,
@@ -84,6 +85,24 @@ public abstract class AbstractFixSessionAgent
         brokerService = inBrokerService;
     }
     /**
+     * Get the fixSessionProvider value.
+     *
+     * @return a <code>FixSessionProvider</code> value
+     */
+    public FixSessionProvider getFixSessionProvider()
+    {
+        return fixSessionProvider;
+    }
+    /**
+     * Sets the fixSessionProvider value.
+     *
+     * @param inFixSessionProvider a <code>FixSessionProvider</code> value
+     */
+    public void setFixSessionProvider(FixSessionProvider inFixSessionProvider)
+    {
+        fixSessionProvider = inFixSessionProvider;
+    }
+    /**
      * Get the startDelay value.
      *
      * @return a <code>long</code> value
@@ -124,6 +143,11 @@ public abstract class AbstractFixSessionAgent
      */
     @Autowired
     private BrokerService brokerService;
+    /**
+     * provides access to FIX sessions
+     */
+    @Autowired
+    private FixSessionProvider fixSessionProvider;
     /**
      * session names to activate
      */

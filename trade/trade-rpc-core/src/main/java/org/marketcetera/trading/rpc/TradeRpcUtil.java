@@ -18,11 +18,13 @@ import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.brokers.ClusteredBrokerStatus;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.HasClusterData;
+import org.marketcetera.cluster.rpc.ClusterRpc;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Validator;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.fix.FixAdminRpc;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSessionStatus;
@@ -68,7 +70,6 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
-import org.marketcetera.trading.rpc.TradingRpc.BrokerStatusListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
 
 import com.google.common.collect.Maps;
@@ -2169,9 +2170,9 @@ public abstract class TradeRpcUtil
         if(!inRpcOrder.hasBrokerAlgo()) {
             return Optional.empty();
         }
-        TradingTypesRpc.BrokerAlgo rpcBrokerAlgo = inRpcOrder.getBrokerAlgo();
+        FixAdminRpc.BrokerAlgo rpcBrokerAlgo = inRpcOrder.getBrokerAlgo();
         BrokerAlgo brokerAlgo = new BrokerAlgo();
-        for(TradingTypesRpc.BrokerAlgoTagSpec rpcAlgoTagSpec : rpcBrokerAlgo.getAlgoTagSpecsList()) {
+        for(FixAdminRpc.BrokerAlgoTagSpec rpcAlgoTagSpec : rpcBrokerAlgo.getAlgoTagSpecsList()) {
             BrokerAlgoTag brokerAlgoTag = new BrokerAlgoTag(getBrokerTagSpec(rpcAlgoTagSpec),
                                                             rpcAlgoTagSpec.getValue());
             brokerAlgo.getAlgoTags().add(brokerAlgoTag);
@@ -2184,10 +2185,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the broker algo tag spec from the given RPC broker algo tag spec.
      *
-     * @param inRpcAlgoTagSpec a <code>TradingTypesRpc.BrokerAlgoTagSpec</code> value
+     * @param inRpcAlgoTagSpec a <code>FixAdminRpc.BrokerAlgoTagSpec</code> value
      * @return a <code>BrokerAlgoTagSpec</code> value
      */
-    public static BrokerAlgoTagSpec getBrokerTagSpec(TradingTypesRpc.BrokerAlgoTagSpec inRpcAlgoTagSpec)
+    public static BrokerAlgoTagSpec getBrokerTagSpec(FixAdminRpc.BrokerAlgoTagSpec inRpcAlgoTagSpec)
     {
         BrokerAlgoTagSpec brokerAlgoTagSpec = new BrokerAlgoTagSpec();
         brokerAlgoTagSpec.setAdvice(inRpcAlgoTagSpec.getAdvice());
@@ -2330,11 +2331,11 @@ public abstract class TradeRpcUtil
      * @param inResponse a <code>BrokerStatusListenerResponse</code> value
      * @return an <code>Optional&lt;BrokerStatus&gt;</code> value
      */
-    public static Optional<BrokerStatus> getBrokerStatus(BrokerStatusListenerResponse inResponse)
+    public static Optional<BrokerStatus> getBrokerStatus(FixAdminRpc.BrokerStatusListenerResponse inResponse)
     {
         BrokerStatus brokerStatus = null;
         if(inResponse.hasBrokerStatus()) {
-            TradingTypesRpc.BrokerStatus rpcBrokerStatus = inResponse.getBrokerStatus();
+            FixAdminRpc.BrokerStatus rpcBrokerStatus = inResponse.getBrokerStatus();
             brokerStatus = getBrokerStatus(rpcBrokerStatus).orElse(null);
         }
         return(brokerStatus==null ? Optional.empty():Optional.of(brokerStatus));
@@ -2342,10 +2343,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the broker status for the given RPC value.
      *
-     * @param inRpcBrokerStatus a <code>TradingTypesRpc.BrokerStatus</code> value
+     * @param inRpcBrokerStatus a <code>FixAdminRpc.BrokerStatus</code> value
      * @return an <code>Optional&lt;BrokerStatus&gt;</code> value
      */
-    public static Optional<BrokerStatus> getBrokerStatus(TradingTypesRpc.BrokerStatus inRpcBrokerStatus)
+    public static Optional<BrokerStatus> getBrokerStatus(FixAdminRpc.BrokerStatus inRpcBrokerStatus)
     {
         Map<String,String> settings = Maps.newHashMap();
         if(inRpcBrokerStatus.hasSettings()) {
@@ -2367,10 +2368,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the cluster data value from the given RPC value.
      *
-     * @param inRpcClusterData a <code>TradingTypesRpc.ClusterData</code> value
+     * @param inRpcClusterData a <code>ClusterRpc.ClusterData</code> value
      * @return an <code>Optional&lt;ClusterData&gt;</code> value
      */
-    public static Optional<ClusterData> getClusterData(TradingTypesRpc.ClusterData inRpcClusterData)
+    public static Optional<ClusterData> getClusterData(ClusterRpc.ClusterData inRpcClusterData)
     {
         ClusterData clusterData = new ClusterData(inRpcClusterData.getTotalInstances(),
                                                   inRpcClusterData.getHostId(),
@@ -2383,13 +2384,13 @@ public abstract class TradeRpcUtil
      * Set the RPC brokers status on the given builder with the given value.
      *
      * @param inBrokersStatus a <code>BrokersStatus</code> value
-     * @param inBuilder a <code>TradingRpc.BrokersStatusResponse.Builder</code> value
+     * @param inBuilder a <code>FixAdminRpc.BrokersStatusResponse.Builder</code> value
      */
     public static void setBrokersStatus(BrokersStatus inBrokersStatus,
-                                        TradingRpc.BrokersStatusResponse.Builder inBuilder)
+                                        FixAdminRpc.BrokersStatusResponse.Builder inBuilder)
     {
         for(BrokerStatus brokerStatus : inBrokersStatus.getBrokers()) {
-            TradingTypesRpc.BrokerStatus.Builder brokerStatusBuilder = TradingTypesRpc.BrokerStatus.newBuilder();
+            FixAdminRpc.BrokerStatus.Builder brokerStatusBuilder = FixAdminRpc.BrokerStatus.newBuilder();
             setBrokerStatus(brokerStatus,
                             brokerStatusBuilder);
             inBuilder.addBrokerStatus(brokerStatusBuilder.build());
@@ -2400,10 +2401,10 @@ public abstract class TradeRpcUtil
      * Set the broker status on the given RPC broker status builder.
      *
      * @param inStatus a <code>BrokerStatus</code> value
-     * @param inBuilder a <code>TradingTypesRpc.BrokerStatus.Builder</code> value
+     * @param inBuilder a <code>FixAdminRpc.BrokerStatus.Builder</code> value
      */
     public static void setBrokerStatus(BrokerStatus inStatus,
-                                       TradingTypesRpc.BrokerStatus.Builder inBuilder)
+                                       FixAdminRpc.BrokerStatus.Builder inBuilder)
     {
         setBrokerAlgos(inStatus,
                        inBuilder);
@@ -2417,7 +2418,7 @@ public abstract class TradeRpcUtil
         inBuilder.setFixSessionStatus(getRpcFixSessionStatus(inStatus.getStatus()));
         if(inStatus instanceof HasClusterData) {
             HasClusterData hasClusterData = (HasClusterData)inStatus;
-            TradingTypesRpc.ClusterData.Builder clusterDataBuilder = TradingTypesRpc.ClusterData.newBuilder();
+            ClusterRpc.ClusterData.Builder clusterDataBuilder = ClusterRpc.ClusterData.newBuilder();
             ClusterData clusterData = hasClusterData.getClusterData();
             clusterDataBuilder.setHostId(clusterData.getHostId());
             clusterDataBuilder.setHostNumber(clusterData.getHostNumber());
@@ -2431,15 +2432,15 @@ public abstract class TradeRpcUtil
      * Set the given broker status value on the given RPC builder.
      *
      * @param inStatus a <code>BrokerStatus</code> value
-     * @param inResponseBuilder a <code>TradingRpc.BrokerStatusListenerResponse.Builder</code> value
+     * @param inResponseBuilder a <code>FixAdminRpc.BrokerStatusListenerResponse.Builder</code> value
      */
     public static void setBrokerStatus(BrokerStatus inStatus,
-                                       TradingRpc.BrokerStatusListenerResponse.Builder inResponseBuilder)
+                                       FixAdminRpc.BrokerStatusListenerResponse.Builder inResponseBuilder)
     {
         if(inStatus == null) {
             return;
         }
-        TradingTypesRpc.BrokerStatus.Builder brokerStatusBuilder = TradingTypesRpc.BrokerStatus.newBuilder();
+        FixAdminRpc.BrokerStatus.Builder brokerStatusBuilder = FixAdminRpc.BrokerStatus.newBuilder();
         setBrokerStatus(inStatus,
                         brokerStatusBuilder);
         inResponseBuilder.setBrokerStatus(brokerStatusBuilder.build());
@@ -2447,10 +2448,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the FIX session status value from the given RPC value.
      *
-     * @param inRpcFixSessionStatus a <code>TradingTypesRpc.FixSessionStatus</code> value
+     * @param inRpcFixSessionStatus a <code>FixAdminRpc.FixSessionStatus</code> value
      * @return a <code>FixSessionStatus</code> value
      */
-    public static FixSessionStatus getFixSessionStatus(TradingTypesRpc.FixSessionStatus inRpcFixSessionStatus)
+    public static FixSessionStatus getFixSessionStatus(FixAdminRpc.FixSessionStatus inRpcFixSessionStatus)
     {
         switch(inRpcFixSessionStatus) {
             case AffinityMismatchFixSessionStatus:
@@ -2480,29 +2481,29 @@ public abstract class TradeRpcUtil
      * Get the RPC FIX session status value for the given value.
      *
      * @param inStatus a <code>FixSessionStatus</code> value
-     * @return a <code>TradingTypesRpc.FixSessionStatus</code> value
+     * @return a <code>FixAdminRpc.FixSessionStatus</code> value
      */
-    public static TradingTypesRpc.FixSessionStatus getRpcFixSessionStatus(FixSessionStatus inStatus)
+    public static FixAdminRpc.FixSessionStatus getRpcFixSessionStatus(FixSessionStatus inStatus)
     {
         switch(inStatus) {
             case AFFINITY_MISMATCH:
-                return TradingTypesRpc.FixSessionStatus.AffinityMismatchFixSessionStatus;
+                return FixAdminRpc.FixSessionStatus.AffinityMismatchFixSessionStatus;
             case BACKUP:
-                return TradingTypesRpc.FixSessionStatus.BackupFixSessionStatus;
+                return FixAdminRpc.FixSessionStatus.BackupFixSessionStatus;
             case CONNECTED:
-                return TradingTypesRpc.FixSessionStatus.ConnectedFixSessionStatus;
+                return FixAdminRpc.FixSessionStatus.ConnectedFixSessionStatus;
             case DELETED:
-                return TradingTypesRpc.FixSessionStatus.DeletedFixSessionStatus;
+                return FixAdminRpc.FixSessionStatus.DeletedFixSessionStatus;
             case DISABLED:
-                return TradingTypesRpc.FixSessionStatus.DisabledFixSessionStatus;
+                return FixAdminRpc.FixSessionStatus.DisabledFixSessionStatus;
             case DISCONNECTED:
-                return TradingTypesRpc.FixSessionStatus.DisconnectedFixSessionStatus;
+                return FixAdminRpc.FixSessionStatus.DisconnectedFixSessionStatus;
             case NOT_CONNECTED:
-                return TradingTypesRpc.FixSessionStatus.NotConnectedFixSessionStatus;
+                return FixAdminRpc.FixSessionStatus.NotConnectedFixSessionStatus;
             case STOPPED:
-                return TradingTypesRpc.FixSessionStatus.StoppedFixSessionStatus;
+                return FixAdminRpc.FixSessionStatus.StoppedFixSessionStatus;
             case UNKNOWN:
-                return TradingTypesRpc.FixSessionStatus.UnknownFixSessionStatus;
+                return FixAdminRpc.FixSessionStatus.UnknownFixSessionStatus;
             default:
                 throw new UnsupportedOperationException("Unsupported fix session status: " + inStatus);
         }
@@ -2511,10 +2512,10 @@ public abstract class TradeRpcUtil
      * Set the given broker ID on the given RPC builder.
      *
      * @param inStatus a <code>BrokerStatus</code> value
-     * @param inBrokerStatusBuilder a <code>TradingTypesRpc.BrokerStatus.Builder</code> value
+     * @param inBrokerStatusBuilder a <code>FixAdminRpc.BrokerStatus.Builder</code> value
      */
     public static void setBrokerId(BrokerStatus inStatus,
-                                   TradingTypesRpc.BrokerStatus.Builder inBrokerStatusBuilder)
+                                   FixAdminRpc.BrokerStatus.Builder inBrokerStatusBuilder)
     {
         if(inStatus == null || inStatus.getId() == null) {
             return;
@@ -2525,16 +2526,16 @@ public abstract class TradeRpcUtil
      * Set the broker algos value on the given RPC builder.
      *
      * @param inStatus a <code>BrokerStatus</code> value
-     * @param inBrokerStatusBuilder a <code>TradingTypesRpc.BrokerStatus.Builder</code> value
+     * @param inBrokerStatusBuilder a <code>FixAdminRpc.BrokerStatus.Builder</code> value
      */
     public static void setBrokerAlgos(BrokerStatus inStatus,
-                                      TradingTypesRpc.BrokerStatus.Builder inBrokerStatusBuilder)
+                                      FixAdminRpc.BrokerStatus.Builder inBrokerStatusBuilder)
     {
         if(inStatus.getBrokerAlgos().isEmpty()) {
             return;
         }
-        TradingTypesRpc.BrokerAlgo.Builder brokerAlgoBuilder = TradingTypesRpc.BrokerAlgo.newBuilder();
-        TradingTypesRpc.BrokerAlgoTagSpec.Builder brokerAlgoTagSpecBuilder = TradingTypesRpc.BrokerAlgoTagSpec.newBuilder();
+        FixAdminRpc.BrokerAlgo.Builder brokerAlgoBuilder = FixAdminRpc.BrokerAlgo.newBuilder();
+        FixAdminRpc.BrokerAlgoTagSpec.Builder brokerAlgoTagSpecBuilder = FixAdminRpc.BrokerAlgoTagSpec.newBuilder();
         for(BrokerAlgoSpec brokerAlgo : inStatus.getBrokerAlgos()) {
             for(BrokerAlgoTagSpec tagSpec : brokerAlgo.getAlgoTagSpecs()) {
                 brokerAlgoTagSpecBuilder.setAdvice(tagSpec.getAdvice());

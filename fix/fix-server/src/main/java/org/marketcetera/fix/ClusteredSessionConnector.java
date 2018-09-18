@@ -13,13 +13,9 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.CallableClusterTask;
 import org.marketcetera.cluster.service.ClusterService;
-import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionAttributes;
-import org.marketcetera.fix.FixSettingsProvider;
-import org.marketcetera.fix.FixSettingsProviderFactory;
-import org.marketcetera.fix.SessionConnector;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -306,7 +302,7 @@ public class ClusteredSessionConnector
                 messageStore.refresh();
                 return messageStore;
             }
-            FixSession fixSession = brokerService.findFixSessionBySessionId(getSessionId());
+            FixSession fixSession = fixSessionProvider.findFixSessionBySessionId(getSessionId());
             if(fixSession == null) {
                 SLF4JLoggerProxy.debug(ClusteredSessionConnector.class,
                                        "{} is not a valid session, cannot retrieve message store",
@@ -356,6 +352,11 @@ public class ClusteredSessionConnector
          */
         @Autowired
         private BrokerService brokerService;
+        /**
+         * provides access to FIX sessions
+         */
+        @Autowired
+        private FixSessionProvider fixSessionProvider;
         private static final long serialVersionUID = 6327240204263634344L;
     }
     /**

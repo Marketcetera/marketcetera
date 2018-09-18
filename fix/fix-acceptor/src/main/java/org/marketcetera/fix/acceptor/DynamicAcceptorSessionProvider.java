@@ -1,6 +1,7 @@
 package org.marketcetera.fix.acceptor;
 
 import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSettingsProvider;
@@ -38,18 +39,21 @@ public class DynamicAcceptorSessionProvider
      *
      * @param inApplication an <code>Application</code> value
      * @param inBrokerService a <code>BrokerService</code> value
+     * @param inFixSessionProvider a <code>FixSessionProvider</code> value
      * @param inSessionNameProvider a <code>SessionNameProvider</code> value
      * @param inFixSettingsProviderFactory a <code>FixSettingsProviderFactory</code> value
      * @param inClusterData a <code>ClusterData</code> value
      */
     public DynamicAcceptorSessionProvider(Application inApplication,
                                           BrokerService inBrokerService,
+                                          FixSessionProvider inFixSessionProvider,
                                           SessionNameProvider inSessionNameProvider,
                                           FixSettingsProviderFactory inFixSettingsProviderFactory,
                                           ClusterData inClusterData)
     {
         application = inApplication;
         brokerService = inBrokerService;
+        fixSessionProvider = inFixSessionProvider;
         sessionNameProvider = inSessionNameProvider;
         fixSettingsProviderFactory = inFixSettingsProviderFactory;
         clusterData = inClusterData;
@@ -72,7 +76,7 @@ public class DynamicAcceptorSessionProvider
             return session;
         }
         // session doesn't exist yet, check to see if there's a session that matches in the DB
-        FixSession fixSession = brokerService.findFixSessionBySessionId(inSessionId);
+        FixSession fixSession = fixSessionProvider.findFixSessionBySessionId(inSessionId);
         if(fixSession == null) {
             SLF4JLoggerProxy.warn(this,
                                   "Rejecting unknown session {}",
@@ -128,6 +132,10 @@ public class DynamicAcceptorSessionProvider
      * provides access to session services
      */
     private final BrokerService brokerService;
+    /**
+     * FIX session provider value
+     */
+    private final FixSessionProvider fixSessionProvider;
     /**
      * provides access to session names
      */

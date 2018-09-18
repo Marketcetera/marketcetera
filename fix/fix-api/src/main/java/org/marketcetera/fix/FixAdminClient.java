@@ -3,7 +3,8 @@ package org.marketcetera.fix;
 import java.util.Collection;
 import java.util.List;
 
-import org.marketcetera.cluster.InstanceData;
+import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.core.BaseClient;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
@@ -79,12 +80,23 @@ public interface FixAdminClient
      */
     void startFixSession(String inName);
     /**
-     * Get the instance data for the given affinity.
+     * Add the given broker status listener.
      *
-     * @param inAffinity an <code>int</code> value
-     * @return an <code>InstanceData</code> value
+     * @param inBrokerStatusListener a <code>BrokerStatusListener</code> value
      */
-    InstanceData getInstanceData(int inAffinity);
+    void addBrokerStatusListener(BrokerStatusListener inBrokerStatusListener);
+    /**
+     * Remove the given broker status listener.
+     *
+     * @param inBrokerStatusListener a <code>BrokerStatusListener</code> value
+     */
+    void removeBrokerStatusListener(BrokerStatusListener inBrokerStatusListener);
+    /**
+     * Get the status of all brokers.
+     * 
+     * @return a <code>BrokersStatus</code> value
+     */
+    BrokersStatus getBrokersStatus();
     /**
      * Get the FIX session attribute descriptors.
      *

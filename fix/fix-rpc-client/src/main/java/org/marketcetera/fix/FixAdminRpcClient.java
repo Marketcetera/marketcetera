@@ -5,10 +5,18 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.cluster.InstanceData;
+import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
+import org.marketcetera.fix.FixAdminRpc.AddBrokerStatusListenerRequest;
+import org.marketcetera.fix.FixAdminRpc.BrokerStatusListenerResponse;
+import org.marketcetera.fix.FixAdminRpc.BrokersStatusRequest;
+import org.marketcetera.fix.FixAdminRpc.BrokersStatusResponse;
+import org.marketcetera.fix.FixAdminRpc.RemoveBrokerStatusListenerRequest;
+import org.marketcetera.fix.FixAdminRpc.RemoveBrokerStatusListenerResponse;
 import org.marketcetera.fix.FixAdminRpcServiceGrpc.FixAdminRpcServiceBlockingStub;
 import org.marketcetera.fix.FixAdminRpcServiceGrpc.FixAdminRpcServiceStub;
 import org.marketcetera.persist.CollectionPageResponse;
@@ -17,14 +25,17 @@ import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
+import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.tags.AppId;
 
 import com.google.common.collect.Lists;
 
 import io.grpc.Channel;
+import io.grpc.stub.StreamObserver;
 
 /* $License$ */
 
@@ -324,43 +335,6 @@ public class FixAdminRpcClient
         });
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.fix.FixAdminClient#getInstanceData(int)
-     */
-    @Override
-    public InstanceData getInstanceData(int inAffinity)
-    {
-        return executeCall(new Callable<InstanceData>() {
-            @Override
-            public InstanceData call()
-                    throws Exception
-            {
-                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
-                                       "{} get instance data {}",
-                                       getSessionId(),
-                                       inAffinity);
-                FixAdminRpc.InstanceDataRequest.Builder requestBuilder = FixAdminRpc.InstanceDataRequest.newBuilder();
-                requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setAffinity(inAffinity);
-                FixAdminRpc.InstanceDataRequest request = requestBuilder.build();
-                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
-                                       "{} sending {}",
-                                       getSessionId(),
-                                       request);
-                FixAdminRpc.InstanceDataResponse response = getBlockingStub().getInstanceData(request);
-                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
-                                       "{} received {}",
-                                       getSessionId(),
-                                       response);
-                InstanceData result = FixRpcUtil.getInstanceData(response.getInstanceData());
-                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
-                                       "{} returning {}",
-                                       getSessionId(),
-                                       result);
-                return result;
-            }
-        });
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.fix.FixAdminClient#getFixSessionAttributeDescriptors()
      */
     @Override
@@ -507,6 +481,24 @@ public class FixAdminRpcClient
                 return null;
             }
         });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixAdminClient#removeBrokerStatusListener(org.marketcetera.brokers.BrokerStatusListener)
+     */
+    @Override
+    public void removeBrokerStatusListener(BrokerStatusListener inBrokerStatusListener)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixAdminClient#getBrokersStatus()
+     */
+    @Override
+    public BrokersStatus getBrokersStatus()
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
     }
     /**
      * Create a new FixAdminRpcClient instance.

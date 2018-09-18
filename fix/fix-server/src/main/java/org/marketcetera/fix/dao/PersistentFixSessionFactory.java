@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionFactory;
+import org.marketcetera.fix.MutableFixSessionFactory;
 
 import quickfix.SessionFactory;
 import quickfix.SessionID;
@@ -20,7 +20,7 @@ import quickfix.SessionID;
  * @since $Release$
  */
 public class PersistentFixSessionFactory
-        implements FixSessionFactory
+        implements MutableFixSessionFactory
 {
     /* (non-Javadoc)
      * @see com.marketcetera.ors.brokers.FixSessionFactory#create()

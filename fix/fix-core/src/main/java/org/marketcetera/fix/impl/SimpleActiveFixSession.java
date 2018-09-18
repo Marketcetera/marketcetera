@@ -1,10 +1,12 @@
 package org.marketcetera.fix.impl;
 
+import java.io.Serializable;
+
+import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.MutableActiveFixSession;
-
-import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -16,8 +18,7 @@ import com.google.common.collect.Maps;
  * @since $Release$
  */
 public class SimpleActiveFixSession
-        extends SimpleFixSession
-        implements MutableActiveFixSession
+        implements MutableActiveFixSession,Serializable
 {
     /**
      * Create a new SimpleActiveFixSession instance.
@@ -26,20 +27,8 @@ public class SimpleActiveFixSession
      */
     public SimpleActiveFixSession(ActiveFixSession inActiveFixSession)
     {
-        setAffinity(inActiveFixSession.getAffinity());
-        setBrokerId(inActiveFixSession.getBrokerId());
-        setDescription(inActiveFixSession.getDescription());
-        setHost(inActiveFixSession.getHost());
-        setInstance(inActiveFixSession.getInstance());
-        setIsAcceptor(inActiveFixSession.isAcceptor());
-        setIsDeleted(inActiveFixSession.isDeleted());
-        setIsEnabled(inActiveFixSession.isEnabled());
-        setMappedBrokerId(inActiveFixSession.getMappedBrokerId());
-        setName(inActiveFixSession.getName());
-        setPort(inActiveFixSession.getPort());
+        setClusterData(inActiveFixSession.getClusterData());
         setSenderSequenceNumber(inActiveFixSession.getSenderSequenceNumber());
-        setSessionId(inActiveFixSession.getSessionId());
-        setSessionSettings(Maps.newHashMap(inActiveFixSession.getSessionSettings()));
         setStatus(inActiveFixSession.getStatus());
         setTargetSequenceNumber(inActiveFixSession.getTargetSequenceNumber());
     }
@@ -47,14 +36,6 @@ public class SimpleActiveFixSession
      * Create a new SimpleActiveFixSession instance.
      */
     public SimpleActiveFixSession() {}
-    /* (non-Javadoc)
-     * @see org.marketcetera.fix.ActiveFixSession#getInstance()
-     */
-    @Override
-    public String getInstance()
-    {
-        return instance;
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.fix.ActiveFixSession#getTargetSequenceNumber()
      */
@@ -78,14 +59,6 @@ public class SimpleActiveFixSession
     public FixSessionStatus getStatus()
     {
         return fixSessionStatus;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.fix.MutableActiveFixSession#setInstance(java.lang.String)
-     */
-    @Override
-    public void setInstance(String inInstance)
-    {
-        instance = inInstance;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.fix.MutableActiveFixSession#setTargetSequenceNumber(int)
@@ -112,28 +85,66 @@ public class SimpleActiveFixSession
         fixSessionStatus = inFixSessionStatus;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.fix.ActiveFixSession#getClusterData()
+     */
+    @Override
+    public ClusterData getClusterData()
+    {
+        return clusterData;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.ActiveFixSession#getFixSession()
+     */
+    @Override
+    public FixSession getFixSession()
+    {
+        return fixSession;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.HasMutableView#getMutableView()
+     */
+    @Override
+    public MutableActiveFixSession getMutableView()
+    {
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.MutableActiveFixSession#setFixSession(org.marketcetera.fix.FixSession)
+     */
+    @Override
+    public void setFixSession(FixSession inFixSession)
+    {
+        fixSession = inFixSession;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.MutableActiveFixSession#setClusterData(org.marketcetera.cluster.ClusterData)
+     */
+    @Override
+    public void setClusterData(ClusterData inClusterData)
+    {
+        clusterData = inClusterData;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("SimpleActiveFixSession [instance=").append(instance).append(", targetSequenceNumber=")
-                .append(targetSequenceNumber).append(", senderSequenceNumber=").append(senderSequenceNumber)
-                .append(", fixSessionStatus=").append(fixSessionStatus).append(", getAffinity()=").append(getAffinity())
-                .append(", getBrokerId()=").append(getBrokerId()).append(", getMappedBrokerId()=")
-                .append(getMappedBrokerId()).append(", getSessionId()=").append(getSessionId())
-                .append(", isAcceptor()=").append(isAcceptor()).append(", isEnabled()=").append(isEnabled())
-                .append(", isDeleted()=").append(isDeleted()).append(", getPort()=").append(getPort())
-                .append(", getHost()=").append(getHost()).append(", getSessionSettings()=").append(getSessionSettings())
-                .append(", getName()=").append(getName()).append(", getDescription()=").append(getDescription())
-                .append("]");
+        builder.append("SimpleActiveFixSession [fixSession=").append(fixSession).append(", clusterData=")
+                .append(clusterData).append(", targetSequenceNumber=").append(targetSequenceNumber)
+                .append(", senderSequenceNumber=").append(senderSequenceNumber).append(", fixSessionStatus=")
+                .append(fixSessionStatus).append("]");
         return builder.toString();
     }
     /**
-     * instance value
+     * FIX session value
      */
-    private String instance;
+    private FixSession fixSession;
+    /**
+     * cluster data value
+     */
+    private ClusterData clusterData;
     /**
      * target sequence number value
      */

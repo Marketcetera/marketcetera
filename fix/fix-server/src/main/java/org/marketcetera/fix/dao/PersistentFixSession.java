@@ -23,7 +23,8 @@ import org.apache.commons.lang.Validate;
 import org.joda.time.format.DateTimeFormatter;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.persist.EntityBase;
+import org.marketcetera.fix.MutableFixSession;
+import org.marketcetera.persist.NDEntityBase;
 
 import quickfix.Session;
 
@@ -41,8 +42,8 @@ import quickfix.Session;
 @Table(name="fix_sessions")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PersistentFixSession
-        extends EntityBase
-        implements FixSession
+        extends NDEntityBase
+        implements MutableFixSession
 {
     /**
      * Validates the object.
@@ -57,7 +58,7 @@ public class PersistentFixSession
                          "Broker ID is required");
         Validate.notNull(host,
                          "Host is required");
-        Validate.notNull(name,
+        Validate.notNull(getName(),
                          "Name is required");
         Validate.isTrue(port > 0 && port < 65536,
                         "Port must be greater than 0 and less than 65536");
@@ -127,38 +128,6 @@ public class PersistentFixSession
     public void setMappedBrokerId(String inBrokerId)
     {
         mappedBrokerId = StringUtils.trimToNull(inBrokerId);
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.ors.brokers.FixSession#getName()
-     */
-    @Override
-    public String getName()
-    {
-        return name;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.ors.brokers.FixSession#setName(java.lang.String)
-     */
-    @Override
-    public void setName(String inName)
-    {
-        name = StringUtils.trimToNull(inName);
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.ors.brokers.FixSession#getDescription()
-     */
-    @Override
-    public String getDescription()
-    {
-        return description;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.ors.brokers.FixSession#setDescription(java.lang.String)
-     */
-    @Override
-    public void setDescription(String inDescription)
-    {
-        description = inDescription;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.brokers.FixSession#isAcceptor()
@@ -270,6 +239,14 @@ public class PersistentFixSession
     {
         sessionId = StringUtils.trimToNull(inSessionId);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSession#getMutableView()
+     */
+    @Override
+    public MutableFixSession getMutableView()
+    {
+        return this;
+    }
     /**
      * Updates this object with the attributes from the given object.
      *
@@ -279,13 +256,13 @@ public class PersistentFixSession
     {
         affinity = inFixSession.getAffinity();
         brokerId = inFixSession.getBrokerId();
-        description = inFixSession.getDescription();
+        setDescription(inFixSession.getDescription());
         host = inFixSession.getHost();
         isAcceptor = inFixSession.isAcceptor();
         isDeleted = inFixSession.isDeleted();
         isEnabled = inFixSession.isEnabled();
         mappedBrokerId = inFixSession.getMappedBrokerId();
-        name = inFixSession.getName();
+        setName(inFixSession.getName());
         port = inFixSession.getPort();
         sessionId = inFixSession.getSessionId();
         sessionSettings.clear();
@@ -299,7 +276,7 @@ public class PersistentFixSession
     {
         StringBuilder builder = new StringBuilder();
         builder.append("PersistentFixSession [sessionId=").append(sessionId).append(", brokerId=").append(brokerId)
-                .append(", name=").append(name).append(", description=").append(description).append(", host=")
+                .append(", name=").append(getName()).append(", description=").append(getDescription()).append(", host=")
                 .append(host).append(", port=").append(port).append(", affinity=").append(affinity)
                 .append(", isAcceptor=").append(isAcceptor).append(", isEnabled=").append(isEnabled)
                 .append(", mappedBrokerId=").append(mappedBrokerId)
@@ -361,18 +338,6 @@ public class PersistentFixSession
     @XmlAttribute
     @Column(name="session_id",nullable=false)
     private String sessionId;
-    /**
-     * name value
-     */
-    @XmlAttribute
-    @Column(name="name",nullable=false)
-    private String name;
-    /**
-     * description value
-     */
-    @XmlAttribute
-    @Column(name="description",nullable=true)
-    private String description;
     /**
      * session attributes
      */

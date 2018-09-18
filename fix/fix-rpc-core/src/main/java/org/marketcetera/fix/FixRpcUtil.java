@@ -2,7 +2,6 @@ package org.marketcetera.fix;
 
 import java.util.Optional;
 
-import org.marketcetera.cluster.InstanceData;
 import org.marketcetera.rpc.base.BaseRpcUtil;
 
 /* $License$ */
@@ -40,16 +39,6 @@ public class FixRpcUtil
     /**
      *
      *
-     * @param inInstanceData
-     * @return
-     */
-    public static InstanceData getInstanceData(FixAdminRpc.InstanceData inInstanceData)
-    {
-        throw new UnsupportedOperationException(); // TODO
-    }
-    /**
-     *
-     *
      * @param inRpcFixSessionAttributeDescriptor
      * @return
      */
@@ -69,11 +58,11 @@ public class FixRpcUtil
             return Optional.empty();
         }
         FixAdminRpc.ActiveFixSession.Builder builder = FixAdminRpc.ActiveFixSession.newBuilder();
-        builder.setEnabled(inActiveFixSession.isEnabled());
-        builder.setInstance(inActiveFixSession.getHost());
-        builder.setSenderSeqNum(inActiveFixSession.getSenderSequenceNumber());
-        FixRpcUtil.getRpcFixSessionStatus(inActiveFixSession.getStatus()).ifPresent(rpcFixSessionStatus->builder.setStatus(rpcFixSessionStatus));
-        getRpcFixSession(inActiveFixSession).ifPresent(rpcFixSession->builder.setFixSession(rpcFixSession));
+//        builder.setEnabled(inActiveFixSession.isEnabled());
+//        builder.setInstance(inActiveFixSession.getHost());
+//        builder.setSenderSeqNum(inActiveFixSession.getSenderSequenceNumber());
+//        FixRpcUtil.getRpcFixSessionStatus(inActiveFixSession.getStatus()).ifPresent(rpcFixSessionStatus->builder.setStatus(rpcFixSessionStatus));
+//        getRpcFixSession(inActiveFixSession).ifPresent(rpcFixSession->builder.setFixSession(rpcFixSession));
         return Optional.of(builder.build());
     }
     /**
@@ -114,16 +103,6 @@ public class FixRpcUtil
         builder.setSessionId(inFixSession.getSessionId());
         builder.setSessionSettings(BaseRpcUtil.getRpcMap(inFixSession.getSessionSettings()));
         return Optional.of(builder.build());
-    }
-    /**
-     *
-     *
-     * @param inAcceptorSessionAttributes
-     * @return
-     */
-    public static FixAdminRpc.InstanceData getRpcInstanceData(AcceptorSessionAttributes inAcceptorSessionAttributes)
-    {
-        throw new UnsupportedOperationException(); // TODO
     }
     /**
      *

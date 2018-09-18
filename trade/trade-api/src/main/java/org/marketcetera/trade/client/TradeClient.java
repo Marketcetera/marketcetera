@@ -6,9 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.BrokerStatusPublisher;
-import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.core.BaseClient;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.HasFIXMessage;
@@ -63,18 +61,6 @@ public interface TradeClient
      */
     SendOrderResponse sendOrder(Order inOrder);
     /**
-     * Add the given broker status listener.
-     *
-     * @param inBrokerStatusListener a <code>BrokerStatusListener</code> value
-     */
-    void addBrokerStatusListener(BrokerStatusListener inBrokerStatusListener);
-    /**
-     * Remove the given broker status listener.
-     *
-     * @param inBrokerStatusListener a <code>BrokerStatusListener</code> value
-     */
-    void removeBrokerStatusListener(BrokerStatusListener inBrokerStatusListener);
-    /**
      * Returns the position of the supplied instrument based on reports generated and received on or before the supplied date in UTC.
      *
      * @param inDate a <code>Date</code> value
@@ -99,12 +85,6 @@ public interface TradeClient
      */
     Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
                                                                String... inRootSymbols);
-    /**
-     * Get the status of all brokers.
-     * 
-     * @return a <code>BrokersStatus</code> value
-     */
-    BrokersStatus getBrokersStatus();
     /**
      * Add the given report to the system data flow.
      * 
