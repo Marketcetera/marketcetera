@@ -115,7 +115,7 @@ public class PersistentFixSessionFactory
                                             senderCompId,
                                             targetCompId);
         fixSession.setSessionId(sessionId.toString());
-        fixSession.validate();
+        fixSession.validateSession();
         return fixSession;
     }
 }

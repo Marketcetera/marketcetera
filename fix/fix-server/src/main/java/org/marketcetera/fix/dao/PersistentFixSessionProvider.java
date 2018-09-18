@@ -246,7 +246,7 @@ public class PersistentFixSessionProvider
                             "Session " + existingSession.getSessionId() + " must be disabled before it can be modified");
             existingSession.update(inFixSession);
         }
-        existingSession.validate();
+        existingSession.validateSession();
         // do not allow the session to enabled via the backdoor
         existingSession.setIsEnabled(false);
         existingSession = fixSessionDao.save(existingSession);

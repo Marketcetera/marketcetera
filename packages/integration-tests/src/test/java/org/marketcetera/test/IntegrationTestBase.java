@@ -192,7 +192,12 @@ public class IntegrationTestBase
         SLF4JLoggerProxy.info(this,
                               "{} cleanup beginning",
                               name.getMethodName());
-        reset();
+        try {
+            reset();
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e);
+        }
         if(adminClient != null) {
             try {
                 adminClient.stop();

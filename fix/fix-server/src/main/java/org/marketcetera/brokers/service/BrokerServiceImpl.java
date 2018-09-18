@@ -684,7 +684,6 @@ public class BrokerServiceImpl
     @PostConstruct
     public void start()
     {
-        brokerStatusEventBus = new EventBus();
         ApplicationContextProvider tmpAppCxProvider = new ApplicationContextProvider();
         tmpAppCxProvider.setApplicationContext(applicationContext);
         clusterService.addClusterListener(this);
@@ -889,7 +888,7 @@ public class BrokerServiceImpl
     /**
      * publishes broker status changes
      */
-    private EventBus brokerStatusEventBus;
+    private final EventBus brokerStatusEventBus = new EventBus();
     /**
      * context used to marshal and unmarshal messages
      */

@@ -45,42 +45,6 @@ public class PersistentFixSession
         extends NDEntityBase
         implements MutableFixSession
 {
-    /**
-     * Validates the object.
-     *
-     * @throws IllegalArgumentException if an attribute is not valid
-     */
-    public void validate()
-    {
-        Validate.isTrue(affinity > 0,
-                        "Affinity must be greater than zero");
-        Validate.notNull(brokerId,
-                         "Broker ID is required");
-        Validate.notNull(host,
-                         "Host is required");
-        Validate.notNull(getName(),
-                         "Name is required");
-        Validate.isTrue(port > 0 && port < 65536,
-                        "Port must be greater than 0 and less than 65536");
-        Validate.notNull(sessionId,
-                         "Session ID is required");
-        String startTime = sessionSettings.get(Session.SETTING_START_TIME);
-        Validate.notNull(startTime,
-                         "Start time is required");
-        String endTime = sessionSettings.get(Session.SETTING_END_TIME);
-        Validate.notNull(endTime,
-                         "End time is required");
-        try {
-            startEndTimeFormatter.parseDateTime(startTime);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid start time: " + startTime);
-        }
-        try {
-            startEndTimeFormatter.parseDateTime(endTime);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid end time: " + endTime);
-        }
-    }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.brokers.FixSession#getAffinity()
      */
@@ -283,6 +247,42 @@ public class PersistentFixSession
                 .append(", isDeleted=").append(isDeleted).append(", sessionSettings=").append(sessionSettings)
                 .append("]");
         return builder.toString();
+    }
+    /**
+     * Validates the object.
+     *
+     * @throws IllegalArgumentException if an attribute is not valid
+     */
+    void validateSession()
+    {
+        Validate.isTrue(affinity > 0,
+                        "Affinity must be greater than zero");
+        Validate.notNull(brokerId,
+                         "Broker ID is required");
+        Validate.notNull(host,
+                         "Host is required");
+        Validate.notNull(getName(),
+                         "Name is required");
+        Validate.isTrue(port > 0 && port < 65536,
+                        "Port must be greater than 0 and less than 65536");
+        Validate.notNull(sessionId,
+                         "Session ID is required");
+        String startTime = sessionSettings.get(Session.SETTING_START_TIME);
+        Validate.notNull(startTime,
+                         "Start time is required");
+        String endTime = sessionSettings.get(Session.SETTING_END_TIME);
+        Validate.notNull(endTime,
+                         "End time is required");
+        try {
+            startEndTimeFormatter.parseDateTime(startTime);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid start time: " + startTime);
+        }
+        try {
+            startEndTimeFormatter.parseDateTime(endTime);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid end time: " + endTime);
+        }
     }
     /**
      * isAcceptor value

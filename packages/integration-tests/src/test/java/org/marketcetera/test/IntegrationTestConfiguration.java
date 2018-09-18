@@ -18,7 +18,6 @@ import org.marketcetera.brokers.service.InMemoryFixSessionProvider;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.dataflow.config.DataFlowProvider;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
@@ -324,10 +323,10 @@ public class IntegrationTestConfiguration
     /**
      * Get the FIX session factory value.
      *
-     * @return a <code>FixSessionFactory</code> value
+     * @return a <code>MutableFixSessionFactory</code> value
      */
     @Bean
-    public FixSessionFactory getFixSessionFactory()
+    public MutableFixSessionFactory getFixSessionFactory()
     {
         return new SimpleFixSessionFactory();
     }

@@ -69,10 +69,10 @@ public class FixDbTestConfiguration
     /**
      * Get the FIX session factory value.
      *
-     * @return a <code>FixSessionFactory</code> value
+     * @return a <code>MutableFixSessionFactory</code> value
      */
     @Bean
-    public FixSessionFactory getFixSessionFactory()
+    public MutableFixSessionFactory getFixSessionFactory()
     {
         return new PersistentFixSessionFactory();
     }
