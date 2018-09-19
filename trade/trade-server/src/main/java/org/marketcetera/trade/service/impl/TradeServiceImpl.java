@@ -5,8 +5,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import org.marketcetera.brokers.Broker;
-import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerUnavailable;
 import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.brokers.Selector;
@@ -14,6 +12,8 @@ import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.fix.FixSessionStatus;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
@@ -41,6 +41,7 @@ import com.google.common.collect.Sets;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.SessionID;
 
 /* $License$ */
 
@@ -59,29 +60,29 @@ public class TradeServiceImpl
      * @see org.marketcetera.trade.service.TradeService#selectBroker(org.marketcetera.trade.Order)
      */
     @Override
-    public Broker selectBroker(Order inOrder)
+    public ServerFixSession selectServerFixSession(Order inOrder)
     {
-        Broker broker = null;
+        ServerFixSession serverFixSession = null;
         if(inOrder.getBrokerID() != null) {
-            broker = brokerService.getBroker(inOrder.getBrokerID());
+            serverFixSession = brokerService.getServerFixSession(inOrder.getBrokerID());
             SLF4JLoggerProxy.debug(this,
                                    "Order {} requsted broker id {} which resolves to {}",
                                    inOrder,
                                    inOrder.getBrokerID(),
-                                   broker);
+                                   serverFixSession);
         }
-        if(broker == null && brokerSelector != null) {
+        if(serverFixSession == null && brokerSelector != null) {
             BrokerID brokerId = brokerSelector.chooseBroker(inOrder);
             if(brokerId != null) {
-                broker = brokerService.getBroker(brokerId);
+                serverFixSession = brokerService.getServerFixSession(brokerId);
             }
             SLF4JLoggerProxy.debug(this,
-                                   "No broker was initially selected for {}, the broker selector chose {} which resolves to {}",
+                                   "No session was initially selected for {}, the session selector chose {} which resolves to {}",
                                    inOrder,
                                    brokerId,
-                                   broker);
+                                   serverFixSession);
         }
-        if(broker == null) {
+        if(serverFixSession == null) {
             Messages.NO_BROKER_SELECTED.warn(this,
                                              inOrder);
             throw new CoreException(new I18NBoundMessage1P(Messages.NO_BROKER_SELECTED,
@@ -89,42 +90,42 @@ public class TradeServiceImpl
         } else {
             SLF4JLoggerProxy.debug(this,
                                    "Selected {} for {}",
-                                   broker,
+                                   serverFixSession,
                                    inOrder.getBrokerID());
         }
-        return broker;
+        return serverFixSession;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.service.TradeService#convertOrder(org.marketcetera.trade.Order, org.marketcetera.brokers.Broker)
      */
     @Override
     public Message convertOrder(Order inOrder,
-                                Broker inBroker)
+                                ServerFixSession inServerFixSession)
     {
         // verify the broker is available
-        BrokerStatus brokerStatus = brokerService.getBrokerStatus(inBroker.getBrokerId());
-        if(brokerStatus == null) {
+        FixSessionStatus sessionStatus = brokerService.getFixSessionStatus(new BrokerID(inServerFixSession.getActiveFixSession().getFixSession().getBrokerId()));
+        if(sessionStatus == null) {
             throw new BrokerUnavailable(new I18NBoundMessage1P(Messages.UNKNOWN_BROKER_ID,
-                                                               inBroker.getBrokerId()));
+                                                               inServerFixSession.getActiveFixSession().getFixSession().getBrokerId()));
         }
-        if(!brokerStatus.getLoggedOn()) {
+        if(!sessionStatus.isLoggedOn()) {
             throw new BrokerUnavailable(Messages.UNAVAILABLE_BROKER);
         }
         // TODO broker algos
         // TODO reprice
         // construct the list of order modifiers to apply
-        Collection<MessageModifier> orderModifiers = getOrderMessageModifiers(inBroker);
+        Collection<MessageModifier> orderModifiers = getOrderMessageModifiers(inServerFixSession);
         // choose the broker to use
-        Broker mappedBroker = resolveVirtualBroker(inBroker);
+        ServerFixSession mappedServerFixSession = resolveVirtualServerFixSession(inServerFixSession);
         // create the FIX message (we can use only one message factory, so if the broker is a virtual broker, we defer to the mapped broker, otherwise the virtual broker would have to duplicate
         //  the entire mapped broker dictionary, etc)
-        Message message = FIXConverter.toQMessage(mappedBroker.getFIXVersion().getMessageFactory(),
-                                                  FIXMessageUtil.getDataDictionary(mappedBroker.getFIXVersion()),
+        Message message = FIXConverter.toQMessage(mappedServerFixSession.getFIXVersion().getMessageFactory(),
+                                                  FIXMessageUtil.getDataDictionary(mappedServerFixSession.getFIXVersion()),
                                                   inOrder);
         // apply modifiers
         for(MessageModifier orderModifier : orderModifiers) {
             try {
-                orderModifier.modify(mappedBroker,
+                orderModifier.modify(mappedServerFixSession,
                                      message);
                 SLF4JLoggerProxy.debug(this,
                                        "Applied {} to {}",
@@ -144,25 +145,25 @@ public class TradeServiceImpl
      */
     @Override
     public TradeMessage convertResponse(HasFIXMessage inMessage,
-                                        Broker inBroker)
+                                        ServerFixSession inServerFixSession)
     {
         Message fixMessage = inMessage.getMessage();
         try {
             if(FIXMessageUtil.isTradingSessionStatus(fixMessage)) {
                 Messages.TRADE_SESSION_STATUS.info(this,
-                                                   inBroker.getFIXDataDictionary().getHumanFieldValue(quickfix.field.TradSesStatus.FIELD,
-                                                                                                      fixMessage.getString(quickfix.field.TradSesStatus.FIELD)));
+                                                   inServerFixSession.getFIXDataDictionary().getHumanFieldValue(quickfix.field.TradSesStatus.FIELD,
+                                                                                                                fixMessage.getString(quickfix.field.TradSesStatus.FIELD)));
             }
         } catch (FieldNotFound e) {
             PlatformServices.handleException(this,
                                              "Unable to process trading session status message",
                                              e);
         }
-        Broker mappedBroker = resolveVirtualBroker(inBroker);
-        Collection<MessageModifier> responseModifiers = getReportMessageModifiers(inBroker);
+        ServerFixSession mappedServerFixSession = resolveVirtualServerFixSession(inServerFixSession);
+        Collection<MessageModifier> responseModifiers = getReportMessageModifiers(inServerFixSession);
         for(MessageModifier responseModifier : responseModifiers) {
             try {
-                responseModifier.modify(mappedBroker,
+                responseModifier.modify(mappedServerFixSession,
                                         fixMessage);
                 SLF4JLoggerProxy.debug(this,
                                        "Applied {} to {}",
@@ -172,18 +173,19 @@ public class TradeServiceImpl
                 Messages.MODIFICATION_FAILED.warn(this,
                                                   e,
                                                   fixMessage,
-                                                  inBroker);
+                                                  inServerFixSession);
             }
         }
         TradeMessage reply;
         try {
+            BrokerID brokerId = new BrokerID(inServerFixSession.getActiveFixSession().getFixSession().getBrokerId());
             UserID actor = orderOwnerService.getMessageOwner(inMessage,
-                                                             inBroker.getSessionId(),
-                                                             inBroker.getBrokerId());
+                                                             new SessionID(inServerFixSession.getActiveFixSession().getFixSession().getSessionId()),
+                                                             brokerId);
             // TODO determine hierarchy - this might need the original order to resolve
             reply = FIXConverter.fromQMessage(fixMessage,
                                               Originator.Broker,
-                                              inBroker.getBrokerId(),
+                                              brokerId,
                                               Hierarchy.Flat,
                                               actor,
                                               actor);
@@ -191,7 +193,7 @@ public class TradeServiceImpl
             Messages.REPORT_FAILED.error(this,
                                          e,
                                          fixMessage,
-                                         inBroker);
+                                         inServerFixSession);
             throw e;
         }
         return reply;
@@ -252,67 +254,67 @@ public class TradeServiceImpl
                               "Trade service started");
     }
     /**
-     * Resolve the given broker into the appropriate virtual or physical broker.
+     * Resolve the given session into the appropriate virtual or physical session.
      *
-     * @param inBroker a <code>Broker</code> value
-     * @return a <code>Broker</code> value
+     * @param inServerFixSession a <code>ServerFixSession</code> value
+     * @return a <code>ServerFixSession</code> value
      */
-    private Broker resolveVirtualBroker(Broker inBroker)
+    private ServerFixSession resolveVirtualServerFixSession(ServerFixSession inServerFixSession)
     {
-        Broker mappedBroker = inBroker;
-        if(inBroker.getMappedBrokerId() != null) {
-            mappedBroker = brokerService.getBroker(inBroker.getMappedBrokerId());
-            if(mappedBroker == null) {
+        ServerFixSession mappedServerFixSession = inServerFixSession;
+        if(inServerFixSession.getActiveFixSession().getFixSession().getMappedBrokerId() != null) {
+            mappedServerFixSession = brokerService.getServerFixSession(new BrokerID(inServerFixSession.getActiveFixSession().getFixSession().getMappedBrokerId()));
+            if(mappedServerFixSession == null) {
                 throw new BrokerUnavailable(new I18NBoundMessage1P(Messages.UNKNOWN_BROKER_ID,
-                                                                   inBroker.getMappedBrokerId()));
+                                                                   inServerFixSession.getActiveFixSession().getFixSession().getMappedBrokerId()));
             }
         }
-        return mappedBroker;
+        return mappedServerFixSession;
     }
     /**
      * Get the complete collection of order modifiers for the given broker.
      *
-     * @param inBroker a <code>Broker</code> value
+     * @param inSession a <code>ServerFixSession</code> value
      * @return a <code>Collection&lt;MessageModifier&gt;</code> value
      */
-    private Collection<MessageModifier> getOrderMessageModifiers(Broker inBroker)
+    private Collection<MessageModifier> getOrderMessageModifiers(ServerFixSession inSession)
     {
-        return getMessageModifiers(inBroker,
+        return getMessageModifiers(inSession,
                                    true);
     }
     /**
      * Get the complete collection of report modifiers for the given broker.
      *
-     * @param inBroker a <code>Broker</code> value
+     * @param inServerFixSession a <code>ServerFixSession</code> value
      * @return a <code>Collection&lt;MessageModifier&gt;</code> value
      */
-    private Collection<MessageModifier> getReportMessageModifiers(Broker inBroker)
+    private Collection<MessageModifier> getReportMessageModifiers(ServerFixSession inServerFixSession)
     {
-        return getMessageModifiers(inBroker,
+        return getMessageModifiers(inServerFixSession,
                                    false);
     }
     /**
      * Get the complete collection of message modifiers for the given broker.
      *
-     * @param inBroker a <code>Broker</code> value
+     * @param inServerFixSession a <code>ServerFixSession</code> value
      * @param inIsOrder a <code>boolean</code> value
      * @return a <code>Collection&lt;MessageModifier&gt;</code> value
      */
-    private Collection<MessageModifier> getMessageModifiers(Broker inBroker,
+    private Collection<MessageModifier> getMessageModifiers(ServerFixSession inServerFixSession,
                                                             boolean inIsOrder)
     {
         Collection<MessageModifier> modifiers = Lists.newArrayList();
         if(inIsOrder) {
-            modifiers.addAll(inBroker.getOrderModifiers());
+            modifiers.addAll(inServerFixSession.getOrderModifiers());
         } else {
-            modifiers.addAll(inBroker.getResponseModifiers());
+            modifiers.addAll(inServerFixSession.getResponseModifiers());
         }
-        if(inBroker.getMappedBrokerId() != null) {
-            Broker mappedBroker = resolveVirtualBroker(inBroker);
+        if(inServerFixSession.getActiveFixSession().getFixSession().getMappedBrokerId() != null) {
+            ServerFixSession mappedServerFixSession = resolveVirtualServerFixSession(inServerFixSession);
             if(inIsOrder) {
-                modifiers.addAll(mappedBroker.getOrderModifiers());
+                modifiers.addAll(mappedServerFixSession.getOrderModifiers());
             } else {
-                modifiers.addAll(mappedBroker.getResponseModifiers());
+                modifiers.addAll(mappedServerFixSession.getResponseModifiers());
             }
         }
         return modifiers;

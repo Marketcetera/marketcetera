@@ -2,21 +2,17 @@ package org.marketcetera.brokers.service;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import org.marketcetera.admin.User;
-import org.marketcetera.brokers.Broker;
-import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerStatusPublisher;
-import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.brokers.SessionCustomization;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.fix.AcceptorSessionAttributes;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionListener;
 import org.marketcetera.fix.FixSessionStatus;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
@@ -37,24 +33,60 @@ public interface BrokerService
         extends BrokerStatusPublisher
 {
     /**
-     * Get the broker for the given session id.
+     * Get the active FIX session for the given session id.
      *
      * @param inSessionId a <code>SessionID</code> value
-     * @return a <code>Broker</code> value or <code>null</code>
+     * @return an <code>ActiveFixSession</code> value or <code>null</code>
      */
-    Broker getBroker(SessionID inSessionId);
+    ActiveFixSession getActiveFixSession(SessionID inSessionId);
     /**
-     * Get the brokers known to the system.
+     * Get an <code>ActiveFixSession</code> value for the given <code>BrokerID</code> value.
      *
-     * @return a <code>Collection&lt;Broker&gt;</code> value
+     * @param inBrokerId a <code>BrokerID</code> value
+     * @return an <code>ActiveFixSession</code> value or <code>null</code>
      */
-    Collection<Broker> getBrokers();
+    ActiveFixSession getActiveFixSession(BrokerID inBrokerId);
+    /**
+     * Get a page of active FIX sessions.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;ActiveFixSession&gt;</code> value
+     */
+    CollectionPageResponse<ActiveFixSession> getActiveFixSessions(PageRequest inPageRequest);
+    /**
+     * Get the server FIX session for the given session id.
+     *
+     * @param inSessionId a <code>SessionID</code> value
+     * @return a <code>ServerFixSession</code> value or <code>null</code>
+     */
+    ServerFixSession getServerFixSession(SessionID inSessionId);
+    /**
+     * Get the server FIX session for the given broker id.
+     *
+     * @param inBrokerId a <code>BrokerID</code> value
+     * @return a <code>ServerFixSession</code> value or <code>null</code>
+     */
+    ServerFixSession getServerFixSession(BrokerID inBrokerId);
+    /**
+     * Get all server FIX session values.
+     *
+     * @return a <code>ServerFixSession</code> value
+     */
+    Collection<ServerFixSession> getServerFixSessions();
+    /**
+     * Get all active FIX session values.
+     *
+     * @return a <code>Collection&lt;ActiveFixSession&gt;</code> value
+     */
+    Collection<ActiveFixSession> getActiveFixSessions();
     /**
      * Reports the status of the given broker.
      *
-     * @param inBrokerStatus a <code>BrokerStatus</code> value
+     * @param inBrokerId a <code>BrokerID</code> value
+     * @param inFixSessionStatus a <code>FixSessionStatus</code> value
      */
-    void reportBrokerStatus(BrokerStatus inBrokerStatus);
+    void reportBrokerStatus(BrokerID inBrokerId,
+                            FixSessionStatus inFixSessionStatus);
     /**
      * Reports the given status for the given session from all cluster members.
      *
@@ -67,42 +99,29 @@ public interface BrokerService
      * Gets the status of the given broker.
      *
      * @param inBrokerId a <code>BrokerID</code> value
-     * @return a <code>BrokerStatus</code> value or <code>null</code>
+     * @return a <code>FixSessionStatus</code> value or <code>null</code>
      */
-    BrokerStatus getBrokerStatus(BrokerID inBrokerId);
-    /**
-     * Gets the status of all brokers.
-     *
-     * @return a <code>BrokerStatus</code> value
-     */
-    BrokersStatus getBrokersStatus();
-    /**
-     * Generate a <code>BrokerStatus</code> value from the given attributes.
-     *
-     * @param inFixSession a <code>FixSession</code> value
-     * @param inClusterData a <code>ClusterData</code> value
-     * @param inStatus a <code>FixSessionStatus</code> value
-     * @param inIsLoggedOn a <code>boolean</code> value
-     * @return a <code>BrokerStatus</code> value
-     */
-    BrokerStatus generateBrokerStatus(FixSession inFixSession,
-                                      ClusterData inClusterData,
-                                      FixSessionStatus inStatus,
-                                      boolean inIsLoggedOn);
+    FixSessionStatus getFixSessionStatus(BrokerID inBrokerId);
+//    /**
+//     * Generate an <code>ActiveFixSession</code> value from the given attributes.
+//     *
+//     * @param inFixSession a <code>FixSession</code> value
+//     * @param inClusterData a <code>ClusterData</code> value
+//     * @param inStatus a <code>FixSessionStatus</code> value
+//     * @param inIsLoggedOn a <code>boolean</code> value
+//     * @return a <code>BrokerStatus</code> value
+//     */
+//    ActiveFixSession generateBrokerStatus(FixSession inFixSession,
+//                                          ClusterData inClusterData,
+//                                          FixSessionStatus inStatus,
+//                                          boolean inIsLoggedOn);
     /**
      * Generate a <code>Broker</code> value from the given <code>FixSession</code> value.
      *
      * @param inFixSession a <code>FixSession</code> value
-     * @return a <code>Broker</code> value
+     * @return an <code>ActiveFixSession</code> value
      */
-    Broker generateBroker(FixSession inFixSession);
-    /**
-     * Get a <code>Broker</code> value for the given <code>BrokerID</code> value.
-     *
-     * @param inBrokerId a <code>BrokerID</code> value
-     * @return a <code>Broker</code> value or <code>null</code>
-     */
-    Broker getBroker(BrokerID inBrokerId);
+    ActiveFixSession generateBroker(FixSession inFixSession);
     /**
      * Adds the given fix session listener to receive future fix session status updated.
      *
@@ -184,11 +203,11 @@ public interface BrokerService
     /**
      * Indicate if the given user is allowed to use the given broker.
      *
-     * @param inBroker a <code>Broker</code> value
+     * @param inBrokerId a <code>BrokerID</code> value
      * @param inUser a <code>User</code> value
      * @return a <code>boolean</code> value
      */
-    boolean isUserAllowed(Broker inBroker,
+    boolean isUserAllowed(BrokerID inBrokerId,
                           User inUser);
     /**
      * Indicate if the session with the given id should be active at this time.
@@ -281,10 +300,4 @@ public interface BrokerService
 //     * @param inSessionID a <code>SessionID</code> value
 //     */
 //    void startSession(SessionID inSessionID);
-    /**
-     * Post a new broker status value to interested subscribers.
-     *
-     * @param inBrokerStatus a <code>BrokerStatus</code> value
-     */
-    void postBrokerStatus(BrokerStatus inBrokerStatus);
 }

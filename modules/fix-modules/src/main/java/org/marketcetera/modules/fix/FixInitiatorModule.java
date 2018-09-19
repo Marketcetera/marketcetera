@@ -2,7 +2,7 @@ package org.marketcetera.modules.fix;
 
 import java.util.Collection;
 
-import org.marketcetera.brokers.Broker;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.module.ModuleURN;
@@ -60,7 +60,7 @@ public class FixInitiatorModule
     protected Collection<FixSession> getFixSessions()
     {
         Collection<FixSession> fixSessions = Lists.newArrayList();
-        for(Broker broker : getBrokerService().getBrokers()) {
+        for(ActiveFixSession broker : getBrokerService().getActiveFixSessions()) {
             if(!broker.getFixSession().isAcceptor()) {
                 fixSessions.add(broker.getFixSession());
             }

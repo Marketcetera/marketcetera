@@ -38,7 +38,6 @@ import org.junit.runner.RunWith;
 import org.marketcetera.admin.dao.PersistentPermissionDao;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
-import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.core.PriceQtyTuple;
@@ -1274,11 +1273,11 @@ public class MarketceteraTestBase
             public Boolean call()
                     throws Exception
             {
-                BrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
+                FixSessionStatus status = brokerService.getFixSessionStatus(inBrokerId);
                 if(status == null) {
                     return false;
                 }
-                return !status.getStatus().isEnabled();
+                return !status.isEnabled();
             }
         });
     }
@@ -1296,8 +1295,8 @@ public class MarketceteraTestBase
             public Boolean call()
                     throws Exception
             {
-                BrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
-                return status == null || status.getStatus() == FixSessionStatus.DELETED;
+                FixSessionStatus status = brokerService.getFixSessionStatus(inBrokerId);
+                return status == null || status == FixSessionStatus.DELETED;
             }
         });
     }
@@ -1315,11 +1314,11 @@ public class MarketceteraTestBase
             public Boolean call()
                     throws Exception
             {
-                BrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
+                FixSessionStatus status = brokerService.getFixSessionStatus(inBrokerId);
                 if(status == null) {
                     return false;
                 }
-                return status.getLoggedOn();
+                return status.isLoggedOn();
             }
         });
     }
@@ -1384,11 +1383,11 @@ public class MarketceteraTestBase
             public Boolean call()
                     throws Exception
             {
-                BrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
+                FixSessionStatus status = brokerService.getFixSessionStatus(inBrokerId);
                 if(status == null) {
                     return false;
                 }
-                return !status.getLoggedOn();
+                return !status.isLoggedOn();
             }
         });
     }
@@ -1406,11 +1405,11 @@ public class MarketceteraTestBase
             public Boolean call()
                     throws Exception
             {
-                BrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
+                FixSessionStatus status = brokerService.getFixSessionStatus(inBrokerId);
                 if(status == null) {
                     return false;
                 }
-                return status.getStatus().isEnabled();
+                return status.isEnabled();
             }
         });
     }
@@ -1425,12 +1424,12 @@ public class MarketceteraTestBase
                                       Boolean inExpectedStatus)
             throws Exception
     {
-        BrokerStatus brokerStatus = brokerService.getBrokerStatus(inBrokerId);
+        FixSessionStatus brokerStatus = brokerService.getFixSessionStatus(inBrokerId);
         if(inExpectedStatus == null) {
             assertNull(brokerStatus);
         } else {
             assertEquals(inExpectedStatus,
-                         brokerStatus.getLoggedOn());
+                         brokerStatus.isLoggedOn());
         }
     }
     /**

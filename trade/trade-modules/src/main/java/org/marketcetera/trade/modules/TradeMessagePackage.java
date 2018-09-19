@@ -1,6 +1,6 @@
 package org.marketcetera.trade.modules;
 
-import org.marketcetera.brokers.Broker;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.HasBrokerID;
 import org.marketcetera.trade.HasTradeMessage;
@@ -25,13 +25,13 @@ public class TradeMessagePackage
     /**
      * Create a new TradeMessagePackage instance.
      *
-     * @param inBroker a <code>Broker</code> value
+     * @param inServerFixSession a <code>ServerFixSession</code> value
      * @param inTradeMessage a <code>TradeMessage</code> value
      */
-    public TradeMessagePackage(Broker inBroker,
+    public TradeMessagePackage(ServerFixSession inServerFixSession,
                                TradeMessage inTradeMessage)
     {
-        broker = inBroker;
+        serverFixSession = inServerFixSession;
         tradeMessage = inTradeMessage;
     }
     /* (non-Javadoc)
@@ -40,7 +40,7 @@ public class TradeMessagePackage
     @Override
     public BrokerID getBrokerID()
     {
-        return broker.getBrokerId();
+        return new BrokerID(serverFixSession.getActiveFixSession().getFixSession().getBrokerId());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.HasTradeMessage#getTradeMessage()
@@ -51,22 +51,22 @@ public class TradeMessagePackage
         return tradeMessage;
     }
     /**
-     * Get the broker value.
+     * Get the serverFixSession value.
      *
-     * @return a <code>Broker</code> value
+     * @return a <code>ServerFixSession</code> value
      */
-    public Broker getBroker()
+    public ServerFixSession getServerFixSession()
     {
-        return broker;
+        return serverFixSession;
     }
     /**
-     * Sets the broker value.
+     * Sets the serverFixSession value.
      *
-     * @param inBroker a <code>Broker</code> value
+     * @param inServerFixSession a <code>ServerFixSession</code> value
      */
-    public void setBroker(Broker inBroker)
+    public void setServerFixSession(ServerFixSession inServerFixSession)
     {
-        broker = inBroker;
+        serverFixSession = inServerFixSession;
     }
     /**
      * Sets the tradeMessage value.
@@ -84,14 +84,14 @@ public class TradeMessagePackage
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("TradeMessagePackage [broker=").append(broker).append(", tradeMessage=").append(tradeMessage)
+        builder.append("TradeMessagePackage [serverFixSession=").append(serverFixSession).append(", tradeMessage=").append(tradeMessage)
                 .append("]");
         return builder.toString();
     }
     /**
      * broker value
      */
-    private Broker broker;
+    private ServerFixSession serverFixSession;
     /**
      * trade message value
      */

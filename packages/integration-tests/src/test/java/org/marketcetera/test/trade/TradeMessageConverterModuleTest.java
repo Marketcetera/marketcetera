@@ -7,7 +7,7 @@ import java.util.Deque;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.marketcetera.brokers.Broker;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.modules.fix.FIXMessageHolder;
 import org.marketcetera.modules.fix.FixDataRequest;
@@ -27,6 +27,7 @@ import org.marketcetera.trade.modules.TradeMessageConverterModule;
 import com.google.common.collect.Lists;
 
 import quickfix.Message;
+import quickfix.SessionID;
 
 /* $License$ */
 
@@ -68,7 +69,7 @@ public class TradeMessageConverterModuleTest
     public void testValidMessage()
             throws Exception
     {
-        Broker target = brokerService.getBroker(selector.getSelectedBrokerId());
+        ServerFixSession target = brokerService.getServerFixSession(selector.getSelectedBrokerId());
         FixDataRequest fixDataRequest = new FixDataRequest();
         fixDataRequest.setIncludeAdmin(false);
         fixDataRequest.setIncludeApp(true);
@@ -103,7 +104,7 @@ public class TradeMessageConverterModuleTest
                                                                         "Ack");
         FIXMessageFactory messageFactory = FIXVersion.FIX42.getMessageFactory();
         messageFactory.addTransactionTimeIfNeeded(receivedOrderAck);
-        HeadwaterModule.getInstance(acceptorHeadwaterInstance).emit(new FIXMessageHolder(FIXMessageUtil.getReversedSessionId(target.getSessionId()),
+        HeadwaterModule.getInstance(acceptorHeadwaterInstance).emit(new FIXMessageHolder(FIXMessageUtil.getReversedSessionId(new SessionID(target.getActiveFixSession().getFixSession().getSessionId())),
                                                                                          receivedOrderAck));
         waitForMessages(1,
                         initiatorIncomingMessages);

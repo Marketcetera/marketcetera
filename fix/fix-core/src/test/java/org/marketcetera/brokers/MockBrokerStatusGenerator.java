@@ -3,8 +3,10 @@ package org.marketcetera.brokers;
 import java.util.UUID;
 
 import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.MutableFixSession;
+import org.marketcetera.fix.impl.SimpleActiveFixSession;
 import org.marketcetera.fix.impl.SimpleFixSession;
 import org.marketcetera.trade.BrokerID;
 
@@ -25,11 +27,11 @@ public class MockBrokerStatusGenerator
      * @param inName a <code>String</code> value
      * @param inBrokerId a <code>BrokerID</code> value
      * @param inIsLoggedOn a <code>boolean</code> value
-     * @return a <code>ClusteredBrokerStatus</code> value
+     * @return an <code>ActiveFixSession</code> value
      */
-    public static ClusteredBrokerStatus generateBrokerStatus(String inName,
-                                                             BrokerID inBrokerId,
-                                                             boolean inIsLoggedOn)
+    public static ActiveFixSession generateActiveFixSession(String inName,
+                                                            BrokerID inBrokerId,
+                                                            boolean inIsLoggedOn)
     {
         MutableFixSession fixSession = new SimpleFixSession();
         fixSession.setAffinity(1);
@@ -40,10 +42,9 @@ public class MockBrokerStatusGenerator
         fixSession.setName(inName);
         fixSession.setPort(9000);
         fixSession.setSessionId("FIX.4.2:MATP->RECEIVER1");
-        return new ClusteredBrokerStatus(fixSession,
-                                         clusterData,
-                                         inIsLoggedOn?FixSessionStatus.CONNECTED:FixSessionStatus.NOT_CONNECTED,
-                                         inIsLoggedOn);
+        return new SimpleActiveFixSession(fixSession,
+                                          clusterData,
+                                          inIsLoggedOn?FixSessionStatus.CONNECTED:FixSessionStatus.NOT_CONNECTED);
     }
     /**
      * generated cluster data

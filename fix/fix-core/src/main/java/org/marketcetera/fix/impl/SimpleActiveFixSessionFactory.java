@@ -1,6 +1,10 @@
 package org.marketcetera.fix.impl;
 
+import org.marketcetera.brokers.SessionCustomization;
+import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.fix.FixSession;
+import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.MutableActiveFixSession;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
 
@@ -31,5 +35,19 @@ public class SimpleActiveFixSessionFactory
     public MutableActiveFixSession create()
     {
         return new SimpleActiveFixSession();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.MutableActiveFixSessionFactory#create(org.marketcetera.fix.FixSession, org.marketcetera.cluster.ClusterData, org.marketcetera.fix.FixSessionStatus, org.marketcetera.brokers.SessionCustomization)
+     */
+    @Override
+    public MutableActiveFixSession create(FixSession inUnderlyingFixSession,
+                                          ClusterData inInstanceData,
+                                          FixSessionStatus inBrokerStatus,
+                                          SessionCustomization inSessionCustomization)
+    {
+        return new SimpleActiveFixSession(inUnderlyingFixSession,
+                                          inInstanceData,
+                                          inBrokerStatus,
+                                          inSessionCustomization);
     }
 }

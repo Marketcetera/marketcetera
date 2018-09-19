@@ -78,6 +78,15 @@ public enum FixSessionStatus
         return enabled.contains(this);
     }
     /**
+     * Indicate if the session is logged on or not.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isLoggedOn()
+    {
+        return CONNECTED.equals(this);
+    }
+    /**
      * contains the statuses that indicate if a session is started or not
      */
     private static final Set<FixSessionStatus> started = EnumSet.of(CONNECTED,NOT_CONNECTED,DISCONNECTED);

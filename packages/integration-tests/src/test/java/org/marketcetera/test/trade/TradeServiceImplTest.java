@@ -10,9 +10,10 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 import org.junit.Test;
-import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.test.IntegrationTestBase;
 import org.marketcetera.trade.BrokerID;
@@ -52,21 +53,21 @@ public class TradeServiceImplTest
             throws Exception
     {
         // test order with a specified broker
-        Broker initiator = null;
-        for(Broker broker : brokerService.getBrokers()) {
-            if(!broker.getFixSession().isAcceptor()) {
-                initiator = broker;
+        ActiveFixSession initiator = null;
+        for(ActiveFixSession fixSession : brokerService.getActiveFixSessions()) {
+            if(!fixSession.getFixSession().isAcceptor()) {
+                initiator = fixSession;
                 break;
             }
         }
         final OrderSingle testOrder = Factory.getInstance().createOrderSingle();
-        testOrder.setBrokerID(initiator.getBrokerId());
+        testOrder.setBrokerID(new BrokerID(initiator.getFixSession().getBrokerId()));
         testOrder.setInstrument(new Equity("METC"));
         testOrder.setOrderType(OrderType.Market);
         testOrder.setQuantity(BigDecimal.TEN);
         testOrder.setSide(Side.Buy);
-        assertEquals(initiator.getBrokerId(),
-                     tradeService.selectBroker(testOrder).getBrokerId());
+        assertEquals(initiator.getFixSession().getBrokerId(),
+                     tradeService.selectServerFixSession(testOrder).getActiveFixSession().getFixSession().getBrokerId());
         // test with an invalid broker
         selector.setChooseBrokerException(null);
         selector.setSelectedBrokerId(null);
@@ -76,14 +77,14 @@ public class TradeServiceImplTest
             protected void run()
                     throws Exception
             {
-                tradeService.selectBroker(testOrder);
+                tradeService.selectServerFixSession(testOrder);
             }
         };
         TestBrokerSelector testSelector = applicationContext.getBean(TestBrokerSelector.class);
-        testSelector.setSelectedBrokerId(initiator.getBrokerId());
+        testSelector.setSelectedBrokerId(new BrokerID(initiator.getFixSession().getBrokerId()));
         testOrder.setBrokerID(null);
-        assertEquals(initiator.getBrokerId(),
-                     tradeService.selectBroker(testOrder).getBrokerId());
+        assertEquals(initiator.getFixSession().getBrokerId(),
+                     tradeService.selectServerFixSession(testOrder).getActiveFixSession().getFixSession().getBrokerId());
         // test when the selector throws an exception
         testSelector.setChooseBrokerException(new RuntimeException("This exception was expected"));
         new ExpectedFailure<RuntimeException>("This exception was expected") {
@@ -91,7 +92,7 @@ public class TradeServiceImplTest
             protected void run()
                     throws Exception
             {
-                tradeService.selectBroker(testOrder);
+                tradeService.selectServerFixSession(testOrder);
             }
         };
     }
@@ -104,19 +105,20 @@ public class TradeServiceImplTest
     public void testBrokerModifier()
             throws Exception
     {
-        Broker target = null;
-        for(Broker broker : brokerService.getBrokers()) {
-            if(!broker.getFixSession().isAcceptor() && !broker.getOrderModifiers().isEmpty() && broker.getMappedBrokerId() == null) {
-                target = broker;
+        ServerFixSession target = null;
+        for(ServerFixSession fixSession : brokerService.getServerFixSessions()) {
+            if(!fixSession.getActiveFixSession().getFixSession().isAcceptor() && !fixSession.getOrderModifiers().isEmpty() && fixSession.getActiveFixSession().getFixSession().getMappedBrokerId() == null) {
+                target = fixSession;
                 break;
             }
         }
+        BrokerID targetBrokerId = new BrokerID(target.getActiveFixSession().getFixSession().getBrokerId());
         assertNotNull("No initiator test session with order modifiers",
                       target);
-        makeBrokerAvailable(target.getBrokerId());
+        makeBrokerAvailable(targetBrokerId);
         // send an order through and make sure the modifiers are applied
         OrderSingle testOrder = Factory.getInstance().createOrderSingle();
-        testOrder.setBrokerID(target.getBrokerId());
+        testOrder.setBrokerID(targetBrokerId);
         testOrder.setInstrument(new Equity("METC"));
         testOrder.setOrderType(OrderType.Market);
         testOrder.setQuantity(BigDecimal.TEN);
@@ -153,23 +155,24 @@ public class TradeServiceImplTest
     public void testMappedBroker()
             throws Exception
     {
-        Broker virtualBroker = null;
-        for(Broker broker : brokerService.getBrokers()) {
-            if(broker.getMappedBrokerId() != null) {
-                virtualBroker = broker;
+        ActiveFixSession virtualSession = null;
+        for(ActiveFixSession session : brokerService.getActiveFixSessions()) {
+            if(session.getFixSession().getMappedBrokerId() != null) {
+                virtualSession = session;
                 break;
             }
         }
         assertNotNull("No virtual brokers in test broker settings",
-                      virtualBroker);
+                      virtualSession);
+        BrokerID virtualSessionBrokerId = new BrokerID(virtualSession.getFixSession().getBrokerId());
         OrderSingle testOrder = Factory.getInstance().createOrderSingle();
-        testOrder.setBrokerID(virtualBroker.getBrokerId());
+        testOrder.setBrokerID(virtualSessionBrokerId);
         testOrder.setInstrument(new Equity("METC"));
         testOrder.setOrderType(OrderType.Market);
         testOrder.setQuantity(BigDecimal.TEN);
         testOrder.setSide(Side.Buy);
-        assertEquals(virtualBroker.getBrokerId(),
-                     tradeService.selectBroker(testOrder).getBrokerId());
+        assertEquals(virtualSession.getFixSession().getBrokerId(),
+                     tradeService.selectServerFixSession(testOrder).getActiveFixSession().getFixSession().getBrokerId());
     }
     /**
      * Test mapped broker order modifiers.
@@ -180,38 +183,40 @@ public class TradeServiceImplTest
     public void testMappedBrokerModifiers()
             throws Exception
     {
-        Broker virtualBroker = null;
-        for(Broker broker : brokerService.getBrokers()) {
-            if(broker.getMappedBrokerId() != null) {
-                virtualBroker = broker;
+        ServerFixSession virtualSession = null;
+        for(ServerFixSession session : brokerService.getServerFixSessions()) {
+            if(session.getActiveFixSession().getFixSession().getMappedBrokerId() != null) {
+                virtualSession = session;
                 break;
             }
         }
         assertNotNull("No virtual brokers in test broker settings",
-                      virtualBroker);
-        Broker mappedBroker = brokerService.getBroker(virtualBroker.getMappedBrokerId());
-        assertNotNull(mappedBroker);
-        makeBrokerAvailable(virtualBroker.getBrokerId());
-        makeBrokerAvailable(mappedBroker.getBrokerId());
+                      virtualSession);
+        BrokerID virtualBrokerId = new BrokerID(virtualSession.getActiveFixSession().getFixSession().getMappedBrokerId());
+        ServerFixSession mappedSession = brokerService.getServerFixSession(virtualBrokerId);
+        assertNotNull(mappedSession);
+        BrokerID mappedBrokerId = new BrokerID(mappedSession.getActiveFixSession().getFixSession().getBrokerId());
+        makeBrokerAvailable(virtualBrokerId);
+        makeBrokerAvailable(mappedBrokerId);
         OrderSingle testOrder = Factory.getInstance().createOrderSingle();
-        testOrder.setBrokerID(virtualBroker.getBrokerId());
+        testOrder.setBrokerID(virtualBrokerId);
         testOrder.setInstrument(new Equity("METC"));
         testOrder.setOrderType(OrderType.Market);
         testOrder.setQuantity(BigDecimal.TEN);
         testOrder.setSide(Side.Buy);
         assertNull(testOrder.getCustomFields());
         Message convertedOrder = tradeService.convertOrder(testOrder,
-                                                           virtualBroker);
+                                                           virtualSession);
         Map<Integer,String> expectedCustomFields = Maps.newHashMap();
         // apply virtual modifiers first
-        for(MessageModifier orderModifier : virtualBroker.getOrderModifiers()) {
+        for(MessageModifier orderModifier : virtualSession.getOrderModifiers()) {
             if(orderModifier instanceof FieldSetterMessageModifier) {
                 FieldSetterMessageModifier fieldSetter = (FieldSetterMessageModifier)orderModifier;
                 expectedCustomFields.put(fieldSetter.getField(),
                                          fieldSetter.getValue());
             }
         }
-        for(MessageModifier orderModifier : mappedBroker.getOrderModifiers()) {
+        for(MessageModifier orderModifier : mappedSession.getOrderModifiers()) {
             if(orderModifier instanceof FieldSetterMessageModifier) {
                 FieldSetterMessageModifier fieldSetter = (FieldSetterMessageModifier)orderModifier;
                 expectedCustomFields.put(fieldSetter.getField(),

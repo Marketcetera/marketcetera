@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.BrokerStatusPublisher;
-import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.core.BaseClient;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
@@ -93,11 +92,11 @@ public interface FixAdminClient
      */
     void removeBrokerStatusListener(BrokerStatusListener inBrokerStatusListener);
     /**
-     * Get the status of all brokers.
+     * Get the status of all sessions.
      * 
-     * @return a <code>BrokersStatus</code> value
+     * @return a <code>Collection&lt;ActiveFixSession&gt;</code> value
      */
-    BrokersStatus getBrokersStatus();
+    Collection<ActiveFixSession> getSessionsStatus();
     /**
      * Get the FIX session attribute descriptors.
      *

@@ -1,5 +1,8 @@
 package org.marketcetera.fix;
 
+import java.util.Set;
+
+import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.core.MutableDomainObject;
 
@@ -45,4 +48,10 @@ public interface MutableActiveFixSession
      * @param inClusterData a <code>ClusterData</code> value
      */
     void setClusterData(ClusterData inClusterData);
+    /**
+     * Set the brokerAlgos value.
+     *
+     * @param a <code>Set&lt;BrokerAlgoSpec&gt;</code> value
+     */
+    void setBrokerAlgos(Set<BrokerAlgoSpec> inBrokerAlgoSpecs);
 }

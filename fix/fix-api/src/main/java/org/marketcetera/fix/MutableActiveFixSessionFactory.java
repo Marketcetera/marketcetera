@@ -1,5 +1,8 @@
 package org.marketcetera.fix;
 
+import org.marketcetera.brokers.SessionCustomization;
+import org.marketcetera.cluster.ClusterData;
+
 /* $License$ */
 
 /**
@@ -26,4 +29,18 @@ public interface MutableActiveFixSessionFactory
      * @return a <code>MutableActiveFixSession</code> value
      */
     MutableActiveFixSession create();
+    /**
+     * Create a <code>MutableActiveFixSession</code> object.
+     *
+     * @param inFixSession a <code>FixSession</code> value
+     * @param inClusterData a <code>ClusterData</code> value
+     * @param inStatus a <code>FixSessionStatus</code> value
+     * @param inSessionCustomization a <code>SessionCustomization</code> value
+     * @return a <code>MutableActiveFixSession</code> value
+     */
+    @Override
+    MutableActiveFixSession create(FixSession inUnderlyingFixSession,
+                                   ClusterData inInstanceData,
+                                   FixSessionStatus inBrokerStatus,
+                                   SessionCustomization inSessionCustomization);
 }

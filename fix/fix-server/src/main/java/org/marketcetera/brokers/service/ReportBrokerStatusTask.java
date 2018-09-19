@@ -1,10 +1,10 @@
 package org.marketcetera.brokers.service;
 
 import org.marketcetera.brokers.BrokerConstants;
-import org.marketcetera.brokers.ClusteredBrokerStatus;
 import org.marketcetera.cluster.RunnableClusterTask;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,14 +24,11 @@ public class ReportBrokerStatusTask
     @Override
     public void run()
     {
-        ClusteredBrokerStatus brokerStatus = new ClusteredBrokerStatus(session,
-                                                                       getClusterService().getInstanceData(),
-                                                                       status,
-                                                                       false);
         if(status == FixSessionStatus.DELETED) {
-            removeBrokerStatus(brokerStatus);
+            removeBrokerStatus();
         } else {
-            brokerService.reportBrokerStatus(brokerStatus);
+            brokerService.reportBrokerStatus(new BrokerID(session.getBrokerId()),
+                                             status);
         }
     }
     /**
@@ -49,13 +46,13 @@ public class ReportBrokerStatusTask
     /**
      * Remove broker status for the given session.
      */
-    private void removeBrokerStatus(ClusteredBrokerStatus brokerStatus)
+    private void removeBrokerStatus()
     {
         SLF4JLoggerProxy.trace(this,
                                "Removing status for {}",
                                session);
         try {
-            getClusterService().removeAttribute(BrokerConstants.brokerStatusPrefix+brokerStatus.getId()+brokerStatus.getHost());
+            getClusterService().removeAttribute(BrokerConstants.brokerStatusPrefix+session.getBrokerId()+session.getHost());
         } catch (NullPointerException ignored) {
             // these can happen on shutdown and can be safely ignored
         } catch (Exception e) {

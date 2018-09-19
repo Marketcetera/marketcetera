@@ -9,8 +9,8 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.service.BrokerServiceImpl;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.module.ExpectedFailure;
@@ -47,12 +47,12 @@ public class BrokerServiceTest
         super.setup();
         initiators = Maps.newHashMap();
         acceptors = Maps.newHashMap();
-        for(Broker broker : brokerService.getBrokers()) {
+        for(ActiveFixSession broker : brokerService.getActiveFixSessions()) {
             if(broker.getFixSession().isAcceptor()) {
-                acceptors.put(broker.getBrokerId(),
+                acceptors.put(new BrokerID(broker.getFixSession().getBrokerId()),
                               broker);
             } else {
-                initiators.put(broker.getBrokerId(),
+                initiators.put(new BrokerID(broker.getFixSession().getBrokerId()),
                                broker);
             }
         }
@@ -71,19 +71,19 @@ public class BrokerServiceTest
             protected void run()
                     throws Exception
             {
-                brokerService.getBroker((SessionID)null);
+                brokerService.getActiveFixSession((SessionID)null);
             }
         };
-        assertNull(brokerService.getBroker(new SessionID(FIXVersion.FIX42.getVersion(),
+        assertNull(brokerService.getActiveFixSession(new SessionID(FIXVersion.FIX42.getVersion(),
                                                          "not-a-sender",
                                                          "not-a-target")));
-        Collection<Broker> brokers = brokerService.getBrokers();
+        Collection<ActiveFixSession> brokers = brokerService.getActiveFixSessions();
         assertEquals(4,
                      brokers.size());
-        Broker sampleBroker = brokers.iterator().next();
-        Broker sampleBrokerCopy = brokerService.getBroker(new SessionID(sampleBroker.getFixSession().getSessionId()));
-        assertEquals(sampleBroker.getBrokerId(),
-                     sampleBrokerCopy.getBrokerId());
+        ActiveFixSession sampleBroker = brokers.iterator().next();
+        ActiveFixSession sampleBrokerCopy = brokerService.getActiveFixSession(new SessionID(sampleBroker.getFixSession().getSessionId()));
+        assertEquals(sampleBroker.getFixSession().getBrokerId(),
+                     sampleBrokerCopy.getFixSession().getBrokerId());
     }
     /**
      * Test the ability to resolve sessions into name aliases.
@@ -108,11 +108,11 @@ public class BrokerServiceTest
     /**
      * initiator brokers
      */
-    private Map<BrokerID,Broker> initiators;
+    private Map<BrokerID,ActiveFixSession> initiators;
     /**
      * acceptor brokers
      */
-    private Map<BrokerID,Broker> acceptors;
+    private Map<BrokerID,ActiveFixSession> acceptors;
     /**
      * test broker service
      */

@@ -1,8 +1,8 @@
 package org.marketcetera.trade.service;
 
-import org.marketcetera.brokers.Broker;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.OrderIntercepted;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
@@ -24,35 +24,35 @@ public interface TradeService
         extends TradeMessagePublisher
 {
     /**
-     * Select a broker for the given order.
+     * Select a session for the given order.
      *
      * @param inOrder an <code>Order</code> value
-     * @return a <code>Broker</code> value
-     * @throws NoBrokerSelected if a broker could not be determined
+     * @return a <code>ServerFixSession</code> value
+     * @throws NoBrokerSelected if a session could not be determined
      */
-    Broker selectBroker(Order inOrder);
+    ServerFixSession selectServerFixSession(Order inOrder);
     /**
-     * Convert the given order into a FIX message targeted to the given broker.
+     * Convert the given order into a FIX message targeted to the given session.
      *
      * @param inOrder an <code>Order</code> value
-     * @param inBroker a <code>Broker</code> value
+     * @param inServerFixSession a <code>ServerFixSession</code> value
      * @return a <code>Message</code> value
      * @throws BrokerUnavailable if the broker is unavailable or unknown
      * @throws OrderIntercepted if the order should not be sent on in the data flow
      */
     Message convertOrder(Order inOrder,
-                         Broker inBroker);
+                         ServerFixSession inServerFixSession);
     /**
      * Convert the given message from the given broker to a <code>TradeMessage</code>.
      *
      * @param inMessage a <code>HasFIXMessage</code> value
-     * @param inBroker a <code>Broker</code> value
+     * @param inServerFixSession a <code>ServerFixSession</code> value
      * @return a <code>TradeMessage</code> value
      * @throws OrderIntercepted if the message should not be sent on in the data flow
      * @throws MessageCreationException if the message could not be converted
      */
     TradeMessage convertResponse(HasFIXMessage inMessage,
-                                 Broker inBroker);
+                                 ServerFixSession inServerFixSession);
     /**
      * Submits the given order to the standard outgoing data flow.
      *

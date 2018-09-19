@@ -13,17 +13,14 @@ import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.algo.BrokerAlgoTagSpec;
-import org.marketcetera.brokers.BrokerStatus;
-import org.marketcetera.brokers.BrokersStatus;
-import org.marketcetera.brokers.ClusteredBrokerStatus;
 import org.marketcetera.cluster.ClusterData;
-import org.marketcetera.cluster.HasClusterData;
 import org.marketcetera.cluster.rpc.ClusterRpc;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Validator;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixAdminRpc;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionFactory;
@@ -2325,46 +2322,46 @@ public abstract class TradeRpcUtil
             inOrderSummary.setRootOrderId(null);
         }
     }
-    /**
-     * Get the broker status value from the given response.
-     *
-     * @param inResponse a <code>BrokerStatusListenerResponse</code> value
-     * @return an <code>Optional&lt;BrokerStatus&gt;</code> value
-     */
-    public static Optional<BrokerStatus> getBrokerStatus(FixAdminRpc.BrokerStatusListenerResponse inResponse)
-    {
-        BrokerStatus brokerStatus = null;
-        if(inResponse.hasBrokerStatus()) {
-            FixAdminRpc.BrokerStatus rpcBrokerStatus = inResponse.getBrokerStatus();
-            brokerStatus = getBrokerStatus(rpcBrokerStatus).orElse(null);
-        }
-        return(brokerStatus==null ? Optional.empty():Optional.of(brokerStatus));
-    }
-    /**
-     * Get the broker status for the given RPC value.
-     *
-     * @param inRpcBrokerStatus a <code>FixAdminRpc.BrokerStatus</code> value
-     * @return an <code>Optional&lt;BrokerStatus&gt;</code> value
-     */
-    public static Optional<BrokerStatus> getBrokerStatus(FixAdminRpc.BrokerStatus inRpcBrokerStatus)
-    {
-        Map<String,String> settings = Maps.newHashMap();
-        if(inRpcBrokerStatus.hasSettings()) {
-            settings = BaseRpcUtil.getMap(inRpcBrokerStatus.getSettings());
-        }
-        settings.put("id",
-                     inRpcBrokerStatus.getId());
-        settings.put("host",
-                     inRpcBrokerStatus.getHost());
-        settings.put("name",
-                     inRpcBrokerStatus.getName());
-        settings.put("port",
-                     String.valueOf(inRpcBrokerStatus.getPort()));
-        return Optional.of(new ClusteredBrokerStatus(fixSessionFactory.create(settings),
-                                                     inRpcBrokerStatus.hasClusterData() ? getClusterData(inRpcBrokerStatus.getClusterData()).orElse(null) : null,
-                                                     getFixSessionStatus(inRpcBrokerStatus.getFixSessionStatus()),
-                                                     inRpcBrokerStatus.getLoggedOn()));
-    }
+//    /**
+//     * Get the broker status value from the given response.
+//     *
+//     * @param inResponse a <code>BrokerStatusListenerResponse</code> value
+//     * @return an <code>Optional&lt;BrokerStatus&gt;</code> value
+//     */
+//    public static Optional<BrokerStatus> getBrokerStatus(FixAdminRpc.BrokerStatusListenerResponse inResponse)
+//    {
+//        BrokerStatus brokerStatus = null;
+//        if(inResponse.hasBrokerStatus()) {
+//            FixAdminRpc.BrokerStatus rpcBrokerStatus = inResponse.getBrokerStatus();
+//            brokerStatus = getBrokerStatus(rpcBrokerStatus).orElse(null);
+//        }
+//        return(brokerStatus==null ? Optional.empty():Optional.of(brokerStatus));
+//    }
+//    /**
+//     * Get the broker status for the given RPC value.
+//     *
+//     * @param inRpcBrokerStatus a <code>FixAdminRpc.BrokerStatus</code> value
+//     * @return an <code>Optional&lt;BrokerStatus&gt;</code> value
+//     */
+//    public static Optional<BrokerStatus> getBrokerStatus(FixAdminRpc.BrokerStatus inRpcBrokerStatus)
+//    {
+//        Map<String,String> settings = Maps.newHashMap();
+//        if(inRpcBrokerStatus.hasSettings()) {
+//            settings = BaseRpcUtil.getMap(inRpcBrokerStatus.getSettings());
+//        }
+//        settings.put("id",
+//                     inRpcBrokerStatus.getId());
+//        settings.put("host",
+//                     inRpcBrokerStatus.getHost());
+//        settings.put("name",
+//                     inRpcBrokerStatus.getName());
+//        settings.put("port",
+//                     String.valueOf(inRpcBrokerStatus.getPort()));
+//        return Optional.of(new ClusteredBrokerStatus(fixSessionFactory.create(settings),
+//                                                     inRpcBrokerStatus.hasClusterData() ? getClusterData(inRpcBrokerStatus.getClusterData()).orElse(null) : null,
+//                                                     getFixSessionStatus(inRpcBrokerStatus.getFixSessionStatus()),
+//                                                     inRpcBrokerStatus.getLoggedOn()));
+//    }
     /**
      * Get the cluster data value from the given RPC value.
      *
@@ -2380,71 +2377,71 @@ public abstract class TradeRpcUtil
                                                   inRpcClusterData.getUuid());
         return(clusterData == null ? Optional.empty() : Optional.of(clusterData));
     }
-    /**
-     * Set the RPC brokers status on the given builder with the given value.
-     *
-     * @param inBrokersStatus a <code>BrokersStatus</code> value
-     * @param inBuilder a <code>FixAdminRpc.BrokersStatusResponse.Builder</code> value
-     */
-    public static void setBrokersStatus(BrokersStatus inBrokersStatus,
-                                        FixAdminRpc.BrokersStatusResponse.Builder inBuilder)
-    {
-        for(BrokerStatus brokerStatus : inBrokersStatus.getBrokers()) {
-            FixAdminRpc.BrokerStatus.Builder brokerStatusBuilder = FixAdminRpc.BrokerStatus.newBuilder();
-            setBrokerStatus(brokerStatus,
-                            brokerStatusBuilder);
-            inBuilder.addBrokerStatus(brokerStatusBuilder.build());
-            brokerStatusBuilder.clear();
-        }
-    }
-    /**
-     * Set the broker status on the given RPC broker status builder.
-     *
-     * @param inStatus a <code>BrokerStatus</code> value
-     * @param inBuilder a <code>FixAdminRpc.BrokerStatus.Builder</code> value
-     */
-    public static void setBrokerStatus(BrokerStatus inStatus,
-                                       FixAdminRpc.BrokerStatus.Builder inBuilder)
-    {
-        setBrokerAlgos(inStatus,
-                       inBuilder);
-        inBuilder.setHost(inStatus.getHost());
-        setBrokerId(inStatus,
-                    inBuilder);
-        inBuilder.setLoggedOn(inStatus.getLoggedOn());
-        inBuilder.setName(inStatus.getName());
-        inBuilder.setPort(inStatus.getPort());
-        inBuilder.setSettings(BaseRpcUtil.getRpcMap(inStatus.getSettings()));
-        inBuilder.setFixSessionStatus(getRpcFixSessionStatus(inStatus.getStatus()));
-        if(inStatus instanceof HasClusterData) {
-            HasClusterData hasClusterData = (HasClusterData)inStatus;
-            ClusterRpc.ClusterData.Builder clusterDataBuilder = ClusterRpc.ClusterData.newBuilder();
-            ClusterData clusterData = hasClusterData.getClusterData();
-            clusterDataBuilder.setHostId(clusterData.getHostId());
-            clusterDataBuilder.setHostNumber(clusterData.getHostNumber());
-            clusterDataBuilder.setInstanceNumber(clusterData.getInstanceNumber());
-            clusterDataBuilder.setTotalInstances(clusterData.getTotalInstances());
-            clusterDataBuilder.setUuid(clusterData.getUuid());
-            inBuilder.setClusterData(clusterDataBuilder.build());
-        }
-    }
-    /**
-     * Set the given broker status value on the given RPC builder.
-     *
-     * @param inStatus a <code>BrokerStatus</code> value
-     * @param inResponseBuilder a <code>FixAdminRpc.BrokerStatusListenerResponse.Builder</code> value
-     */
-    public static void setBrokerStatus(BrokerStatus inStatus,
-                                       FixAdminRpc.BrokerStatusListenerResponse.Builder inResponseBuilder)
-    {
-        if(inStatus == null) {
-            return;
-        }
-        FixAdminRpc.BrokerStatus.Builder brokerStatusBuilder = FixAdminRpc.BrokerStatus.newBuilder();
-        setBrokerStatus(inStatus,
-                        brokerStatusBuilder);
-        inResponseBuilder.setBrokerStatus(brokerStatusBuilder.build());
-    }
+//    /**
+//     * Set the RPC brokers status on the given builder with the given value.
+//     *
+//     * @param inBrokersStatus a <code>BrokersStatus</code> value
+//     * @param inBuilder a <code>FixAdminRpc.BrokersStatusResponse.Builder</code> value
+//     */
+//    public static void setBrokersStatus(BrokersStatus inBrokersStatus,
+//                                        FixAdminRpc.BrokersStatusResponse.Builder inBuilder)
+//    {
+//        for(BrokerStatus brokerStatus : inBrokersStatus.getActiveFixSessions()) {
+//            FixAdminRpc.BrokerStatus.Builder brokerStatusBuilder = FixAdminRpc.BrokerStatus.newBuilder();
+//            setBrokerStatus(brokerStatus,
+//                            brokerStatusBuilder);
+//            inBuilder.addBrokerStatus(brokerStatusBuilder.build());
+//            brokerStatusBuilder.clear();
+//        }
+//    }
+//    /**
+//     * Set the broker status on the given RPC broker status builder.
+//     *
+//     * @param inStatus a <code>BrokerStatus</code> value
+//     * @param inBuilder a <code>FixAdminRpc.BrokerStatus.Builder</code> value
+//     */
+//    public static void setBrokerStatus(BrokerStatus inStatus,
+//                                       FixAdminRpc.BrokerStatus.Builder inBuilder)
+//    {
+//        setBrokerAlgos(inStatus,
+//                       inBuilder);
+//        inBuilder.setHost(inStatus.getHost());
+//        setBrokerId(inStatus,
+//                    inBuilder);
+//        inBuilder.setLoggedOn(inStatus.getLoggedOn());
+//        inBuilder.setName(inStatus.getName());
+//        inBuilder.setPort(inStatus.getPort());
+//        inBuilder.setSettings(BaseRpcUtil.getRpcMap(inStatus.getSettings()));
+//        inBuilder.setFixSessionStatus(getRpcFixSessionStatus(inStatus.getStatus()));
+//        if(inStatus instanceof HasClusterData) {
+//            HasClusterData hasClusterData = (HasClusterData)inStatus;
+//            ClusterRpc.ClusterData.Builder clusterDataBuilder = ClusterRpc.ClusterData.newBuilder();
+//            ClusterData clusterData = hasClusterData.getClusterData();
+//            clusterDataBuilder.setHostId(clusterData.getHostId());
+//            clusterDataBuilder.setHostNumber(clusterData.getHostNumber());
+//            clusterDataBuilder.setInstanceNumber(clusterData.getInstanceNumber());
+//            clusterDataBuilder.setTotalInstances(clusterData.getTotalInstances());
+//            clusterDataBuilder.setUuid(clusterData.getUuid());
+//            inBuilder.setClusterData(clusterDataBuilder.build());
+//        }
+//    }
+//    /**
+//     * Set the given broker status value on the given RPC builder.
+//     *
+//     * @param inStatus a <code>BrokerStatus</code> value
+//     * @param inResponseBuilder a <code>FixAdminRpc.BrokerStatusListenerResponse.Builder</code> value
+//     */
+//    public static void setBrokerStatus(BrokerStatus inStatus,
+//                                       FixAdminRpc.BrokerStatusListenerResponse.Builder inResponseBuilder)
+//    {
+//        if(inStatus == null) {
+//            return;
+//        }
+//        FixAdminRpc.BrokerStatus.Builder brokerStatusBuilder = FixAdminRpc.BrokerStatus.newBuilder();
+//        setBrokerStatus(inStatus,
+//                        brokerStatusBuilder);
+//        inResponseBuilder.setBrokerStatus(brokerStatusBuilder.build());
+//    }
     /**
      * Get the FIX session status value from the given RPC value.
      *
@@ -2511,32 +2508,32 @@ public abstract class TradeRpcUtil
     /**
      * Set the given broker ID on the given RPC builder.
      *
-     * @param inStatus a <code>BrokerStatus</code> value
+     * @param inSession a <code>FixSession</code> value
      * @param inBrokerStatusBuilder a <code>FixAdminRpc.BrokerStatus.Builder</code> value
      */
-    public static void setBrokerId(BrokerStatus inStatus,
+    public static void setBrokerId(FixSession inSession,
                                    FixAdminRpc.BrokerStatus.Builder inBrokerStatusBuilder)
     {
-        if(inStatus == null || inStatus.getId() == null) {
+        if(inSession == null || inSession.getBrokerId() == null) {
             return;
         }
-        inBrokerStatusBuilder.setId(inStatus.getId().getValue());
+        inBrokerStatusBuilder.setId(inSession.getBrokerId());
     }
     /**
      * Set the broker algos value on the given RPC builder.
      *
-     * @param inStatus a <code>BrokerStatus</code> value
+     * @param inActiveFixSession an <code>ActiveFixSession</code> value
      * @param inBrokerStatusBuilder a <code>FixAdminRpc.BrokerStatus.Builder</code> value
      */
-    public static void setBrokerAlgos(BrokerStatus inStatus,
+    public static void setBrokerAlgos(ActiveFixSession inActiveFixSession,
                                       FixAdminRpc.BrokerStatus.Builder inBrokerStatusBuilder)
     {
-        if(inStatus.getBrokerAlgos().isEmpty()) {
+        if(inActiveFixSession.getBrokerAlgos().isEmpty()) {
             return;
         }
         FixAdminRpc.BrokerAlgo.Builder brokerAlgoBuilder = FixAdminRpc.BrokerAlgo.newBuilder();
         FixAdminRpc.BrokerAlgoTagSpec.Builder brokerAlgoTagSpecBuilder = FixAdminRpc.BrokerAlgoTagSpec.newBuilder();
-        for(BrokerAlgoSpec brokerAlgo : inStatus.getBrokerAlgos()) {
+        for(BrokerAlgoSpec brokerAlgo : inActiveFixSession.getBrokerAlgos()) {
             for(BrokerAlgoTagSpec tagSpec : brokerAlgo.getAlgoTagSpecs()) {
                 brokerAlgoTagSpecBuilder.setAdvice(tagSpec.getAdvice());
                 brokerAlgoTagSpecBuilder.setDefaultValue(tagSpec.getDefaultValue());

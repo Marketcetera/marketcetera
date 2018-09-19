@@ -1,11 +1,10 @@
 package org.marketcetera.fix;
 
+import java.util.Collection;
 import java.util.Optional;
 
-import org.marketcetera.brokers.BrokerStatus;
-import org.marketcetera.brokers.BrokersStatus;
+import org.marketcetera.fix.FixAdminRpc.BrokerStatus;
 import org.marketcetera.fix.FixAdminRpc.BrokerStatusListenerResponse;
-import org.marketcetera.fix.FixAdminRpc.BrokersStatusResponse.Builder;
 import org.marketcetera.rpc.base.BaseRpcUtil;
 
 /* $License$ */
@@ -121,18 +120,6 @@ public class FixRpcUtil
     /**
      *
      *
-     * @param inBrokersStatus
-     * @param inResponseBuilder
-     */
-    public static void setBrokersStatus(BrokersStatus inBrokersStatus,
-                                        Builder inResponseBuilder)
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
-    }
-    /**
-     *
-     *
      * @param inStatus
      * @param inResponseBuilder
      */
@@ -148,7 +135,7 @@ public class FixRpcUtil
      * @param inResponse
      * @return
      */
-    public static Optional<BrokerStatus> getBrokerStatus(BrokerStatusListenerResponse inResponse)
+    public static Optional<FixSessionStatus> getBrokerStatus(BrokerStatusListenerResponse inResponse)
     {
         throw new UnsupportedOperationException(); // TODO
         
@@ -159,7 +146,42 @@ public class FixRpcUtil
      * @param inRpcBrokerStatus
      * @return
      */
-    public static Optional<BrokerStatus> getBrokerStatus(org.marketcetera.fix.FixAdminRpc.BrokerStatus inRpcBrokerStatus)
+    public static Optional<ActiveFixSession> getActiveFixSession(org.marketcetera.fix.FixAdminRpc.BrokerStatus inRpcBrokerStatus)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /**
+     *
+     *
+     * @param inResponse
+     * @return
+     */
+    public static Optional<ActiveFixSession> getActiveFixSession(BrokerStatusListenerResponse inResponse)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /**
+     *
+     *
+     * @param inActiveFixSessions
+     * @param inResponseBuilder
+     */
+    public static void setActiveFixSessions(Collection<ActiveFixSession> inActiveFixSessions,
+                                            FixAdminRpc.BrokersStatusResponse.Builder inResponseBuilder)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /**
+     *
+     *
+     * @param inStatus
+     * @param inResponseBuilder
+     */
+    public static void setActiveFixSession(ActiveFixSession inStatus,
+                                           FixAdminRpc.BrokerStatusListenerResponse.Builder inResponseBuilder)
     {
         throw new UnsupportedOperationException(); // TODO
         

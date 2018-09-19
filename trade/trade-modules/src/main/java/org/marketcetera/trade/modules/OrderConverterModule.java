@@ -1,14 +1,15 @@
 package org.marketcetera.trade.modules;
 
 import org.marketcetera.admin.HasUser;
-import org.marketcetera.brokers.Broker;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.service.TradeService;
@@ -17,6 +18,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import quickfix.Message;
+import quickfix.SessionID;
 
 /* $License$ */
 
@@ -49,7 +51,7 @@ public class OrderConverterModule
                                                                   inData.getClass().getSimpleName()));
         }
         Order order = ((HasOrder)inData).getOrder();
-        Broker broker = tradeService.selectBroker(order);
+        ServerFixSession broker = tradeService.selectServerFixSession(order);
         SLF4JLoggerProxy.debug(this,
                                "{} targeted to {}",
                                order,
@@ -57,14 +59,14 @@ public class OrderConverterModule
         Message convertedOrder = tradeService.convertOrder(order,
                                                            broker);
         FIXMessageUtil.setSessionId(convertedOrder,
-                                    broker.getSessionId());
+                                    new SessionID(broker.getActiveFixSession().getFixSession().getSessionId()));
         SLF4JLoggerProxy.debug(this,
                                "{} converted to {}",
                                order,
                                convertedOrder);
         return new OwnedMessage(((HasUser)inData).getUser(),
-                                broker.getBrokerId(),
-                                broker.getSessionId(),
+                                new BrokerID(broker.getActiveFixSession().getFixSession().getBrokerId()),
+                                new SessionID(broker.getActiveFixSession().getFixSession().getSessionId()),
                                 convertedOrder);
     }
     /**

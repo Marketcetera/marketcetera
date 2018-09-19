@@ -36,8 +36,6 @@ import org.marketcetera.admin.dao.PersistentPermissionDao;
 import org.marketcetera.admin.rpc.AdminRpcUtilTest;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
-import org.marketcetera.brokers.Broker;
-import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.service.ClusterService;
@@ -46,6 +44,7 @@ import org.marketcetera.core.PriceQtyTuple;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.time.TimeFactoryImpl;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixMessageHandler;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
@@ -152,21 +151,21 @@ public class IntegrationTestBase
         transactionModuleUrn = TransactionModuleFactory.INSTANCE_URN;
         tradeMessages.clear();
         tradeService.addTradeMessageListener(tradeMessageListener);
-        Broker target = null;
-        for(Broker broker : brokerService.getBrokers()) {
-            if(!broker.getFixSession().isAcceptor() && broker.getMappedBrokerId() == null) {
+        ActiveFixSession target = null;
+        for(ActiveFixSession broker : brokerService.getActiveFixSessions()) {
+            if(!broker.getFixSession().isAcceptor() && broker.getFixSession().getMappedBrokerId() == null) {
                 target = broker;
                 break;
             }
         }
         assertNotNull(target);
-        selector.setSelectedBrokerId(target.getBrokerId());
+        selector.setSelectedBrokerId(new BrokerID(target.getFixSession().getBrokerId()));
         selector.setChooseBrokerException(null);
         acceptorModuleUrn = FixAcceptorModuleFactory.INSTANCE_URN;
         initiatorModuleUrn = FixInitiatorModuleFactory.INSTANCE_URN;
         acceptorSessions.clear();
         initiatorSessions.clear();
-        for(Broker broker : brokerService.getBrokers()) {
+        for(ActiveFixSession broker : brokerService.getActiveFixSessions()) {
             if(broker.getFixSession().isAcceptor()) {
                 acceptorSessions.add(new SessionID(broker.getFixSession().getSessionId()));
             } else {
@@ -427,17 +426,17 @@ public class IntegrationTestBase
     protected void verifySessionsConnected()
             throws Exception
     {
-        for(final Broker broker : brokerService.getBrokers()) {
+        for(final ActiveFixSession broker : brokerService.getActiveFixSessions()) {
             MarketDataFeedTestBase.wait(new Callable<Boolean>() {
                 @Override
                 public Boolean call()
                         throws Exception
                 {
-                    BrokerStatus brokerStatus = brokerService.getBrokerStatus(broker.getBrokerId());
+                    FixSessionStatus brokerStatus = brokerService.getFixSessionStatus(new BrokerID(broker.getFixSession().getBrokerId()));
                     if(brokerStatus == null) {
                         return false;
                     }
-                    return brokerStatus.getLoggedOn();
+                    return brokerStatus.isLoggedOn();
                 }}
             );
         }
@@ -606,29 +605,22 @@ public class IntegrationTestBase
     protected void makeBrokerAvailable(BrokerID inBrokerId)
             throws Exception
     {
-        Broker broker = brokerService.getBroker(inBrokerId);
-        assertNotNull(broker);
-        reportBrokerStatus(broker,
-                           FixSessionStatus.CONNECTED,
-                           true);
+        reportBrokerStatus(inBrokerId,
+                           FixSessionStatus.CONNECTED);
     }
     /**
      * Reports the broker status as indicated.
      *
-     * @param inBroker a <code>Broker</code> value
+     * @param inBrokerId a <code>BrokerID</code> value
      * @param inFixSessionStatus a <code>FixSessionStatus</code> value
-     * @param inIsLoggedOn a <code>boolean</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected void reportBrokerStatus(Broker inBroker,
-                                    FixSessionStatus inFixSessionStatus,
-                                    boolean inIsLoggedOn)
+    protected void reportBrokerStatus(BrokerID inBrokerId,
+                                      FixSessionStatus inFixSessionStatus)
             throws Exception
     {
-        brokerService.reportBrokerStatus(brokerService.generateBrokerStatus(inBroker.getFixSession(),
-                                                                            clusterService.getInstanceData(),
-                                                                            FixSessionStatus.CONNECTED,
-                                                                            true));
+        brokerService.reportBrokerStatus(inBrokerId,
+                                         inFixSessionStatus);
     }
     /**
      * Generate a test order single.
@@ -798,11 +790,11 @@ public class IntegrationTestBase
             public Boolean call()
                     throws Exception
             {
-                BrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
+                FixSessionStatus status = brokerService.getFixSessionStatus(inBrokerId);
                 if(status == null) {
                     return false;
                 }
-                return !status.getStatus().isEnabled();
+                return !status.isEnabled();
             }
         });
     }
@@ -820,8 +812,8 @@ public class IntegrationTestBase
             public Boolean call()
                     throws Exception
             {
-                BrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
-                return status == null || status.getStatus() == FixSessionStatus.DELETED;
+                FixSessionStatus status = brokerService.getFixSessionStatus(inBrokerId);
+                return status == null || status == FixSessionStatus.DELETED;
             }
         });
     }
@@ -839,11 +831,11 @@ public class IntegrationTestBase
             public Boolean call()
                     throws Exception
             {
-                BrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
+                FixSessionStatus status = brokerService.getFixSessionStatus(inBrokerId);
                 if(status == null) {
                     return false;
                 }
-                return status.getLoggedOn();
+                return status.isLoggedOn();
             }
         });
     }
@@ -908,11 +900,11 @@ public class IntegrationTestBase
             public Boolean call()
                     throws Exception
             {
-                BrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
+                FixSessionStatus status = brokerService.getFixSessionStatus(inBrokerId);
                 if(status == null) {
                     return false;
                 }
-                return !status.getLoggedOn();
+                return !status.isLoggedOn();
             }
         });
     }
@@ -930,11 +922,11 @@ public class IntegrationTestBase
             public Boolean call()
                     throws Exception
             {
-                BrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
+                FixSessionStatus status = brokerService.getFixSessionStatus(inBrokerId);
                 if(status == null) {
                     return false;
                 }
-                return status.getStatus().isEnabled();
+                return status.isEnabled();
             }
         });
     }
@@ -949,23 +941,23 @@ public class IntegrationTestBase
                                       Boolean inExpectedStatus)
             throws Exception
     {
-        BrokerStatus brokerStatus = brokerService.getBrokerStatus(inBrokerId);
+        FixSessionStatus brokerStatus = brokerService.getFixSessionStatus(inBrokerId);
         if(inExpectedStatus == null) {
             assertNull(brokerStatus);
         } else {
             assertEquals(inExpectedStatus,
-                         brokerStatus.getLoggedOn());
+                         brokerStatus.isLoggedOn());
         }
     }
     /**
      * Get an initiator broker.
      *
-     * @return a <code>Broker</code> value
+     * @return an <code>ActiveFixSession</code> value
      */
-    protected Broker getInitiator()
+    protected ActiveFixSession getInitiator()
     {
         for(FixSession fixSession : fixSessionProvider.findFixSessions(false,1,1)) {
-            return brokerService.getBroker(new BrokerID(fixSession.getBrokerId()));
+            return brokerService.getActiveFixSession(new BrokerID(fixSession.getBrokerId()));
         }
         throw new UnsupportedOperationException("No initiators configured!");
     }

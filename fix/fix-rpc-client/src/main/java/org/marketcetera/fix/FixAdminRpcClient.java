@@ -2,15 +2,10 @@ package org.marketcetera.fix;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerStatusListener;
-import org.marketcetera.brokers.BrokersStatus;
-import org.marketcetera.brokers.ClusteredBrokerStatus;
-import org.marketcetera.brokers.ClusteredBrokersStatus;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
@@ -515,7 +510,7 @@ public class FixAdminRpcClient
                                        getSessionId(),
                                        addBrokerStatusListenerRequest);
                 getAsyncStub().addBrokerStatusListener(addBrokerStatusListenerRequest,
-                                                       (BrokerStatusListenerProxy)listener);
+                                                       (FixSessionStatusListenerProxy)listener);
                 return null;
             }
         });
@@ -561,11 +556,11 @@ public class FixAdminRpcClient
      * @see org.marketcetera.trade.client.TradingClient#getBrokersStatus()
      */
     @Override
-    public BrokersStatus getBrokersStatus()
+    public Collection<ActiveFixSession> getSessionsStatus()
     {
-        return executeCall(new Callable<BrokersStatus>() {
+        return executeCall(new Callable<Collection<ActiveFixSession>>() {
             @Override
-            public BrokersStatus call()
+            public Collection<ActiveFixSession> call()
                     throws Exception
             {
                 SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
@@ -578,19 +573,15 @@ public class FixAdminRpcClient
                                        "{} received {}",
                                        getSessionId(),
                                        response);
-                List<ClusteredBrokerStatus> brokers = Lists.newArrayList();
-                for(FixAdminRpc.BrokerStatus rpcBrokerStatus : response.getBrokerStatusList()) {
-                    Optional<BrokerStatus> brokerStatus = FixRpcUtil.getBrokerStatus(rpcBrokerStatus);
-                    if(brokerStatus.isPresent()) {
-                        brokers.add((ClusteredBrokerStatus)brokerStatus.get());
-                    }
-                }
-                BrokersStatus brokersStatus = new ClusteredBrokersStatus(brokers);
+                List<ActiveFixSession> activeFixSessions = Lists.newArrayList();
+                response.getBrokerStatusList().parallelStream()
+                    .forEach(rpcActiveFixSession->FixRpcUtil.getActiveFixSession(rpcActiveFixSession)
+                    .ifPresent(activeFixSession->activeFixSessions.add(activeFixSession)));
                 SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
-                                       brokersStatus);
-                return brokersStatus;
+                                       activeFixSessions);
+                return activeFixSessions;
             }}
         );
     }
@@ -668,27 +659,27 @@ public class FixAdminRpcClient
     private static AbstractClientListenerProxy<?,?,?> getListenerFor(Object inListener)
     {
         if(inListener instanceof BrokerStatusListener) {
-            return new BrokerStatusListenerProxy((BrokerStatusListener)inListener);
+            return new FixSessionStatusListenerProxy((BrokerStatusListener)inListener);
         } else {
             throw new UnsupportedOperationException();
         }
     }
     /**
-     * Provides an interface between broker message stream listeners and their handlers.
+     * Provides an interface between session status message stream listeners and their handlers.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
      * @since $Release$
      */
-    private static class BrokerStatusListenerProxy
-            extends BaseRpcUtil.AbstractClientListenerProxy<BrokerStatusListenerResponse,BrokerStatus,BrokerStatusListener>
+    private static class FixSessionStatusListenerProxy
+            extends BaseRpcUtil.AbstractClientListenerProxy<BrokerStatusListenerResponse,ActiveFixSession,BrokerStatusListener>
     {
         /**
          * Create a new BrokerStatusListenerProxy instance.
          *
-         * @param inMessageListener
+         * @param inMessageListener a <code>BrokerStatusListener</code> value
          */
-        protected BrokerStatusListenerProxy(BrokerStatusListener inMessageListener)
+        protected FixSessionStatusListenerProxy(BrokerStatusListener inMessageListener)
         {
             super(inMessageListener);
         }
@@ -696,16 +687,16 @@ public class FixAdminRpcClient
          * @see org.marketcetera.trading.rpc.FixAdminRpcClient.AbstractListenerProxy#translateMessage(java.lang.Object)
          */
         @Override
-        protected BrokerStatus translateMessage(BrokerStatusListenerResponse inResponse)
+        protected ActiveFixSession translateMessage(BrokerStatusListenerResponse inResponse)
         {
-            return FixRpcUtil.getBrokerStatus(inResponse).orElse(null);
+            return FixRpcUtil.getActiveFixSession(inResponse).orElse(null);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.trading.rpc.FixAdminRpcClient.AbstractListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
          */
         @Override
         protected void sendMessage(BrokerStatusListener inMessageListener,
-                                   BrokerStatus inMessage)
+                                   ActiveFixSession inMessage)
         {
             inMessageListener.receiveBrokerStatus(inMessage);
         }

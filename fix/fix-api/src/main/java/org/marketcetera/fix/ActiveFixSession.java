@@ -1,6 +1,9 @@
 package org.marketcetera.fix;
 
-import org.marketcetera.cluster.ClusterData;
+import java.util.Set;
+
+import org.marketcetera.algo.BrokerAlgoSpec;
+import org.marketcetera.cluster.HasClusterData;
 import org.marketcetera.core.DomainObject;
 import org.marketcetera.core.HasMutableView;
 
@@ -14,7 +17,7 @@ import org.marketcetera.core.HasMutableView;
  * @since $Release$
  */
 public interface ActiveFixSession
-        extends DomainObject,HasMutableView<MutableActiveFixSession>
+        extends DomainObject,HasMutableView<MutableActiveFixSession>,HasClusterData
 {
     /**
      * Get the next target sequence number.
@@ -35,15 +38,15 @@ public interface ActiveFixSession
      */
     FixSessionStatus getStatus();
     /**
-     * Get the cluster data value.
-     *
-     * @return a <code>ClusterData</code> value
-     */
-    ClusterData getClusterData();
-    /**
      * Get the FIX session value.
      *
      * @return a <code>FixSession</code> value
      */
     FixSession getFixSession();
+    /**
+     * Get the brokerAlgos value.
+     *
+     * @return a <code>Set&lt;BrokerAlgoSpec&gt;</code> value
+     */
+    Set<BrokerAlgoSpec> getBrokerAlgos();
 }

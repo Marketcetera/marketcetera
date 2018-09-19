@@ -7,11 +7,12 @@ import java.math.BigDecimal;
 import java.util.Deque;
 
 import org.junit.Test;
-import org.marketcetera.brokers.Broker;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.test.IntegrationTestBase;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderSingle;
@@ -63,16 +64,16 @@ public class OrderConverterModuleTest
     public void testSpecifiedBroker()
             throws Exception
     {
-        Broker target = null;
-        for(Broker broker : brokerService.getBrokers()) {
-            if(!broker.getFixSession().isAcceptor() && broker.getMappedBrokerId() == null) {
+        ActiveFixSession target = null;
+        for(ActiveFixSession broker : brokerService.getActiveFixSessions()) {
+            if(!broker.getFixSession().isAcceptor() && broker.getFixSession().getMappedBrokerId() == null) {
                 target = broker;
                 break;
             }
         }
-        makeBrokerAvailable(target.getBrokerId());
+        makeBrokerAvailable(new BrokerID(target.getFixSession().getBrokerId()));
         final OrderSingle testOrder = Factory.getInstance().createOrderSingle();
-        testOrder.setBrokerID(target.getBrokerId());
+        testOrder.setBrokerID(new BrokerID(target.getFixSession().getBrokerId()));
         testOrder.setInstrument(new Equity("METC"));
         testOrder.setOrderType(OrderType.Market);
         testOrder.setQuantity(BigDecimal.TEN);
@@ -98,15 +99,15 @@ public class OrderConverterModuleTest
     public void testNoSpecifiedBroker()
             throws Exception
     {
-        Broker target = null;
-        for(Broker broker : brokerService.getBrokers()) {
-            if(!broker.getFixSession().isAcceptor() && broker.getMappedBrokerId() == null) {
+        ActiveFixSession target = null;
+        for(ActiveFixSession broker : brokerService.getActiveFixSessions()) {
+            if(!broker.getFixSession().isAcceptor() && broker.getFixSession().getMappedBrokerId() == null) {
                 target = broker;
                 break;
             }
         }
-        makeBrokerAvailable(target.getBrokerId());
-        selector.setSelectedBrokerId(target.getBrokerId());
+        makeBrokerAvailable(new BrokerID(target.getFixSession().getBrokerId()));
+        selector.setSelectedBrokerId(new BrokerID(target.getFixSession().getBrokerId()));
         selector.setChooseBrokerException(null);
         final OrderSingle testOrder = Factory.getInstance().createOrderSingle();
         testOrder.setInstrument(new Equity("METC"));
@@ -134,16 +135,16 @@ public class OrderConverterModuleTest
     public void testSelectionException()
             throws Exception
     {
-        Broker target = null;
-        for(Broker broker : brokerService.getBrokers()) {
-            if(!broker.getFixSession().isAcceptor() && broker.getMappedBrokerId() == null) {
+        ActiveFixSession target = null;
+        for(ActiveFixSession broker : brokerService.getActiveFixSessions()) {
+            if(!broker.getFixSession().isAcceptor() && broker.getFixSession().getMappedBrokerId() == null) {
                 target = broker;
                 break;
             }
         }
-        makeBrokerAvailable(target.getBrokerId());
+        makeBrokerAvailable(new BrokerID(target.getFixSession().getBrokerId()));
         TestBrokerSelector selector = applicationContext.getBean(TestBrokerSelector.class);
-        selector.setSelectedBrokerId(target.getBrokerId());
+        selector.setSelectedBrokerId(new BrokerID(target.getFixSession().getBrokerId()));
         selector.setChooseBrokerException(new RuntimeException("This exception is expected"));
         final OrderSingle testOrder = Factory.getInstance().createOrderSingle();
         testOrder.setInstrument(new Equity("METC"));

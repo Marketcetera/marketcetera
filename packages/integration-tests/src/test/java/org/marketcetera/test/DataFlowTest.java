@@ -9,12 +9,13 @@ import java.math.BigDecimal;
 
 import org.junit.Test;
 import org.marketcetera.admin.User;
-import org.marketcetera.brokers.Broker;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.module.HasMutableStatus;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionType;
@@ -48,14 +49,14 @@ public class DataFlowTest
     public void testAddReport()
             throws Exception
     {
-        Broker initiatorBroker = getInitiator();
+        ActiveFixSession initiatorBroker = getInitiator();
         User user = getTraderUser();
         CalculatedOrderData order1Data = new CalculatedOrderData(new BigDecimal(10000),
                                                                  new BigDecimal(100),
                                                                  OrderType.Limit,
                                                                  Side.Buy);
         quickfix.Message order1 = order1Data.generateOrder(new Equity("METC"),
-                                                           initiatorBroker.getSessionId());
+                                                           new SessionID(initiatorBroker.getFixSession().getSessionId()));
         FIXVersion fixVersion = FIXVersion.getFIXVersion(order1);
         quickfix.Message message = generateExecutionReport(order1,
                                                            order1Data,
@@ -65,7 +66,7 @@ public class DataFlowTest
                                                            fixVersion.getMessageFactory());
         ReportWrapper reportWrapper = new ReportWrapper(message);
         reportService.addReport(reportWrapper,
-                                initiatorBroker.getBrokerId(),
+                                new BrokerID(initiatorBroker.getFixSession().getBrokerId()),
                                 user.getUserID());
         assertFalse(reportWrapper.getFailed());
     }
@@ -78,14 +79,14 @@ public class DataFlowTest
     public void testDeleteReport()
             throws Exception
     {
-        Broker initiatorBroker = getInitiator();
+        ActiveFixSession initiatorBroker = getInitiator();
         User user = getTraderUser();
         CalculatedOrderData order1Data = new CalculatedOrderData(new BigDecimal(10000),
                                                                  new BigDecimal(100),
                                                                  OrderType.Limit,
                                                                  Side.Buy);
         quickfix.Message order1 = order1Data.generateOrder(new Equity("METC"),
-                                                           initiatorBroker.getSessionId());
+                                                           new SessionID(initiatorBroker.getFixSession().getSessionId()));
         FIXVersion fixVersion = FIXVersion.getFIXVersion(order1);
         quickfix.Message message = generateExecutionReport(order1,
                                                            order1Data,
@@ -95,7 +96,7 @@ public class DataFlowTest
                                                            fixVersion.getMessageFactory());
         ReportWrapper reportWrapper = new ReportWrapper(message);
         reportService.addReport(reportWrapper,
-                                initiatorBroker.getBrokerId(),
+                                new BrokerID(initiatorBroker.getFixSession().getBrokerId()),
                                 user.getUserID());
         TradeMessage tradeMessage = waitForNextTradeMessage();
         assertTrue(tradeMessage instanceof ExecutionReport);
@@ -118,8 +119,8 @@ public class DataFlowTest
             throws Exception
     {
         // create an order with three executions: new, partially filled, filled
-        Broker initiatorBroker = getInitiator();
-        SessionID initiatorSessionId = initiatorBroker.getSessionId();
+        ActiveFixSession initiatorBroker = getInitiator();
+        SessionID initiatorSessionId = new SessionID(initiatorBroker.getFixSession().getSessionId());
         CalculatedOrderData order1Data = new CalculatedOrderData(new BigDecimal(10000),
                                                                  new BigDecimal(100),
                                                                  OrderType.Limit,

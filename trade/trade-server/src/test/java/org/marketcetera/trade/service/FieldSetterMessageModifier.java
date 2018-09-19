@@ -1,7 +1,7 @@
 package org.marketcetera.trade.service;
 
-import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.MessageModifier;
+import org.marketcetera.fix.ServerFixSession;
 
 import quickfix.Message;
 
@@ -18,10 +18,10 @@ public class FieldSetterMessageModifier
         implements MessageModifier
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.brokers.MessageModifier#modify(org.marketcetera.brokers.Broker, quickfix.Message)
+     * @see org.marketcetera.brokers.MessageModifier#modify(org.marketcetera.fix.ServerFixSession, quickfix.Message)
      */
     @Override
-    public boolean modify(Broker inBroker,
+    public boolean modify(ServerFixSession inServerFixSession,
                           Message inMessage)
     {
         inMessage.setString(field,

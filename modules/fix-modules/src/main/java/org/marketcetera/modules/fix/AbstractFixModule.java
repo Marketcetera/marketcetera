@@ -3,12 +3,11 @@ package org.marketcetera.modules.fix;
 import java.util.Collection;
 import java.util.Set;
 
-import org.marketcetera.brokers.Broker;
-import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.FixSettingsProvider;
@@ -27,6 +26,7 @@ import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.module.RequestDataException;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -382,7 +382,7 @@ public abstract class AbstractFixModule
                             boolean inCreated,
                             boolean inLoggedOn)
     {
-        Broker broker = brokerService.getBroker(inSessionId);
+        ActiveFixSession broker = brokerService.getActiveFixSession(inSessionId);
         if(broker == null) {
             SLF4JLoggerProxy.warn(this,
                                   "No broker for {}, cannot report status",
@@ -414,12 +414,9 @@ public abstract class AbstractFixModule
                 }
             }
         }
-        BrokerStatus brokerStatus = brokerService.generateBrokerStatus(broker.getFixSession(),
-                                                                       instanceData,
-                                                                       status,
-                                                                       inLoggedOn);
         synchronized(brokerStatusBroadcasterLock) {
-            brokerService.postBrokerStatus(brokerStatus);
+            brokerService.reportBrokerStatus(new BrokerID(fixSession.getBrokerId()),
+                                             status);
         }
     }
     /**

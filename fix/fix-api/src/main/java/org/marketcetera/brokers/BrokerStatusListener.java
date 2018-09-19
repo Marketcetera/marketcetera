@@ -1,6 +1,6 @@
 package org.marketcetera.brokers;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.fix.ActiveFixSession;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -18,14 +18,13 @@ import com.google.common.eventbus.Subscribe;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
 public interface BrokerStatusListener
 {
     /**
      * Supplies a broker status to the receiver.
      *
-     * @param status The status.
+     * @param inActiveFixSession an <code>ActiveFixSession</code> value
      */
     @Subscribe
-    void receiveBrokerStatus(BrokerStatus status);
+    void receiveBrokerStatus(ActiveFixSession inActiveFixSession);
 }

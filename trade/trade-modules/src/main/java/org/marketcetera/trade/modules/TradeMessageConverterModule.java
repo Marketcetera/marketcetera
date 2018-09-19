@@ -1,9 +1,9 @@
 package org.marketcetera.trade.modules;
 
-import org.marketcetera.brokers.Broker;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.OrderIntercepted;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitterSupport;
@@ -46,27 +46,27 @@ public class TradeMessageConverterModule
         }
         HasFIXMessage hasFixMessage = (HasFIXMessage)inData;
         Message fixTradeMessage = hasFixMessage.getMessage();
-        Broker broker;
+        ServerFixSession serverFixSession;
         try {
-            broker = brokerService.getBroker(FIXMessageUtil.getReversedSessionId(FIXMessageUtil.getSessionId(fixTradeMessage)));
+            serverFixSession = brokerService.getServerFixSession(FIXMessageUtil.getReversedSessionId(FIXMessageUtil.getSessionId(fixTradeMessage)));
         } catch (FieldNotFound e) {
             throw new ReceiveDataException(e);
         }
-        if(broker == null) {
-            throw new ReceiveDataException(new RuntimeException("Message rejected because the broker is unknown for: " + fixTradeMessage)); // TODO
+        if(serverFixSession == null) {
+            throw new ReceiveDataException(new RuntimeException("Message rejected because the session is unknown for: " + fixTradeMessage)); // TODO
         }
         SLF4JLoggerProxy.debug(this,
                                "Received {} for {}",
                                fixTradeMessage,
-                               broker);
+                               serverFixSession);
         try {
             TradeMessage tradeMessage = tradeService.convertResponse(hasFixMessage,
-                                                                     broker);
+                                                                     serverFixSession);
             SLF4JLoggerProxy.debug(this,
                                    "Converted {} to {}",
                                    fixTradeMessage,
                                    tradeMessage);
-            return new TradeMessagePackage(broker,
+            return new TradeMessagePackage(serverFixSession,
                                            tradeMessage);
         } catch (OrderIntercepted e) {
             SLF4JLoggerProxy.info(this,

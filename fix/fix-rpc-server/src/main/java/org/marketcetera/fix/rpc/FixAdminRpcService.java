@@ -8,11 +8,10 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.admin.service.AuthorizationService;
-import org.marketcetera.brokers.BrokerStatus;
 import org.marketcetera.brokers.BrokerStatusListener;
-import org.marketcetera.brokers.BrokersStatus;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.brokers.service.FixSessionProvider;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixAdminRpc;
 import org.marketcetera.fix.FixAdminRpc.AddBrokerStatusListenerRequest;
 import org.marketcetera.fix.FixAdminRpc.BrokerStatusListenerResponse;
@@ -46,9 +45,11 @@ import org.marketcetera.fix.FixPermissions;
 import org.marketcetera.fix.FixRpcUtil;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
+import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.MutableFixSession;
 import org.marketcetera.fix.store.MessageStoreSession;
 import org.marketcetera.fix.store.MessageStoreSessionDao;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
@@ -208,21 +209,20 @@ public class FixAdminRpcService<SessionClazz>
                 } else {
                     pageRequest = new PageRequest(0,Integer.MAX_VALUE);
                 }
-//                CollectionPageResponse<ActiveFixSession> pagedResponse = fixSessionProvider.findActiveFixSessions(pageRequest);
-//                if(pagedResponse != null) {
-//                    responseBuilder.setPage(PagingRpcUtil.getPageResponse(pageRequest,
-//                                                                          pagedResponse));
-//                    for(ActiveFixSession activeFixSession : pagedResponse.getElements()) {
-//                        FixRpcUtil.getRpcActiveFixSession(activeFixSession).ifPresent(rpcFixSession->responseBuilder.addFixSession(rpcFixSession));
-//                    }
-//                }
-//                FixAdminRpc.ReadFixSessionsResponse response = responseBuilder.build();
-//                SLF4JLoggerProxy.trace(FixAdminRpcService.this,
-//                                       "Returning {}",
-//                                       response);
-//                inResponseObserver.onNext(response);
-//                inResponseObserver.onCompleted();
-                throw new UnsupportedOperationException();
+                CollectionPageResponse<ActiveFixSession> pagedResponse = brokerService.getActiveFixSessions(pageRequest);
+                if(pagedResponse != null) {
+                    responseBuilder.setPage(PagingRpcUtil.getPageResponse(pageRequest,
+                                                                          pagedResponse));
+                    for(ActiveFixSession activeFixSession : pagedResponse.getElements()) {
+                        FixRpcUtil.getRpcActiveFixSession(activeFixSession).ifPresent(rpcFixSession->responseBuilder.addFixSession(rpcFixSession));
+                    }
+                }
+                FixAdminRpc.ReadFixSessionsResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(FixAdminRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
             } catch (Exception e) {
                 if(e instanceof StatusRuntimeException) {
                     throw (StatusRuntimeException)e;
@@ -504,8 +504,8 @@ public class FixAdminRpcService<SessionClazz>
                 if(fixSession == null) {
                     throw new IllegalArgumentException("No FIX session with name '" + inRequest.getName() + "'");
                 }
-                BrokerStatus brokerStatus = brokerService.getBrokerStatus(new BrokerID(fixSession.getBrokerId()));
-                if(brokerStatus.getStatus().isStarted()) {
+                FixSessionStatus brokerStatus = brokerService.getFixSessionStatus(new BrokerID(fixSession.getBrokerId()));
+                if(brokerStatus.isStarted()) {
                     throw new IllegalArgumentException("FIX session " + inRequest.getName() + " is running");
                 }
                 // TODO this should be moved to a service with transactions
@@ -580,9 +580,9 @@ public class FixAdminRpcService<SessionClazz>
                 authzService.authorize(sessionHolder.getUser(),
                                        FixPermissions.ViewBrokerStatusAction.name());
                 FixAdminRpc.BrokersStatusResponse.Builder responseBuilder = FixAdminRpc.BrokersStatusResponse.newBuilder();
-                BrokersStatus brokersStatus = brokerService.getBrokersStatus();
-                FixRpcUtil.setBrokersStatus(brokersStatus,
-                                            responseBuilder);
+                Collection<ActiveFixSession> activeFixSessions = brokerService.getActiveFixSessions();
+                FixRpcUtil.setActiveFixSessions(activeFixSessions,
+                                                responseBuilder);
                 FixAdminRpc.BrokersStatusResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(FixAdminRpcService.this,
                                        "Returning {}",
@@ -638,10 +638,10 @@ public class FixAdminRpcService<SessionClazz>
          * @see org.marketcetera.brokers.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.brokers.BrokerStatus)
          */
         @Override
-        public void receiveBrokerStatus(BrokerStatus inStatus)
+        public void receiveBrokerStatus(ActiveFixSession inStatus)
         {
-            FixRpcUtil.setBrokerStatus(inStatus,
-                                       responseBuilder);
+            FixRpcUtil.setActiveFixSession(inStatus,
+                                           responseBuilder);
             BrokerStatusListenerResponse response = responseBuilder.build();
             SLF4JLoggerProxy.trace(FixAdminRpcService.class,
                                    "{} received broker status {}, sending {}",

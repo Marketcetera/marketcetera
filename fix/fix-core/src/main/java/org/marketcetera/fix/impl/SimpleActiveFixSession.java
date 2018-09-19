@@ -1,12 +1,24 @@
 package org.marketcetera.fix.impl;
 
 import java.io.Serializable;
+import java.util.Set;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.marketcetera.algo.BrokerAlgoSpec;
+import org.marketcetera.brokers.SessionCustomization;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.MutableActiveFixSession;
+
+import com.google.common.collect.Sets;
 
 /* $License$ */
 
@@ -17,8 +29,10 @@ import org.marketcetera.fix.MutableActiveFixSession;
  * @version $Id$
  * @since $Release$
  */
+@XmlRootElement(name="ActiveFixSession")
+@XmlAccessorType(XmlAccessType.NONE)
 public class SimpleActiveFixSession
-        implements MutableActiveFixSession,Serializable
+        implements MutableActiveFixSession,Serializable,Comparable<SimpleActiveFixSession>
 {
     /**
      * Create a new SimpleActiveFixSession instance.
@@ -31,11 +45,44 @@ public class SimpleActiveFixSession
         setSenderSequenceNumber(inActiveFixSession.getSenderSequenceNumber());
         setStatus(inActiveFixSession.getStatus());
         setTargetSequenceNumber(inActiveFixSession.getTargetSequenceNumber());
+        setBrokerAlgos(inActiveFixSession.getBrokerAlgos());
     }
     /**
      * Create a new SimpleActiveFixSession instance.
      */
     public SimpleActiveFixSession() {}
+    /**
+     * Create a new SimpleActiveFixSession instance.
+     *
+     * @param inUnderlyingFixSession
+     * @param inInstanceData
+     * @param inBrokerStatus
+     * @param inSessionCustomization
+     */
+    public SimpleActiveFixSession(FixSession inUnderlyingFixSession,
+                                  ClusterData inInstanceData,
+                                  FixSessionStatus inBrokerStatus,
+                                  SessionCustomization inSessionCustomization)
+    {
+        throw new UnsupportedOperationException();
+    }
+    /**
+     * Create a new SimpleActiveFixSession instance.
+     *
+     * @param inUnderlyingFixSession
+     * @param inInstanceData
+     * @param inBrokerStatus
+     * @param inSessionCustomization
+     */
+    public SimpleActiveFixSession(FixSession inUnderlyingFixSession,
+                                  ClusterData inInstanceData,
+                                  FixSessionStatus inBrokerStatus)
+    {
+        this(inUnderlyingFixSession,
+             inInstanceData,
+             inBrokerStatus,
+             null);
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.fix.ActiveFixSession#getTargetSequenceNumber()
      */
@@ -125,37 +172,106 @@ public class SimpleActiveFixSession
         clusterData = inClusterData;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.fix.ActiveFixSession#getBrokerAlgos()
+     */
+    @Override
+    public Set<BrokerAlgoSpec> getBrokerAlgos()
+    {
+        return brokerAlgos;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.MutableActiveFixSession#setBrokerAlgos(java.util.Set)
+     */
+    @Override
+    public void setBrokerAlgos(Set<BrokerAlgoSpec> inBrokerAlgoSpecs)
+    {
+        brokerAlgos = inBrokerAlgoSpecs;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("SimpleActiveFixSession [fixSession=").append(fixSession).append(", clusterData=")
-                .append(clusterData).append(", targetSequenceNumber=").append(targetSequenceNumber)
-                .append(", senderSequenceNumber=").append(senderSequenceNumber).append(", fixSessionStatus=")
-                .append(fixSessionStatus).append("]");
+        builder.append("Session: ").append(getFixSession().getName()).append(" (").append(getFixSession().getBrokerId()).append(")");
+        if(fixSessionStatus == null) {
+            builder.append("is unknown on ");
+        } else {
+            switch(fixSessionStatus) {
+                case AFFINITY_MISMATCH:
+                    builder.append("is not bound on ");
+                    builder.append(clusterData);
+                    break;
+                case BACKUP:
+                    builder.append("is backup on ");
+                    builder.append(clusterData);
+                    break;
+                case CONNECTED:
+                    builder.append("is available on ");
+                    builder.append(clusterData);
+                    break;
+                case DELETED:
+                    builder.append("has been deleted");
+                    break;
+                case DISABLED:
+                    builder.append("is disabled");
+                    break;
+                case DISCONNECTED:
+                    builder.append("is disconnected on ");
+                    builder.append(clusterData);
+                    break;
+                case NOT_CONNECTED:
+                    builder.append("is not connected on ");
+                    builder.append(clusterData);
+                    break;
+                case STOPPED:
+                    builder.append("is stopped on ");
+                    builder.append(clusterData);
+                    break;
+                default:
+                    break;
+            }
+        }
         return builder.toString();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(SimpleActiveFixSession inO)
+    {
+        return new CompareToBuilder().append(getFixSession().getBrokerId(),inO.getFixSession().getBrokerId()).toComparison();
     }
     /**
      * FIX session value
      */
+    @XmlAttribute
     private FixSession fixSession;
     /**
      * cluster data value
      */
+    @XmlAttribute
     private ClusterData clusterData;
     /**
      * target sequence number value
      */
+    @XmlAttribute
     private int targetSequenceNumber;
     /**
      * sender sequence number value
      */
+    @XmlAttribute
     private int senderSequenceNumber;
     /**
      * fix session status value
      */
+    @XmlAttribute
     private FixSessionStatus fixSessionStatus;
+    /**
+     * broker algos value
+     */
+    @XmlElementWrapper
+    private Set<BrokerAlgoSpec> brokerAlgos = Sets.newHashSet();
     private static final long serialVersionUID = 2114962365315641093L;
 }
