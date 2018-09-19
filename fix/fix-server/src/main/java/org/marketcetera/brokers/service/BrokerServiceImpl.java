@@ -2,7 +2,6 @@ package org.marketcetera.brokers.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +30,7 @@ import org.marketcetera.admin.User;
 import org.marketcetera.brokers.BrokerConstants;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.SessionCustomization;
+import org.marketcetera.cluster.CallableClusterTask;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterListener;
 import org.marketcetera.cluster.service.ClusterMember;
@@ -47,6 +47,7 @@ import org.marketcetera.fix.FixSettingsProviderFactory;
 import org.marketcetera.fix.MutableActiveFixSession;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
 import org.marketcetera.fix.ServerFixSession;
+import org.marketcetera.fix.ServerFixSessionFactory;
 import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.fix.SessionSchedule;
 import org.marketcetera.fix.SessionSettingsGenerator;
@@ -100,7 +101,7 @@ public class BrokerServiceImpl
         }
         SessionCustomization sessionCustomization = getSessionCustomization(underlyingFixSession);
         return activeFixSessionFactory.create(underlyingFixSession,
-                                              instanceData,
+                                              getClusterData(new SessionID(underlyingFixSession.getSessionId())),
                                               getFixSessionStatus(inBrokerId),
                                               sessionCustomization);
     }
@@ -122,7 +123,18 @@ public class BrokerServiceImpl
     @Override
     public Collection<ActiveFixSession> getActiveFixSessions()
     {
-        return Lists.newArrayList(clusterBrokerStatus);
+        List<FixSession> fixSessions = fixSessionProvider.findFixSessions();
+        Collection<ActiveFixSession> activeFixSessions = Lists.newArrayList();
+        for(FixSession fixSession : fixSessions) {
+            BrokerID brokerId = new BrokerID(fixSession.getBrokerId());
+            SessionID sessionId = new SessionID(fixSession.getSessionId());
+            FixSessionStatus sessionStatus = getFixSessionStatus(brokerId);
+            activeFixSessions.add(activeFixSessionFactory.create(fixSession,
+                                                                 getClusterData(sessionId),
+                                                                 sessionStatus,
+                                                                 getSessionCustomization(fixSession)));
+        }
+        return activeFixSessions;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getActiveFixSessions(org.marketcetera.persist.PageRequest)
@@ -130,8 +142,25 @@ public class BrokerServiceImpl
     @Override
     public CollectionPageResponse<ActiveFixSession> getActiveFixSessions(PageRequest inPageRequest)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        CollectionPageResponse<ActiveFixSession> result = new CollectionPageResponse<>();
+        CollectionPageResponse<FixSession> intermediateResult = fixSessionProvider.findFixSessions(inPageRequest);
+        for(FixSession fixSession : intermediateResult.getElements()) {
+            BrokerID brokerId = new BrokerID(fixSession.getBrokerId());
+            SessionID sessionId = new SessionID(fixSession.getSessionId());
+            FixSessionStatus sessionStatus = getFixSessionStatus(brokerId);
+            result.getElements().add(activeFixSessionFactory.create(fixSession,
+                                                                    getClusterData(sessionId),
+                                                                    sessionStatus,
+                                                                    getSessionCustomization(fixSession)));
+        }
+        result.setHasContent(intermediateResult.hasContent());
+        result.setPageMaxSize(intermediateResult.getPageMaxSize());
+        result.setPageNumber(intermediateResult.getPageNumber());
+        result.setPageSize(intermediateResult.getPageSize());
+        result.setSortOrder(intermediateResult.getSortOrder());
+        result.setTotalPages(intermediateResult.getTotalPages());
+        result.setTotalSize(intermediateResult.getTotalSize());
+        return result;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getServerFixSession(quickfix.SessionID)
@@ -139,8 +168,15 @@ public class BrokerServiceImpl
     @Override
     public ServerFixSession getServerFixSession(SessionID inSessionId)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        ActiveFixSession activeFixSession = getActiveFixSession(inSessionId);
+        if(activeFixSession == null) {
+            SLF4JLoggerProxy.warn(this,
+                                  "No session for {}",
+                                  inSessionId);
+            return null;
+        }
+        return serverFixSessionFactory.create(activeFixSession,
+                                              getSessionCustomization(activeFixSession.getFixSession()));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getServerFixSession(org.marketcetera.trade.BrokerID)
@@ -148,8 +184,15 @@ public class BrokerServiceImpl
     @Override
     public ServerFixSession getServerFixSession(BrokerID inBrokerId)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        ActiveFixSession activeFixSession = getActiveFixSession(inBrokerId);
+        if(activeFixSession == null) {
+            SLF4JLoggerProxy.warn(this,
+                                  "No session for {}",
+                                  inBrokerId);
+            return null;
+        }
+        return serverFixSessionFactory.create(activeFixSession,
+                                              getSessionCustomization(activeFixSession.getFixSession()));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getServerFixSessions()
@@ -157,8 +200,12 @@ public class BrokerServiceImpl
     @Override
     public Collection<ServerFixSession> getServerFixSessions()
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        Collection<ServerFixSession> results = Lists.newArrayList();
+        for(ActiveFixSession activeFixSession : getActiveFixSessions()) {
+            results.add(serverFixSessionFactory.create(activeFixSession,
+                                                       getSessionCustomization(activeFixSession.getFixSession())));
+        }
+        return results;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getBrokerStatus(org.marketcetera.trade.BrokerID)
@@ -179,7 +226,7 @@ public class BrokerServiceImpl
                     bestStatus = brokerStatus;
                 }
             }
-            return bestStatus.getStatus();
+            return bestStatus == null?FixSessionStatus.UNKNOWN:bestStatus.getStatus();
         }
     }
     /* (non-Javadoc)
@@ -316,7 +363,7 @@ public class BrokerServiceImpl
             }
             ActiveFixSession activeFixSession = generateBrokerStatus(fixSession,
                                                                      inFixSessionStatus);
-            String xmlStatus = marshall(inFixSessionStatus);
+            String xmlStatus = marshall(activeFixSession);
             String key = BrokerConstants.brokerStatusPrefix+inBrokerId+fixSession.getHost();
             clusterService.setAttribute(key,
                                         xmlStatus);
@@ -759,7 +806,7 @@ public class BrokerServiceImpl
      * @return a <code>String</code> value
      * @throws JAXBException if the given object cannot be marshaled
      */
-    private static <Clazz extends Serializable> String marshall(Clazz inData)
+    private static <Clazz> String marshall(Clazz inData)
             throws JAXBException
     {
         synchronized(marshaller) {
@@ -788,7 +835,7 @@ public class BrokerServiceImpl
      */
     private void logBrokerInstanceData()
     {
-        Collection<ActiveFixSession> activeFixSessions = getActiveFixSessions();
+        Collection<ActiveFixSession> activeFixSessions = Lists.newArrayList(clusterBrokerStatus);
         // x-axis is the number of instances total, across all hosts
         SortedSet<String> sortedClusterData = new TreeSet<>();
         // y-axis is the sessions across all hosts
@@ -875,6 +922,70 @@ public class BrokerServiceImpl
         lastBrokerLog = thisBrokerLog;
     }
     /**
+     * Get the cluster data for the given session.
+     *
+     * @param inSessionId a <code>SessionID</code> value
+     * @return a <code>ClusterData</code> value or <code>null</code>
+     */
+    private ClusterData getClusterData(SessionID inSessionId)
+    {
+        try {
+            Map<Object,Future<ClusterData>> results = clusterService.execute(new FindClusterDataTask(inSessionId));
+            ClusterData clusterData = null;
+            for(Map.Entry<Object,Future<ClusterData>> entry : results.entrySet()) {
+                ClusterData returnedValue = entry.getValue().get();
+                if(returnedValue != null) {
+                    clusterData = returnedValue;
+                    break;
+                }
+            }
+            return clusterData;
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "Unable to determine cluster data for {}",
+                                  inSessionId);
+            return null;
+        }
+    }
+    /**
+     * Finds the cluster data for a given session.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class FindClusterDataTask
+            extends CallableClusterTask<ClusterData>
+    {
+        /* (non-Javadoc)
+         * @see java.util.concurrent.Callable#call()
+         */
+        @Override
+        public ClusterData call()
+                throws Exception
+        {
+            if(Session.doesSessionExist(sessionId)) {
+                return getClusterService().getInstanceData();
+            }
+            return null;
+        }
+        /**
+         * Create a new FindClusterDataTask instance.
+         *
+         * @param inSessionId a <code>SessionID</code> value
+         */
+        private FindClusterDataTask(SessionID inSessionId)
+        {
+            sessionId = inSessionId;
+        }
+        /**
+         * session id value
+         */
+        private final SessionID sessionId;
+        private static final long serialVersionUID = -8786699688513719193L;
+    }
+    /**
      * cluster data for this instance
      */
     private ClusterData instanceData;
@@ -908,6 +1019,11 @@ public class BrokerServiceImpl
      */
     @Autowired
     private MutableActiveFixSessionFactory activeFixSessionFactory;
+    /**
+     * creates {@link ServerFixSession} objects
+     */
+    @Autowired
+    private ServerFixSessionFactory serverFixSessionFactory;
     /**
      * publishes broker status changes
      */

@@ -23,9 +23,11 @@ import org.marketcetera.fix.FixSettingsProviderFactory;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
 import org.marketcetera.fix.MutableFixSession;
 import org.marketcetera.fix.MutableFixSessionFactory;
+import org.marketcetera.fix.ServerFixSessionFactory;
 import org.marketcetera.fix.SessionSettingsGenerator;
 import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
+import org.marketcetera.fix.impl.SimpleServerFixSessionFactory;
 import org.marketcetera.fix.provisioning.FixSessionsConfiguration;
 import org.marketcetera.fix.provisioning.SimpleSessionCustomization;
 import org.marketcetera.module.ModuleManager;
@@ -329,6 +331,16 @@ public class IntegrationTestConfiguration
     public MutableFixSessionFactory getFixSessionFactory()
     {
         return new SimpleFixSessionFactory();
+    }
+    /**
+     * Get the server FIX session factory value.
+     *
+     * @return a <code>ServerFixSessionFactory</code> value
+     */
+    @Bean
+    public ServerFixSessionFactory getServerFixSessionFactory()
+    {
+        return new SimpleServerFixSessionFactory();
     }
     /**
      * Get the message owner service value.

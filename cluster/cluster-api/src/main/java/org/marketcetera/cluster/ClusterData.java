@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -19,8 +20,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name="clusterData")
+@XmlAccessorType(XmlAccessType.NONE)
 public class ClusterData
         implements Serializable,Comparable<ClusterData>
 {
@@ -185,22 +186,27 @@ public class ClusterData
     /**
      * the instance number of this member
      */
+    @XmlAttribute
     private int instanceNumber;
     /**
      * the host number of this member
      */
+    @XmlAttribute
     private int hostNumber;
     /**
      * the host id of this member
      */
+    @XmlAttribute
     private String hostId;
     /**
      * the total expected number of instances in the cluster
      */
+    @XmlAttribute
     private int totalInstances;
     /**
      * the unique identified of this instance in the cluster
      */
+    @XmlAttribute
     private String uuid;
     private static final long serialVersionUID = -8742803205412217859L;
 }

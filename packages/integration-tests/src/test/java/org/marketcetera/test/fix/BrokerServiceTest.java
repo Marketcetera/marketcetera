@@ -44,7 +44,12 @@ public class BrokerServiceTest
     public void setup()
             throws Exception
     {
-        super.setup();
+        try {
+            super.setup();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
         initiators = Maps.newHashMap();
         acceptors = Maps.newHashMap();
         for(ActiveFixSession broker : brokerService.getActiveFixSessions()) {

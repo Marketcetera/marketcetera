@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -29,7 +30,7 @@ import com.google.common.collect.Sets;
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement(name="ActiveFixSession")
+@XmlRootElement(name="activeFixSession")
 @XmlAccessorType(XmlAccessType.NONE)
 public class SimpleActiveFixSession
         implements MutableActiveFixSession,Serializable,Comparable<SimpleActiveFixSession>
@@ -54,31 +55,35 @@ public class SimpleActiveFixSession
     /**
      * Create a new SimpleActiveFixSession instance.
      *
-     * @param inUnderlyingFixSession
-     * @param inInstanceData
-     * @param inBrokerStatus
-     * @param inSessionCustomization
+     * @param inFixSession a <code>FixSession</code> value
+     * @param inInstanceData a <code>ClusterData</code> value
+     * @param inBrokerStatus a <code>FixSessionStatus</code> value
+     * @param inSessionCustomization a <code>SessionCustomization</code> value or <code>null</code>
      */
-    public SimpleActiveFixSession(FixSession inUnderlyingFixSession,
+    public SimpleActiveFixSession(FixSession inFixSession,
                                   ClusterData inInstanceData,
                                   FixSessionStatus inBrokerStatus,
                                   SessionCustomization inSessionCustomization)
     {
-        throw new UnsupportedOperationException();
+        if(inSessionCustomization != null) {
+            setBrokerAlgos(inSessionCustomization.getBrokerAlgos());
+        }
+        setClusterData(inInstanceData);
+        setFixSession(inFixSession);
+        setStatus(inBrokerStatus);
     }
     /**
      * Create a new SimpleActiveFixSession instance.
      *
-     * @param inUnderlyingFixSession
-     * @param inInstanceData
-     * @param inBrokerStatus
-     * @param inSessionCustomization
+     * @param inFixSession a <code>FixSession</code> value
+     * @param inInstanceData a <code>ClusterData</code> value
+     * @param inBrokerStatus a <code>FixSessionStatus</code> value
      */
-    public SimpleActiveFixSession(FixSession inUnderlyingFixSession,
+    public SimpleActiveFixSession(FixSession inFixSession,
                                   ClusterData inInstanceData,
                                   FixSessionStatus inBrokerStatus)
     {
-        this(inUnderlyingFixSession,
+        this(inFixSession,
              inInstanceData,
              inBrokerStatus,
              null);
@@ -161,7 +166,10 @@ public class SimpleActiveFixSession
     @Override
     public void setFixSession(FixSession inFixSession)
     {
-        fixSession = inFixSession;
+        if(inFixSession instanceof SimpleFixSession) {
+            fixSession = (SimpleFixSession)inFixSession;
+        }
+        fixSession = new SimpleFixSession(inFixSession);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.fix.MutableActiveFixSession#setClusterData(org.marketcetera.cluster.ClusterData)
@@ -246,12 +254,12 @@ public class SimpleActiveFixSession
     /**
      * FIX session value
      */
-    @XmlAttribute
-    private FixSession fixSession;
+    @XmlElement(name="fixSession")
+    private SimpleFixSession fixSession;
     /**
      * cluster data value
      */
-    @XmlAttribute
+    @XmlElement
     private ClusterData clusterData;
     /**
      * target sequence number value
