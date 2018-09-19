@@ -111,7 +111,10 @@ public class SimpleServerFixSession
     @Override
     public FIXDataDictionary getFIXDataDictionary()
     {
-        throw new UnsupportedOperationException(); // TODO
+        if(dataDictionary == null) {
+            dataDictionary=new FIXDataDictionary(getDataDictionary());
+        }
+        return dataDictionary;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.fix.ServerFixSession#getFIXVersion()
@@ -141,6 +144,10 @@ public class SimpleServerFixSession
      * FIX version value
      */
     private FIXVersion fixVersion;
+    /**
+     * data dictionary value
+     */
+    private FIXDataDictionary dataDictionary;
     /**
      * active FIX session value
      */

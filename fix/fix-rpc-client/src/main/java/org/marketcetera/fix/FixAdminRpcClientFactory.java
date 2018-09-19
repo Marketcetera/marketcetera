@@ -1,6 +1,7 @@
 package org.marketcetera.fix;
 
 import org.marketcetera.rpc.client.RpcClientFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */
 
@@ -20,6 +21,13 @@ public class FixAdminRpcClientFactory
     @Override
     public FixAdminRpcClient create(FixAdminRpcClientParameters inParameters)
     {
-        return new FixAdminRpcClient(inParameters);
+        FixAdminRpcClient fixAdminRpcClient = new FixAdminRpcClient(inParameters);
+        fixAdminRpcClient.setActiveFixSessionFactory(activeFixSessionFactory);
+        return fixAdminRpcClient;
     }
+    /**
+     * creates {@link ActiveFixSession} objects
+     */
+    @Autowired
+    private MutableActiveFixSessionFactory activeFixSessionFactory;
 }

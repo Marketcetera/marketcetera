@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.algo.BrokerAlgo;
-import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.algo.BrokerAlgoTagSpec;
 import org.marketcetera.cluster.ClusterData;
@@ -20,8 +19,8 @@ import org.marketcetera.core.Validator;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixAdminRpc;
+import org.marketcetera.fix.FixRpcUtil;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSessionStatus;
@@ -2167,16 +2166,11 @@ public abstract class TradeRpcUtil
         if(!inRpcOrder.hasBrokerAlgo()) {
             return Optional.empty();
         }
-        FixAdminRpc.BrokerAlgo rpcBrokerAlgo = inRpcOrder.getBrokerAlgo();
         BrokerAlgo brokerAlgo = new BrokerAlgo();
-        for(FixAdminRpc.BrokerAlgoTagSpec rpcAlgoTagSpec : rpcBrokerAlgo.getAlgoTagSpecsList()) {
-            BrokerAlgoTag brokerAlgoTag = new BrokerAlgoTag(getBrokerTagSpec(rpcAlgoTagSpec),
-                                                            rpcAlgoTagSpec.getValue());
-            brokerAlgo.getAlgoTags().add(brokerAlgoTag);
+        if(inRpcOrder.getBrokerAlgo().hasBrokerAlgoSpec()) {
+            FixRpcUtil.getBrokerAlgoSpec(inRpcOrder.getBrokerAlgo().getBrokerAlgoSpec()).ifPresent(brokerAlgoSpec->brokerAlgo.setAlgoSpec(brokerAlgoSpec));
         }
-        // TODO need to look up broker algo spec by name?
-//        String brokerAlgoName = rpcBrokerAlgo.getName();
-//        brokerAlgo.setAlgoSpec(inAlgoSpec);
+        inRpcOrder.getBrokerAlgo().getBrokerAlgoTagsList().stream().forEach(rpcBrokerAlgoTag->FixRpcUtil.getBrokerAlgoTag(rpcBrokerAlgoTag).ifPresent(brokerAlgoTag->brokerAlgo.getAlgoTags().add(brokerAlgoTag)));
         return Optional.of(brokerAlgo);
     }
     /**
@@ -2503,54 +2497,6 @@ public abstract class TradeRpcUtil
                 return FixAdminRpc.FixSessionStatus.UnknownFixSessionStatus;
             default:
                 throw new UnsupportedOperationException("Unsupported fix session status: " + inStatus);
-        }
-    }
-    /**
-     * Set the given broker ID on the given RPC builder.
-     *
-     * @param inSession a <code>FixSession</code> value
-     * @param inBrokerStatusBuilder a <code>FixAdminRpc.BrokerStatus.Builder</code> value
-     */
-    public static void setBrokerId(FixSession inSession,
-                                   FixAdminRpc.BrokerStatus.Builder inBrokerStatusBuilder)
-    {
-        if(inSession == null || inSession.getBrokerId() == null) {
-            return;
-        }
-        inBrokerStatusBuilder.setId(inSession.getBrokerId());
-    }
-    /**
-     * Set the broker algos value on the given RPC builder.
-     *
-     * @param inActiveFixSession an <code>ActiveFixSession</code> value
-     * @param inBrokerStatusBuilder a <code>FixAdminRpc.BrokerStatus.Builder</code> value
-     */
-    public static void setBrokerAlgos(ActiveFixSession inActiveFixSession,
-                                      FixAdminRpc.BrokerStatus.Builder inBrokerStatusBuilder)
-    {
-        if(inActiveFixSession.getBrokerAlgos().isEmpty()) {
-            return;
-        }
-        FixAdminRpc.BrokerAlgo.Builder brokerAlgoBuilder = FixAdminRpc.BrokerAlgo.newBuilder();
-        FixAdminRpc.BrokerAlgoTagSpec.Builder brokerAlgoTagSpecBuilder = FixAdminRpc.BrokerAlgoTagSpec.newBuilder();
-        for(BrokerAlgoSpec brokerAlgo : inActiveFixSession.getBrokerAlgos()) {
-            for(BrokerAlgoTagSpec tagSpec : brokerAlgo.getAlgoTagSpecs()) {
-                brokerAlgoTagSpecBuilder.setAdvice(tagSpec.getAdvice());
-                brokerAlgoTagSpecBuilder.setDefaultValue(tagSpec.getDefaultValue());
-                brokerAlgoTagSpecBuilder.setDescription(tagSpec.getDescription());
-                brokerAlgoTagSpecBuilder.setIsReadOnly(tagSpec.isReadOnly());
-                brokerAlgoTagSpecBuilder.setLabel(tagSpec.getLabel());
-                brokerAlgoTagSpecBuilder.setMandatory(tagSpec.getIsMandatory());
-                brokerAlgoTagSpecBuilder.setOptions(BaseRpcUtil.getRpcMap(tagSpec.getOptions()));
-                brokerAlgoTagSpecBuilder.setPattern(tagSpec.getPattern());
-                brokerAlgoTagSpecBuilder.setTag(tagSpec.getTag());
-                brokerAlgoTagSpecBuilder.setValidator(tagSpec.getValidator()==null?null:tagSpec.getValidator().getClass().getName());
-                brokerAlgoBuilder.addAlgoTagSpecs(brokerAlgoTagSpecBuilder.build());
-                brokerAlgoTagSpecBuilder.clear();
-            }
-            brokerAlgoBuilder.setName(brokerAlgo.getName());
-            inBrokerStatusBuilder.addBrokerAlgos(brokerAlgoBuilder.build());
-            brokerAlgoBuilder.clear();
         }
     }
     /**

@@ -15,8 +15,6 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixAdminRpc;
 import org.marketcetera.fix.FixAdminRpc.AddBrokerStatusListenerRequest;
 import org.marketcetera.fix.FixAdminRpc.BrokerStatusListenerResponse;
-import org.marketcetera.fix.FixAdminRpc.BrokersStatusRequest;
-import org.marketcetera.fix.FixAdminRpc.BrokersStatusResponse;
 import org.marketcetera.fix.FixAdminRpc.CreateFixSessionRequest;
 import org.marketcetera.fix.FixAdminRpc.CreateFixSessionResponse;
 import org.marketcetera.fix.FixAdminRpc.DeleteFixSessionRequest;
@@ -168,7 +166,8 @@ public class FixAdminRpcService<SessionClazz>
                                        AdminPermissions.AddSessionAction.name());
                 FixAdminRpc.CreateFixSessionResponse.Builder responseBuilder = FixAdminRpc.CreateFixSessionResponse.newBuilder();
                 if(inRequest.hasFixSession()) {
-                    FixSession fixSession = FixRpcUtil.getFixSession(inRequest.getFixSession());
+                    FixSession fixSession = FixRpcUtil.getFixSession(inRequest.getFixSession()).orElse(null);
+                    Validate.notNull(fixSession);
                     Validate.isTrue(null == fixSessionProvider.findFixSessionByName(fixSession.getName()),
                                     "FIX Session " + fixSession.getName() + " already exists");
                     fixSession = fixSessionProvider.save(fixSession);
@@ -554,36 +553,6 @@ public class FixAdminRpcService<SessionClazz>
                 }
                 FixAdminRpc.RemoveBrokerStatusListenerResponse.Builder responseBuilder = FixAdminRpc.RemoveBrokerStatusListenerResponse.newBuilder();
                 FixAdminRpc.RemoveBrokerStatusListenerResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.trace(FixAdminRpcService.this,
-                                       "Returning {}",
-                                       response);
-                inResponseObserver.onNext(response);
-                inResponseObserver.onCompleted();
-            } catch (Exception e) {
-                handleError(e,
-                            inResponseObserver);
-            }
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.FixAdminRpcServiceGrpc.FixAdminRpcServiceImplBase#getBrokersStatus(org.marketcetera.trading.rpc.FixAdminRpc.BrokersStatusRequest, io.grpc.stub.StreamObserver)
-         */
-        @Override
-        public void getBrokersStatus(BrokersStatusRequest inRequest,
-                                     StreamObserver<BrokersStatusResponse> inResponseObserver)
-        {
-            try {
-                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                SLF4JLoggerProxy.trace(FixAdminRpcService.this,
-                                       "Received get brokers status request {} from {}",
-                                       inRequest,
-                                       sessionHolder);
-                authzService.authorize(sessionHolder.getUser(),
-                                       FixPermissions.ViewBrokerStatusAction.name());
-                FixAdminRpc.BrokersStatusResponse.Builder responseBuilder = FixAdminRpc.BrokersStatusResponse.newBuilder();
-                Collection<ActiveFixSession> activeFixSessions = brokerService.getActiveFixSessions();
-                FixRpcUtil.setActiveFixSessions(activeFixSessions,
-                                                responseBuilder);
-                FixAdminRpc.BrokersStatusResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(FixAdminRpcService.this,
                                        "Returning {}",
                                        response);

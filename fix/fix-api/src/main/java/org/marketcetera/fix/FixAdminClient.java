@@ -92,12 +92,6 @@ public interface FixAdminClient
      */
     void removeBrokerStatusListener(BrokerStatusListener inBrokerStatusListener);
     /**
-     * Get the status of all sessions.
-     * 
-     * @return a <code>Collection&lt;ActiveFixSession&gt;</code> value
-     */
-    Collection<ActiveFixSession> getSessionsStatus();
-    /**
      * Get the FIX session attribute descriptors.
      *
      * @return a <code>Collection&lt;FixSessionAttributeDescriptor&gt;</code> value

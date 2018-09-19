@@ -76,7 +76,7 @@ public class FixAdminRpcClient
                                        response);
                 FixSession result = null;
                 if(response.hasFixSession()) {
-                    result = FixRpcUtil.getFixSession(response.getFixSession());
+                    result = FixRpcUtil.getFixSession(response.getFixSession()).orElse(null);
                 }
                 SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
                                        "{} returning {}",
@@ -122,7 +122,7 @@ public class FixAdminRpcClient
                                        response);
                 CollectionPageResponse<ActiveFixSession> results = new CollectionPageResponse<>();
                 for(FixAdminRpc.ActiveFixSession rpcFixSession : response.getFixSessionList()) {
-                    results.getElements().add(FixRpcUtil.getActiveFixSession(rpcFixSession));
+                    FixRpcUtil.getActiveFixSession(rpcFixSession,activeFixSessionFactory).ifPresent(activeFixSession->results.getElements().add(activeFixSession));
                 }
                 PagingRpcUtil.setPageResponse(inPageRequest,
                                               response.getPage(),
@@ -552,38 +552,23 @@ public class FixAdminRpcClient
             }
         });
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradingClient#getBrokersStatus()
+    /**
+     * Get the activeFixSessionFactory value.
+     *
+     * @return a <code>MutableActiveFixSessionFactory</code> value
      */
-    @Override
-    public Collection<ActiveFixSession> getSessionsStatus()
+    public MutableActiveFixSessionFactory getActiveFixSessionFactory()
     {
-        return executeCall(new Callable<Collection<ActiveFixSession>>() {
-            @Override
-            public Collection<ActiveFixSession> call()
-                    throws Exception
-            {
-                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
-                                       "{} getting brokers status",
-                                       getSessionId());
-                FixAdminRpc.BrokersStatusRequest.Builder requestBuilder = FixAdminRpc.BrokersStatusRequest.newBuilder();
-                requestBuilder.setSessionId(getSessionId().getValue());
-                FixAdminRpc.BrokersStatusResponse response = getBlockingStub().getBrokersStatus(requestBuilder.build());
-                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
-                                       "{} received {}",
-                                       getSessionId(),
-                                       response);
-                List<ActiveFixSession> activeFixSessions = Lists.newArrayList();
-                response.getBrokerStatusList().parallelStream()
-                    .forEach(rpcActiveFixSession->FixRpcUtil.getActiveFixSession(rpcActiveFixSession)
-                    .ifPresent(activeFixSession->activeFixSessions.add(activeFixSession)));
-                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
-                                       "{} returning {}",
-                                       getSessionId(),
-                                       activeFixSessions);
-                return activeFixSessions;
-            }}
-        );
+        return activeFixSessionFactory;
+    }
+    /**
+     * Sets the activeFixSessionFactory value.
+     *
+     * @param inActiveFixSessionFactory a <code>MutableActiveFixSessionFactory</code> value
+     */
+    public void setActiveFixSessionFactory(MutableActiveFixSessionFactory inActiveFixSessionFactory)
+    {
+        activeFixSessionFactory = inActiveFixSessionFactory;
     }
     /**
      * Create a new FixAdminRpcClient instance.
@@ -701,6 +686,10 @@ public class FixAdminRpcClient
             inMessageListener.receiveBrokerStatus(inMessage);
         }
     }
+    /**
+     * creates {@link ActiveFixSession} objects
+     */
+    private MutableActiveFixSessionFactory activeFixSessionFactory;
     /**
      * holds report listeners by their id
      */

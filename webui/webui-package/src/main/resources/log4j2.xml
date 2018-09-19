@@ -13,5 +13,6 @@
     <logger name="org.marketcetera" level="info"/>
     <logger name="org.marketcetera.web" level="debug"/>
     <logger name="com.marketcetera.web" level="debug"/>
+    <logger name="org.marketcetera.fix.FixAdminRpcClient" level="trace"/>
   </Loggers>
 </Configuration>

@@ -37,18 +37,7 @@ message ActiveFixSession {
     FixSessionStatus fixSessionStatus = 3;
     uint32 targetSeqNum = 4;
     uint32 senderSeqNum = 5;
-}
-
-message BrokerStatus {
-    repeated BrokerAlgo brokerAlgos = 1;
-    string host = 2;
-    string id = 3;
-    bool loggedOn = 4;
-    string name = 5;
-    uint32 port = 6;
-    Map settings = 7;
-    FixSessionStatus fixSessionStatus = 8;
-    ClusterData clusterData = 9;
+    repeated BrokerAlgoSpec brokerAlgoSpecs = 6;
 }
 
 message BrokerAlgoTagSpec {
@@ -65,9 +54,19 @@ message BrokerAlgoTagSpec {
     string value = 11;
 }
 
-message BrokerAlgo {
+message BrokerAlgoSpec {
     string name = 1;
-    repeated BrokerAlgoTagSpec algoTagSpecs = 2;
+    repeated BrokerAlgoTagSpec brokerAlgoTagSpecs = 2;
+}
+
+message BrokerAlgoTag {
+    BrokerAlgoTagSpec brokerAlgoTagSpec = 1;
+    string value = 2;
+}
+
+message BrokerAlgo {
+    BrokerAlgoSpec brokerAlgoSpec = 1;
+    repeated BrokerAlgoTag brokerAlgoTags = 2;
 }
 
 message CreateFixSessionRequest {
@@ -171,7 +170,7 @@ message AddBrokerStatusListenerRequest {
 }
 
 message BrokerStatusListenerResponse {
-    BrokerStatus brokerStatus = 1;
+    ActiveFixSession activeFixSession = 1;
 }
 
 message RemoveBrokerStatusListenerRequest {
@@ -180,14 +179,6 @@ message RemoveBrokerStatusListenerRequest {
 }
 
 message RemoveBrokerStatusListenerResponse {
-}
-
-message BrokersStatusRequest {
-    string sessionId = 1;
-}
-
-message BrokersStatusResponse {
-    repeated BrokerStatus brokerStatus = 1;
 }
 
 service FixAdminRpcService {
@@ -206,5 +197,4 @@ service FixAdminRpcService {
     rpc updateSequenceNumbers(UpdateSequenceNumbersRequest) returns (UpdateSequenceNumbersResponse);
     rpc addBrokerStatusListener(AddBrokerStatusListenerRequest) returns (stream BrokerStatusListenerResponse);
     rpc removeBrokerStatusListener(RemoveBrokerStatusListenerRequest) returns (RemoveBrokerStatusListenerResponse);
-    rpc getBrokersStatus(BrokersStatusRequest) returns (BrokersStatusResponse);
 }

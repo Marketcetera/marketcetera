@@ -15,7 +15,6 @@ import org.marketcetera.cluster.rpc.ClusterRpc;
  */
 public class ClusterRpcUtil
 {
-
     /**
      *
      *
@@ -25,7 +24,25 @@ public class ClusterRpcUtil
     public static Optional<InstanceData> getInstanceData(ClusterRpc.InstanceData inInstanceData)
     {
         throw new UnsupportedOperationException(); // TODO
+    }
+    /**
+    *
+    *
+    * @param inRpcClusterData
+    * @return
+    */
+   public static Optional<ClusterData> getClusterData(ClusterRpc.ClusterData inRpcClusterData)
+   {
+       throw new UnsupportedOperationException(); // TODO
+   }
+    /**
+     *
+     *
+     * @return
+     */
+    public static Optional<ClusterRpc.ClusterData> getRpcClusterData(ClusterData inClusterData)
+    {
+        throw new UnsupportedOperationException(); // TODO
         
     }
-
 }
