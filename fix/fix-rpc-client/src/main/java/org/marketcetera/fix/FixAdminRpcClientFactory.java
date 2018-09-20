@@ -1,5 +1,6 @@
 package org.marketcetera.fix;
 
+import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.rpc.client.RpcClientFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,6 +26,7 @@ public class FixAdminRpcClientFactory
         fixAdminRpcClient.setActiveFixSessionFactory(activeFixSessionFactory);
         fixAdminRpcClient.setFixSessionFactory(fixSessionFactory);
         fixAdminRpcClient.setFixSessionAttributeDescriptorFactory(fixSessionAttributeDescriptorFactory);
+        fixAdminRpcClient.setClusterDataFactory(clusterDataFactory);
         return fixAdminRpcClient;
     }
     /**
@@ -42,4 +44,9 @@ public class FixAdminRpcClientFactory
      */
     @Autowired
     private MutableFixSessionFactory fixSessionFactory;
+    /**
+     * creates {@link ClusterData} objects
+     */
+    @Autowired
+    private ClusterDataFactory clusterDataFactory;
 }

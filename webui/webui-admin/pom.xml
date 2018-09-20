@@ -28,6 +28,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>webui-cluster</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>admin-rpc-client</artifactId>
     </dependency>
     <dependency>

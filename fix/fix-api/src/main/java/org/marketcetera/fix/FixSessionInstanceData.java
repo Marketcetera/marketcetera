@@ -1,15 +1,15 @@
-package org.marketcetera.cluster;
+package org.marketcetera.fix;
 
 /* $License$ */
 
 /**
- * Provides information about a cluster instance.
+ * Provides information about a FIX session on a particular cluster instance.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public interface InstanceData
+public interface FixSessionInstanceData
 {
     /**
      * Get the hostname for this instance.

@@ -3,7 +3,7 @@ option java_generic_services = true;
 option java_package = "org.marketcetera.cluster.rpc";
 option java_outer_classname = "ClusterRpc";
 import "rpc_base.proto";
-import "google/protobuf/timestamp.proto";
+import "rpc_paging.proto";
 
 message ClusterData {
     string hostId = 1;
@@ -13,23 +13,21 @@ message ClusterData {
     string uuid = 5;
 }
 
-message InstanceDataRequest {
+message ClusterMember {
+    string uuid = 1;
+}
+
+message ReadClusterMembersRequest {
     string sessionId = 1;
-    uint32 affinity = 2;
 }
 
-message InstanceDataResponse {
-    InstanceData instanceData = 1;
-}
-
-message InstanceData {
-    string hostname = 1;
-    uint32 port = 2;
+message ReadClusterMembersResponse {
+    repeated ClusterMember clusterMember = 1;
 }
 
 service ClusterRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
     rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
-    rpc getInstanceData(InstanceDataRequest) returns (InstanceDataResponse);
+    rpc readClusterMembers(ReadClusterMembersRequest) returns (ReadClusterMembersResponse);
 }

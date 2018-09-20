@@ -3,6 +3,7 @@ package org.marketcetera.cluster;
 import java.util.Optional;
 
 import org.marketcetera.cluster.rpc.ClusterRpc;
+import org.marketcetera.cluster.service.ClusterMember;
 
 /* $License$ */
 
@@ -15,30 +16,6 @@ import org.marketcetera.cluster.rpc.ClusterRpc;
  */
 public class ClusterRpcUtil
 {
-    /**
-     *
-     *
-     * @param inInstanceData
-     * @return
-     */
-    public static Optional<InstanceData> getInstanceData(ClusterRpc.InstanceData inInstanceData)
-    {
-        throw new UnsupportedOperationException(); // TODO
-    }
-    /**
-     * Get the value from the given RPC value.
-     *
-     * @param inRpcClusterData a <code>ClusterRpc.ClusterData</code> value
-     * @return an <code>Optional&lt;ClusterData&gt;</code> value
-     */
-    public static Optional<ClusterData> getClusterData(ClusterRpc.ClusterData inRpcClusterData)
-    {
-        if(inRpcClusterData == null) {
-            return Optional.empty();
-        }
-        
-        throw new UnsupportedOperationException(); // TODO
-    }
     /**
      * Get the RPC value from the given value.
      *
@@ -73,5 +50,28 @@ public class ClusterRpcUtil
                                                               inRpcClusterData.getInstanceNumber(),
                                                               inRpcClusterData.getUuid());
         return(clusterData == null ? Optional.empty() : Optional.of(clusterData));
+    }
+    /**
+     *
+     *
+     * @param inClusterMember
+     * @return
+     */
+    public static Optional<ClusterRpc.ClusterMember> getRpcClusterMember(ClusterMember inClusterMember)
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
+    /**
+     *
+     *
+     * @param inRpcClusterMember
+     * @param inClusterMemberFactory
+     * @return
+     */
+    public static Optional<ClusterMember> getClusterMember(ClusterRpc.ClusterMember inRpcClusterMember,
+                                                           ClusterMemberFactory inClusterMemberFactory)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
     }
 }

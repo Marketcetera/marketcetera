@@ -1,5 +1,8 @@
 package org.marketcetera.cluster;
 
+import java.util.Collection;
+
+import org.marketcetera.cluster.service.ClusterMember;
 import org.marketcetera.core.BaseClient;
 
 /* $License$ */
@@ -15,10 +18,9 @@ public interface ClusterClient
         extends BaseClient
 {
     /**
-     * Get the instance data for the given affinity.
+     * Get the cluster members;
      *
-     * @param inAffinity an <code>int</code> value
-     * @return an <code>InstanceData</code> value
+     * @return a <code>Collection&lt;ClusterMember&gt;</code> value
      */
-    InstanceData getInstanceData(int inAffinity);
+    Collection<ClusterMember> getClusterMembers();
 }

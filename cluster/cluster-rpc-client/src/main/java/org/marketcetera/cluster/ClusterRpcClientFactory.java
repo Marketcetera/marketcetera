@@ -1,6 +1,8 @@
 package org.marketcetera.cluster;
 
+import org.marketcetera.cluster.service.ClusterMember;
 import org.marketcetera.rpc.client.RpcClientFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */
 
@@ -20,6 +22,19 @@ public class ClusterRpcClientFactory
     @Override
     public ClusterRpcClient create(ClusterRpcClientParameters inParameters)
     {
-        return new ClusterRpcClient(inParameters);
+        ClusterRpcClient client = new ClusterRpcClient(inParameters);
+        client.setClusterDataFactory(clusterDataFactory);
+        client.setClusterMemberFactory(clusterMemberFactory);
+        return client;
     }
+    /**
+     * creates {@link ClusterData} objects
+     */
+    @Autowired
+    private ClusterDataFactory clusterDataFactory;
+    /**
+     * creates {@link ClusterMember} objects
+     */
+    @Autowired
+    private ClusterMemberFactory clusterMemberFactory;
 }

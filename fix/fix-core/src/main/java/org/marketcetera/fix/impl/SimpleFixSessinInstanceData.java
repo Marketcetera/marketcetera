@@ -4,21 +4,21 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.marketcetera.cluster.InstanceData;
+import org.marketcetera.fix.FixSessionInstanceData;
 
 /* $License$ */
 
 /**
- * Provides a simple <code>InstanceData</code> implementation.
+ * Provides a simple <code>FixSessionInstanceData</code> implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement(name="instanceData")
+@XmlRootElement(name="fixSessionInstanceData")
 @XmlAccessorType(XmlAccessType.NONE)
-public class SimpleInstanceData
-        implements InstanceData
+public class SimpleFixSessinInstanceData
+        implements FixSessionInstanceData
 {
     /* (non-Javadoc)
      * @see com.marketcetera.admin.InstanceData#getHostname()
@@ -61,7 +61,7 @@ public class SimpleInstanceData
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("SimpleInstanceData [hostname=").append(hostname).append(", port=").append(port).append("]");
+        builder.append("InstanceData [hostname=").append(hostname).append(", port=").append(port).append("]");
         return builder.toString();
     }
     /**

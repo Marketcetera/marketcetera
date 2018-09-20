@@ -9,11 +9,11 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.marketcetera.cluster.InstanceData;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionDay;
+import org.marketcetera.fix.FixSessionInstanceData;
 import org.marketcetera.fix.impl.SimpleActiveFixSession;
 import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptor;
 import org.marketcetera.persist.NDEntityBase;
@@ -476,7 +476,7 @@ public class SessionView
                     private static final long serialVersionUID = -2219835238983724259L;
                 });
                 if(inFixSession.getFixSession().isAcceptor()) {
-                    InstanceData instanceData = AdminClientService.getInstance().getInstanceData(inFixSession.getFixSession().getAffinity());
+                    FixSessionInstanceData instanceData = AdminClientService.getInstance().getFixSessionInstanceData(inFixSession.getFixSession().getAffinity());
                     hostnameTextField.setValue(instanceData.getHostname());
                     hostnameTextField.setReadOnly(true);
                     hostnameTextField.setDescription("The acceptor hostname is determined by the server and is not modifiable");
@@ -544,7 +544,7 @@ public class SessionView
             private void initializeFields()
             {
                 if(inFixSession.getFixSession().isAcceptor()) {
-                    InstanceData instanceData = AdminClientService.getInstance().getInstanceData(inFixSession.getFixSession().getAffinity());
+                    FixSessionInstanceData instanceData = AdminClientService.getInstance().getFixSessionInstanceData(inFixSession.getFixSession().getAffinity());
                     hostnameTextField.setValue(instanceData.getHostname());
                     hostnameTextField.setReadOnly(true);
                     hostnameTextField.setDescription("The acceptor hostname is determined by the server and is not modifiable");

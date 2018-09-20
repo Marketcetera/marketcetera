@@ -9,14 +9,13 @@ import org.marketcetera.admin.AdminRpcClientParameters;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.Role;
 import org.marketcetera.admin.User;
-import org.marketcetera.cluster.ClusterClient;
-import org.marketcetera.cluster.InstanceData;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixAdminClient;
 import org.marketcetera.fix.FixAdminRpcClientFactory;
 import org.marketcetera.fix.FixAdminRpcClientParameters;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
+import org.marketcetera.fix.FixSessionInstanceData;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -278,16 +277,6 @@ public class AdminClientService
         return fixAdminClient.readFixSessions(inPageRequest);
     }
     /**
-     * Get the instance data for the given affinity.
-     *
-     * @param inAffinity an <code>int</code> value
-     * @return an <code>InstanceData</code> value
-     */
-    public InstanceData getInstanceData(int inAffinity)
-    {
-        return clusterClient.getInstanceData(inAffinity);
-    }
-    /**
      * Get the FIX session attribute descriptors.
      *
      * @return a <code>Collection&lt;FixSessionAttributeDescriptor&gt;</code> value
@@ -424,6 +413,16 @@ public class AdminClientService
                                      inPermission);
     }
     /**
+     * Get the instance data for the given affinity.
+     *
+     * @param inAffinity an <code>int</code> value
+     * @return an <code>InstanceData</code> value
+     */
+    public FixSessionInstanceData getFixSessionInstanceData(int inAffinity)
+    {
+        return fixAdminClient.getFixSessionInstanceData(inAffinity);
+    }
+    /**
      * server hostname to connect to
      */
     private String hostname;
@@ -455,8 +454,4 @@ public class AdminClientService
      * provides access to FIX admin services
      */
     private FixAdminClient fixAdminClient;
-    /**
-     * provides access to cluster services
-     */
-    private ClusterClient clusterClient;
 }

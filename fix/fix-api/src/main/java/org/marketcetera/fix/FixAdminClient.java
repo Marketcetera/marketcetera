@@ -123,4 +123,11 @@ public interface FixAdminClient
      */
     void updateTargetSequenceNumber(String inSessionName,
                                     int inTargetSequenceNumber);
+    /**
+     * Get the instance data for the given affinity.
+     *
+     * @param inAffinity an <code>int</code> value
+     * @return a <code>FixSessionInstanceData</code> value
+     */
+    FixSessionInstanceData getFixSessionInstanceData(int inAffinity);
 }

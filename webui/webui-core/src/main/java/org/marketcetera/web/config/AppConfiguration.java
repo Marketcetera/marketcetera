@@ -9,6 +9,9 @@ import org.marketcetera.admin.impl.SimplePermissionFactory;
 import org.marketcetera.admin.impl.SimpleRoleFactory;
 import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
+import org.marketcetera.cluster.ClusterDataFactory;
+import org.marketcetera.cluster.ClusterRpcClientFactory;
+import org.marketcetera.cluster.SimpleClusterDataFactory;
 import org.marketcetera.core.ContextClassAggregator;
 import org.marketcetera.fix.FixAdminRpcClientFactory;
 import org.marketcetera.fix.FixSessionAttributeDescriptorFactory;
@@ -58,6 +61,26 @@ public class AppConfiguration
     public static FixAdminRpcClientFactory getFixAdminClientFactory()
     {
         return new FixAdminRpcClientFactory();
+    }
+    /**
+     * Get the cluster client factory value.
+     *
+     * @return a <code>ClusterClientFactory</code> value
+     */
+    @Bean
+    public static ClusterRpcClientFactory getClusterClientFactory()
+    {
+        return new ClusterRpcClientFactory();
+    }
+    /**
+     * Get the cluster data factory value.
+     *
+     * @return a <code>ClusterDataFactory</code> value
+     */
+    @Bean
+    public ClusterDataFactory getClusterDataFactory()
+    {
+        return new SimpleClusterDataFactory();
     }
 //    /**
 //     * Get the SA client factory value.

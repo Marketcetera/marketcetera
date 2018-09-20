@@ -1,11 +1,13 @@
 package org.marketcetera.cluster;
 
+import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import org.marketcetera.cluster.rpc.ClusterRpc;
 import org.marketcetera.cluster.rpc.ClusterRpcServiceGrpc;
 import org.marketcetera.cluster.rpc.ClusterRpcServiceGrpc.ClusterRpcServiceBlockingStub;
 import org.marketcetera.cluster.rpc.ClusterRpcServiceGrpc.ClusterRpcServiceStub;
+import org.marketcetera.cluster.service.ClusterMember;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
@@ -16,6 +18,8 @@ import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
 import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
+
+import com.google.common.collect.Lists;
 
 import io.grpc.Channel;
 
@@ -33,34 +37,33 @@ public class ClusterRpcClient
         implements ClusterClient
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.fix.ClusterClient#getInstanceData(int)
+     * @see org.marketcetera.cluster.ClusterClient#getClusterMembers()
      */
     @Override
-    public InstanceData getInstanceData(int inAffinity)
+    public Collection<ClusterMember> getClusterMembers()
     {
-        return executeCall(new Callable<InstanceData>() {
+        return executeCall(new Callable<Collection<ClusterMember>>() {
             @Override
-            public InstanceData call()
+            public Collection<ClusterMember> call()
                     throws Exception
             {
                 SLF4JLoggerProxy.trace(ClusterRpcClient.this,
-                                       "{} get instance data {}",
-                                       getSessionId(),
-                                       inAffinity);
-                ClusterRpc.InstanceDataRequest.Builder requestBuilder = ClusterRpc.InstanceDataRequest.newBuilder();
+                                       "{} get cluster members",
+                                       getSessionId());
+                ClusterRpc.ReadClusterMembersRequest.Builder requestBuilder = ClusterRpc.ReadClusterMembersRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setAffinity(inAffinity);
-                ClusterRpc.InstanceDataRequest request = requestBuilder.build();
+                ClusterRpc.ReadClusterMembersRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(ClusterRpcClient.this,
                                        "{} sending {}",
                                        getSessionId(),
                                        request);
-                ClusterRpc.InstanceDataResponse response = getBlockingStub().getInstanceData(request);
+                ClusterRpc.ReadClusterMembersResponse response = getBlockingStub().readClusterMembers(request);
                 SLF4JLoggerProxy.trace(ClusterRpcClient.this,
                                        "{} received {}",
                                        getSessionId(),
                                        response);
-                InstanceData result = ClusterRpcUtil.getInstanceData(response.getInstanceData()).get();
+                Collection<ClusterMember> result = Lists.newArrayList();
+                response.getClusterMemberList().stream().forEach(rpcClusterMember->ClusterRpcUtil.getClusterMember(rpcClusterMember,clusterMemberFactory).ifPresent(clusterMember->result.add(clusterMember)));
                 SLF4JLoggerProxy.trace(ClusterRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
@@ -126,6 +129,42 @@ public class ClusterRpcClient
     {
         return getBlockingStub().logout(inRequest);
     }
+    /**
+     * Get the clusterDataFactory value.
+     *
+     * @return a <code>ClusterDataFactory</code> value
+     */
+    public ClusterDataFactory getClusterDataFactory()
+    {
+        return clusterDataFactory;
+    }
+    /**
+     * Sets the clusterDataFactory value.
+     *
+     * @param inClusterDataFactory a <code>ClusterDataFactory</code> value
+     */
+    public void setClusterDataFactory(ClusterDataFactory inClusterDataFactory)
+    {
+        clusterDataFactory = inClusterDataFactory;
+    }
+    /**
+     * Get the clusterMemberFactory value.
+     *
+     * @return a <code>ClusterMemberFactory</code> value
+     */
+    public ClusterMemberFactory getClusterMemberFactory()
+    {
+        return clusterMemberFactory;
+    }
+    /**
+     * Sets the clusterMemberFactory value.
+     *
+     * @param inClusterMemberFactory a <code>ClusterMemberFactory</code> value
+     */
+    public void setClusterMemberFactory(ClusterMemberFactory inClusterMemberFactory)
+    {
+        clusterMemberFactory = inClusterMemberFactory;
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.AbstractRpcClient#executeHeartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
      */
@@ -134,6 +173,14 @@ public class ClusterRpcClient
     {
         return getBlockingStub().heartbeat(inRequest);
     }
+    /**
+     * creates {@link ClusterMember} objects
+     */
+    private ClusterMemberFactory clusterMemberFactory;
+    /**
+     * creates {@link ClusterData} objects
+     */
+    private ClusterDataFactory clusterDataFactory;
     /**
      * The client's application ID: the application name.
      */

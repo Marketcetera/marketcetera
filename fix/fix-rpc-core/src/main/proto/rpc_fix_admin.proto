@@ -70,6 +70,11 @@ message BrokerAlgo {
     repeated BrokerAlgoTag brokerAlgoTags = 2;
 }
 
+message InstanceData {
+    string hostname = 1;
+    uint32 port = 2;
+}
+
 message CreateFixSessionRequest {
     string sessionId = 1;
     FixSession fixSession = 2;
@@ -182,6 +187,15 @@ message RemoveBrokerStatusListenerRequest {
 message RemoveBrokerStatusListenerResponse {
 }
 
+message InstanceDataRequest {
+    string sessionId = 1;
+    uint32 affinity = 2;
+}
+
+message InstanceDataResponse {
+    InstanceData instanceData = 1;
+}
+
 service FixAdminRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
@@ -198,4 +212,5 @@ service FixAdminRpcService {
     rpc updateSequenceNumbers(UpdateSequenceNumbersRequest) returns (UpdateSequenceNumbersResponse);
     rpc addBrokerStatusListener(AddBrokerStatusListenerRequest) returns (stream BrokerStatusListenerResponse);
     rpc removeBrokerStatusListener(RemoveBrokerStatusListenerRequest) returns (RemoveBrokerStatusListenerResponse);
+    rpc getInstanceData(InstanceDataRequest) returns (InstanceDataResponse);
 }

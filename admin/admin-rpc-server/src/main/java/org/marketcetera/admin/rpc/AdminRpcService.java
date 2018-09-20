@@ -847,6 +847,46 @@ public class AdminRpcService<SessionClazz>
                 throw sre;
             }
         }
+//        /* (non-Javadoc)
+//         * @see com.marketcetera.fix.ClusterRpcServiceGrpc.ClusterRpcServiceImplBase#getInstanceData(com.marketcetera.fix.ClusterRpc.InstanceDataRequest, io.grpc.stub.StreamObserver)
+//         */
+//        @Override
+//        public void getInstanceData(InstanceDataRequest inRequest,
+//                                    StreamObserver<InstanceDataResponse> inResponseObserver)
+//        {
+//            try {
+//                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+//                SLF4JLoggerProxy.trace(ClusterRpcService.this,
+//                                       "Received get instance data {} from {}",
+//                                       inRequest,
+//                                       sessionHolder);
+//                authzService.authorize(sessionHolder.getUser(),
+//                                       AdminPermissions.ReadInstanceDataAction.name());
+//                ClusterRpc.InstanceDataResponse.Builder responseBuilder = ClusterRpc.InstanceDataResponse.newBuilder();
+//                            AdminRpc.InstanceData.Builder instanceDataBuilder = AdminRpc.InstanceData.newBuilder();
+//                            AcceptorSessionAttributes acceptorSessionAttributes = brokerService.getFixSettingsFor(inRequest.getAffinity());
+//                            if(acceptorSessionAttributes.getHost() != null) {
+//                                instanceDataBuilder.setHostname(acceptorSessionAttributes.getHost());
+//                            }
+//                            instanceDataBuilder.setPort(acceptorSessionAttributes.getPort());
+//                            responseBuilder.setInstanceData(instanceDataBuilder.build());
+//                                
+////                AcceptorSessionAttributes acceptorSessionAttributes = brokerService.getFixSettingsFor(inRequest.getAffinity());
+////                responseBuilder.setInstanceData(ClusterRpcUtil.getRpcInstanceData(acceptorSessionAttributes));
+////                ClusterRpc.InstanceDataResponse response = responseBuilder.build();
+////                SLF4JLoggerProxy.trace(ClusterRpcService.this,
+////                                       "Returning {}",
+////                                       response);
+////                inResponseObserver.onNext(response);
+////                inResponseObserver.onCompleted();
+//                throw new UnsupportedOperationException();
+//            } catch (Exception e) {
+//                if(e instanceof StatusRuntimeException) {
+//                    throw (StatusRuntimeException)e;
+//                }
+//                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+//            }
+//        }
     }
     /**
      * provides the RPC service

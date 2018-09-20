@@ -5,9 +5,11 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.admin.service.AuthorizationService;
-import org.marketcetera.cluster.rpc.ClusterRpc.InstanceDataRequest;
-import org.marketcetera.cluster.rpc.ClusterRpc.InstanceDataResponse;
+import org.marketcetera.cluster.ClusterRpcUtil;
+import org.marketcetera.cluster.rpc.ClusterRpc.ReadClusterMembersRequest;
+import org.marketcetera.cluster.rpc.ClusterRpc.ReadClusterMembersResponse;
 import org.marketcetera.cluster.rpc.ClusterRpcServiceGrpc.ClusterRpcServiceImplBase;
+import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse;
 import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
@@ -102,30 +104,28 @@ public class ClusterRpcService<SessionClazz>
                                                 inResponseObserver);
         }
         /* (non-Javadoc)
-         * @see com.marketcetera.fix.ClusterRpcServiceGrpc.ClusterRpcServiceImplBase#getInstanceData(com.marketcetera.fix.ClusterRpc.InstanceDataRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.cluster.rpc.ClusterRpcServiceGrpc.ClusterRpcServiceImplBase#readClusterMembers(org.marketcetera.cluster.rpc.ClusterRpc.ReadClusterMembersRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void getInstanceData(InstanceDataRequest inRequest,
-                                    StreamObserver<InstanceDataResponse> inResponseObserver)
+        public void readClusterMembers(ReadClusterMembersRequest inRequest,
+                                       StreamObserver<ReadClusterMembersResponse> inResponseObserver)
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
                 SLF4JLoggerProxy.trace(ClusterRpcService.this,
-                                       "Received get instance data {} from {}",
+                                       "Received read FIX sessions request {} from {}",
                                        inRequest,
                                        sessionHolder);
                 authzService.authorize(sessionHolder.getUser(),
-                                       AdminPermissions.ReadInstanceDataAction.name());
-                ClusterRpc.InstanceDataResponse.Builder responseBuilder = ClusterRpc.InstanceDataResponse.newBuilder();
-//                AcceptorSessionAttributes acceptorSessionAttributes = brokerService.getFixSettingsFor(inRequest.getAffinity());
-//                responseBuilder.setInstanceData(ClusterRpcUtil.getRpcInstanceData(acceptorSessionAttributes));
-//                ClusterRpc.InstanceDataResponse response = responseBuilder.build();
-//                SLF4JLoggerProxy.trace(ClusterRpcService.this,
-//                                       "Returning {}",
-//                                       response);
-//                inResponseObserver.onNext(response);
-//                inResponseObserver.onCompleted();
-                throw new UnsupportedOperationException();
+                                       AdminPermissions.ViewSessionAction.name());
+                ClusterRpc.ReadClusterMembersResponse.Builder responseBuilder = ClusterRpc.ReadClusterMembersResponse.newBuilder();
+                clusterService.getClusterMembers().stream().forEach(clusterMember->ClusterRpcUtil.getRpcClusterMember(clusterMember).ifPresent(rpcClusterMember->responseBuilder.addClusterMember(rpcClusterMember)));
+                ClusterRpc.ReadClusterMembersResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(ClusterRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
             } catch (Exception e) {
                 if(e instanceof StatusRuntimeException) {
                     throw (StatusRuntimeException)e;
@@ -134,6 +134,11 @@ public class ClusterRpcService<SessionClazz>
             }
         }
     }
+    /**
+     * provides access to cluster services
+     */
+    @Autowired
+    private ClusterService clusterService;
     /**
      * provides access to authorization services
      */
@@ -146,5 +151,5 @@ public class ClusterRpcService<SessionClazz>
     /**
      * description of the service
      */
-    private static final String DESCRIPTION = "MATP FIX Admin RPC Service"; //$NON-NLS-1$
+    private static final String DESCRIPTION = "Cluster RPC Service"; //$NON-NLS-1$
 }

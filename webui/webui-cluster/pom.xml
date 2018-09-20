@@ -4,10 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.marketcetera</groupId>
-  <artifactId>webui-core</artifactId>
+  <artifactId>webui-cluster</artifactId>
   <version>4.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>Web UI Core</name>
+  <name>Web UI Cluster</name>
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>webui-parent</artifactId>
@@ -16,15 +16,15 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>admin-rpc-client</artifactId>
+      <artifactId>cluster-api</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>admin-api</artifactId>
+      <artifactId>cluster-core</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>fix-rpc-client</artifactId>
+      <artifactId>webui-core</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -32,23 +32,15 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>fix-rpc-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>cluster-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>fix-api</artifactId>
+      <artifactId>dataflow-api</artifactId>
     </dependency>
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin-spring-boot-starter</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>vaadin-shared</artifactId>
+      <groupId>org.vaadin.crudui</groupId>
+      <artifactId>crudui</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -56,12 +48,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>

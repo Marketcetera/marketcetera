@@ -375,6 +375,11 @@
         <artifactId>webui-admin</artifactId>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>webui-cluster</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
       <!-- Compile: QuickFIX/J -->
       <dependency>
         <groupId>org.quickfixj</groupId>

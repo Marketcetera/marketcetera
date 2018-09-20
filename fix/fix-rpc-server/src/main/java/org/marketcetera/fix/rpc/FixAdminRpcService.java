@@ -11,6 +11,7 @@ import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.brokers.service.FixSessionProvider;
+import org.marketcetera.fix.AcceptorSessionAttributes;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixAdminRpc;
 import org.marketcetera.fix.FixAdminRpc.AddBrokerStatusListenerRequest;
@@ -23,6 +24,8 @@ import org.marketcetera.fix.FixAdminRpc.DisableFixSessionRequest;
 import org.marketcetera.fix.FixAdminRpc.DisableFixSessionResponse;
 import org.marketcetera.fix.FixAdminRpc.EnableFixSessionRequest;
 import org.marketcetera.fix.FixAdminRpc.EnableFixSessionResponse;
+import org.marketcetera.fix.FixAdminRpc.InstanceDataRequest;
+import org.marketcetera.fix.FixAdminRpc.InstanceDataResponse;
 import org.marketcetera.fix.FixAdminRpc.ReadFixSessionAttributeDescriptorsRequest;
 import org.marketcetera.fix.FixAdminRpc.ReadFixSessionAttributeDescriptorsResponse;
 import org.marketcetera.fix.FixAdminRpc.ReadFixSessionsRequest;
@@ -589,6 +592,41 @@ public class FixAdminRpcService<SessionClazz>
             } catch (Exception e) {
                 handleError(e,
                             inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.fix.FixAdminRpcServiceGrpc.FixAdminRpcServiceImplBase#getInstanceData(org.marketcetera.fix.FixAdminRpc.InstanceDataRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getInstanceData(InstanceDataRequest inRequest,
+                                    StreamObserver<InstanceDataResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(FixAdminRpcService.this,
+                                       "Received {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                authzService.authorize(sessionHolder.getUser(),
+                                       AdminPermissions.ReadInstanceDataAction.name());
+                FixAdminRpc.InstanceDataResponse.Builder responseBuilder = FixAdminRpc.InstanceDataResponse.newBuilder();
+                FixAdminRpc.InstanceData.Builder instanceDataBuilder = FixAdminRpc.InstanceData.newBuilder();
+                AcceptorSessionAttributes acceptorSessionAttributes = brokerService.getFixSettingsFor(inRequest.getAffinity());
+                if(acceptorSessionAttributes.getHost() != null) {
+                    instanceDataBuilder.setHostname(acceptorSessionAttributes.getHost());
+                }
+                instanceDataBuilder.setPort(acceptorSessionAttributes.getPort());
+                FixAdminRpc.InstanceDataResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(FixAdminRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
             }
         }
     }

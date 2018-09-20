@@ -21,6 +21,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>cluster-rpc-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>misc</artifactId>
     </dependency>
     <dependency>

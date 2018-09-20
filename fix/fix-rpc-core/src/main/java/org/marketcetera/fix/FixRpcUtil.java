@@ -6,6 +6,7 @@ import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.algo.BrokerAlgoTagSpec;
+import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.ClusterRpcUtil;
 import org.marketcetera.core.Validator;
 import org.marketcetera.rpc.base.BaseRpcUtil;
@@ -22,6 +23,16 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  */
 public class FixRpcUtil
 {
+    /**
+     *
+     *
+     * @param inInstanceData
+     * @return
+     */
+    public static Optional<FixSessionInstanceData> getInstanceData(FixAdminRpc.InstanceData inInstanceData)
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
     /**
      * Get the value from the given RPC value.
      *
@@ -52,13 +63,48 @@ public class FixRpcUtil
     /**
      * Get the value from the given RPC value.
      *
+     * @param inResponse a <code>FixAdminRpc.BrokerStatusListenerResponse</code> value
+     * @param inActiveFixSessionFactory a <code>MutableActiveFixSessionFactory</code> value
+     * @param inFixSessionFactory a <code>MutableFixSessionFactory</code> value
+     * @param inClusterDataFactory a <code>ClusterDataFactory</code> value
+     * @return an <code>Optional&lt;ActiveFixSession&gt;</code> value
+     */
+    public static Optional<ActiveFixSession> getActiveFixSession(FixAdminRpc.BrokerStatusListenerResponse inResponse,
+                                                                 MutableActiveFixSessionFactory inActiveFixSessionFactory,
+                                                                 MutableFixSessionFactory inFixSessionFactory,
+                                                                 ClusterDataFactory inClusterDataFactory)
+    {
+        if(inResponse == null || !inResponse.hasActiveFixSession()) {
+            return Optional.empty();
+        }
+        FixAdminRpc.ActiveFixSession rpcActiveFixSession = inResponse.getActiveFixSession();
+        MutableActiveFixSession activeFixSession = inActiveFixSessionFactory.create();
+        rpcActiveFixSession.getBrokerAlgoSpecsList().stream()
+            .forEach(rpcBrokerAlgoSpec->getBrokerAlgoSpec(rpcBrokerAlgoSpec)
+            .ifPresent(brokerAlgoSpec->activeFixSession.getBrokerAlgos().add(brokerAlgoSpec)));
+        if(rpcActiveFixSession.hasClusterData()) {
+            ClusterRpcUtil.getClusterData(rpcActiveFixSession.getClusterData(),inClusterDataFactory).ifPresent(clusterData->activeFixSession.setClusterData(clusterData));
+        }
+        if(rpcActiveFixSession.hasFixSession()) {
+            getFixSession(rpcActiveFixSession.getFixSession(),inFixSessionFactory).ifPresent(fixSession->activeFixSession.setFixSession(fixSession));
+        }
+        activeFixSession.setSenderSequenceNumber(rpcActiveFixSession.getSenderSeqNum());
+        activeFixSession.setStatus(FixSessionStatus.values()[rpcActiveFixSession.getFixSessionStatus().ordinal()]);
+        activeFixSession.setTargetSequenceNumber(rpcActiveFixSession.getTargetSeqNum());
+        return Optional.of(activeFixSession);
+    }
+    /**
+     * Get the value from the given RPC value.
+     *
      * @param inRpcFixSession a <code>FixAdminRpc.ActiveFixSession</code> value
      * @param inActiveFixSessionFactory a <code>MutableActiveFixSessionFactory</code> value
+     * @param inClusterDataFactory a <code>ClusterDataFactory</code> value
      * @return an <code>Optional&lt;ActiveFixSession&gt;</code> value
      */
     public static Optional<ActiveFixSession> getActiveFixSession(FixAdminRpc.ActiveFixSession inRpcFixSession,
                                                                  MutableActiveFixSessionFactory inActiveFixSessionFactory,
-                                                                 MutableFixSessionFactory inFixSessionFactory)
+                                                                 MutableFixSessionFactory inFixSessionFactory,
+                                                                 ClusterDataFactory inClusterDataFactory)
     {
         if(inRpcFixSession == null) {
             return Optional.empty();
@@ -66,7 +112,7 @@ public class FixRpcUtil
         MutableActiveFixSession activeFixSession = inActiveFixSessionFactory.create();
         inRpcFixSession.getBrokerAlgoSpecsList().stream().forEach(rpcBrokerAlgoSpec->getBrokerAlgoSpec(rpcBrokerAlgoSpec).ifPresent(brokerAlgoSpec->activeFixSession.getBrokerAlgos().add(brokerAlgoSpec)));
         if(inRpcFixSession.hasClusterData()) {
-            ClusterRpcUtil.getClusterData(inRpcFixSession.getClusterData()).ifPresent(clusterData->activeFixSession.setClusterData(clusterData));
+            ClusterRpcUtil.getClusterData(inRpcFixSession.getClusterData(),inClusterDataFactory).ifPresent(clusterData->activeFixSession.setClusterData(clusterData));
         }
         if(inRpcFixSession.hasFixSession()) {
             getFixSession(inRpcFixSession.getFixSession(),inFixSessionFactory).ifPresent(fixSession->activeFixSession.setFixSession(fixSession));
@@ -279,37 +325,6 @@ public class FixRpcUtil
         builder.setPattern(inDescriptor.getPattern());
         builder.setRequired(inDescriptor.isRequired());
         return Optional.of(builder.build());
-    }
-    /**
-     * Get the value from the given RPC value.
-     *
-     * @param inResponse a <code>FixAdminRpc.BrokerStatusListenerResponse</code> value
-     * @param inActiveFixSessionFactory a <code>MutableActiveFixSessionFactory</code> value
-     * @param inFixSessionFactory a <code>MutableFixSessionFactory</code> value
-     * @return an <code>Optional&lt;ActiveFixSession&gt;</code> value
-     */
-    public static Optional<ActiveFixSession> getActiveFixSession(FixAdminRpc.BrokerStatusListenerResponse inResponse,
-                                                                 MutableActiveFixSessionFactory inActiveFixSessionFactory,
-                                                                 MutableFixSessionFactory inFixSessionFactory)
-    {
-        if(inResponse == null || !inResponse.hasActiveFixSession()) {
-            return Optional.empty();
-        }
-        FixAdminRpc.ActiveFixSession rpcActiveFixSession = inResponse.getActiveFixSession();
-        MutableActiveFixSession activeFixSession = inActiveFixSessionFactory.create();
-        rpcActiveFixSession.getBrokerAlgoSpecsList().stream()
-            .forEach(rpcBrokerAlgoSpec->getBrokerAlgoSpec(rpcBrokerAlgoSpec)
-            .ifPresent(brokerAlgoSpec->activeFixSession.getBrokerAlgos().add(brokerAlgoSpec)));
-        if(rpcActiveFixSession.hasClusterData()) {
-            ClusterRpcUtil.getClusterData(rpcActiveFixSession.getClusterData()).ifPresent(clusterData->activeFixSession.setClusterData(clusterData));
-        }
-        if(rpcActiveFixSession.hasFixSession()) {
-            getFixSession(rpcActiveFixSession.getFixSession(),inFixSessionFactory).ifPresent(fixSession->activeFixSession.setFixSession(fixSession));
-        }
-        activeFixSession.setSenderSequenceNumber(rpcActiveFixSession.getSenderSeqNum());
-        activeFixSession.setStatus(FixSessionStatus.values()[rpcActiveFixSession.getFixSessionStatus().ordinal()]);
-        activeFixSession.setTargetSequenceNumber(rpcActiveFixSession.getTargetSeqNum());
-        return Optional.of(activeFixSession);
     }
     /**
      * Set the given active FIX session on the given builder.

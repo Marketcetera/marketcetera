@@ -6,6 +6,8 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
@@ -110,6 +112,7 @@ public class FixAdminRpcClient
                                        getSessionId());
                 FixAdminRpc.ReadFixSessionsRequest.Builder requestBuilder = FixAdminRpc.ReadFixSessionsRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setPage(PagingRpcUtil.buildPageRequest(inPageRequest));
                 FixAdminRpc.ReadFixSessionsRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
                                        "{} sending {}",
@@ -122,7 +125,7 @@ public class FixAdminRpcClient
                                        response);
                 CollectionPageResponse<ActiveFixSession> results = new CollectionPageResponse<>();
                 for(FixAdminRpc.ActiveFixSession rpcFixSession : response.getFixSessionList()) {
-                    FixRpcUtil.getActiveFixSession(rpcFixSession,activeFixSessionFactory,fixSessionFactory).ifPresent(activeFixSession->results.getElements().add(activeFixSession));
+                    FixRpcUtil.getActiveFixSession(rpcFixSession,activeFixSessionFactory,fixSessionFactory,clusterDataFactory).ifPresent(activeFixSession->results.getElements().add(activeFixSession));
                 }
                 PagingRpcUtil.setPageResponse(inPageRequest,
                                               response.getPage(),
@@ -516,6 +519,43 @@ public class FixAdminRpcClient
         });
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixAdminClient#getInstanceData(int)
+     */
+    @Override
+    public FixSessionInstanceData getFixSessionInstanceData(int inAffinity)
+    {
+        return executeCall(new Callable<FixSessionInstanceData>() {
+            @Override
+            public FixSessionInstanceData call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
+                                       "{} get instance data {}",
+                                       getSessionId(),
+                                       inAffinity);
+                FixAdminRpc.InstanceDataRequest.Builder requestBuilder = FixAdminRpc.InstanceDataRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setAffinity(inAffinity);
+                FixAdminRpc.InstanceDataRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                FixAdminRpc.InstanceDataResponse response = getBlockingStub().getInstanceData(request);
+                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                FixSessionInstanceData result = FixRpcUtil.getInstanceData(response.getInstanceData()).get();
+                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result;
+            }
+        });
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#removeBrokerStatusListener(org.marketcetera.brokers.BrokerStatusListener)
      */
     @Override
@@ -605,6 +645,24 @@ public class FixAdminRpcClient
     public void setFixSessionAttributeDescriptorFactory(FixSessionAttributeDescriptorFactory inFixSessionAttributeDescriptorFactory)
     {
         fixSessionAttributeDescriptorFactory = inFixSessionAttributeDescriptorFactory;
+    }
+    /**
+     * Get the clusterDataFactory value.
+     *
+     * @return a <code>ClusterDataFactory</code> value
+     */
+    public ClusterDataFactory getClusterDataFactory()
+    {
+        return clusterDataFactory;
+    }
+    /**
+     * Sets the clusterDataFactory value.
+     *
+     * @param inClusterDataFactory a <code>ClusterDataFactory</code> value
+     */
+    public void setClusterDataFactory(ClusterDataFactory inClusterDataFactory)
+    {
+        clusterDataFactory = inClusterDataFactory;
     }
     /**
      * Create a new FixAdminRpcClient instance.
@@ -710,7 +768,7 @@ public class FixAdminRpcClient
         @Override
         protected ActiveFixSession translateMessage(BrokerStatusListenerResponse inResponse)
         {
-            return FixRpcUtil.getActiveFixSession(inResponse,activeFixSessionFactory,fixSessionFactory).orElse(null);
+            return FixRpcUtil.getActiveFixSession(inResponse,activeFixSessionFactory,fixSessionFactory,clusterDataFactory).orElse(null);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.trading.rpc.FixAdminRpcClient.AbstractListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
@@ -722,6 +780,10 @@ public class FixAdminRpcClient
             inMessageListener.receiveBrokerStatus(inMessage);
         }
     }
+    /**
+     * creates {@link ClusterData} objects
+     */
+    private ClusterDataFactory clusterDataFactory;
     /**
      * creates {@link ActiveFixSession} objects
      */

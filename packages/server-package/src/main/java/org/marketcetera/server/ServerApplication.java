@@ -16,6 +16,7 @@ import org.marketcetera.brokers.service.InMemoryFixSessionProvider;
 import org.marketcetera.client.rpc.server.TradeClientRpcService;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
+import org.marketcetera.cluster.rpc.ClusterRpcService;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.dataflow.config.DataFlowProvider;
@@ -243,6 +244,22 @@ public class ServerApplication
         tradeClientRpcService.setAuthenticator(inAuthenticator);
         tradeClientRpcService.setSessionManager(inSessionManager);
         return tradeClientRpcService;
+    }
+    /**
+     * Get the cluster RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return a <code>ClusterRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public ClusterRpcService<ServerSession> getClusterRpcService(@Autowired Authenticator inAuthenticator,
+                                                                 @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        ClusterRpcService<ServerSession> clusterRpcService = new ClusterRpcService<>();
+        clusterRpcService.setAuthenticator(inAuthenticator);
+        clusterRpcService.setSessionManager(inSessionManager);
+        return clusterRpcService;
     }
     /**
      * Get the admin RPC service.
