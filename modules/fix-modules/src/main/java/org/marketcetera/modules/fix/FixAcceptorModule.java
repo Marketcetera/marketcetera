@@ -2,7 +2,7 @@ package org.marketcetera.modules.fix;
 
 import java.util.Collection;
 
-import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.module.ModuleURN;
@@ -72,13 +72,10 @@ public class FixAcceptorModule
     @Override
     protected Collection<FixSession> getFixSessions()
     {
-        Collection<FixSession> fixSessions = Lists.newArrayList();
-        for(ActiveFixSession broker : getBrokerService().getActiveFixSessions()) {
-            if(broker.getFixSession().isAcceptor()) {
-                fixSessions.add(broker.getFixSession());
-            }
-        }
-        return fixSessions;
+        ClusterData clusterData = getInstanceData();
+        return getFixSessionProvider().findFixSessions(true,
+                                                       clusterData.getInstanceNumber(),
+                                                       clusterData.getTotalInstances());
     }
     /**
      * static reference to this singleton object

@@ -2,6 +2,7 @@ package org.marketcetera.cluster;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 /* $License$ */
@@ -18,4 +19,14 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan("org.marketcetera")
 public class SimpleClusterTestConfiguration
 {
+    /**
+     * Get the cluster data factory value.
+     *
+     * @return a <code>ClusterDataFactory</code> value
+     */
+    @Bean
+    public ClusterDataFactory getClusterDataFactory()
+    {
+        return new SimpleClusterDataFactory();
+    }
 }

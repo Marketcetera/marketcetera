@@ -2,11 +2,14 @@ package org.marketcetera.fix;
 
 import java.util.Optional;
 
+import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.algo.BrokerAlgoTagSpec;
 import org.marketcetera.cluster.ClusterRpcUtil;
+import org.marketcetera.core.Validator;
 import org.marketcetera.rpc.base.BaseRpcUtil;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -79,6 +82,7 @@ public class FixRpcUtil
      * @param inRpcBrokerAlgoSpec a <code>FixAdminRpc.BrokerAlgoSpec</code> value
      * @return an <code>Optional&lt;BrokerAlgoSpec&gt;</code> value
      */
+    @SuppressWarnings("unchecked")
     public static Optional<BrokerAlgoSpec> getBrokerAlgoSpec(FixAdminRpc.BrokerAlgoSpec inRpcBrokerAlgoSpec)
     {
         if(inRpcBrokerAlgoSpec == null) {
@@ -89,8 +93,19 @@ public class FixRpcUtil
             .forEach(rpcBrokerAlgoTag->getBrokerAlgoTagSpec(rpcBrokerAlgoTag)
             .ifPresent(brokerAlgoTagSpec->brokerAlgoSpec.getAlgoTagSpecs().add(brokerAlgoTagSpec)));
         brokerAlgoSpec.setName(inRpcBrokerAlgoSpec.getName());
-        // TODO look up broker algos and find validators
-//        brokerAlgoSpec.setValidator(inValidator);
+        if(inRpcBrokerAlgoSpec.getValidator() != null) {
+            String validatorName = inRpcBrokerAlgoSpec.getValidator();
+            try {
+                Class<?> validatorClass = Class.forName(validatorName);
+                brokerAlgoSpec.setValidator((Validator<BrokerAlgo>)validatorClass.newInstance());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                SLF4JLoggerProxy.warn(FixRpcUtil.class,
+                                      e,
+                                      "Unable to instantiate validator of class {} for {}",
+                                      validatorName,
+                                      inRpcBrokerAlgoSpec);
+            }
+        }
         return Optional.of(brokerAlgoSpec);
     }
     /**
@@ -99,6 +114,7 @@ public class FixRpcUtil
      * @param inRpcBrokerAlgoTag a <code>FixAdminRpc.BrokerAlgoTagSpec</code> value
      * @return an <code>Optional&lt;BrokerAlgoTagSpec&gt;</code> value
      */
+    @SuppressWarnings("unchecked")
     public static Optional<BrokerAlgoTagSpec> getBrokerAlgoTagSpec(FixAdminRpc.BrokerAlgoTagSpec inRpcBrokerAlgoTag)
     {
         if(inRpcBrokerAlgoTag == null) {
@@ -116,7 +132,16 @@ public class FixRpcUtil
         brokerAlgoTagSpec.setTag(inRpcBrokerAlgoTag.getTag());
         if(inRpcBrokerAlgoTag.getValidator() != null) {
             String validatorName = inRpcBrokerAlgoTag.getValidator();
-            // TODO create class instance of the validator
+            try {
+                Class<?> validatorClass = Class.forName(validatorName);
+                brokerAlgoTagSpec.setValidator((Validator<BrokerAlgoTag>)validatorClass.newInstance());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                SLF4JLoggerProxy.warn(FixRpcUtil.class,
+                                      e,
+                                      "Unable to instantiate validator of class {} for {}",
+                                      validatorName,
+                                      inRpcBrokerAlgoTag);
+            }
         }
         return Optional.of(brokerAlgoTagSpec);
     }
@@ -179,6 +204,9 @@ public class FixRpcUtil
             .forEach(algoTagSpec->getRpcBrokerAlgoTagSpec(algoTagSpec)
             .ifPresent(rpcAlgoTagSpec->builder.addBrokerAlgoTagSpecs(rpcAlgoTagSpec)));
         builder.setName(inBrokerAlgoSpec.getName());
+        if(inBrokerAlgoSpec.getValidator() != null) {
+            builder.setValidator(inBrokerAlgoSpec.getValidator().getClass().getName());
+        }
         return Optional.of(builder.build());
     }
     /**

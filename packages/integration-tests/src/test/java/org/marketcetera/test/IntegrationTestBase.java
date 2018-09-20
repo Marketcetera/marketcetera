@@ -151,25 +151,25 @@ public class IntegrationTestBase
         transactionModuleUrn = TransactionModuleFactory.INSTANCE_URN;
         tradeMessages.clear();
         tradeService.addTradeMessageListener(tradeMessageListener);
-        ActiveFixSession target = null;
-        for(ActiveFixSession broker : brokerService.getActiveFixSessions()) {
-            if(!broker.getFixSession().isAcceptor() && broker.getFixSession().getMappedBrokerId() == null) {
-                target = broker;
+        FixSession targetSession = null;
+        for(FixSession fixSession : fixSessionProvider.findFixSessions()) {
+            if(!fixSession.isAcceptor() && fixSession.getMappedBrokerId() == null) {
+                targetSession = fixSession;
                 break;
             }
         }
-        assertNotNull(target);
-        selector.setSelectedBrokerId(new BrokerID(target.getFixSession().getBrokerId()));
+        assertNotNull(targetSession);
+        selector.setSelectedBrokerId(new BrokerID(targetSession.getBrokerId()));
         selector.setChooseBrokerException(null);
         acceptorModuleUrn = FixAcceptorModuleFactory.INSTANCE_URN;
         initiatorModuleUrn = FixInitiatorModuleFactory.INSTANCE_URN;
         acceptorSessions.clear();
         initiatorSessions.clear();
-        for(ActiveFixSession broker : brokerService.getActiveFixSessions()) {
-            if(broker.getFixSession().isAcceptor()) {
-                acceptorSessions.add(new SessionID(broker.getFixSession().getSessionId()));
+        for(FixSession broker : fixSessionProvider.findFixSessions()) {
+            if(broker.isAcceptor()) {
+                acceptorSessions.add(new SessionID(broker.getSessionId()));
             } else {
-                initiatorSessions.add(new SessionID(broker.getFixSession().getSessionId()));
+                initiatorSessions.add(new SessionID(broker.getSessionId()));
             }
         }
         startModulesIfNecessary();
@@ -426,13 +426,13 @@ public class IntegrationTestBase
     protected void verifySessionsConnected()
             throws Exception
     {
-        for(final ActiveFixSession broker : brokerService.getActiveFixSessions()) {
+        for(FixSession broker : fixSessionProvider.findFixSessions()) {
             MarketDataFeedTestBase.wait(new Callable<Boolean>() {
                 @Override
                 public Boolean call()
                         throws Exception
                 {
-                    FixSessionStatus brokerStatus = brokerService.getFixSessionStatus(new BrokerID(broker.getFixSession().getBrokerId()));
+                    FixSessionStatus brokerStatus = brokerService.getFixSessionStatus(new BrokerID(broker.getBrokerId()));
                     if(brokerStatus == null) {
                         return false;
                     }

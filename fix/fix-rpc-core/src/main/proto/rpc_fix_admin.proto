@@ -56,7 +56,8 @@ message BrokerAlgoTagSpec {
 
 message BrokerAlgoSpec {
     string name = 1;
-    repeated BrokerAlgoTagSpec brokerAlgoTagSpecs = 2;
+    string validator = 2;
+    repeated BrokerAlgoTagSpec brokerAlgoTagSpecs = 3;
 }
 
 message BrokerAlgoTag {

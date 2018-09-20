@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.event.HasFIXMessage;
@@ -372,6 +373,24 @@ public abstract class AbstractFixModule
         return brokerService;
     }
     /**
+     * Get the fixSessionProvider value.
+     *
+     * @return a <code>FixSessionProvider</code> value
+     */
+    protected FixSessionProvider getFixSessionProvider()
+    {
+        return fixSessionProvider;
+    }
+    /**
+     * Get the instanceData value.
+     *
+     * @return a <code>ClusterData</code> value
+     */
+    protected ClusterData getInstanceData()
+    {
+        return instanceData;
+    }
+    /**
      * Sends status for the given session.
      *
      * @param inSessionId a <code>SessionID</code> value
@@ -595,6 +614,11 @@ public abstract class AbstractFixModule
      */
     @Autowired
     private BrokerService brokerService;
+    /**
+     * provides access to FIX sessions
+     */
+    @Autowired
+    private FixSessionProvider fixSessionProvider;
     /**
      * underlying FIX engine
      */
