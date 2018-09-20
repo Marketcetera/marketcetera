@@ -1,7 +1,7 @@
 package org.marketcetera.brokers.service;
 
 import org.marketcetera.brokers.BrokerConstants;
-import org.marketcetera.cluster.RunnableClusterTask;
+import org.marketcetera.cluster.AbstractRunnableClusterTask;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.trade.BrokerID;
@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since $Release$
  */
 public class ReportBrokerStatusTask
-        extends RunnableClusterTask
+        extends AbstractRunnableClusterTask
 {
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()

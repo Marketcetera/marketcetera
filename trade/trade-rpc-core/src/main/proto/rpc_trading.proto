@@ -5,7 +5,6 @@ option java_outer_classname = "TradingRpc";
 import "rpc_base.proto";
 import "rpc_paging.proto";
 import "rpc_trading_types.proto";
-import "rpc_fix_admin.proto";
 import "google/protobuf/timestamp.proto";
 
 message OpenOrdersRequest {

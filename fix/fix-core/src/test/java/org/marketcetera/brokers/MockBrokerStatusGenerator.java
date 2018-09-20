@@ -3,6 +3,7 @@ package org.marketcetera.brokers;
 import java.util.UUID;
 
 import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.SimpleClusterData;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.MutableFixSession;
@@ -49,5 +50,5 @@ public class MockBrokerStatusGenerator
     /**
      * generated cluster data
      */
-    private static final ClusterData clusterData = new ClusterData(1,"host1",1,1,UUID.randomUUID().toString());
+    private static final ClusterData clusterData = new SimpleClusterData(1,"host1",1,1,UUID.randomUUID().toString());
 }

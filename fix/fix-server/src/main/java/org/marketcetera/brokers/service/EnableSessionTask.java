@@ -1,7 +1,7 @@
 package org.marketcetera.brokers.service;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.marketcetera.cluster.CallableClusterTask;
+import org.marketcetera.cluster.AbstractCallableClusterTask;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionListener;
 import org.marketcetera.fix.SessionNameProvider;
@@ -18,7 +18,7 @@ import quickfix.SessionID;
  * @since $Release$
  */
 public class EnableSessionTask
-        extends CallableClusterTask<Boolean>
+        extends AbstractCallableClusterTask<Boolean>
 {
     /* (non-Javadoc)
      * @see java.util.concurrent.Callable#call()

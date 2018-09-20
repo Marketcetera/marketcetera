@@ -2,7 +2,7 @@ package org.marketcetera.brokers.service;
 
 import java.util.Date;
 
-import org.marketcetera.cluster.CallableClusterTask;
+import org.marketcetera.cluster.AbstractCallableClusterTask;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Session;
@@ -16,7 +16,7 @@ import quickfix.SessionID;
  * @since $Release$
  */
 public class GetSessionStartTask
-        extends CallableClusterTask<Date>
+        extends AbstractCallableClusterTask<Date>
 {
     /* (non-Javadoc)
      * @see java.util.concurrent.Callable#call()

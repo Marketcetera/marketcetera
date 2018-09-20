@@ -14,6 +14,8 @@ import org.marketcetera.brokers.Selector;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.brokers.service.InMemoryFixSessionProvider;
 import org.marketcetera.client.rpc.server.TradeClientRpcService;
+import org.marketcetera.cluster.ClusterDataFactory;
+import org.marketcetera.cluster.SimpleClusterDataFactory;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.dataflow.config.DataFlowProvider;
@@ -171,6 +173,16 @@ public class ServerApplication
     public MessageFactory getMessageFactory()
     {
         return new quickfix.DefaultMessageFactory();
+    }
+    /**
+     * Get the cluster data factory value.
+     *
+     * @return a <code>ClusterDataFactory</code> value
+     */
+    @Bean
+    public ClusterDataFactory getClusterDataFactory()
+    {
+        return new SimpleClusterDataFactory();
     }
     /**
      * Get the user service value.

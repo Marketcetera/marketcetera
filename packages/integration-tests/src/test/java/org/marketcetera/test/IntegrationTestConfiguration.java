@@ -15,6 +15,8 @@ import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.brokers.SessionCustomization;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.brokers.service.InMemoryFixSessionProvider;
+import org.marketcetera.cluster.ClusterDataFactory;
+import org.marketcetera.cluster.SimpleClusterDataFactory;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.dataflow.config.DataFlowProvider;
 import org.marketcetera.fix.FixSession;
@@ -116,6 +118,16 @@ public class IntegrationTestConfiguration
             }
         }
         return moduleManager;
+    }
+    /**
+     * Get the cluster data factory value.
+     *
+     * @return a <code>ClusterDataFactory</code> value
+     */
+    @Bean
+    public ClusterDataFactory getClusterDataFactory()
+    {
+        return new SimpleClusterDataFactory();
     }
     /**
      * Create the standard incoming data flow.

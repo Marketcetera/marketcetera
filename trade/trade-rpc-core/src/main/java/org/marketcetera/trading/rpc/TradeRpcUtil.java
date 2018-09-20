@@ -12,8 +12,6 @@ import org.marketcetera.admin.UserFactory;
 import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.algo.BrokerAlgoTagSpec;
-import org.marketcetera.cluster.ClusterData;
-import org.marketcetera.cluster.rpc.ClusterRpc;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Validator;
 import org.marketcetera.core.position.PositionKey;
@@ -2356,21 +2354,6 @@ public abstract class TradeRpcUtil
 //                                                     getFixSessionStatus(inRpcBrokerStatus.getFixSessionStatus()),
 //                                                     inRpcBrokerStatus.getLoggedOn()));
 //    }
-    /**
-     * Get the cluster data value from the given RPC value.
-     *
-     * @param inRpcClusterData a <code>ClusterRpc.ClusterData</code> value
-     * @return an <code>Optional&lt;ClusterData&gt;</code> value
-     */
-    public static Optional<ClusterData> getClusterData(ClusterRpc.ClusterData inRpcClusterData)
-    {
-        ClusterData clusterData = new ClusterData(inRpcClusterData.getTotalInstances(),
-                                                  inRpcClusterData.getHostId(),
-                                                  inRpcClusterData.getHostNumber(),
-                                                  inRpcClusterData.getInstanceNumber(),
-                                                  inRpcClusterData.getUuid());
-        return(clusterData == null ? Optional.empty() : Optional.of(clusterData));
-    }
 //    /**
 //     * Set the RPC brokers status on the given builder with the given value.
 //     *

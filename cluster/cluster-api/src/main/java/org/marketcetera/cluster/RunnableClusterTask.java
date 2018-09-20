@@ -3,15 +3,13 @@ package org.marketcetera.cluster;
 /* $License$ */
 
 /**
- * Provides common behavior for clusterable tasks.
+ * Provides a <code>Runnable</code> task that can be invoked on cluster members.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: RunnableClusterTask.java 17131 2017-01-25 16:16:17Z colin $
- * @since 2.5.0
+ * @version $Id$
+ * @since $Release$
  */
-public abstract class RunnableClusterTask
-        extends AbstractClusterTask
-        implements Runnable
+public interface RunnableClusterTask
+        extends ClusterTask,Runnable
 {
-    private static final long serialVersionUID = 6017470487914431583L;
 }

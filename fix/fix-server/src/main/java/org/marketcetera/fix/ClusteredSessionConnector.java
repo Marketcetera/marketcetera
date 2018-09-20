@@ -14,7 +14,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.brokers.service.FixSessionProvider;
-import org.marketcetera.cluster.CallableClusterTask;
+import org.marketcetera.cluster.AbstractCallableClusterTask;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -222,7 +222,7 @@ public class ClusteredSessionConnector
      * @since 1.0.1
      */
     private static abstract class AbstractTask<Clazz extends Serializable>
-            extends CallableClusterTask<Clazz>
+            extends AbstractCallableClusterTask<Clazz>
     {
         /**
          * Gets the result of the task.

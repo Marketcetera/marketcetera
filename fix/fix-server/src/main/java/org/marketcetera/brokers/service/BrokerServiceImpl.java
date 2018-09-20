@@ -30,7 +30,7 @@ import org.marketcetera.admin.User;
 import org.marketcetera.brokers.BrokerConstants;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.SessionCustomization;
-import org.marketcetera.cluster.CallableClusterTask;
+import org.marketcetera.cluster.AbstractCallableClusterTask;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterListener;
 import org.marketcetera.cluster.service.ClusterMember;
@@ -956,7 +956,7 @@ public class BrokerServiceImpl
      * @since $Release$
      */
     private static class FindClusterDataTask
-            extends CallableClusterTask<ClusterData>
+            extends AbstractCallableClusterTask<ClusterData>
     {
         /* (non-Javadoc)
          * @see java.util.concurrent.Callable#call()

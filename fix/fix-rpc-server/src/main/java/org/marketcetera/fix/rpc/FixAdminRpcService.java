@@ -45,6 +45,7 @@ import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.MutableFixSession;
+import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.store.MessageStoreSession;
 import org.marketcetera.fix.store.MessageStoreSessionDao;
 import org.marketcetera.persist.CollectionPageResponse;
@@ -166,7 +167,7 @@ public class FixAdminRpcService<SessionClazz>
                                        AdminPermissions.AddSessionAction.name());
                 FixAdminRpc.CreateFixSessionResponse.Builder responseBuilder = FixAdminRpc.CreateFixSessionResponse.newBuilder();
                 if(inRequest.hasFixSession()) {
-                    FixSession fixSession = FixRpcUtil.getFixSession(inRequest.getFixSession()).orElse(null);
+                    FixSession fixSession = FixRpcUtil.getFixSession(inRequest.getFixSession(),fixSessionFactory).orElse(null);
                     Validate.notNull(fixSession);
                     Validate.isTrue(null == fixSessionProvider.findFixSessionByName(fixSession.getName()),
                                     "FIX Session " + fixSession.getName() + " already exists");
@@ -297,9 +298,8 @@ public class FixAdminRpcService<SessionClazz>
                                        AdminPermissions.ReadFixSessionAttributeDescriptorsAction.name());
                 FixAdminRpc.ReadFixSessionAttributeDescriptorsResponse.Builder responseBuilder = FixAdminRpc.ReadFixSessionAttributeDescriptorsResponse.newBuilder();
                 Collection<FixSessionAttributeDescriptor> descriptors = fixSessionProvider.getFixSessionAttributeDescriptors();
-                for(FixSessionAttributeDescriptor descriptor : descriptors) {
-                    responseBuilder.addFixSessionAttributeDescriptors(FixRpcUtil.getRpcFixSessionAttributeDescriptor(descriptor));
-                }
+                descriptors.stream().forEach(descriptor->FixRpcUtil.getRpcFixSessionAttributeDescriptor(descriptor)
+                    .ifPresent(rpcDescriptor->responseBuilder.addFixSessionAttributeDescriptors(rpcDescriptor)));
                 FixAdminRpc.ReadFixSessionAttributeDescriptorsResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(FixAdminRpcService.this,
                                        "Returning {}",
@@ -658,6 +658,11 @@ public class FixAdminRpcService<SessionClazz>
      */
     @Autowired
     private MessageStoreSessionDao fixSessionStoreDao;
+    /**
+     * creates {@link FixSession} objects
+     */
+    @Autowired
+    private MutableFixSessionFactory fixSessionFactory;
     /**
      * provides the RPC service
      */

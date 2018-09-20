@@ -14,6 +14,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.brokers.SessionCustomization;
 import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.SimpleClusterData;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
@@ -177,7 +178,10 @@ public class SimpleActiveFixSession
     @Override
     public void setClusterData(ClusterData inClusterData)
     {
-        clusterData = inClusterData;
+        if(inClusterData instanceof SimpleClusterData) {
+            clusterData = (SimpleClusterData)inClusterData;
+        }
+        clusterData = new SimpleClusterData(inClusterData);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.fix.ActiveFixSession#getBrokerAlgos()
@@ -260,7 +264,7 @@ public class SimpleActiveFixSession
      * cluster data value
      */
     @XmlElement
-    private ClusterData clusterData;
+    private SimpleClusterData clusterData;
     /**
      * target sequence number value
      */

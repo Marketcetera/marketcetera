@@ -11,8 +11,12 @@ import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
 import org.marketcetera.core.ContextClassAggregator;
 import org.marketcetera.fix.FixAdminRpcClientFactory;
+import org.marketcetera.fix.FixSessionAttributeDescriptorFactory;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
+import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
+import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptorFactory;
+import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -124,6 +128,26 @@ public class AppConfiguration
     public MutableActiveFixSessionFactory getActiveFixSessionFactory()
     {
         return new SimpleActiveFixSessionFactory();
+    }
+    /**
+     * Get the FIX session factory value.
+     *
+     * @return a <code>MutableFixSessionFactory</code> value
+     */
+    @Bean
+    public MutableFixSessionFactory getFixSessionFactory()
+    {
+        return new SimpleFixSessionFactory();
+    }
+    /**
+     * Get the FIX session attribute descriptor factory value.
+     *
+     * @return a <code>FixSessionAttributeDescriptoFactory</code> value
+     */
+    @Bean
+    public FixSessionAttributeDescriptorFactory getFixSessionAttributeDescriptorFactory()
+    {
+        return new SimpleFixSessionAttributeDescriptorFactory();
     }
     /**
      * Get the XML context provider for strategy engines.

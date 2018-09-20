@@ -76,7 +76,7 @@ public class FixAdminRpcClient
                                        response);
                 FixSession result = null;
                 if(response.hasFixSession()) {
-                    result = FixRpcUtil.getFixSession(response.getFixSession()).orElse(null);
+                    result = FixRpcUtil.getFixSession(response.getFixSession(),fixSessionFactory).orElse(null);
                 }
                 SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
                                        "{} returning {}",
@@ -122,7 +122,7 @@ public class FixAdminRpcClient
                                        response);
                 CollectionPageResponse<ActiveFixSession> results = new CollectionPageResponse<>();
                 for(FixAdminRpc.ActiveFixSession rpcFixSession : response.getFixSessionList()) {
-                    FixRpcUtil.getActiveFixSession(rpcFixSession,activeFixSessionFactory).ifPresent(activeFixSession->results.getElements().add(activeFixSession));
+                    FixRpcUtil.getActiveFixSession(rpcFixSession,activeFixSessionFactory,fixSessionFactory).ifPresent(activeFixSession->results.getElements().add(activeFixSession));
                 }
                 PagingRpcUtil.setPageResponse(inPageRequest,
                                               response.getPage(),
@@ -357,9 +357,9 @@ public class FixAdminRpcClient
                                        getSessionId(),
                                        response);
                 Collection<FixSessionAttributeDescriptor> results = Lists.newArrayList();
-                for(FixAdminRpc.FixSessionAttributeDescriptor rpcFixSessionAttributeDescriptor : response.getFixSessionAttributeDescriptorsList()) {
-                    results.add(FixRpcUtil.getFixSessionAttributeDescriptor(rpcFixSessionAttributeDescriptor));
-                }
+                response.getFixSessionAttributeDescriptorsList().stream()
+                    .forEach(rpcFixSessionAttributeDescriptor->FixRpcUtil.getFixSessionAttributeDescriptor(rpcFixSessionAttributeDescriptor,fixSessionAttributeDescriptorFactory)
+                    .ifPresent(fixSessionAttributeDescriptor->results.add(fixSessionAttributeDescriptor)));
                 SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),
@@ -571,6 +571,42 @@ public class FixAdminRpcClient
         activeFixSessionFactory = inActiveFixSessionFactory;
     }
     /**
+     * Get the fixSessionFactory value.
+     *
+     * @return a <code>MutableFixSessionFactory</code> value
+     */
+    public MutableFixSessionFactory getFixSessionFactory()
+    {
+        return fixSessionFactory;
+    }
+    /**
+     * Sets the fixSessionFactory value.
+     *
+     * @param inFixSessionFactory a <code>MutableFixSessionFactory</code> value
+     */
+    public void setFixSessionFactory(MutableFixSessionFactory inFixSessionFactory)
+    {
+        fixSessionFactory = inFixSessionFactory;
+    }
+    /**
+     * Get the fixSessionAttributeDescriptorFactory value.
+     *
+     * @return a <code>FixSessionAttributeDescriptorFactory</code> value
+     */
+    public FixSessionAttributeDescriptorFactory getFixSessionAttributeDescriptorFactory()
+    {
+        return fixSessionAttributeDescriptorFactory;
+    }
+    /**
+     * Sets the fixSessionAttributeDescriptorFactory value.
+     *
+     * @param inFixSessionAttributeDescriptorFactory a <code>FixSessionAttributeDescriptorFactory</code> value
+     */
+    public void setFixSessionAttributeDescriptorFactory(FixSessionAttributeDescriptorFactory inFixSessionAttributeDescriptorFactory)
+    {
+        fixSessionAttributeDescriptorFactory = inFixSessionAttributeDescriptorFactory;
+    }
+    /**
      * Create a new FixAdminRpcClient instance.
      *
      * @param inParameters a <code>FixAdminRpcClientParameters</code> value
@@ -641,7 +677,7 @@ public class FixAdminRpcClient
      * @param inListener an <code>Object</code> value
      * @return an <code>AbstractListenerProxy&lt;?,?,?&gt;</code> value
      */
-    private static AbstractClientListenerProxy<?,?,?> getListenerFor(Object inListener)
+    private AbstractClientListenerProxy<?,?,?> getListenerFor(Object inListener)
     {
         if(inListener instanceof BrokerStatusListener) {
             return new FixSessionStatusListenerProxy((BrokerStatusListener)inListener);
@@ -656,7 +692,7 @@ public class FixAdminRpcClient
      * @version $Id$
      * @since $Release$
      */
-    private static class FixSessionStatusListenerProxy
+    private class FixSessionStatusListenerProxy
             extends BaseRpcUtil.AbstractClientListenerProxy<BrokerStatusListenerResponse,ActiveFixSession,BrokerStatusListener>
     {
         /**
@@ -674,7 +710,7 @@ public class FixAdminRpcClient
         @Override
         protected ActiveFixSession translateMessage(BrokerStatusListenerResponse inResponse)
         {
-            return FixRpcUtil.getActiveFixSession(inResponse).orElse(null);
+            return FixRpcUtil.getActiveFixSession(inResponse,activeFixSessionFactory,fixSessionFactory).orElse(null);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.trading.rpc.FixAdminRpcClient.AbstractListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
@@ -690,6 +726,14 @@ public class FixAdminRpcClient
      * creates {@link ActiveFixSession} objects
      */
     private MutableActiveFixSessionFactory activeFixSessionFactory;
+    /**
+     * creates {@link FixSession} objects
+     */
+    private MutableFixSessionFactory fixSessionFactory;
+    /**
+     * creates {@link FixSessionAttributeDescriptor} objects
+     */
+    private FixSessionAttributeDescriptorFactory fixSessionAttributeDescriptorFactory;
     /**
      * holds report listeners by their id
      */

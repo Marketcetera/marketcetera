@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTag;
+import org.marketcetera.algo.BrokerAlgoTagSpec;
 import org.marketcetera.cluster.ClusterRpcUtil;
-import org.marketcetera.fix.FixAdminRpc.BrokerStatusListenerResponse;
 import org.marketcetera.rpc.base.BaseRpcUtil;
 
 /* $License$ */
@@ -22,15 +22,29 @@ public class FixRpcUtil
     /**
      * Get the value from the given RPC value.
      *
-     * @param inFixSession a <code>FixAdminRpc.FixSession</code> value
+     * @param inRpcFixSession a <code>FixAdminRpc.FixSession</code> value
+     * @param inFixSessionFactory a <code>MutableFixSessionFactory</code> value
      * @return an <code>Optional&lt;FixSession&gt;</code> value
      */
-    public static Optional<FixSession> getFixSession(FixAdminRpc.FixSession inFixSession)
+    public static Optional<FixSession> getFixSession(FixAdminRpc.FixSession inRpcFixSession,
+                                                     MutableFixSessionFactory inFixSessionFactory)
     {
-        if(inFixSession == null) {
+        if(inRpcFixSession == null) {
             return Optional.empty();
         }
-        throw new UnsupportedOperationException(); // TODO
+        MutableFixSession fixSession = inFixSessionFactory.create();
+        fixSession.setAffinity(inRpcFixSession.getAffinity());
+        fixSession.setBrokerId(inRpcFixSession.getBrokerId());
+        fixSession.setDescription(inRpcFixSession.getDescription());
+        fixSession.setHost(inRpcFixSession.getHost());
+        fixSession.setIsAcceptor(inRpcFixSession.getAcceptor());
+        fixSession.setIsEnabled(inRpcFixSession.getAcceptor());
+        fixSession.setMappedBrokerId(inRpcFixSession.getMappedBrokerId());
+        fixSession.setName(inRpcFixSession.getName());
+        fixSession.setPort(inRpcFixSession.getPort());
+        fixSession.setSessionId(inRpcFixSession.getSessionId());
+        fixSession.getSessionSettings().putAll(BaseRpcUtil.getMap(inRpcFixSession.getSessionSettings()));
+        return Optional.of(fixSession);
     }
     /**
      * Get the value from the given RPC value.
@@ -40,7 +54,8 @@ public class FixRpcUtil
      * @return an <code>Optional&lt;ActiveFixSession&gt;</code> value
      */
     public static Optional<ActiveFixSession> getActiveFixSession(FixAdminRpc.ActiveFixSession inRpcFixSession,
-                                                                 MutableActiveFixSessionFactory inActiveFixSessionFactory)
+                                                                 MutableActiveFixSessionFactory inActiveFixSessionFactory,
+                                                                 MutableFixSessionFactory inFixSessionFactory)
     {
         if(inRpcFixSession == null) {
             return Optional.empty();
@@ -51,7 +66,7 @@ public class FixRpcUtil
             ClusterRpcUtil.getClusterData(inRpcFixSession.getClusterData()).ifPresent(clusterData->activeFixSession.setClusterData(clusterData));
         }
         if(inRpcFixSession.hasFixSession()) {
-            getFixSession(inRpcFixSession.getFixSession()).ifPresent(fixSession->activeFixSession.setFixSession(fixSession));
+            getFixSession(inRpcFixSession.getFixSession(),inFixSessionFactory).ifPresent(fixSession->activeFixSession.setFixSession(fixSession));
         }
         activeFixSession.setSenderSequenceNumber(inRpcFixSession.getSenderSeqNum());
         activeFixSession.setStatus(FixSessionStatus.values()[inRpcFixSession.getFixSessionStatus().ordinal()]);
@@ -59,24 +74,70 @@ public class FixRpcUtil
         return Optional.of(activeFixSession);
     }
     /**
+     * Get the value from the given RPC value.
      *
-     *
-     * @return
+     * @param inRpcBrokerAlgoSpec a <code>FixAdminRpc.BrokerAlgoSpec</code> value
+     * @return an <code>Optional&lt;BrokerAlgoSpec&gt;</code> value
      */
     public static Optional<BrokerAlgoSpec> getBrokerAlgoSpec(FixAdminRpc.BrokerAlgoSpec inRpcBrokerAlgoSpec)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        if(inRpcBrokerAlgoSpec == null) {
+            return Optional.empty();
+        }
+        BrokerAlgoSpec brokerAlgoSpec = new BrokerAlgoSpec();
+        inRpcBrokerAlgoSpec.getBrokerAlgoTagSpecsList().stream()
+            .forEach(rpcBrokerAlgoTag->getBrokerAlgoTagSpec(rpcBrokerAlgoTag)
+            .ifPresent(brokerAlgoTagSpec->brokerAlgoSpec.getAlgoTagSpecs().add(brokerAlgoTagSpec)));
+        brokerAlgoSpec.setName(inRpcBrokerAlgoSpec.getName());
+        // TODO look up broker algos and find validators
+//        brokerAlgoSpec.setValidator(inValidator);
+        return Optional.of(brokerAlgoSpec);
     }
     /**
+     * Get the value from the given RPC value.
      *
-     *
-     * @param inRpcFixSessionAttributeDescriptor
-     * @return
+     * @param inRpcBrokerAlgoTag a <code>FixAdminRpc.BrokerAlgoTagSpec</code> value
+     * @return an <code>Optional&lt;BrokerAlgoTagSpec&gt;</code> value
      */
-    public static FixSessionAttributeDescriptor getFixSessionAttributeDescriptor(FixAdminRpc.FixSessionAttributeDescriptor inRpcFixSessionAttributeDescriptor)
+    public static Optional<BrokerAlgoTagSpec> getBrokerAlgoTagSpec(FixAdminRpc.BrokerAlgoTagSpec inRpcBrokerAlgoTag)
     {
-        throw new UnsupportedOperationException(); // TODO
+        if(inRpcBrokerAlgoTag == null) {
+            return Optional.empty();
+        }
+        BrokerAlgoTagSpec brokerAlgoTagSpec = new BrokerAlgoTagSpec();
+        brokerAlgoTagSpec.setAdvice(inRpcBrokerAlgoTag.getAdvice());
+        brokerAlgoTagSpec.setDefaultValue(inRpcBrokerAlgoTag.getDefaultValue());
+        brokerAlgoTagSpec.setDescription(inRpcBrokerAlgoTag.getDescription());
+        brokerAlgoTagSpec.setIsMandatory(inRpcBrokerAlgoTag.getMandatory());
+        brokerAlgoTagSpec.setIsReadOnly(inRpcBrokerAlgoTag.getIsReadOnly());
+        brokerAlgoTagSpec.setLabel(inRpcBrokerAlgoTag.getLabel());
+        brokerAlgoTagSpec.setOptions(BaseRpcUtil.getMap(inRpcBrokerAlgoTag.getOptions()));
+        brokerAlgoTagSpec.setPattern(inRpcBrokerAlgoTag.getPattern());
+        brokerAlgoTagSpec.setTag(inRpcBrokerAlgoTag.getTag());
+        if(inRpcBrokerAlgoTag.getValidator() != null) {
+            String validatorName = inRpcBrokerAlgoTag.getValidator();
+            // TODO create class instance of the validator
+        }
+        return Optional.of(brokerAlgoTagSpec);
+    }
+    /**
+     * Get the value from the given RPC value.
+     *
+     * @param inRpcFixSessionAttributeDescriptor a <code>FixAdminRpc.FixSessionAttributeDescriptor</code> value
+     * @return an <code>Optional&lt;FixSessionAttributeDescriptor&gt;</code> value
+     */
+    public static Optional<FixSessionAttributeDescriptor> getFixSessionAttributeDescriptor(FixAdminRpc.FixSessionAttributeDescriptor inRpcFixSessionAttributeDescriptor,
+                                                                                           FixSessionAttributeDescriptorFactory inFixSessionAttributeDescriptorFactory)
+    {
+        if(inRpcFixSessionAttributeDescriptor == null) {
+            return Optional.empty();
+        }
+        FixSessionAttributeDescriptor fixSessionAttributeDescriptor = inFixSessionAttributeDescriptorFactory.create(inRpcFixSessionAttributeDescriptor.getName(),
+                                                                                                                    inRpcFixSessionAttributeDescriptor.getDescription(),
+                                                                                                                    inRpcFixSessionAttributeDescriptor.getDefaultValue(),
+                                                                                                                    inRpcFixSessionAttributeDescriptor.getPattern(),
+                                                                                                                    inRpcFixSessionAttributeDescriptor.getRequired());
+        return Optional.of(fixSessionAttributeDescriptor);
     }
     /**
      * Get the RPC value from the given value.
@@ -105,26 +166,45 @@ public class FixRpcUtil
     /**
      * Get the RPC value from the given value.
      *
-     * @param inBrokerAlgo a <code>BrokerAlgoSpec<code> value
+     * @param inBrokerAlgoSpec a <code>BrokerAlgoSpec<code> value
      * @return an <code>Optional&lt;FixAdminRpc.BrokerAlgoSpec&gt;</code> value
      */
-    public static Optional<FixAdminRpc.BrokerAlgoSpec> getRpcBrokerAlgo(BrokerAlgoSpec inBrokerAlgo)
+    public static Optional<FixAdminRpc.BrokerAlgoSpec> getRpcBrokerAlgo(BrokerAlgoSpec inBrokerAlgoSpec)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        if(inBrokerAlgoSpec == null) {
+            return Optional.empty();
+        }
+        FixAdminRpc.BrokerAlgoSpec.Builder builder = FixAdminRpc.BrokerAlgoSpec.newBuilder();
+        inBrokerAlgoSpec.getAlgoTagSpecs().stream()
+            .forEach(algoTagSpec->getRpcBrokerAlgoTagSpec(algoTagSpec)
+            .ifPresent(rpcAlgoTagSpec->builder.addBrokerAlgoTagSpecs(rpcAlgoTagSpec)));
+        builder.setName(inBrokerAlgoSpec.getName());
+        return Optional.of(builder.build());
     }
     /**
      * Get the RPC value from the given value.
      *
-     * @param inStatus a <code>FixSessionStatus</code> value
-     * @return an <code>Optional&lt;String&gt;</code> value
+     * @param inAlgoTagSpec a <code>BrokerAlgoTagSpec</code> value
+     * @return an <code>Optional&lt;FixAdminRpc.BrokerAlgoTagSpec&gt;</code> value
      */
-    public static Optional<String> getRpcFixSessionStatus(FixSessionStatus inStatus)
+    public static Optional<FixAdminRpc.BrokerAlgoTagSpec> getRpcBrokerAlgoTagSpec(BrokerAlgoTagSpec inAlgoTagSpec)
     {
-        if(inStatus == null) {
+        if(inAlgoTagSpec == null) {
             return Optional.empty();
         }
-        return Optional.of(inStatus.name());
+        FixAdminRpc.BrokerAlgoTagSpec.Builder builder = FixAdminRpc.BrokerAlgoTagSpec.newBuilder();
+        builder.setAdvice(inAlgoTagSpec.getAdvice());
+        builder.setDefaultValue(inAlgoTagSpec.getDefaultValue());
+        builder.setDescription(inAlgoTagSpec.getDescription());
+        builder.setIsReadOnly(inAlgoTagSpec.isReadOnly());
+        builder.setLabel(inAlgoTagSpec.getLabel());
+        builder.setMandatory(inAlgoTagSpec.getIsMandatory());
+        builder.setPattern(inAlgoTagSpec.getPattern());
+        builder.setTag(inAlgoTagSpec.getTag());
+        if(inAlgoTagSpec.getValidator() != null) {
+            builder.setValidator(inAlgoTagSpec.getValidator().getClass().getName());
+        }
+        return Optional.of(builder.build());
     }
     /**
      * Get the RPC value from the given value.
@@ -153,91 +233,86 @@ public class FixRpcUtil
         return Optional.of(builder.build());
     }
     /**
+     * Get the RPC value from the given value.
      *
-     *
-     * @param inDescriptor
-     * @return
+     * @param inDescriptor a <code>FixSessionAttributeDescriptor</code> value
+     * @return an <code>Optional&lt;FixAdminRpc.FixSessionAttributeDescriptor&gt;</code> value
      */
-    public static FixAdminRpc.FixSessionAttributeDescriptor getRpcFixSessionAttributeDescriptor(FixSessionAttributeDescriptor inDescriptor)
+    public static Optional<FixAdminRpc.FixSessionAttributeDescriptor> getRpcFixSessionAttributeDescriptor(FixSessionAttributeDescriptor inDescriptor)
     {
-        throw new UnsupportedOperationException(); // TODO
+        if(inDescriptor == null) {
+            return Optional.empty();
+        }
+        FixAdminRpc.FixSessionAttributeDescriptor.Builder builder = FixAdminRpc.FixSessionAttributeDescriptor.newBuilder();
+        builder.setAdvice(inDescriptor.getAdvice());
+        builder.setDefaultValue(inDescriptor.getDefaultValue());
+        builder.setDescription(inDescriptor.getDescription());
+        builder.setName(inDescriptor.getName());
+        builder.setPattern(inDescriptor.getPattern());
+        builder.setRequired(inDescriptor.isRequired());
+        return Optional.of(builder.build());
     }
     /**
+     * Get the value from the given RPC value.
      *
-     *
-     * @param inResponse
-     * @return
+     * @param inResponse a <code>FixAdminRpc.BrokerStatusListenerResponse</code> value
+     * @param inActiveFixSessionFactory a <code>MutableActiveFixSessionFactory</code> value
+     * @param inFixSessionFactory a <code>MutableFixSessionFactory</code> value
+     * @return an <code>Optional&lt;ActiveFixSession&gt;</code> value
      */
-    public static Optional<FixSessionStatus> getBrokerStatus(BrokerStatusListenerResponse inResponse)
+    public static Optional<ActiveFixSession> getActiveFixSession(FixAdminRpc.BrokerStatusListenerResponse inResponse,
+                                                                 MutableActiveFixSessionFactory inActiveFixSessionFactory,
+                                                                 MutableFixSessionFactory inFixSessionFactory)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        if(inResponse == null || !inResponse.hasActiveFixSession()) {
+            return Optional.empty();
+        }
+        FixAdminRpc.ActiveFixSession rpcActiveFixSession = inResponse.getActiveFixSession();
+        MutableActiveFixSession activeFixSession = inActiveFixSessionFactory.create();
+        rpcActiveFixSession.getBrokerAlgoSpecsList().stream()
+            .forEach(rpcBrokerAlgoSpec->getBrokerAlgoSpec(rpcBrokerAlgoSpec)
+            .ifPresent(brokerAlgoSpec->activeFixSession.getBrokerAlgos().add(brokerAlgoSpec)));
+        if(rpcActiveFixSession.hasClusterData()) {
+            ClusterRpcUtil.getClusterData(rpcActiveFixSession.getClusterData()).ifPresent(clusterData->activeFixSession.setClusterData(clusterData));
+        }
+        if(rpcActiveFixSession.hasFixSession()) {
+            getFixSession(rpcActiveFixSession.getFixSession(),inFixSessionFactory).ifPresent(fixSession->activeFixSession.setFixSession(fixSession));
+        }
+        activeFixSession.setSenderSequenceNumber(rpcActiveFixSession.getSenderSeqNum());
+        activeFixSession.setStatus(FixSessionStatus.values()[rpcActiveFixSession.getFixSessionStatus().ordinal()]);
+        activeFixSession.setTargetSequenceNumber(rpcActiveFixSession.getTargetSeqNum());
+        return Optional.of(activeFixSession);
     }
     /**
+     * Set the given active FIX session on the given builder.
      *
-     *
-     * @param inResponse
-     * @return
+     * @param inActiveFixSession an <code>ActiveFixSession</code> value
+     * @param inResponseBuilder a <code>FixAdminRpc.BrokerStatusListenerResponse.Builder</code> value
      */
-    public static Optional<ActiveFixSession> getActiveFixSession(BrokerStatusListenerResponse inResponse)
-    {
-        throw new UnsupportedOperationException(); // TODO
-        
-    }
-    /**
-     *
-     *
-     * @param inStatus
-     * @param inResponseBuilder
-     */
-    public static void setActiveFixSession(ActiveFixSession inStatus,
+    public static void setActiveFixSession(ActiveFixSession inActiveFixSession,
                                            FixAdminRpc.BrokerStatusListenerResponse.Builder inResponseBuilder)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        if(inActiveFixSession == null) {
+            return;
+        }
+        getRpcActiveFixSession(inActiveFixSession).ifPresent(rpcActiveFixSession->inResponseBuilder.setActiveFixSession(rpcActiveFixSession));
     }
     /**
+     * Get the value from the given RPC value.
      *
-     *
-     * @param inRpcBrokerAlgoTag
-     * @return
+     * @param inRpcBrokerAlgoTag a <code>FixAdminRpc.BrokerAlgoTag</code> value
+     * @return an <code>Optional&lt;BrokerAlgoTag&gt;</code> value
      */
     public static Optional<BrokerAlgoTag> getBrokerAlgoTag(FixAdminRpc.BrokerAlgoTag inRpcBrokerAlgoTag)
     {
-        throw new UnsupportedOperationException(); // TODO
+        if(inRpcBrokerAlgoTag == null) {
+            return Optional.empty();
+        }
+        BrokerAlgoTag brokerAlgoTag = new BrokerAlgoTag();
+        if(inRpcBrokerAlgoTag.hasBrokerAlgoTagSpec()) {
+            getBrokerAlgoTagSpec(inRpcBrokerAlgoTag.getBrokerAlgoTagSpec()).ifPresent(brokerAlgoTagSpec->brokerAlgoTag.setTagSpec(brokerAlgoTagSpec));
+        }
+        brokerAlgoTag.setValue(inRpcBrokerAlgoTag.getValue());
+        return Optional.of(brokerAlgoTag);
     }
-//    /**
-//     * Set the broker algos value on the given RPC builder.
-//     *
-//     * @param inActiveFixSession an <code>ActiveFixSession</code> value
-//     * @param inBrokerStatusBuilder a <code>FixAdminRpc.BrokerStatus.Builder</code> value
-//     */
-//    public static void setBrokerAlgos(ActiveFixSession inActiveFixSession,
-//                                      FixAdminRpc.BrokerStatus.Builder inBrokerStatusBuilder)
-//    {
-//        if(inActiveFixSession.getBrokerAlgos().isEmpty()) {
-//            return;
-//        }
-//        FixAdminRpc.BrokerAlgo.Builder brokerAlgoBuilder = FixAdminRpc.BrokerAlgo.newBuilder();
-//        FixAdminRpc.BrokerAlgoTagSpec.Builder brokerAlgoTagSpecBuilder = FixAdminRpc.BrokerAlgoTagSpec.newBuilder();
-//        for(BrokerAlgoSpec brokerAlgo : inActiveFixSession.getBrokerAlgos()) {
-//            for(BrokerAlgoTagSpec tagSpec : brokerAlgo.getAlgoTagSpecs()) {
-//                brokerAlgoTagSpecBuilder.setAdvice(tagSpec.getAdvice());
-//                brokerAlgoTagSpecBuilder.setDefaultValue(tagSpec.getDefaultValue());
-//                brokerAlgoTagSpecBuilder.setDescription(tagSpec.getDescription());
-//                brokerAlgoTagSpecBuilder.setIsReadOnly(tagSpec.isReadOnly());
-//                brokerAlgoTagSpecBuilder.setLabel(tagSpec.getLabel());
-//                brokerAlgoTagSpecBuilder.setMandatory(tagSpec.getIsMandatory());
-//                brokerAlgoTagSpecBuilder.setOptions(BaseRpcUtil.getRpcMap(tagSpec.getOptions()));
-//                brokerAlgoTagSpecBuilder.setPattern(tagSpec.getPattern());
-//                brokerAlgoTagSpecBuilder.setTag(tagSpec.getTag());
-//                brokerAlgoTagSpecBuilder.setValidator(tagSpec.getValidator()==null?null:tagSpec.getValidator().getClass().getName());
-//                brokerAlgoBuilder.addAlgoTagSpecs(brokerAlgoTagSpecBuilder.build());
-//                brokerAlgoTagSpecBuilder.clear();
-//            }
-//            brokerAlgoBuilder.setName(brokerAlgo.getName());
-//            inBrokerStatusBuilder.addBrokerAlgos(brokerAlgoBuilder.build());
-//            brokerAlgoBuilder.clear();
-//        }
-//    }
 }

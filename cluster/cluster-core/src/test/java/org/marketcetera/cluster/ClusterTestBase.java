@@ -60,8 +60,8 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
     public void testQueue()
             throws Exception
     {
-        final QueueDescriptor<String> testDescriptor1 = new QueueDescriptor<>("test-queue1");
-        final QueueDescriptor<Integer> testDescriptor2 = new QueueDescriptor<>("test-queue2");
+        final QueueDescriptor<String> testDescriptor1 = new SimpleQueueDescriptor<>("test-queue1");
+        final QueueDescriptor<Integer> testDescriptor2 = new SimpleQueueDescriptor<>("test-queue2");
         assertNull(clusterService.peekFromQueue(testDescriptor1));
         assertNull(clusterService.peekFromQueue(testDescriptor2));
         String testValue1 = "test-value1";
@@ -470,7 +470,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      * @since $Release$
      */
     private static class TestRunnable
-            extends RunnableClusterTask
+            extends AbstractRunnableClusterTask
     {
         /* (non-Javadoc)
          * @see java.lang.Runnable#run()
@@ -537,7 +537,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      * @since $Release$
      */
     private static class TestCallable<Clazz extends Serializable>
-            extends CallableClusterTask<Clazz>
+            extends AbstractCallableClusterTask<Clazz>
     {
         /* (non-Javadoc)
          * @see java.util.concurrent.Callable#call()

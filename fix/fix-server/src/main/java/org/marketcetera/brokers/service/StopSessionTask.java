@@ -1,7 +1,7 @@
 package org.marketcetera.brokers.service;
 
 import org.marketcetera.brokers.service.BrokerService;
-import org.marketcetera.cluster.CallableClusterTask;
+import org.marketcetera.cluster.AbstractCallableClusterTask;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionListener;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since $Release$
  */
 public class StopSessionTask
-        extends CallableClusterTask<Boolean>
+        extends AbstractCallableClusterTask<Boolean>
 {
     /* (non-Javadoc)
      * @see java.util.concurrent.Callable#call()

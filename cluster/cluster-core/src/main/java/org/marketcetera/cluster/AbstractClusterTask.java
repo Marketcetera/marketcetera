@@ -1,7 +1,5 @@
 package org.marketcetera.cluster;
 
-import java.io.Serializable;
-
 import org.marketcetera.cluster.service.ClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version $Id: AbstractClusterTask.java 17134 2017-01-27 16:41:54Z colin $
  * @since 2.5.0
  */
-public class AbstractClusterTask
-        implements Serializable
+public abstract class AbstractClusterTask
+        implements ClusterTask
 {
     /**
      * Gets the executor pool to use for this task.

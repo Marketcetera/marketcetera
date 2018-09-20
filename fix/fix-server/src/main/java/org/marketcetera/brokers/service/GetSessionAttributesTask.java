@@ -1,7 +1,6 @@
 package org.marketcetera.brokers.service;
 
-import org.marketcetera.brokers.service.BrokerService;
-import org.marketcetera.cluster.CallableClusterTask;
+import org.marketcetera.cluster.AbstractCallableClusterTask;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.fix.AcceptorSessionAttributes;
 import org.marketcetera.fix.FixSettingsProvider;
@@ -17,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since $Release$
  */
 public class GetSessionAttributesTask
-        extends CallableClusterTask<AcceptorSessionAttributes>
+        extends AbstractCallableClusterTask<AcceptorSessionAttributes>
 {
     /* (non-Javadoc)
      * @see java.util.concurrent.Callable#call()

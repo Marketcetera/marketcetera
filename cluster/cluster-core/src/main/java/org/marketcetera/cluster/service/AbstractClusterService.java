@@ -35,11 +35,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.cluster.ClusterActivateWorkUnit;
 import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.ClusterWorkUnit;
 import org.marketcetera.cluster.ClusterWorkUnitDescriptor;
 import org.marketcetera.cluster.ClusterWorkUnitSpec;
 import org.marketcetera.cluster.ClusterWorkUnitType;
 import org.marketcetera.cluster.ClusterWorkUnitUid;
+import org.marketcetera.cluster.SimpleClusterWorkUnitDescriptor;
+import org.marketcetera.cluster.SimpleClusterWorkUnitSpec;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
@@ -47,6 +50,7 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -333,11 +337,11 @@ public abstract class AbstractClusterService
                                               int inInstanceNumber,
                                               String inMemberUuid)
     {
-        return new ClusterData(inTotalInstances,
-                               inHostId,
-                               inHostNumber,
-                               inInstanceNumber,
-                               inMemberUuid);
+        return clusterDataFactory.create(inTotalInstances,
+                                         inHostId,
+                                         inHostNumber,
+                                         inInstanceNumber,
+                                         inMemberUuid);
     }
     /**
      * Notify the cluster that the given member has been removed.
@@ -422,9 +426,9 @@ public abstract class AbstractClusterService
                     // the candidates are supposed to implement an annotation which provides a UID for this spec, further identifying it. this allows multiple instances of the same overall type
                     String uuid = getUuid(workUnitCandidate);
                     if(uuid != null) {
-                        ClusterWorkUnitSpec dynamicSpec = new ClusterWorkUnitSpec(currentWorkUnitSpec.getWorkUnitType(),
-                                                                                  currentWorkUnitSpec.getWorkUnitId(),
-                                                                                  uuid);
+                        ClusterWorkUnitSpec dynamicSpec = new SimpleClusterWorkUnitSpec(currentWorkUnitSpec.getWorkUnitType(),
+                                                                                        currentWorkUnitSpec.getWorkUnitId(),
+                                                                                        uuid);
                         dynamicSpecs.add(dynamicSpec);
                         SLF4JLoggerProxy.debug(this,
                                                "Generated dynamic work unit spec {} for {} from {}",
@@ -535,8 +539,8 @@ public abstract class AbstractClusterService
      */
     protected ClusterWorkUnitDescriptor generateWorkUnitDescriptor(ClusterWorkUnitSpec inWorkUnitSpec)
     {
-        return new ClusterWorkUnitDescriptor(inWorkUnitSpec,
-                                             memberUuid);
+        return new SimpleClusterWorkUnitDescriptor(inWorkUnitSpec,
+                                                   memberUuid);
     }
     /**
      * Returns a candidate that suits the given work unit spec if one exists.
@@ -645,7 +649,7 @@ public abstract class AbstractClusterService
                 for(Map.Entry<String,Object> entry : workUnits.entrySet()) {
                     ClusterWorkUnit workUnit = getTypeAnnotation(entry.getValue(),
                                                                  ClusterWorkUnit.class);
-                    ClusterWorkUnitSpec workUnitSpec = new ClusterWorkUnitSpec(workUnit);
+                    ClusterWorkUnitSpec workUnitSpec = new SimpleClusterWorkUnitSpec(workUnit);
                     requiredWorkUnitSpecs.add(workUnitSpec);
                 }
             }
@@ -763,8 +767,8 @@ public abstract class AbstractClusterService
     protected void register(ClusterData inClusterData)
     {
         try {
-            ClusterMetaData metaData = new ClusterMetaData(inClusterData,
-                                                           activeWorkUnits);
+            SimpleClusterMetaData metaData = new SimpleClusterMetaData(inClusterData,
+                                                                       activeWorkUnits);
             String xmlMetaData = marshall(metaData);
             setAttribute(metaDataPrefix+memberUuid,
                          xmlMetaData);
@@ -996,6 +1000,11 @@ public abstract class AbstractClusterService
         private long workUnitLockAttempt;
     }
     /**
+     * creates {@link ClusterData} objects
+     */
+    @Autowired
+    private ClusterDataFactory clusterDataFactory;
+    /**
      * uniquely identifies a cluster member
      */
     private String memberUuid;
@@ -1098,7 +1107,7 @@ public abstract class AbstractClusterService
      */
     static {
         try {
-            context = JAXBContext.newInstance(ClusterMetaData.class);
+            context = JAXBContext.newInstance(SimpleClusterMetaData.class);
             marshaller = context.createMarshaller();
             unmarshaller = context.createUnmarshaller();
             unmarshaller.setEventHandler(new ValidationEventHandler() {

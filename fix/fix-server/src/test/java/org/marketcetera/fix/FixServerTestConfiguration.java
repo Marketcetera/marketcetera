@@ -1,6 +1,8 @@
 package org.marketcetera.fix;
 
 import org.marketcetera.brokers.service.FixSessionProvider;
+import org.marketcetera.cluster.ClusterDataFactory;
+import org.marketcetera.cluster.SimpleClusterDataFactory;
 import org.marketcetera.fix.dao.PersistentFixSessionFactory;
 import org.marketcetera.fix.dao.PersistentFixSessionProvider;
 import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
@@ -56,6 +58,16 @@ public class FixServerTestConfiguration
     public ServerFixSessionFactory getServerFixSessionFactory()
     {
         return new SimpleServerFixSessionFactory();
+    }
+    /**
+     * Get the cluster data factory value.
+     *
+     * @return a <code>ClusterDataFactory</code> value
+     */
+    @Bean
+    public ClusterDataFactory getClusterDataFactory()
+    {
+        return new SimpleClusterDataFactory();
     }
     /**
      * Get the message factory value.

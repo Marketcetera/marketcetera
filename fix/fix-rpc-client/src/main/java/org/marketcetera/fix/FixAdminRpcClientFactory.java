@@ -23,11 +23,23 @@ public class FixAdminRpcClientFactory
     {
         FixAdminRpcClient fixAdminRpcClient = new FixAdminRpcClient(inParameters);
         fixAdminRpcClient.setActiveFixSessionFactory(activeFixSessionFactory);
+        fixAdminRpcClient.setFixSessionFactory(fixSessionFactory);
+        fixAdminRpcClient.setFixSessionAttributeDescriptorFactory(fixSessionAttributeDescriptorFactory);
         return fixAdminRpcClient;
     }
+    /**
+     * creates {@link FixSessionAttributeDescriptor} objects
+     */
+    @Autowired
+    private FixSessionAttributeDescriptorFactory fixSessionAttributeDescriptorFactory;
     /**
      * creates {@link ActiveFixSession} objects
      */
     @Autowired
     private MutableActiveFixSessionFactory activeFixSessionFactory;
+    /**
+     * creates {@link FixSession} objects
+     */
+    @Autowired
+    private MutableFixSessionFactory fixSessionFactory;
 }
