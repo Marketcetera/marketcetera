@@ -25,6 +25,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>webui-dataflow</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>webui-cluster</artifactId>
       <scope>runtime</scope>
     </dependency>
@@ -48,10 +53,6 @@
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
     </dependency>
-    <!--dependency>
-      <groupId>org.vaadin.addons</groupId>
-      <artifactId>wizards-for-vaadin</artifactId>
-    </dependency-->
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin-push</artifactId>

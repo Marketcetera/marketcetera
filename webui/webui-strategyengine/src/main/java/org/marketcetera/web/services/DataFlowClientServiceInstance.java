@@ -1,4 +1,4 @@
-package com.marketcetera.web.services;
+package org.marketcetera.web.services;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -14,15 +14,15 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.config.AppConfiguration;
+import org.marketcetera.web.view.dataflows.DecoratedStrategyEngine;
 import org.springframework.context.ApplicationContext;
 
-import com.marketcetera.web.view.dataflows.DecoratedStrategyEngine;
 import com.vaadin.server.VaadinSession;
 
 /* $License$ */
 
 /**
- * Provides access to an SA server instance.
+ * Provides access to a data flow server instance.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

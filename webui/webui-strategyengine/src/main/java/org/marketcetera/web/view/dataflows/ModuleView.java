@@ -1,4 +1,4 @@
-package com.marketcetera.web.view.dataflows;
+package org.marketcetera.web.view.dataflows;
 
 import org.marketcetera.web.view.AbstractGridView;
 import org.marketcetera.web.view.ContentView;

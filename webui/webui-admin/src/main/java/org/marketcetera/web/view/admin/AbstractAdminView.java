@@ -6,7 +6,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.persist.SummaryNDEntityBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.web.events.MenuEvent;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.services.AdminClientService;
 import org.marketcetera.web.services.WebMessageService;
 import org.marketcetera.web.view.AbstractGridView;
@@ -256,7 +256,7 @@ public abstract class AbstractAdminView<Clazz extends SummaryNDEntityBase>
      * @since $Release$
      */
     private class AdminViewMenuEvent
-            implements MenuEvent
+            implements NewWindowEvent
     {
         /* (non-Javadoc)
          * @see org.marketcetera.web.events.MenuEvent#getWindowTitle()

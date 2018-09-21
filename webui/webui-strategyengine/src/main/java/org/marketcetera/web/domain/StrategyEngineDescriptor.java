@@ -1,4 +1,4 @@
-package com.marketcetera.web.domain;
+package org.marketcetera.web.domain;
 
 /* $License$ */
 

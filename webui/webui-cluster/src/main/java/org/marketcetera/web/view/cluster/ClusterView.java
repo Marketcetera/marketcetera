@@ -5,7 +5,7 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.impl.SimpleActiveFixSession;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
-import org.marketcetera.web.events.MenuEvent;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.services.WebMessageService;
 import org.marketcetera.web.view.AbstractGridView;
 import org.marketcetera.web.view.MenuContent;
@@ -133,7 +133,7 @@ public class ClusterView
             @Override
             public void menuSelected(MenuItem inSelectedItem)
             {
-                webMessageService.post(new MenuEvent() {
+                webMessageService.post(new NewWindowEvent() {
                     @Override
                     public String getWindowTitle()
                     {
@@ -143,8 +143,8 @@ public class ClusterView
                     public Component getComponent()
                     {
                         return ClusterView.this;
-                    }}
-                );
+                    }
+                });
             }
             private static final long serialVersionUID = 49365592058433460L;
         };

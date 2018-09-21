@@ -1,4 +1,4 @@
-package com.marketcetera.web.view.dataflows;
+package org.marketcetera.web.view.dataflows;
 
 import java.net.Socket;
 import java.util.Collection;
@@ -7,12 +7,12 @@ import java.util.Iterator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.services.DataFlowClientService;
+import org.marketcetera.web.services.DataFlowClientServiceInstance;
 import org.marketcetera.web.view.AbstractGridView;
 import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.PagedDataContainer;
 
-import com.marketcetera.web.services.DataFlowClientService;
-import com.marketcetera.web.services.DataFlowClientServiceInstance;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validatable;
 import com.vaadin.data.Validator.InvalidValueException;

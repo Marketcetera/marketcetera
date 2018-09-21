@@ -1,15 +1,14 @@
-package com.marketcetera.web.view.dataflows;
+package org.marketcetera.web.view.dataflows;
 
 import java.util.Collection;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
+import org.marketcetera.web.services.DataFlowClientService;
+import org.marketcetera.web.services.DataFlowClientServiceInstance;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.marketcetera.web.view.PagedViewProvider;
-
-import com.marketcetera.web.services.DataFlowClientServiceInstance;
-import com.marketcetera.web.services.DataFlowClientService;
 
 /* $License$ */
 

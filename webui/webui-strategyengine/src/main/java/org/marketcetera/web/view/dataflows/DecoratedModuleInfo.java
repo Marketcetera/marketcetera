@@ -1,4 +1,4 @@
-package com.marketcetera.web.view.dataflows;
+package org.marketcetera.web.view.dataflows;
 
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleState;

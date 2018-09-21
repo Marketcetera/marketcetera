@@ -20,7 +20,7 @@ import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
-import org.marketcetera.web.events.MenuEvent;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.services.AdminClientService;
 import org.marketcetera.web.services.WebMessageService;
 import org.marketcetera.web.view.AbstractGridView;
@@ -187,7 +187,7 @@ public class SessionView
             @Override
             public void menuSelected(MenuItem inSelectedItem)
             {
-                webMessageService.post(new MenuEvent() {
+                webMessageService.post(new NewWindowEvent() {
                     @Override
                     public String getWindowTitle()
                     {

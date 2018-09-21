@@ -4,19 +4,20 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.web.events.MenuEvent;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.events.WindowResizeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.Subscribe;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 /* $License$ */
 
 /**
- *
+ * Manages window views in the UI.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -48,21 +49,20 @@ public class WindowManagerService
     /**
      * Receive menu events.
      *
-     * @param inMenuEvent a <code>MenuEvent</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      */
     @Subscribe
-    public void receiveMenuEvent(MenuEvent inMenuEvent)
+    public void receiveMenuEvent(NewWindowEvent inNewWindowEvent)
     {
         SLF4JLoggerProxy.debug(this,
                                "Received {}",
-                               inMenuEvent.getWindowTitle());
-        Window newWindow = new Window(inMenuEvent.getWindowTitle());
-        newWindow.setContent(inMenuEvent.getComponent());
+                               inNewWindowEvent.getWindowTitle());
+        Window newWindow = new Window(inNewWindowEvent.getWindowTitle());
         newWindow.setModal(false);
         newWindow.setDraggable(true);
         newWindow.setResizable(true);
-        newWindow.getContent().setSizeUndefined();
-        newWindow.setSizeUndefined();
+        newWindow.setWidth(inNewWindowEvent.getWindowSize().getFirstMember());
+        newWindow.setHeight(inNewWindowEvent.getWindowSize().getSecondMember());
         newWindow.addResizeListener(inE -> {
             webMessageService.post(new WindowResizeEvent() {
                 @Override
@@ -94,6 +94,7 @@ public class WindowManagerService
                 }
             });
         });
+        newWindow.setContent(inNewWindowEvent.getComponent());
         UI.getCurrent().addWindow(newWindow);
         newWindow.focus();
     }
