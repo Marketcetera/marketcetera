@@ -52,26 +52,33 @@ public class ClusterRpcUtil
         return(clusterData == null ? Optional.empty() : Optional.of(clusterData));
     }
     /**
+     * Get the RPC value from the given value.
      *
-     *
-     * @param inClusterMember
-     * @return
+     * @param inClusterMember a <code>ClusterMember</code> value
+     * @return an <code>Optional&lt;ClusterRpc.ClusterMember&gt;</code> value
      */
     public static Optional<ClusterRpc.ClusterMember> getRpcClusterMember(ClusterMember inClusterMember)
     {
-        throw new UnsupportedOperationException(); // TODO
+        if(inClusterMember == null) {
+            return Optional.empty();
+        }
+        ClusterRpc.ClusterMember.Builder builder = ClusterRpc.ClusterMember.newBuilder();
+        builder.setUuid(inClusterMember.getUuid());
+        return Optional.of(builder.build());
     }
     /**
+     * Get the value from the given RPC value.
      *
-     *
-     * @param inRpcClusterMember
-     * @param inClusterMemberFactory
-     * @return
+     * @param inRpcClusterMember a <code>ClusterRpc.ClusterMember</code> value
+     * @param inClusterMemberFactory a <code>ClusterMemberFactory</code> value
+     * @return an <code>Optional&lt;ClusterMember&gt;</code> value
      */
     public static Optional<ClusterMember> getClusterMember(ClusterRpc.ClusterMember inRpcClusterMember,
                                                            ClusterMemberFactory inClusterMemberFactory)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        if(inRpcClusterMember == null) {
+            return Optional.empty();
+        }
+        return Optional.of(inClusterMemberFactory.create(inRpcClusterMember.getUuid()));
     }
 }

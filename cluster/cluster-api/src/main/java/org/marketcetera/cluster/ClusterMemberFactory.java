@@ -15,4 +15,11 @@ import org.marketcetera.core.DomainObjectFactory;
 public interface ClusterMemberFactory
         extends DomainObjectFactory<ClusterMember>
 {
+    /**
+     * Create a <code>ClusterMember</code> object.
+     *
+     * @param inUuid a <code>String</code> value
+     * @return a <code>ClusterMember</code> value
+     */
+    public ClusterMember create(String inUuid);
 }

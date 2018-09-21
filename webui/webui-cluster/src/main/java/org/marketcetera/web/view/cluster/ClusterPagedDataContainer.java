@@ -55,7 +55,16 @@ public class ClusterPagedDataContainer
     protected CollectionPageResponse<ClusterMember> getDataContainerContents(PageRequest inPageRequest)
     {
         Collection<ClusterMember> clusterMembers = ClusterClientService.getInstance().getClusterMembers();
-        throw new UnsupportedOperationException();
+        CollectionPageResponse<ClusterMember> response = new CollectionPageResponse<>();
+        response.getElements().addAll(clusterMembers);
+        response.setHasContent(!clusterMembers.isEmpty());
+        response.setPageMaxSize(inPageRequest.getPageSize());
+        response.setPageNumber(inPageRequest.getPageNumber());
+        response.setPageSize(clusterMembers.size());
+        response.setSortOrder(inPageRequest.getSortOrder());
+        response.setTotalPages(1);
+        response.setTotalSize(response.getPageSize());
+        return response;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.PagedDataContainer#isDeepEquals(java.lang.Object, java.lang.Object)
