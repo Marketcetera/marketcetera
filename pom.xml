@@ -35,7 +35,7 @@
     <mvn.javaee.version>8</mvn.javaee.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
     <mvn.log4j.version>2.7</mvn.log4j.version>
-    <mvn.spring.boot.version>2.0.3.RELEASE</mvn.spring.boot.version>
+    <mvn.spring.boot.version>2.0.5.RELEASE</mvn.spring.boot.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

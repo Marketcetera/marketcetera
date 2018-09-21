@@ -58,6 +58,7 @@
     <module>webui-core</module>
     <module>webui-cluster</module>
     <module>webui-package</module>
+    <module>webui-strategyengine</module>
   </modules>
   <repositories>
     <repository>
