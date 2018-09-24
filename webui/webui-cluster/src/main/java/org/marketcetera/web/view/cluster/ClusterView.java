@@ -105,7 +105,7 @@ public class ClusterView
     @Override
     public int getWeight()
     {
-        return 50;
+        return 200;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCategory()

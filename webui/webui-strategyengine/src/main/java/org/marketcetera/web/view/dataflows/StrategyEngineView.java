@@ -69,7 +69,7 @@ public class StrategyEngineView
     @Override
     public int getWeight()
     {
-        return 50;
+        return 400;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCategory()
@@ -188,9 +188,24 @@ public class StrategyEngineView
                     serviceInstance.disconnect();
                     break;
                 case ACTION_DATAFLOWS:
-                    VaadinSession.getCurrent().setAttribute(DecoratedStrategyEngine.class,
-                                                            selectedItem);
-                    UI.getCurrent().getNavigator().navigateTo(ModuleView.NAME);
+                    ModuleView moduleView = new ModuleView(selectedItem);
+                    webMessageService.post(new NewWindowEvent() {
+                        @Override
+                        public String getWindowTitle()
+                        {
+                            return moduleView.getViewSubjectName();
+                        }
+                        @Override
+                        public Component getComponent()
+                        {
+                            return moduleView;
+                        }
+                        @Override
+                        public String toString()
+                        {
+                            return "NewModuleViewEvent: " + selectedItem.getName();
+                        }
+                    });
                     break;
                 default:
                     throw new UnsupportedOperationException("Unsupported action: " + action);

@@ -159,7 +159,7 @@ public class SessionView
     @Override
     public int getWeight()
     {
-        return 75;
+        return 300;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCategory()

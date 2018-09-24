@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.config.dataflows.DataFlowConfiguration;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 
 /* $License$ */
@@ -86,6 +86,7 @@ public class DataFlowClientService
     {
         SLF4JLoggerProxy.info(this,
                               "Starting data flow client service");
+        instance = this;
     }
     /**
      * Get the <code>SaClientService</code> instance for the current session.
@@ -94,34 +95,21 @@ public class DataFlowClientService
      */
     public static DataFlowClientService getInstance()
     {
-        synchronized(DataFlowClientService.class) {
-            DataFlowClientService dataFlowClientService = VaadinSession.getCurrent().getAttribute(DataFlowClientService.class);
-            if(dataFlowClientService == null) {
-                dataFlowClientService = new DataFlowClientService();
-                VaadinSession.getCurrent().setAttribute(DataFlowClientService.class,
-                                                        dataFlowClientService);
-            }
-            return dataFlowClientService;
-        }
+        return instance;
     }
     /**
      * Get the service instance for the given SE descriptor.
      *
      * @param inEngine a <code>DecoratedStrategyEngine</code> value
      * @return a <code>DataFlowClientServiceInstance</code> value
+     * @throws IllegalArgumentException if there is no client service instance for the given engine
      */
     public DataFlowClientServiceInstance getServiceInstance(DecoratedStrategyEngine inEngine)
     {
-        throw new UnsupportedOperationException();
-//        synchronized(instancesByName) {
-//            DataFlowClientServiceInstance instance = instancesByName.get(inEngine.getName());
-//            if(instance == null) {
-//                instance = new DataFlowClientServiceInstance(inEngine);
-//                instancesByName.put(inEngine.getName(),
-//                                    instance);
-//            }
-//            return instance;
-//        }
+        DataFlowClientServiceInstance instance = instancesByName.getIfPresent(inEngine.getName());
+        Validate.notNull(instance,
+                         "No data flow client service instance for " + inEngine.getName());
+        return instance;
     }
     /**
      * Get the strategy engines known to the system for this user.
@@ -166,4 +154,8 @@ public class DataFlowClientService
      */
     @Autowired
     private DataFlowConfiguration dataFlowConfiguration;
+    /**
+     * static instance of this object
+     */
+    private static DataFlowClientService instance;
 }

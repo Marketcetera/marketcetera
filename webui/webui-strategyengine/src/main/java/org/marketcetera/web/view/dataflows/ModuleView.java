@@ -5,8 +5,6 @@ import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.PagedDataContainer;
 
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.spring.annotation.SpringView;
 
 /* $License$ */
 
@@ -17,18 +15,25 @@ import com.vaadin.spring.annotation.SpringView;
  * @version $Id$
  * @since $Release$
  */
-@SpringView(name=ModuleView.NAME)
 public class ModuleView
         extends AbstractGridView<DecoratedModuleInfo>
         implements ContentView
 {
+    /**
+     * Create a new ModuleView instance.
+     *
+     * @param inSelectedItem a <code>DecoratedStrategyEngine</code> value
+     */
+    public ModuleView(DecoratedStrategyEngine inSelectedItem)
+    {
+        strategyEngine = inSelectedItem;
+    }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
      */
     @Override
     public void attach()
     {
-        strategyEngine = VaadinSession.getCurrent().getAttribute(DecoratedStrategyEngine.class);
         super.attach();
         getGrid().addSelectionListener(inEvent -> {
             DecoratedModuleInfo selectedObject = getSelectedItem();
@@ -89,7 +94,7 @@ public class ModuleView
     @Override
     protected String getViewSubjectName()
     {
-        return "Modules";
+        return "Modules of " + strategyEngine.getName();
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#createDataContainer()

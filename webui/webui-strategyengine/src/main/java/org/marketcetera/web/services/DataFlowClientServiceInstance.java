@@ -92,7 +92,7 @@ public class DataFlowClientServiceInstance
                 dataFlowClient.stop();
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
-                                      "Unable to stop existing SA client for {}: {}",
+                                      "Unable to stop existing data flow client for {}: {}",
                                       username,
                                       ExceptionUtils.getRootCauseMessage(e));
             } finally {
@@ -100,7 +100,7 @@ public class DataFlowClientServiceInstance
             }
         }
         SLF4JLoggerProxy.debug(this,
-                               "Creating SA client for {} to {}:{}",
+                               "Creating data flow client for {} to {}:{}",
                                username,
                                hostname,
                                port);
