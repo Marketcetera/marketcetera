@@ -14,7 +14,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.config.AppConfiguration;
-import org.marketcetera.web.view.dataflows.DecoratedStrategyEngine;
+import org.marketcetera.web.config.dataflows.DataFlowConfiguration.DataFlowEngineDescriptor;
 import org.springframework.context.ApplicationContext;
 
 import com.vaadin.server.VaadinSession;
@@ -60,16 +60,17 @@ public class DataFlowClientServiceInstance
         return dataFlowClient.getProviders();
     }
     /**
-     * Create a new SaClientService instance.
+     * Create a new DataFlowClientServiceInstance instance.
      *
-     * @param inEngine a <code>DecoratedStrategyEngine</code> value
+     * @param inEngineDescriptor
      */
-    public DataFlowClientServiceInstance(DecoratedStrategyEngine inEngine)
+    public DataFlowClientServiceInstance(DataFlowEngineDescriptor inEngineDescriptor)
     {
         ApplicationContext applicationContext = AppConfiguration.getApplicationContext();
-        saClientFactory = applicationContext.getBean(DataFlowRpcClientFactory.class);
-        hostname = inEngine.getHostname();
-        port = inEngine.getPort();
+        dataFlowClientFactory = applicationContext.getBean(DataFlowRpcClientFactory.class);
+        hostname = inEngineDescriptor.getHostname();
+        port = inEngineDescriptor.getPort();
+        name = inEngineDescriptor.getName();
     }
     /**
      * Connect to the Admin server.
@@ -111,7 +112,7 @@ public class DataFlowClientServiceInstance
         params.setUsername(username);
         params.setPassword(password);
         params.setContextClassProvider(contextProvider);
-        dataFlowClient = saClientFactory.create(params);
+        dataFlowClient = dataFlowClientFactory.create(params);
         dataFlowClient.start();
         return dataFlowClient.isRunning();
     }
@@ -172,13 +173,44 @@ public class DataFlowClientServiceInstance
         return dataFlowClient.isRunning();
     }
     /**
+     * Get the hostname value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getHostname()
+    {
+        return hostname;
+    }
+    /**
+     * Get the assigned name value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getName()
+    {
+        return name;
+    }
+    /**
+     * Get the port value.
+     *
+     * @return an <code>int</code> value
+     */
+    public int getPort()
+    {
+        return port;
+    }
+    /**
      * creates an SA client to connect to the SA server
      */
-    private final DataFlowRpcClientFactory saClientFactory;
+    private final DataFlowRpcClientFactory dataFlowClientFactory;
     /**
      * client object used to communicate with the server
      */
     private DataFlowClient dataFlowClient;
+    /**
+     * assigned name of this instance
+     */
+    private final String name;
     /**
      * server hostname to connect to
      */

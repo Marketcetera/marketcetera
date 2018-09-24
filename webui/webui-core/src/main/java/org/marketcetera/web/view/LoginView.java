@@ -96,6 +96,16 @@ public class LoginView
                 SLF4JLoggerProxy.info(this,
                                       "{} logged in",
                                        username);
+                // get the permissions available for this user
+                Collection<Permission> permissions = adminClientService.getPermissions();
+                // Store the current user in the service session
+                SessionUser loggedInUser = new SessionUser(username,
+                                                           password);
+                loggedInUser.getPermissions().addAll(permissions);
+                VaadinSession.getCurrent().setAttribute(SessionUser.class,
+                                                        loggedInUser);
+                VaadinSession.getCurrent().setAttribute(AdminClientService.class,
+                                                        adminClientService);
                 // connect other services
                 Map<String,ConnectableService> services = applicationContext.getBeansOfType(ConnectableService.class);
                 for(Map.Entry<String,ConnectableService> serviceEntry : services.entrySet()) {
@@ -123,16 +133,6 @@ public class LoginView
                                               message);
                     }
                 }
-                // get the permissions available for this user
-                Collection<Permission> permissions = adminClientService.getPermissions();
-                // Store the current user in the service session
-                SessionUser loggedInUser = new SessionUser(username,
-                                                           password);
-                loggedInUser.getPermissions().addAll(permissions);
-                VaadinSession.getCurrent().setAttribute(SessionUser.class,
-                                                        loggedInUser);
-                VaadinSession.getCurrent().setAttribute(AdminClientService.class,
-                                                        adminClientService);
                 // Navigate to main view
                 getUI().getNavigator().navigateTo(MainView.NAME);
             } else {

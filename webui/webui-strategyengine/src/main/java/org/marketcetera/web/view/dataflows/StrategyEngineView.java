@@ -7,15 +7,20 @@ import java.util.Iterator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.services.DataFlowClientService;
 import org.marketcetera.web.services.DataFlowClientServiceInstance;
+import org.marketcetera.web.services.WebMessageService;
 import org.marketcetera.web.view.AbstractGridView;
-import org.marketcetera.web.view.ContentView;
+import org.marketcetera.web.view.MenuContent;
 import org.marketcetera.web.view.PagedDataContainer;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validatable;
 import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
@@ -25,6 +30,9 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
@@ -45,15 +53,73 @@ import com.vaadin.ui.themes.ValoTheme;
 @SpringComponent
 public class StrategyEngineView
         extends AbstractGridView<DecoratedStrategyEngine>
-        implements ContentView
+        implements MenuContent
 {
+    /* (non-Javadoc)
+     * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
+     */
+    @Override
+    public String getMenuCaption()
+    {
+        return "Data Flows";
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.web.view.MenuContent#getWeight()
+     */
+    @Override
+    public int getWeight()
+    {
+        return 50;
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.web.view.MenuContent#getCategory()
+     */
+    @Override
+    public MenuContent getCategory()
+    {
+        return null;
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.web.view.MenuContent#getMenuIcon()
+     */
+    @Override
+    public Resource getMenuIcon()
+    {
+        return FontAwesome.COGS;
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.web.view.MenuContent#getCommand()
+     */
+    @Override
+    public Command getCommand()
+    {
+        return new MenuBar.Command() {
+            @Override
+            public void menuSelected(MenuItem inSelectedItem)
+            {
+                webMessageService.post(new NewWindowEvent() {
+                    @Override
+                    public String getWindowTitle()
+                    {
+                        return getMenuCaption();
+                    }
+                    @Override
+                    public Component getComponent()
+                    {
+                        return StrategyEngineView.this;
+                    }
+                });
+            }
+            private static final long serialVersionUID = 49365592058433460L;
+        };
+    }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.ContentView#getViewName()
      */
     @Override
     public String getViewName()
     {
-        return "Strategy Engines";
+        return "Data Flows";
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
@@ -163,7 +229,7 @@ public class StrategyEngineView
     @Override
     protected String getViewSubjectName()
     {
-        return "Strategy Engine";
+        return "Data Flow";
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#createDataContainer()
@@ -195,21 +261,6 @@ public class StrategyEngineView
         final FormLayout fieldLayout = new FormLayout();
         fieldLayout.setMargin(true);
         fieldLayout.setSizeFull();
-        final TextField urlField = new TextField("Url");
-        urlField.setNullRepresentation("");
-        urlField.setDescription("Url value");
-        urlField.setRequired(true);
-        urlField.setRequiredError("Url is required");
-        urlField.setValue(inStrategyEngine.getUrl());
-        urlField.addValidator(inValue -> {
-            if(inValue == null) {
-                throw new InvalidValueException("Url is required");
-            }
-        });
-        urlField.addValueChangeListener(inEvent -> {
-            urlField.setValidationVisible(true);
-        });
-        urlField.setValidationVisible(false);
         final TextField nameField = new TextField("Name");
         nameField.setNullRepresentation("");
         nameField.setDescription("Unique name value");
@@ -283,7 +334,6 @@ public class StrategyEngineView
             }
         });
         fieldLayout.addComponents(nameField,
-                                  urlField,
                                   hostnameField,
                                   portField,
                                   testConnectionButton,
@@ -314,7 +364,6 @@ public class StrategyEngineView
             formWindow.close();
             try {
                 inStrategyEngine.setName(nameField.getValue());
-                inStrategyEngine.setUrl(urlField.getValue());
                 inStrategyEngine.setHostname(hostnameField.getValue());
                 inStrategyEngine.setPort(Integer.parseInt(portField.getValue()));
                 Collection<DecoratedStrategyEngine> existingStrategyEngines = DataFlowClientService.getInstance().getStrategyEngines();
@@ -338,6 +387,11 @@ public class StrategyEngineView
         UI.getCurrent().addWindow(formWindow);
     }
     /**
+     * provides access to web message services
+     */
+    @Autowired
+    protected WebMessageService webMessageService;
+    /**
      * action examine data flows
      */
     private final String ACTION_DATAFLOWS = "Examine Data Flows";
@@ -360,6 +414,6 @@ public class StrategyEngineView
     /**
      * global name of this view
      */
-    public static final String NAME = "StrategyEngineView";
+    public static final String NAME = "DataFlowView";
     private static final long serialVersionUID = 1185152523219310958L;
 }

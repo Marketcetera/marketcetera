@@ -2,6 +2,7 @@ package org.marketcetera.web.view.dataflows;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.marketcetera.web.services.DataFlowClientServiceInstance;
 
 /* $License$ */
 
@@ -14,6 +15,22 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  */
 public class DecoratedStrategyEngine
 {
+    /**
+     * Create a new DecoratedStrategyEngine instance.
+     *
+     * @param inServiceInstance a <code>DataFlowClientServiceInstance</code> value
+     */
+    public DecoratedStrategyEngine(DataFlowClientServiceInstance inServiceInstance)
+    {
+        setHostname(inServiceInstance.getHostname());
+        setIsConnected(inServiceInstance.isRunning());
+        setName(inServiceInstance.getName());
+        setPort(inServiceInstance.getPort());
+    }
+    /**
+     * Create a new DecoratedStrategyEngine instance.
+     */
+    public DecoratedStrategyEngine() {}
     /**
      * Get the name value.
      *
@@ -67,24 +84,6 @@ public class DecoratedStrategyEngine
     public void setPort(int inPort)
     {
         port = inPort;
-    }
-    /**
-     * Get the url value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getUrl()
-    {
-        return url;
-    }
-    /**
-     * Sets the url value.
-     *
-     * @param inUrl a <code>String</code> value
-     */
-    public void setUrl(String inUrl)
-    {
-        url = inUrl;
     }
     /**
      * Get the isConnected value.
@@ -145,10 +144,6 @@ public class DecoratedStrategyEngine
      * SE web services/rpc hostname value
      */
     private String hostname;
-    /**
-     * JMS URL value
-     */
-    private String url;
     /**
      * SE web services/rpc port value
      */

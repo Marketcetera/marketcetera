@@ -40,7 +40,7 @@ public class DataFlowConfiguration
      *
      * @return a <code>List&lt;DataFlowEngineDescriptor&gt;</code> value
      */
-    public List<DataFlowEngineDescriptor> getDataFlowEngineDescriptors()
+    public List<DataFlowEngineDescriptor> getEngineDescriptors()
     {
         return dataFlowEngineDescriptors;
     }
@@ -49,7 +49,7 @@ public class DataFlowConfiguration
      *
      * @param inDataFlowEngineDescriptors a <code>List&lt;DataFlowEngineDescriptor&gt;</code> value
      */
-    public void setDataFlowEngineDescriptors(List<DataFlowEngineDescriptor> inDataFlowEngineDescriptors)
+    public void setEngineDescriptors(List<DataFlowEngineDescriptor> inDataFlowEngineDescriptors)
     {
         dataFlowEngineDescriptors = inDataFlowEngineDescriptors;
     }

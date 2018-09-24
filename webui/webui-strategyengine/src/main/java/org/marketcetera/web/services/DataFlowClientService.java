@@ -1,13 +1,11 @@
 package org.marketcetera.web.services;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.marketcetera.dataflow.client.DataFlowClient;
-import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientFactory;
-import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientParameters;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.config.dataflows.DataFlowConfiguration;
 import org.marketcetera.web.config.dataflows.DataFlowConfiguration.DataFlowEngineDescriptor;
@@ -16,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 
@@ -42,13 +41,16 @@ public class DataFlowClientService
                            int inPort)
             throws Exception
     {
-        if(dataFlowConfiguration.getDataFlowEngineDescriptors().isEmpty()) {
+        if(dataFlowConfiguration.getEngineDescriptors().isEmpty()) {
             SLF4JLoggerProxy.warn(this,
                                   "No data flow engines in configuration");
             return false;
         }
+        SLF4JLoggerProxy.info(this,
+                              "Data flow engine configuration: {}",
+                              dataFlowConfiguration.getEngineDescriptors());
         boolean atLeastOne = false;
-        for(DataFlowEngineDescriptor engineDescriptor : dataFlowConfiguration.getDataFlowEngineDescriptors()) {
+        for(DataFlowEngineDescriptor engineDescriptor : dataFlowConfiguration.getEngineDescriptors()) {
             DataFlowClientServiceInstance serviceInstance = instancesByName.getIfPresent(engineDescriptor.getName());
             if(serviceInstance != null) {
                 try {
@@ -67,13 +69,12 @@ public class DataFlowClientService
                                    "Creating data flow client {} for {}",
                                    engineDescriptor,
                                    inUsername);
-            DataFlowRpcClientParameters params = new DataFlowRpcClientParameters();
-            params.setHostname(engineDescriptor.getHostname());
-            params.setPort(engineDescriptor.getPort());
-            params.setUsername(inUsername);
-            params.setPassword(inPassword);
-//            serviceInstance = new DataFlowClientServiceInstance();
-//            serviceInstance.start();
+            serviceInstance = new DataFlowClientServiceInstance(engineDescriptor);
+            if(serviceInstance.connect()) {
+                instancesByName.put(engineDescriptor.getName(),
+                                    serviceInstance);
+                atLeastOne = true;
+            }
         }
         return atLeastOne;
     }
@@ -129,33 +130,14 @@ public class DataFlowClientService
      */
     public Collection<DecoratedStrategyEngine> getStrategyEngines()
     {
-        throw new UnsupportedOperationException();
-//        List<DecoratedStrategyEngine> results = Lists.newArrayList();
-//        UserAttribute userAttribute = adminClient.getUserAttribute(VaadinSession.getCurrent().getAttribute(SessionUser.class).getUsername(),
-//                                                                   UserAttributeType.STRATEGY_ENGINES);
-//        if(userAttribute != null) {
-//            String rawValue = userAttribute.getAttribute();
-//            try {
-//                Properties engines = Util.propertiesFromString(rawValue);
-//                for(Map.Entry<Object,Object> entry : engines.entrySet()) {
-//                    String key = String.valueOf(entry.getKey());
-//                    String value = String.valueOf(entry.getValue());
-//                    DecoratedStrategyEngine engine = new DecoratedStrategyEngine();
-//                    engine.setName(key);
-//                    String[] components = value.split("\\|");
-//                    engine.setHostname(components[0]);
-//                    engine.setPort(Integer.parseInt(components[1]));
-//                    engine.setUrl(components[2]);
-//                    results.add(engine);
-//                }
-//            } catch (Exception e) {
-//                SLF4JLoggerProxy.warn(this,
-//                                      e,
-//                                      "Unable to translate {} to engine list",
-//                                      rawValue);
-//            }
-//        }
-//        return results;
+        // TODO the old code did this to find strategy engines, meaning the set of strategy engines would follow a user from one session
+        //  to another rather than read from the config. thoughts?
+//      List<DecoratedStrategyEngine> results = Lists.newArrayList();
+//      UserAttribute userAttribute = adminClient.getUserAttribute(VaadinSession.getCurrent().getAttribute(SessionUser.class).getUsername(),
+//                                                                 UserAttributeType.STRATEGY_ENGINES);
+        List<DecoratedStrategyEngine> results = Lists.newArrayList();
+        instancesByName.asMap().values().stream().forEach(serviceInstance->results.add(new DecoratedStrategyEngine(serviceInstance)));
+        return results;
     }
     /**
      * Set the strategy engines value for the current user.

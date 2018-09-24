@@ -15,6 +15,7 @@ import org.marketcetera.cluster.ClusterRpcClientFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterMemberFactory;
 import org.marketcetera.core.ContextClassAggregator;
+import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientFactory;
 import org.marketcetera.fix.FixAdminRpcClientFactory;
 import org.marketcetera.fix.FixSessionAttributeDescriptorFactory;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
@@ -73,6 +74,16 @@ public class AppConfiguration
     public static ClusterRpcClientFactory getClusterClientFactory()
     {
         return new ClusterRpcClientFactory();
+    }
+    /**
+     * Get the data flow client factory value.
+     *
+     * @return a <code>DataFlowClientFactory</code> value
+     */
+    @Bean
+    public static DataFlowRpcClientFactory getDataFlowClientFactory()
+    {
+        return new DataFlowRpcClientFactory();
     }
     /**
      * Get the cluster data factory value.
