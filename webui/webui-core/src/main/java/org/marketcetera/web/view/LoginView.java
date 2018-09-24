@@ -1,16 +1,14 @@
 package org.marketcetera.web.view;
 
-import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.marketcetera.admin.Permission;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
-import org.marketcetera.web.config.HostnameConfiguration;
-import org.marketcetera.web.services.AdminClientService;
-import org.marketcetera.web.services.ConnectableService;
+import org.marketcetera.web.service.ConnectableService;
+import org.marketcetera.web.service.ConnectableServiceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 
 import com.vaadin.navigator.View;
@@ -81,6 +79,7 @@ public class LoginView
      * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
      */
     @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void buttonClick(ClickEvent inEvent)
     {
         fields.setCaption("Please login to access the application");
@@ -90,49 +89,41 @@ public class LoginView
             SLF4JLoggerProxy.debug(this,
                                    "Attempting to log in {}",
                                    username);
-            AdminClientService adminClientService = new AdminClientService(username);
-            boolean isValid = adminClientService.connect(password);
-            if(isValid) {
+            boolean atLeastOneService = false;
+            // connect services
+            Map<String,ConnectableServiceFactory> services = applicationContext.getBeansOfType(ConnectableServiceFactory.class);
+            for(Map.Entry<String,ConnectableServiceFactory> serviceEntry : services.entrySet()) {
+                SLF4JLoggerProxy.debug(this,
+                                       "Connecting {}",
+                                       serviceEntry.getKey());
+                try {
+                    ConnectableServiceFactory<? extends ConnectableService> serviceFactory = serviceEntry.getValue();
+                    ConnectableService service = serviceFactory.create();
+                    boolean result = service.connect(username,
+                                                     password,
+                                                     hostname,
+                                                     port);
+                    if(!result) {
+                        SLF4JLoggerProxy.warn(this,
+                                              "{} failed to connect to {}",
+                                              username,
+                                              serviceEntry.getKey());
+                    } else {
+                        atLeastOneService = true;
+                    }
+                } catch (Exception e) {
+                    String message = ExceptionUtils.getRootCauseMessage(e);
+                    SLF4JLoggerProxy.warn(this,
+                                          "{} failed to connect to {}: {}",
+                                          username,
+                                          serviceEntry.getKey(),
+                                          message);
+                }
+            }
+            if(atLeastOneService) {
                 SLF4JLoggerProxy.info(this,
                                       "{} logged in",
                                        username);
-                // get the permissions available for this user
-                Collection<Permission> permissions = adminClientService.getPermissions();
-                // Store the current user in the service session
-                SessionUser loggedInUser = new SessionUser(username,
-                                                           password);
-                loggedInUser.getPermissions().addAll(permissions);
-                VaadinSession.getCurrent().setAttribute(SessionUser.class,
-                                                        loggedInUser);
-                VaadinSession.getCurrent().setAttribute(AdminClientService.class,
-                                                        adminClientService);
-                // connect other services
-                Map<String,ConnectableService> services = applicationContext.getBeansOfType(ConnectableService.class);
-                for(Map.Entry<String,ConnectableService> serviceEntry : services.entrySet()) {
-                    SLF4JLoggerProxy.debug(this,
-                                           "Connecting {}",
-                                           serviceEntry.getKey());
-                    try {
-                        ConnectableService service = serviceEntry.getValue();
-                        boolean result = service.connect(username,
-                                                         password,
-                                                         HostnameConfiguration.getInstance().getHostname(),
-                                                         HostnameConfiguration.getInstance().getPort());
-                        if(!result) {
-                            SLF4JLoggerProxy.warn(this,
-                                                  "{} failed to connect to {}",
-                                                  username,
-                                                  serviceEntry.getKey());
-                        }
-                    } catch (Exception e) {
-                        String message = ExceptionUtils.getRootCauseMessage(e);
-                        SLF4JLoggerProxy.warn(this,
-                                              "{} failed to connect to {}: {}",
-                                              username,
-                                              serviceEntry.getKey(),
-                                              message);
-                    }
-                }
                 // Navigate to main view
                 getUI().getNavigator().navigateTo(MainView.NAME);
             } else {
@@ -140,8 +131,6 @@ public class LoginView
                                       "{} failed to log in",
                                        username);
                 VaadinSession.getCurrent().setAttribute(SessionUser.class,
-                                                        null);
-                VaadinSession.getCurrent().setAttribute(AdminClientService.class,
                                                         null);
             }
         } catch (Exception e) {
@@ -153,8 +142,6 @@ public class LoginView
                                   message);
             fields.setCaption(message);
             VaadinSession.getCurrent().setAttribute(SessionUser.class,
-                                                    null);
-            VaadinSession.getCurrent().setAttribute(AdminClientService.class,
                                                     null);
         }
         this.password.setValue(null);
@@ -168,6 +155,16 @@ public class LoginView
     {
         user.focus();
     }
+    /**
+     * hostname to connect to
+     */
+    @Value("${host.name}")
+    private String hostname;
+    /**
+     * port to connect to
+     */
+    @Value("${host.port}")
+    private int port;
     /**
      * application context value
      */

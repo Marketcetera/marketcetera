@@ -1,4 +1,4 @@
-package org.marketcetera.web.services;
+package org.marketcetera.web.service.admin;
 
 import java.util.Collection;
 
@@ -19,9 +19,8 @@ import org.marketcetera.fix.FixSessionInstanceData;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.web.config.AppConfiguration;
-import org.marketcetera.web.config.HostnameConfiguration;
-import org.springframework.context.ApplicationContext;
+import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.service.ConnectableService;
 
 import com.vaadin.server.VaadinSession;
 
@@ -36,6 +35,7 @@ import com.vaadin.server.VaadinSession;
  * TODO separate out FIX admin services
  */
 public class AdminClientService
+        implements ConnectableService
 {
     /**
      * Get the <code>AdminClientService</code> instance for the current session.
@@ -48,26 +48,16 @@ public class AdminClientService
     }
     /**
      * Create a new AdminClientService instance.
-     *
-     * @param inUsername a <code>String</code> value
      */
-    public AdminClientService(String inUsername)
-    {
-        username = inUsername;
-        applicationContext = AppConfiguration.getApplicationContext();
-        adminClientFactory = applicationContext.getBean(AdminRpcClientFactory.class);
-        fixAdminClientFactory = applicationContext.getBean(FixAdminRpcClientFactory.class);
-        hostname = HostnameConfiguration.getInstance().getHostname();
-        port = HostnameConfiguration.getInstance().getPort();
-    }
-    /**
-     * Connect to the Admin server.
-     *
-     * @param inPassword a <code>String</code> value
-     * @return a <code>boolean</code> value
-     * @throws Exception if an error occurs connecting
+    public AdminClientService() {}
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.services.ConnectableService#connect(java.lang.String, java.lang.String, java.lang.String, int)
      */
-    public boolean connect(String inPassword)
+    @Override
+    public boolean connect(String inUsername,
+                           String inPassword,
+                           String inHostname,
+                           int inPort)
             throws Exception
     {
         if(adminClient != null) {
@@ -76,7 +66,7 @@ public class AdminClientService
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
                                       "Unable to stop existing admin client for {}: {}",
-                                      username,
+                                      inUsername,
                                       ExceptionUtils.getRootCauseMessage(e));
             } finally {
                 adminClient = null;
@@ -84,23 +74,35 @@ public class AdminClientService
         }
         SLF4JLoggerProxy.debug(this,
                                "Creating admin client for {} to {}:{}",
-                               username,
-                               hostname,
-                               port);
+                               inUsername,
+                               inHostname,
+                               inPort);
         AdminRpcClientParameters params = new AdminRpcClientParameters();
-        params.setHostname(hostname);
-        params.setPort(port);
-        params.setUsername(username);
+        params.setHostname(inHostname);
+        params.setPort(inPort);
+        params.setUsername(inUsername);
         params.setPassword(inPassword);
         adminClient = adminClientFactory.create(params);
         adminClient.start();
+        if(adminClient.isRunning()) {
+            SessionUser loggedInUser = new SessionUser(inUsername,
+                                                       inPassword);
+            // get the permissions available for this user
+            Collection<Permission> permissions = getPermissions();
+            // Store the current user in the service session
+            loggedInUser.getPermissions().addAll(permissions);
+            VaadinSession.getCurrent().setAttribute(SessionUser.class,
+                                                    loggedInUser);
+            VaadinSession.getCurrent().setAttribute(AdminClientService.class,
+                                                    this);
+        }
         if(fixAdminClient != null) {
             try {
                 fixAdminClient.stop();
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
                                       "Unable to stop existing fix admin client for {}: {}",
-                                      username,
+                                      inUsername,
                                       ExceptionUtils.getRootCauseMessage(e));
             } finally {
                 fixAdminClient = null;
@@ -108,16 +110,20 @@ public class AdminClientService
         }
         SLF4JLoggerProxy.debug(this,
                                "Creating fixAdmin client for {} to {}:{}",
-                               username,
-                               hostname,
-                               port);
+                               inUsername,
+                               inHostname,
+                               inPort);
         FixAdminRpcClientParameters fixParams = new FixAdminRpcClientParameters();
-        fixParams.setHostname(hostname);
-        fixParams.setPort(port);
-        fixParams.setUsername(username);
+        fixParams.setHostname(inHostname);
+        fixParams.setPort(inPort);
+        fixParams.setUsername(inUsername);
         fixParams.setPassword(inPassword);
         fixAdminClient = fixAdminClientFactory.create(fixParams);
         fixAdminClient.start();
+        if(adminClient.isRunning() && fixAdminClient.isRunning()) {
+            VaadinSession.getCurrent().setAttribute(AdminClientService.class,
+                                                    this);
+        }
         return adminClient.isRunning() && fixAdminClient.isRunning();
     }
     /**
@@ -423,21 +429,23 @@ public class AdminClientService
         return fixAdminClient.getFixSessionInstanceData(inAffinity);
     }
     /**
-     * server hostname to connect to
+     * Sets the adminClientFactory value.
+     *
+     * @param inAdminClientFactory an <code>AdminRpcClientFactory</code> value
      */
-    private String hostname;
+    public void setAdminClientFactory(AdminRpcClientFactory inAdminClientFactory)
+    {
+        adminClientFactory = inAdminClientFactory;
+    }
     /**
-     * server port to connect to
+     * Sets the fixAdminClientFactory value.
+     *
+     * @param inFixAdminClientFactory a <code>FixAdminRpcClientFactory</code> value
      */
-    private int port;
-    /**
-     * application context value
-     */
-    private ApplicationContext applicationContext;
-    /**
-     * user that owns this connection
-     */
-    private final String username;
+    public void setFixAdminClientFactory(FixAdminRpcClientFactory inFixAdminClientFactory)
+    {
+        fixAdminClientFactory = inFixAdminClientFactory;
+    }
     /**
      * creates an admin client to connect to the admin server
      */

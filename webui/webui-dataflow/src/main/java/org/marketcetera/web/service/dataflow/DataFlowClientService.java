@@ -1,22 +1,22 @@
-package org.marketcetera.web.services;
+package org.marketcetera.web.service.dataflow;
 
 import java.util.Collection;
 import java.util.List;
-
-import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.config.dataflows.DataFlowConfiguration;
 import org.marketcetera.web.config.dataflows.DataFlowConfiguration.DataFlowEngineDescriptor;
+import org.marketcetera.web.service.ConnectableService;
 import org.marketcetera.web.view.dataflows.DecoratedStrategyEngine;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
-import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.server.VaadinSession;
 
 /* $License$ */
 
@@ -27,7 +27,6 @@ import com.vaadin.spring.annotation.SpringComponent;
  * @version $Id$
  * @since $Release$
  */
-@SpringComponent
 public class DataFlowClientService
         implements ConnectableService
 {
@@ -46,6 +45,8 @@ public class DataFlowClientService
                                   "No data flow engines in configuration");
             return false;
         }
+        VaadinSession.getCurrent().setAttribute(DataFlowClientService.class,
+                                                this);
         SLF4JLoggerProxy.info(this,
                               "Data flow engine configuration: {}",
                               dataFlowConfiguration.getEngineDescriptors());
@@ -69,7 +70,8 @@ public class DataFlowClientService
                                    "Creating data flow client {} for {}",
                                    engineDescriptor,
                                    inUsername);
-            serviceInstance = new DataFlowClientServiceInstance(engineDescriptor);
+            serviceInstance = new DataFlowClientServiceInstance(engineDescriptor,
+                                                                applicationContext);
             if(serviceInstance.connect()) {
                 instancesByName.put(engineDescriptor.getName(),
                                     serviceInstance);
@@ -79,23 +81,13 @@ public class DataFlowClientService
         return atLeastOne;
     }
     /**
-     * Validate and start the object.
-     */
-    @PostConstruct
-    public void start()
-    {
-        SLF4JLoggerProxy.info(this,
-                              "Starting data flow client service");
-        instance = this;
-    }
-    /**
-     * Get the <code>SaClientService</code> instance for the current session.
+     * Get the <code>DataFlowClientService</code> instance for the current session.
      *
-     * @return a <code>SaClientService</code> value
+     * @return a <code>DataFlowClientService</code> value
      */
     public static DataFlowClientService getInstance()
     {
-        return instance;
+        return VaadinSession.getCurrent().getAttribute(DataFlowClientService.class);
     }
     /**
      * Get the service instance for the given SE descriptor.
@@ -146,6 +138,47 @@ public class DataFlowClientService
 //                                     encodedEngines);
     }
     /**
+     * Get the applicationContext value.
+     *
+     * @return an <code>ApplicationContext</code> value
+     */
+    public ApplicationContext getApplicationContext()
+    {
+        return applicationContext;
+    }
+    /**
+     * Sets the applicationContext value.
+     *
+     * @param inApplicationContext an <code>ApplicationContext</code> value
+     */
+    public void setApplicationContext(ApplicationContext inApplicationContext)
+    {
+        applicationContext = inApplicationContext;
+    }
+    /**
+     * Get the dataFlowConfiguration value.
+     *
+     * @return a <code>DataFlowConfiguration</code> value
+     */
+    public DataFlowConfiguration getDataFlowConfiguration()
+    {
+        return dataFlowConfiguration;
+    }
+    /**
+     * Sets the dataFlowConfiguration value.
+     *
+     * @param inDataFlowConfiguration a <code>DataFlowConfiguration</code> value
+     */
+    public void setDataFlowConfiguration(DataFlowConfiguration inDataFlowConfiguration)
+    {
+        dataFlowConfiguration = inDataFlowConfiguration;
+    }
+    /**
+     * provides access to application configuration
+     */
+    @Autowired
+    private ApplicationContext applicationContext;
+    /**
      * tracks data flow client instances by name
      */
     private Cache<String,DataFlowClientServiceInstance> instancesByName = CacheBuilder.newBuilder().build();
@@ -154,8 +187,4 @@ public class DataFlowClientService
      */
     @Autowired
     private DataFlowConfiguration dataFlowConfiguration;
-    /**
-     * static instance of this object
-     */
-    private static DataFlowClientService instance;
 }

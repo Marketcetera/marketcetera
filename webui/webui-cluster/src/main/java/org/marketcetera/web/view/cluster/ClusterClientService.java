@@ -2,17 +2,15 @@ package org.marketcetera.web.view.cluster;
 
 import java.util.Collection;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.cluster.ClusterClient;
 import org.marketcetera.cluster.ClusterRpcClientFactory;
 import org.marketcetera.cluster.ClusterRpcClientParameters;
 import org.marketcetera.cluster.service.ClusterMember;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.web.services.ConnectableService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.marketcetera.web.service.ConnectableService;
+
+import com.vaadin.server.VaadinSession;
 
 /* $License$ */
 
@@ -23,7 +21,6 @@ import org.springframework.stereotype.Service;
  * @version $Id$
  * @since $Release$
  */
-@Service
 public class ClusterClientService
         implements ConnectableService
 {
@@ -61,6 +58,10 @@ public class ClusterClientService
         params.setPassword(inPassword);
         clusterClient = clusterClientFactory.create(params);
         clusterClient.start();
+        if(clusterClient.isRunning()) {
+            VaadinSession.getCurrent().setAttribute(ClusterClientService.class,
+                                                    this);
+        }
         return clusterClient.isRunning();
     }
     /**
@@ -73,33 +74,36 @@ public class ClusterClientService
         return clusterClient.getClusterMembers();
     }
     /**
-     * Validate and start the object.
-     */
-    @PostConstruct
-    public void start()
-    {
-        SLF4JLoggerProxy.info(this,
-                              "Starting cluster client service");
-        instance = this;
-    }
-    /**
      * Get the instance value.
      *
      * @return a <code>ClusterClientService</code> value
      */
     public static ClusterClientService getInstance()
     {
-        return instance;
+        return VaadinSession.getCurrent().getAttribute(ClusterClientService.class);
+    }
+    /**
+     * Get the clusterClientFactory value.
+     *
+     * @return a <code>ClusterRpcClientFactory</code> value
+     */
+    public ClusterRpcClientFactory getClusterClientFactory()
+    {
+        return clusterClientFactory;
+    }
+    /**
+     * Sets the clusterClientFactory value.
+     *
+     * @param inClusterClientFactory a <code>ClusterRpcClientFactory</code> value
+     */
+    public void setClusterClientFactory(ClusterRpcClientFactory inClusterClientFactory)
+    {
+        clusterClientFactory = inClusterClientFactory;
     }
     /**
      * creates {@link ClusterClient} objects
      */
-    @Autowired
     private ClusterRpcClientFactory clusterClientFactory;
-    /**
-     * instance value
-     */
-    private static ClusterClientService instance;
     /**
      * provides access to cluster services
      */

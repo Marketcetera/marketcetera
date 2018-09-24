@@ -57,8 +57,9 @@
     <module>webui-admin</module>
     <module>webui-core</module>
     <module>webui-cluster</module>
-    <module>webui-package</module>
     <module>webui-dataflow</module>
+    <module>webui-marketdata</module>
+    <module>webui-package</module>
   </modules>
   <repositories>
     <repository>

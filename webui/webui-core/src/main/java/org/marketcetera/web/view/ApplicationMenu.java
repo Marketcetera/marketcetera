@@ -6,7 +6,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.marketcetera.web.config.AppConfiguration;
 import org.springframework.context.ApplicationContext;
 
 import com.vaadin.ui.MenuBar;
@@ -26,10 +25,12 @@ public class ApplicationMenu
 {
     /**
      * Create a new ApplicationMenu instance.
+     *
+     * @param inApplicationContext an <code>ApplicationContext</code> value
      */
-    public ApplicationMenu()
+    public ApplicationMenu(ApplicationContext inApplicationContext)
     {
-        applicationContext = AppConfiguration.getApplicationContext();
+        applicationContext = inApplicationContext;
         initMenu();
     }
     /**

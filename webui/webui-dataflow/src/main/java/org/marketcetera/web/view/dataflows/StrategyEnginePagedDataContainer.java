@@ -5,8 +5,8 @@ import java.util.Collection;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
-import org.marketcetera.web.services.DataFlowClientService;
-import org.marketcetera.web.services.DataFlowClientServiceInstance;
+import org.marketcetera.web.service.dataflow.DataFlowClientService;
+import org.marketcetera.web.service.dataflow.DataFlowClientServiceInstance;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.marketcetera.web.view.PagedViewProvider;
 

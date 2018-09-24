@@ -7,8 +7,8 @@ import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
-import org.marketcetera.web.services.DataFlowClientService;
-import org.marketcetera.web.services.DataFlowClientServiceInstance;
+import org.marketcetera.web.service.dataflow.DataFlowClientService;
+import org.marketcetera.web.service.dataflow.DataFlowClientServiceInstance;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.marketcetera.web.view.PagedViewProvider;
 

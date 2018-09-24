@@ -1,4 +1,4 @@
-package org.marketcetera.web.services;
+package org.marketcetera.web.service;
 
 import javax.annotation.PostConstruct;
 

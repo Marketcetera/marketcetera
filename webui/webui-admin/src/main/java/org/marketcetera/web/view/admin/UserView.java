@@ -4,7 +4,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.impl.SimpleUser;
-import org.marketcetera.web.services.AdminClientService;
+import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.PagedDataContainer;
 
 import com.vaadin.data.Property.ValueChangeEvent;

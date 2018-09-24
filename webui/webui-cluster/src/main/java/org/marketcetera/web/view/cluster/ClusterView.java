@@ -6,7 +6,7 @@ import org.marketcetera.fix.impl.SimpleActiveFixSession;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.events.NewWindowEvent;
-import org.marketcetera.web.services.WebMessageService;
+import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.AbstractGridView;
 import org.marketcetera.web.view.MenuContent;
 import org.marketcetera.web.view.PagedDataContainer;

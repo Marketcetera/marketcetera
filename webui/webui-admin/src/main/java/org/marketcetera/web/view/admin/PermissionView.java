@@ -2,7 +2,7 @@ package org.marketcetera.web.view.admin;
 
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.impl.SimplePermission;
-import org.marketcetera.web.services.AdminClientService;
+import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.PagedDataContainer;
 
 import com.vaadin.server.FontAwesome;

@@ -2,10 +2,10 @@ package org.marketcetera.web;
 
 import org.marketcetera.core.CloseableLock;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.view.ApplicationMenu;
 import org.marketcetera.web.view.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
@@ -97,7 +97,7 @@ public class MainUI
                         if(applicationMenu == null) {
                             SLF4JLoggerProxy.debug(this,
                                                    "Session is now logged in, building application menu");
-                            applicationMenu = new ApplicationMenu();
+                            applicationMenu = new ApplicationMenu(applicationContext);
                             menuLayout.addComponent(applicationMenu.getMenu());
                         }
                     }
@@ -111,6 +111,11 @@ public class MainUI
      * top-level application menu, may be <code>null</code> until the user logs in and tries to access a view
      */
     private ApplicationMenu applicationMenu;
+    /**
+     * provides access to the application configuration
+     */
+    @Autowired
+    private ApplicationContext applicationContext;
     /**
      * provides views defined to Spring
      */

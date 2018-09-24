@@ -1,4 +1,4 @@
-package org.marketcetera.web.services;
+package org.marketcetera.web.service.dataflow;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -13,7 +13,6 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.web.SessionUser;
-import org.marketcetera.web.config.AppConfiguration;
 import org.marketcetera.web.config.dataflows.DataFlowConfiguration.DataFlowEngineDescriptor;
 import org.springframework.context.ApplicationContext;
 
@@ -62,11 +61,13 @@ public class DataFlowClientServiceInstance
     /**
      * Create a new DataFlowClientServiceInstance instance.
      *
-     * @param inEngineDescriptor
+     * @param inEngineDescriptor a <code>DataFlowEngineDescriptor</code> value
+     * @param inApplicationContext an <code>ApplicationContext</code> value
      */
-    public DataFlowClientServiceInstance(DataFlowEngineDescriptor inEngineDescriptor)
+    public DataFlowClientServiceInstance(DataFlowEngineDescriptor inEngineDescriptor,
+                                         ApplicationContext inApplicationContext)
     {
-        ApplicationContext applicationContext = AppConfiguration.getApplicationContext();
+        applicationContext = inApplicationContext;
         dataFlowClientFactory = applicationContext.getBean(DataFlowRpcClientFactory.class);
         hostname = inEngineDescriptor.getHostname();
         port = inEngineDescriptor.getPort();
@@ -104,8 +105,8 @@ public class DataFlowClientServiceInstance
                                username,
                                hostname,
                                port);
-        ContextClassProvider contextProvider = AppConfiguration.getApplicationContext().getBean(ContextClassProvider.class,
-                                                                                                "strategyEngineContextProvider");
+        ContextClassProvider contextProvider = applicationContext.getBean(ContextClassProvider.class,
+                                                                          "strategyEngineContextProvider");
         DataFlowRpcClientParameters params = new DataFlowRpcClientParameters();
         params.setHostname(hostname);
         params.setPort(port);
@@ -199,6 +200,10 @@ public class DataFlowClientServiceInstance
     {
         return port;
     }
+    /**
+     * provides access to application configuration
+     */
+    private final ApplicationContext applicationContext;
     /**
      * creates an SA client to connect to the SA server
      */

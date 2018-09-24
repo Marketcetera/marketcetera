@@ -2,7 +2,7 @@ package org.marketcetera.web.view.dataflows;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.marketcetera.web.services.DataFlowClientServiceInstance;
+import org.marketcetera.web.service.dataflow.DataFlowClientServiceInstance;
 
 /* $License$ */
 

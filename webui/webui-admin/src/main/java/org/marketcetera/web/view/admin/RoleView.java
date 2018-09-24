@@ -11,7 +11,7 @@ import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.Role;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.impl.SimpleRole;
-import org.marketcetera.web.services.AdminClientService;
+import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.PagedDataContainer;
 
 import com.vaadin.server.FontAwesome;

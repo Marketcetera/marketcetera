@@ -1,4 +1,4 @@
-package org.marketcetera.web.config;
+package org.marketcetera.web;
 
 import org.marketcetera.admin.AdminRpcClientFactory;
 import org.marketcetera.admin.PermissionFactory;
@@ -23,6 +23,7 @@ import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptorFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
+import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -84,6 +85,16 @@ public class AppConfiguration
     public static DataFlowRpcClientFactory getDataFlowClientFactory()
     {
         return new DataFlowRpcClientFactory();
+    }
+    /**
+     * Get the market data client factory value.
+     *
+     * @return a <code>MarketDataClientFactory</code> value
+     */
+    @Bean
+    public static MarketDataRpcClientFactory getMarketDataClientFactory()
+    {
+        return new MarketDataRpcClientFactory();
     }
     /**
      * Get the cluster data factory value.
