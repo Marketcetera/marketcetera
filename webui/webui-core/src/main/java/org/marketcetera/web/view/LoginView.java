@@ -1,12 +1,9 @@
 package org.marketcetera.web.view;
 
-import java.util.Map;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.web.SessionUser;
-import org.marketcetera.web.service.ConnectableService;
-import org.marketcetera.web.service.ConnectableServiceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -89,50 +86,72 @@ public class LoginView
             SLF4JLoggerProxy.debug(this,
                                    "Attempting to log in {}",
                                    username);
-            boolean atLeastOneService = false;
-            // connect services
-            Map<String,ConnectableServiceFactory> services = applicationContext.getBeansOfType(ConnectableServiceFactory.class);
-            for(Map.Entry<String,ConnectableServiceFactory> serviceEntry : services.entrySet()) {
-                SLF4JLoggerProxy.debug(this,
-                                       "Connecting {}",
-                                       serviceEntry.getKey());
-                try {
-                    ConnectableServiceFactory<? extends ConnectableService> serviceFactory = serviceEntry.getValue();
-                    ConnectableService service = serviceFactory.create();
-                    boolean result = service.connect(username,
-                                                     password,
-                                                     hostname,
-                                                     port);
-                    if(!result) {
-                        SLF4JLoggerProxy.warn(this,
-                                              "{} failed to connect to {}",
-                                              username,
-                                              serviceEntry.getKey());
-                    } else {
-                        atLeastOneService = true;
-                    }
-                } catch (Exception e) {
-                    String message = ExceptionUtils.getRootCauseMessage(e);
-                    SLF4JLoggerProxy.warn(this,
-                                          "{} failed to connect to {}: {}",
-                                          username,
-                                          serviceEntry.getKey(),
-                                          message);
+            SessionUser sessionUser = new SessionUser(username,
+                                                      password);
+            VaadinSession.getCurrent().setAttribute(SessionUser.class,
+                                                    sessionUser);
+            try {
+                if(webAuthenticator.shouldAllow(null,username,password.toCharArray())) {
+                    SLF4JLoggerProxy.info(this,
+                                          "{} logged in",
+                                          username);
+                    // Navigate to main view
+                    getUI().getNavigator().navigateTo(MainView.NAME);
+                } else {
+                    throw new IllegalArgumentException("Failed to log in");
                 }
-            }
-            if(atLeastOneService) {
-                SLF4JLoggerProxy.info(this,
-                                      "{} logged in",
-                                       username);
-                // Navigate to main view
-                getUI().getNavigator().navigateTo(MainView.NAME);
-            } else {
+            } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
+                                      e,
                                       "{} failed to log in",
-                                       username);
+                                      username);
                 VaadinSession.getCurrent().setAttribute(SessionUser.class,
                                                         null);
             }
+//            boolean atLeastOneService = false;
+//            // connect services
+//            Map<String,ConnectableServiceFactory> services = applicationContext.getBeansOfType(ConnectableServiceFactory.class);
+//            for(Map.Entry<String,ConnectableServiceFactory> serviceEntry : services.entrySet()) {
+//                SLF4JLoggerProxy.debug(this,
+//                                       "Connecting {}",
+//                                       serviceEntry.getKey());
+//                try {
+//                    ConnectableServiceFactory<? extends ConnectableService> serviceFactory = serviceEntry.getValue();
+//                    ConnectableService service = serviceFactory.create();
+//                    boolean result = service.connect(username,
+//                                                     password,
+//                                                     hostname,
+//                                                     port);
+//                    if(!result) {
+//                        SLF4JLoggerProxy.warn(this,
+//                                              "{} failed to connect to {}",
+//                                              username,
+//                                              serviceEntry.getKey());
+//                    } else {
+//                        atLeastOneService = true;
+//                    }
+//                } catch (Exception e) {
+//                    String message = ExceptionUtils.getRootCauseMessage(e);
+//                    SLF4JLoggerProxy.warn(this,
+//                                          "{} failed to connect to {}: {}",
+//                                          username,
+//                                          serviceEntry.getKey(),
+//                                          message);
+//                }
+//            }
+//            if(atLeastOneService) {
+//                SLF4JLoggerProxy.info(this,
+//                                      "{} logged in",
+//                                       username);
+//                // Navigate to main view
+//                getUI().getNavigator().navigateTo(MainView.NAME);
+//            } else {
+//                SLF4JLoggerProxy.warn(this,
+//                                      "{} failed to log in",
+//                                       username);
+//                VaadinSession.getCurrent().setAttribute(SessionUser.class,
+//                                                        null);
+//            }
         } catch (Exception e) {
             String message = ExceptionUtils.getRootCauseMessage(e);
             SLF4JLoggerProxy.warn(this,
@@ -165,6 +184,11 @@ public class LoginView
      */
     @Value("${host.port}")
     private int port;
+    /**
+     * provides authentication services
+     */
+    @Autowired
+    private Authenticator webAuthenticator;
     /**
      * application context value
      */

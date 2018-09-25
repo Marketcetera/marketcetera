@@ -30,6 +30,14 @@ public class AdminClientServiceFactory
         adminClientService.setFixAdminClientFactory(fixAdminClientFactory);
         return adminClientService;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.service.ConnectableServiceFactory#getServiceType()
+     */
+    @Override
+    public Class<AdminClientService> getServiceType()
+    {
+        return AdminClientService.class;
+    }
     /**
      * creates an admin client to connect to the admin server
      */

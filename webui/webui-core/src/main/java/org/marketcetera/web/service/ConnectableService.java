@@ -26,4 +26,14 @@ public interface ConnectableService
                     String inHostname,
                     int inPort)
             throws Exception;
+    /**
+     * Disconnect the service.
+     */
+    void disconnect();
+    /**
+     * Indicate if the service is running or not.
+     *
+     * @return a <code>boolean</code> value
+     */
+    boolean isRunning();
 }

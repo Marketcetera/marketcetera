@@ -1,6 +1,6 @@
 package org.marketcetera.web.marketdata.service;
 
-import javax.annotation.PostConstruct;
+import java.io.IOException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.marketdata.MarketDataClient;
@@ -8,9 +8,7 @@ import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientParameters;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.service.ConnectableService;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.vaadin.spring.annotation.SpringComponent;
+import org.marketcetera.web.service.ServiceManager;
 
 /* $License$ */
 
@@ -21,7 +19,6 @@ import com.vaadin.spring.annotation.SpringComponent;
  * @version $Id$
  * @since $Release$
  */
-@SpringComponent
 public class MarketDataClientService
         implements ConnectableService
 {
@@ -57,19 +54,33 @@ public class MarketDataClientService
         params.setPort(inPort);
         params.setUsername(inUsername);
         params.setPassword(inPassword);
-        marketDataClient = MarketDataClientFactory.create(params);
+        marketDataClient = marketDataClientFactory.create(params);
         marketDataClient.start();
         return marketDataClient.isRunning();
     }
-    /**
-     * Validate and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.service.ConnectableService#disconnect()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    public void disconnect()
     {
-        SLF4JLoggerProxy.info(this,
-                              "Starting market data client service");
-        instance = this;
+        if(marketDataClient != null) {
+            try {
+                marketDataClient.close();
+            } catch (IOException e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+            }
+        }
+        marketDataClient = null;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.service.ConnectableService#isRunning()
+     */
+    @Override
+    public boolean isRunning()
+    {
+        return marketDataClient != null && marketDataClient.isRunning();
     }
     /**
      * Get the instance value.
@@ -78,12 +89,17 @@ public class MarketDataClientService
      */
     public static MarketDataClientService getInstance()
     {
-        return instance;
+        return ServiceManager.getInstance().getService(MarketDataClientService.class);
     }
     /**
-     * static instance of this object
+     * Sets the marketDataClientFactory value.
+     *
+     * @param inMarketDataClientFactory a <code>MarketDataRpcClientFactory</code> value
      */
-    private static MarketDataClientService instance;
+    public void setMarketDataClientFactory(MarketDataRpcClientFactory inMarketDataClientFactory)
+    {
+        marketDataClientFactory = inMarketDataClientFactory;
+    }
     /**
      * provides access to MarketData services
      */
@@ -91,6 +107,5 @@ public class MarketDataClientService
     /**
      * creates {@link MarketDataClient} objects
      */
-    @Autowired
-    private MarketDataRpcClientFactory MarketDataClientFactory;
+    private MarketDataRpcClientFactory marketDataClientFactory;
 }

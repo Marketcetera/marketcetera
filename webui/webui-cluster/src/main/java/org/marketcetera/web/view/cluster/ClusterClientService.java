@@ -1,5 +1,6 @@
 package org.marketcetera.web.view.cluster;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -9,6 +10,7 @@ import org.marketcetera.cluster.ClusterRpcClientParameters;
 import org.marketcetera.cluster.service.ClusterMember;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.service.ConnectableService;
+import org.marketcetera.web.service.ServiceManager;
 
 import com.vaadin.server.VaadinSession;
 
@@ -64,6 +66,30 @@ public class ClusterClientService
         }
         return clusterClient.isRunning();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.service.ConnectableService#disconnect()
+     */
+    @Override
+    public void disconnect()
+    {
+        if(clusterClient != null) {
+            try {
+                clusterClient.close();
+            } catch (IOException e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+            }
+        }
+        clusterClient = null;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.service.ConnectableService#isRunning()
+     */
+    @Override
+    public boolean isRunning()
+    {
+        return clusterClient != null && clusterClient.isRunning();
+    }
     /**
      * Get the cluster members.
      *
@@ -80,7 +106,7 @@ public class ClusterClientService
      */
     public static ClusterClientService getInstance()
     {
-        return VaadinSession.getCurrent().getAttribute(ClusterClientService.class);
+        return ServiceManager.getInstance().getService(ClusterClientService.class);
     }
     /**
      * Get the clusterClientFactory value.

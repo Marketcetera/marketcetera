@@ -17,4 +17,10 @@ public interface ConnectableServiceFactory<ServiceClazz extends ConnectableServi
      * @return a <code>ServiceClazz</code> value
      */
     ServiceClazz create();
+    /**
+     * Get the type of service this factory creates.
+     *
+     * @return a <code>Class&lt;ServiceClazz&gt;</code> value
+     */
+    Class<ServiceClazz> getServiceType();
 }

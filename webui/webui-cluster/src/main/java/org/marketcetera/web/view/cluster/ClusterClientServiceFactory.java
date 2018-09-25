@@ -29,6 +29,14 @@ public class ClusterClientServiceFactory
         service.setClusterClientFactory(clusterClientFactory);
         return service;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.service.ConnectableServiceFactory#getServiceType()
+     */
+    @Override
+    public Class<ClusterClientService> getServiceType()
+    {
+        return ClusterClientService.class;
+    }
     /**
      * creates {@link ClusterClient} objects
      */

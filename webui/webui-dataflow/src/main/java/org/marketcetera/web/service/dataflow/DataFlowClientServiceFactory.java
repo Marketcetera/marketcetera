@@ -30,6 +30,14 @@ public class DataFlowClientServiceFactory
         service.setDataFlowConfiguration(dataFlowConfiguration);
         return service;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.service.ConnectableServiceFactory#getServiceType()
+     */
+    @Override
+    public Class<DataFlowClientService> getServiceType()
+    {
+        return DataFlowClientService.class;
+    }
     /**
      * provides access to application configuration
      */

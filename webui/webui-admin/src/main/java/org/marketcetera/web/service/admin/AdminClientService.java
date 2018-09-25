@@ -1,5 +1,6 @@
 package org.marketcetera.web.service.admin;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -19,8 +20,8 @@ import org.marketcetera.fix.FixSessionInstanceData;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.service.ConnectableService;
+import org.marketcetera.web.service.ServiceManager;
 
 import com.vaadin.server.VaadinSession;
 
@@ -44,12 +45,36 @@ public class AdminClientService
      */
     public static AdminClientService getInstance()
     {
-        return VaadinSession.getCurrent().getAttribute(AdminClientService.class);
+        return ServiceManager.getInstance().getService(AdminClientService.class);
     }
     /**
      * Create a new AdminClientService instance.
      */
     public AdminClientService() {}
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.service.ConnectableService#isRunning()
+     */
+    @Override
+    public boolean isRunning()
+    {
+        return adminClient != null && adminClient.isRunning();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.service.ConnectableService#disconnect()
+     */
+    @Override
+    public void disconnect()
+    {
+        if(adminClient != null) {
+            try {
+                adminClient.close();
+            } catch (IOException e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+            }
+        }
+        adminClient = null;
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.web.services.ConnectableService#connect(java.lang.String, java.lang.String, java.lang.String, int)
      */
@@ -84,18 +109,6 @@ public class AdminClientService
         params.setPassword(inPassword);
         adminClient = adminClientFactory.create(params);
         adminClient.start();
-        if(adminClient.isRunning()) {
-            SessionUser loggedInUser = new SessionUser(inUsername,
-                                                       inPassword);
-            // get the permissions available for this user
-            Collection<Permission> permissions = getPermissions();
-            // Store the current user in the service session
-            loggedInUser.getPermissions().addAll(permissions);
-            VaadinSession.getCurrent().setAttribute(SessionUser.class,
-                                                    loggedInUser);
-            VaadinSession.getCurrent().setAttribute(AdminClientService.class,
-                                                    this);
-        }
         if(fixAdminClient != null) {
             try {
                 fixAdminClient.stop();

@@ -41,7 +41,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>webui-admin</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

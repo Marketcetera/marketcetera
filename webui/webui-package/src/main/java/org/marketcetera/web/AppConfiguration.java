@@ -1,6 +1,9 @@
 package org.marketcetera.web;
 
+import java.util.Collection;
+
 import org.marketcetera.admin.AdminRpcClientFactory;
+import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.RoleFactory;
 import org.marketcetera.admin.UserAttributeFactory;
@@ -24,7 +27,12 @@ import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptorFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.ws.ContextClassProvider;
+import org.marketcetera.util.ws.stateful.Authenticator;
+import org.marketcetera.util.ws.stateless.StatelessClientContext;
+import org.marketcetera.web.service.ServiceManager;
+import org.marketcetera.web.service.admin.AdminClientService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -46,6 +54,30 @@ import com.google.common.eventbus.EventBus;
 public class AppConfiguration
         implements ApplicationContextAware
 {
+    /**
+     * Get the authenticator for the web application.
+     *
+     * @param inServiceManager a <code>ServiceManager</code> value
+     * @return an <code>Authenticator</code> value
+     */
+    @Bean
+    public Authenticator getAuthenticator(ServiceManager inServiceManager)
+    {
+        Authenticator authenticator = new Authenticator() {
+            @Override
+            public boolean shouldAllow(StatelessClientContext inContext,
+                                       String inUser,
+                                       char[] inPassword)
+                    throws I18NException
+            {
+                AdminClientService adminClientService = inServiceManager.getService(AdminClientService.class);
+                Collection<Permission> permissions = adminClientService.getPermissions();
+                SessionUser.getCurrentUser().getPermissions().addAll(permissions);
+                return true;
+            }
+        };
+        return authenticator;
+    }
     /**
      * Get the admin client factory value.
      *

@@ -9,8 +9,8 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.config.dataflows.DataFlowConfiguration;
 import org.marketcetera.web.config.dataflows.DataFlowConfiguration.DataFlowEngineDescriptor;
 import org.marketcetera.web.service.ConnectableService;
+import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.view.dataflows.DecoratedStrategyEngine;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.google.common.cache.Cache;
@@ -50,7 +50,6 @@ public class DataFlowClientService
         SLF4JLoggerProxy.info(this,
                               "Data flow engine configuration: {}",
                               dataFlowConfiguration.getEngineDescriptors());
-        boolean atLeastOne = false;
         for(DataFlowEngineDescriptor engineDescriptor : dataFlowConfiguration.getEngineDescriptors()) {
             DataFlowClientServiceInstance serviceInstance = instancesByName.getIfPresent(engineDescriptor.getName());
             if(serviceInstance != null) {
@@ -75,10 +74,35 @@ public class DataFlowClientService
             if(serviceInstance.connect()) {
                 instancesByName.put(engineDescriptor.getName(),
                                     serviceInstance);
-                atLeastOne = true;
             }
         }
-        return atLeastOne;
+        running = true;
+        return running;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.service.ConnectableService#disconnect()
+     */
+    @Override
+    public void disconnect()
+    {
+        running = false;
+        for(DataFlowClientServiceInstance instance : instancesByName.asMap().values()) {
+            try {
+                instance.disconnect();
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+            }
+        }
+        instancesByName.invalidateAll();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.service.ConnectableService#isRunning()
+     */
+    @Override
+    public boolean isRunning()
+    {
+        return running;
     }
     /**
      * Get the <code>DataFlowClientService</code> instance for the current session.
@@ -87,7 +111,7 @@ public class DataFlowClientService
      */
     public static DataFlowClientService getInstance()
     {
-        return VaadinSession.getCurrent().getAttribute(DataFlowClientService.class);
+        return ServiceManager.getInstance().getService(DataFlowClientService.class);
     }
     /**
      * Get the service instance for the given SE descriptor.
@@ -174,9 +198,12 @@ public class DataFlowClientService
         dataFlowConfiguration = inDataFlowConfiguration;
     }
     /**
+     * indicates if the service is running
+     */
+    private volatile boolean running = false;
+    /**
      * provides access to application configuration
      */
-    @Autowired
     private ApplicationContext applicationContext;
     /**
      * tracks data flow client instances by name
@@ -185,6 +212,5 @@ public class DataFlowClientService
     /**
      * provides configuration for connecting to data flow engines
      */
-    @Autowired
     private DataFlowConfiguration dataFlowConfiguration;
 }
