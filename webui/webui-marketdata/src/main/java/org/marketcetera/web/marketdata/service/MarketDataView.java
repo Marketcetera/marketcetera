@@ -1,5 +1,15 @@
 package org.marketcetera.web.marketdata.service;
 
+import org.dussan.vaadin.dcharts.DCharts;
+import org.dussan.vaadin.dcharts.base.elements.XYaxis;
+import org.dussan.vaadin.dcharts.data.DataSeries;
+import org.dussan.vaadin.dcharts.data.Ticks;
+import org.dussan.vaadin.dcharts.metadata.renderers.AxisRenderers;
+import org.dussan.vaadin.dcharts.metadata.renderers.SeriesRenderers;
+import org.dussan.vaadin.dcharts.options.Axes;
+import org.dussan.vaadin.dcharts.options.Highlighter;
+import org.dussan.vaadin.dcharts.options.Options;
+import org.dussan.vaadin.dcharts.options.SeriesDefaults;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.ContentView;
@@ -9,12 +19,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionMode;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 /* $License$ */
 
@@ -37,7 +54,61 @@ public class MarketDataView
     public void attach()
     {
         super.attach();
+        setSizeFull();
+        symbol = new TextField();
+        symbol.setCaption("Symbol");
+        symbol.setSizeUndefined();
+        CssLayout symbolLayout = new CssLayout();
+        symbolLayout.setWidth("100%");
+        Button symbolButton = new Button();
+        symbolButton.addClickListener(inEvent -> {
+            // TODO resolve symbol, set instrument label, launch market data request
+        });
+        symbolButton.setSizeUndefined();
+        symbolButton.setIcon(FontAwesome.ARROW_CIRCLE_O_RIGHT);
+        Label instrumentLabel = new Label();
+        instrumentLabel.setSizeUndefined();
+        symbolLayout.addComponents(symbol,
+                                   symbolButton,
+                                   instrumentLabel);
+        grid = new Grid();
+        grid.setSelectionMode(SelectionMode.NONE);
+        grid.setHeightMode(HeightMode.CSS);
+        grid.setSizeFull();
+        grid.setColumns("Exchange","Trade\nPx","Trade\nSize","Bid\nSize","Bid\nPx","Ask\nPx","Ask\nSize","Open","High","Low","Close","Vol","VWAP");
+        final VerticalLayout layout = new VerticalLayout();
+        DataSeries dataSeries = new DataSeries()
+          .add(1, 5, 8, 2, 3);
+
+         SeriesDefaults seriesDefaults = new SeriesDefaults()
+          .setRenderer(SeriesRenderers.BAR);
+
+         Axes axes = new Axes()
+         .addAxis(
+                 new XYaxis().setRenderer(AxisRenderers.CATEGORY)
+                 .setTicks(new Ticks()
+                         .add("a", "b", "c", "d", "e")));
+
+         Highlighter highlighter = new Highlighter()
+         .setShow(false);
+
+         Options options = new Options()
+          .setSeriesDefaults(seriesDefaults)
+          .setAxes(axes)
+          .setHighlighter(highlighter);
+
+         DCharts chart = new DCharts()
+          .setDataSeries(dataSeries)
+          .setOptions(options)
+          .show();
+         layout.addComponent(chart);
+
+        addComponents(symbolLayout,
+                      grid,
+                      layout);
     }
+    private TextField symbol;
+    private Grid grid;
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.ContentView#getViewName()
      */

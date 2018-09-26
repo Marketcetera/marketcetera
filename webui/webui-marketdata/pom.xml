@@ -17,6 +17,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
+    <gwt.version>2.8.2</gwt.version>
+    <gwt.plugin.version>2.8.2</gwt.plugin.version>
   </properties>
   <dependencies>
     <dependency>
@@ -31,5 +33,95 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>marketdata-rpc-client</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.vaadin.addons</groupId>
+      <artifactId>dcharts-widget</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.gwt-charts</groupId>
+      <artifactId>gwt-charts</artifactId>
+      <version>0.9.10</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+	<groupId>com.vaadin</groupId>
+	<artifactId>vaadin-maven-plugin</artifactId>
+	<configuration>
+          <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+          <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
+          <hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets</hostedWebapp>
+          <noServer>true</noServer>
+          <draftCompile>false</draftCompile>
+          <style>OBF</style>
+          <compileReport>true</compileReport>
+          <runTarget>http://localhost:8080/</runTarget>
+          <widgetsetMode>cdn</widgetsetMode>
+	</configuration>
+	<executions>
+          <execution>
+            <goals>
+              <goal>compile-theme</goal>
+              <goal>update-widgetset</goal>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+	</executions>
+      </plugin>
+      <!--plugin>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+            </configuration>
+            <goals>
+              <goal>update-widgetset</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin-->
+      <!--plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>${gwt.plugin.version}</version>
+        <configuration>
+          <webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
+          <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+          <runTarget>sample</runTarget>
+          <hostedWebapp>${project.build.directory}/${project.build.finalName}</hostedWebapp>
+          <noServer>true</noServer>
+          <port>8080</port>
+          <compileReport>false</compileReport>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>resources</goal>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwt.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin-->
+    </plugins>
+  </build>
 </project>

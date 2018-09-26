@@ -31,28 +31,53 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-	<groupId>com.vaadin</groupId>
-	<artifactId>vaadin-spring-boot-starter</artifactId>
-	<version>1.2.0</version>
-	<exclusions>
-	  <exclusion>
-	    <groupId>org.springframework.boot</groupId>
-	    <artifactId>spring-boot-starter-logging</artifactId>
-	  </exclusion>
-	</exclusions>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-spring-boot-starter</artifactId>
+        <version>1.2.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
-	<groupId>org.vaadin.addons</groupId>
-	<artifactId>wizards-for-vaadin</artifactId>
-	<version>1.1.1</version>
+        <groupId>org.vaadin.addons</groupId>
+        <artifactId>wizards-for-vaadin</artifactId>
+        <version>1.1.1</version>
       </dependency>
       <dependency>
-	<groupId>org.vaadin.crudui</groupId>
-	<artifactId>crudui</artifactId>
-	<version>1.6.0</version>
+        <groupId>org.vaadin.crudui</groupId>
+        <artifactId>crudui</artifactId>
+        <version>1.6.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.vaadin.addons</groupId>
+        <artifactId>dcharts-widget</artifactId>
+        <version>1.7.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.vaadin</groupId>
+          <artifactId>vaadin-maven-plugin</artifactId>
+          <version>${vaadin.version}</version>
+          <executions>
+            <execution>
+              <configuration>
+              </configuration>
+              <goals>
+                <goal>update-widgetset</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
   <modules>
     <module>webui-admin</module>
     <module>webui-core</module>
@@ -66,8 +91,6 @@
       <id>snapshot</id>
       <url>https://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
     </repository>
-    <!-- Essential Vaadin artifacts are in maven central, but maven.vaadin.com 
-         contains a huge set of additional libraries. See vaadin.com/directory -->
     <repository>
       <id>vaadin-addons</id>
       <url>http://maven.vaadin.com/vaadin-addons</url>
