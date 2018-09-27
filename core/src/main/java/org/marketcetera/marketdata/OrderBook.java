@@ -208,10 +208,12 @@ public class OrderBook
             default:
                 throw new UnsupportedOperationException();
         }
-        if(inEvent instanceof BidEvent) {
-            mBidBook.updateLevels();
-        } else if(inEvent instanceof AskEvent) {
-            mAskBook.updateLevels();
+        synchronized(mBidBook) {
+            if(inEvent instanceof BidEvent) {
+                mBidBook.updateLevels();
+            } else if(inEvent instanceof AskEvent) {
+                mAskBook.updateLevels();
+            }
         }
         SLF4JLoggerProxy.debug(this,
                                "Book is now\n{}", //$NON-NLS-1$
