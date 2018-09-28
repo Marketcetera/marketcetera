@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.vaadin.annotations.Push;
-import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
-import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
@@ -34,9 +32,7 @@ import com.vaadin.ui.themes.ValoTheme;
  */
 @Push
 @SpringUI
-@Theme(ValoTheme.THEME_NAME)
 @Title("Marketcetera Automated Trading Platform")
-@Widgetset("com.vaadin.v7.Vaadin7WidgetSet")
 public class MainUI
         extends UI
 {

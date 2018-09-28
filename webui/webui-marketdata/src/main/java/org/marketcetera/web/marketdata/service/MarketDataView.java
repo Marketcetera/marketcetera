@@ -74,35 +74,29 @@ public class MarketDataView
         grid = new Grid();
         grid.setSelectionMode(SelectionMode.NONE);
         grid.setHeightMode(HeightMode.CSS);
-        grid.setSizeFull();
+        grid.setWidth("100%");
         grid.setColumns("Exchange","Trade\nPx","Trade\nSize","Bid\nSize","Bid\nPx","Ask\nPx","Ask\nSize","Open","High","Low","Close","Vol","VWAP");
         final VerticalLayout layout = new VerticalLayout();
-        DataSeries dataSeries = new DataSeries()
-          .add(1, 5, 8, 2, 3);
+        DataSeries dataSeries = new DataSeries().add(1, 5, 8, 2, 3);
+        SeriesDefaults seriesDefaults = new SeriesDefaults().setRenderer(SeriesRenderers.BAR);
+        Axes axes = new Axes().addAxis(
+                                       new XYaxis().setRenderer(AxisRenderers.CATEGORY)
+                                       .setTicks(new Ticks()
+                                                 .add("a", "b", "c", "d", "e")));
 
-         SeriesDefaults seriesDefaults = new SeriesDefaults()
-          .setRenderer(SeriesRenderers.BAR);
+        Highlighter highlighter = new Highlighter()
+                .setShow(false);
 
-         Axes axes = new Axes()
-         .addAxis(
-                 new XYaxis().setRenderer(AxisRenderers.CATEGORY)
-                 .setTicks(new Ticks()
-                         .add("a", "b", "c", "d", "e")));
+        Options options = new Options()
+                .setSeriesDefaults(seriesDefaults)
+                .setAxes(axes)
+                .setHighlighter(highlighter);
 
-         Highlighter highlighter = new Highlighter()
-         .setShow(false);
-
-         Options options = new Options()
-          .setSeriesDefaults(seriesDefaults)
-          .setAxes(axes)
-          .setHighlighter(highlighter);
-
-         DCharts chart = new DCharts()
-          .setDataSeries(dataSeries)
-          .setOptions(options)
-          .show();
-         layout.addComponent(chart);
-
+        DCharts chart = new DCharts()
+                .setDataSeries(dataSeries)
+                .setOptions(options)
+                .show();
+        layout.addComponent(chart);
         addComponents(symbolLayout,
                       grid,
                       layout);

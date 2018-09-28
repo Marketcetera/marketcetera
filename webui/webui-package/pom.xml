@@ -55,11 +55,14 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>webui-marketdata</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin-spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-client-compiled</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -88,6 +91,30 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+	<groupId>com.vaadin</groupId>
+	<artifactId>vaadin-maven-plugin</artifactId>
+	<configuration>
+          <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+          <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
+          <hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets</hostedWebapp>
+          <noServer>true</noServer>
+          <draftCompile>false</draftCompile>
+          <style>OBF</style>
+          <compileReport>true</compileReport>
+          <runTarget>http://localhost:8080/</runTarget>
+          <widgetsetMode>local</widgetsetMode>
+	</configuration>
+	<executions>
+          <execution>
+            <goals>
+              <goal>compile-theme</goal>
+              <goal>update-widgetset</goal>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+	</executions>
       </plugin>
     </plugins>
   </build>
