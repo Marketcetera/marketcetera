@@ -4,6 +4,7 @@ import org.marketcetera.marketdata.MarketDataClient;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
 import org.marketcetera.web.service.ConnectableServiceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /* $License$ */
 
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class MarketDataClientServiceFactory
         implements ConnectableServiceFactory<MarketDataClientService>
 {

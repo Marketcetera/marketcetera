@@ -12,6 +12,7 @@
     <logger name="com.marketcetera" level="info"/>
     <logger name="org.marketcetera" level="info"/>
     <logger name="org.marketcetera.web" level="debug"/>
-    <logger name="com.marketcetera.web" level="debug"/>
+    <logger name="com.marketcetera.web.marketdata" level="trace"/>
+    <logger name="org.marketcetera.marketdata.rpc.client" level="trace"/>
   </Loggers>
 </Configuration>

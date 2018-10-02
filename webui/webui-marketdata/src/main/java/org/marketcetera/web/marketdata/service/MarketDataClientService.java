@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.marketdata.MarketDataClient;
+import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientParameters;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -81,6 +83,28 @@ public class MarketDataClientService
     public boolean isRunning()
     {
         return marketDataClient != null && marketDataClient.isRunning();
+    }
+    /**
+     * Request market data.
+     * 
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inMarketDataListener a <code>MarketDataListener</code> value
+     * @return a <code>String</code> value containing the request ID
+     */
+    public String request(MarketDataRequest inRequest,
+                          MarketDataListener inMarketDataListener)
+    {
+        return marketDataClient.request(inRequest,
+                                        inMarketDataListener);
+    }
+    /**
+     * Cancels a market data request.
+     *
+     * @param inRequestId a <code>String</code> value
+     */
+    public void cancel(String inRequestId)
+    {
+        
     }
     /**
      * Get the instance value.

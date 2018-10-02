@@ -1,5 +1,7 @@
 package org.marketcetera.web.marketdata.service;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dussan.vaadin.dcharts.DCharts;
 import org.dussan.vaadin.dcharts.base.elements.XYaxis;
 import org.dussan.vaadin.dcharts.data.DataSeries;
@@ -10,6 +12,10 @@ import org.dussan.vaadin.dcharts.options.Axes;
 import org.dussan.vaadin.dcharts.options.Highlighter;
 import org.dussan.vaadin.dcharts.options.Options;
 import org.dussan.vaadin.dcharts.options.SeriesDefaults;
+import org.marketcetera.event.HasInstrument;
+import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.ContentView;
@@ -30,7 +36,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 /* $License$ */
@@ -55,23 +63,30 @@ public class MarketDataView
     {
         super.attach();
         setSizeFull();
+        symbolButton = new Button();
+        symbolButton.setEnabled(false);
         symbol = new TextField();
+        CssLayout symbolLayout = new CssLayout();
+        instrumentLabel = new Label();
+        grid = new Grid();
         symbol.setCaption("Symbol");
         symbol.setSizeUndefined();
-        CssLayout symbolLayout = new CssLayout();
+        symbol.addValueChangeListener(inEvent-> {
+            symbolButton.setEnabled(StringUtils.trimToNull(symbol.getValue()) != null);
+        });
+//        symbol.addTextChangeListener(inEvent-> {
+//            symbolButton.setEnabled(StringUtils.trimToNull(symbol.getValue()) != null);
+//        });
         symbolLayout.setWidth("100%");
-        Button symbolButton = new Button();
         symbolButton.addClickListener(inEvent -> {
-            // TODO resolve symbol, set instrument label, launch market data request
+            requestMarketData();
         });
         symbolButton.setSizeUndefined();
         symbolButton.setIcon(FontAwesome.ARROW_CIRCLE_O_RIGHT);
-        Label instrumentLabel = new Label();
         instrumentLabel.setSizeUndefined();
         symbolLayout.addComponents(symbol,
                                    symbolButton,
                                    instrumentLabel);
-        grid = new Grid();
         grid.setSelectionMode(SelectionMode.NONE);
         grid.setHeightMode(HeightMode.CSS);
         grid.setWidth("100%");
@@ -101,8 +116,66 @@ public class MarketDataView
                       grid,
                       layout);
     }
+    private Label instrumentLabel;
+    private Button symbolButton;
     private TextField symbol;
     private Grid grid;
+    private synchronized void requestMarketData()
+    {
+        MarketDataClientService marketDataClientService = MarketDataClientService.getInstance();
+        cancelMarketData();
+        MarketDataRequestBuilder requestBuilder = MarketDataRequestBuilder.newRequest();
+        requestBuilder.withSymbols(StringUtils.trim(symbol.getValue()));
+        marketDataRequestToken = marketDataClientService.request(requestBuilder.create(),
+                                                                 new MarketDataListener() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.marketdata.MarketDataListener#receiveMarketData(org.marketcetera.event.Event)
+             */
+            @Override
+            public void receiveMarketData(org.marketcetera.event.Event inMarketDataEvent)
+            {
+                if(inMarketDataEvent instanceof HasInstrument) {
+                    String fullSymbol = ((HasInstrument)inMarketDataEvent).getInstrument().getFullSymbol();
+                    if(fullSymbol == null) {
+                        instrumentLabel.setValue("");
+                    } else {
+                        if(!fullSymbol.equals(instrumentLabel.getValue())) {
+                            instrumentLabel.setValue(fullSymbol);
+                        }
+                    }
+                }
+            }
+            /* (non-Javadoc)
+             * @see org.marketcetera.marketdata.MarketDataListener#onError(java.lang.Throwable)
+             */
+            @Override
+            public void onError(Throwable inThrowable)
+            {
+                SLF4JLoggerProxy.warn(MarketDataView.this,
+                                      inThrowable);
+                UI.getCurrent().access(() -> {
+                    Notification.show("Market Data Request",
+                                      ExceptionUtils.getRootCauseMessage(inThrowable),
+                                      Notification.Type.ERROR_MESSAGE);
+                });
+                cancelMarketData();
+            }
+        });
+    }
+    private void cancelMarketData()
+    {
+        MarketDataClientService marketDataClientService = MarketDataClientService.getInstance();
+        if(marketDataRequestToken != null) {
+            try {
+                marketDataClientService.cancel(marketDataRequestToken);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+            } finally {
+                marketDataRequestToken = null;
+            }
+        }
+    }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.ContentView#getViewName()
      */
@@ -176,6 +249,7 @@ public class MarketDataView
             private static final long serialVersionUID = 49365592058433460L;
         };
     }
+    private String marketDataRequestToken;
     /**
      * provides access to web message services
      */
