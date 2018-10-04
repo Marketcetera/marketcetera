@@ -85,6 +85,11 @@
       <artifactId>vaadin-push</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-themes</artifactId>
+      <!--version>${vaadin.version}</version-->
+    </dependency>
   </dependencies>
   <build>
     <plugins>

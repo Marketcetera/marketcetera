@@ -25,13 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
-import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.Grid.SelectionMode;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
@@ -63,20 +61,21 @@ public class MarketDataView
     {
         super.attach();
         setSizeFull();
+        CssLayout symbolLayout = new CssLayout();
+        VerticalLayout dataLayout = new VerticalLayout();
+        HorizontalLayout dataChartLayout = new HorizontalLayout();
+        symbolLayout.addStyleName("layout-with-border");
+        dataLayout.addStyleName("layout-with-border");
+        dataChartLayout.addStyleName("layout-with-border");
         symbolButton = new Button();
         symbolButton.setEnabled(false);
         symbol = new TextField();
-        CssLayout symbolLayout = new CssLayout();
         instrumentLabel = new Label();
-        grid = new Grid();
         symbol.setCaption("Symbol");
         symbol.setSizeUndefined();
-        symbol.addValueChangeListener(inEvent-> {
-            symbolButton.setEnabled(StringUtils.trimToNull(symbol.getValue()) != null);
+        symbol.addTextChangeListener(inEvent-> {
+            symbolButton.setEnabled(StringUtils.trimToNull(inEvent.getText()) != null);
         });
-//        symbol.addTextChangeListener(inEvent-> {
-//            symbolButton.setEnabled(StringUtils.trimToNull(symbol.getValue()) != null);
-//        });
         symbolLayout.setWidth("100%");
         symbolButton.addClickListener(inEvent -> {
             requestMarketData();
@@ -87,11 +86,29 @@ public class MarketDataView
         symbolLayout.addComponents(symbol,
                                    symbolButton,
                                    instrumentLabel);
-        grid.setSelectionMode(SelectionMode.NONE);
-        grid.setHeightMode(HeightMode.CSS);
-        grid.setWidth("100%");
-        grid.setColumns("Exchange","Trade\nPx","Trade\nSize","Bid\nSize","Bid\nPx","Ask\nPx","Ask\nSize","Open","High","Low","Close","Vol","VWAP");
-        final VerticalLayout layout = new VerticalLayout();
+        lastText = new TextField();
+        lastText.setCaption("Last");
+        bidText = new TextField();
+        bidText.setCaption("Bid");
+        offerText = new TextField();
+        offerText.setCaption("Offer");
+        openText = new TextField();
+        openText.setCaption("Open");
+        highText = new TextField();
+        highText.setCaption("High");
+        lowText = new TextField();
+        lowText.setCaption("Low");
+        closeText = new TextField();
+        closeText.setCaption("Close");
+        dataLayout.addComponents(lastText,
+                                 bidText,
+                                 offerText,
+                                 openText,
+                                 highText,
+                                 lowText,
+                                 closeText);
+        final CssLayout chartLayout = new CssLayout();
+        chartLayout.addStyleName("layout-with-border");
         DataSeries dataSeries = new DataSeries().add(1, 5, 8, 2, 3);
         SeriesDefaults seriesDefaults = new SeriesDefaults().setRenderer(SeriesRenderers.BAR);
         Axes axes = new Axes().addAxis(
@@ -111,15 +128,30 @@ public class MarketDataView
                 .setDataSeries(dataSeries)
                 .setOptions(options)
                 .show();
-        layout.addComponent(chart);
+        chart.setWidth("100%");
+        chartLayout.setWidth("100%");
+        chartLayout.addComponent(chart);
+        chartLayout.setResponsive(true);
+        chart.setResponsive(true);
+        dataChartLayout.setWidth("100%");
+        dataChartLayout.setResponsive(true);
+        dataChartLayout.addComponents(dataLayout,
+                                      chartLayout);
         addComponents(symbolLayout,
-                      grid,
-                      layout);
+                      dataChartLayout);
+        setWidth("100%");
+        setResponsive(true);
     }
+    private TextField lastText;
+    private TextField bidText;
+    private TextField offerText;
+    private TextField openText;
+    private TextField highText;
+    private TextField lowText;
+    private TextField closeText;
     private Label instrumentLabel;
     private Button symbolButton;
     private TextField symbol;
-    private Grid grid;
     private synchronized void requestMarketData()
     {
         MarketDataClientService marketDataClientService = MarketDataClientService.getInstance();
