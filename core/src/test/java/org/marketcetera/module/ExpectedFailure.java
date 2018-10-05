@@ -1,18 +1,19 @@
 package org.marketcetera.module;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NMessage;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.except.I18NException;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.lang.reflect.Type;
-import java.lang.reflect.ParameterizedType;
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -215,7 +216,7 @@ public abstract class ExpectedFailure<T extends Exception> {
             run();
             fail("Didn't fail!");
         } catch(Exception t) {
-            Class expected = getExceptionClass();
+            Class<?> expected = getExceptionClass();
             assertTrue("Expected<" + expected + ">Actual<"+t.getClass()+">" + t,
                     expected.isInstance(t));
             mException = (T) t;
@@ -236,9 +237,9 @@ public abstract class ExpectedFailure<T extends Exception> {
      *
      * @return the expected exception type.
      */
-    private Class getExceptionClass() {
+    private Class<?> getExceptionClass() {
         ParameterizedType pt;
-        Class cls = getClass();
+        Class<?> cls = getClass();
         //find the direct sub-class of this class
         while(!ExpectedFailure.class.equals(cls.getSuperclass())) {
             cls = cls.getSuperclass();
@@ -246,7 +247,7 @@ public abstract class ExpectedFailure<T extends Exception> {
         pt = (ParameterizedType) cls.getGenericSuperclass();
         Type[] t = pt.getActualTypeArguments();
         assertEquals(1, t.length);
-        return (Class) t[0];
+        return (Class<?>) t[0];
     }
     private I18NMessage mExpectedMessage;
     private Object[] mExpectedParams;
@@ -259,5 +260,5 @@ public abstract class ExpectedFailure<T extends Exception> {
      * {@link #assertI18NException(Throwable, I18NMessage, Object[])} or
      * {@link #ExpectedFailure(I18NMessage, Object[])}  
      */
-    public static final Serializable IGNORE = new Serializable(){};
+    public static final Serializable IGNORE = new Serializable() {private static final long serialVersionUID = -348025487355746622L;};
 }

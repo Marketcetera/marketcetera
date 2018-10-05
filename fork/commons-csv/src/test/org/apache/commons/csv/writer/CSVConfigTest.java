@@ -42,7 +42,7 @@ public class CSVConfigTest extends TestCase {
         assertEquals(0, config.getFields().length);
         config.setFields((CSVField[])null);
         assertEquals(0, config.getFields().length);
-        config.setFields((Collection)null);
+        config.setFields((Collection<CSVField>)null);
         assertEquals(0, config.getFields().length);
         CSVField field = new CSVField();
         field.setName("field1");

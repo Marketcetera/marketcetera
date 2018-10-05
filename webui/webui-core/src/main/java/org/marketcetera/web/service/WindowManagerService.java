@@ -1,17 +1,20 @@
 package org.marketcetera.web.service;
 
+import java.util.Properties;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.events.WindowResizeEvent;
+import org.marketcetera.web.view.ContentView;
+import org.marketcetera.web.view.ContentViewFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.Subscribe;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 /* $License$ */
@@ -58,9 +61,9 @@ public class WindowManagerService
                                "Received {}",
                                inNewWindowEvent.getWindowTitle());
         Window newWindow = new Window(inNewWindowEvent.getWindowTitle());
-        newWindow.setModal(false);
-        newWindow.setDraggable(true);
-        newWindow.setResizable(true);
+        newWindow.setModal(inNewWindowEvent.isModal());
+        newWindow.setDraggable(inNewWindowEvent.isDraggable());
+        newWindow.setResizable(inNewWindowEvent.isResizable());
         newWindow.setWidth(inNewWindowEvent.getWindowSize().getFirstMember());
         newWindow.setHeight(inNewWindowEvent.getWindowSize().getSecondMember());
         newWindow.addResizeListener(inE -> {
@@ -94,7 +97,9 @@ public class WindowManagerService
                 }
             });
         });
-        newWindow.setContent(inNewWindowEvent.getComponent());
+        ContentViewFactory viewFactory = inNewWindowEvent.getViewFactory();
+        ContentView contentView = viewFactory.create(new Properties()); // TODO these properties can come from restart/restore
+        newWindow.setContent(contentView);
         UI.getCurrent().addWindow(newWindow);
         newWindow.focus();
     }

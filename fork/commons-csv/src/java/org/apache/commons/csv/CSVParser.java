@@ -75,7 +75,7 @@ public class CSVParser {
   
   // the following objects are shared to reduce garbage 
   /** A record buffer for getLine(). Grows as necessary and is reused. */
-  private final ArrayList record = new ArrayList();
+  private final ArrayList<String> record = new ArrayList<>();
   private final Token reusableToken = new Token();
   private final CharBuffer wsBuf = new CharBuffer();
   private final CharBuffer code = new CharBuffer(4);
@@ -184,7 +184,7 @@ public class CSVParser {
    * @throws IOException on parse error or input read-failure
    */
   public String[][] getAllValues() throws IOException {
-    ArrayList records = new ArrayList();
+    ArrayList<String[]> records = new ArrayList<>();
     String[] values;
     String[][] ret = null;
     while ((values = getLine()) != null)  {

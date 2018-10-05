@@ -1,27 +1,19 @@
 package org.marketcetera.web.view.cluster;
 
+import java.util.Properties;
+
 import org.marketcetera.cluster.service.ClusterMember;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.impl.SimpleActiveFixSession;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
-import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.AbstractGridView;
-import org.marketcetera.web.view.MenuContent;
 import org.marketcetera.web.view.PagedDataContainer;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
 
 /* $License$ */
 
@@ -32,10 +24,8 @@ import com.vaadin.ui.MenuBar.MenuItem;
  * @version $Id$
  * @since $Release$
  */
-@SpringComponent
 public class ClusterView
         extends AbstractGridView<ClusterMember>
-        implements MenuContent
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
@@ -91,63 +81,13 @@ public class ClusterView
     {
         return NAME;
     }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
+    /**
+     * Create a new ClusterView instance.
+     *
+     * @param inViewProperties
      */
-    @Override
-    public String getMenuCaption()
+    ClusterView(Properties inViewProperties)
     {
-        return "Cluster Data";
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getWeight()
-     */
-    @Override
-    public int getWeight()
-    {
-        return 200;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getCategory()
-     */
-    @Override
-    public MenuContent getCategory()
-    {
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuIcon()
-     */
-    @Override
-    public Resource getMenuIcon()
-    {
-        return FontAwesome.SITEMAP;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getCommand()
-     */
-    @Override
-    public Command getCommand()
-    {
-        return new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuItem inSelectedItem)
-            {
-                webMessageService.post(new NewWindowEvent() {
-                    @Override
-                    public String getWindowTitle()
-                    {
-                        return getMenuCaption();
-                    }
-                    @Override
-                    public Component getComponent()
-                    {
-                        return ClusterView.this;
-                    }
-                });
-            }
-            private static final long serialVersionUID = 49365592058433460L;
-        };
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#setGridColumns()
@@ -1152,9 +1092,26 @@ public class ClusterView
 //        UI.getCurrent().addWindow(subWindow);
     }
     /**
+     * Get the webMessageService value.
+     *
+     * @return a <code>WebMessageService</code> value
+     */
+    WebMessageService getWebMessageService()
+    {
+        return webMessageService;
+    }
+    /**
+     * Sets the webMessageService value.
+     *
+     * @param inWebMessageService a <code>WebMessageService</code> value
+     */
+    void setWebMessageService(WebMessageService inWebMessageService)
+    {
+        webMessageService = inWebMessageService;
+    }
+    /**
      * provides access to web message services
      */
-    @Autowired
     private WebMessageService webMessageService;
     /**
      * global name of this view

@@ -1,8 +1,7 @@
 package org.marketcetera.web.events;
 
 import org.marketcetera.core.Pair;
-
-import com.vaadin.ui.Component;
+import org.marketcetera.web.view.ContentViewFactory;
 
 /* $License$ */
 
@@ -22,11 +21,12 @@ public interface NewWindowEvent
      */
     String getWindowTitle();
     /**
-     * Get the component to display in the window.
+     * 
      *
-     * @return a <code>Component</code> value
+     *
+     * @return
      */
-    Component getComponent();
+    ContentViewFactory getViewFactory();
     /**
      * Get the window size recommended for this window.
      *
@@ -35,5 +35,35 @@ public interface NewWindowEvent
     default Pair<String,String> getWindowSize()
     {
         return Pair.create("50%","50%");
+    }
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    default boolean isResizable()
+    {
+        return true;
+    }
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    default boolean isDraggable()
+    {
+        return true;
+    }
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    default boolean isModal()
+    {
+        return false;
     }
 }

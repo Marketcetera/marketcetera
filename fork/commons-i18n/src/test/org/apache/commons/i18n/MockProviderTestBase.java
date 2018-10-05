@@ -54,8 +54,8 @@ public abstract class MockProviderTestBase extends TestCase {
                 return MockProviderTestBase.getMockString(providerId, id, entry, locale);
             }
 
-            public Map getEntries(String id, Locale locale) throws MessageNotFoundException {
-                Map output = new HashMap();
+            public Map<String,String> getEntries(String id, Locale locale) throws MessageNotFoundException {
+                Map<String,String> output = new HashMap<>();
                 output.put("entry1", MockProviderTestBase.getMockString(providerId,id,"entry1",locale));
                 output.put("entry2", MockProviderTestBase.getMockString(providerId,id,"entry2",locale));
                 return output;
@@ -74,7 +74,7 @@ public abstract class MockProviderTestBase extends TestCase {
                 return null;
             }
 
-            public Map getEntries(String id, Locale locale) throws MessageNotFoundException {
+            public Map<String,String> getEntries(String id, Locale locale) throws MessageNotFoundException {
                 throw new MessageNotFoundException("Mock exception from getEntries()");
             }
         });
@@ -98,10 +98,12 @@ public abstract class MockProviderTestBase extends TestCase {
     }
 
     public static String getFormattedMockString(String providerId, String id, String entry, String[] arguments, Locale locale) {
-        return MessageFormat.format(getMockString(providerId, id, entry, locale), arguments);
+        return MessageFormat.format(getMockString(providerId, id, entry, locale),
+                                    (Object[])arguments);
     }
 
     public static String getFormattedMockString(String id, String entry, String[] arguments, Locale locale) {
-        return MessageFormat.format(getMockString(id, entry, locale), arguments);
+        return MessageFormat.format(getMockString(id, entry, locale),
+                                    (Object[])arguments);
     }
 }

@@ -1,5 +1,19 @@
-@import url(../chameleon/styles.css);
+// mytheme.scss
+@import "../valo/valo.scss";
 
-.layout-with-border {
-    border: 10px solid red;
+.mytheme {
+   @include valo;
+
+  .layout-with-border1 {
+    border: 4px solid red;
+  }
+  .layout-with-border2 {
+    border: 4px solid blue;
+  }
+  .layout-with-border3 {
+    border: 4px solid green;
+  }
+  .layout-with-border4 {
+    border: 4px solid magenta;
+  }
 }

@@ -1,12 +1,12 @@
 package org.marketcetera.web.view.admin;
 
+import java.util.Properties;
+
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.impl.SimplePermission;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.PagedDataContainer;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Resource;
 import com.vaadin.ui.Button.ClickEvent;
 
 /* $License$ */
@@ -18,7 +18,6 @@ import com.vaadin.ui.Button.ClickEvent;
  * @version $Id$
  * @since $Release$
  */
-@org.springframework.stereotype.Component
 public class PermissionView
         extends AbstractAdminView<Permission>
 {
@@ -30,29 +29,13 @@ public class PermissionView
     {
         return NAME;
     }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
+    /**
+     * Create a new PermissionView instance.
+     *
+     * @param inViewProperties
      */
-    @Override
-    public String getMenuCaption()
+    PermissionView(Properties inViewProperties)
     {
-        return "Permissions";
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getWeight()
-     */
-    @Override
-    public int getWeight()
-    {
-        return 300;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuIcon()
-     */
-    @Override
-    public Resource getMenuIcon()
-    {
-        return FontAwesome.HAND_STOP_O;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractAdminView#getViewSubjectName()

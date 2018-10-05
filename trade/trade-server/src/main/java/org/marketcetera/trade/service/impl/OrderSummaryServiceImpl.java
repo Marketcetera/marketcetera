@@ -62,11 +62,11 @@ public class OrderSummaryServiceImpl
     {
         BooleanBuilder where = new BooleanBuilder();
         where = where.and(QPersistentOrderSummary.persistentOrderSummary.rootOrderId.eq(inRootOrderId));
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC,
-                                            QPersistentOrderSummary.persistentOrderSummary.id.getMetadata().getName()));
-        Pageable pageRequest = new PageRequest(0,
-                                               1,
-                                               sort);
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC,
+                                           QPersistentOrderSummary.persistentOrderSummary.id.getMetadata().getName()));
+        Pageable pageRequest = PageRequest.of(0,
+                                              1,
+                                              sort);
         Page<PersistentOrderSummary> results = orderStatusDao.findAll(where,
                                                                      pageRequest);
         if(!results.hasContent()) {
@@ -83,11 +83,11 @@ public class OrderSummaryServiceImpl
         BooleanBuilder where = new BooleanBuilder();
         where = where.and(QPersistentOrderSummary.persistentOrderSummary.rootOrderId.eq(inRootOrderId));
         where = where.and(QPersistentOrderSummary.persistentOrderSummary.securityType.isNotNull());
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC,
-                                            QPersistentOrderSummary.persistentOrderSummary.id.getMetadata().getName()));
-        Pageable pageRequest = new PageRequest(0,
-                                               1,
-                                               sort);
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC,
+                                           QPersistentOrderSummary.persistentOrderSummary.id.getMetadata().getName()));
+        Pageable pageRequest = PageRequest.of(0,
+                                              1,
+                                              sort);
         Page<PersistentOrderSummary> results = orderStatusDao.findAll(where,
                                                                      pageRequest);
         if(!results.hasContent()) {
@@ -103,11 +103,11 @@ public class OrderSummaryServiceImpl
     {
         BooleanBuilder where = new BooleanBuilder();
         where = where.and(QPersistentOrderSummary.persistentOrderSummary.rootOrderId.eq(inRootOrderId));
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC,
-                                            QPersistentOrderSummary.persistentOrderSummary.id.getMetadata().getName()));
-        Pageable pageRequest = new PageRequest(0,
-                                               1,
-                                               sort);
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC,
+                                           QPersistentOrderSummary.persistentOrderSummary.id.getMetadata().getName()));
+        Pageable pageRequest = PageRequest.of(0,
+                                              1,
+                                              sort);
         Page<PersistentOrderSummary> results = orderStatusDao.findAll(where,
                                                                      pageRequest);
         if(!results.hasContent()) {
@@ -141,9 +141,9 @@ public class OrderSummaryServiceImpl
         Sort sort = new Sort(Sort.Direction.DESC,
                              r.sendingTime.getMetadata().getName());
         // can expose the page and page size to allow paging through the api interfaces
-        PageRequest page = new PageRequest(0,
-                                           Integer.MAX_VALUE,
-                                           sort);
+        PageRequest page = PageRequest.of(0,
+                                          Integer.MAX_VALUE,
+                                          sort);
         Iterable<PersistentOrderSummary> orderStatusIterable = orderStatusDao.findAll(where,
                                                                                      page);
         List<Report> reports = Lists.newArrayList();
@@ -182,11 +182,11 @@ public class OrderSummaryServiceImpl
     public CollectionPageResponse<? extends OrderSummary> findOpenOrders(org.marketcetera.persist.PageRequest inPageRequest)
     {
         // TODO use the sort from the page request or this one if no sort specified
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC,
-                                            QPersistentOrderSummary.persistentOrderSummary.sendingTime.getMetadata().getName()));
-        Pageable pageRequest = new PageRequest(inPageRequest.getPageNumber(),
-                                               inPageRequest.getPageSize(),
-                                               sort);
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC,
+                                           QPersistentOrderSummary.persistentOrderSummary.sendingTime.getMetadata().getName()));
+        Pageable pageRequest = PageRequest.of(inPageRequest.getPageNumber(),
+                                              inPageRequest.getPageSize(),
+                                              sort);
         Page<PersistentOrderSummary> pageResponse = orderStatusDao.findOpenOrders(OrderStatus.openOrderStatuses,
                                                                                   pageRequest);
         return new CollectionPageResponse<>(pageRequest,

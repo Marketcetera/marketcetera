@@ -1,6 +1,7 @@
 package org.marketcetera.web.view;
 
 import com.vaadin.navigator.View;
+import com.vaadin.ui.Component;
 
 /* $License$ */
 
@@ -12,7 +13,7 @@ import com.vaadin.navigator.View;
  * @since $Release$
  */
 public interface ContentView
-        extends View
+        extends View,Component
 {
     /**
      * Get the Vaadin name of the view.

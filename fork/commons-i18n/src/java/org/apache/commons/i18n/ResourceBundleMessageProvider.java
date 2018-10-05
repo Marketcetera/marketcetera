@@ -57,7 +57,7 @@ public class ResourceBundleMessageProvider implements MessageProvider {
             }
         } catch (MissingResourceException e) {
             String msg = MessageFormat.format(I18nUtils.INTERNAL_MESSAGES.getString("resourceBundleNotFound"),
-                                              new String[] { baseName });
+                                              (Object[])new String[] { baseName });
 
             logger.log(Level.WARNING,
                        msg);
@@ -84,7 +84,9 @@ public class ResourceBundleMessageProvider implements MessageProvider {
         }
         catch (MissingResourceException e)
         {
-          logger.log(Level.WARNING, MessageFormat.format(I18nUtils.INTERNAL_MESSAGES.getString("noMessageEntriesFound"), new String[] { id }));
+          logger.log(Level.WARNING,
+                     MessageFormat.format(I18nUtils.INTERNAL_MESSAGES.getString("noMessageEntriesFound"),
+                                          (Object[])new String[] { id }));
         }
         return null;
     }
@@ -92,25 +94,26 @@ public class ResourceBundleMessageProvider implements MessageProvider {
     /* (non-Javadoc)
      * @see org.apache.commons.i18n.MessageProvider#getEntries(java.lang.String, java.util.Locale)
      */
-    public Map getEntries(String id, Locale locale) {
+    public Map<String,String> getEntries(String id, Locale locale) {
         String messageIdentifier = id + ".";
-        Map entries = null;
+        Map<String,String> entries = null;
         ResourceBundle resourceBundle = this.classLoader == null ? ResourceBundle.getBundle(this.baseName, locale) : ResourceBundle.getBundle(this.baseName, locale, this.classLoader);
         
-        Enumeration keys = resourceBundle.getKeys();
+        Enumeration<String> keys = resourceBundle.getKeys();
         while (keys.hasMoreElements())
         {
           String key = (String)keys.nextElement();
           if (key.startsWith(messageIdentifier))
           {
             if (entries == null) {
-              entries = new HashMap();
+              entries = new HashMap<>();
             }
             entries.put(key.substring(messageIdentifier.length()), resourceBundle.getString(key));
           }
         }
         if (entries == null) {
-          throw new MessageNotFoundException(MessageFormat.format(I18nUtils.INTERNAL_MESSAGES.getString("noMessageEntriesFound"), new String[] { id }));
+          throw new MessageNotFoundException(MessageFormat.format(I18nUtils.INTERNAL_MESSAGES.getString("noMessageEntriesFound"),
+                                                                  (Object[])new String[] { id }));
         }
         return entries;
     }

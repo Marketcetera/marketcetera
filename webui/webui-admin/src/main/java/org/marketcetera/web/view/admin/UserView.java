@@ -1,5 +1,7 @@
 package org.marketcetera.web.view.admin;
 
+import java.util.Properties;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.admin.User;
@@ -9,8 +11,6 @@ import org.marketcetera.web.view.PagedDataContainer;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Resource;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Layout;
@@ -32,6 +32,14 @@ import com.vaadin.ui.PasswordField;
 public class UserView
         extends AbstractAdminView<User>
 {
+    /**
+     * Create a new UserView instance.
+     *
+     * @param inViewProperties
+     */
+    UserView(Properties inViewProperties)
+    {
+    }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.ContentView#getViewName()
      */
@@ -39,30 +47,6 @@ public class UserView
     public String getViewName()
     {
         return NAME;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
-     */
-    @Override
-    public String getMenuCaption()
-    {
-        return "Users";
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getWeight()
-     */
-    @Override
-    public int getWeight()
-    {
-        return 100;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuIcon()
-     */
-    @Override
-    public Resource getMenuIcon()
-    {
-        return FontAwesome.USER;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractAdminView#getViewSubjectName()

@@ -1,5 +1,7 @@
 package org.marketcetera.web.marketdata.service;
 
+import java.util.Properties;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dussan.vaadin.dcharts.DCharts;
@@ -16,24 +18,15 @@ import org.marketcetera.event.HasInstrument;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.ContentView;
-import org.marketcetera.web.view.MenuContent;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Resource;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -48,11 +41,18 @@ import com.vaadin.ui.VerticalLayout;
  * @version $Id$
  * @since $Release$
  */
-@SpringComponent
 public class MarketDataView
         extends CssLayout
-        implements ContentView,MenuContent
+        implements ContentView
 {
+    /**
+     * Create a new MarketDataView instance.
+     *
+     * @param inViewProperties
+     */
+    MarketDataView(Properties inViewProperties)
+    {
+    }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
      */
@@ -63,10 +63,15 @@ public class MarketDataView
         setSizeFull();
         CssLayout symbolLayout = new CssLayout();
         VerticalLayout dataLayout = new VerticalLayout();
+        VerticalLayout chartLayout = new VerticalLayout();
         HorizontalLayout dataChartLayout = new HorizontalLayout();
-        symbolLayout.addStyleName("layout-with-border");
-        dataLayout.addStyleName("layout-with-border");
-        dataChartLayout.addStyleName("layout-with-border");
+        dataLayout.addStyleName("layout-with-border2");
+        dataLayout.setWidthUndefined();
+        dataLayout.setHeightUndefined();
+        chartLayout.addStyleName("layout-with-border2");
+        chartLayout.setWidthUndefined();
+        chartLayout.setHeightUndefined();
+        dataChartLayout.addStyleName("layout-with-border3");
         symbolButton = new Button();
         symbolButton.setEnabled(false);
         symbol = new TextField();
@@ -88,18 +93,25 @@ public class MarketDataView
                                    instrumentLabel);
         lastText = new TextField();
         lastText.setCaption("Last");
+        lastText.setWidth("100%");
         bidText = new TextField();
         bidText.setCaption("Bid");
+        bidText.setWidth("100%");
         offerText = new TextField();
         offerText.setCaption("Offer");
+        offerText.setWidth("100%");
         openText = new TextField();
         openText.setCaption("Open");
+        openText.setWidth("100%");
         highText = new TextField();
         highText.setCaption("High");
+        highText.setWidth("100%");
         lowText = new TextField();
         lowText.setCaption("Low");
+        lowText.setWidth("100%");
         closeText = new TextField();
         closeText.setCaption("Close");
+        closeText.setWidth("100%");
         dataLayout.addComponents(lastText,
                                  bidText,
                                  offerText,
@@ -107,8 +119,6 @@ public class MarketDataView
                                  highText,
                                  lowText,
                                  closeText);
-        final CssLayout chartLayout = new CssLayout();
-        chartLayout.addStyleName("layout-with-border");
         DataSeries dataSeries = new DataSeries().add(1, 5, 8, 2, 3);
         SeriesDefaults seriesDefaults = new SeriesDefaults().setRenderer(SeriesRenderers.BAR);
         Axes axes = new Axes().addAxis(
@@ -128,30 +138,15 @@ public class MarketDataView
                 .setDataSeries(dataSeries)
                 .setOptions(options)
                 .show();
-        chart.setWidth("100%");
-        chartLayout.setWidth("100%");
+        chart.setSizeFull();
         chartLayout.addComponent(chart);
-        chartLayout.setResponsive(true);
-        chart.setResponsive(true);
-        dataChartLayout.setWidth("100%");
-        dataChartLayout.setResponsive(true);
         dataChartLayout.addComponents(dataLayout,
                                       chartLayout);
+        dataChartLayout.setSizeFull();
         addComponents(symbolLayout,
                       dataChartLayout);
         setWidth("100%");
-        setResponsive(true);
     }
-    private TextField lastText;
-    private TextField bidText;
-    private TextField offerText;
-    private TextField openText;
-    private TextField highText;
-    private TextField lowText;
-    private TextField closeText;
-    private Label instrumentLabel;
-    private Button symbolButton;
-    private TextField symbol;
     private synchronized void requestMarketData()
     {
         MarketDataClientService marketDataClientService = MarketDataClientService.getInstance();
@@ -217,76 +212,45 @@ public class MarketDataView
         return NAME;
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
-     */
-    @Override
-    public String getMenuCaption()
-    {
-        return "Market Data";
-    }
-    /* (non-Javadoc)
      * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
      */
     @Override
     public void enter(ViewChangeEvent inEvent)
     {
     }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getWeight()
-     */
-    @Override
-    public int getWeight()
-    {
-        return 500;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getCategory()
-     */
-    @Override
-    public MenuContent getCategory()
-    {
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuIcon()
-     */
-    @Override
-    public Resource getMenuIcon()
-    {
-        return FontAwesome.AREA_CHART;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getCommand()
-     */
-    @Override
-    public Command getCommand()
-    {
-        return new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuItem inSelectedItem)
-            {
-                webMessageService.post(new NewWindowEvent() {
-                    @Override
-                    public String getWindowTitle()
-                    {
-                        return getMenuCaption();
-                    }
-                    @Override
-                    public Component getComponent()
-                    {
-                        return MarketDataView.this;
-                    }
-                });
-            }
-            private static final long serialVersionUID = 49365592058433460L;
-        };
-    }
     private String marketDataRequestToken;
+    /**
+     * Get the webMessageService value.
+     *
+     * @return a <code>WebMessageService</code> value
+     */
+    WebMessageService getWebMessageService()
+    {
+        return webMessageService;
+    }
+    /**
+     * Sets the webMessageService value.
+     *
+     * @param inWebMessageService a <code>WebMessageService</code> value
+     */
+    void setWebMessageService(WebMessageService inWebMessageService)
+    {
+        webMessageService = inWebMessageService;
+    }
     /**
      * provides access to web message services
      */
-    @Autowired
     private WebMessageService webMessageService;
+    private TextField lastText;
+    private TextField bidText;
+    private TextField offerText;
+    private TextField openText;
+    private TextField highText;
+    private TextField lowText;
+    private TextField closeText;
+    private Label instrumentLabel;
+    private Button symbolButton;
+    private TextField symbol;
     /**
      * global name of this view
      */

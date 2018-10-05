@@ -1,9 +1,20 @@
 package org.apache.commons.i18n;
 
-import javax.sql.DataSource;
-import java.util.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.sql.DataSource;
 
 /**
  * The <code>JdbcMessageProvider</code> provides messages stored in a database (or other data source)
@@ -18,7 +29,7 @@ public class JdbcMessageProvider implements MessageProvider {
      * This Map has locale or language as key, and a Map with the different
      * messages as value.
      */
-    private final Map locales = new HashMap();
+    private final Map<Locale,Map<String,Map<String,String>>> locales = new HashMap<>();
 
     private String idColumn;
 
@@ -76,15 +87,15 @@ public class JdbcMessageProvider implements MessageProvider {
      * jdbc.sql.locale.column            = locale
      * jdbc.sql.key.column               = msgKey
      */
-    public JdbcMessageProvider(Map properties) throws ClassNotFoundException, SQLException {
-        String driver = (String)properties.get("jdbc.connect.driver");
-        String url    = (String)properties.get("jdbc.connect.url");
-        String user = (String)properties.get("jdbc.connect.login");
-        String pass = (String)properties.get("jdbc.connect.password");
+    public JdbcMessageProvider(Properties properties) throws ClassNotFoundException, SQLException {
+        String driver = properties.getProperty("jdbc.connect.driver");
+        String url    = properties.getProperty("jdbc.connect.url");
+        String user = properties.getProperty("jdbc.connect.login");
+        String pass = properties.getProperty("jdbc.connect.password");
 
-        String table = (String)properties.get("jdbc.sql.table");
-        this.idColumn = (String)properties.get("jdbc.sql.key.column");
-        this.languageColumn = (String)properties.get("jdbc.sql.locale.column");
+        String table = properties.getProperty("jdbc.sql.table");
+        this.idColumn = properties.getProperty("jdbc.sql.key.column");
+        this.languageColumn = properties.getProperty("jdbc.sql.locale.column");
 
         Class.forName(driver);
         Connection conn = null;
@@ -112,15 +123,15 @@ public class JdbcMessageProvider implements MessageProvider {
             while(rs.next()) {
                 String id = rs.getString(idColumn);
                 Locale locale = getLocale(rs);
-                Map entries = new HashMap();
+                Map<String,String> entries = new HashMap<>();
                 for(int i = 0; i < valueColumns.length; i++) {
                     String entry = rs.getString(valueColumns[i]);
                     if(entry != null)
                         entries.put(valueColumns[i], entry);
                 }
-                Map localeMap = (Map)locales.get(locale);
+                Map<String,Map<String,String>> localeMap = locales.get(locale);
                 if(localeMap == null) { // If first record for this Locale
-                    localeMap = new HashMap();
+                    localeMap = new HashMap<>();
                     locales.put(locale, localeMap);
                 }
                 localeMap.put(id, entries);
@@ -142,7 +153,7 @@ public class JdbcMessageProvider implements MessageProvider {
      * @throws SQLException If an SQL error occurs.
      */
     protected String[] getValueColumns(ResultSet rs) throws SQLException {
-        List output = new LinkedList();
+        List<String> output = new LinkedList<>();
         ResultSetMetaData metadata = rs.getMetaData();
         int count = metadata.getColumnCount();
         for(int i = 0; i < count; i++) {
@@ -150,7 +161,7 @@ public class JdbcMessageProvider implements MessageProvider {
             if(! columnName.equals(idColumn) && ! columnName.equals(languageColumn) )
                 output.add(columnName);
         }
-        return (String[])output.toArray(new String[0]);
+        return output.toArray(new String[0]);
     }
 
     /**
@@ -170,27 +181,27 @@ public class JdbcMessageProvider implements MessageProvider {
 
     public String getText(String id, String entry, Locale locale) {
         // TODO: Add Logging
-        Map entries = findEntries(id, locale);
+        Map<String,String> entries = findEntries(id, locale);
         if(entries != null) {
             // TODO: Consider whether we need to recurse up if entries does not contain requested entry
-            return (String)entries.get(entry);
+            return entries.get(entry);
         }
         else
             return null;
     }
 
-    public Map getEntries(String id, Locale locale) {
-        Map entries = findEntries(id,locale);
+    public Map<String,String> getEntries(String id, Locale locale) {
+        Map<String,String> entries = findEntries(id,locale);
         if(entries == null) { // If not found by using specified or default locale
             throw new MessageNotFoundException(MessageFormat.format(
                     I18nUtils.INTERNAL_MESSAGES.getString(I18nUtils.NO_MESSAGE_ENTRIES_FOUND),
-                    new String[] { id }));
+                    (Object[])new String[] { id }));
         }
         return entries;
     }
 
-    private Map findEntries(String id, Locale locale) {
-        Map entries = findEntriesRecursively(id,locale);
+    private Map<String,String> findEntries(String id, Locale locale) {
+        Map<String,String> entries = findEntriesRecursively(id,locale);
         if(entries == null) { // If not found by using specified locale, try to use default
             return findEntriesRecursively(id,Locale.getDefault());
         }
@@ -203,10 +214,10 @@ public class JdbcMessageProvider implements MessageProvider {
      * language, country -> language) until entry is found. If entry not found for topmost
      * Locale (language only), null is returned.
      */
-    private Map findEntriesRecursively(String id, Locale locale) {
-        Map localeIds = (Map)locales.get(locale);
+    private Map<String,String> findEntriesRecursively(String id, Locale locale) {
+        Map<String,Map<String,String>> localeIds = locales.get(locale);
         if(localeIds != null) {
-            Map entries = (Map)localeIds.get(id);
+            Map<String,String> entries = localeIds.get(id);
             if(entries != null)
               return entries;
         }
@@ -216,5 +227,4 @@ public class JdbcMessageProvider implements MessageProvider {
         else
             return findEntriesRecursively(id, parentLocale); // Recursive call
     }
-
 }

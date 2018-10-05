@@ -6,12 +6,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.persist.SummaryNDEntityBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.AbstractGridView;
-import org.marketcetera.web.view.MenuContent;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validatable;
@@ -25,9 +22,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
@@ -46,30 +40,24 @@ import com.vaadin.ui.Window;
  */
 public abstract class AbstractAdminView<Clazz extends SummaryNDEntityBase>
         extends AbstractGridView<Clazz>
-        implements MenuContent
 {
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getCategory()
+    /**
+     * Get the webMessageService value.
+     *
+     * @return a <code>WebMessageService</code> value
      */
-    @Override
-    public MenuContent getCategory()
+    WebMessageService getWebMessageService()
     {
-        return AdminContentCategory.instance;
+        return webMessageService;
     }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getCommand()
+    /**
+     * Sets the webMessageService value.
+     *
+     * @param inWebMessageService a <code>WebMessageService</code> value
      */
-    @Override
-    public Command getCommand()
+    void setWebMessageService(WebMessageService inWebMessageService)
     {
-        return new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuItem inSelectedItem)
-            {
-                webMessageService.post(new AdminViewMenuEvent());
-            }
-            private static final long serialVersionUID = -7269505766947455017L;
-        };
+        webMessageService = inWebMessageService;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractAdminView#addActions(com.vaadin.ui.ComboBox)
@@ -249,36 +237,8 @@ public abstract class AbstractAdminView<Clazz extends SummaryNDEntityBase>
         return VaadinSession.getCurrent().getAttribute(AdminClientService.class);
     }
     /**
-     * Indicates that an admin type has been selected.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    private class AdminViewMenuEvent
-            implements NewWindowEvent
-    {
-        /* (non-Javadoc)
-         * @see org.marketcetera.web.events.MenuEvent#getWindowTitle()
-         */
-        @Override
-        public String getWindowTitle()
-        {
-            return getViewName();
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.web.events.MenuEvent#getComponent()
-         */
-        @Override
-        public Component getComponent()
-        {
-            return AbstractAdminView.this;
-        }
-    }
-    /**
      * provides access to web message services
      */
-    @Autowired
     protected WebMessageService webMessageService;
     /**
      * edit action label

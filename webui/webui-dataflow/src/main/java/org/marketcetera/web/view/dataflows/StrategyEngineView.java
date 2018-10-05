@@ -3,6 +3,7 @@ package org.marketcetera.web.view.dataflows;
 import java.net.Socket;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Properties;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -12,17 +13,14 @@ import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.dataflow.DataFlowClientService;
 import org.marketcetera.web.service.dataflow.DataFlowClientServiceInstance;
 import org.marketcetera.web.view.AbstractGridView;
-import org.marketcetera.web.view.MenuContent;
+import org.marketcetera.web.view.ContentView;
+import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.PagedDataContainer;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validatable;
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -30,9 +28,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
@@ -50,69 +45,9 @@ import com.vaadin.ui.themes.ValoTheme;
  * @version $Id$
  * @since $Release$
  */
-@SpringComponent
 public class StrategyEngineView
         extends AbstractGridView<DecoratedStrategyEngine>
-        implements MenuContent
 {
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
-     */
-    @Override
-    public String getMenuCaption()
-    {
-        return "Data Flows";
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getWeight()
-     */
-    @Override
-    public int getWeight()
-    {
-        return 400;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getCategory()
-     */
-    @Override
-    public MenuContent getCategory()
-    {
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuIcon()
-     */
-    @Override
-    public Resource getMenuIcon()
-    {
-        return FontAwesome.COGS;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getCommand()
-     */
-    @Override
-    public Command getCommand()
-    {
-        return new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuItem inSelectedItem)
-            {
-                webMessageService.post(new NewWindowEvent() {
-                    @Override
-                    public String getWindowTitle()
-                    {
-                        return getMenuCaption();
-                    }
-                    @Override
-                    public Component getComponent()
-                    {
-                        return StrategyEngineView.this;
-                    }
-                });
-            }
-            private static final long serialVersionUID = 49365592058433460L;
-        };
-    }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.ContentView#getViewName()
      */
@@ -146,6 +81,14 @@ public class StrategyEngineView
                                            ACTION_DELETE);
             }
         });
+    }
+    /**
+     * Create a new StrategyEngineView instance.
+     *
+     * @param inViewProperties
+     */
+    StrategyEngineView(Properties inViewProperties)
+    {
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#onActionSelect(com.vaadin.data.Property.ValueChangeEvent)
@@ -196,14 +139,20 @@ public class StrategyEngineView
                             return moduleView.getViewSubjectName();
                         }
                         @Override
-                        public Component getComponent()
-                        {
-                            return moduleView;
-                        }
-                        @Override
                         public String toString()
                         {
                             return "NewModuleViewEvent: " + selectedItem.getName();
+                        }
+                        @Override
+                        public ContentViewFactory getViewFactory()
+                        {
+                            return new ContentViewFactory() {
+                                @Override
+                                public ContentView create(Properties inViewProperties)
+                                {
+                                    return moduleView;
+                                }
+                            };
                         }
                     });
                     break;
@@ -402,9 +351,26 @@ public class StrategyEngineView
         UI.getCurrent().addWindow(formWindow);
     }
     /**
+     * Get the webMessageService value.
+     *
+     * @return a <code>WebMessageService</code> value
+     */
+    WebMessageService getWebMessageService()
+    {
+        return webMessageService;
+    }
+    /**
+     * Sets the webMessageService value.
+     *
+     * @param inWebMessageService a <code>WebMessageService</code> value
+     */
+    void setWebMessageService(WebMessageService inWebMessageService)
+    {
+        webMessageService = inWebMessageService;
+    }
+    /**
      * provides access to web message services
      */
-    @Autowired
     protected WebMessageService webMessageService;
     /**
      * action examine data flows

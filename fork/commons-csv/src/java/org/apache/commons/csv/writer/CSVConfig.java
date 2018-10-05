@@ -34,7 +34,7 @@ public class CSVConfig {
     /** specifies if it is a fixed width csv file **/
     private boolean fixedWidth;
     /** list of fields **/
-    private List fields;
+    private List<CSVField> fields;
 
     /** Do no do any filling **/
     public static final int FILLNONE = 0;
@@ -84,7 +84,7 @@ public class CSVConfig {
     
     public void addField(CSVField field) {
         if (fields == null) {
-            fields = new ArrayList();
+            fields = new ArrayList<>();
         }
         fields.add(field);
     }
@@ -98,18 +98,18 @@ public class CSVConfig {
         if (csvFields == null) {
             return;
         }
-        fields = new ArrayList(Arrays.asList(csvFields));
+        fields = new ArrayList<>(Arrays.asList(csvFields));
     }
     
     /**
      * Set the fields that should be used by the writer
      * @param csvField a collection with fields. If null it will do nothing
      */
-    public void setFields(Collection csvField) {
+    public void setFields(Collection<CSVField> csvField) {
         if (csvField == null) {
             return;
         }
-        fields = new ArrayList(csvField);
+        fields = new ArrayList<>(csvField);
     }
 
     /**

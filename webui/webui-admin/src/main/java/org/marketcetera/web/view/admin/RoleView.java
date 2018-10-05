@@ -1,6 +1,7 @@
 package org.marketcetera.web.view.admin;
 
 import java.util.Collection;
+import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -14,8 +15,6 @@ import org.marketcetera.admin.impl.SimpleRole;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.PagedDataContainer;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Resource;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.TwinColSelect;
@@ -29,10 +28,17 @@ import com.vaadin.ui.TwinColSelect;
  * @version $Id$
  * @since $Release$
  */
-@org.springframework.stereotype.Component
 public class RoleView
         extends AbstractAdminView<Role>
 {
+    /**
+     * Create a new RoleView instance.
+     *
+     * @param inViewProperties
+     */
+    RoleView(Properties inViewProperties)
+    {
+    }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.ContentView#getViewName()
      */
@@ -40,30 +46,6 @@ public class RoleView
     public String getViewName()
     {
         return NAME;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
-     */
-    @Override
-    public String getMenuCaption()
-    {
-        return "Roles";
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getWeight()
-     */
-    @Override
-    public int getWeight()
-    {
-        return 200;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.MenuContent#getMenuIcon()
-     */
-    @Override
-    public Resource getMenuIcon()
-    {
-        return FontAwesome.GROUP;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractAdminView#getViewSubjectName()
