@@ -166,13 +166,14 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
      * A task thats run in a separate thread to emit data.
      */
     static class EmitTask implements Callable<Integer> {
+        @SuppressWarnings("unchecked")
         public Integer call() throws Exception {
             int i = 0;
             try {
                 //Loop a maximum of 10 times
                 while(i < 10) {
                     if (mData instanceof Map) {
-                        Map m = (Map) mData;
+                        Map<String,Object> m = (Map<String,Object>)mData;
                         Object obj = m.get("value");
                         Object error = m.get("error");
                         int times = (Integer)m.get("times");
@@ -232,7 +233,6 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
     private ExecutorService mService;
     private EmitTask mLastTask;
     private final Set<DataFlowID> mFlowIDs = new HashSet<DataFlowID>();
-    private final Hashtable<RequestID,Future<Integer>> mRequests =
-            new Hashtable<RequestID, Future<Integer>>();
+    private final Hashtable<RequestID,Future<Integer>> mRequests = new Hashtable<> ();
     private boolean mThrowExceptionOnCancel = false;
 }
