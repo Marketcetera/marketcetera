@@ -158,11 +158,6 @@
       <artifactId>spring-boot-starter-log4j2</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <!-- dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jetty</artifactId>
-      <scope>runtime</scope>
-    </dependency-->
     <!-- other runtime -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -219,6 +214,15 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-maven-plugin</artifactId>
+        <configuration>
+          <url>jdbc:postgresql://127.0.0.1/metc</url>
+          <user>metc</user>
+          <password>pw4metc</password>
+        </configuration>
       </plugin>
     </plugins>
   </build>
