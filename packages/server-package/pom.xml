@@ -191,6 +191,10 @@
             -Dlogging.config=src/test/cmd_exec/conf/log4j2-spring.xml
             -Dorg.marketcetera.appDir=src/test/cmd_exec
             -Dspring.config.location=src/test/cmd_exec/conf/application.properties
+            -Dmetc.jdbc.url=${metc.jdbc.url}
+            -Dmetc.jdbc.user=${metc.jdbc.user}
+            -Dmetc.jdbc.password=${metc.jdbc.password}
+            -Dmetc.jdbc.driver=${metc.jdbc.driver}
           </jvmArguments>
         </configuration>
       </plugin>
@@ -214,15 +218,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.flywaydb</groupId>
-        <artifactId>flyway-maven-plugin</artifactId>
-        <configuration>
-          <url>jdbc:postgresql://127.0.0.1/metc</url>
-          <user>metc</user>
-          <password>pw4metc</password>
-        </configuration>
       </plugin>
     </plugins>
   </build>

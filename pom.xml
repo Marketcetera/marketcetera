@@ -857,22 +857,6 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.flywaydb</groupId>
-          <artifactId>flyway-maven-plugin</artifactId>
-          <configuration>
-            <url>jdbc:postgresql://127.0.0.1/metc</url>
-            <user>metc</user>
-	    <password>pw4metc</password>
-          </configuration>
-          <!--dependencies>
-            <dependency>
-              <groupId>com.h2database</groupId>
-              <artifactId>h2</artifactId>
-              <version>1.4.191</version>
-            </dependency>
-          </dependencies-->
-        </plugin>
-        <plugin>
           <groupId>com.google.code.maven-replacer-plugin</groupId>
           <artifactId>maven-replacer-plugin</artifactId>
           <version>1.4.1</version>

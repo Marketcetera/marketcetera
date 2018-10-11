@@ -44,11 +44,6 @@
       <artifactId>simple-cluster</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-core</artifactId>
-      <!--version>5.2.0</version-->
-    </dependency>
     <!-- spring test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
