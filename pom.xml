@@ -1028,6 +1028,12 @@
             <argLine>${mvn.test.options}</argLine>
             <systemPropertyVariables>
               <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
+              <metc.jdbc.user>${metc.jdbc.user}</metc.jdbc.user>
+              <metc.jdbc.password>${metc.jdbc.password}</metc.jdbc.password>
+              <metc.jdbc.driver>${metc.jdbc.driver}</metc.jdbc.driver>
+              <metc.jdbc.url>${metc.jdbc.url}</metc.jdbc.url>
+              <metc.jdbc.testquery>${metc.jdbc.testquery}</metc.jdbc.testquery>
+              <metc.hibernate.dialect>${metc.hibernate.dialect}</metc.hibernate.dialect>
             </systemPropertyVariables>
           </configuration>
         </plugin>
