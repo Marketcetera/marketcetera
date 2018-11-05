@@ -727,7 +727,10 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>9.3-1101-jdbc41</version>
+	<!-- use this version for postgres 9 or earlier -->
+        <!--version>9.3-1101-jdbc41</version-->
+	<!-- use this version from postgres 10 -->
+	<version>42.2.5.jre6</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
