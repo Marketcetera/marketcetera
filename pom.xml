@@ -732,7 +732,10 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>9.3-1101-jdbc41</version>
+	<!-- use this version for postgres 9 or earlier -->
+        <!--version>9.3-1101-jdbc41</version-->
+	<!-- use this version from postgres 10 -->
+	<version>42.2.5.jre6</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -1264,7 +1267,7 @@
     </repository>
     <repository>
       <id>internal</id>
-      <url>http://repo.marketcetera.org/maven</url>
+      <url>https://repo.marketcetera.org/maven</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -1280,7 +1283,7 @@
     </pluginRepository>
     <pluginRepository>
       <id>internal</id>
-      <url>http://repo.marketcetera.org/maven</url>
+      <url>https://repo.marketcetera.org/maven</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
