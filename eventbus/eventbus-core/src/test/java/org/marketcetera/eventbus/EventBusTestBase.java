@@ -93,7 +93,6 @@ public abstract class EventBusTestBase<ServiceClazz extends EventBusService>
         EventBusTestEvent testEvent1 = new EventBusTestEvent();
         eventBusService.post(testEvent1);
         verifySameTestEvent(testEvent1);
-        eventBusService.unregister(this);
     }
     /**
      * Receive test event values.
