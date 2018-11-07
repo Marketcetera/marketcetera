@@ -145,6 +145,16 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>eventbus-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>eventbus-core</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>cep-esper</artifactId>
         <version>3.1.0</version>
         <exclusions>
@@ -395,12 +405,12 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${mvn.hibernate.version}</version>
-	<exclusions>
+        <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
           </exclusion>
-	</exclusions>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -572,6 +582,12 @@
       </dependency>
       <!-- Runtime. -->
       <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>eventbus-guava</artifactId>
+        <version>3.1.0</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
         <groupId>com.hazelcast</groupId>
         <artifactId>hazelcast-hibernate5</artifactId>
         <version>1.2.1</version>
@@ -722,20 +738,20 @@
         <artifactId>hibernate-entitymanager</artifactId>
         <version>${mvn.hibernate.version}</version>
         <scope>runtime</scope>
-	<exclusions>
+        <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
           </exclusion>
-	</exclusions>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-	<!-- use this version for postgres 9 or earlier -->
+        <!-- use this version for postgres 9 or earlier -->
         <!--version>9.3-1101-jdbc41</version-->
-	<!-- use this version from postgres 10 -->
-	<version>42.2.5.jre6</version>
+        <!-- use this version from postgres 10 -->
+        <version>42.2.5.jre6</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -1198,6 +1214,7 @@
   <modules>
     <module>client</module>
     <module>core</module>
+    <module>eventbus</module>
     <module>fork</module>
     <module>modules</module>
     <module>orderloader</module>
