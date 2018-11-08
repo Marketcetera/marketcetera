@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Main CLI configuration.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id: cli.xml 17266 2017-04-28 14:58:00Z colin $
+  - $License$
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+  <import resource="../dare/db.xml"/>
+  <context:component-scan base-package="org.marketcetera.core,com.marketcetera.ors"/>
+  <jpa:repositories base-package="org.marketcetera.core,com.marketcetera.ors"/>
+  <tx:annotation-driven/>
+  <bean id="userService" class="com.marketcetera.ors.dao.impl.UserServiceImpl"/>
+  <bean id="cliApp" class="com.marketcetera.ors.security.ORSAdminCLI" init-method="start" destroy-method="stop"/>
+</beans>

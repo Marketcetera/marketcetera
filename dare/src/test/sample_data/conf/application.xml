@@ -1,0 +1,893 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+                           http://www.hazelcast.com/schema/spring http://www.hazelcast.com/schema/spring/hazelcast-spring.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+  <util:list id="propertiesFiles">
+    <value>file:target/local.properties</value>
+  </util:list>
+  <bean class= "org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+    <property name="locations" ref="propertiesFiles"/>
+  </bean>
+  <context:component-scan base-package="org.marketcetera,com.marketcetera"/>
+  <context:annotation-config/> 
+  <jpa:repositories base-package="org.marketcetera,com.marketcetera"/>
+  <tx:annotation-driven proxy-target-class="true"/>
+  <!-- symbol resolvers: add additional resolvers as necessary in precedence order -->
+  <bean id="symbolResolverService" class="org.marketcetera.symbol.IterativeSymbolResolver">
+    <property name="symbolResolvers">
+      <list>
+        <bean class="org.marketcetera.symbol.PatternSymbolResolver"/>
+      </list>
+    </property>
+  </bean>
+  <!-- FIX settings -->
+  <bean id="messageFactory" class="quickfix.DefaultMessageFactory"/>
+  <bean id="hibernateMessageStoreConfiguration" class="com.marketcetera.fix.store.HibernateMessageStoreConfiguration"/>
+  <bean id="fixSettingsProviderFactory" class="org.marketcetera.core.fix.FixSettingsProviderFactoryImpl" depends-on="hibernateMessageStoreConfiguration">
+    <property name="messageStoreFactoryClass" value="com.marketcetera.fix.store.HibernateMessageStoreFactory"/>
+    <property name="logFactoryClass" value="com.marketcetera.quickfix.RecordingLogFactory"/>
+    <property name="messageFactory" ref="messageFactory"/>
+    <property name="acceptorHost" value="127.0.0.1"/>
+    <property name="acceptorPort" value="9007"/>
+  </bean>
+  <!-- executors -->
+  <!-- services -->
+  <bean id="sessionConnectorFactory" class="com.marketcetera.ors.brokers.impl.ClusteredSessionConnectorFactory"/>
+  <bean id="matpBrokerService" class="com.marketcetera.ors.brokers.impl.BrokerServiceImpl"/>
+  <bean id="fixSessionService" class="com.marketcetera.fix.SessionServiceImpl"/>
+  <bean id="orderStatusService" class="com.marketcetera.ors.dao.impl.OrderStatusServiceImpl"/>
+  <bean id="userAttributeService" class="com.marketcetera.admin.service.impl.UserAttributeServiceImpl"/>
+  <bean id="authorizationService" class="com.marketcetera.admin.service.impl.AuthorizationServiceImpl"/>
+  <bean id="systemInfoService" class="com.marketcetera.ors.dao.impl.SystemInfoServiceImpl"/>
+  <!-- authorization -->
+  <!-- admin -->
+  <bean id="addSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="AddSessionAction"/>
+    <property name="description" value="Access to Add Session action"/>
+  </bean>
+  <bean id="deleteSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="DeleteSessionAction"/>
+    <property name="description" value="Access to Delete Session action"/>
+  </bean>
+  <bean id="disableSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="DisableSessionAction"/>
+    <property name="description" value="Access to disable session action"/>
+  </bean>
+  <bean id="editSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="EditSessionAction"/>
+    <property name="description" value="Access to edit session action"/>
+  </bean>
+  <bean id="enableSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="EnableSessionAction"/>
+    <property name="description" value="Access to enable session action"/>
+  </bean>
+  <bean id="startSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="StartSessionAction"/>
+    <property name="description" value="Access to start session action"/>
+  </bean>
+  <bean id="stopSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="StopSessionAction"/>
+    <property name="description" value="Access to stop session action"/>
+  </bean>
+  <bean id="viewSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ViewSessionAction"/>
+    <property name="description" value="Access to view session action"/>
+  </bean>
+  <bean id="createUserPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="CreateUserAction"/>
+    <property name="description" value="Access to create user action"/>
+  </bean>
+  <bean id="readUserPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ReadUserAction"/>
+    <property name="description" value="Access to read user action"/>
+  </bean>
+  <bean id="updateUserPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="UpdateUserAction"/>
+    <property name="description" value="Access to update user action"/>
+  </bean>
+  <bean id="deleteUserPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="DeleteUserAction"/>
+    <property name="description" value="Access to delete user action"/>
+  </bean>
+  <bean id="changeUserPasswordPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ChangeUserPasswordAction"/>
+    <property name="description" value="Access to change user password action"/>
+  </bean>
+  <bean id="readUserPermissionsPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ReadUserPermisionsAction"/>
+    <property name="description" value="Access to read user permissions action"/>
+  </bean>
+  <bean id="createPermissionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="CreatePermissionAction"/>
+    <property name="description" value="Access to create permission action"/>
+  </bean>
+  <bean id="readPermissionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ReadPermissionAction"/>
+    <property name="description" value="Access to read permission action"/>
+  </bean>
+  <bean id="updatePermissionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="UpdatePermissionAction"/>
+    <property name="description" value="Access to update permission action"/>
+  </bean>
+  <bean id="deletePermissionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="DeletePermissionAction"/>
+    <property name="description" value="Access to delete permission action"/>
+  </bean>
+  <bean id="createRolePermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="CreateRoleAction"/>
+    <property name="description" value="Access to create role action"/>
+  </bean>
+  <bean id="readRolePermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ReadRoleAction"/>
+    <property name="description" value="Access to read role action"/>
+  </bean>
+  <bean id="updateRolePermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="UpdateRoleAction"/>
+    <property name="description" value="Access to update role action"/>
+  </bean>
+  <bean id="deleteRolePermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="DeleteRoleAction"/>
+    <property name="description" value="Access to delete role action"/>
+  </bean>
+  <!-- trader -->
+  <bean id="viewBrokerStatus" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ViewBrokerStatusAction"/>
+    <property name="description" value="Access to view broker status action"/>
+  </bean>
+  <bean id="viewOpenOrdersPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ViewOpenOrdersAction"/>
+    <property name="description" value="Access to view open orders action"/>
+  </bean>
+  <bean id="viewReportPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ViewReportAction"/>
+    <property name="description" value="Access to view reports action"/>
+  </bean>
+  <bean id="viewPositionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ViewPositionAction"/>
+    <property name="description" value="Access to view positions action"/>
+  </bean>
+  <bean id="sendOrderPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="SendOrderAction"/>
+    <property name="description" value="Access to send new orders action"/>
+  </bean>
+  <bean id="viewUserDataPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ViewUserDataAction"/>
+    <property name="description" value="Access to view user data action"/>
+  </bean>
+  <bean id="writeUserDataPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="WriteUserDataAction"/>
+    <property name="description" value="Access to write user data action"/>
+  </bean>
+  <!-- trader admin -->
+  <bean id="addReportPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="AddReportAction"/>
+    <property name="description" value="Access to manually add new reports action"/>
+  </bean>
+  <bean id="deleteReportPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="DeleteReportAction"/>
+    <property name="description" value="Access to manually delete reports action"/>
+  </bean>
+  <!-- create roles -->
+  <bean id="adminRole" class="com.marketcetera.admin.RoleDescriptor">
+    <property name="name" value="Admin"/>
+    <property name="description" value="Admin role"/>
+    <property name="permissionNames">
+      <set>
+        <value>AddSessionAction</value>
+        <value>DeleteSessionAction</value>
+        <value>DisableSessionAction</value>
+        <value>EditSessionAction</value>
+        <value>EnableSessionAction</value>
+        <value>StartSessionAction</value>
+        <value>StopSessionAction</value>
+        <value>ViewSessionAction</value>
+        <value>CreateUserAction</value>
+        <value>ReadUserAction</value>
+        <value>UpdateUserAction</value>
+        <value>DeleteUserAction</value>
+        <value>ChangeUserPasswordAction</value>
+        <value>ReadUserPermisionsAction</value>
+        <value>CreatePermissionAction</value>
+        <value>ReadPermissionAction</value>
+        <value>UpdatePermissionAction</value>
+        <value>DeletePermissionAction</value>
+        <value>CreateRoleAction</value>
+        <value>ReadRoleAction</value>
+        <value>UpdateRoleAction</value>
+        <value>DeleteRoleAction</value>
+        <value>ViewBrokerStatusAction</value>
+        <value>ViewUserDataAction</value>
+        <value>WriteUserDataAction</value>
+      </set>
+    </property>
+    <property name="usernames">
+      <set>
+        <value>admin</value>
+        <value>test</value>
+      </set>
+    </property>
+  </bean>
+  <bean id="traderAdminRole" class="com.marketcetera.admin.RoleDescriptor">
+    <property name="name" value="TraderAdmin"/>
+    <property name="description" value="Trader Admin role"/>
+    <property name="permissionNames">
+      <set>
+        <value>ViewBrokerStatusAction</value>
+        <value>ViewOpenOrdersAction</value>
+        <value>ViewReportAction</value>
+        <value>ViewPositionAction</value>
+        <value>SendOrderAction</value>
+        <value>ViewUserDataAction</value>
+        <value>WriteUserDataAction</value>
+        <value>AddReportAction</value>
+        <value>DeleteReportAction</value>
+      </set>
+    </property>
+    <property name="usernames">
+      <set>
+        <value>admin</value>
+        <value>test</value>
+      </set>
+    </property>
+  </bean>
+  <bean id="traderRole" class="com.marketcetera.admin.RoleDescriptor">
+    <property name="name" value="Trader"/>
+    <property name="description" value="Trader role"/>
+    <property name="permissionNames">
+      <set>
+        <value>ViewBrokerStatusAction</value>
+        <value>ViewOpenOrdersAction</value>
+        <value>ViewReportAction</value>
+        <value>ViewPositionAction</value>
+        <value>SendOrderAction</value>
+        <value>ViewUserDataAction</value>
+        <value>WriteUserDataAction</value>
+      </set>
+    </property>
+    <property name="usernames">
+      <set>
+        <value>trader</value>
+        <value>test</value>
+      </set>
+    </property>
+  </bean>
+  <bean id="traderSupervisorRole" class="com.marketcetera.admin.SupervisorPermissionDescriptor">
+    <property name="name" value="TraderSupervisor"/>
+    <property name="description" value="Trader supervisor role"/>
+    <property name="supervisorUsername" value="traderAdmin"/>
+    <property name="permissionNames">
+      <set>
+        <value>ViewBrokerStatusAction</value>
+        <value>ViewOpenOrdersAction</value>
+        <value>ViewReportAction</value>
+        <value>ViewPositionAction</value>
+        <value>ViewUserDataAction</value>
+      </set>
+    </property>
+    <property name="subjectUsernames">
+      <set>
+        <value>trader</value>
+      </set>
+    </property>
+  </bean>
+  <bean id="authorizationInitializer" class="com.marketcetera.admin.AuthorizationInitializer">
+    <property name="users">
+      <set>
+        <bean class="com.marketcetera.admin.UserDescriptor">
+          <property name="name" value="trader"/>
+          <property name="description" value="Trader user"/>
+          <property name="password" value="trader"/>
+          <property name="isActive" value="true"/>
+          <property name="isSuperuser" value="false"/>
+        </bean>
+        <bean class="com.marketcetera.admin.UserDescriptor">
+          <property name="name" value="traderAdmin"/>
+          <property name="description" value="Trader Admin user"/>
+          <property name="password" value="traderAdmin"/>
+          <property name="isActive" value="true"/>
+          <property name="isSuperuser" value="false"/>
+        </bean>
+        <bean class="com.marketcetera.admin.UserDescriptor">
+          <property name="name" value="test"/>
+          <property name="description" value="Test user"/>
+          <property name="password" value="test"/>
+          <property name="isActive" value="true"/>
+          <property name="isSuperuser" value="true"/>
+        </bean>
+        <bean class="com.marketcetera.admin.UserDescriptor">
+          <property name="name" value="admin"/>
+          <property name="description" value="Admin user"/>
+          <property name="password" value="admin"/>
+          <property name="isActive" value="true"/>
+          <property name="isSuperuser" value="true"/>
+        </bean>
+      </set>
+    </property>
+    <property name="permissions">
+      <set>
+        <ref bean="addSessionPermission"/>
+        <ref bean="deleteSessionPermission"/>
+        <ref bean="disableSessionPermission"/>
+        <ref bean="editSessionPermission"/>
+        <ref bean="enableSessionPermission"/>
+        <ref bean="startSessionPermission"/>
+        <ref bean="stopSessionPermission"/>
+        <ref bean="viewSessionPermission"/>
+        <ref bean="createUserPermission"/>
+        <ref bean="readUserPermission"/>
+        <ref bean="updateUserPermission"/>
+        <ref bean="deleteUserPermission"/>
+        <ref bean="changeUserPasswordPermission"/>
+        <ref bean="readUserPermissionsPermission"/>
+        <ref bean="createPermissionPermission"/>
+        <ref bean="readPermissionPermission"/>
+        <ref bean="updatePermissionPermission"/>
+        <ref bean="deletePermissionPermission"/>
+        <ref bean="createRolePermission"/>
+        <ref bean="readRolePermission"/>
+        <ref bean="updateRolePermission"/>
+        <ref bean="deleteRolePermission"/>
+        <ref bean="viewBrokerStatus"/>
+        <ref bean="viewOpenOrdersPermission"/>
+        <ref bean="viewReportPermission"/>
+        <ref bean="viewPositionPermission"/>
+        <ref bean="sendOrderPermission"/>
+        <ref bean="viewUserDataPermission"/>
+        <ref bean="writeUserDataPermission"/>
+        <ref bean="addReportPermission"/>
+        <ref bean="deleteReportPermission"/>
+      </set>
+    </property>
+    <property name="roles">
+      <set>
+        <ref bean="adminRole"/>
+        <ref bean="traderRole"/>
+        <ref bean="traderAdminRole"/>
+      </set>
+    </property>
+    <property name="supervisorPermissions">
+      <set>
+        <ref bean="traderSupervisorRole"/>
+      </set>
+    </property>
+  </bean>
+  <!-- factories -->
+  <bean id="adminClientFactory" class="com.marketcetera.admin.AdminRpcClientFactory"/>
+  <bean id="permissionFactory" class="com.marketcetera.admin.impl.PersistentPermissionFactory"/>
+  <bean id="userFactory" class="com.marketcetera.ors.security.SimpleUserFactory"/>
+  <bean id="roleFactory" class="com.marketcetera.admin.impl.PersistentRoleFactory"/>
+  <bean id="userAttributeFactory" class="com.marketcetera.admin.impl.PersistentUserAttributeFactory"/>
+  <bean id="outgoingMessageFactory" class="com.marketcetera.ors.dao.PersistentOutgoingMessageFactory"/>
+  <bean id="fixSessionFactory" class="com.marketcetera.fix.dao.PersistentFixSessionFactory"/>
+  <bean id="fixSessionAttributeDescriptorFactory" class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptorFactory"/>
+  <bean id="supervisorPermissionFactory" class="com.marketcetera.admin.impl.PersistentSupervisorPermissionFactory"/>
+  <!-- unique id generator -->
+  <bean id="idFactory" class="com.marketcetera.ors.dao.DatabaseIDFactory" init-method="init" depends-on="clusterService"/>
+  <!-- ORS object -->
+  <bean id="ors" class="com.marketcetera.ors.OrderRoutingSystem" depends-on="schemaInitializer">
+    <property name="jmsManager" ref="jmsManager"/>
+    <property name="reportHistoryServices" ref="reportHistoryServices"/>
+    <property name="replyPersister" ref="replyPersister"/>
+    <property name="systemInfo" ref="systemInfo"/>
+    <property name="userManager" ref="orsUserManager"/>
+    <property name="clientSessionFactory" ref="clientSessionFactory"/>
+    <property name="sessionManager" ref="orsSessionManager"/>
+    <property name="server" ref="orsServer"/>
+    <property name="service" ref="orsService"/>
+    <property name="quickFixSender" ref="orsQuickFixSender"/>
+    <property name="idFactory" ref="orsIdFactory"/>
+    <property name="requestHandler" ref="orsRequestHandler"/>
+    <property name="productKey" value="Z+wCPBaSGvaM/V2DLTcWzM45FK0rpS+gB8qfVvHBnkZsDkbfmq1lx5MAdQeS0rh4UraGn88E2y8rqivulUdzvVxDNnLlwg4osoLpmXPbnAX0ibsGbRuymwDAtOLWeI3ofBQY8IhodevdYkRsVq0DogmkkM++p23evlJF50cs1zEfE8dXlKAIHB7BSZH+wqzzUSrkxIae3fjVRHbRhAHBaSgWorXLCc3Gtj7UYittgTTya5rAxSlTZ3BkyIjFwuW9iPVlhD37G8NNIK1qepIAf5NY4/P5cF2lzoRircsk8Ck+wSxeoqCmWYbUcKzghfzL2tCaAoqUsB/CzpD0SnH94w=="/>
+    <property name="allowDeliverToCompID" value="true"/>
+    <property name="dontForwardMessages" value="A,0,1,2,4,5"/>
+    <property name="forwardMessages" value=""/>
+    <property name="executionPoolDelay" value="100"/>
+    <property name="executionPoolTtl" value="1000"/>
+    <property name="maxExecutionPools" value="1000"/>
+  </bean>
+  <!-- ORS Reply Persister -->
+  <bean id="replyPersister" class="com.marketcetera.ors.ReplyPersister">
+    <constructor-arg ref="reportHistoryServices"/>
+  </bean>
+  <!-- ORS JMS manager -->
+  <bean id="jmsManager" class="org.marketcetera.client.jms.JmsManager">
+    <constructor-arg ref="metc_connection_factory_in"/>
+    <constructor-arg ref="metc_connection_factory_out"/>
+  </bean>
+  <!-- ORS System Info -->
+  <bean id="systemInfo" class="com.marketcetera.ors.info.SystemInfoImpl"/>
+  <!-- ORS Report History Services -->
+  <bean id="reportHistoryServices" class="com.marketcetera.ors.history.BasicReportHistoryServices">
+    <!-- property name="purgeDate" value="30d"/--> <!-- enable to purge trade history older than 30d at start -->
+  </bean>
+  <!-- ORS Brokers -->
+  <bean id="dareReportService" class="com.marketcetera.ors.dao.impl.ReportServiceImpl"/>
+  <!-- ORS User Manager -->
+  <bean id="userService" class="com.marketcetera.ors.dao.impl.UserServiceImpl"/>
+  <bean id="orsUserManager" class="com.marketcetera.ors.UserManager"/>
+  <!-- ORS Client Session Factory -->
+  <bean id="clientSessionFactory" class="com.marketcetera.ors.ws.ClientSessionFactory">
+    <constructor-arg ref="systemInfo"/>
+    <constructor-arg ref="jmsManager"/>
+    <constructor-arg ref="orsUserManager"/>
+  </bean>
+  <!-- ORS Session Manager -->
+  <bean id="orsSessionManager" class="org.marketcetera.util.ws.stateful.SessionManager">
+    <constructor-arg ref="clientSessionFactory"/>
+    <constructor-arg value="-1"/> <!-- infinite session life, otherwise specify a ms value -->
+  </bean>
+  <!-- ORS Web Server -->
+  <bean id="orsServer" class="org.marketcetera.util.ws.stateful.Server">
+    <constructor-arg value="127.0.0.1"/> <!-- web-services hostname -->
+    <constructor-arg value="9000"/> <!-- web-services port -->
+    <constructor-arg ref="dbAuthenticator"/>
+    <constructor-arg ref="orsSessionManager"/>
+  </bean>
+  <!-- ORS Web Service -->
+  <bean id="orsServiceProvider" class="com.marketcetera.ors.ws.ClusteredServiceProvider"/>
+  <bean id="orsService" class="com.marketcetera.ors.ws.ServiceImpl">
+    <constructor-arg ref="orsSessionManager"/>
+  </bean>
+  <!--  ORS RPC Service -->
+  <bean id="rpcService" class="org.marketcetera.util.rpc.RpcServer">
+    <property name="contextClassProvider">
+      <bean class="org.marketcetera.core.ContextClassAggregator">
+        <property name="contextClassProviders">
+          <list>
+            <bean class="org.marketcetera.trade.TradeContextClassProvider"/>
+            <bean class="org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider"/>
+            <bean class="org.marketcetera.saclient.rpc.SAClientContextClassProvider"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="hostname" value="127.0.0.1"/>
+    <property name="port" value ="8999"/>
+    <property name="authenticator" ref="dbAuthenticator"/>
+    <property name="sessionManager" ref="orsSessionManager"/>
+    <property name="serviceSpecs">
+      <list>
+        <ref bean="matpRpcService"/>
+        <bean id="adminRpcService" class="com.marketcetera.admin.rpc.AdminRpcService"/>
+      </list>
+    </property>
+  </bean>
+  <!-- MATP Server RPC Service -->
+  <bean id="matpRpcService" class="com.marketcetera.ors.rpc.RpcServerServiceImpl">
+    <property name="serverAdapter" ref="orsService"/>
+  </bean>
+  <!-- ORS QuickFix Sender -->
+  <bean id="orsQuickFixSender" class="org.marketcetera.quickfix.QuickFIXSenderImpl"/>
+  <!-- ORS ID Factory -->
+  <bean id="orsIdFactory" class="com.marketcetera.ors.LocalIDFactory" init-method="init">
+    <constructor-arg ref="idFactory"/>
+  </bean>
+  <!-- ORS Root Order ID Factory -->
+  <bean id="rootOrderIdFactory" class="com.marketcetera.ors.history.BasicRootOrderIdFactory"/>
+  <!-- ORS Request Handler -->
+  <bean id="orsRequestHandler" class="com.marketcetera.ors.RequestHandler">
+    <property name="allowedOrders">
+      <!-- 
+        <list>
+            <ref bean="metc_allowed_orders"/>
+            <ref bean="metc_restricted_users"/>
+        </list>
+       -->
+      <list/>
+    </property>
+    <property name="persister" ref="replyPersister"/>
+    <property name="sender" ref="orsQuickFixSender"/>
+    <property name="userManager" ref="orsUserManager"/>
+    <property name="IDFactory" ref="idFactory"/>
+  </bean>
+  <!-- added for FIX message recording -->
+  <bean id="incomingMessageFactory" class="com.marketcetera.fix.dao.PersistentIncomingMessageFactory"/>
+  <bean id="recordingLogConfiguration" class="com.marketcetera.quickfix.RecordingLogConfiguration">
+     <property name="dataSource" ref="metc_sql_pool"/>
+  </bean>
+  <!-- outgoing order service -->
+  <bean id="outgoingMessageService" class="com.marketcetera.ors.outgoingorder.impl.OutgoingMessageServiceImpl">
+    <property name="identifyOwnerStrategies">
+      <list>
+        <bean class="com.marketcetera.ors.outgoingorder.impl.OutgoingMessageLookupStrategy"/>
+        <bean class="com.marketcetera.ors.outgoingorder.impl.DefaultOwnerStrategy">
+          <property name="username" value="admin"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  <bean class="com.marketcetera.ors.OptionRootUnderlyingMap">
+    <property name="filename" value="src/test/sample_data/conf/optionRootMapping.txt"/>
+    <property name="includeTypes" value="EU,EL"/>
+  </bean>
+  <!--  authenticator -->
+  <bean id="dbAuthenticator" class="com.marketcetera.ors.ws.DBAuthenticator"/>
+  <!-- Exception translation bean post processor -->
+  <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
+  <bean id="metc_sql_pool" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+    <property name="dataSourceName" value="matp"/>
+    <property name="driverClass" value="${metc.jdbc.driver}"/>
+    <property name="jdbcUrl" value="${metc.jdbc.url}"/>
+    <property name="user" value="${metc.jdbc.user}"/>
+    <property name="password" value="${metc.jdbc.password}"/>
+    <property name="maxPoolSize" value="50"/>
+    <property name="preferredTestQuery" value="${metc.jdbc.testquery}"/>
+    <property name="testConnectionOnCheckout" value="false"/>
+    <property name="debugUnreturnedConnectionStackTraces" value="false"/>
+    <property name="checkoutTimeout" value="30000"/>
+    <property name="unreturnedConnectionTimeout" value="0"/>
+    <property name="idleConnectionTestPeriod" value="300"/>
+    <property name="statementCacheNumDeferredCloseThreads" value="1"/>
+  </bean>
+  <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="metc-hcast">
+    <property name="dataSource" ref="metc_sql_pool"/>
+    <property name="persistenceUnitName" value="metc"/>
+    <property name="jpaVendorAdapter">
+      <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+    </property>
+    <property name="jpaProperties">
+      <props>
+        <prop key="hibernate.dialect">${metc.hibernate.dialect}</prop>
+        <prop key="hibernate.hbm2ddl.auto">create</prop>
+        <prop key="hibernate.show_sql">false</prop>
+        <prop key="hibernate.format_sql">false</prop>
+      </props>
+    </property>
+    <property name="packagesToScan">
+      <list>
+        <value>org.marketcetera</value>
+        <value>com.marketcetera</value>
+      </list>
+    </property>
+  </bean>
+  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="entityManagerFactory" />
+  </bean>
+  <!-- bean id="adminUser" class="com.marketcetera.ors.security.SimpleUser">
+    <property name="name" value="admin"/>
+    <property name="password" value="admin"/>
+    <property name="superuser" value="true"/>
+  </bean>
+  <bean id="userInitializer" class="com.marketcetera.ors.security.SimpleUserInitializer">
+    <property name="users">
+      <list>
+        <ref bean="adminUser"/>
+      </list>
+    </property>
+  </bean-->
+  <bean id="schemaInitializer" class="com.marketcetera.ors.dao.DatabaseVersionInitializer"/>
+  <!--
+    - Sets Java system properties.
+    -->
+  <bean id="metc_system_properties_setter" class="org.marketcetera.util.spring.SystemPropertiesSetter">
+    <property name="map">
+      <map>
+        <!--
+          - The name of the JAAS configuration file containing the JAAS
+          - 'ors-amq-domain'.
+          -->
+        <entry key="java.security.auth.login.config" value="src/test/sample_data/conf/login.config"/>
+      </map>
+    </property>
+  </bean>
+  <!--
+    - See 'http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/
+    - activemq/broker/BrokerService.html' for a complete list of options.
+    -->
+  <bean id="metc_jms_broker" class="org.apache.activemq.broker.BrokerService" init-method="start" destroy-method="stop" depends-on="metc_system_properties_setter">
+    <property name="brokerName" value="ORS-BROKER"/>
+    <property name="persistent" value="false"/>
+    <property name="useShutdownHook" value="false"/>
+    <property name="useJmx" value="true"/>
+    <property name="destinationPolicy">
+      <bean class="org.apache.activemq.broker.region.policy.PolicyMap">
+        <property name="policyEntries">
+          <list>
+            <bean class="org.apache.activemq.broker.region.policy.PolicyEntry">
+              <property name="queue" value="*"/>
+              <property name="producerFlowControl" value="false"/>
+            </bean>
+            <bean class="org.apache.activemq.broker.region.policy.PolicyEntry">
+              <property name="topic" value="*"/>
+              <property name="producerFlowControl" value="false"/>
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="transportConnectorURIs">
+      <list>
+        <value>tcp://127.0.0.1:61616?wireFormat.maxInactivityDurationInitalDelay=30000</value>
+        <value>stomp://127.0.0.1:61613</value>
+      </list>
+    </property>
+    <property name="plugins">
+      <list>
+        <bean class="org.apache.activemq.security.JaasAuthenticationPlugin">
+          <property name="configuration" value="ors-amq-domain"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  <!--
+    - The connection factory for incoming connections. Note that ActiveMQ
+    - pooled factories only support outgoing connections, hence a simple
+    - factory is used for incoming ones.
+    -
+    - See 'http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/
+    - activemq/spring/ActiveMQConnectionFactory.html' for a complete list
+    - of options.
+    -->
+  <bean id="metc_connection_factory_in" class="org.apache.activemq.ActiveMQConnectionFactory" depends-on="metc_jms_broker">
+    <property name="brokerURL" value="vm://localhost?create=false&amp;waitForStart=30000"/>
+    <property name="userName" value="admin"/>
+    <property name="password" value="admin"/>
+  </bean>
+  <!--
+    - The connection factory for outgoing connections.
+    -
+    - See 'http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/
+    - activemq/pool/PooledConnectionFactory.html' for a complete list
+    - of options.
+    -->
+  <bean id="metc_connection_factory_out" class="org.apache.activemq.pool.PooledConnectionFactory" depends-on="metc_jms_broker">
+    <property name="connectionFactory" ref="metc_connection_factory_in"/>
+  </bean>
+  <bean id="metc_allowed_orders" class="com.marketcetera.ors.filters.OrderLimitFilter">
+    <!--
+      - If true, orders with type 'MARKET' are rejected. If omitted, false
+      - is assumed.
+      -->
+    <property name="disallowMarketOrders" value="false"/>
+    <!--
+      - Minimum order price; it is checked only if a price is set.
+      - If omitted, no minimum price check is performed.
+      -->
+    <property name="minPrice" value="0"/>
+    <!--
+      - Maximum order price; it is checked only if a price is set.
+      - If omitted, no maximum price check is performed.
+      -->
+    <property name="maxPrice" value="100"/>
+    <!--
+      - Maximum order quantity; it is checked only if a quantity is set.
+      - If omitted, no maximum quantity check is performed.
+      -->
+    <property name="maxQuantityPerOrder" value="10000"/>
+    <!--
+      - Maximum order notional (product of price and quantity); it is
+      - checked only if both a price and a quantity are set. If omitted,
+      - no maximum notional check is performed.
+      -->
+    <property name="maxNotionalPerOrder" value="100000"/>
+  </bean>
+  <!-- indicates users allowed or disallowed to send orders of a particular asset class -->
+  <bean id="metc_restricted_users" class="com.marketcetera.ors.filters.AssetClassFilter">
+    <property name="userlists">
+        <map>
+          <entry key="CS"> <!-- restrictions for 'CS', i.e. equities -->
+            <bean class="com.marketcetera.ors.filters.UserList">
+                <!-- whitelist explicitly allows users - if specified, anyone not on the whitelist is not allowed -->
+                <property name="whitelist">
+                    <set>
+                        <value>bob</value>
+                        <value>alice</value>
+                    </set>
+                </property>
+                <!-- blacklist explicitly disallows users - if specified, anyone not on the blacklist is allowed -->
+                <property name="blacklist">
+                    <set>
+                        <value>evilbob</value>
+                        <value>evilalice</value>
+                    </set>
+                </property>
+            </bean>
+          </entry>
+          <entry key="FUT"> <!-- restrictions for 'FUT', i.e. futures -->
+            <bean class="com.marketcetera.ors.filters.UserList">
+                <!-- whitelist explicitly allows users - if specified, anyone not on the whitelist is not allowed -->
+                <property name="whitelist">
+                    <set>
+                        <value>bob</value>
+                        <value>alice</value>
+                    </set>
+                </property>
+                <!-- blacklist explicitly disallows users - if specified, anyone not on the blacklist is allowed -->
+                <property name="blacklist">
+                    <set>
+                        <value>evilbob</value>
+                        <value>evilalice</value>
+                    </set>
+                </property>
+            </bean>
+          </entry>
+          <!-- asset classes not included, like 'OPT' and 'CUR' have no restrictions -->
+        </map>
+    </property>
+  </bean>
+  <bean id="metc_supported_messages" class="com.marketcetera.ors.filters.MessageTypeFilter">
+    <!--
+      - If true, messages of unknown type are accepted.  If omitted, false
+      - is assumed.
+      -->
+    <property name="acceptUnknown" value="false"/>
+    <!--
+      - The set of acceptable message types. A non-null set is required
+      - (an empty set is acceptable).
+      -->
+    <property name="acceptedMessages">
+      <set>
+        <value>0</value>  <!-- HEARTBEAT -->
+        <value>1</value>  <!-- TEST_REQUEST -->
+        <value>2</value>  <!-- RESEND_REQUEST -->
+        <value>3</value>  <!-- REJECT -->
+        <value>4</value>  <!-- SEQUENCE_RESET -->
+        <value>5</value>  <!-- LOGOUT -->
+        <value>6</value>  <!-- INDICATION_OF_INTEREST -->
+        <value>7</value>  <!-- ADVERTISEMENT -->
+        <value>8</value>  <!-- EXECUTION_REPORT -->
+        <value>9</value>  <!-- ORDER_CANCEL_REJECT -->
+        <value>A</value>  <!-- LOGON -->
+        <value>B</value>  <!-- NEWS -->
+        <value>C</value>  <!-- EMAIL -->
+        <value>D</value>  <!-- ORDER_SINGLE -->
+        <value>E</value>  <!-- ORDER_LIST -->
+        <value>F</value>  <!-- ORDER_CANCEL_REQUEST -->
+        <value>G</value>  <!-- ORDER_CANCEL_REPLACE_REQUEST -->
+        <value>H</value>  <!-- ORDER_STATUS_REQUEST -->
+        <value>J</value>  <!-- ALLOCATION_INSTRUCTION -->
+        <value>K</value>  <!-- LIST_CANCEL_REQUEST -->
+        <value>L</value>  <!-- LIST_EXECUTE -->
+        <value>M</value>  <!-- LIST_STATUS_REQUEST -->
+        <value>N</value>  <!-- LIST_STATUS -->
+        <!-- 'O' is not a valid FIX message type, hence omitted. -->
+        <!-- Not supported: P (ALLOCATION_INSTRUCTION_ACK). -->
+        <value>Q</value>  <!-- DONT_KNOW_TRADE -->
+        <value>R</value>  <!-- QUOTE_REQUEST -->
+        <value>S</value>  <!-- QUOTE -->
+        <value>T</value>  <!-- SETTLEMENT_INSTRUCTIONS -->
+        <value>V</value>  <!-- MARKET_DATA_REQUEST -->
+        <value>W</value>  <!-- MARKET_DATA_SNAPSHOT_FULL_REFRESH -->
+        <value>X</value>  <!-- MARKET_DATA_INCREMENTAL_REFRESH -->
+        <value>Y</value>  <!-- MARKET_DATA_REQUEST_REJECT -->
+        <value>Z</value>  <!-- QUOTE_CANCEL -->
+        <value>a</value>  <!-- QUOTE_STATUS_REQUEST -->
+        <value>b</value>  <!-- MASS_QUOTE_ACKNOWLEDGEMENT -->
+        <value>c</value>  <!-- SECURITY_DEFINITION_REQUEST -->
+        <value>d</value>  <!-- SECURITY_DEFINITION -->
+        <value>e</value>  <!-- SECURITY_STATUS_REQUEST -->
+        <value>f</value>  <!-- SECURITY_STATUS -->
+        <value>g</value>  <!-- TRADING_SESSION_STATUS_REQUEST -->
+        <value>h</value>  <!-- TRADING_SESSION_STATUS -->
+        <value>i</value>  <!-- MASS_QUOTE -->
+        <value>j</value>  <!-- BUSINESS_MESSAGE_REJECT -->
+        <value>k</value>  <!-- BID_REQUEST -->
+        <value>l</value>  <!-- BID_RESPONSE -->
+        <value>m</value>  <!-- LIST_STRIKE_PRICE -->
+        <value>n</value>  <!-- XML_MESSAGE -->
+        <value>o</value>  <!-- REGISTRATION_INSTRUCTIONS -->
+        <value>p</value>  <!-- REGISTRATION_INSTRUCTIONS_RESPONSE -->
+        <value>q</value>  <!-- ORDER_MASS_CANCEL_REQUEST -->
+        <value>r</value>  <!-- ORDER_MASS_CANCEL_REPORT -->
+        <value>s</value>  <!-- NEW_ORDER_CROSS -->
+        <value>t</value>  <!-- CROSS_ORDER_CANCEL_REPLACE_REQUEST -->
+        <value>u</value>  <!-- CROSS_ORDER_CANCEL_REQUEST -->
+        <value>v</value>  <!-- SECURITY_TYPE_REQUEST -->
+        <value>w</value>  <!-- SECURITY_TYPES -->
+        <value>x</value>  <!-- SECURITY_LIST_REQUEST -->
+        <value>y</value>  <!-- SECURITY_LIST -->
+        <value>z</value>  <!-- DERIVATIVE_SECURITY_LIST_REQUEST -->
+        <value>AA</value> <!-- DERIVATIVE_SECURITY_LIST -->
+        <value>AB</value> <!-- NEW_ORDER_MULTILEG -->
+        <value>AC</value> <!-- MULTILEG_ORDER_CANCEL_REPLACE -->
+        <value>AD</value> <!-- TRADE_CAPTURE_REPORT_REQUEST -->
+        <value>AE</value> <!-- TRADE_CAPTURE_REPORT -->
+        <value>AF</value> <!-- ORDER_MASS_STATUS_REQUEST -->
+        <value>AG</value> <!-- QUOTE_REQUEST_REJECT -->
+        <value>AH</value> <!-- RFQ_REQUEST -->
+        <value>AI</value> <!-- QUOTE_STATUS_REPORT -->
+        <value>AJ</value> <!-- QUOTE_RESPONSE -->
+        <value>AK</value> <!-- CONFIRMATION -->
+        <value>AL</value> <!-- POSITION_MAINTENANCE_REQUEST -->
+        <value>AM</value> <!-- POSITION_MAINTENANCE_REPORT -->
+        <value>AN</value> <!-- REQUEST_FOR_POSITIONS -->
+        <value>AO</value> <!-- REQUEST_FOR_POSITIONS_ACK -->
+        <value>AP</value> <!-- POSITION_REPORT -->
+        <value>AQ</value> <!-- TRADE_CAPTURE_REPORT_REQUEST_ACK -->
+        <value>AR</value> <!-- TRADE_CAPTURE_REPORT_ACK -->
+        <value>AS</value> <!-- ALLOCATION_REPORT -->
+        <value>AT</value> <!-- ALLOCATION_REPORT_ACK -->
+        <value>AU</value> <!-- CONFIRMATION_ACK -->
+        <value>AV</value> <!-- SETTLEMENT_INSTRUCTION_REQUEST -->
+        <value>AW</value> <!-- ASSIGNMENT_REPORT -->
+        <value>AX</value> <!-- COLLATERAL_REQUEST -->
+        <value>AY</value> <!-- COLLATERAL_ASSIGNMENT -->
+        <value>AZ</value> <!-- COLLATERAL_RESPONSE -->
+        <value>BA</value> <!-- COLLATERAL_REPORT -->
+        <value>BB</value> <!-- COLLATERAL_INQUIRY -->
+        <value>BC</value> <!-- NETWORK_STATUS_REQEST -->
+        <value>BD</value> <!-- NETWORK_STATUS_RESPONSE -->
+        <value>BE</value> <!-- USER_REQUEST -->
+        <value>BF</value> <!-- USER_RESPONSE -->
+        <value>BG</value> <!-- COLLATERAL_INQUIRY_ACK -->
+        <value>BH</value> <!-- CONFIRMATION_REQUEST -->
+      </set> 
+    </property>
+  </bean>
+  <!-- Cluster Service -->
+  <bean id="clusterService" class="com.marketcetera.matp.cluster.hazelcast.HazelcastClusterService" depends-on="metc-hcast">
+    <property name="instanceName" value="matp"/>
+    <!-- interval to wait to obtain a cluster-wide lock -->
+    <property name="lockTimeout" value="1000"/>
+    <!-- interval to wait before deciding that a cluster-wide lock has been abandoned and needs to be broken -->
+    <property name="abandonedLockTimeout" value="30000"/>
+    <!-- determines how long to wait upon member removal to evaluate work units -->
+    <property name="workUnitEvaluationDelay" value="10000"/>
+  </bean>
+  <hz:hazelcast id="metc-hcast">
+    <hz:config>
+      <hz:spring-aware />
+      <hz:instance-name>matp</hz:instance-name>
+      <hz:group name="metc" password="pw4metc"/>
+      <hz:network port="5701" port-auto-increment="true">
+        <hz:join>
+          <hz:multicast enabled="false" />
+          <hz:tcp-ip enabled="true">
+            <hz:members>127.0.0.1</hz:members>
+          </hz:tcp-ip>
+        </hz:join>
+      </hz:network>
+    </hz:config>
+  </hz:hazelcast>
+  <!-- Client -->
+  <bean id="client" class="com.marketcetera.ors.ClusteredDirectClient">
+    <property name="username" value="trader"/>
+    <property name="sessionManager" ref="orsSessionManager"/>
+    <property name="brokerStatusPublishers">
+      <list>
+        <ref bean="ors"/>
+      </list>
+    </property>
+    <property name="enableRemoteQueue" value="false"/>
+  </bean>
+  <bean id="clientParameters" class="org.marketcetera.client.ClientParameters"/>
+  <bean id="clientManager" class="org.marketcetera.client.ClientManager">
+    <property name="client" ref="client"/>
+  </bean>
+  <!-- monitors -->
+  <bean id="metricMonitor" class="org.marketcetera.metrics.MetricServiceLogReporter">
+    <property name="reportInterval" value="30"/>
+  </bean>
+  <bean id="primaryPoolMonitor" class="org.marketcetera.persist.PoolMonitor">
+    <property name="pool" ref="metc_sql_pool"/>
+    <property name="monitorInterval" value="30000"/>
+  </bean>
+  <!-- test directories -->
+  <bean class="java.lang.String" id="actionDirectory">
+    <constructor-arg value="target/actions1"/>
+  </bean>
+  <bean class="java.lang.String" id="qfstoreDirectory">
+    <constructor-arg value="target/qf_store"/>
+  </bean>
+  <bean id="testDirectoryManager" class="com.marketcetera.test.TestDirectoryManager">
+    <property name="testDirectories">
+      <list>
+        <ref bean="actionDirectory"/>
+      </list>
+    </property>
+    <property name="deleteDirectories">
+      <list>
+        <ref bean="qfstoreDirectory"/>
+      </list>
+    </property>
+  </bean>
+</beans>

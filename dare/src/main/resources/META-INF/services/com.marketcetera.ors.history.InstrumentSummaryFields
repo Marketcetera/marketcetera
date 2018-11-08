@@ -1,0 +1,5 @@
+com.marketcetera.ors.history.EquitySummaryFields
+com.marketcetera.ors.history.OptionSummaryFields
+com.marketcetera.ors.history.FutureSummaryFields
+com.marketcetera.ors.history.CurrencySummaryFields
+com.marketcetera.ors.history.ConvertibleBondSummaryFields

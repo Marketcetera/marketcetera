@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+  <context:component-scan base-package="com.marketcetera.admin"/>
+  <bean id="schemaInitializer" class="com.marketcetera.ors.dao.DatabaseVersionInitializer"/>
+  <!-- provisioning agent for dynamic provisioning -->
+  <bean id="provisioningAgent" class="com.marketcetera.core.ProvisioningAgent">
+    <property name="provisioningDirectory" value="${org.marketcetera.appDir}/instances/provisioning"/>
+  </bean>
+  <!-- authorization -->
+  <!-- admin -->
+  <bean id="addSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="AddSessionAction"/>
+    <property name="description" value="Access to Add Session action"/>
+  </bean>
+  <bean id="deleteSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="DeleteSessionAction"/>
+    <property name="description" value="Access to Delete Session action"/>
+  </bean>
+  <bean id="disableSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="DisableSessionAction"/>
+    <property name="description" value="Access to disable session action"/>
+  </bean>
+  <bean id="editSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="EditSessionAction"/>
+    <property name="description" value="Access to edit session action"/>
+  </bean>
+  <bean id="enableSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="EnableSessionAction"/>
+    <property name="description" value="Access to enable session action"/>
+  </bean>
+  <bean id="updateSequencePermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="UpdateSequenceAction"/>
+    <property name="description" value="Access to update sequence numbers action"/>
+  </bean>
+  <bean id="startSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="StartSessionAction"/>
+    <property name="description" value="Access to start session action"/>
+  </bean>
+  <bean id="stopSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="StopSessionAction"/>
+    <property name="description" value="Access to stop session action"/>
+  </bean>
+  <bean id="viewSessionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ViewSessionAction"/>
+    <property name="description" value="Access to view session action"/>
+  </bean>
+  <bean id="readInstanceDataPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ReadInstanceDataAction"/>
+    <property name="description" value="Access to read instance data action"/>
+  </bean>
+  <bean id="readFixSessionAttributeDescriptorPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ReadFixSessionAttributeDescriptorsAction"/>
+    <property name="description" value="Access to read FIX session attribute descriptors action"/>
+  </bean>
+  <bean id="createUserPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="CreateUserAction"/>
+    <property name="description" value="Access to create user action"/>
+  </bean>
+  <bean id="readUserPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ReadUserAction"/>
+    <property name="description" value="Access to read user action"/>
+  </bean>
+  <bean id="updateUserPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="UpdateUserAction"/>
+    <property name="description" value="Access to update user action"/>
+  </bean>
+  <bean id="deleteUserPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="DeleteUserAction"/>
+    <property name="description" value="Access to delete user action"/>
+  </bean>
+  <bean id="changeUserPasswordPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ChangeUserPasswordAction"/>
+    <property name="description" value="Access to change user password action"/>
+  </bean>
+  <bean id="readUserPermissionsPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ReadUserPermisionsAction"/>
+    <property name="description" value="Access to read user permissions action"/>
+  </bean>
+  <bean id="createPermissionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="CreatePermissionAction"/>
+    <property name="description" value="Access to create permission action"/>
+  </bean>
+  <bean id="readPermissionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ReadPermissionAction"/>
+    <property name="description" value="Access to read permission action"/>
+  </bean>
+  <bean id="updatePermissionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="UpdatePermissionAction"/>
+    <property name="description" value="Access to update permission action"/>
+  </bean>
+  <bean id="deletePermissionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="DeletePermissionAction"/>
+    <property name="description" value="Access to delete permission action"/>
+  </bean>
+  <bean id="createRolePermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="CreateRoleAction"/>
+    <property name="description" value="Access to create role action"/>
+  </bean>
+  <bean id="readRolePermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ReadRoleAction"/>
+    <property name="description" value="Access to read role action"/>
+  </bean>
+  <bean id="updateRolePermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="UpdateRoleAction"/>
+    <property name="description" value="Access to update role action"/>
+  </bean>
+  <bean id="deleteRolePermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="DeleteRoleAction"/>
+    <property name="description" value="Access to delete role action"/>
+  </bean>
+  <!-- trader -->
+  <bean id="viewBrokerStatus" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ViewBrokerStatusAction"/>
+    <property name="description" value="Access to view broker status action"/>
+  </bean>
+  <bean id="viewOpenOrdersPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ViewOpenOrdersAction"/>
+    <property name="description" value="Access to view open orders action"/>
+  </bean>
+  <bean id="viewReportPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ViewReportAction"/>
+    <property name="description" value="Access to view reports action"/>
+  </bean>
+  <bean id="viewPositionPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ViewPositionAction"/>
+    <property name="description" value="Access to view positions action"/>
+  </bean>
+  <bean id="sendOrderPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="SendOrderAction"/>
+    <property name="description" value="Access to send new orders action"/>
+  </bean>
+  <bean id="viewUserDataPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ViewUserDataAction"/>
+    <property name="description" value="Access to view user data action"/>
+  </bean>
+  <bean id="writeUserDataPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="WriteUserDataAction"/>
+    <property name="description" value="Access to write user data action"/>
+  </bean>
+  <!-- trader admin -->
+  <bean id="addReportPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="AddReportAction"/>
+    <property name="description" value="Access to manually add new reports action"/>
+  </bean>
+  <bean id="deleteReportPermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="DeleteReportAction"/>
+    <property name="description" value="Access to manually delete reports action"/>
+  </bean>
+  <!-- user attributes -->
+  <bean id="readUserAttributePermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="ReadUserAttributeAction"/>
+    <property name="description" value="Access to read a user attribute action"/>
+  </bean>
+  <bean id="writeUserAttributePermission" class="com.marketcetera.admin.PermissionDescriptor">
+    <property name="name" value="WriteUserAttributeAction"/>
+    <property name="description" value="Access to write a user attribute action"/>
+  </bean>
+  <!-- create roles -->
+  <bean id="adminRole" class="com.marketcetera.admin.RoleDescriptor">
+    <property name="name" value="Admin"/>
+    <property name="description" value="Admin role"/>
+    <property name="permissionNames">
+      <set>
+        <value>AddSessionAction</value>
+        <value>DeleteSessionAction</value>
+        <value>DisableSessionAction</value>
+        <value>EditSessionAction</value>
+        <value>EnableSessionAction</value>
+        <value>UpdateSequenceAction</value>
+        <value>StartSessionAction</value>
+        <value>StopSessionAction</value>
+        <value>ViewSessionAction</value>
+        <value>ReadInstanceDataAction</value>
+        <value>CreateUserAction</value>
+        <value>ReadUserAction</value>
+        <value>UpdateUserAction</value>
+        <value>DeleteUserAction</value>
+        <value>ChangeUserPasswordAction</value>
+        <value>ReadUserPermisionsAction</value>
+        <value>CreatePermissionAction</value>
+        <value>ReadPermissionAction</value>
+        <value>UpdatePermissionAction</value>
+        <value>DeletePermissionAction</value>
+        <value>CreateRoleAction</value>
+        <value>ReadRoleAction</value>
+        <value>UpdateRoleAction</value>
+        <value>DeleteRoleAction</value>
+        <value>ViewBrokerStatusAction</value>
+        <value>ViewUserDataAction</value>
+        <value>WriteUserDataAction</value>
+        <value>ReadFixSessionAttributeDescriptorsAction</value>
+        <value>ReadUserAttributeAction</value>
+        <value>WriteUserAttributeAction</value>
+      </set>
+    </property>
+    <property name="usernames">
+      <set>
+        <value>admin</value>
+      </set>
+    </property>
+  </bean>
+  <bean id="traderAdminRole" class="com.marketcetera.admin.RoleDescriptor">
+    <property name="name" value="TraderAdmin"/>
+    <property name="description" value="Trader Admin role"/>
+    <property name="permissionNames">
+      <set>
+        <value>ViewBrokerStatusAction</value>
+        <value>ViewOpenOrdersAction</value>
+        <value>ViewReportAction</value>
+        <value>ViewPositionAction</value>
+        <value>SendOrderAction</value>
+        <value>ViewUserDataAction</value>
+        <value>WriteUserDataAction</value>
+        <value>AddReportAction</value>
+        <value>DeleteReportAction</value>
+      </set>
+    </property>
+    <property name="usernames">
+      <set>
+        <value>traderAdmin</value>
+      </set>
+    </property>
+  </bean>
+  <bean id="traderRole" class="com.marketcetera.admin.RoleDescriptor">
+    <property name="name" value="Trader"/>
+    <property name="description" value="Trader role"/>
+    <property name="permissionNames">
+      <set>
+        <value>AddReportAction</value>
+        <value>ViewBrokerStatusAction</value>
+        <value>ViewOpenOrdersAction</value>
+        <value>ViewReportAction</value>
+        <value>ViewPositionAction</value>
+        <value>SendOrderAction</value>
+        <value>ViewUserDataAction</value>
+        <value>WriteUserDataAction</value>
+      </set>
+    </property>
+    <property name="usernames">
+      <set>
+        <value>trader</value>
+      </set>
+    </property>
+  </bean>
+  <bean id="traderSupervisorRole" class="com.marketcetera.admin.SupervisorPermissionDescriptor">
+    <property name="name" value="TraderSupervisor"/>
+    <property name="description" value="Trader supervisor role"/>
+    <property name="supervisorUsername" value="traderAdmin"/>
+    <property name="permissionNames">
+      <set>
+        <value>ViewBrokerStatusAction</value>
+        <value>ViewOpenOrdersAction</value>
+        <value>ViewReportAction</value>
+        <value>ViewPositionAction</value>
+        <value>ViewUserDataAction</value>
+      </set>
+    </property>
+    <property name="subjectUsernames">
+      <set>
+        <value>trader</value>
+      </set>
+    </property>
+  </bean>
+  <bean id="authorizationInitializer" class="com.marketcetera.admin.AuthorizationInitializer">
+    <property name="users">
+      <set>
+        <bean class="com.marketcetera.admin.UserDescriptor">
+          <property name="name" value="trader"/>
+          <property name="description" value="Trader user"/>
+          <property name="password" value="trader"/>
+          <property name="isActive" value="true"/>
+          <property name="isSuperuser" value="false"/>
+        </bean>
+        <bean class="com.marketcetera.admin.UserDescriptor">
+          <property name="name" value="traderAdmin"/>
+          <property name="description" value="Trader Admin user"/>
+          <property name="password" value="traderAdmin"/>
+          <property name="isActive" value="true"/>
+          <property name="isSuperuser" value="false"/>
+        </bean>
+        <bean class="com.marketcetera.admin.UserDescriptor">
+          <property name="name" value="admin"/>
+          <property name="description" value="Admin user"/>
+          <property name="password" value="admin"/>
+          <property name="isActive" value="true"/>
+          <property name="isSuperuser" value="true"/>
+        </bean>
+      </set>
+    </property>
+    <property name="permissions">
+      <set>
+        <ref bean="addSessionPermission"/>
+        <ref bean="deleteSessionPermission"/>
+        <ref bean="disableSessionPermission"/>
+        <ref bean="editSessionPermission"/>
+        <ref bean="enableSessionPermission"/>
+        <ref bean="updateSequencePermission"/>
+        <ref bean="startSessionPermission"/>
+        <ref bean="stopSessionPermission"/>
+        <ref bean="viewSessionPermission"/>
+        <ref bean="readInstanceDataPermission"/>
+        <ref bean="readFixSessionAttributeDescriptorPermission"/>
+        <ref bean="createUserPermission"/>
+        <ref bean="readUserPermission"/>
+        <ref bean="updateUserPermission"/>
+        <ref bean="deleteUserPermission"/>
+        <ref bean="changeUserPasswordPermission"/>
+        <ref bean="readUserPermissionsPermission"/>
+        <ref bean="createPermissionPermission"/>
+        <ref bean="readPermissionPermission"/>
+        <ref bean="updatePermissionPermission"/>
+        <ref bean="deletePermissionPermission"/>
+        <ref bean="createRolePermission"/>
+        <ref bean="readRolePermission"/>
+        <ref bean="updateRolePermission"/>
+        <ref bean="deleteRolePermission"/>
+        <ref bean="viewBrokerStatus"/>
+        <ref bean="viewOpenOrdersPermission"/>
+        <ref bean="viewReportPermission"/>
+        <ref bean="viewPositionPermission"/>
+        <ref bean="sendOrderPermission"/>
+        <ref bean="viewUserDataPermission"/>
+        <ref bean="writeUserDataPermission"/>
+        <ref bean="addReportPermission"/>
+        <ref bean="deleteReportPermission"/>
+        <ref bean="readUserAttributePermission"/>
+        <ref bean="writeUserAttributePermission"/>
+      </set>
+    </property>
+    <property name="roles">
+      <set>
+        <ref bean="adminRole"/>
+        <ref bean="traderRole"/>
+        <ref bean="traderAdminRole"/>
+      </set>
+    </property>
+    <property name="supervisorPermissions">
+      <set>
+        <ref bean="traderSupervisorRole"/>
+      </set>
+    </property>
+  </bean>
+  <!-- FIX sessions -->
+  <bean id="sessionInitializer" class="com.marketcetera.ors.brokers.impl.FixSessionInitializer">
+    <property name="brokers">
+      <list>
+        <bean class="com.marketcetera.ors.brokers.Brokers">
+          <constructor-arg ref="initiatorSessions"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  <bean id="sessionEnabler" class="com.marketcetera.ors.brokers.impl.FixSessionEnabler" depends-on="sessionInitializer">
+    <property name="sessionNames">
+      <list>
+        <value>MATP Exchange Simulator</value>
+      </list>
+    </property>
+  </bean>
+  <bean id="initiatorSessions" class="com.marketcetera.ors.brokers.SpringBrokers">
+    <!-- The QuickFIX/J session settings. -->
+    <property name="settings" ref="initiatorQsettings"/>
+    <!-- The sessions (order is not significant). -->
+    <property name="brokers">
+      <list>
+        <ref bean="exsimInitiatorSession"/>
+      </list>
+    </property>
+  </bean>
+  <!-- global initiator settings -->
+  <bean id="initiatorQsettings" class="org.marketcetera.util.quickfix.SpringSessionSettings">
+    <property name="defaults">
+      <map>
+        <entry key="metc.LogFactoryClass" value="quickfix.SLF4JLogFactory"/>
+        <entry key="metc.MessageStoreFactoryClass" value="com.marketcetera.fix.store.HibernateMessageStoreFactory"/>
+        <entry key="ConnectionType" value="initiator"/>
+        <entry key="HeartBtInt" value="30"/>
+        <entry key="StartTime" value="00:00:00"/>
+        <entry key="EndTime" value="22:45:00"/>
+        <entry key="TimeZone" value="US/Pacific"/>
+        <entry key="ReconnectInterval" value="30"/>
+        <entry key="ResetOnLogon" value="N"/>
+        <entry key="ResetOnLogout" value="N"/>
+        <entry key="ResetOnDisconnect" value="N"/>
+        <entry key="ResetOnError" value="N"/>
+        <entry key="SLF4JLogHeartbeats" value="N"/>
+      </map>
+    </property>
+  </bean>
+  <!-- Exsim Initiator Session -->
+  <bean id="exsimInitiatorSession" class="com.marketcetera.ors.brokers.SpringBroker">
+    <property name="name" value="MATP Exchange Simulator"/>
+    <property name="id" value="exsim"/>
+    <property name="descriptor" ref="exsimInitiatorQDescriptor"/>
+    <property name="instanceAffinity" value="1"/>
+  </bean>
+  <bean id="exsimInitiatorQDescriptor" class="org.marketcetera.util.quickfix.SpringSessionDescriptor">
+    <property name="dictionary">
+      <map>
+        <entry key="BeginString" value="${metc.exsim.qf.begin.string}"/>
+        <entry key="SenderCompID" value="${metc.exsim.qf.sender.comp.id}"/>
+        <entry key="TargetCompID" value="${metc.exsim.qf.target.comp.id}"/>
+        <entry key="SocketConnectHost" value="${metc.exsim.qf.host}"/>
+        <entry key="SocketConnectPort" value="${metc.exsim.qf.port}"/>
+        <entry key="DefaultApplVerID" value="${metc.exsim.qf.default.appl.ver.id}"/>
+        <entry key="AppDataDictionary" value="${metc.exsim.qf.data.dictionary}"/>
+        <entry key="TransportDataDictionary" value="FIXT11.xml"/>
+        <entry key="StartTime" value="${metc.exsim.qf.starttime}"/>
+        <entry key="EndTime" value="${metc.exsim.qf.endtime}"/>
+        <entry key="TimeZone" value="${metc.exsim.qf.timezone}"/>
+        <entry key="ResetOnLogon" value="${metc.exsim.qf.resetOnLogon}"/>
+        <entry key="ResetOnLogoff" value="${metc.exsim.qf.resetOnLogout}"/>
+        <entry key="ResetOnDisconnect" value="${metc.exsim.qf.resetOnDisconnect}"/>
+        <entry key="ResetOnError" value="${metc.exsim.qf.resetOnError}"/>
+        <entry key="org.marketcetera.sessioncustomization" value="sessionCustomizationAlgoTagsOnly"/>
+      </map>
+    </property>
+  </bean>
+  <!-- session customizations -->
+  <bean id="sessionCustomizationAlgoTagsOnly" class="com.marketcetera.ors.brokers.SessionCustomization">
+    <property name="name" value="sessionCustomizationAlgoTagsOnly"/>
+    <property name="brokerAlgos">
+      <set>
+        <ref bean="vwapAlgoSpec"/>
+        <!-- ref bean="smartAlgoSpec"/-->
+        <!-- ref bean="trailingStopAlgoSpec"/-->
+      </set>
+    </property>
+  </bean>
+  <!-- algo definitions -->
+  <bean id="vwapAlgoSpec" class="org.marketcetera.algo.BrokerAlgoSpec">
+    <property name="name" value="VWAP"/>
+    <property name="algoTagSpecs">
+      <set>
+        <bean class="org.marketcetera.algo.BrokerAlgoTagSpec">
+          <property name="tag" value="9600"/>
+          <property name="label" value="Algo Type (9600)"/>
+          <property name="description" value="Describes the type of algo"/>
+          <property name="isMandatory" value="true"/>
+          <property name="isReadOnly" value="true"/>
+          <property name="defaultValue" value="1"/>
+        </bean>
+        <bean class="org.marketcetera.algo.BrokerAlgoTagSpec">
+          <property name="tag" value="9601"/>
+          <property name="label" value="Interval (9601)"/>
+          <property name="description" value="Interval in ms at which to place child orders"/>
+          <property name="isMandatory" value="true"/>
+          <property name="pattern" value="^[0-9]{1,}$"/>
+          <property name="advice" value="must be a number"/>
+        </bean>
+        <bean class="org.marketcetera.algo.BrokerAlgoTagSpec">
+          <property name="tag" value="9602"/>
+          <property name="label" value="Slices (9602)"/>
+          <property name="description" value="Number of child orders to send"/>
+          <property name="isMandatory" value="true"/>
+          <property name="pattern" value="^[0-9]{1,}$"/>
+          <property name="advice" value="must be a number"/>
+        </bean>
+      </set>
+    </property>
+  </bean>
+  <bean id="smartAlgoSpec" class="org.marketcetera.algo.BrokerAlgoSpec">
+    <property name="name" value="SMART"/>
+    <property name="algoTagSpecs">
+      <set>
+        <bean class="org.marketcetera.algo.BrokerAlgoTagSpec">
+          <property name="tag" value="9600"/>
+          <property name="label" value="Algo Type (9600)"/>
+          <property name="description" value="Describes the type of algo"/>
+          <property name="isMandatory" value="true"/>
+          <property name="isReadOnly" value="true"/>
+          <property name="defaultValue" value="2"/>
+        </bean>
+      </set>
+    </property>
+  </bean>
+  <bean id="trailingStopAlgoSpec" class="org.marketcetera.algo.BrokerAlgoSpec">
+    <property name="name" value="Trailing Stop"/>
+    <property name="algoTagSpecs">
+      <set>
+        <bean class="org.marketcetera.algo.BrokerAlgoTagSpec">
+          <property name="tag" value="9600"/>
+          <property name="label" value="Algo Type (9600)"/>
+          <property name="description" value="Describes the type of algo"/>
+          <property name="isMandatory" value="true"/>
+          <property name="isReadOnly" value="true"/>
+          <property name="defaultValue" value="3"/>
+        </bean>
+        <bean class="org.marketcetera.algo.BrokerAlgoTagSpec">
+          <property name="tag" value="9603"/>
+          <property name="label" value="Offset (9603)"/>
+          <property name="description" value="Trailing stop offset"/>
+          <property name="isMandatory" value="true"/>
+          <property name="pattern" value="^[0-9]{1,}(\.[0-9]{2,6}){0,1}$"/>
+          <property name="advice" value="must be a number in dollars and cents"/>
+        </bean>
+      </set>
+    </property>
+  </bean>
+</beans>

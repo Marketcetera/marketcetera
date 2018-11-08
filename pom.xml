@@ -184,6 +184,88 @@
         <artifactId>saclient</artifactId>
         <version>3.1.0</version>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>admin-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>admin-rpc-core</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>admin-rpc-client</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>noop-keytool</artifactId>
+        <version>3.1.0</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>dare</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>keys-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>notional-value-modifier</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>enterprise-core</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fix-acceptor</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fix-initiator</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fix-core</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fix-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>cluster-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>cluster-core</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>cluster-simple</artifactId>
+        <version>3.1.0</version>
+	<scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>metrics-persist</artifactId>
+        <version>3.1.0</version>
+      </dependency>
       <!-- Compile: QuickFIX/J -->
       <dependency>
         <groupId>org.quickfixj</groupId>
@@ -285,6 +367,26 @@
         </exclusions>
       </dependency>
       <!-- Compile: Other -->
+      <dependency>
+        <groupId>com.atlassian.crowd</groupId>
+        <artifactId>crowd-integration-client-common</artifactId>
+        <version>2.10.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.atlassian.crowd</groupId>
+        <artifactId>crowd-integration-client-rest</artifactId>
+        <version>2.10.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.atlassian.crowd</groupId>
+        <artifactId>crowd-integration-api</artifactId>
+        <version>2.10.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.atlassian.crowd</groupId>
+        <artifactId>embedded-crowd-api</artifactId>
+        <version>2.10.1</version>
+      </dependency>
       <dependency>
         <groupId>org.tensorflow</groupId>
         <artifactId>tensorflow</artifactId>
@@ -411,6 +513,12 @@
             <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient-cache</artifactId>
+        <version>4.5.1</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -789,6 +897,13 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>eventbus-core</artifactId>
+        <version>3.1.0</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>cluster-core</artifactId>
         <version>3.1.0</version>
         <type>test-jar</type>
         <scope>test</scope>
@@ -1221,6 +1336,8 @@
   <modules>
     <module>client</module>
     <module>core</module>
+    <module>cluster</module>
+    <module>dare</module>
     <module>eventbus</module>
     <module>fork</module>
     <module>modules</module>
