@@ -358,26 +358,6 @@
       </dependency>
       <!-- Compile: Other -->
       <dependency>
-        <groupId>com.atlassian.crowd</groupId>
-        <artifactId>crowd-integration-client-common</artifactId>
-        <version>2.10.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.atlassian.crowd</groupId>
-        <artifactId>crowd-integration-client-rest</artifactId>
-        <version>2.10.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.atlassian.crowd</groupId>
-        <artifactId>crowd-integration-api</artifactId>
-        <version>2.10.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.atlassian.crowd</groupId>
-        <artifactId>embedded-crowd-api</artifactId>
-        <version>2.10.1</version>
-      </dependency>
-      <dependency>
         <groupId>org.tensorflow</groupId>
         <artifactId>tensorflow</artifactId>
         <version>1.1.0-rc1</version>
@@ -1334,11 +1314,9 @@
     <module>fork</module>
     <module>modules</module>
     <module>orderloader</module>
-    <!-- Build strategy agent before photon. -->
     <module>saclient</module>
     <module>samples</module>
     <module>strategyagent</module>
-    <module>photon</module>
     <module>util</module>
     <module>util-test</module>
     <module>tools</module>

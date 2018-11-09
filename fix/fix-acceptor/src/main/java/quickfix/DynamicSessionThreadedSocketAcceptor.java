@@ -1,9 +1,9 @@
 package quickfix;
 
+import org.marketcetera.fix.SessionService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Lists;
-import com.marketcetera.fix.SessionService;
 
 /* $License$ */
 
