@@ -31,8 +31,7 @@
     </developer>
   </developers>
   <properties>
-    <mvn.javase.version>7</mvn.javase.version>
-    <mvn.javaee.version>5</mvn.javaee.version>
+    <mvn.javase.version>8</mvn.javase.version>
     <mvn.spring.version>4.3.8.RELEASE</mvn.spring.version>
     <mvn.cxf.version>3.1.11</mvn.cxf.version>
     <mvn.querydsl.version>4.1.4</mvn.querydsl.version>
@@ -1290,7 +1289,6 @@
                 <link>http://commons.apache.org/io/api-release/</link>
                 <link>http://commons.apache.org/lang/api-release/</link>
                 <link>http://commons.apache.org/vfs/apidocs/</link>
-                <link>http://java.sun.com/javaee/${mvn.javaee.version}/docs/api/</link>
                 <link>http://java.sun.com/javase/${mvn.javase.version}/docs/api/</link>
                 <link>http://logging.apache.org/log4j/1.2/apidocs/</link>
                 <link>http://publicobject.com/glazedlists/glazedlists-1.7.0/api/</link>
