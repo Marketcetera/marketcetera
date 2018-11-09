@@ -1,4 +1,4 @@
-package com.marketcetera.ors;
+package org.marketcetera.ors;
 
 public final class Version
 {

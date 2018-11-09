@@ -14,7 +14,7 @@
   <name>Deploy Anywhere Routing Engine</name>
   <properties>
     <version.template.file>src/main/resources/version.java.template</version.template.file>
-    <version.file>src/main/java/com/marketcetera/ors/Version.java</version.file>
+    <version.file>src/main/java/org/marketcetera/ors/Version.java</version.file>
   </properties>
   <dependencies>
     <!-- Compile. -->
