@@ -30,7 +30,14 @@ import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.jms.DataEnvelope;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
+import org.marketcetera.cluster.ClusterActivateWorkUnit;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.ClusterWorkUnit;
+import org.marketcetera.cluster.ClusterWorkUnitType;
+import org.marketcetera.cluster.ClusterWorkUnitUid;
+import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.fix.FixSettingsProvider;
 import org.marketcetera.core.fix.FixSettingsProviderFactory;
 import org.marketcetera.core.notifications.Notification;
@@ -50,21 +57,22 @@ import org.quickfixj.jmx.JmxExporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
 
+import quickfix.ConfigError;
+import quickfix.DefaultSessionFactory;
+import quickfix.RuntimeError;
+import quickfix.Session;
+import quickfix.SessionFactory;
+import quickfix.SessionID;
+import quickfix.SessionSettings;
+import quickfix.ThreadedSocketInitiator;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.marketcetera.core.EnterprisePlatformServices;
 import com.marketcetera.fix.ClusteredBrokerStatus;
 import com.marketcetera.fix.FixSession;
 import com.marketcetera.fix.FixSessionListener;
 import com.marketcetera.fix.FixSessionStatus;
 import com.marketcetera.fix.SessionService;
-import com.marketcetera.keytools.KeyReader;
-import com.marketcetera.matp.cluster.ClusterActivateWorkUnit;
-import com.marketcetera.matp.cluster.ClusterData;
-import com.marketcetera.matp.cluster.ClusterWorkUnit;
-import com.marketcetera.matp.cluster.ClusterWorkUnitType;
-import com.marketcetera.matp.cluster.ClusterWorkUnitUid;
-import com.marketcetera.matp.service.ClusterService;
 import com.marketcetera.ors.brokers.BrokerService;
 import com.marketcetera.ors.brokers.FixSessionRestoreExecutor;
 import com.marketcetera.ors.dao.DatabaseVersionMismatch;
@@ -80,15 +88,6 @@ import com.marketcetera.ors.mbeans.ORSAdmin;
 import com.marketcetera.ors.outgoingorder.OutgoingMessageService;
 import com.marketcetera.ors.ws.ClientSession;
 import com.marketcetera.ors.ws.ClientSessionFactory;
-
-import quickfix.ConfigError;
-import quickfix.DefaultSessionFactory;
-import quickfix.RuntimeError;
-import quickfix.Session;
-import quickfix.SessionFactory;
-import quickfix.SessionID;
-import quickfix.SessionSettings;
-import quickfix.ThreadedSocketInitiator;
 
 /* $License$ */
 
@@ -594,9 +593,6 @@ public class OrderRoutingSystem
                 SLF4JLoggerProxy.info(this,
                                       "Activating {}",
                                       this);
-                keyReader.execute(productKey,
-                                  QuickFIXApplication.COMPONENT_NAME,
-                                  Version.pomversion);
                 isPrimary = true;
                 int totalInstances = clusterData.getTotalInstances();
                 int instanceId = clusterData.getInstanceNumber();
@@ -648,7 +644,6 @@ public class OrderRoutingSystem
                 qfApp.setFixInjectorDirectory(fixInjectorDirectory);
                 qfApp.setFixSettingsProviderFactory(fixSettingsProviderFactory);
                 qfApp.setOutgoingMessageService(outgoingMessageService);
-                qfApp.setKeyReader(keyReader);
                 qfApp.start();
                 // Initiate broker connections.
                 try {
@@ -683,9 +678,9 @@ public class OrderRoutingSystem
                 activated = true;
             }
         } catch (Exception e) {
-            EnterprisePlatformServices.handleException(this,
-                                                       "Unable to activate DARE",
-                                                       e);
+            PlatformServices.handleException(this,
+                                             "Unable to activate DARE",
+                                             e);
             throw e;
         }
     }
@@ -1299,11 +1294,6 @@ public class OrderRoutingSystem
      * key data which allows access to ORS services
      */
     private String productKey;
-    /**
-     * provides key reader services
-     */
-    @Autowired
-    private KeyReader keyReader;
     /**
      * provides access to system info objects
      */

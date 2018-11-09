@@ -18,6 +18,11 @@ import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.Validations;
 import org.marketcetera.client.jms.DataEnvelope;
+import org.marketcetera.cluster.AbstractCallableClusterTask;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.QueueDescriptor;
+import org.marketcetera.cluster.SimpleQueueDescriptor;
+import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXOrder;
@@ -38,10 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
 import com.marketcetera.fix.ClusteredBrokerStatus;
-import com.marketcetera.matp.cluster.CallableClusterTask;
-import com.marketcetera.matp.cluster.ClusterData;
-import com.marketcetera.matp.cluster.QueueDescriptor;
-import com.marketcetera.matp.service.ClusterService;
 import com.marketcetera.ors.brokers.BrokerService;
 import com.marketcetera.ors.brokers.Selector;
 import com.marketcetera.ors.ws.ClientSession;
@@ -274,7 +275,7 @@ public class ClusteredDirectClient
      * @since 2.5.0
      */
     private static class GenerateSessionIdTask<SessionClazz>
-            extends CallableClusterTask<GeneratedSessionId>
+            extends AbstractCallableClusterTask<GeneratedSessionId>
     {
         /* (non-Javadoc)
          * @see java.util.concurrent.Callable#call()
@@ -614,7 +615,7 @@ public class ClusteredDirectClient
     /**
      * describes the cluster queue we're using to manage DARE requests
      */
-    private static final QueueDescriptor<DareRequestPackage> requestHandlerProcessingQueue = new QueueDescriptor<>("dare-request-handler-processing-queue");
+    private static final QueueDescriptor<DareRequestPackage> requestHandlerProcessingQueue = new SimpleQueueDescriptor<>("dare-request-handler-processing-queue");
     /**
      * indicates what host we're running on
      */

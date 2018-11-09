@@ -33,6 +33,12 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.cluster.AbstractCallableClusterTask;
+import org.marketcetera.cluster.AbstractRunnableClusterTask;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.service.ClusterListener;
+import org.marketcetera.cluster.service.ClusterMember;
+import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.fix.FixSettingsProvider;
 import org.marketcetera.core.fix.FixSettingsProviderFactory;
 import org.marketcetera.persist.CollectionPageResponse;
@@ -56,8 +62,16 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import quickfix.Acceptor;
+import quickfix.ConfigError;
+import quickfix.FieldConvertError;
+import quickfix.Initiator;
+import quickfix.Session;
+import quickfix.SessionFactory;
+import quickfix.SessionID;
+import quickfix.SessionSettings;
+
 import com.google.common.collect.Lists;
-import com.hazelcast.core.HazelcastInstanceNotActiveException;
 import com.hazelcast.core.Member;
 import com.hazelcast.core.MemberAttributeEvent;
 import com.hazelcast.core.MembershipEvent;
@@ -77,26 +91,13 @@ import com.marketcetera.fix.dao.FixSessionDao;
 import com.marketcetera.fix.dao.PersistentFixSession;
 import com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor;
 import com.marketcetera.fix.dao.QPersistentFixSession;
-import com.marketcetera.matp.cluster.CallableClusterTask;
-import com.marketcetera.matp.cluster.ClusterData;
-import com.marketcetera.matp.cluster.RunnableClusterTask;
-import com.marketcetera.matp.cluster.hazelcast.HazelcastClusterService;
-import com.marketcetera.matp.service.ClusterService;
 import com.marketcetera.ors.brokers.Broker;
+import com.marketcetera.ors.brokers.BrokerConstants;
 import com.marketcetera.ors.brokers.BrokerService;
 import com.marketcetera.ors.brokers.Brokers;
 import com.marketcetera.ors.brokers.SessionCustomization;
 import com.marketcetera.ors.brokers.SpringBroker;
 import com.querydsl.core.BooleanBuilder;
-
-import quickfix.Acceptor;
-import quickfix.ConfigError;
-import quickfix.FieldConvertError;
-import quickfix.Initiator;
-import quickfix.Session;
-import quickfix.SessionFactory;
-import quickfix.SessionID;
-import quickfix.SessionSettings;
 
 /* $License$ */
 
@@ -108,7 +109,7 @@ import quickfix.SessionSettings;
  * @since $Release$
  */
 public class BrokerServiceImpl
-        implements BrokerService,MembershipListener
+        implements BrokerService,MembershipListener,ClusterListener
 {
     /* (non-Javadoc)
      * @see com.marketcetera.fix.SessionService#getSessionName(quickfix.SessionID)
@@ -208,24 +209,26 @@ public class BrokerServiceImpl
         SLF4JLoggerProxy.trace(this,
                                "Reporting {}",
                                inBrokerStatus);
-        HazelcastClusterService hzClusterService = (HazelcastClusterService)clusterService;
-        try {
-            String xmlStatus = marshall(inBrokerStatus);
-            String key = brokerStatusPrefix+inBrokerStatus.getId()+inBrokerStatus.getHost();
-            hzClusterService.getInstance().getCluster().getLocalMember().setStringAttribute(key,
-                                                                                            xmlStatus);
-        } catch (JAXBException e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e,
-                                  "Unable to update broker status");
-            return;
-        } catch (HazelcastInstanceNotActiveException | NullPointerException ignored) {
-            // these can happen on shutdown and can be safely ignored
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e,
-                                  "Unable to update broker status");
-        }
+//        HazelcastClusterService hzClusterService = (HazelcastClusterService)clusterService;
+//        try {
+//            String xmlStatus = marshall(inBrokerStatus);
+//            String key = brokerStatusPrefix+inBrokerStatus.getId()+inBrokerStatus.getHost();
+//            hzClusterService.getInstance().getCluster().getLocalMember().setStringAttribute(key,
+//                                                                                            xmlStatus);
+//        } catch (JAXBException e) {
+//            SLF4JLoggerProxy.warn(this,
+//                                  e,
+//                                  "Unable to update broker status");
+//            return;
+//        } catch (HazelcastInstanceNotActiveException | NullPointerException ignored) {
+//            // these can happen on shutdown and can be safely ignored
+//        } catch (Exception e) {
+//            SLF4JLoggerProxy.warn(this,
+//                                  e,
+//                                  "Unable to update broker status");
+//        }
+        // TODO
+        throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.brokers.BrokerService#reportBrokerStatusFromAll(com.marketcetera.ors.brokers.FixSession, com.marketcetera.ors.brokers.ClusteredBrokerStatus.Status)
@@ -957,7 +960,7 @@ public class BrokerServiceImpl
         Validate.notNull(clusterService);
         Validate.notNull(fixSessionDao);
         Validate.notNull(fixSessionAttributeDescriptorDao);
-        ((HazelcastClusterService)clusterService).getInstance().getCluster().addMembershipListener(this);
+        clusterService.addClusterListener(this);
         sessionCustomizationsByName.clear();
         if(sessionCustomizations != null) {
             for(SessionCustomization sessionCustomization : sessionCustomizations) {
@@ -1162,6 +1165,30 @@ public class BrokerServiceImpl
         Broker broker = generateBroker(session);
         return broker;
     }
+    /* (non-Javadoc)
+     * @see com.marketcetera.matp.service.ClusterListener#memberAdded(com.marketcetera.matp.service.ClusterMember)
+     */
+    @Override
+    public void memberAdded(ClusterMember inAddedMember)
+    {
+        updateBrokerStatus();
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.matp.service.ClusterListener#memberRemoved(com.marketcetera.matp.service.ClusterMember)
+     */
+    @Override
+    public void memberRemoved(ClusterMember inRemovedMember)
+    {
+        updateBrokerStatus();
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.matp.service.ClusterListener#memberChanged(com.marketcetera.matp.service.ClusterMember)
+     */
+    @Override
+    public void memberChanged(ClusterMember inChangedMember)
+    {
+        updateBrokerStatus();
+    }
     /**
      * Generate session settings from the given FIX sessions.
      *
@@ -1264,30 +1291,32 @@ public class BrokerServiceImpl
     private void updateBrokerStatus()
     {
         synchronized(clusterBrokerStatus) {
-            HazelcastClusterService hzClusterService = (HazelcastClusterService)clusterService;
-            List<ClusteredBrokerStatus> updatedStatus = new ArrayList<>();
-            for(Member member : hzClusterService.getInstance().getCluster().getMembers()) {
-                for(Map.Entry<String,Object> attributeEntry : member.getAttributes().entrySet()) {
-                    String key = attributeEntry.getKey();
-                    if(key.startsWith(brokerStatusPrefix)) {
-                        String rawValue = String.valueOf(attributeEntry.getValue());
-                        ClusteredBrokerStatus status;
-                        try {
-                            status = (ClusteredBrokerStatus)unmarshall(rawValue);
-                            updatedStatus.add(status);
-                        } catch (Exception e) {
-                            SLF4JLoggerProxy.warn(this,
-                                                  e,
-                                                  "Unable to update broker status");
-                            return;
-                        }
-                    }
-                }
-            }
-            clusterBrokerStatus.clear();
-            clusterBrokerStatus.addAll(updatedStatus);
-            logBrokerInstanceData();
+//            HazelcastClusterService hzClusterService = (HazelcastClusterService)clusterService;
+//            List<ClusteredBrokerStatus> updatedStatus = new ArrayList<>();
+//            for(Member member : hzClusterService.getInstance().getCluster().getMembers()) {
+//                for(Map.Entry<String,Object> attributeEntry : member.getAttributes().entrySet()) {
+//                    String key = attributeEntry.getKey();
+//                    if(key.startsWith(brokerStatusPrefix)) {
+//                        String rawValue = String.valueOf(attributeEntry.getValue());
+//                        ClusteredBrokerStatus status;
+//                        try {
+//                            status = (ClusteredBrokerStatus)unmarshall(rawValue);
+//                            updatedStatus.add(status);
+//                        } catch (Exception e) {
+//                            SLF4JLoggerProxy.warn(this,
+//                                                  e,
+//                                                  "Unable to update broker status");
+//                            return;
+//                        }
+//                    }
+//                }
+//            }
+//            clusterBrokerStatus.clear();
+//            clusterBrokerStatus.addAll(updatedStatus);
+//            logBrokerInstanceData();
         }
+        // TODO
+        throw new UnsupportedOperationException();
     }
     /**
      * Marshals the given value as XML.
@@ -1420,7 +1449,7 @@ public class BrokerServiceImpl
      * @since $Release$
      */
     private static class GetSessionAttributesTask
-            extends CallableClusterTask<AcceptorSessionAttributes>
+            extends AbstractCallableClusterTask<AcceptorSessionAttributes>
     {
         /* (non-Javadoc)
          * @see java.util.concurrent.Callable#call()
@@ -1480,7 +1509,7 @@ public class BrokerServiceImpl
      * @since $Release$
      */
     private static class GetSessionStartTask
-            extends CallableClusterTask<Date>
+            extends AbstractCallableClusterTask<Date>
     {
         /* (non-Javadoc)
          * @see java.util.concurrent.Callable#call()
@@ -1522,7 +1551,7 @@ public class BrokerServiceImpl
      * @since $Release$
      */
     private static class StopSessionTask
-            extends CallableClusterTask<Boolean>
+            extends AbstractCallableClusterTask<Boolean>
     {
         /* (non-Javadoc)
          * @see java.util.concurrent.Callable#call()
@@ -1569,7 +1598,7 @@ public class BrokerServiceImpl
      * @since $Release$
      */
     private static class StartSessionTask
-            extends CallableClusterTask<Boolean>
+            extends AbstractCallableClusterTask<Boolean>
     {
         /* (non-Javadoc)
          * @see java.util.concurrent.Callable#call()
@@ -1616,7 +1645,7 @@ public class BrokerServiceImpl
      * @since $Release$
      */
     private static class DisableSessionTask
-            extends CallableClusterTask<Boolean>
+            extends AbstractCallableClusterTask<Boolean>
     {
         /* (non-Javadoc)
          * @see java.util.concurrent.Callable#call()
@@ -1663,7 +1692,7 @@ public class BrokerServiceImpl
      * @since $Release$
      */
     private static class EnableSessionTask
-            extends CallableClusterTask<Boolean>
+            extends AbstractCallableClusterTask<Boolean>
     {
         /* (non-Javadoc)
          * @see java.util.concurrent.Callable#call()
@@ -1718,7 +1747,7 @@ public class BrokerServiceImpl
      * @since $Release$
      */
     private static class ReportBrokerStatusTask
-            extends RunnableClusterTask
+            extends AbstractRunnableClusterTask
     {
         /* (non-Javadoc)
          * @see java.lang.Runnable#run()
@@ -1756,10 +1785,9 @@ public class BrokerServiceImpl
             SLF4JLoggerProxy.trace(BrokerServiceImpl.class,
                                    "Removing status for {}",
                                    session);
-            HazelcastClusterService hzClusterService = (HazelcastClusterService)getClusterService();
             try {
-                hzClusterService.getInstance().getCluster().getLocalMember().removeAttribute(brokerStatusPrefix+brokerStatus.getId()+brokerStatus.getHost());
-            } catch (HazelcastInstanceNotActiveException | NullPointerException ignored) {
+                getClusterService().removeAttribute(BrokerConstants.brokerStatusPrefix+session.getBrokerId()+session.getHost());
+            } catch (NullPointerException ignored) {
                 // these can happen on shutdown and can be safely ignored
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,

@@ -1,5 +1,6 @@
 package com.marketcetera.fix.acceptor;
 
+import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.core.fix.FixSettingsProvider;
 import org.marketcetera.core.fix.FixSettingsProviderFactory;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -18,7 +19,6 @@ import quickfix.mina.acceptor.AcceptorSessionProvider;
 import com.google.common.collect.Lists;
 import com.marketcetera.fix.FixSession;
 import com.marketcetera.fix.SessionService;
-import com.marketcetera.matp.cluster.ClusterData;
 
 /* $License$ */
 

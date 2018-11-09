@@ -4,10 +4,10 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.marketcetera.core.PlatformServices;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
-import com.marketcetera.core.EnterprisePlatformServices;
 import com.marketcetera.fix.FixSession;
 import com.marketcetera.ors.brokers.BrokerService;
 
@@ -33,9 +33,9 @@ public abstract class AbstractFixSessionAgent
                 FixSession fixSession = brokerService.findFixSessionByName(sessionName);
                 doSessionAction(fixSession);
             } catch (Exception e) {
-                EnterprisePlatformServices.handleException(this,
-                                                           "Unable to " + getSessionActionDescription() + " " + sessionName,
-                                                           e);
+                PlatformServices.handleException(this,
+                                                 "Unable to " + getSessionActionDescription() + " " + sessionName,
+                                                 e);
             }
         }
     }

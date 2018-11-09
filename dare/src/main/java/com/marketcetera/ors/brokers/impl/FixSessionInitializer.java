@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,7 +19,6 @@ import quickfix.SessionFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
 
-import com.marketcetera.core.EnterprisePlatformServices;
 import com.marketcetera.fix.FixSession;
 import com.marketcetera.fix.FixSessionFactory;
 import com.marketcetera.ors.brokers.Broker;
@@ -89,9 +89,9 @@ public class FixSessionInitializer
                     FixSession savedSession = brokerService.save(fixSessionFactory.create(attributes));
                     brokerService.enableSession(new SessionID(savedSession.getSessionId()));
                 } catch (Exception e) {
-                    EnterprisePlatformServices.handleException(this,
-                                                               "Unable to initialize a FIX session for " + broker,
-                                                               e);
+                    PlatformServices.handleException(this,
+                                                     "Unable to initialize a FIX session for " + broker,
+                                                     e);
                 }
             }
         }

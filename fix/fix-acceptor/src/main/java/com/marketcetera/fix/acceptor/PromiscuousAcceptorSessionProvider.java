@@ -6,6 +6,8 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.fix.FixSettingsProvider;
 import org.marketcetera.core.fix.FixSettingsProviderFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -32,8 +34,6 @@ import com.marketcetera.fix.FixSessionFactory;
 import com.marketcetera.fix.SessionService;
 import com.marketcetera.fix.store.MessageStoreSession;
 import com.marketcetera.fix.store.MessageStoreSessionDao;
-import com.marketcetera.matp.cluster.ClusterData;
-import com.marketcetera.matp.service.ClusterService;
 
 /* $License$ */
 

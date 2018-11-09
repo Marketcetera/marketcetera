@@ -4,12 +4,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.cluster.service.ClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.marketcetera.fix.FixSession;
 import com.marketcetera.fix.SessionConnector;
 import com.marketcetera.fix.SessionConnectorFactory;
-import com.marketcetera.matp.service.ClusterService;
 
 /* $License$ */
 

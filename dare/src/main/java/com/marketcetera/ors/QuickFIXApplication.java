@@ -31,6 +31,8 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.marketcetera.client.BrokerStatusListener;
 import org.marketcetera.client.BrokerStatusPublisher;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.QueueProcessor;
 import org.marketcetera.core.file.DirectoryWatcherImpl;
@@ -57,40 +59,6 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsOperations;
 
-import com.codahale.metrics.Counter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.hazelcast.core.HazelcastInstanceNotActiveException;
-import com.hazelcast.core.OperationTimeoutException;
-import com.marketcetera.fix.ClusteredBrokerStatus;
-import com.marketcetera.fix.FixSession;
-import com.marketcetera.fix.FixSessionAttributes;
-import com.marketcetera.fix.FixSessionDay;
-import com.marketcetera.fix.FixSessionStatus;
-import com.marketcetera.fix.SessionRestorePayload;
-import com.marketcetera.fix.SessionRestorePayloadHandler;
-import com.marketcetera.fix.SessionService;
-import com.marketcetera.keytools.InvalidProductKey;
-import com.marketcetera.keytools.KeyReader;
-import com.marketcetera.matp.cluster.ClusterData;
-import com.marketcetera.matp.service.ClusterService;
-import com.marketcetera.ors.brokers.Broker;
-import com.marketcetera.ors.brokers.BrokerService;
-import com.marketcetera.ors.brokers.FixSessionRestoreExecutor;
-import com.marketcetera.ors.brokers.impl.BrokerServiceImpl;
-import com.marketcetera.ors.config.LogonAction;
-import com.marketcetera.ors.config.LogoutAction;
-import com.marketcetera.ors.dao.PersistentReportDao;
-import com.marketcetera.ors.dao.ReportService;
-import com.marketcetera.ors.filters.MessageFilter;
-import com.marketcetera.ors.history.RootOrderIdFactory;
-import com.marketcetera.ors.info.RequestInfo;
-import com.marketcetera.ors.info.RequestInfoImpl;
-import com.marketcetera.ors.info.SessionInfo;
-import com.marketcetera.ors.info.SessionInfoImpl;
-import com.marketcetera.ors.info.SystemInfo;
-import com.marketcetera.ors.outgoingorder.OutgoingMessageService;
-
 import quickfix.ApplicationExtended;
 import quickfix.DoNotSend;
 import quickfix.FieldNotFound;
@@ -115,6 +83,36 @@ import quickfix.field.SessionRejectReason;
 import quickfix.field.TargetCompID;
 import quickfix.field.Text;
 import quickfix.field.TradSesStatus;
+
+import com.codahale.metrics.Counter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
+import com.hazelcast.core.OperationTimeoutException;
+import com.marketcetera.fix.ClusteredBrokerStatus;
+import com.marketcetera.fix.FixSession;
+import com.marketcetera.fix.FixSessionAttributes;
+import com.marketcetera.fix.FixSessionDay;
+import com.marketcetera.fix.FixSessionStatus;
+import com.marketcetera.fix.SessionRestorePayload;
+import com.marketcetera.fix.SessionRestorePayloadHandler;
+import com.marketcetera.fix.SessionService;
+import com.marketcetera.ors.brokers.Broker;
+import com.marketcetera.ors.brokers.BrokerService;
+import com.marketcetera.ors.brokers.FixSessionRestoreExecutor;
+import com.marketcetera.ors.brokers.impl.BrokerServiceImpl;
+import com.marketcetera.ors.config.LogonAction;
+import com.marketcetera.ors.config.LogoutAction;
+import com.marketcetera.ors.dao.PersistentReportDao;
+import com.marketcetera.ors.dao.ReportService;
+import com.marketcetera.ors.filters.MessageFilter;
+import com.marketcetera.ors.history.RootOrderIdFactory;
+import com.marketcetera.ors.info.RequestInfo;
+import com.marketcetera.ors.info.RequestInfoImpl;
+import com.marketcetera.ors.info.SessionInfo;
+import com.marketcetera.ors.info.SessionInfoImpl;
+import com.marketcetera.ors.info.SystemInfo;
+import com.marketcetera.ors.outgoingorder.OutgoingMessageService;
 
 /* $License$ */
 
@@ -174,12 +172,13 @@ public class QuickFIXApplication
                         }
                         int senderSeqNum = session.getExpectedSenderNum();
                         int targetSeqNum = session.getExpectedTargetNum();
-                        Map<Object,Object> fixSessionAttributes = clusterService.getMap(FixSessionAttributes.fixSessionAttributesKey);
-                        fixSessionAttributes.put(sessionId,
-                                                 new FixSessionAttributes(sessionId,
-                                                                          senderSeqNum,
-                                                                          targetSeqNum,
-                                                                          acceptorPort));
+                        FixSessionAttributes attributes = new FixSessionAttributes(sessionId,
+                                                                                   senderSeqNum,
+                                                                                   targetSeqNum,
+                                                                                   acceptorPort);
+                        clusterService.addToMap(FixSessionAttributes.fixSessionAttributesKey,
+                                                sessionId.toString(),
+                                                attributes.getAsString());
                     }
                 } catch (OperationTimeoutException e) {
                     SLF4JLoggerProxy.debug(QuickFIXApplication.this,
@@ -285,14 +284,6 @@ public class QuickFIXApplication
         updateStatus(fixSession,
                      true);
         Broker broker = brokerService.generateBroker(fixSession);
-        try {
-            validateKey(inSessionId);
-        } catch (InvalidProductKey e) {
-            Messages.QF_UNAUTHORIZED_DESTINATION.warn(this,
-                                                      e,
-                                                      broker);
-            return;
-        }
         if(broker.getSpringBroker().getLogonActions() != null) {
             for(LogonAction action : broker.getSpringBroker().getLogonActions()) {
                 try {
@@ -808,24 +799,6 @@ public class QuickFIXApplication
         productKey = inProductKey;
     }
     /**
-     * Get the keyReader value.
-     *
-     * @return a <code>KeyReader</code> value
-     */
-    public KeyReader getKeyReader()
-    {
-        return keyReader;
-    }
-    /**
-     * Sets the keyReader value.
-     *
-     * @param inKeyReader a <code>KeyReader</code> value
-     */
-    public void setKeyReader(KeyReader inKeyReader)
-    {
-        keyReader = inKeyReader;
-    }
-    /**
      * Sets the systemInfo value.
      *
      * @param a <code>SystemInfo</code> value
@@ -1254,18 +1227,6 @@ public class QuickFIXApplication
         }
     }
     /**
-     * Validate the product key with the given session.
-     *
-     * @param inSessionId a <code>SessionID</code> value
-     * @throws InvalidProductKey if the validation fails
-     */
-    protected void validateKey(SessionID inSessionId)
-    {
-        keyReader.execute(productKey,
-                          COMPONENT_NAME,
-                          Version.pomversion);
-    }
-    /**
      * Gets the SessionID value appropriate for FIX injection from the given message.
      *
      * @param inMessage a <code>Message</code> value
@@ -1430,7 +1391,6 @@ public class QuickFIXApplication
 //        if(oldStatus == inStatus) {
 //            return;
 //        }
-        validateKey(new SessionID(inFixSession.getSessionId()));
         // TODO is this crap necessary?
         Broker broker = brokerService.generateBroker(inFixSession);
         Messages.QF_SENDING_STATUS.info(this,
@@ -2201,11 +2161,6 @@ public class QuickFIXApplication
      */
     @Autowired
     private SessionService sessionService;
-    /**
-     * provides key reader services
-     */
-    @Autowired
-    private KeyReader keyReader;
     /**
      * identifies this cluster instance
      */

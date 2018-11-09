@@ -8,6 +8,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.concurrent.GuardedBy;
 
 import org.apache.commons.lang3.Validate;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.CloseableLock;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Order;
@@ -15,8 +17,6 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.marketcetera.fix.FixSession;
-import com.marketcetera.matp.cluster.ClusterData;
-import com.marketcetera.matp.service.ClusterService;
 
 /* $License$ */
 

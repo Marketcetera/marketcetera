@@ -2,9 +2,8 @@ package com.marketcetera.ors;
 
 import java.io.Serializable;
 
+import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.util.ws.tags.SessionId;
-
-import com.marketcetera.matp.cluster.ClusterData;
 
 /* $License$ */
 

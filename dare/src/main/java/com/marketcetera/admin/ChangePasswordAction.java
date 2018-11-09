@@ -4,9 +4,9 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
+import org.marketcetera.core.PlatformServices;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.marketcetera.core.EnterprisePlatformServices;
 import com.marketcetera.ors.dao.UserService;
 import com.marketcetera.ors.security.SimpleUser;
 
@@ -44,9 +44,9 @@ public class ChangePasswordAction
                                       newPassword.toCharArray());
             simpleUser = userService.save(simpleUser);
         } catch (Exception e) {
-            EnterprisePlatformServices.handleException(this,
-                                                       "Unable to change password for " + username,
-                                                       e);
+            PlatformServices.handleException(this,
+                                             "Unable to change password for " + username,
+                                             e);
         }
     }
     /**

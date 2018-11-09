@@ -8,11 +8,9 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.HasClusterData;
 import org.marketcetera.trade.BrokerID;
-
-import com.marketcetera.matp.cluster.ClusterData;
-import com.marketcetera.matp.cluster.HasClusterData;
-import com.marketcetera.matp.cluster.hazelcast.HazelcastClusterData;
 
 /* $License$ */
 
@@ -46,7 +44,9 @@ public class ClusteredBrokerStatus
               new BrokerID(inFixSession.getBrokerId()),
               inIsLoggedOn,
               inFixSession.getSessionSettings());
-        clusterData = (HazelcastClusterData) inClusterData;
+        // TODO
+//        clusterData = (HazelcastClusterData)inClusterData;
+        clusterData = null;
         status = inStatus;
         Validate.notNull(clusterData);
         Validate.notNull(status);
@@ -188,6 +188,6 @@ public class ClusteredBrokerStatus
     /**
      * identifies the cluster
      */
-    private final HazelcastClusterData clusterData;
+    private final ClusterData clusterData;
     private static final long serialVersionUID = -1837912946225621L;
 }

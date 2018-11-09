@@ -14,19 +14,13 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.joda.time.DateTime;
+import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.core.fix.FixSettingsProvider;
 import org.marketcetera.core.fix.FixSettingsProviderFactory;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
-import com.marketcetera.fix.dao.FixSessionDao;
-import com.marketcetera.fix.dao.PersistentFixSession;
-import com.marketcetera.matp.cluster.ClusterData;
 
 import quickfix.Acceptor;
 import quickfix.ConfigError;
@@ -36,6 +30,12 @@ import quickfix.Session;
 import quickfix.SessionFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
+import com.marketcetera.fix.dao.FixSessionDao;
+import com.marketcetera.fix.dao.PersistentFixSession;
 
 /* $License$ */
 

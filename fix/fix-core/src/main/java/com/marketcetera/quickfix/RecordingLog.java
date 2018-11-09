@@ -6,17 +6,17 @@ import java.util.List;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.core.BatchQueueProcessor;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-
-import com.marketcetera.core.EnterprisePlatformServices;
-import com.marketcetera.fix.IncomingMessage;
-import com.marketcetera.fix.SessionService;
-import com.marketcetera.fix.dao.PersistentIncomingMessage;
 
 import quickfix.Log;
 import quickfix.LogFactory;
 import quickfix.Message;
 import quickfix.SessionID;
+
+import com.marketcetera.fix.IncomingMessage;
+import com.marketcetera.fix.SessionService;
+import com.marketcetera.fix.dao.PersistentIncomingMessage;
 
 /* $License$ */
 
@@ -154,7 +154,7 @@ public class RecordingLog
                                                                                                            fixMessage);
                         newMessages.add((PersistentIncomingMessage)incomingMessage);
                     } catch (Exception e) {
-                        if(EnterprisePlatformServices.isShutdown(e)) {
+                        if(PlatformServices.isShutdown(e)) {
                             throw e;
                         }
                         if(SLF4JLoggerProxy.isDebugEnabled(this)) {
@@ -171,7 +171,7 @@ public class RecordingLog
                 }
                 configuration.getIncomingMessageDao().save(newMessages);
             } catch (Exception e) {
-                if(EnterprisePlatformServices.isShutdown(e)) {
+                if(PlatformServices.isShutdown(e)) {
                     // this exception can be safely ignored
                     return;
                 }

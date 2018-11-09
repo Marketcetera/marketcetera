@@ -13,8 +13,8 @@
   <name>FIX Parent</name>
   <modules>
     <module>fix-acceptor</module>
-    <module>fix-core</module>
     <module>fix-api</module>
+    <module>fix-core</module>
     <module>fix-initiator</module>
   </modules>
 </project>

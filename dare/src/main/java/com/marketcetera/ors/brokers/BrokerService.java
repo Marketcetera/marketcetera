@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
@@ -20,7 +21,6 @@ import com.marketcetera.fix.FixSessionAttributeDescriptor;
 import com.marketcetera.fix.FixSessionListener;
 import com.marketcetera.fix.FixSessionStatus;
 import com.marketcetera.fix.SessionNameProvider;
-import com.marketcetera.matp.cluster.ClusterData;
 
 /* $License$ */
 

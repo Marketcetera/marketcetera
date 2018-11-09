@@ -20,6 +20,7 @@ import org.marketcetera.client.jms.DataEnvelope;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
@@ -79,7 +80,6 @@ import quickfix.field.Text;
 import com.google.common.collect.Sets;
 import com.marketcetera.admin.NotAuthorizedException;
 import com.marketcetera.admin.service.AuthorizationService;
-import com.marketcetera.core.EnterprisePlatformServices;
 import com.marketcetera.ors.brokers.Broker;
 import com.marketcetera.ors.brokers.BrokerService;
 import com.marketcetera.ors.brokers.Selector;
@@ -592,7 +592,7 @@ public class RequestHandler
                                                    newOrReplaceOrder.getOrderID(),
                                                    newPrice);
                     } catch (Exception e) {
-                        String cause = EnterprisePlatformServices.getMessage(e);
+                        String cause = PlatformServices.getMessage(e);
                         Messages.RH_PEG_TO_MIDPOINT_FAILED.warn(this,
                                                                 e,
                                                                 newOrReplaceOrder.getOrderID(),

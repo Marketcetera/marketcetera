@@ -1,10 +1,10 @@
 package com.marketcetera.test;
 
-import static com.marketcetera.core.EnterprisePlatformServices.divisionContext;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.marketcetera.core.PlatformServices.divisionContext;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -25,6 +25,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import junitparams.JUnitParamsRunner;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +41,7 @@ import org.junit.runner.RunWith;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ReportListener;
 import org.marketcetera.core.ApplicationContainer;
+import org.marketcetera.core.PriceQtyTuple;
 import org.marketcetera.core.fix.FixSettingsProvider;
 import org.marketcetera.core.fix.FixSettingsProviderFactory;
 import org.marketcetera.core.instruments.InstrumentToMessage;
@@ -73,11 +76,21 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
+import quickfix.Acceptor;
+import quickfix.DataDictionary;
+import quickfix.FixVersions;
+import quickfix.Initiator;
+import quickfix.Message;
+import quickfix.MessageFactory;
+import quickfix.Session;
+import quickfix.SessionID;
+import quickfix.SessionSettings;
+import quickfix.field.MsgType;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.marketcetera.admin.impl.PersistentPermissionDao;
 import com.marketcetera.admin.service.AuthorizationService;
-import com.marketcetera.core.PriceQtyTuple;
 import com.marketcetera.fix.ClusteredBrokerStatus;
 import com.marketcetera.fix.FixSession;
 import com.marketcetera.fix.FixSessionFactory;
@@ -90,18 +103,6 @@ import com.marketcetera.ors.dao.OrderStatusService;
 import com.marketcetera.ors.dao.PersistentReportDao;
 import com.marketcetera.ors.dao.ReportService;
 import com.marketcetera.ors.dao.UserService;
-
-import junitparams.JUnitParamsRunner;
-import quickfix.Acceptor;
-import quickfix.DataDictionary;
-import quickfix.FixVersions;
-import quickfix.Initiator;
-import quickfix.Message;
-import quickfix.MessageFactory;
-import quickfix.Session;
-import quickfix.SessionID;
-import quickfix.SessionSettings;
-import quickfix.field.MsgType;
 
 /* $License$ */
 

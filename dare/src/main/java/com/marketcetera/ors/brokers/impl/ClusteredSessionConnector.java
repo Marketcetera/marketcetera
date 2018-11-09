@@ -12,6 +12,8 @@ import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.marketcetera.cluster.AbstractCallableClusterTask;
+import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.fix.FixSettingsProvider;
 import org.marketcetera.core.fix.FixSettingsProviderFactory;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -23,13 +25,9 @@ import quickfix.Session;
 import quickfix.SessionID;
 
 import com.google.common.collect.Lists;
-import com.hazelcast.core.HazelcastInstanceNotActiveException;
-import com.hazelcast.core.OperationTimeoutException;
 import com.marketcetera.fix.FixSession;
 import com.marketcetera.fix.FixSessionAttributes;
 import com.marketcetera.fix.SessionConnector;
-import com.marketcetera.matp.cluster.CallableClusterTask;
-import com.marketcetera.matp.service.ClusterService;
 import com.marketcetera.ors.brokers.BrokerService;
 
 /* $License$ */
@@ -138,23 +136,25 @@ public class ClusteredSessionConnector
      */
     private void updateSessionValues()
     {
-        try {
-            Map<Object,Object> clusterFixSessionAttributes = clusterService.getMap(FixSessionAttributes.fixSessionAttributesKey);
-            if(clusterFixSessionAttributes.containsKey(sessionId)) {
-                FixSessionAttributes fixSessionAttributes = (FixSessionAttributes)clusterFixSessionAttributes.get(sessionId);
-                SLF4JLoggerProxy.trace(this,
-                                      "Found {} for {}",
-                                      fixSessionAttributes,
-                                      sessionId);
-                cachedSenderSeqNum = fixSessionAttributes.getNextSenderSeqNum();
-                cachedTargetSeqNum = fixSessionAttributes.getNextTargetSeqNum();
-                cachedAcceptorPort = fixSessionAttributes.getAcceptorPort();
-            }
-        } catch (OperationTimeoutException e) {
-            SLF4JLoggerProxy.debug(this,
-                                   "Cluster in transition, returning cached seq num values for {}",
-                                   sessionId);
-        }
+//        try {
+//            Map<String,String> clusterFixSessionAttributes = clusterService.getMap(FixSessionAttributes.fixSessionAttributesKey);
+//            if(clusterFixSessionAttributes.containsKey(sessionId.toString())) {
+//                FixSessionAttributes fixSessionAttributes = FixSessionAttributes.getFromString(clusterFixSessionAttributes.get(sessionId.toString()));
+//                SLF4JLoggerProxy.trace(this,
+//                                      "Found {} for {}",
+//                                      fixSessionAttributes,
+//                                      sessionId);
+//                cachedSenderSeqNum = fixSessionAttributes.getNextSenderSeqNum();
+//                cachedTargetSeqNum = fixSessionAttributes.getNextTargetSeqNum();
+//                cachedAcceptorPort = fixSessionAttributes.getAcceptorPort();
+//            }
+//        } catch (Exception e) {
+//            SLF4JLoggerProxy.debug(this,
+//                                   "Cluster in transition, returning cached seq num values for {}",
+//                                   sessionId);
+//        }
+        // TODO
+        throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
      * @see com.marketcetera.tiaacref.irouter.broker.SessionConnector#setNextTargetSequenceNumber(int)
@@ -228,7 +228,7 @@ public class ClusteredSessionConnector
      * @since 1.0.1
      */
     private static abstract class AbstractTask<Clazz extends Serializable>
-            extends CallableClusterTask<Clazz>
+            extends AbstractCallableClusterTask<Clazz>
     {
         /**
          * Gets the result of the task.
@@ -249,7 +249,7 @@ public class ClusteredSessionConnector
                     }
                 }
                 return result;
-            } catch (InterruptedException | HazelcastInstanceNotActiveException | NullPointerException ignored) {
+            } catch (InterruptedException | NullPointerException ignored) {
                 // this can happen normally on shutdown and can be safely ignored
             } catch (ExecutionException | TimeoutException ignored) {
                 // this can happen if a cluster member has suddenly dropped out and can be safely ignored
@@ -286,12 +286,13 @@ public class ClusteredSessionConnector
         protected void updateSequenceNumberStore(int inSenderSeqNum,
                                                  int inTargetSeqNum)
         {
-            Map<Object,Object> allFixSessionAttributes = getClusterService().getMap(FixSessionAttributes.fixSessionAttributesKey);
-            allFixSessionAttributes.put(getSessionId(),
-                                     new FixSessionAttributes(getSessionId(),
-                                                              inSenderSeqNum,
-                                                              inTargetSeqNum,
-                                                              fixSettingsProviderFactory.create().getAcceptorPort()));
+            FixSessionAttributes attributes = new FixSessionAttributes(getSessionId(),
+                                                                       inSenderSeqNum,
+                                                                       inTargetSeqNum,
+                                                                       fixSettingsProviderFactory.create().getAcceptorPort());
+            getClusterService().addToMap(FixSessionAttributes.fixSessionAttributesKey,
+                                         getSessionId().toString(),
+                                         attributes.getAsString());
         }
         /**
          * Get the message store for the session.

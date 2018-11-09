@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.collect.Sets;
 import com.marketcetera.admin.User;
 import com.marketcetera.admin.service.AuthorizationService;
-import com.marketcetera.core.EnterprisePlatformServices;
+import com.marketcetera.core.PlatformServices;
 import com.marketcetera.ors.dao.UserService;
 import com.marketcetera.ors.info.SessionInfo;
 import com.marketcetera.ors.security.SimpleUser;
@@ -297,7 +297,7 @@ public class UserManager
                 supervisors.addAll(authzService.getSupervisorsFor(actor.getName(),
                                                                   TradingPermissions.ViewReportAction.name()));
             } catch (Exception e) {
-                EnterprisePlatformServices.handleException(UserManager.this,
+                PlatformServices.handleException(UserManager.this,
                                                            "Cannot find supervisors for " + inMessage,
                                                            e);
             }
