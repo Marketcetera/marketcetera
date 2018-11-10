@@ -12,7 +12,7 @@
        xmlns:hz="http://www.hazelcast.com/schema/spring"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.hazelcast.com/schema/spring http://www.hazelcast.com/schema/spring/hazelcast-spring.xsd">
-  <bean id="clusterService" class="com.marketcetera.matp.cluster.hazelcast.HazelcastClusterService" depends-on="metc-hcast">
+  <bean id="clusterService" class="org.marketcetera.matp.cluster.hazelcast.HazelcastClusterService" depends-on="metc-hcast">
     <property name="instanceName" value="matp"/>
     <!-- interval to wait to obtain a cluster-wide lock -->
     <property name="lockTimeout" value="1000"/>

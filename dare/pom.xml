@@ -499,7 +499,7 @@
                  </execution>
                </executions>
                <configuration>
-                 <mainClass>com.marketcetera.ors.dao.DBInit</mainClass>
+                 <mainClass>org.marketcetera.ors.dao.DBInit</mainClass>
                  <arguments>
                    <argument>org.marketcetera.core.MultiInstanceApplicationContainer</argument>
                  </arguments>

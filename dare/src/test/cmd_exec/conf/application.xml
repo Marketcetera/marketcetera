@@ -10,9 +10,8 @@
                            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
   <import resource="properties.xml"/>
   <import resource="dare/dare.xml"/>
-  <import resource="cluster.xml"/>
-  <context:component-scan base-package="org.marketcetera,com.marketcetera"/>
-  <jpa:repositories base-package="org.marketcetera,com.marketcetera"/>
+  <context:component-scan base-package="org.marketcetera,org.marketcetera"/>
+  <jpa:repositories base-package="org.marketcetera,org.marketcetera"/>
   <tx:annotation-driven/>
   <!-- symbol resolvers: add additional resolvers as necessary in precedence order -->
   <bean id="symbolResolverService" class="org.marketcetera.symbol.IterativeSymbolResolver">

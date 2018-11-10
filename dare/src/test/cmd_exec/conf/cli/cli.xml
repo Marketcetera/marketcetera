@@ -18,9 +18,9 @@
                            http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
                            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
   <import resource="../dare/db.xml"/>
-  <context:component-scan base-package="org.marketcetera.core,com.marketcetera.ors"/>
-  <jpa:repositories base-package="org.marketcetera.core,com.marketcetera.ors"/>
+  <context:component-scan base-package="org.marketcetera.core,org.marketcetera.ors"/>
+  <jpa:repositories base-package="org.marketcetera.core,org.marketcetera.ors"/>
   <tx:annotation-driven/>
-  <bean id="userService" class="com.marketcetera.ors.dao.impl.UserServiceImpl"/>
-  <bean id="cliApp" class="com.marketcetera.ors.security.ORSAdminCLI" init-method="start" destroy-method="stop"/>
+  <bean id="userService" class="org.marketcetera.ors.dao.impl.UserServiceImpl"/>
+  <bean id="cliApp" class="org.marketcetera.ors.security.ORSAdminCLI" init-method="start" destroy-method="stop"/>
 </beans>

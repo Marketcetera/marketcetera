@@ -5,241 +5,241 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
   <!-- fix session descriptor initializer -->
-  <bean id="fixSessionAttributeDescriptorInitializer" class="com.marketcetera.ors.brokers.impl.FixSessionAttributeDescriptorInitializer">
+  <bean id="fixSessionAttributeDescriptorInitializer" class="org.marketcetera.ors.brokers.impl.FixSessionAttributeDescriptorInitializer">
     <property name="descriptors">
       <list>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SenderSubID"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="(Optional) Your subID as associated with this FIX session"/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SenderLocationID"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="(Optional) Your locationID as associated with this FIX session"/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="TargetSubID"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="(Optional) counterparty's subID as associated with this FIX session"/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="TargetLocationID"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="(Optional) counterparty's locationID as associated with this FIX session"/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SessionQualifier"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="Additional qualifier to disambiguate otherwise identical sessions. This can only be used with initiator sessions.Note: See Special notes for Oracle."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="DefaultApplVerID"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="Required only for FIXT 1.1 (and newer). Ignored for earlier transport versions. Specifies the default application version ID for the session. This can either be the ApplVerID enum (see the ApplVerID field) the beginString for the default version."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="MillisecondsInTimeStamp"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="Determines if milliseconds should be added to timestamps. Only available for FIX.4.2 and greater."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ClosedResendInterval"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Use actual end of sequence gap for resend requests rather than using ''infinity'' as the end sequence of the gap. Not recommended by the FIX specification, but needed for some counterparties."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="UseDataDictionary"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="Tell session whether or not to expect a data dictionary. You should always use a DataDictionary if you are using repeating groups."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="DataDictionary"/>
           <property name="defaultValue" value="FIX42.xml"/>
           <property name="description" value="XML definition file for validating incoming FIX messages. If no DataDictionary is supplied, only basic message validation will be done. This setting should only be used with FIX transport versions old than FIXT 1.1. See TransportDataDictionary and ApplicationDataDictionary for FIXT 1.1 settings."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="TransportDataDictionary"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="XML definition file for validating admin (transport) messages. This setting is only valid for the FIXT 1.1 (or newer) sessions. See DataDictionary for older transport versions (FIX 4.0-4.4) and for additional information."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="AppDataDictionary"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="XML definition file for validating application messages. This setting is only valid for the FIXT 1.1 (or newer) sessions. See DataDictionary for older transport versions (FIX 4.0-4.4) and for additional information. This setting supports the possibility of a custom application data dictionary for each session. This setting would only be used with FIXT 1.1 and new transport protocols. This setting can be used as a prefix to specify multiple application dictionaries for the FIXT transport. For example: DefaultApplVerID=FIX.4.2 # For default application version ID AppDataDictionary=FIX42.xml # For nondefault application version ID # Use beginString suffix for app version AppDataDictionary.FIX.4.4=FIX44.xml This would use FIX42.xml for the default application version ID and FIX44.xml for any FIX 4.4 messages."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ValidateFieldsOutOfOrder"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="If set to N, fields that are out of order (i.e. body fields in the header, or header fields in the body) will not be rejected. Useful for connecting to systems which do not properly order fields."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ValidateFieldsHaveValues"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="If set to N, fields without values (empty) will not be rejected. Useful for connecting to systems which improperly send empty tags."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ValidateUserDefinedFields"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="If set to N, user defined fields will not be rejected if they are not defined in the data dictionary, or are present in messages they do not belong to."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ValidateUnorderedGroupFields"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="Session validation setting for enabling whether field ordering is * validated. Values are ''Y'' or ''N''. Default is ''Y''."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ValidateIncomingMessage"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="Allow to bypass the message validation (against the dictionary). Default is ''Y''."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ValidateSequenceNumbers"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="Check the next expected target SeqNum against the received SeqNum. Default is ''Y''. If enabled and a mismatch is detected, apply the following logic:if lower than expected SeqNum , logout if higher, send a resend request If not enabled and a mismatch is detected, nothing is done. Must be enabled for EnableNextExpectedMsgSeqNum to work."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="AllowUnknownMsgFields"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Allow unknown fields in messages. This is intended for unknown fields with tags lt 5000 (not user defined fields). Use ValidateUserDefinedFields for controlling validation of tags ge 5000."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="CheckCompID"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="If set to Y, messages must be received from the counterparty with the correct SenderCompID and TargetCompID. Some systems will send you different CompIDs by design, so you must set this to N."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="CheckLatency"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="If set to Y, messages must be received from the counterparty within a defined number of seconds (see MaxLatency). It is useful to turn this off if a system uses localtime for its timestamps instead of GMT."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="MaxLatency"/>
           <property name="defaultValue" value="120"/>
           <property name="description" value="If CheckLatency is set to Y, this defines the number of seconds latency allowed for a message to be processed."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="RejectInvalidMessage"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="If RejectInvalidMessage is set to N, only a warning will be logged on reception of message that fails data dictionary validation."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="RejectMessageOnUnhandledException"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="If this configuration is enabled, an uncaught Exception or Error in the application's message processing will lead to a (BusinessMessage)Reject being sent to the counterparty and the incoming message sequence number will be incremented. If disabled (default), the problematic incoming message is discarded and the message sequence number is not incremented. Processing of the next valid message will cause detection of a sequence gap and a ResendRequest will be generated."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="RequiresOrigSendingTime"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="If RequiresOrigSendingTime is set to N, PossDup messages lacking that field will not be rejected."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ReconnectInterval"/>
           <property name="defaultValue" value="30"/>
           <property name="description" value="Time between reconnection attempts in seconds. Only used for initiators"/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="HeartBtInt"/>
           <property name="defaultValue" value="30"/>
           <property name="description" value="Heartbeat interval in seconds. Only used for initiators."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="LogonTimeout"/>
           <property name="defaultValue" value="10"/>
           <property name="description" value="Number of seconds to wait for a logon response before disconnecting."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="LogoutTimeout"/>
           <property name="defaultValue" value="2"/>
           <property name="description" value="Number of seconds to wait for a logout response before disconnecting."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketConnectProtocol"/>
           <property name="defaultValue" value="TCP"/>
           <property name="description" value="Specifies the initiator communication protocol. The SocketConnectHost is not used with the VM_PIPE protocol, but the SocketConnectPort is significant and must match the acceptor configuration."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketLocalPort"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="Bind the local socket to this port. Only used with a SocketInitiator. If unset the socket will be bound to a free port from the ephemeral port range."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketLocalHost"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="Bind the local socket to this host. Only used with a SocketAcceptor. If unset the socket will be bound to all local interfaces."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketAcceptProtocol"/>
           <property name="defaultValue" value="TCP"/>
           <property name="description" value="Specifies the acceptor communication protocol. The SocketAcceptAddress is not used with the VM_PIPE protocol, but the SocketAcceptPort is significant and must match the initiator configuration."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="RefreshOnLogon"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="Refresh the session state when a logon is received. This allows a simple form of failover when the message store data is persistent. The option will be ignored for message stores that are not persistent (e.g., MemoryStore)."/>
@@ -247,273 +247,273 @@
           <property name="isRequired" value="false"/>
           <property name="advice" value="Enter 'Y' or 'N'"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketUseSSL"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Enables SSL usage for QFJ acceptor or initiator."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketKeyStore"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="KeyStore to use with SSL"/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketKeyStorePassword"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="KeyStore password"/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketKeepAlive"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="When the keepalive option is set for a TCP socket and no data has been exchanged across the socket in either direction for 2 hours (NOTE: the actual value is implementation dependent), TCP automatically sends a keepalive probe to the peer. This probe is a TCP segment to which the peer must respond. One of three responses is expected: The peer responds with the expected ACK. The application is not notified (since everything is OK). TCP will send another probe following another 2 hours of inactivity. The peer responds with an RST, which tells the local TCP that the peer host has crashed and rebooted. The socket is closed. There is no response from the peer. The socket is closed. The purpose of this option is to detect if the peer host crashes."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketOobInline"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="When the OOBINLINE option is set, any TCP urgent data received on the socket will be received through the socket input stream. When the option is disabled (which is the default) urgent data is silently discarded."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketReceiveBufferSize"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="Set a hint the size of the underlying buffers used by the platform for incoming network I/O. When used in set, this is a suggestion to the kernel from the application about the size of buffers to use for the data to be received over the socket."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketReuseAddress"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="Sets SO_REUSEADDR for a socket. This is used only for MulticastSockets in java, and it is set by default for MulticastSockets."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketSendBufferSize"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="Set a hint the size of the underlying buffers used by the platform for outgoing network I/O. When used in set, this is a suggestion to the kernel from the application about the size of buffers to use for the data to be sent over the socket."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketLinger"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="Specify a linger-on-close timeout. This option disables/enables immediate return from a close() of a TCP Socket. Enabling this option with a non-zero Integer timeout means that a close() will block pending the transmission and acknowledgement of all data written to the peer, at which point the socket is closed gracefully. Upon reaching the linger timeout, the socket is closed forcefully, with a TCP RST. Enabling the option with a timeout of zero does a forceful close immediately. If the specified timeout value exceeds 65,535 it will be reduced to 65,535."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketTcpNoDelay"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="Disable Nagle's algorithm for this connection. Written data to the network is not buffered pending acknowledgement of previously written data."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketTrafficClass"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="Sets traffic class or type-of-service octet in the IP header for packets sent from this Socket. As the underlying network implementation may ignore this value applications should consider it a hint. The tc must be in the range 0 = tc = 255 or an IllegalArgumentException will be thrown. Notes: for Internet Protocol v4 the value consists of an octet with precedence and TOS fields as detailed in RFC 1349. The TOS field is bitset created by bitwise-or'ing values such the following :- IPTOS_LOWCOST (0x02) IPTOS_RELIABILITY (0x04) IPTOS_THROUGHPUT (0x08) IPTOS_LOWDELAY (0x10) The last low order bit is always ignored as this corresponds to the MBZ (must be zero) bit. Setting bits in the precedence field may result in a SocketException indicating that the operation is not permitted."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketSynchronousWrites"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Write messages synchronously. This is not generally recommended as it may result in performance degradation. The MINA communication layer is asynchronous by design, but this option will override that behavior if needed."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SocketSynchronousWriteTimeout"/>
           <property name="defaultValue" value="30000"/>
           <property name="description" value="The time in milliseconds to wait for a write to complete."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="PersistMessages"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="If set to N, no messages will be persisted. This will force QFJ to always send GapFills instead of resending messages. Use this if you know you never want to resend a message. Useful for market data streams."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="FileIncludeMilliseconds"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Controls whether milliseconds are included in log time stamps."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="FileIncludeTimestampForMessages"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Controls whether time stamps are included on message log entries."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SLF4JLogEventCategory"/>
           <property name="defaultValue" value="quickfixj.event"/>
           <property name="description" value="Log category for logged events."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SLF4JLogIncomingMessageCategory"/>
           <property name="defaultValue" value="quickfixj.msg.incoming"/>
           <property name="description" value="Log category for incoming messages."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SLF4JLogOutgoingMessageCategory"/>
           <property name="defaultValue" value="quickfixj.msg.outgoing"/>
           <property name="description" value="Log category for outgoing messages."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SLF4JLogPrependSessionID"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="Controls whether session ID is prepended to log message."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SLF4JLogHeartbeats"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Controls whether heartbeats are logged."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ScreenLogEvents"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="Log events to screen."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ScreenLogShowIncoming"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="Log incoming messages to screen."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ScreenLogShowOutgoing"/>
           <property name="defaultValue" value="Y"/>
           <property name="description" value="Log outgoing messages to screen."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ScreenLogShowHeartbeats"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Filter heartbeats from output (both incoming and outgoing)"/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ResetOnLogon"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Determines if sequence numbers should be reset before sending/receiving a logon request."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ResetOnLogout"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Determines if sequence numbers should be reset to 1 after a normal logout termination."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ResetOnDisconnect"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Determines if sequence numbers should be reset to 1 after an abnormal termination."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ResetOnError"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Session setting for doing an automatic reset when an error occurs. A reset means disconnect, sequence numbers reset, store cleaned and reconnect, as for a daily reset."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="DisconnectOnError"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Session setting for doing an automatic disconnect when an error occurs."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="EnableLastMsgSeqNumProcessed"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Add tag LastMsgSeqNumProcessed in the header (optional tag 369)."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="EnableNextExpectedMsgSeqNum"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Add tag NextExpectedMsgSeqNum (optional tag 789) on the sent Logon message and use value of tag 789 on received Logon message to synchronize session. This should not be enabled for FIX versions lt 4.4. Only works when ValidateSequenceNumbers is enabled."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ResendRequestChunkSize"/>
           <property name="defaultValue" value="0"/>
           <property name="description" value="Setting to limit the size of a resend request in case of missing messages. This is useful when the remote FIX engine does not allow to ask for more than n message for a ResendRequest. E.g. if the ResendRequestChunkSize is set to 5 and a gap of 7 messages is detected, a first resend request will be sent for 5 messages. When this gap has been filled, another resend request for 2 messages will be sent. If the ResendRequestChunkSize is set to 0, only one ResendRequest for all the missing messages will be sent."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ContinueInitializationOnError"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Continue initializing sessions if an error occurs."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="SendRedundantResendRequests"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Allows sending of redundant resend requests."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="TestRequestDelayMultiplier"/>
           <property name="defaultValue" value="0.5"/>
           <property name="description" value="Fraction of the heartbeat interval which defines the additional time to wait if a TestRequest sent after a missing heartbeat times out."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="DisableHeartBeatCheck"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Heartbeat detection is disabled. A disconnect due to a missing heartbeat will never occur."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="ForceResendWhenCorruptedStore"/>
           <property name="defaultValue" value="N"/>
           <property name="description" value="Fill in heartbeats on resend when reading from message store fails."/>
           <property name="pattern" value=""/>
           <property name="isRequired" value="false"/>
         </bean>
-        <bean class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
+        <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">
           <property name="name" value="org.marketcetera.sessioncustomization"/>
           <property name="defaultValue" value=""/>
           <property name="description" value="Name of the session modifiers to apply to this session"/>

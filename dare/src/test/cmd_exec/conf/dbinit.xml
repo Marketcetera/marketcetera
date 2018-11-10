@@ -18,24 +18,24 @@
                            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
   <import resource="properties.xml"/>
   <import resource="dare/db-create.xml"/>
-  <context:component-scan base-package="org.marketcetera,com.marketcetera"/>
-  <jpa:repositories base-package="org.marketcetera,com.marketcetera"/>
+  <context:component-scan base-package="org.marketcetera,org.marketcetera"/>
+  <jpa:repositories base-package="org.marketcetera,org.marketcetera"/>
   <tx:annotation-driven/>
-  <bean id="userService" class="com.marketcetera.ors.dao.impl.UserServiceImpl"/>
-  <bean id="adminUser" class="com.marketcetera.ors.security.SimpleUser">
+  <bean id="userService" class="org.marketcetera.ors.dao.impl.UserServiceImpl"/>
+  <bean id="adminUser" class="org.marketcetera.ors.security.SimpleUser">
     <property name="name" value="admin"/>
     <property name="password" value="admin"/>
     <property name="superuser" value="true"/>
   </bean>
-  <bean id="userInitializer" class="com.marketcetera.ors.security.SimpleUserInitializer">
+  <bean id="userInitializer" class="org.marketcetera.ors.security.SimpleUserInitializer">
     <property name="users">
       <list>
         <ref bean="adminUser"/>
       </list>
     </property>
   </bean>
-  <bean id="schemaInitializer" class="com.marketcetera.ors.dao.DatabaseVersionInitializer"/>
-  <bean id="systemInfoService" class="com.marketcetera.ors.dao.impl.SystemInfoServiceImpl"/>
+  <bean id="schemaInitializer" class="org.marketcetera.ors.dao.DatabaseVersionInitializer"/>
+  <bean id="systemInfoService" class="org.marketcetera.ors.dao.impl.SystemInfoServiceImpl"/>
   <!--  ORS root order factory -->
-  <bean id="rootOrderIdFactory" class="com.marketcetera.ors.history.BasicRootOrderIdFactory"/>
+  <bean id="rootOrderIdFactory" class="org.marketcetera.ors.history.BasicRootOrderIdFactory"/>
 </beans>

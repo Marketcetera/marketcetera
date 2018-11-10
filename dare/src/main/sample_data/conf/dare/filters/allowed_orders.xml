@@ -16,7 +16,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
-  <bean id="metc_allowed_orders" class="com.marketcetera.ors.filters.OrderLimitFilter">
+  <bean id="metc_allowed_orders" class="org.marketcetera.ors.filters.OrderLimitFilter">
     <!--
       - If true, orders with type 'MARKET' are rejected. If omitted, false
       - is assumed.
@@ -45,11 +45,11 @@
     <property name="maxNotionalPerOrder" value="100000"/>
   </bean>
   <!-- indicates users allowed or disallowed to send orders of a particular asset class -->
-  <bean id="metc_restricted_users" class="com.marketcetera.ors.filters.AssetClassFilter">
+  <bean id="metc_restricted_users" class="org.marketcetera.ors.filters.AssetClassFilter">
     <property name="userlists">
         <map>
           <entry key="CS"> <!-- restrictions for 'CS', i.e. equities -->
-            <bean class="com.marketcetera.ors.filters.UserList">
+            <bean class="org.marketcetera.ors.filters.UserList">
                 <!-- whitelist explicitly allows users - if specified, anyone not on the whitelist is not allowed -->
                 <property name="whitelist">
                     <set>
@@ -67,7 +67,7 @@
             </bean>
           </entry>
           <entry key="FUT"> <!-- restrictions for 'FUT', i.e. futures -->
-            <bean class="com.marketcetera.ors.filters.UserList">
+            <bean class="org.marketcetera.ors.filters.UserList">
                 <!-- whitelist explicitly allows users - if specified, anyone not on the whitelist is not allowed -->
                 <property name="whitelist">
                     <set>

@@ -59,7 +59,7 @@
       <AppenderRef ref="FILE"/>
     </Root>
     <logger name="org.marketcetera" level="info"/>
-    <logger name="com.marketcetera" level="info"/>
+    <logger name="org.marketcetera" level="info"/>
     <logger name="metc.restore" level="info" additivity="false">
       <AppenderRef ref="RESTORE"/>
       <AppenderRef ref="FILE"/>
@@ -85,15 +85,15 @@
     <logger name="metc.startup" level="info" additivity="false">
       <AppenderRef ref="STDOUT"/>
     </logger>
-    <logger name="com.marketcetera.ors.brokers.Broker.HEARTBEATS" level="error"/>
-    <logger name="com.marketcetera.ors.QuickFIXApplication.HEARTBEATS" level="error"/>
-    <logger name="com.marketcetera.ors.info" level="error"/>
+    <logger name="org.marketcetera.ors.brokers.Broker.HEARTBEATS" level="error"/>
+    <logger name="org.marketcetera.ors.QuickFIXApplication.HEARTBEATS" level="error"/>
+    <logger name="org.marketcetera.ors.info" level="error"/>
     <!-- Active MQ -->
-    <logger name="com.marketcetera.ors.info" level="error"/>
+    <logger name="org.marketcetera.ors.info" level="error"/>
     <logger name="org.apache.activemq.transport" level="error"/>
     <logger name="org.apache.activemq.broker.jmx.ManagementContext" level="INFO"/>
     <!-- provides a nicely printed log of the messages -->
-    <logger name="com.marketcetera.ors.brokers.Broker" level="debug"/>
+    <logger name="org.marketcetera.ors.brokers.Broker" level="debug"/>
     <logger name="quickfixj.event" level="info"/>
     <logger name="quickfixj.msg.incoming" level="info" additivity="false">
       <AppenderRef ref="FIX-INCOMING"/>

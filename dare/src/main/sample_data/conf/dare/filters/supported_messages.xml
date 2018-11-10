@@ -22,7 +22,7 @@
 
   <bean
    id="metc_supported_messages"
-   class="com.marketcetera.ors.filters.MessageTypeFilter">
+   class="org.marketcetera.ors.filters.MessageTypeFilter">
     <!--
       - If true, messages of unknown type are accepted.  If omitted, false
       - is assumed.

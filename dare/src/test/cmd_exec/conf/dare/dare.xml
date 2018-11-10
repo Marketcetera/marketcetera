@@ -14,19 +14,19 @@
   <import resource="provisioning.xml"/>
   <import resource="sessionAttributeDescriptors.xml"/>
   <!-- FIX session settings -->
-  <bean id="hibernateMessageStoreConfiguration" class="com.marketcetera.fix.store.HibernateMessageStoreConfiguration"/>
+  <bean id="hibernateMessageStoreConfiguration" class="org.marketcetera.fix.store.HibernateMessageStoreConfiguration"/>
   <bean id="fixSettingsProviderFactory" class="org.marketcetera.core.fix.FixSettingsProviderFactoryImpl" depends-on="hibernateMessageStoreConfiguration">
-    <property name="messageStoreFactoryClass" value="com.marketcetera.fix.store.HibernateMessageStoreFactory"/>
+    <property name="messageStoreFactoryClass" value="org.marketcetera.fix.store.HibernateMessageStoreFactory"/>
     <property name="logFactoryClass" value="org.marketcetera.quickfix.ObservableLogFactory"/>
     <property name="messageFactory" ref="messageFactory"/>
     <property name="acceptorHost" value="${metc.acceptor.qf.host}"/>
     <property name="acceptorPort" value="${metc.acceptor.qf.port}"/>
   </bean>
   <!-- unique id generator -->
-  <bean id="idFactory" class="com.marketcetera.ors.dao.DatabaseIDFactory" init-method="init" depends-on="clusterService"/>
+  <bean id="idFactory" class="org.marketcetera.ors.dao.DatabaseIDFactory" init-method="init" depends-on="clusterService"/>
   <!-- ORS object -->
   <bean id="messageFactory" class="quickfix.DefaultMessageFactory"/>
-  <bean id="ors" class="com.marketcetera.ors.OrderRoutingSystem">
+  <bean id="ors" class="org.marketcetera.ors.OrderRoutingSystem">
     <property name="jmsManager" ref="jmsManager"/>
     <property name="reportHistoryServices" ref="reportHistoryServices"/>
     <property name="replyPersister" ref="replyPersister"/>
@@ -48,7 +48,7 @@
     <property name="productKey" value="${metc.product.key}"/>
   </bean>
   <!-- ORS Reply Persister -->
-  <bean id="replyPersister" class="com.marketcetera.ors.ReplyPersister">
+  <bean id="replyPersister" class="org.marketcetera.ors.ReplyPersister">
     <constructor-arg ref="reportHistoryServices"/>
   </bean>
   <!-- ORS JMS manager -->
@@ -57,20 +57,20 @@
     <constructor-arg ref="metc_connection_factory_out"/>
   </bean>
   <!-- ORS System Info -->
-  <bean id="systemInfo" class="com.marketcetera.ors.info.SystemInfoImpl"/>
+  <bean id="systemInfo" class="org.marketcetera.ors.info.SystemInfoImpl"/>
   <!-- ORS Report History Services -->
-  <bean id="reportHistoryServices" class="com.marketcetera.ors.history.AsyncSaveReportHistoryServices">
+  <bean id="reportHistoryServices" class="org.marketcetera.ors.history.AsyncSaveReportHistoryServices">
     <!-- property name="purgeDate" value="30d"/--> <!-- enable to purge trade history older than 30d at start -->
   </bean>
   <!-- Outgoing message factory -->
-  <bean id="outgoingMessageFactory" class="com.marketcetera.ors.dao.PersistentOutgoingMessageFactory"/>
-  <bean id="dareReportService" class="com.marketcetera.ors.dao.impl.ReportServiceImpl"/>
-  <bean id="orderStatusService" class="com.marketcetera.ors.dao.impl.OrderStatusServiceImpl"/>
+  <bean id="outgoingMessageFactory" class="org.marketcetera.ors.dao.PersistentOutgoingMessageFactory"/>
+  <bean id="dareReportService" class="org.marketcetera.ors.dao.impl.ReportServiceImpl"/>
+  <bean id="orderStatusService" class="org.marketcetera.ors.dao.impl.OrderStatusServiceImpl"/>
   <!-- ORS User Manager -->
-  <bean id="userService" class="com.marketcetera.ors.dao.impl.UserServiceImpl"/>
-  <bean id="orsUserManager" class="com.marketcetera.ors.UserManager"/>
+  <bean id="userService" class="org.marketcetera.ors.dao.impl.UserServiceImpl"/>
+  <bean id="orsUserManager" class="org.marketcetera.ors.UserManager"/>
   <!-- ORS Client Session Factory -->
-  <bean id="clientSessionFactory" class="com.marketcetera.ors.ws.ClientSessionFactory">
+  <bean id="clientSessionFactory" class="org.marketcetera.ors.ws.ClientSessionFactory">
     <constructor-arg ref="systemInfo"/>
     <constructor-arg ref="jmsManager"/>
     <constructor-arg ref="orsUserManager"/>
@@ -88,8 +88,8 @@
     <constructor-arg ref="orsSessionManager"/>
   </bean>
   <!-- ORS Web Service -->
-  <bean id="orsServiceProvider" class="com.marketcetera.ors.ws.ClusteredServiceProvider"/>
-  <bean id="orsService" class="com.marketcetera.ors.ws.ServiceImpl">
+  <bean id="orsServiceProvider" class="org.marketcetera.ors.ws.ClusteredServiceProvider"/>
+  <bean id="orsService" class="org.marketcetera.ors.ws.ServiceImpl">
     <constructor-arg ref="orsSessionManager"/>
   </bean>
   <!--  ORS RPC Service -->
@@ -105,41 +105,41 @@
     <property name="serviceSpecs">
       <list>
         <ref bean="matpRpcService"/>
-        <bean id="adminRpcService" class="com.marketcetera.admin.rpc.AdminRpcService"/>
+        <bean id="adminRpcService" class="org.marketcetera.admin.rpc.AdminRpcService"/>
       </list>
     </property>
   </bean>
   <!-- MATP Server RPC Service -->
-  <bean id="matpRpcService" class="com.marketcetera.ors.rpc.RpcServerServiceImpl">
+  <bean id="matpRpcService" class="org.marketcetera.ors.rpc.RpcServerServiceImpl">
     <property name="serverAdapter" ref="orsService"/>
   </bean>
   <!--  broker service -->
-  <bean id="fixSessionService" class="com.marketcetera.fix.SessionServiceImpl"/>
-  <bean id="matpBrokerService" class="com.marketcetera.ors.brokers.impl.BrokerServiceImpl"/>
+  <bean id="fixSessionService" class="org.marketcetera.fix.SessionServiceImpl"/>
+  <bean id="matpBrokerService" class="org.marketcetera.ors.brokers.impl.BrokerServiceImpl"/>
   <!-- outgoing order service -->
-  <bean id="outgoingMessageService" class="com.marketcetera.ors.outgoingorder.impl.OutgoingMessageServiceImpl">
+  <bean id="outgoingMessageService" class="org.marketcetera.ors.outgoingorder.impl.OutgoingMessageServiceImpl">
     <property name="identifyOwnerStrategies">
       <list>
-        <bean class="com.marketcetera.ors.outgoingorder.impl.OutgoingMessageLookupStrategy"/>
-        <bean class="com.marketcetera.ors.outgoingorder.impl.DefaultOwnerStrategy">
+        <bean class="org.marketcetera.ors.outgoingorder.impl.OutgoingMessageLookupStrategy"/>
+        <bean class="org.marketcetera.ors.outgoingorder.impl.DefaultOwnerStrategy">
           <property name="username" value="admin"/>
         </bean>
       </list>
     </property>
   </bean>
   <!-- user attribute service -->
-  <bean id="userAttributeService" class="com.marketcetera.admin.service.impl.UserAttributeServiceImpl"/>
+  <bean id="userAttributeService" class="org.marketcetera.admin.service.impl.UserAttributeServiceImpl"/>
   <!-- ORS QuickFix Sender -->
   <bean id="orsQuickFixSender" class="org.marketcetera.quickfix.QuickFIXSenderImpl"/>
   <!-- ORS ID Factory -->
-  <bean id="orsIdFactory" class="com.marketcetera.ors.LocalIDFactory" init-method="init">
+  <bean id="orsIdFactory" class="org.marketcetera.ors.LocalIDFactory" init-method="init">
     <constructor-arg ref="idFactory"/>
   </bean>
   <!-- ORS Request Handler -->
-  <bean id="brokerSelector" class="com.marketcetera.ors.brokers.BasicSelector">
+  <bean id="brokerSelector" class="org.marketcetera.ors.brokers.BasicSelector">
     <property name="defaultBroker" value="exsim"/>
   </bean>
-  <bean id="orsRequestHandler" class="com.marketcetera.ors.RequestHandler">
+  <bean id="orsRequestHandler" class="org.marketcetera.ors.RequestHandler">
     <property name="allowedOrders">
        <!-- 
          <list>
@@ -156,22 +156,22 @@
     <property name="selector" ref="brokerSelector"/>
   </bean>
   <!-- ORS Root Order ID Factory -->
-  <bean id="rootOrderIdFactory" class="com.marketcetera.ors.history.BasicRootOrderIdFactory"/>
-  <bean class="com.marketcetera.ors.OptionRootUnderlyingMap">
+  <bean id="rootOrderIdFactory" class="org.marketcetera.ors.history.BasicRootOrderIdFactory"/>
+  <bean class="org.marketcetera.ors.OptionRootUnderlyingMap">
     <property name="filename" value="${metc.optionroot.map.file}"/>
     <property name="includeTypes" value="EU,EL"/>
   </bean>
   <!--  authenticator -->
-  <bean id="dbAuthenticator" class="com.marketcetera.ors.ws.DBAuthenticator"/>
-  <bean id="authorizationService" class="com.marketcetera.admin.service.impl.AuthorizationServiceImpl"/>
+  <bean id="dbAuthenticator" class="org.marketcetera.ors.ws.DBAuthenticator"/>
+  <bean id="authorizationService" class="org.marketcetera.admin.service.impl.AuthorizationServiceImpl"/>
   <!-- services -->
-  <bean id="systemInfoService" class="com.marketcetera.ors.dao.impl.SystemInfoServiceImpl"/>
+  <bean id="systemInfoService" class="org.marketcetera.ors.dao.impl.SystemInfoServiceImpl"/>
   <!-- factories -->
-  <bean id="userFactory" class="com.marketcetera.ors.security.SimpleUserFactory"/>
-  <bean id="fixSessionFactory" class="com.marketcetera.fix.dao.PersistentFixSessionFactory"/>
-  <bean id="fixSessionAttributeDescriptorFactory" class="com.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptorFactory"/>
-  <bean id="permissionFactory" class="com.marketcetera.admin.impl.PersistentPermissionFactory"/>
-  <bean id="roleFactory" class="com.marketcetera.admin.impl.PersistentRoleFactory"/>
-  <bean id="userAttributeFactory" class="com.marketcetera.admin.impl.PersistentUserAttributeFactory"/>
-  <bean id="supervisorPermissionFactory" class="com.marketcetera.admin.impl.PersistentSupervisorPermissionFactory"/>
+  <bean id="userFactory" class="org.marketcetera.ors.security.SimpleUserFactory"/>
+  <bean id="fixSessionFactory" class="org.marketcetera.fix.dao.PersistentFixSessionFactory"/>
+  <bean id="fixSessionAttributeDescriptorFactory" class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptorFactory"/>
+  <bean id="permissionFactory" class="org.marketcetera.admin.impl.PersistentPermissionFactory"/>
+  <bean id="roleFactory" class="org.marketcetera.admin.impl.PersistentRoleFactory"/>
+  <bean id="userAttributeFactory" class="org.marketcetera.admin.impl.PersistentUserAttributeFactory"/>
+  <bean id="supervisorPermissionFactory" class="org.marketcetera.admin.impl.PersistentSupervisorPermissionFactory"/>
 </beans>
