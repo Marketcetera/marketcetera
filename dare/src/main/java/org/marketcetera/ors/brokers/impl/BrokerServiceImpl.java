@@ -83,6 +83,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import com.google.common.collect.Lists;
+import com.hazelcast.core.MemberAttributeEvent;
+import com.hazelcast.core.MembershipEvent;
+import com.hazelcast.core.MembershipListener;
+import com.querydsl.core.BooleanBuilder;
+
 import quickfix.Acceptor;
 import quickfix.ConfigError;
 import quickfix.FieldConvertError;
@@ -91,12 +97,6 @@ import quickfix.Session;
 import quickfix.SessionFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
-
-import com.google.common.collect.Lists;
-import com.hazelcast.core.MemberAttributeEvent;
-import com.hazelcast.core.MembershipEvent;
-import com.hazelcast.core.MembershipListener;
-import com.querydsl.core.BooleanBuilder;
 
 /* $License$ */
 
@@ -208,26 +208,29 @@ public class BrokerServiceImpl
         SLF4JLoggerProxy.trace(this,
                                "Reporting {}",
                                inBrokerStatus);
-//        HazelcastClusterService hzClusterService = (HazelcastClusterService)clusterService;
-//        try {
-//            String xmlStatus = marshall(inBrokerStatus);
-//            String key = brokerStatusPrefix+inBrokerStatus.getId()+inBrokerStatus.getHost();
-//            hzClusterService.getInstance().getCluster().getLocalMember().setStringAttribute(key,
-//                                                                                            xmlStatus);
-//        } catch (JAXBException e) {
-//            SLF4JLoggerProxy.warn(this,
-//                                  e,
-//                                  "Unable to update broker status");
-//            return;
-//        } catch (HazelcastInstanceNotActiveException | NullPointerException ignored) {
-//            // these can happen on shutdown and can be safely ignored
-//        } catch (Exception e) {
-//            SLF4JLoggerProxy.warn(this,
-//                                  e,
-//                                  "Unable to update broker status");
-//        }
-        // TODO
-        throw new UnsupportedOperationException();
+        try {
+            FixSession fixSession = findFixSessionByBrokerId(inBrokerStatus.getId());
+            if(fixSession == null) {
+                SLF4JLoggerProxy.warn(this,
+                                      "Cannot report broker status for {}: no FIX session with that broker id",
+                                      inBrokerStatus.getId());
+                return;
+            }
+            String xmlStatus = marshall(inBrokerStatus);
+            String key = BrokerConstants.brokerStatusPrefix+inBrokerStatus.getId()+fixSession.getHost();
+            clusterService.setAttribute(key,
+                                        xmlStatus);
+        } catch (JAXBException e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "Unable to update broker status");
+        } catch (NullPointerException ignored) {
+            // these can happen on shutdown and can be safely ignored
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "Unable to update broker status");
+        }
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.brokers.BrokerService#reportBrokerStatusFromAll(com.marketcetera.ors.brokers.FixSession, com.marketcetera.ors.brokers.ClusteredBrokerStatus.Status)
@@ -1290,32 +1293,29 @@ public class BrokerServiceImpl
     private void updateBrokerStatus()
     {
         synchronized(clusterBrokerStatus) {
-//            HazelcastClusterService hzClusterService = (HazelcastClusterService)clusterService;
-//            List<ClusteredBrokerStatus> updatedStatus = new ArrayList<>();
-//            for(Member member : hzClusterService.getInstance().getCluster().getMembers()) {
-//                for(Map.Entry<String,Object> attributeEntry : member.getAttributes().entrySet()) {
-//                    String key = attributeEntry.getKey();
-//                    if(key.startsWith(brokerStatusPrefix)) {
-//                        String rawValue = String.valueOf(attributeEntry.getValue());
-//                        ClusteredBrokerStatus status;
-//                        try {
-//                            status = (ClusteredBrokerStatus)unmarshall(rawValue);
-//                            updatedStatus.add(status);
-//                        } catch (Exception e) {
-//                            SLF4JLoggerProxy.warn(this,
-//                                                  e,
-//                                                  "Unable to update broker status");
-//                            return;
-//                        }
-//                    }
-//                }
-//            }
-//            clusterBrokerStatus.clear();
-//            clusterBrokerStatus.addAll(updatedStatus);
-//            logBrokerInstanceData();
+            List<ClusteredBrokerStatus> updatedStatus = new ArrayList<>();
+            for(ClusterMember member : clusterService.getClusterMembers()) {
+                for(Map.Entry<String,String> attributeEntry : clusterService.getAttributes(member.getUuid()).entrySet()) {
+                    String key = attributeEntry.getKey();
+                    if(key.startsWith(brokerStatusPrefix)) {
+                        String rawValue = String.valueOf(attributeEntry.getValue());
+                        ClusteredBrokerStatus status;
+                        try {
+                            status = (ClusteredBrokerStatus)unmarshall(rawValue);
+                            updatedStatus.add(status);
+                        } catch (Exception e) {
+                            SLF4JLoggerProxy.warn(this,
+                                                  e,
+                                                  "Unable to update broker status");
+                            return;
+                        }
+                    }
+                }
+            }
+            clusterBrokerStatus.clear();
+            clusterBrokerStatus.addAll(updatedStatus);
+            logBrokerInstanceData();
         }
-        // TODO
-        throw new UnsupportedOperationException();
     }
     /**
      * Marshals the given value as XML.

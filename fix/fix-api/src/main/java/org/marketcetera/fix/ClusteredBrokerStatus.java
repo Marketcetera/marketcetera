@@ -3,7 +3,6 @@ package org.marketcetera.fix;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -11,6 +10,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.HasClusterData;
+import org.marketcetera.cluster.SimpleClusterData;
 import org.marketcetera.trade.BrokerID;
 
 /* $License$ */
@@ -45,9 +45,7 @@ public class ClusteredBrokerStatus
               new BrokerID(inFixSession.getBrokerId()),
               inIsLoggedOn,
               inFixSession.getSessionSettings());
-        // TODO
-//        clusterData = (HazelcastClusterData)inClusterData;
-        clusterData = null;
+        clusterData = (SimpleClusterData)inClusterData;
         status = inStatus;
         Validate.notNull(clusterData);
         Validate.notNull(status);
@@ -189,7 +187,6 @@ public class ClusteredBrokerStatus
     /**
      * identifies the cluster
      */
-    @XmlTransient //TODO
-    private final ClusterData clusterData;
+    private final SimpleClusterData clusterData;
     private static final long serialVersionUID = -1837912946225621L;
 }

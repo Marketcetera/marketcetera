@@ -25,5 +25,9 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>cluster-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cluster-core</artifactId>
+    </dependency>
   </dependencies>
 </project>
