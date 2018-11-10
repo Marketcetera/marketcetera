@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!--
-  - Main configuration for database initialization (test wrapper).
-  -
-  - Author: tlerios@marketcetera.com
-  - Since: 1.0.0
-  - Version: $Id: dbinit.xml 17266 2017-04-28 14:58:00Z colin $
-  - $License$
-  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
@@ -18,8 +10,8 @@
                            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
   <import resource="properties.xml"/>
   <import resource="dare/db-create.xml"/>
-  <context:component-scan base-package="org.marketcetera,org.marketcetera"/>
-  <jpa:repositories base-package="org.marketcetera,org.marketcetera"/>
+  <context:component-scan base-package="org.marketcetera"/>
+  <jpa:repositories base-package="org.marketcetera"/>
   <tx:annotation-driven/>
   <bean id="userService" class="org.marketcetera.ors.dao.impl.UserServiceImpl"/>
   <bean id="adminUser" class="org.marketcetera.ors.security.SimpleUser">

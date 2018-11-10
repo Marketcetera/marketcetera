@@ -3,6 +3,7 @@ package org.marketcetera.fix;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -188,6 +189,7 @@ public class ClusteredBrokerStatus
     /**
      * identifies the cluster
      */
+    @XmlTransient //TODO
     private final ClusterData clusterData;
     private static final long serialVersionUID = -1837912946225621L;
 }
