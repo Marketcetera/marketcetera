@@ -121,7 +121,7 @@ public class Node
     /**
      * Returns the connection URL for the given service interface.
      *
-     * @param inInterfaceClazz
+     * @param inInterfaceClazz a <code>Class&lt;?&gt;</code> value
      * @return a <code>String</code> containing the connection namespace
      */
     protected String getConnectionUrl(Class<?> inInterfaceClazz)

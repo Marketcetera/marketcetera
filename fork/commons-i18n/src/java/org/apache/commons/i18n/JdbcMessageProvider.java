@@ -10,7 +10,7 @@ import java.text.MessageFormat;
  * accessible via JDBC. The <code>JdbcMessageProvider</code> only has support for different languages,
  * but if support for country or variant is required one could easily subclass it and override the
  * <code>getLocale</code> method. If <code>getLocale</code> is overridden, the languageColumn parameter
- * (or <code>jdbc.sql.locale.column<code> Map entry) of the constructors may be null, since it will not be used.
+ * (or <code>jdbc.sql.locale.column</code> Map entry) of the constructors may be null, since it will not be used.
  * @author Mattias Jiderhamn
  */
 public class JdbcMessageProvider implements MessageProvider {
@@ -75,6 +75,10 @@ public class JdbcMessageProvider implements MessageProvider {
      * jdbc.sql.table                    = resources
      * jdbc.sql.locale.column            = locale
      * jdbc.sql.key.column               = msgKey
+     * 
+     * @param properties a <code>Map</code> value
+     * @throws ClassNotFoundException if the message provider cannot be created
+     * @throws SQLException if an error occurs connecting to the provider
      */
     public JdbcMessageProvider(Map properties) throws ClassNotFoundException, SQLException {
         String driver = (String)properties.get("jdbc.connect.driver");
@@ -158,7 +162,9 @@ public class JdbcMessageProvider implements MessageProvider {
      * by subclasses to allow for proprietary interpretation of language data.
      * The default implementation assumes the column with the name provided as languageColumn
      * for the constructor contains the ISO-639 code.
+     * @param rs a <code>ResultSet</code> value
      * @return The <code>Locale</code> of the current <code>ResultSet</code> record.
+     * @throws SQLException if an SQL error occurs
      */
     protected Locale getLocale(ResultSet rs) throws SQLException {
         return new Locale(rs.getString(languageColumn).toLowerCase());

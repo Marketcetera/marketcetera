@@ -51,7 +51,7 @@ public class AdminRpcServiceTest
         adminClient = adminClientFactory.create("test",
                                                 "test",
                                                 "127.0.0.1",
-                                                8999);
+                                                19605);
         adminClient.start();
     }
     /**
@@ -384,7 +384,7 @@ public class AdminRpcServiceTest
         AdminClient testClient = adminClientFactory.create(inUsername,
                                                            inPassword,
                                                            "127.0.0.1",
-                                                           8999);
+                                                           19605);
         testClient.start();
         return testClient;
     }

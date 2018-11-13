@@ -285,6 +285,13 @@
             <metc.jdbc.url>${metc.jdbc.url}</metc.jdbc.url>
             <metc.jdbc.testquery>${metc.jdbc.testquery}</metc.jdbc.testquery>
             <metc.hibernate.dialect>${metc.hibernate.dialect}</metc.hibernate.dialect>
+            <metc.jms.port>19600</metc.jms.port>
+            <metc.ws.host>localhost</metc.ws.host>
+            <metc.ws.port>19601</metc.ws.port>
+            <metc.stomp.port>19602</metc.stomp.port>
+            <metc.jms.jmx.port>19603</metc.jms.jmx.port>
+            <metc.acceptor.qf.port>19604</metc.acceptor.qf.port>
+            <metc.rpc.port>19605</metc.rpc.port>
           </systemPropertyVariables>
         </configuration>
       </plugin>

@@ -130,7 +130,7 @@ public enum OperatingSystem
     // INSTANCE METHODS.
 
     /**
-     * Returns the expected value of the <KBD>os.name</KBD> property
+     * Returns the expected value of the <code>os.name</code> property
      * for the receiver.
      *
      * @return The value. It may be null for {@link #UNKNOWN}.

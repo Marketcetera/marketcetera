@@ -38,7 +38,9 @@ import java.util.Locale;
  * the key of the desired message entry.</p>  
  * This class should not be used directly in order to retrieve entries of a message bundle. It is recommended
  * to subclass the <code>LocalizedBundle</code> class in order to define a specific localized bundle. 
- * @see org.apache.commons.i18n.bundles.TextBundle, MessageBundle, ErrorBundle
+ * @see org.apache.commons.i18n.bundles.TextBundle
+ * @see org.apache.commons.i18n.bundles.MessageBundle
+ * @see org.apache.commons.i18n.bundles.ErrorBundle
  */
 public class LocalizedBundle implements Serializable {
     public final static String ID = "id";
