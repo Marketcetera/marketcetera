@@ -94,6 +94,10 @@
       <artifactId>cluster-simple</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http-jetty</artifactId>
     </dependency>
@@ -212,6 +216,17 @@
       </resource>
     </resources>
     <plugins>
+      <plugin>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-maven-plugin</artifactId>
+        <configuration>
+          <user>${metc.jdbc.user}</user>
+          <password>${metc.jdbc.password}</password>
+          <url>${metc.jdbc.url}</url>
+          <driver>${metc.jdbc.driver}</driver>
+	  <locations>filesystem:src/main/resources/db/migration/${metc.flyway.vendor}</locations>
+        </configuration>
+      </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
