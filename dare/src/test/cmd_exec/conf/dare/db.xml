@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
-<!--
-  - Main database configuration.
-  -
-  - Author: tlerios@marketcetera.com
-  - Since: 1.0.0
-  - Version: $Id: db.xml 17266 2017-04-28 14:58:00Z colin $
-  - $License$
-  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
   <!-- Exception translation bean post processor -->
   <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
+  <!-- Flyway configuration -->
+  <bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
+    <property name="baselineOnMigrate" value="true" />
+    <property name="locations" value="classpath:/db/migration/${metc.flyway.vendor}" />
+    <property name="dataSource" ref="metc_sql_pool" />
+  </bean>
   <bean id="metc_sql_pool" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
     <property name="driverClass" value="${metc.jdbc.driver}"/>
     <property name="jdbcUrl" value="${metc.jdbc.url}"/>
@@ -22,7 +19,7 @@
     <property name="preferredTestQuery" value="${metc.jdbc.testquery}"/>
     <property name="testConnectionOnCheckout" value="true"/>
   </bean>
-  <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+  <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="flyway">
     <property name="dataSource" ref="metc_sql_pool"/>
     <property name="persistenceUnitName" value="test"/>
     <property name="jpaVendorAdapter">

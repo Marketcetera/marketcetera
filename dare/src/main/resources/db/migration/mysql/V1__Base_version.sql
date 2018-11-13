@@ -626,34 +626,6 @@ INSERT INTO `supervisor_permissions_users` (`SupervisorPermission_id`, `subjects
 UNLOCK TABLES;
 
 --
--- Table structure for table `system_info`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE IF NOT EXISTS `system_info` (
-  `id` bigint(20) NOT NULL,
-  `last_updated` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
-  `update_count` int(11) NOT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `name` varchar(255) NOT NULL,
-  `value` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `UK_457m1gi0j3jft2b5wq33iccxk` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `system_info`
---
-
-LOCK TABLES `system_info` WRITE;
-/*!40000 ALTER TABLE `system_info` DISABLE KEYS */;
-INSERT INTO `system_info` (`id`, `last_updated`, `update_count`, `description`, `name`, `value`) VALUES (2,'2018-11-13 14:33:01.909',0,'indicates current database schema version','schema version','7');
-/*!40000 ALTER TABLE `system_info` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `user_attributes`
 --
 

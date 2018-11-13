@@ -164,8 +164,6 @@
   <!--  authenticator -->
   <bean id="dbAuthenticator" class="org.marketcetera.ors.ws.DBAuthenticator"/>
   <bean id="authorizationService" class="org.marketcetera.admin.service.impl.AuthorizationServiceImpl"/>
-  <!-- services -->
-  <bean id="systemInfoService" class="org.marketcetera.ors.dao.impl.SystemInfoServiceImpl"/>
   <!-- factories -->
   <bean id="userFactory" class="org.marketcetera.ors.security.SimpleUserFactory"/>
   <bean id="fixSessionFactory" class="org.marketcetera.fix.dao.PersistentFixSessionFactory"/>

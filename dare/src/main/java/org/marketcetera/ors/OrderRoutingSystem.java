@@ -49,10 +49,8 @@ import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.SessionService;
 import org.marketcetera.ors.brokers.BrokerService;
 import org.marketcetera.ors.brokers.FixSessionRestoreExecutor;
-import org.marketcetera.ors.dao.DatabaseVersionMismatch;
 import org.marketcetera.ors.dao.PersistentReportDao;
 import org.marketcetera.ors.dao.ReportService;
-import org.marketcetera.ors.dao.SystemInfoService;
 import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.RootOrderIdFactory;
@@ -77,6 +75,9 @@ import org.quickfixj.jmx.JmxExporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
 import quickfix.ConfigError;
 import quickfix.DefaultSessionFactory;
 import quickfix.RuntimeError;
@@ -85,9 +86,6 @@ import quickfix.SessionFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
 import quickfix.ThreadedSocketInitiator;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 /* $License$ */
 
@@ -459,8 +457,6 @@ public class OrderRoutingSystem
         Validate.notNull(clusterService);
         Validate.notNull(reportService);
         Validate.notNull(brokerService);
-        // check database version
-        verifyDatabaseVersion();
         // Create system information.
         systemInfo.setValue(SystemInfo.HISTORY_SERVICES,
                             reportHistoryServices);
@@ -978,24 +974,6 @@ public class OrderRoutingSystem
         return instance;
     }
     /**
-     * Get the systemInfoService value.
-     *
-     * @return a <code>SystemInfoService</code> value
-     */
-    public SystemInfoService getSystemInfoService()
-    {
-        return systemInfoService;
-    }
-    /**
-     * Sets the systemInfoService value.
-     *
-     * @param inSystemInfoService a <code>SystemInfoService</code> value
-     */
-    public void setSystemInfoService(SystemInfoService inSystemInfoService)
-    {
-        systemInfoService = inSystemInfoService;
-    }
-    /**
      * Get the allowDeliverToCompID value.
      *
      * @return a <code>boolean</code> value
@@ -1211,21 +1189,6 @@ public class OrderRoutingSystem
         }
     }
     /**
-     * Verifies that the current database version matches the expected value.
-     */
-    private void verifyDatabaseVersion()
-    {
-        try {
-            systemInfoService.verifyDatabaseVersion();
-        } catch (DatabaseVersionMismatch e) {
-            SLF4JLoggerProxy.error(this,
-                                   "Database version {} does not match expected current version {}",
-                                   e.getActualDatabaseVersion(),
-                                   e.getExpectedDatabaseVersion());
-            throw e;
-        }
-    }
-    /**
      * DARE JMS identifier
      */
     private static final String JMX_NAME = "com.marketcetera.ors.mbean:type=ORSAdmin"; //$NON-NLS-1$
@@ -1294,11 +1257,6 @@ public class OrderRoutingSystem
      * key data which allows access to ORS services
      */
     private String productKey;
-    /**
-     * provides access to system info objects
-     */
-    @Autowired
-    private SystemInfoService systemInfoService;
     /**
      * determines whether we allow the redeliverToCompID flag or not
      */

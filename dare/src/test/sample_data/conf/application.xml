@@ -373,7 +373,7 @@
   <!-- unique id generator -->
   <bean id="idFactory" class="org.marketcetera.ors.dao.DatabaseIDFactory" init-method="init" depends-on="clusterService"/>
   <!-- ORS object -->
-  <bean id="ors" class="org.marketcetera.ors.OrderRoutingSystem" depends-on="schemaInitializer">
+  <bean id="ors" class="org.marketcetera.ors.OrderRoutingSystem">
     <property name="jmsManager" ref="jmsManager"/>
     <property name="reportHistoryServices" ref="reportHistoryServices"/>
     <property name="replyPersister" ref="replyPersister"/>
@@ -552,19 +552,6 @@
   <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
     <property name="entityManagerFactory" ref="entityManagerFactory" />
   </bean>
-  <!-- bean id="adminUser" class="org.marketcetera.ors.security.SimpleUser">
-    <property name="name" value="admin"/>
-    <property name="password" value="admin"/>
-    <property name="superuser" value="true"/>
-  </bean>
-  <bean id="userInitializer" class="org.marketcetera.ors.security.SimpleUserInitializer">
-    <property name="users">
-      <list>
-        <ref bean="adminUser"/>
-      </list>
-    </property>
-  </bean-->
-  <bean id="schemaInitializer" class="org.marketcetera.ors.dao.DatabaseVersionInitializer"/>
   <!--
     - Sets Java system properties.
     -->

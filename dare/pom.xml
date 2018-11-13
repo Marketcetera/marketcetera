@@ -91,6 +91,10 @@
     <!-- Runtime. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>eventbus-guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cluster-simple</artifactId>
     </dependency>
     <dependency>
@@ -224,7 +228,7 @@
           <password>${metc.jdbc.password}</password>
           <url>${metc.jdbc.url}</url>
           <driver>${metc.jdbc.driver}</driver>
-	  <locations>filesystem:src/main/resources/db/migration/${metc.flyway.vendor}</locations>
+          <locations>filesystem:src/main/resources/db/migration/${metc.flyway.vendor}</locations>
         </configuration>
       </plugin>
       <plugin>
@@ -417,11 +421,6 @@
                   <key>metc.instance.Xmx4096m</key>
                   <value></value>
                 </systemProperty>
-                <!-- remove for Java8 -->
-                <systemProperty>
-                  <key>metc.instance.XX:MaxPermSize=1024m</key>
-                  <value></value>
-                </systemProperty>
                 <systemProperty>
                   <key>metc.instance.XX:+UseParallelGC</key>
                   <value></value>
@@ -498,200 +497,6 @@
                      <key>metc.system.agentpath:/tmp/libyjpagent.so</key>
                      <value></value>
                    </systemProperty-->
-                 </systemProperties>
-                 <classpathScope>test</classpathScope>
-               </configuration>
-             </plugin>
-           </plugins>
-         </build>
-       </profile>
-       <profile>
-         <id>executeDBInit</id>
-         <build>
-           <plugins>
-             <plugin>
-               <groupId>org.codehaus.mojo</groupId>
-               <artifactId>exec-maven-plugin</artifactId>
-               <executions>
-                 <execution>
-                   <goals><goal>java</goal></goals>
-                 </execution>
-               </executions>
-               <configuration>
-                 <mainClass>org.marketcetera.ors.dao.DBInit</mainClass>
-                 <arguments>
-                   <argument>org.marketcetera.core.MultiInstanceApplicationContainer</argument>
-                 </arguments>
-                 <systemProperties>
-                   <systemProperty>
-                     <key>org.marketcetera.appDir</key>
-                     <value>src/test/cmd_exec</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>org.marketcetera.instanceDir</key>
-                     <value>instances</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>hazelcast.jmx</key>
-                     <value>true</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>log4j.configurationFile</key>
-                     <value>src/test/cmd_exec/conf/log4j2.xml</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>Log4jContextSelector</key>
-                     <value>org.apache.logging.log4j.core.async.AsyncLoggerContextSelector</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.cluster.tcpip.members</key>
-                     <value>127.0.0.1</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.logdir</key>
-                     <value>target/logs</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.logname</key>
-                     <value>dareout</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.total.instances</key>
-                     <value>1</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.start.delay</key>
-                     <value>1000</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.instance</key>
-                     <value>0</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.instance.Xms384m</key>
-                     <value></value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.instance.Xmx4096m</key>
-                     <value></value>
-                   </systemProperty>
-                   <!-- remove for Java8 -->
-                   <systemProperty>
-                     <key>metc.instance.XX:MaxPermSize=1024m</key>
-                     <value></value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.instance.XX:+UseParallelGC</key>
-                     <value></value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.instance.XX:+AggressiveOpts</key>
-                     <value></value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.instance.XX:+UseFastAccessorMethods</key>
-                     <value></value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.instance.Xloggc:target/logs/dare_gc.out</key>
-                     <value></value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.instance.com.sun.management.jmxremote</key>
-                     <value>true</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.instance.com.sun.management.jmxremote.authenticate</key>
-                     <value>false</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.instance.com.sun.management.jmxremote.ssl</key>
-                     <value>false</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.port.metc.ws.port</key>
-                     <value>9000</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.port.metc.rpc.port</key>
-                     <value>9100</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.port.metc.sa.rpc.port</key>
-                     <value>9200</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.port.metc.sa.ws.port</key>
-                     <value>9300</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.port.metc.cluster.port</key>
-                     <value>9400</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.port.metc.stomp.port</key>
-                     <value>9500</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.port.metc.jms.port</key>
-                     <value>9600</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.port.metc.sa.jms.port</key>
-                     <value>9700</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.port.metc.acceptor.qf.port</key>
-                     <value>9800</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.port.metc.jms.jmx.port</key>
-                     <value>9900</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>metc.instanceport.com.sun.management.jmxremote.port</key>
-                     <value>9950</value>
-                   </systemProperty>
-                 </systemProperties>
-                 <classpathScope>test</classpathScope>
-               </configuration>
-             </plugin>
-           </plugins>
-         </build>
-       </profile>
-       <!-- Security administration utility. -->
-       <profile>
-         <id>cli</id>
-         <build>
-           <plugins>
-             <plugin>
-               <groupId>org.codehaus.mojo</groupId>
-               <artifactId>exec-maven-plugin</artifactId>
-               <executions>
-                 <execution>
-                   <goals><goal>java</goal></goals>
-                 </execution>
-               </executions>
-               <configuration>
-                 <mainClass>org.marketcetera.core.ApplicationContainer</mainClass>
-                 <!-- -Dexec.args="-u admin ..." -->
-                 <systemProperties>
-                   <systemProperty>
-                     <key>org.marketcetera.appDir</key>
-                     <value>src/test/cmd_exec</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>org.marketcetera.contextFile</key>
-                     <value>application-cli.xml</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>log4j.configurationFile</key>
-                     <value>src/test/cmd_exec/conf/log4j2.xml</value>
-                   </systemProperty>
-                   <systemProperty>
-                     <key>Log4jContextSelector</key>
-                     <value>org.apache.logging.log4j.core.async.AsyncLoggerContextSelector</value>
-                   </systemProperty>
                  </systemProperties>
                  <classpathScope>test</classpathScope>
                </configuration>
