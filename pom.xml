@@ -848,6 +848,13 @@
       <!-- Testing: local modules. -->
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>dare</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
         <version>3.1.0</version>
         <type>test-jar</type>
