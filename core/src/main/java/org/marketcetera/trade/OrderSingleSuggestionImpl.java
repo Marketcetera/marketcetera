@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Implementation for Single Order Suggestions.
  *
  * @author anshul@marketcetera.com
- * @author <a href="mailto:colin@marketcetera.com>Colin DuPlantis</a>
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 1.0.0
  */

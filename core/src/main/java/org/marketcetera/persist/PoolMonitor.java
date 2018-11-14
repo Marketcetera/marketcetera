@@ -76,7 +76,7 @@ public class PoolMonitor
     /**
      * Sets the pool value.
      *
-     * @param a <code>PooledDataSource</code> value
+     * @param inPool a <code>PooledDataSource</code> value
      */
     public void setPool(PooledDataSource inPool)
     {
@@ -94,7 +94,7 @@ public class PoolMonitor
     /**
      * Sets the monitorInterval value.
      *
-     * @param a <code>long</code> value
+     * @param inMonitorInterval a <code>long</code> value
      */
     public void setMonitorInterval(long inMonitorInterval)
     {

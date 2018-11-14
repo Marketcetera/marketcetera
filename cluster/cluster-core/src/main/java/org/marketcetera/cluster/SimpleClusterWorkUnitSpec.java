@@ -104,7 +104,7 @@ public class SimpleClusterWorkUnitSpec
     /**
      * Sets the workUnitUid value.
      *
-     * @param a <code>String</code> value
+     * @param inWorkUnitUid a <code>String</code> value
      */
     public void setWorkUnitUid(String inWorkUnitUid)
     {

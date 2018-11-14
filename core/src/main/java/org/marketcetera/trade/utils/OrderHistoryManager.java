@@ -301,10 +301,10 @@ public class OrderHistoryManager
      * <p>The returned <code>Deque</code> does not change and will not reflect future changes.
      * 
      * <p>The given <code>OrderID</code> may be either an order ID or an original order ID. The reports
-     * returned will be the same in either case. If no history exists for the given <code>OrderID<code>,
+     * returned will be the same in either case. If no history exists for the given <code>OrderID</code>,
      * an empty <code>Deque</code> is returned.
      * 
-     * <p>The underlying order history is populated by calls to {@link #add(ReportBase)}.
+     * <p>The underlying order history is populated by calls to {@link #add(ReportBase)}.</p>
      *
      * @param inOrderId an <code>OrderID</code> value
      * @return a <code>Deque&lt;ReportBase&gt;</code> value which may be empty

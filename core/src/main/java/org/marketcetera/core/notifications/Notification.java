@@ -177,7 +177,7 @@ public class Notification
      * @param inBody a <code>String</code> value
      * @param inTimestamp a <code>Date</code> value
      * @param inSeverity a <code>Severity</code> value
-     * @param inOriginator a <cod>String</code> value
+     * @param inOriginator a <code>String</code> value
      */
     public Notification(String inSubject,
                         String inBody,

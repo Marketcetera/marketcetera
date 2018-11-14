@@ -11,7 +11,7 @@ import org.marketcetera.module.ModuleURN;
  * is different from the thread on which the data is received..
  * <p>
  * The factory has the following characteristics.
- * <table>
+ * <table summary="Describes the module attributes">
  * <tr><th>Provider URN:</th><td><code>metc:async:simple</code></td></tr>
  * <tr><th>Cardinality:</th><td>Multi-Instance</td></tr>
  * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>

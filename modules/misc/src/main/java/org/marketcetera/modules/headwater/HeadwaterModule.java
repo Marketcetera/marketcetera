@@ -23,17 +23,16 @@ import com.google.common.collect.Sets;
 /**
  * Provides an insertion point to a module framework data flow.
  * 
- * <p>Module Features
- * <table>
+ * Module Features
+ * <table summary="Describes the module capabilities">
  * <tr><th>Capabilities</th><td>Data Emitter</td></tr>
  * <tr><th>DataFlow Request Parameters</th><td>none</td></tr>
  * <tr><th>Stops data flows</th><td>n/a</td></tr>
  * <tr><th>Start Operation</th><td>n/a</td></tr>
  * <tr><th>Stop Operation</th><td>n/a</td></tr>
- * <tr><th>Management Interface</th>n/a</td></tr>
+ * <tr><th>Management Interface</th><td>n/a</td></tr>
  * <tr><th>Factory</th><td>{@link HeadwaterModuleFactory}</td></tr>
  * </table>
- * </p>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

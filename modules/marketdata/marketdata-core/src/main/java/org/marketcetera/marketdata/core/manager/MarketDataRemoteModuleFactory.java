@@ -12,7 +12,7 @@ import org.marketcetera.module.ModuleURN;
  * The provider / factory that creates the Remote Market Data Module instance.
  * 
  * <p>The factory has the following characteristics.
- * <table>
+ * <table summary="Describes the module attributes">
  * <tr><th>Provider URN:</th><td><code>metc:mdata:remote</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
  * <tr><th>InstanceURN:</th><td><code>metc:mdata:remote:single</code></td></tr>

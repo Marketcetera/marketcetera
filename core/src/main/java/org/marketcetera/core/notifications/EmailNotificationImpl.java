@@ -71,7 +71,7 @@ public class EmailNotificationImpl
     /**
      * Sets the recipients value.
      *
-     * @param inRecipients a <code>Set<String></code> value
+     * @param inRecipients a <code>Set&lt;String&gt;</code> value
      */
     public void setRecipients(Set<String> inRecipients)
     {

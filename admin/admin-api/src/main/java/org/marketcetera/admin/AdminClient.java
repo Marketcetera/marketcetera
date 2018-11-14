@@ -186,7 +186,7 @@ public interface AdminClient
     /**
      * Read roles.
      *
-     * @return a <code>List&lt;Role&gt</code> value
+     * @return a <code>List&lt;Role&gt;</code> value
      */
     List<Role> readRoles();
     /**

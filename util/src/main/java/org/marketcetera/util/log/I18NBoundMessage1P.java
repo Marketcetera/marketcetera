@@ -27,14 +27,14 @@ public class I18NBoundMessage1P
     // CONSTRUCTORS.
 
     /**
-     * Constructor mirroring superclass constructor.
+     * Create a new I18NBoundMessage1P instance.
      *
+     * @param message an <code>I18NMessage1P</code> value
+     * @param p1 a <code>Serializable</code> value
      * @see I18NBoundMessageBase#I18NBoundMessageBase(I18NMessage,Serializable...)
      */
-
-    public I18NBoundMessage1P
-        (I18NMessage1P message,
-         Serializable p1)
+    public I18NBoundMessage1P(I18NMessage1P message,
+                              Serializable p1)
     {
         super(message,p1);
     }

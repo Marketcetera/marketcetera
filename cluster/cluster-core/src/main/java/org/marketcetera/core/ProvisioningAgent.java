@@ -84,7 +84,7 @@ public class ProvisioningAgent
     /**
      * Sets the pollingInterval value.
      *
-     * @param a <code>long</code> value
+     * @param inPollingInterval a <code>long</code> value
      */
     public void setPollingInterval(long inPollingInterval)
     {
@@ -102,7 +102,7 @@ public class ProvisioningAgent
     /**
      * Sets the provisioningDirectory value.
      *
-     * @param a <code>String</code> value
+     * @param inProvisioningDirectory a <code>String</code> value
      */
     public void setProvisioningDirectory(String inProvisioningDirectory)
     {
@@ -120,7 +120,7 @@ public class ProvisioningAgent
     /**
      * Sets the clusterService value.
      *
-     * @param a <code>ClusterService</code> value
+     * @param inClusterService a <code>ClusterService</code> value
      */
     public void setClusterService(ClusterService inClusterService)
     {

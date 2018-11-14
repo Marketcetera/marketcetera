@@ -72,7 +72,7 @@ import org.springframework.context.ApplicationContextAware;
  *     the module when stopping and removing it.</li>
  *  <li>Module lifecycle operations like start and stop, acquire Module
  *      {@link Module#getLock() write lock} when changing
- *      the module state during the operation. The {@link Module#preStart()} &
+ *      the module state during the operation. The {@link Module#preStart()} &amp;
  *      {@link Module#preStop()} methods are invoked without acquiring any
  *      locks on the module.</li>
  *  <li>Data flow creation operations acquire Module

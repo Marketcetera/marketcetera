@@ -111,7 +111,7 @@ public interface ClusterService
     /**
      * Get the attribute with the given key for the local cluster member.
      *
-     * @param inKey a <code>String<code> value
+     * @param inKey a <code>String</code> value
      * @return a <code>String</code> value or <code>null</code>
      */
     String getAttribute(String inKey);
@@ -125,7 +125,7 @@ public interface ClusterService
     /**
      * Get the attributes for all cluster members.
      *
-     * @return a <code>Map&lt;String,Map&l;String,String&gt;&gt;</code> value
+     * @return a <code>Map&lt;String,Map&lt;String,String&gt;&gt;</code> value
      */
     Map<String,Map<String,String>> getAttributes();
     /**

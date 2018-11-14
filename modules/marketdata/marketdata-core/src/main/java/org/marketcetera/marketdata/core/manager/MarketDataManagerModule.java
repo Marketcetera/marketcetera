@@ -44,7 +44,7 @@ import com.google.common.collect.Multimap;
  *
  * <p>
  * Module Features
- * <table>
+ * <table summary="Describes the module attributes">
  * <tr><th>Capabilities</th><td>Data Requester</td></tr>
  * <tr><th>Stops data flows</th><td>Yes</td></tr>
  * <tr><th>Start Operation</th><td>None</td></tr>
@@ -153,7 +153,7 @@ public class MarketDataManagerModule
     /**
      * Sets the subscriberTimeout value.
      *
-     * @param a <code>long</code> value
+     * @param inSubscriberTimeout a <code>long</code> value
      */
     public void setSubscriberTimeout(long inSubscriberTimeout)
     {
@@ -293,7 +293,7 @@ public class MarketDataManagerModule
     /**
      * Sets the defaultProvider value.
      *
-     * @param a <code>String</code> value
+     * @param inDefaultProvider a <code>String</code> value
      */
     public void setDefaultProvider(String inDefaultProvider)
     {

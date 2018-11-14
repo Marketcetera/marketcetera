@@ -26,7 +26,7 @@ public class MarketDataProviderStatus
     /**
      * Sets the provider value.
      *
-     * @param a <code>String</code> value
+     * @param inProvider a <code>String</code> value
      */
     public void setProvider(String inProvider)
     {
@@ -44,7 +44,7 @@ public class MarketDataProviderStatus
     /**
      * Sets the isAvailable value.
      *
-     * @param a <code>boolean</code> value
+     * @param inIsAvailable a <code>boolean</code> value
      */
     public void setIsAvailable(boolean inIsAvailable)
     {

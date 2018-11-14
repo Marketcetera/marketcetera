@@ -17,7 +17,7 @@ import org.marketcetera.module.ModuleCreationException;
  * creating the module instance.
  * <p>
  * The factory has the following characteristics.
- * <table>
+ * <table summary="Describes the module capabilities">
  * <tr><th>Provider URN:</th><td><code>metc:server:system</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
  * <tr><th>InstanceURN:</th><td><code>metc:server:system:single</code></td></tr>

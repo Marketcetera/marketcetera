@@ -10,9 +10,6 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * A class that perform currency validation functions.
- *
- * @param <I> The type of instrument handled by this function
- * 
  */
 @ClassVersion("$Id: CurrencyValidationHandler")
 public class CurrencyValidationHandler extends InstrumentValidationHandler<Currency>{

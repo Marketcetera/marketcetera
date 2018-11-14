@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!--
-- Author: anshul@marketcetera.com
-- Since: 0.9.0
-- Version: $Id$
-- $License$
--->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -47,6 +40,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>marketdata-core</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>eventbus-guava</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>

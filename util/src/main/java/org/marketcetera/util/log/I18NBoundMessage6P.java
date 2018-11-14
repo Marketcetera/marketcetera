@@ -27,19 +27,24 @@ public class I18NBoundMessage6P
     // CONSTRUCTORS.
 
     /**
-     * Constructor mirroring superclass constructor.
+     * Create a new I18NBoundMessage6P instance.
      *
+     * @param message an <code>I18NMessage1P</code> value
+     * @param p1 a <code>Serializable</code> value
+     * @param p2 a <code>Serializable</code> value
+     * @param p3 a <code>Serializable</code> value
+     * @param p4 a <code>Serializable</code> value
+     * @param p5 a <code>Serializable</code> value
+     * @param p6 a <code>Serializable</code> value
      * @see I18NBoundMessageBase#I18NBoundMessageBase(I18NMessage,Serializable...)
      */
-
-    public I18NBoundMessage6P
-        (I18NMessage6P message,
-         Serializable p1,
-         Serializable p2,
-         Serializable p3,
-         Serializable p4,
-         Serializable p5,
-         Serializable p6)
+    public I18NBoundMessage6P(I18NMessage6P message,
+                              Serializable p1,
+                              Serializable p2,
+                              Serializable p3,
+                              Serializable p4,
+                              Serializable p5,
+                              Serializable p6)
     {
         super(message,p1,p2,p3,p4,p5,p6);
     }

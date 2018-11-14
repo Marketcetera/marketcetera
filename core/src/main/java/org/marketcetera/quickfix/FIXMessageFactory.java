@@ -145,7 +145,7 @@ public class FIXMessageFactory
      *
      * @param inOldMessage a <code>Message</code> value
      * @return a <code>Message</code> value
-     * @throws FieldNotFound
+     * @throws FieldNotFound if an error occurs creating the message.
      */
     public Message newCancelReplaceFromMessage(Message inOldMessage)
             throws FieldNotFound
@@ -166,7 +166,7 @@ public class FIXMessageFactory
      * @param inOldMessage a <code>Message</code> value
      * @param inOnlyCopyRequiredFields a <code>boolean</code> value
      * @return a <code>Message</code> value
-     * @throws FieldNotFound
+     * @throws FieldNotFound if the cancel helper cannot be built
      */
     public Message newCancelHelper(String inMsgType,
                                    Message inOldMessage,
@@ -227,6 +227,7 @@ public class FIXMessageFactory
      * Create a new market data incremental refresh (35=X) message.
      *
      * @param inRequestId a <code>String</code> value
+     * @return a <code>Message</code> value
      */
     public Message newMarketDataIncrementalRefresh(String inRequestId)
     {
@@ -239,7 +240,7 @@ public class FIXMessageFactory
     /**
      * Create an MDEntry group.
      *
-     * @param inMessageFactory a <code>FIXMessageFactory</code> value
+     * @param inMsgType a <code>String</code> value
      * @param inMdEntryType a <code>char</code> value
      * @return a <code>Group</code> value
      */
@@ -255,7 +256,7 @@ public class FIXMessageFactory
      * Get the MDEntry groups from the given message.
      *
      * @param inMessage a <code>Message</code> value
-     * @return a <code>List&lt:Group&gt;</code> value
+     * @return a <code>List&lt;Group&gt;</code> value
      * @throws FieldNotFound if the groups could not be extracted
      */
     public List<Group> getMdEntriesFromMessage(Message inMessage)
@@ -644,30 +645,46 @@ public class FIXMessageFactory
         msgAugmentor.cancelRequestAugment(aMessage);
         return aMessage;
     }
-
-    /** Incoming price may be null for MARKET orders
-     * <p>
-     * <b>NOTE:</b> This method is only meant to be used for unit testing.
+    /**
+     * Create a new execution report.
      * 
-     * @param orderQty  Original order qty
-     * @param orderPrice    Original order price
-     * @param inAccount Account name of the institution that's sending the order. may be null
-     * */
-    public Message newExecutionReport(
-            String orderID,
-            String clOrderID,
-            String execID,
-            char ordStatus,
-            char side,
-            BigDecimal orderQty,
-            BigDecimal orderPrice,
-            BigDecimal lastShares,
-            BigDecimal lastPrice,
-            BigDecimal cumQty,
-            BigDecimal avgPrice,
-            Instrument instrument,
-            String inAccount,
-            String inText) throws FieldNotFound {
+     * <p>Incoming price may be null for MARKET orders
+     * 
+     * <p><b>NOTE:</b> This method is only meant to be used for unit testing.
+     *
+     * @param orderID a <code>String</code> value
+     * @param clOrderID a <code>String</code> value
+     * @param execID a <code>String</code> value
+     * @param ordStatus a <code>char</code> value
+     * @param side a <code>char</code> value
+     * @param orderQty a <code>BigDecimal</code> value
+     * @param orderPrice a <code>BigDecimal</code> value
+     * @param lastShares a <code>BigDecimal</code> value
+     * @param lastPrice a <code>BigDecimal</code> value
+     * @param cumQty a <code>BigDecimal</code> value
+     * @param avgPrice a <code>BigDecimal</code> value
+     * @param instrument an <code>Instrument</code> value
+     * @param inAccount a <code>String</code> value
+     * @param inText a <code>String</code> value
+     * @return a <code>Message</code> value
+     * @throws FieldNotFound if the message cannot be built
+     */
+    public Message newExecutionReport(String orderID,
+                                      String clOrderID,
+                                      String execID,
+                                      char ordStatus,
+                                      char side,
+                                      BigDecimal orderQty,
+                                      BigDecimal orderPrice,
+                                      BigDecimal lastShares,
+                                      BigDecimal lastPrice,
+                                      BigDecimal cumQty,
+                                      BigDecimal avgPrice,
+                                      Instrument instrument,
+                                      String inAccount,
+                                      String inText)
+            throws FieldNotFound
+    {
         Message aMessage = msgFactory.create(beginString, MsgType.EXECUTION_REPORT);
         addTransactionTimeIfNeeded(aMessage);
         addApplicationVersion(aMessage);
@@ -705,24 +722,28 @@ public class FIXMessageFactory
      * @param execID    Execution ID for this order (can be null)
      * @param side      {@link quickfix.field.Side} of the transaction
      * @param orderQty  Original order quantity
-     * @param cumQty    Cumuluative order qty       (can be 0)
+     * @param cumQty    Cumulative order qty        (can be 0)
      * @param avgPrice  Average price for the order (can be 0)
      * @param instrument instrument for the order
+     * @param rejReason an <code>OrdRejReason</code> value
+     * @param inAccount a <code>String</code> value
+     * @param inText a <code>String</code> value
      * @return A new {@link Message} signifying a reject
+     * @throws FieldNotFound if the message cannot be built
      */
-    public Message newRejectExecutionReport(
-            String orderID,
-            String clOrderID,
-            String execID,
-            char side,
-            BigDecimal orderQty,
-            BigDecimal cumQty,
-            BigDecimal avgPrice,
-            Instrument instrument,
-            OrdRejReason rejReason,
-            String inAccount,
-            String inText
-    ) throws FieldNotFound {
+    public Message newRejectExecutionReport(String orderID,
+                                            String clOrderID,
+                                            String execID,
+                                            char side,
+                                            BigDecimal orderQty,
+                                            BigDecimal cumQty,
+                                            BigDecimal avgPrice,
+                                            Instrument instrument,
+                                            OrdRejReason rejReason,
+                                            String inAccount,
+                                            String inText)
+            throws FieldNotFound
+    {
         Message execReport = newExecutionReport(orderID, clOrderID, execID,
                 OrdStatus.REJECTED, side, orderQty, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                 cumQty, avgPrice, instrument, inAccount, inText);
@@ -730,9 +751,18 @@ public class FIXMessageFactory
         execReport.setField(rejReason);
         return execReport;
     }
-
-    /** Creates a new BusinessMessageReject message based on passed-in parameters */ 
-    public Message newBusinessMessageReject(String refMsgType, int rejReason, String textReason) {
+    /**
+     * Create a new BusinessMessageReject message based on passed-in parameters.
+     *
+     * @param refMsgType a <code>String</code> value
+     * @param rejReason an <code>int</code> value
+     * @param textReason a <code>String</code> value
+     * @return a <code>Message</code> value
+     */
+    public Message newBusinessMessageReject(String refMsgType,
+                                            int rejReason,
+                                            String textReason)
+    {
         Message bmReject = createMessage(MsgType.BUSINESS_MESSAGE_REJECT);
         bmReject.setField(new RefMsgType(refMsgType));
         bmReject.setField(new BusinessRejectReason(rejReason));
@@ -740,12 +770,21 @@ public class FIXMessageFactory
         addApplicationVersion(bmReject);
         return bmReject;
     }
-
-    /** Creates a {@link MsgType#ORDER_CANCEL_REJECT} message
-     * @param rejectReasonText  Text explanation for why reject is sent
+    /**
+     * Creates a {@link MsgType#ORDER_CANCEL_REJECT} message
+     *
+     * @param orderID an <code>OrderID</code> value
+     * @param clOrdID a <code>ClOrdID</code> value
+     * @param origClOrdID an <code>OrigClOrdID</code> value
+     * @param rejectReasonText a <code>String</code> value
+     * @param cxlRejReason a <code>CxlRejReason</code> value
+     * @return a <code>Message</code> value
      */
-    public Message newOrderCancelReject(OrderID orderID, ClOrdID clOrdID, OrigClOrdID origClOrdID,
-                                         String rejectReasonText, CxlRejReason cxlRejReason)
+    public Message newOrderCancelReject(OrderID orderID,
+                                        ClOrdID clOrdID,
+                                        OrigClOrdID origClOrdID,
+                                        String rejectReasonText,
+                                        CxlRejReason cxlRejReason)
     {
         Message reject = newOrderCancelReject();
         reject.setField(orderID);
@@ -760,25 +799,37 @@ public class FIXMessageFactory
         addApplicationVersion(reject);
         return reject;
     }
-
-    /** Creates a new order message and poopulates it with current {@link TransactTime}
-     * @return  new order single
+    /**
+     * Creates a new order message and populates it with current {@link TransactTime}.
+     * 
+     * @return a <code>Message</code> value
      */
-    public Message newBasicOrder() {
+    public Message newBasicOrder()
+    {
         Message msg =  msgFactory.create(beginString, MsgType.ORDER_SINGLE);
         addApplicationVersion(msg);
         addHandlingInst(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
     }
-
-    /** Creates a group based on the specified container message and group id */
-    public Group createGroup(String msgType, int groupID)
+    /**
+     * Create a group based on the specified container message and group id.
+     *
+     * @param msgType a <code>String</code> value
+     * @param groupID an <code>int</code> value
+     * @return a <code>Group</code> value
+     */
+    public Group createGroup(String msgType,
+                             int groupID)
     {
         return msgFactory.create(beginString, msgType, groupID);
     }
-
-    /** Creates a message baed on the specified message type */
+    /**
+     * Creates a message based on the specified message type.
+     *
+     * @param msgType a <code>String</code> value
+     * @return a <code>Message</code> value
+     */
     public Message createMessage(String msgType)
     {
         Message msg = msgFactory.create(beginString, msgType);
@@ -786,29 +837,42 @@ public class FIXMessageFactory
         addApplicationVersion(msg);
         return msg;
     }
-
+    /**
+     * Get the begin string value.
+     *
+     * @return a <code>String</code> value
+     */
     public String getBeginString()
     {
         return beginString;
     }
-
-    /** Returns the underlying Quickfix/J {@link MessageFactory} that is used
-     * to create all messages.
+    /**
+     * Returns the underlying Quickfix/J {@link MessageFactory} that is used to create all messages.
+     * 
+     * @return a <code>MessageFactory</code> value
      */
     public MessageFactory getUnderlyingMessageFactory()
     {
         return msgFactory;
     }
-
-    public FIXMessageAugmentor getMsgAugmentor() {
+    /**
+     * Get the FIX message augmentor value.
+     *
+     * @return a <code>FIXMessageAugmentor</code> value
+     */
+    public FIXMessageAugmentor getMsgAugmentor()
+    {
         return msgAugmentor;
     }
-
-    /** Only add the transaction time if it's necessary for this message */
+    /**
+     * Add the transaction time to the given message if necessary.
+     *
+     * @param msg a <code>Message</code> value
+     */
     public void addTransactionTimeIfNeeded(Message msg)
     {
         if(msgAugmentor.needsTransactTime(msg)) {
-            msg.setField(new TransactTime(new Date())); //non-i18n
+            msg.setField(new TransactTime(new Date()));
         }
     }
     /**
@@ -844,8 +908,8 @@ public class FIXMessageFactory
      * @param inIncomingMsg   Message that generated this session-level reject
      * @param inRejectReason  Reason for reject
      * @return Session-level reject message to send out
-     * @throws FieldNotFound
-     * @throws SessionNotFound
+     * @throws FieldNotFound if the session reject could not be built
+     * @throws SessionNotFound if the session does not exist
      */
     public Message createSessionReject(Message inIncomingMsg,
                                        int inRejectReason)
@@ -860,8 +924,17 @@ public class FIXMessageFactory
         reply.setInt(SessionRejectReason.FIELD, inRejectReason);
         return reply;
     }
-    /** Reverses the sender/target compIDs from reply and sets them in the outgoing outgoingMsg */
-    public void reverseRoute(Message outgoingMsg, Message reply) throws FieldNotFound {
+    /**
+     * Reverses the sender/target compIDs from reply and sets them in the outgoing outgoingMsg.
+     *
+     * @param outgoingMsg a <code>Message</code> value
+     * @param reply a <code>Message</code> value
+     * @throws FieldNotFound if the necessary fields do not exist on the given messages
+     */
+    public void reverseRoute(Message outgoingMsg,
+                             Message reply)
+            throws FieldNotFound
+    {
         reply.getHeader().setString(SenderCompID.FIELD,
                 outgoingMsg.getHeader().getString(TargetCompID.FIELD));
         reply.getHeader().setString(TargetCompID.FIELD,

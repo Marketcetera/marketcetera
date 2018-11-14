@@ -26,7 +26,7 @@ public interface MarketDataManager
      * Executes the given market data request and publishes the results to the given subscriber.
      * 
      * <p>Market data will be published to the given subscriber as it becomes available until
-     * the request is {@link #cancelMarketDataRequest(Subscriber) canceled}.
+     * the request is {@link #cancelMarketDataRequest(long) canceled}.
      * 
      * @param inRequest a <code>MarketDataRequest</code> value
      * @param inSubscriber an <code>ISubscriber</code> value or <code>null</code> if no update events are required

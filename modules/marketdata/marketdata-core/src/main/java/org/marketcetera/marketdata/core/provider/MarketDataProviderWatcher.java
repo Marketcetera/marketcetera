@@ -122,7 +122,7 @@ public class MarketDataProviderWatcher
     /**
      * Sets the marketDataStatusListeners value.
      *
-     * @param a <code>List&lt;MarketDataStatusListener&gt;</code> value
+     * @param inMarketDataStatusListeners a <code>List&lt;MarketDataStatusListener&gt;</code> value
      */
     public void setMarketDataStatusListeners(List<MarketDataStatusListener> inMarketDataStatusListeners)
     {

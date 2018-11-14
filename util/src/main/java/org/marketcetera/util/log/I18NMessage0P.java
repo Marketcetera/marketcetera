@@ -36,28 +36,28 @@ public class I18NMessage0P
     // CONSTRUCTORS.
 
     /**
-     * Constructor mirroring superclass constructor.
+     * Create a new I18NMessage0P instance.
      *
+     * @param loggerProxy an <code>I18NLoggerProxy</code> value
+     * @param messageId a <code>String</code> value
+     * @param entryId a <code>String</code> value
      * @see I18NMessage#I18NMessage(I18NLoggerProxy,String,String)
      */
-
-    public I18NMessage0P
-        (I18NLoggerProxy loggerProxy,
-         String messageId,
-         String entryId)
+    public I18NMessage0P(I18NLoggerProxy loggerProxy,
+                         String messageId,
+                         String entryId)
     {
         super(loggerProxy,messageId,entryId);
     }
-
     /**
-     * Constructor mirroring superclass constructor.
+     * Create a new I18NMessage0P instance.
      *
+     * @param loggerProxy an <code>I18NLoggerProxy</code> value
+     * @param messageId a <code>String</code> value
      * @see I18NMessage#I18NMessage(I18NLoggerProxy,String)
      */
-
-    public I18NMessage0P
-        (I18NLoggerProxy loggerProxy,
-         String messageId)
+    public I18NMessage0P(I18NLoggerProxy loggerProxy,
+                         String messageId)
     {
         super(loggerProxy,messageId);
     }
@@ -93,8 +93,7 @@ public class I18NMessage0P
     }
 
     @Override
-    public String getText
-        (Locale locale)
+    public String getText(Locale locale)
     {
         return getMessageProvider().getText(locale,this);
     }

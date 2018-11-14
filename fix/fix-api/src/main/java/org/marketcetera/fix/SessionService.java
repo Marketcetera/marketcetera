@@ -23,7 +23,7 @@ public interface SessionService
     /**
      * Get the name of the given session.
      *
-     * <b>This method is intended to be light-weight to be called frequently with minimal trips to the database.
+     * <p>This method is intended to be light-weight to be called frequently with minimal trips to the database.
      * As such, it is possible that the value returned may, under certain circumstances, be inaccurate due to caching.
      * This is unlikely to happen, but is possible due to the emphasis on performance.
      * 
@@ -32,7 +32,7 @@ public interface SessionService
      */
     String getSessionName(SessionID inSessionId);
     /**
-     * Generates a <code>SessionSettings<code> value based on the given collection of fix sessions.
+     * Generates a <code>SessionSettings</code> value based on the given collection of fix sessions.
      *
      * @param inFixSessions a <code>Collection&lt;FixSession&gt;</code> value
      * @return a <code>SessionSettings</code> value
@@ -41,7 +41,7 @@ public interface SessionService
     /**
      * Finds the fix session with the given session id.
      *
-     * @param inFixSessionListener a <code>FixSessionListener</code> value
+     * @param inSessionId a <code>SessionID</code> value
      * @return a <code>FixSession</code> value or <code>null</code>
      */
     FixSession findFixSessionBySessionId(SessionID inSessionId);
