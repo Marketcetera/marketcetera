@@ -34,6 +34,7 @@
     <mvn.javase.version>8</mvn.javase.version>
     <mvn.spring.boot.version>2.1.0.RELEASE</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
+    <mvn.log4j.version>2.11.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
   </properties>
@@ -355,6 +356,32 @@
         <artifactId>commons-beanutils</artifactId>
         <version>1.9.1</version>
       </dependency>
+      <!-- Binding for Log4J -->
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${mvn.log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <!-- Log4j API and Core implementation required for binding -->
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-1.2-api</artifactId>
+        <version>${mvn.log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${mvn.log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${mvn.log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
       <dependency>
         <groupId>taglibs</groupId>
         <artifactId>standard</artifactId>
@@ -486,7 +513,7 @@
       <dependency>
         <groupId>com.lmax</groupId>
         <artifactId>disruptor</artifactId>
-        <version>3.3.0</version>
+        <version>3.4.2</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -577,6 +604,13 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>cluster-core</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
         <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
@@ -585,13 +619,6 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>eventbus-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>cluster-core</artifactId>
         <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
@@ -802,11 +829,11 @@
           </dependencies>
         </plugin-->
         <!-- mvn exec:* -->
-        <!--plugin>
+        <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
           <version>1.6.0</version>
-        </plugin-->
+        </plugin>
         <!-- mvn test -->
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
