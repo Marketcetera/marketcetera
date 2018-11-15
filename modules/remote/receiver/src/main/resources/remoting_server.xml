@@ -14,8 +14,7 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <!-- Configure the broker -->
-  <bean id="broker" class="org.apache.activemq.broker.BrokerService"
-        init-method="start" destroy-method="stop">
+  <bean id="broker" class="org.apache.activemq.broker.BrokerService" init-method="start" destroy-method="stop">
     <property name="brokerName" value="REMOTING-BROKER"/>
     <property name="useJmx" value="true"/>
     <property name="useShutdownHook" value="false"/>
@@ -40,12 +39,11 @@
   </bean>
 
   <!-- Connection factories -->
-  <bean id="connectionFactory"
-        class="org.apache.activemq.ActiveMQConnectionFactory"
-        depends-on="broker">
+  <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" depends-on="broker">
     <property name="brokerURL" value="vm://REMOTING-BROKER?create=false"/>
     <property name="userName" ref="userName"/>
     <property name="password" ref="password"/>
+    <property name="trustAllPackages" value="true"/>
   </bean>
   <bean id="pooledConnectionFactory"
         class="org.apache.activemq.pool.PooledConnectionFactory">
