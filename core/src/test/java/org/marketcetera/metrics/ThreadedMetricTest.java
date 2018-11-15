@@ -462,6 +462,7 @@ public class ThreadedMetricTest {
      *
      * @throws Exception if there were any unexpected errors.
      */
+    @SuppressWarnings("rawtypes")
     static void assertOutput(Object[][] inExpected, String [][]inActual) throws Exception {
         assertEquals(inExpected.length, inActual.length);
         for(int i = 0; i < inExpected.length; i++) {
@@ -496,7 +497,7 @@ public class ThreadedMetricTest {
             return null;
         }
     }
-    static <T extends Comparable> T parseNumber(String inString, Class<T> inClass) throws Exception {
+    static <T extends Comparable<?>> T parseNumber(String inString, Class<T> inClass) throws Exception {
         return inClass.getConstructor(String.class).newInstance(inString);
     }
     static final long sleepInterval = 100;

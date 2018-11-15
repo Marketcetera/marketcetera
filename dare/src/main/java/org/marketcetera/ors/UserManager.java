@@ -152,7 +152,7 @@ public class UserManager
         for (UserID userID:allUserIDs) {
             // Assume user is nonexistent/inactive.
             SimpleUser user=null;
-            user = userService.findOne(userID.getValue());
+            user = userService.findById(userID.getValue());
             if ((user!=null) && (!user.isActive())) {
                 user=null;
             }

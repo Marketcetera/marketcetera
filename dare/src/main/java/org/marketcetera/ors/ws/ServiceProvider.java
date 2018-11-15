@@ -180,7 +180,7 @@ public class ServiceProvider
      */
     public UserInfo getUserInfo(UserID inUserId)
     {
-        SimpleUser u = userService.findOne(inUserId.getValue());
+        SimpleUser u = userService.findById(inUserId.getValue());
         return new UserInfo(u.getName(),u.getUserID(),u.isActive(),u.isSuperuser(),Util.propertiesFromString(u.getUserData()));
     }
     /**

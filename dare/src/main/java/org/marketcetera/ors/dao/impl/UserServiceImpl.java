@@ -147,7 +147,7 @@ public class UserServiceImpl
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public void delete(SimpleUser inUser)
     {
-        inUser = userDao.findOne(inUser.getId());
+        inUser = userDao.findById(inUser.getId()).orElse(null);
         if(inUser != null) {
             userDao.delete(inUser);
             usersByUserId.invalidate(inUser.getUserID());
@@ -155,12 +155,12 @@ public class UserServiceImpl
         }
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.ors.dao.UserService#findOne(long)
+     * @see com.marketcetera.ors.dao.UserService#findById(long)
      */
     @Override
-    public SimpleUser findOne(long inValue)
+    public SimpleUser findById(long inValue)
     {
-        return userDao.findOne(inValue);
+        return userDao.findById(inValue).orElse(null);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.UserService#findAll()
@@ -179,8 +179,8 @@ public class UserServiceImpl
         List<User> users = new ArrayList<>();
         Sort jpaSort = null;
         if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
-            jpaSort = new Sort(new Sort.Order(Sort.Direction.ASC,
-                                              QSimpleUser.simpleUser.name.getMetadata().getName()));
+            jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC,
+                                             QSimpleUser.simpleUser.name.getMetadata().getName()));
         } else {
             for(org.marketcetera.persist.Sort sort : inPageRequest.getSortOrder()) {
                 Sort.Direction jpaSortDirection = sort.getDirection()==SortDirection.ASCENDING?Sort.Direction.ASC:Sort.Direction.DESC;
@@ -193,17 +193,17 @@ public class UserServiceImpl
                     path = property;
                 }
                 if(jpaSort == null) {
-                    jpaSort = new Sort(new Sort.Order(jpaSortDirection,
-                                                      path));
+                    jpaSort = Sort.by(new Sort.Order(jpaSortDirection,
+                                                     path));
                 } else {
-                    jpaSort = jpaSort.and(new Sort(new Sort.Order(jpaSortDirection,
-                                                                  path)));
+                    jpaSort = jpaSort.and(Sort.by(new Sort.Order(jpaSortDirection,
+                                                                 path)));
                 }
             }
         }
-        org.springframework.data.domain.PageRequest pageRequest = new org.springframework.data.domain.PageRequest(inPageRequest.getPageNumber(),
-                                                                                                                  inPageRequest.getPageSize(),
-                                                                                                                  jpaSort);
+        org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(inPageRequest.getPageNumber(),
+                                                                                                                 inPageRequest.getPageSize(),
+                                                                                                                 jpaSort);
         Page<SimpleUser> result = userDao.findAll(pageRequest);
         CollectionPageResponse<User> response = new CollectionPageResponse<>();
         response.setPageMaxSize(result.getSize());
@@ -279,7 +279,7 @@ public class UserServiceImpl
             public SimpleUser load(UserID inKey)
                     throws Exception
             {
-                return userDao.findOne(inKey.getValue());
+                return userDao.findById(inKey.getValue()).orElse(null);
             }});
         usersByUsername = CacheBuilder.newBuilder().maximumSize(100).build(new CacheLoader<String,SimpleUser>() {
             @Override

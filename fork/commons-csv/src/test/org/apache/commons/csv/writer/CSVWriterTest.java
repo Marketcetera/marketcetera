@@ -49,7 +49,7 @@ public class CSVWriterTest extends TestCase {
         writer.setConfig(config);
         StringWriter sw = new StringWriter();
         writer.setWriter(sw);
-        Map map = new HashMap();
+        Map<String,Object> map = new HashMap<>();
         map.put("field1", "12345");
         map.put("field2", "1234");
         writer.writeRecord(map);

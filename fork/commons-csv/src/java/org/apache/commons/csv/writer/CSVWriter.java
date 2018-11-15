@@ -44,7 +44,7 @@ public class CSVWriter {
         setConfig(config);
     }
 
-    public void writeRecord(Map map) {
+    public void writeRecord(Map<String,Object> map) {
         CSVField[] fields = config.getFields();
         try {
             StringBuffer sb = new StringBuffer();

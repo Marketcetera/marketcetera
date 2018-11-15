@@ -31,7 +31,7 @@ public class Deleter
 
     @ClassVersion("$Id$")
     private static final class RecursiveDeleter
-        extends SmartLinksDirectoryWalker
+            extends SmartLinksDirectoryWalker
     {
 
         // CONSTRUCTORS.
@@ -54,12 +54,10 @@ public class Deleter
          * @see DirectoryWalker#handleDirectoryEnd(File,int,Collection)
          */
 
-        @SuppressWarnings("unchecked")
         @Override
-        protected void handleDirectoryEnd
-            (File directory,
-             int depth,
-             Collection results)
+        protected void handleDirectoryEnd(File directory,
+                                          int depth,
+                                          Collection<String> results)
             throws IOException
         {
             deleteWrap(directory);
@@ -71,12 +69,10 @@ public class Deleter
          * @see DirectoryWalker#handleFile(File,int,Collection)
          */
 
-        @SuppressWarnings("unchecked")
         @Override
-        protected void handleFile
-            (File file,
-             int depth,
-             Collection results)
+        protected void handleFile(File file,
+                                  int depth,
+                                  Collection<String> results)
             throws IOException
         {
             deleteWrap(file);
@@ -90,8 +86,7 @@ public class Deleter
          * @throws I18NException Thrown if an I/O error occurs.
          */
 
-        public void applyUnwrap
-            (File file)
+        public void applyUnwrap(File file)
             throws I18NException
         {
             try {

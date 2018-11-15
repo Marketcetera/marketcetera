@@ -169,7 +169,7 @@ public class RecordingLog
                         }
                     }
                 }
-                configuration.getIncomingMessageDao().save(newMessages);
+                configuration.getIncomingMessageDao().saveAll(newMessages);
             } catch (Exception e) {
                 if(PlatformServices.isShutdown(e)) {
                     // this exception can be safely ignored

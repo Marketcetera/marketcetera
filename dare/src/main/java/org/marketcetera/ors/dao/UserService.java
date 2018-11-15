@@ -86,7 +86,7 @@ public interface UserService
      * @param inValue a <code>long</code> value
      * @return a <code>SimpleUser</code> value or <code>null</code>
      */
-    SimpleUser findOne(long inValue);
+    SimpleUser findById(long inValue);
     /**
      * Find the user associated with the given user id.
      *

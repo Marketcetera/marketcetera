@@ -71,9 +71,9 @@ public class OutgoingMessageLookupStrategy
             Sort sort = new Sort(Sort.Direction.DESC,
                                  QPersistentOutgoingMessage.persistentOutgoingMessage.lastUpdated.getMetadata().getName(),
                                  QPersistentOutgoingMessage.persistentOutgoingMessage.msgSeqNum.getMetadata().getName());
-            PageRequest pageRequest = new PageRequest(0,
-                                                      1,
-                                                      sort);
+            PageRequest pageRequest = PageRequest.of(0,
+                                                     1,
+                                                     sort);
             // this query, as structured, cannot return multiple rows, but there could be multiple matches in the db and the
             //  matches could each be owned by a different user. this is not a perfect technique as, for example, the original
             //  order could be masked by subsequent order status requests. what if the order status requests were owned by

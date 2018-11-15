@@ -105,106 +105,103 @@ public class JavaCompilerExecutionEngine
                                                                                       null,
                                                                                       null);
         // this is the specialized file manager that produces source and stores byte-code all in-memory
-        InMemoryFileManager specializedFileManager = new InMemoryFileManager(standardFileManager,
-                                                                             output,
-                                                                             loader);
-        // source file objects are produced for each thing to be compiled.  For us, this is the strategy script, which
-        //  contains 1 or more classes.  notice that this is where the strategy name is associated with the source.  this
-        //  is required by the java compiler which dictates that a class name must match the file name
-        SourceJavaFileObject sourceObject;
-        try {
-            sourceObject = new SourceJavaFileObject(strategy.getName(),
-                                                    processedScript);
-        } catch (URISyntaxException e) {
-            throw new StrategyException(e,
-                                        new I18NBoundMessage1P(INVALID_STRATEGY_NAME,
-                                                               strategy.toString()));
-        }
-        // prepare the options to pass to the compiler
-        // collect classpath entries
-        Set<String> classpathEntries = new LinkedHashSet<String>();
-        // add the system classpath
-        String systemPath = System.getProperty("java.class.path"); //$NON-NLS-1$
-        if(systemPath != null) {
-            String[] entries = systemPath.split(File.pathSeparator);
-            classpathEntries.addAll(Arrays.asList(entries));
-        }
-        // add jars we are given by the parent class loaders, if any
-        ClassLoader currentLoader = loader;
-        do {
-            if(currentLoader instanceof URLClassLoader) {
-                for(URL url: ((URLClassLoader)currentLoader).getURLs()) {
-                    try {
-                        classpathEntries.add(url.toURI().getPath());
-                    } catch (URISyntaxException e) {
-                        Messages.ERROR_CONVERTING_CLASSPATH_URL.warn(this,
-                                                                     e,
-                                                                     url);
+        try(InMemoryFileManager specializedFileManager = new InMemoryFileManager(standardFileManager,output,loader)) {
+            // source file objects are produced for each thing to be compiled.  For us, this is the strategy script, which
+            //  contains 1 or more classes.  notice that this is where the strategy name is associated with the source.  this
+            //  is required by the java compiler which dictates that a class name must match the file name
+            SourceJavaFileObject sourceObject;
+            try {
+                sourceObject = new SourceJavaFileObject(strategy.getName(),
+                                                        processedScript);
+            } catch (URISyntaxException e) {
+                throw new StrategyException(e,
+                                            new I18NBoundMessage1P(INVALID_STRATEGY_NAME,
+                                                                   strategy.toString()));
+            }
+            // prepare the options to pass to the compiler
+            // collect classpath entries
+            Set<String> classpathEntries = new LinkedHashSet<String>();
+            // add the system classpath
+            String systemPath = System.getProperty("java.class.path"); //$NON-NLS-1$
+            if(systemPath != null) {
+                String[] entries = systemPath.split(File.pathSeparator);
+                classpathEntries.addAll(Arrays.asList(entries));
+            }
+            // add jars we are given by the parent class loaders, if any
+            ClassLoader currentLoader = loader;
+            do {
+                if(currentLoader instanceof URLClassLoader) {
+                    for(URL url: ((URLClassLoader)currentLoader).getURLs()) {
+                        try {
+                            classpathEntries.add(url.toURI().getPath());
+                        } catch (URISyntaxException e) {
+                            Messages.ERROR_CONVERTING_CLASSPATH_URL.warn(this,
+                                                                         e,
+                                                                         url);
+                        }
                     }
                 }
+            } while((currentLoader = currentLoader.getParent()) != null);
+            // add our custom classpath
+            String customPath = System.getProperty(CLASSPATH_KEY);
+            if(customPath != null) {
+                String[] entries = customPath.split(File.pathSeparator);
+                classpathEntries.addAll(Arrays.asList(entries));
             }
-        } while((currentLoader = currentLoader.getParent()) != null);
-        // add our custom classpath
-        String customPath = System.getProperty(CLASSPATH_KEY);
-        if(customPath != null) {
-            String[] entries = customPath.split(File.pathSeparator);
-            classpathEntries.addAll(Arrays.asList(entries));
-        }
-        String strategyPath = System.getProperty(Strategy.CLASSPATH_PROPERTYNAME);
-        if(strategyPath != null) {
-            String[] entries = strategyPath.split(File.pathSeparator);
-            classpathEntries.addAll(Arrays.asList(entries));
-        }
-        // put the classpath string in place with the classpath command-line option
-        List<String> options = new ArrayList<String>();
-        // make debug symbols available in the compiled strategy
-        options.add("-g"); //$NON-NLS-1$
-        options.add("-cp"); //$NON-NLS-1$
-        StringBuilder classpathString = new StringBuilder();
-        for(String entry : classpathEntries) {
-            classpathString.append(entry).append(File.pathSeparator);
-        }
-        options.add(classpathString.toString());
-        SLF4JLoggerProxy.debug(JavaCompilerExecutionEngine.class,
-                               "Java compiler compiling {} with options {} (classpath length: {})", //$NON-NLS-1$
-                               strategy.getName(),
-                               Arrays.toString(options.toArray()),
-                               classpathString.length());
-        // schedule the compilation task
-        CompilationTask compilationJob = compiler.getTask(null, // out-writer not needed because we're using the in-memory file manager
-                                                          specializedFileManager,
-                                                          diagnostics,
-                                                          options,
-                                                          null, // no annotation processing needed
-                                                          Arrays.asList(sourceObject));
-        // wait for the compilation job to complete
-        if (!compilationJob.call()) {
-            // compilation failed, deal with the errors
-            CompilationFailed failed = new CompilationFailed(strategy);
-            for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-                if(diagnostic.getKind().equals(Diagnostic.Kind.ERROR)) {
-                    failed.addDiagnostic(CompilationFailed.Diagnostic.error(diagnostic.toString()));
-                } else {
-                    failed.addDiagnostic(CompilationFailed.Diagnostic.warning(diagnostic.toString()));
+            String strategyPath = System.getProperty(Strategy.CLASSPATH_PROPERTYNAME);
+            if(strategyPath != null) {
+                String[] entries = strategyPath.split(File.pathSeparator);
+                classpathEntries.addAll(Arrays.asList(entries));
+            }
+            // put the classpath string in place with the classpath command-line option
+            List<String> options = new ArrayList<String>();
+            // make debug symbols available in the compiled strategy
+            options.add("-g"); //$NON-NLS-1$
+            options.add("-cp"); //$NON-NLS-1$
+            StringBuilder classpathString = new StringBuilder();
+            for(String entry : classpathEntries) {
+                classpathString.append(entry).append(File.pathSeparator);
+            }
+            options.add(classpathString.toString());
+            SLF4JLoggerProxy.debug(JavaCompilerExecutionEngine.class,
+                                   "Java compiler compiling {} with options {} (classpath length: {})", //$NON-NLS-1$
+                                   strategy.getName(),
+                                   Arrays.toString(options.toArray()),
+                                   classpathString.length());
+            // schedule the compilation task
+            CompilationTask compilationJob = compiler.getTask(null, // out-writer not needed because we're using the in-memory file manager
+                                                              specializedFileManager,
+                                                              diagnostics,
+                                                              options,
+                                                              null, // no annotation processing needed
+                                                              Arrays.asList(sourceObject));
+            // wait for the compilation job to complete
+            if (!compilationJob.call()) {
+                // compilation failed, deal with the errors
+                CompilationFailed failed = new CompilationFailed(strategy);
+                for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+                    if(diagnostic.getKind().equals(Diagnostic.Kind.ERROR)) {
+                        failed.addDiagnostic(CompilationFailed.Diagnostic.error(diagnostic.toString()));
+                    } else {
+                        failed.addDiagnostic(CompilationFailed.Diagnostic.warning(diagnostic.toString()));
+                    }
+                }
+                StrategyModule.log(LogEventBuilder.error().withMessage(COMPILATION_FAILED,
+                                                                       String.valueOf(strategy),
+                                                                       failed.toString())
+                                                          .withException(failed).create(),
+                                   strategy);
+                throw failed;
+            } else {
+                // compilation succeeded with or without warnings
+                for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+                    StrategyModule.log(LogEventBuilder.warn().withMessage(COMPILATION_FAILED_DIAGNOSTIC,
+                                                                          String.valueOf(diagnostic.getKind()),
+                                                                          String.valueOf(diagnostic)).create(),
+                                       strategy);
                 }
             }
-            StrategyModule.log(LogEventBuilder.error().withMessage(COMPILATION_FAILED,
-                                                                   String.valueOf(strategy),
-                                                                   failed.toString())
-                                                      .withException(failed).create(),
-                               strategy);
-            throw failed;
-        } else {
-            // compilation succeeded with or without warnings
-            for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-                StrategyModule.log(LogEventBuilder.warn().withMessage(COMPILATION_FAILED_DIAGNOSTIC,
-                                                                      String.valueOf(diagnostic.getKind()),
-                                                                      String.valueOf(diagnostic)).create(),
-                                   strategy);
-            }
-        }
-        // strategy has compiled successfully and is now held in our specializedFileManager
-        try {
+            // strategy has compiled successfully and is now held in our specializedFileManager
             // load the class from the specialized class loader that caches the compiled strategy classes
             // remember that the strategy name is specified without a package name, but the classloader needs
             //  to know the fully-qualified classname with package, so check the mappings we created for fully-qualified
@@ -222,14 +219,14 @@ public class JavaCompilerExecutionEngine
             //  note that this implicitly loads helper classes as necessary
             return c.newInstance();
         } catch (Exception e) {
-            // the myriad of exceptions that can be thrown with the above couple of lines all amount to the same
+            // myriad exceptions can be thrown with the above couple of lines all amount to the same
             //  thing: the black magic of the compiler, in-memory objects, and the classloader somehow malfunctioned.
             //  this would be a warranty repair: nothing the user can do.  might as well call it a compilation problem
             //  as well as call it anything else.
             StrategyModule.log(LogEventBuilder.error().withMessage(COMPILATION_FAILED,
                                                                    String.valueOf(strategy),
                                                                    String.valueOf(e))
-                                                      .withException(e).create(),
+                               .withException(e).create(),
                                strategy);
             throw new CompilationFailed(e,
                                         strategy);

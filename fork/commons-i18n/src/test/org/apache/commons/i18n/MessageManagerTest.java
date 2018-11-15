@@ -134,7 +134,7 @@ public class MessageManagerTest extends MockProviderTestBase {
 
         addMockProvider(); // Add mock provider
 
-        Map entries = MessageManager.getEntries("dummyId", Locale.US);
+        Map<String,String> entries = MessageManager.getEntries("dummyId", Locale.US);
         assertEquals("No of entries", 2, entries.size());
         assertEquals("Entry 1 match", "Source=mock Id=dummyId Entry=entry1 Locale=en_US", entries.get("entry1"));
         assertEquals("Entry 2 match", "Source=mock Id=dummyId Entry=entry2 Locale=en_US", entries.get("entry2"));
