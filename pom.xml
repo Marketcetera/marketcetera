@@ -10,7 +10,7 @@
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>public-parent</artifactId>
-  <version>4.0.0-SNAPSHOT</version>
+  <version>3.1.0</version>
   <packaging>pom</packaging>
   <name>Marketcetera Public Sources Parent POM</name>
   <description>The root of Marketcetera public sources.</description>
@@ -32,231 +32,120 @@
   </developers>
   <properties>
     <mvn.javase.version>8</mvn.javase.version>
-    <mvn.javaee.version>8</mvn.javaee.version>
-    <mvn.cxf.version>3.2.1</mvn.cxf.version>
-    <mvn.log4j.version>2.7</mvn.log4j.version>
-    <mvn.spring.boot.version>2.0.5.RELEASE</mvn.spring.boot.version>
-    <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
+    <mvn.spring.version>4.3.8.RELEASE</mvn.spring.version>
+    <mvn.cxf.version>3.1.11</mvn.cxf.version>
+    <mvn.querydsl.version>4.1.4</mvn.querydsl.version>
+    <mvn.springdatajpa.version>1.11.3.RELEASE</mvn.springdatajpa.version>
+    <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
+    <mvn.hibernate.version>5.1.5.Final</mvn.hibernate.version>
+    <mvn.hazelcast.version>3.8.1</mvn.hazelcast.version>
+    <mvn.slf4j.version>1.7.21</mvn.slf4j.version>
+    <mvn.log4j.version>2.1</mvn.log4j.version>
+    <mvn.test.options>-Xmx2048m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <!-- Import dependency management from Spring Boot -->
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${mvn.spring.boot.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
       <!-- Compile: local modules -->
-      <!-- admin modules -->
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>admin-api</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>admin-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>admin-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>admin-rpc-client</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>admin-rpc-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>admin-rpc-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <!-- fix modules -->
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>fix-api</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>fix-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>fix-rpc-client</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>fix-rpc-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>fix-acceptor</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>fix-rpc-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>fix-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>fix-modules</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>trade-api</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>trade-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>trade-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>trade-modules</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>cluster-api</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>cluster-rpc-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>cluster-rpc-client</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>cluster-rpc-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>client</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>simple-cluster</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>cluster-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>migration</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>orderloader</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategyagent</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-csv</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-bogus</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-manual</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-exsim</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-recorder</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>rpc-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>marketdata-core</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-marketcetera</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-yahoo</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-csv</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>misc</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategy</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>eventbus-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>eventbus-core</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-esper</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
         <exclusions>
           <exclusion>
             <groupId>log4j</groupId>
@@ -267,128 +156,94 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>tensorflow</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>remote-receiver</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>remote-emitter</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dataflow-api</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>saclient</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dataflow-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>admin-api</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dataflow-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>admin-rpc-core</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dataflow-rpc-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>admin-rpc-client</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-core</artifactId>
+        <version>5.2.1</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dataflow-rpc-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>dare</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dataflow-rpc-client</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>notional-value-modifier</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-api</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>fix-acceptor</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>fix-initiator</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>fix-core</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-rpc-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>fix-api</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-rpc-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>cluster-api</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-rpc-client</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>cluster-core</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-ws-client</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>cluster-simple</artifactId>
+        <version>3.1.0</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-ws-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-ws-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>trade-rpc-client</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>trade-rpc-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>trade-rpc-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <!-- compile: web ui -->
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-admin</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-dataflow</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-marketdata</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-cluster</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>metrics-persist</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <!-- Compile: QuickFIX/J -->
       <dependency>
@@ -423,6 +278,73 @@
         <artifactId>cxf-rt-transports-http</artifactId>
         <version>${mvn.cxf.version}</version>
       </dependency>
+      <!-- Compile: Spring -->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>${mvn.spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>${mvn.spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>${mvn.spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>${mvn.spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-tx</artifactId>
+        <version>${mvn.spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${mvn.spring.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jms</artifactId>
+        <version>${mvn.spring.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.data</groupId>
+        <artifactId>spring-data-jpa</artifactId>
+        <version>${mvn.springdatajpa.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
       <!-- Compile: Other -->
       <dependency>
         <groupId>org.tensorflow</groupId>
@@ -435,6 +357,42 @@
         <version>0.2</version>
       </dependency>
       <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>javax.mail</artifactId>
+        <version>1.5.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20140107</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>3.2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.hazelcast</groupId>
+        <artifactId>hazelcast</artifactId>
+        <version>${mvn.hazelcast.version}</version>
+      </dependency> 
+      <dependency>
+        <groupId>com.hazelcast</groupId>
+        <artifactId>hazelcast-spring</artifactId>
+        <version>${mvn.hazelcast.version}</version>
+      </dependency> 
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>4.0</version>
+      </dependency>
+      <dependency>
         <groupId>org.skife.kasparov</groupId>
         <artifactId>csv</artifactId>
         <version>1.0</version>
@@ -445,19 +403,9 @@
         <version>1.9.0</version>
       </dependency>
       <dependency>
-        <groupId>org.json</groupId>
-        <artifactId>json</artifactId>
-        <version>20180130</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-beanutils</groupId>
-        <artifactId>commons-beanutils</artifactId>
-        <version>1.9.3</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-collections</groupId>
-        <artifactId>commons-collections</artifactId>
-        <version>3.2.2</version>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${mvn.slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -481,18 +429,77 @@
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
+        <artifactId>commons-math3</artifactId>
+        <version>3.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.9</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-collections</groupId>
+        <artifactId>commons-collections</artifactId>
+        <version>3.2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
         <artifactId>commons-collections4</artifactId>
         <version>4.0</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-i18n</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>1.9.1</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate.javax.persistence</groupId>
         <artifactId>hibernate-jpa-2.1-api</artifactId>
         <version>1.0.0.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${mvn.hibernate.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient-cache</artifactId>
+        <version>4.5.1</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>jstl</artifactId>
+        <version>1.2</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>taglibs</groupId>
+        <artifactId>standard</artifactId>
+        <version>1.1.2</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.ccil.cowan.tagsoup</groupId>
+        <artifactId>tagsoup</artifactId>
+        <version>1.2.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.bsf</groupId>
@@ -521,9 +528,34 @@
         <version>1.1.1</version>
       </dependency>
       <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>2.9.9</version>
+      </dependency>
+      <dependency>
+        <groupId>org.joda</groupId>
+        <artifactId>joda-primitives</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>20.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j</groupId>
+        <artifactId>peaberry</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j</groupId>
+        <artifactId>peaberry.eclipse</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
+        <version>2.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
@@ -542,34 +574,45 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-core</artifactId>
-        <version>1.12.0</version>
-      </dependency>
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-netty</artifactId>
-        <version>1.12.0</version>
-      </dependency>
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-protobuf</artifactId>
-        <version>1.12.0</version>
-      </dependency>
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-stub</artifactId>
-        <version>1.12.0</version>
+        <groupId>jparsec</groupId>
+        <artifactId>jparsec</artifactId>
+        <version>2.0.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>3.6.0</version>
+        <version>2.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.googlecode.protobuf-rpc-pro</groupId>
+        <artifactId>protobuf-streamer-pro</artifactId>
+        <version>1.2.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>io.netty</groupId>
+            <artifactId>netty</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.googlecode.protobuf-rpc-pro</groupId>
+        <artifactId>protobuf-rpc-pro-duplex</artifactId>
+        <version>3.2.2</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-all</artifactId>
-        <version>4.1.25.Final</version>
+        <version>4.0.15.Final</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -578,7 +621,75 @@
         <version>1.1.2</version>
         <scope>runtime</scope>
       </dependency>
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-core</artifactId>
+        <version>${mvn.querydsl.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-apt</artifactId>
+        <version>${mvn.querydsl.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-jpa</artifactId>
+        <version>${mvn.querydsl.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-sql</artifactId>
+        <version>${mvn.querydsl.version}</version>
+      </dependency>
       <!-- Runtime. -->
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>eventbus-guava</artifactId>
+        <version>3.1.0</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.hazelcast</groupId>
+        <artifactId>hazelcast-hibernate5</artifactId>
+        <version>1.2.1</version>
+        <scope>runtime</scope>
+      </dependency> 
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-pool</artifactId>
+        <version>5.9.0</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-broker</artifactId>
+        <version>5.9.0</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-stomp</artifactId>
+        <version>5.9.0</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-jaas</artifactId>
+        <version>5.9.0</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>${mvn.spring.version}</version>
+        <scope>runtime</scope>
+      </dependency>
       <!-- Binding for Log4J -->
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
@@ -612,36 +723,29 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
+        <groupId>commons-pool</groupId>
+        <artifactId>commons-pool</artifactId>
+        <version>1.6</version>
+        <exclusions>
+          <!-- Exclude xerces as it pulls in an older buggy version. -->
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xerces</artifactId>
+          </exclusion>
+          <!-- Exclude xml-apis, standard JRE ones are preferable. -->
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-transports-http-jetty</artifactId>
         <version>${mvn.cxf.version}</version>
         <scope>runtime</scope>
         <exclusions>
-          <!-- there's a bug in jetty 9.4.7 that causes "locker not reentrant" in web client/server calls -->
-          <exclusion>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-util</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-io</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-security</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-continuation</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-http</artifactId>
-          </exclusion>
           <!-- Exclude slf4j-jdk14, let application choose slf4j binding. -->
           <exclusion>
             <groupId>org.slf4j</groupId>
@@ -654,46 +758,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- these jetty dependencies are transitively included from cxf-rt-transports-http, but the included version, 9.4.7, is buggy -->
-      <!-- we include the specific dependencies because we're manually overriding the version to 9.4.8 -->
-      <!-- these can be removed when the transitive dependencies are changed to a fixed jetty version in cxf -->
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-server</artifactId>
-        <version>9.4.8.v20171121</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-util</artifactId>
-        <version>9.4.8.v20171121</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-io</artifactId>
-        <version>9.4.8.v20171121</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-security</artifactId>
-        <version>9.4.8.v20171121</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-continuation</artifactId>
-        <version>9.4.8.v20171121</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-http</artifactId>
-        <version>9.4.8.v20171121</version>
-        <scope>runtime</scope>
-      </dependency>
-      <!-- end jetty dependencies -->
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
         <artifactId>geronimo-jta_1.1_spec</artifactId>
@@ -713,6 +777,63 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
+        <groupId>org.apache.xbean</groupId>
+        <artifactId>xbean-spring</artifactId>
+        <version>3.16</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>5.1.29</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <version>10.14.2.0</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>1.8.0.10</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>${mvn.hibernate.version}</version>
+        <scope>runtime</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <!-- use this version for postgres 9 or earlier -->
+        <!--version>9.3-1101-jdbc41</version-->
+        <!-- use this version from postgres 10 -->
+        <version>42.2.5.jre6</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-c3p0</artifactId>
+        <version>${mvn.hibernate.version}</version>
+        <scope>runtime</scope>
+      </dependency>       
+      <dependency>
+        <groupId>colt</groupId>
+        <artifactId>colt</artifactId>
+        <version>1.2.0</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
         <groupId>org.apache.mina</groupId>
         <artifactId>mina-core</artifactId>
         <version>2.0.16</version>
@@ -727,127 +848,118 @@
       <!-- Testing: local modules. -->
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>dare</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>admin-rpc-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>admin-rpc-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-rpc-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-rpc-client</artifactId>
-        <type>test-jar</type>
-        <scope>test</scope>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-server</artifactId>
-        <type>test-jar</type>
-        <scope>test</scope>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>dataflow-rpc-client</artifactId>
-        <type>test-jar</type>
-        <scope>test</scope>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>      
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>rpc-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>trade-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>fix-server</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>fix-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>fix-modules</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>eventbus-core</artifactId>
+        <version>3.1.0</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cluster-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-core</artifactId>
+        <version>3.1.0</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util-test</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cep-system</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.1.0</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>integration-tests</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>client</artifactId>
+        <version>3.1.0</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <!-- Testing: other. -->
       <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${mvn.spring.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-orm</artifactId>
+        <version>${mvn.spring.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <version>${mvn.spring.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>pl.pragmatists</groupId>
         <artifactId>JUnitParams</artifactId>
         <version>1.0.4</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymockclassextension</artifactId>
+        <version>3.2</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>1.9.5</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.objenesis</groupId>
+        <artifactId>objenesis</artifactId>
+        <version>2.1</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-library</artifactId>
+        <version>1.3</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-core</artifactId>
+        <version>1.3</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
@@ -857,14 +969,9 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>com.google.code.maven-replacer-plugin</groupId>
-          <artifactId>maven-replacer-plugin</artifactId>
-          <version>1.4.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-maven-plugin</artifactId>
-          <version>${mvn.spring.boot.version}</version>
+          <groupId>org.flywaydb</groupId>
+          <artifactId>flyway-maven-plugin</artifactId>
+          <version>5.2.1</version>
         </plugin>
         <plugin>
           <groupId>com.mysema.maven</groupId>
@@ -1015,12 +1122,12 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
-          <version>1.2.1</version>
+          <version>1.6.0</version>
         </plugin>
         <!-- mvn test -->
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.19.1</version>
+          <version>2.22.1</version>
           <configuration>
             <disableXmlReport>false</disableXmlReport>
             <forkCount>2.5C</forkCount>
@@ -1028,19 +1135,13 @@
             <argLine>${mvn.test.options}</argLine>
             <systemPropertyVariables>
               <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
-              <metc.jdbc.user>${metc.jdbc.user}</metc.jdbc.user>
-              <metc.jdbc.password>${metc.jdbc.password}</metc.jdbc.password>
-              <metc.jdbc.driver>${metc.jdbc.driver}</metc.jdbc.driver>
-              <metc.jdbc.url>${metc.jdbc.url}</metc.jdbc.url>
-              <metc.jdbc.testquery>${metc.jdbc.testquery}</metc.jdbc.testquery>
-              <metc.hibernate.dialect>${metc.hibernate.dialect}</metc.hibernate.dialect>
             </systemPropertyVariables>
           </configuration>
         </plugin>
         <!-- mvn compile -->
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.7.0</version>
+          <version>3.8.0</version>
           <configuration>
             <source>1.${mvn.javase.version}</source>
             <target>1.${mvn.javase.version}</target>
@@ -1049,12 +1150,16 @@
         <!-- mvn javadoc:* -->
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.5</version>
+          <version>3.0.1</version>
+          <configuration>
+            <!-- add this to disable checking -->
+            <failOnError>false</failOnError>
+          </configuration>
         </plugin>
         <!-- mvn assembly:* -->
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.1.0</version>
           <configuration>
             <finalName>${project.artifactId}</finalName>
             <appendAssemblyId>false</appendAssemblyId>
@@ -1081,14 +1186,6 @@
       <!-- Place tests into a jar for use during testing of other packages -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.2</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <!-- Adds the build number to each JAR -->
       <plugin>
@@ -1134,11 +1231,6 @@
         <artifactId>wagon-ssh</artifactId>
         <version>2.5</version>
       </extension>
-      <extension>
-        <groupId>kr.motd.maven</groupId>
-        <artifactId>os-maven-plugin</artifactId>
-        <version>1.5.0.Final</version>
-      </extension>
     </extensions>
     <resources>
       <resource>
@@ -1171,7 +1263,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.1</version>
+            <version>1.6</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
@@ -1184,7 +1276,7 @@
           </plugin>
           <plugin>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.5</version>
+            <version>3.0.1</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -1198,17 +1290,10 @@
               <windowtitle>Marketcetera Platform ${project.version} API</windowtitle>
               <overview>tools/javadoc/overview.html</overview>
               <links>
-                <link>http://commons.apache.org/cli/api-release/</link>
-                <link>http://commons.apache.org/collections/api-release/</link>
-                <link>http://commons.apache.org/io/api-release/</link>
-                <link>http://commons.apache.org/lang/api-release/</link>
-                <link>http://commons.apache.org/vfs/apidocs/</link>
-                <link>http://java.sun.com/javaee/${mvn.javaee.version}/docs/api/</link>
-                <link>http://java.sun.com/javase/${mvn.javase.version}/docs/api/</link>
-                <link>http://logging.apache.org/log4j/1.2/apidocs/</link>
-                <link>http://publicobject.com/glazedlists/glazedlists-1.7.0/api/</link>
-                <link>http://static.springframework.org/spring/docs/2.5.2/api/</link>
-                <link>http://www.quickfixj.org/quickfixj/javadoc/1.5.1</link>
+                <link>https://java.sun.com/javase/${mvn.javase.version}/docs/api/</link>
+                <link>https://logging.apache.org/log4j/2.x/log4j-api/apidocs/</link>
+                <link>https://docs.spring.io/spring/docs/4.3.8.RELEASE/javadoc-api/</link>
+                <link>https://www.quickfixj.org/javadoc/1.6.3/</link>
               </links>
             </configuration>
           </plugin>
@@ -1218,25 +1303,30 @@
   </profiles>
   <modules>
     <module>admin</module>
+    <module>client</module>
     <module>cluster</module>
     <module>core</module>
+    <module>dare</module>
+    <module>eventbus</module>
     <module>fix</module>
     <module>fork</module>
-    <module>marketdata</module>
     <module>modules</module>
-    <!--module>orderloader</module-->
-    <module>packages</module>
-    <module>rpc-core</module>
+    <module>orderloader</module>
+    <module>saclient</module>
     <module>samples</module>
-    <module>dataflow</module>
-    <!--module>strategyagent</module-->
-    <module>trade</module>
+    <module>strategyagent</module>
+    <module>tools</module>
     <module>util</module>
     <module>util-test</module>
-    <module>tools</module>
-    <module>webui</module>
   </modules>
   <repositories>
+    <repository>
+      <id>internal</id>
+      <url>https://repo.marketcetera.org/maven</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
     <repository>
       <id>com.springsource.repository.bundles.release</id>
       <name>EBR Spring Release Repository</name>
@@ -1247,18 +1337,11 @@
       <name>EBR External Release Repository</name>
       <url>http://repository.springsource.com/maven/bundles/external</url>
     </repository>
-    <repository>
-      <id>internal</id>
-      <url>http://repo.marketcetera.org/maven</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>internal</id>
-      <url>http://repo.marketcetera.org/maven</url>
+      <url>https://repo.marketcetera.org/maven</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
@@ -1269,23 +1352,33 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9</version>
+        <version>3.0.1</version>
         <configuration>
           <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
           <docletArtifact>
             <groupId>org.umlgraph</groupId>
             <artifactId>umlgraph</artifactId>
-            <version>5.6</version>
+            <version>5.6.6</version>
           </docletArtifact>
           <additionalparam>-views -all</additionalparam>
           <useStandardDocletOptions>true</useStandardDocletOptions>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.3</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.7</version>
+      </plugin>
     </plugins>
   </reporting>
   <scm>
-    <url>http://source.marketcetera.org/root/trunk</url>
-    <connection>scm:svn:http://source.marketcetera.org/root/trunk</connection>
-    <developerConnection>scm:svn:http://source.marketcetera.org/root/trunk</developerConnection>
+    <url>https://source.marketcetera.org/root/trunk</url>
+    <connection>scm:svn:https://source.marketcetera.org/root/trunk</connection>
+    <developerConnection>scm:svn:https://source.marketcetera.org/root/trunk</developerConnection>
   </scm>
 </project>

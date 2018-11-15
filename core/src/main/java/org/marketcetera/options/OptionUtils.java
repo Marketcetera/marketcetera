@@ -166,7 +166,11 @@ public class OptionUtils {
         if (symbol.length() > 6) {
             throw new IllegalArgumentException();
         }
-        String expiry = inOption.getExpiry().substring(2);
+        String expiry = inOption.getAugmentedExpiry();
+        if(expiry == null) {
+            expiry = inOption.getExpiry();
+        }
+        expiry = expiry.substring(2);
         if (expiry.length() != 6) {
             throw new IllegalArgumentException();
         }

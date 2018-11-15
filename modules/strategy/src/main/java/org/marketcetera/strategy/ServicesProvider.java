@@ -1,34 +1,19 @@
 package org.marketcetera.strategy;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
-import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.client.ClientInitException;
+import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.module.DataEmitter;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataFlowNotFoundException;
-import org.marketcetera.module.DataFlowSupport;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.ModuleException;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.trade.BrokerID;
+import org.marketcetera.module.*;
+import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Future;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.Suggestion;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.Message;
@@ -199,97 +184,133 @@ interface ServicesProvider
      * Returns the list of brokers known to the system.
      *
      * @return a <code>List&lt;BrokerStatus&gt;</code> value
+     * @throws ConnectionException if the information could not be retrieved
+     * @throws ClientInitException if the information could not be retrieved 
      */
-    List<BrokerStatus> getBrokers();
+    List<BrokerStatus> getBrokers()
+            throws ConnectionException, ClientInitException;
     /**
      * Gets the position in the given <code>Equity</code> at the given point in time.
      *
      * @param inDate a <code>Date</code> value
      * @param inEquity an <code>Equity</code> value
      * @return a <code>BigDecimal</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
      */
     BigDecimal getPositionAsOf(Date inDate,
-                               Equity inEquity);
+                               Equity inEquity)
+            throws ConnectionException, ClientInitException;
     /**
-     * Gets all open <code>Instrument</code> positions at the given point in time.
+     * Gets all open <code>Equity</code> positions at the given point in time.
      *
      * @param inDate a <code>Date</code> value
-     * @return a <code>Map&lt;PositionKey&lt;Instrument&gt;,BigDecimal&gt;</code> value
+     * @return a <code>Map&lt;PositionKey&lt;Equity&gt;,BigDecimal&gt;</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
      */
-    Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(Date inDate);
+    Map<PositionKey<Equity>,BigDecimal> getAllPositionsAsOf(Date inDate)
+            throws ConnectionException, ClientInitException;
     /**
      * Gets the position in the given <code>Future</code> at the given point in time.
      *
      * @param inDate a <code>Date</code> value
      * @param inFuture a <code>Future</code> value
      * @return a <code>BigDecimal</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
      */
     BigDecimal getFuturePositionAsOf(Date inDate,
-                                     Future inFuture);
+                                     Future inFuture)
+            throws ConnectionException, ClientInitException;
     /**
-     * Gets all open <code>Instrument</code> positions at the given point in time.
+     * Gets all open <code>Future</code> positions at the given point in time.
      *
      * @param inDate a <code>Date</code> value
-     * @return a <code>Map&lt;PositionKey&lt;Instrument&gt;,BigDecimal&gt;</code> value
+     * @return a <code>Map&lt;PositionKey&lt;Future&gt;,BigDecimal&gt;</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
      */
-    Map<PositionKey<? extends Instrument>,BigDecimal> getAllFuturePositionsAsOf(Date inDate);
+    Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(Date inDate)
+            throws ConnectionException, ClientInitException;
     /**
      * Gets the position in the given <code>Currency</code> at the given point in time.
      *
      * @param inDate a <code>Date</code> value
      * @param inCurrency a <code>Currency</code> value
      * @return a <code>BigDecimal</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
      */
     BigDecimal getCurrencyPositionAsOf(Date inDate,
-                                     Currency inCurrency);
+                                     Currency inCurrency)
+            throws ConnectionException, ClientInitException;
     /**
-     * Gets all open <code>Instrument</code> positions at the given point in time.
+     * Gets all open <code>Currency</code> positions at the given point in time.
      *
      * @param inDate a <code>Date</code> value
-     * @return a <code>Map&lt;PositionKey&lt;Instrument&gt;,BigDecimal&gt;</code> value
+     * @return a <code>Map&lt;PositionKey&lt;Currency&gt;,BigDecimal&gt;</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
      */
-    Map<PositionKey<? extends Instrument>,BigDecimal> getAllCurrencyPositionsAsOf(Date inDate);
+    Map<PositionKey<Currency>,BigDecimal> getAllCurrencyPositionsAsOf(Date inDate)
+            throws ConnectionException, ClientInitException;
     /**
      * Gets the position in the given <code>Option</code> at the given point in time.
      *
      * @param inDate a <code>Date</code> value
      * @param inOption an <code>Option</code> value
      * @return a <code>BigDecimal</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
      */
     BigDecimal getOptionPositionAsOf(Date inDate,
-                                     Option inOption);
+                                     Option inOption)
+            throws ConnectionException, ClientInitException;
     /**
-     * Gets all open <code>Instrument</code> positions at the given point in time.
+     * Gets all open <code>Option</code> positions at the given point in time.
      *
      * @param inDate a <code>Date</code> value
-     * @return a <code>Map&lt;PositionKey&lt;Instrument&gt;,BigDecimal&gt;</code> value
-     */
-    Map<PositionKey<? extends Instrument>,BigDecimal> getAllOptionPositionsAsOf(Date inDate);
-    /**
-     * Gets open positions for the Instruments specified by the given Instrument roots at the given point in time. 
-     *
-     * @param inDate a <code>Date</code> value
-     * @param inOptionRoots a <code>String[]</code> value containing the specific Instrument roots for which to search
      * @return a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&gt;</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
+     */
+    Map<PositionKey<Option>,BigDecimal> getAllOptionPositionsAsOf(Date inDate)
+            throws ConnectionException, ClientInitException;
+    /**
+     * Gets open positions for the options specified by the given option roots at the given point in time. 
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inOptionRoots a <code>String[]</code> value containing the specific option roots for which to search
+     * @return a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&gt;</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
      */
     Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
-                                                               String...inOptionRoots);
+                                                               String...inOptionRoots)
+            throws ConnectionException, ClientInitException;
     /**
      * Gets the underlying symbol for the given option root, if available.
      *
      * @param inOptionRoot a <code>String</code> value containing an option root
      * @return a <code>String</code> value containing the symbol for the underlying instrument or <code>null</code> if
      *  no underlying instrument could be found
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
      */
-    String getUnderlying(String inOptionRoot);
+    String getUnderlying(String inOptionRoot)
+            throws ConnectionException, ClientInitException;
     /**
      * Gets the set of of known option roots for the given underlying symbol. 
      *
      * @param inUnderlying a <code>String</code> value containing the symbol of an underlying instrument
      * @return a <code>Collection&lt;String&gt;</code> value sorted lexicographically by option root or <code>null</code>
      *  if no option roots could be found
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
      */
-    Collection<String> getOptionRoots(String inUnderlying);
+    Collection<String> getOptionRoots(String inUnderlying)
+            throws ConnectionException, ClientInitException;
     /**
      * Gets the {@link ModuleURN} for this strategy.
      *
@@ -300,12 +321,18 @@ interface ServicesProvider
      * Gets the user data associated with the current user. 
      *
      * @return a <code>Properties</code> value
+     * @throws ClientInitException if an error occurred contacting the client
+     * @throws ConnectionException if an error occurred contacting the server
      */
-    Properties getUserData();
+    Properties getUserData()
+            throws ConnectionException, ClientInitException;
     /**
      * Sets the user data associated with the current user.
      *
      * @param inData a <code>Properties</code> value
+     * @throws ClientInitException if an error occurred contacting the client
+     * @throws ConnectionException if an error occurred contacting the server
      */
-    void setUserData(Properties inData);
+    void setUserData(Properties inData)
+            throws ConnectionException, ClientInitException;
 }

@@ -1,7 +1,6 @@
 package org.marketcetera.marketdata.exsim;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Deque;
 import java.util.EnumSet;
@@ -29,12 +28,10 @@ import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.CapabilityCollection;
 import org.marketcetera.marketdata.FeedStatus;
-import org.marketcetera.marketdata.MarketDataCapabilityBroadcaster;
-import org.marketcetera.marketdata.MarketDataProviderStatus;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
-import org.marketcetera.marketdata.MarketDataStatusBroadcaster;
 import org.marketcetera.marketdata.OrderBook;
 import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitter;
@@ -63,12 +60,6 @@ import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import quickfix.Application;
 import quickfix.ConfigError;
 import quickfix.DoNotSend;
@@ -88,6 +79,12 @@ import quickfix.SessionNotFound;
 import quickfix.SessionSettings;
 import quickfix.SocketInitiator;
 import quickfix.UnsupportedMessageType;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -228,7 +225,7 @@ public class ExsimFeedModule
                                    "Canceling data flow {} with market data request id {}", //$NON-NLS-1$
                                    inFlowId,
                                    requestData);
-            requestsByRequestId.remove(requestData.requestId);
+            requestsByRequestId.remove(requestData);
             try {
                 cancelMarketDataRequest(requestData);
             } catch (Exception e) {
@@ -254,9 +251,7 @@ public class ExsimFeedModule
             throw new ModuleException(Messages.FEED_CONFIG_REQUIRED);
         }
         try {
-            for(MarketDataCapabilityBroadcaster capabilityBroadcaster : marketDataCapabilityBroadcasters) {
-                capabilityBroadcaster.reportCapability(getCapabilities());
-            }
+            CapabilityCollection.reportCapability(getCapabilities());
             fixMessageProcessor = new FixMessageProcessor();
             fixMessageProcessor.start();
             String aplVersion = exsimFeedConfig.getFixAplVersion();
@@ -426,11 +421,6 @@ public class ExsimFeedModule
         Messages.FEED_STATUS_UPDATE.info(this,
                                          ExsimFeedModuleFactory.IDENTIFIER.toUpperCase(),
                                          feedStatus);
-        MarketDataProviderStatus status = new MarketDataProviderStatus(getURN().providerName(),
-                                                                       inNewStatus);
-        for(MarketDataStatusBroadcaster marketDataStatusPublisher : marketDataStatusBroadcasters) {
-            marketDataStatusPublisher.reportMarketDataStatus(status);
-        }
         if(feedStatus.isRunning()) {
             orderBooksByInstrument.invalidateAll();
             SLF4JLoggerProxy.debug(this,
@@ -1279,16 +1269,6 @@ public class ExsimFeedModule
      */
     @Autowired
     private SymbolResolverService symbolResolverService;
-    /**
-     * optional market data status publishers
-     */
-    @Autowired(required=false)
-    private Collection<MarketDataStatusBroadcaster> marketDataStatusBroadcasters = Lists.newArrayList();
-    /**
-     * optional market data capability publishers
-     */
-    @Autowired(required=false)
-    private Collection<MarketDataCapabilityBroadcaster> marketDataCapabilityBroadcasters = Lists.newArrayList();
     /**
      * number of milliseconds to wait for the feed to become available if a request is made while it is offline
      */

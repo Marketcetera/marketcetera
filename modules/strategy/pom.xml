@@ -1,39 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+<!--
+  - Author: colin@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>modules</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>3.1.0</version>
   </parent>
   <artifactId>strategy</artifactId>
   <packaging>jar</packaging>
+
   <name>Strategy Module</name>
+
   <dependencies>
-    <!-- local compile -->
+
+    <!-- Compile. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>fix-api</artifactId>
+      <artifactId>marketdata-core</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>marketdata-server</artifactId>
-    </dependency>    
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>trade-api</artifactId>
+      <artifactId>client</artifactId>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>trade-core</artifactId>
-    </dependency>
-    <!-- other compile -->
     <dependency>
       <groupId>org.apache.bsf</groupId>
       <artifactId>com.springsource.org.apache.bsf</artifactId>
@@ -46,12 +52,10 @@
       <groupId>org.ow2.sirocco</groupId>
       <artifactId>sirocco-text-table-formatter</artifactId>
     </dependency>
-    <!-- local test -->
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>fix-core</artifactId>
-      <type>test-jar</type>
-    </dependency>
+    
+    <!-- Runtime. -->
+
+    <!-- Testing. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>cep-esper</artifactId>
@@ -77,4 +81,22 @@
       <artifactId>util-test</artifactId>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+
+      <!-- Configure Eclipse IDE metadata. -->
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+	  <buildOutputDirectory>target/classes</buildOutputDirectory>
+	  <downloadSources>true</downloadSources>
+	  <downloadJavadocs>true</downloadJavadocs>
+          <pde>true</pde>
+          <manifest>null</manifest>
+          <resolveDependencies>false</resolveDependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

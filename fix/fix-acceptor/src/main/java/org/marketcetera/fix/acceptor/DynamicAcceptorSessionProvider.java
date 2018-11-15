@@ -1,15 +1,11 @@
 package org.marketcetera.fix.acceptor;
 
-import org.marketcetera.brokers.service.BrokerService;
-import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.core.fix.FixSettingsProvider;
+import org.marketcetera.core.fix.FixSettingsProviderFactory;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSettingsProvider;
-import org.marketcetera.fix.FixSettingsProviderFactory;
-import org.marketcetera.fix.SessionNameProvider;
+import org.marketcetera.fix.SessionService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-
-import com.google.common.collect.Lists;
 
 import quickfix.Acceptor;
 import quickfix.Application;
@@ -21,6 +17,8 @@ import quickfix.SessionID;
 import quickfix.SessionSettings;
 import quickfix.mina.SessionConnector;
 import quickfix.mina.acceptor.AcceptorSessionProvider;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -38,23 +36,16 @@ public class DynamicAcceptorSessionProvider
      * Create a new DynamicAcceptorSessionProvider instance.
      *
      * @param inApplication an <code>Application</code> value
-     * @param inBrokerService a <code>BrokerService</code> value
-     * @param inFixSessionProvider a <code>FixSessionProvider</code> value
-     * @param inSessionNameProvider a <code>SessionNameProvider</code> value
+     * @param inSessionService a <code>SessionService</code> value
      * @param inFixSettingsProviderFactory a <code>FixSettingsProviderFactory</code> value
-     * @param inClusterData a <code>ClusterData</code> value
      */
     public DynamicAcceptorSessionProvider(Application inApplication,
-                                          BrokerService inBrokerService,
-                                          FixSessionProvider inFixSessionProvider,
-                                          SessionNameProvider inSessionNameProvider,
+                                          SessionService inSessionService,
                                           FixSettingsProviderFactory inFixSettingsProviderFactory,
                                           ClusterData inClusterData)
     {
         application = inApplication;
-        brokerService = inBrokerService;
-        fixSessionProvider = inFixSessionProvider;
-        sessionNameProvider = inSessionNameProvider;
+        sessionService = inSessionService;
         fixSettingsProviderFactory = inFixSettingsProviderFactory;
         clusterData = inClusterData;
     }
@@ -65,7 +56,7 @@ public class DynamicAcceptorSessionProvider
     public Session getSession(SessionID inSessionId,
                               SessionConnector inConnector)
     {
-        String sessionName = sessionNameProvider.getSessionName(inSessionId);
+        String sessionName = sessionService.getSessionName(inSessionId);
         // first, check to see if the session already exists
         Session session = Session.lookupSession(inSessionId);
         if(session != null) {
@@ -76,7 +67,7 @@ public class DynamicAcceptorSessionProvider
             return session;
         }
         // session doesn't exist yet, check to see if there's a session that matches in the DB
-        FixSession fixSession = fixSessionProvider.findFixSessionBySessionId(inSessionId);
+        FixSession fixSession = sessionService.findFixSessionBySessionId(inSessionId);
         if(fixSession == null) {
             SLF4JLoggerProxy.warn(this,
                                   "Rejecting unknown session {}",
@@ -89,7 +80,7 @@ public class DynamicAcceptorSessionProvider
                                   sessionName);
             return null;
         }
-        if(!brokerService.isAffinityMatch(fixSession,
+        if(!sessionService.isAffinityMatch(fixSession,
                                           clusterData)) {
             SLF4JLoggerProxy.warn(this,
                                   "Rejecting session {} because no affinity match to {}",
@@ -98,7 +89,7 @@ public class DynamicAcceptorSessionProvider
             return null;
         }
         // session exists in the DB, generate FIX settings for it
-        SessionSettings fixSessionSettings = brokerService.generateSessionSettings(Lists.newArrayList(fixSession));
+        SessionSettings fixSessionSettings = sessionService.generateSessionSettings(Lists.newArrayList(fixSession));
         FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
         if(fixSession.isAcceptor()) {
             // inject the acceptor port here, if available
@@ -131,15 +122,7 @@ public class DynamicAcceptorSessionProvider
     /**
      * provides access to session services
      */
-    private final BrokerService brokerService;
-    /**
-     * FIX session provider value
-     */
-    private final FixSessionProvider fixSessionProvider;
-    /**
-     * provides access to session names
-     */
-    private final SessionNameProvider sessionNameProvider;
+    private final SessionService sessionService;
     /**
      * constructs a FIX settings provider object
      */

@@ -195,14 +195,6 @@ public class SimpleClusterData
     {
         return new CompareToBuilder().append(hostNumber,inO.getHostNumber()).append(instanceNumber,inO.getInstanceNumber()).toComparison();
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.core.HasMutableView#getMutableView()
-     */
-    @Override
-    public MutableClusterData getMutableView()
-    {
-        return this;
-    }
     /**
      * the instance number of this member
      */

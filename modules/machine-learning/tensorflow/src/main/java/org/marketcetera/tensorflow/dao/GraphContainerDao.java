@@ -1,7 +1,7 @@
 package org.marketcetera.tensorflow.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 /* $License$ */
 
@@ -13,7 +13,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
  * @since $Release$
  */
 public interface GraphContainerDao
-        extends JpaRepository<PersistentGraphContainer,Long>,QuerydslPredicateExecutor<PersistentGraphContainer>
+        extends JpaRepository<PersistentGraphContainer,Long>,QueryDslPredicateExecutor<PersistentGraphContainer>
 {
     /**
      * Find the graph with the given name.

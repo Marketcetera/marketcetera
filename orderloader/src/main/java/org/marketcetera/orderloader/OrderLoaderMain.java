@@ -1,22 +1,6 @@
 package org.marketcetera.orderloader;
 
-import static org.marketcetera.orderloader.Messages.ARG_BROKER_DESCRIPTION;
-import static org.marketcetera.orderloader.Messages.ARG_BROKER_VALUE;
-import static org.marketcetera.orderloader.Messages.ARG_MODE_DESCRIPTION;
-import static org.marketcetera.orderloader.Messages.ARG_MODE_VALUE;
-import static org.marketcetera.orderloader.Messages.ARG_PASSWORD_DESCRIPTION;
-import static org.marketcetera.orderloader.Messages.ARG_PASSWORD_VALUE;
-import static org.marketcetera.orderloader.Messages.ARG_USERNAME_DESCRIPTION;
-import static org.marketcetera.orderloader.Messages.ARG_USERNAME_VALUE;
-import static org.marketcetera.orderloader.Messages.ERROR_MISSING_FILE;
-import static org.marketcetera.orderloader.Messages.ERROR_TOO_MANY_ARGUMENTS;
-import static org.marketcetera.orderloader.Messages.ERROR_USAGE;
-import static org.marketcetera.orderloader.Messages.FAILED_ORDER;
-import static org.marketcetera.orderloader.Messages.FAILED_ORDERS;
-import static org.marketcetera.orderloader.Messages.LINE_SUMMARY;
-import static org.marketcetera.orderloader.Messages.LOG_APP_COPYRIGHT;
-import static org.marketcetera.orderloader.Messages.LOG_APP_VERSION_BUILD;
-import static org.marketcetera.orderloader.Messages.ORDER_SUMMARY;
+import static org.marketcetera.orderloader.Messages.*;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -25,16 +9,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
+import org.apache.commons.cli.*;
+import org.marketcetera.client.ClientParameters;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.ApplicationVersion;
-import org.marketcetera.core.ClientParameters;
 import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.client.TradingClientParameters;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -196,9 +175,10 @@ public class OrderLoaderMain
         ApplicationContainer.stopInstanceWaiting();
     }
     /**
-     * Get the invocation arguments value.
+     * 
      *
-     * @return a <code>String[]</code> value
+     *
+     * @return
      */
     protected String[] getArgs()
     {
@@ -213,15 +193,12 @@ public class OrderLoaderMain
             throws Exception
     {
         // create the order processor
-        TradingClientParameters parameters = new TradingClientParameters();
-        /*
-        TradingClientParameters parameters = new TradingClientParameters(clientUsername,
+        ClientParameters parameters = new ClientParameters(clientUsername,
                                                            clientPassword,
                                                            clientURL,
                                                            clientWsHost,
                                                            Integer.parseInt(clientWsPort),
                                                            clientIdPrefix);
-         */
         OrderProcessor processor = createProcessor(parameters);
         // run the order loader and display the summary of results.
         try {
@@ -233,6 +210,7 @@ public class OrderLoaderMain
             processor.done();
         }
     }
+
     /**
      * Creates a processor given the parameters.
      * <p>
@@ -244,7 +222,7 @@ public class OrderLoaderMain
      *
      * @throws Exception if there were errors creating the order processor.
      */
-    protected OrderProcessor createProcessor(TradingClientParameters inParameters)
+    protected OrderProcessor createProcessor(ClientParameters inParameters)
             throws Exception
     {
         return new ServerOrderProcessor(inParameters);

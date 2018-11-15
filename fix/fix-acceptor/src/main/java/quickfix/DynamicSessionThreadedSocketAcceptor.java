@@ -1,6 +1,6 @@
 package quickfix;
 
-import org.marketcetera.fix.SessionNameProvider;
+import org.marketcetera.fix.SessionService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Lists;
@@ -35,7 +35,7 @@ public class DynamicSessionThreadedSocketAcceptor
                                                 LogFactory inLogFactory,
                                                 MessageFactory inMessageFactory,
                                                 int inQueueCapacity,
-                                                SessionNameProvider inSessionNameProvider)
+                                                SessionService inSessionNameProvider)
             throws ConfigError
     {
         super(inApplication,
@@ -44,7 +44,7 @@ public class DynamicSessionThreadedSocketAcceptor
               inLogFactory,
               inMessageFactory,
               inQueueCapacity);
-        sessionNameProvider = inSessionNameProvider;
+        sessionServices = inSessionNameProvider;
     }
     /**
      * Create a new DynamicSessionThreadedSocketAcceptor instance.
@@ -62,7 +62,7 @@ public class DynamicSessionThreadedSocketAcceptor
                                                 SessionSettings inSettings,
                                                 LogFactory inLogFactory,
                                                 MessageFactory inMessageFactory,
-                                                SessionNameProvider inSessionNameProvider)
+                                                SessionService inSessionNameProvider)
             throws ConfigError
     {
         super(inApplication,
@@ -70,7 +70,7 @@ public class DynamicSessionThreadedSocketAcceptor
               inSettings,
               inLogFactory,
               inMessageFactory);
-        sessionNameProvider = inSessionNameProvider;
+        sessionServices = inSessionNameProvider;
     }
     /**
      * Create a new DynamicSessionThreadedSocketAcceptor instance.
@@ -87,7 +87,7 @@ public class DynamicSessionThreadedSocketAcceptor
                                                 MessageStoreFactory inMessageStoreFactory,
                                                 SessionSettings inSettings,
                                                 MessageFactory inMessageFactory,
-                                                SessionNameProvider inSessionNameProvider,
+                                                SessionService inSessionNameProvider,
                                                 int inQueueCapacity)
             throws ConfigError
     {
@@ -96,7 +96,7 @@ public class DynamicSessionThreadedSocketAcceptor
               inSettings,
               inMessageFactory,
               inQueueCapacity);
-        sessionNameProvider = inSessionNameProvider;
+        sessionServices = inSessionNameProvider;
     }
     /**
      * Create a new DynamicSessionThreadedSocketAcceptor instance.
@@ -112,14 +112,14 @@ public class DynamicSessionThreadedSocketAcceptor
                                                 MessageStoreFactory inMessageStoreFactory,
                                                 SessionSettings inSettings,
                                                 MessageFactory inMessageFactory,
-                                                SessionNameProvider inSessionNameProvider)
+                                                SessionService inSessionNameProvider)
             throws ConfigError
     {
         super(inApplication,
               inMessageStoreFactory,
               inSettings,
               inMessageFactory);
-        sessionNameProvider = inSessionNameProvider;
+        sessionServices = inSessionNameProvider;
     }
     /**
      * Create a new DynamicSessionThreadedSocketAcceptor instance.
@@ -133,13 +133,13 @@ public class DynamicSessionThreadedSocketAcceptor
     public DynamicSessionThreadedSocketAcceptor(SessionFactory inSessionFactory,
                                                 SessionSettings inSettings,
                                                 int inQueueCapacity,
-                                                SessionNameProvider inSessionNameProvider)
+                                                SessionService inSessionNameProvider)
             throws ConfigError
     {
         super(inSessionFactory,
               inSettings,
               inQueueCapacity);
-        sessionNameProvider = inSessionNameProvider;
+        sessionServices = inSessionNameProvider;
     }
     /**
      * Create a new DynamicSessionThreadedSocketAcceptor instance.
@@ -151,12 +151,12 @@ public class DynamicSessionThreadedSocketAcceptor
      */
     public DynamicSessionThreadedSocketAcceptor(SessionFactory inSessionFactory,
                                                 SessionSettings inSettings,
-                                                SessionNameProvider inSessionNameProvider)
+                                                SessionService inSessionNameProvider)
             throws ConfigError
     {
         super(inSessionFactory,
               inSettings);
-        sessionNameProvider = inSessionNameProvider;
+        sessionServices = inSessionNameProvider;
     }
     /* (non-Javadoc)
      * @see quickfix.mina.SessionConnector#removeDynamicSession(quickfix.SessionID)
@@ -164,7 +164,7 @@ public class DynamicSessionThreadedSocketAcceptor
     @Override
     public void removeDynamicSession(SessionID inSessionId)
     {
-        String sessionName = sessionNameProvider.getSessionName(inSessionId);
+        String sessionName = sessionServices.getSessionName(inSessionId);
         Session existingSession = Session.lookupSession(inSessionId);
         SLF4JLoggerProxy.debug(this,
                                "Removing dynamic session {}, existing session: {}",
@@ -209,7 +209,7 @@ public class DynamicSessionThreadedSocketAcceptor
         }
     }
     /**
-     * provides access to session names
+     * provides access to session services
      */
-    private final SessionNameProvider sessionNameProvider;
+    private final SessionService sessionServices;
 }

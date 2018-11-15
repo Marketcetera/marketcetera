@@ -103,8 +103,9 @@ public class SimpleClusterMetaData
         } else {
             clusterData = new SimpleClusterData(inClusterData);
         }
-        inActiveWorkUnits.stream().forEach(workUnitDescriptor->
-            activeWorkUnits.add(workUnitDescriptor instanceof SimpleClusterWorkUnitDescriptor?(SimpleClusterWorkUnitDescriptor)workUnitDescriptor:new SimpleClusterWorkUnitDescriptor(workUnitDescriptor)));
+        for(ClusterWorkUnitDescriptor workUnitDescriptor : inActiveWorkUnits) {
+            activeWorkUnits.add(workUnitDescriptor instanceof SimpleClusterWorkUnitDescriptor?(SimpleClusterWorkUnitDescriptor)workUnitDescriptor:new SimpleClusterWorkUnitDescriptor(workUnitDescriptor));
+        }
     }
     /**
      * Create a new MetaData instance.

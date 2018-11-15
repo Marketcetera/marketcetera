@@ -289,10 +289,11 @@ public class OptionUtilsTest {
                 BigDecimal.ONE, 
                 OptionType.Call);
         // expiry without day
-        verifyGetOsiSymbolFromOptionFails("123456", 
-                "200910", 
-                BigDecimal.ONE,
-                OptionType.Call);
+        verifyOsiSymbolFromOption("MSFT  091017P12345123",
+                                  "MSFT",
+                                  OptionType.Put,
+                                  "200910",
+                                  new BigDecimal("12345.123"));
         // expiry with week
         verifyGetOsiSymbolFromOptionFails("123456", 
                 "200910w1", 
@@ -319,10 +320,10 @@ public class OptionUtilsTest {
                 BigDecimal.ONE,
                 OptionType.Unknown);
         verifyOsiSymbolFromOption("123456301122P12345123",
-                "123456",
-                OptionType.Put,
-                "20301122",
-                new BigDecimal("12345.123"));
+                                  "123456",
+                                  OptionType.Put,
+                                  "20301122",
+                                  new BigDecimal("12345.123"));
         verifyOsiSymbolFromOption("MSFT  001122P12345123",
                 "MSFT",
                 OptionType.Put,

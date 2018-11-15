@@ -162,10 +162,9 @@ abstract class AbstractDataCoupler
             try {
                 ((DataReceiver)mReceiver).receiveData(mFlowID,inData);
                 failed = false;
-                SLF4JLoggerProxy.debug(this,
-                                       "{} received {}",  //$NON-NLS-1$
-                                       mReceiver.getURN(),
-                                       mReceived);
+                SLF4JLoggerProxy.debug(this, "{} received {}",  //$NON-NLS-1$
+                        mReceiver.getURN(),
+                        mReceived);
             } finally {
                 if(failed) {
                     //This counter needs to be incremented before
@@ -179,21 +178,12 @@ abstract class AbstractDataCoupler
             } else {
                 mLastReceiveError = t.getLocalizedMessage();
             }
-            Messages.LOG_DATA_RECEIVE_ERROR.warn(this,
-                                                 t,
-                                                 mReceiver.getURN(),
-                                                 inData);
+            Messages.LOG_DATA_RECEIVE_ERROR.warn(this, t,
+                    mReceiver.getURN(), inData);
             if(t instanceof StopDataFlowException) {
-                Messages.LOG_CANCELING_DATA_FLOW.info(this,
-                                                      t,
-                                                      mFlowID,
-                                                      getReceiverURN());
+                Messages.LOG_CANCELING_DATA_FLOW.info(this, t,
+                        mFlowID, getReceiverURN());
                 cancelDataFlow(mReceiver);
-            }
-            if(inData instanceof HasMutableStatus) {
-                HasMutableStatus hasMutableStatus = (HasMutableStatus)inData;
-                hasMutableStatus.setFailed(true);
-                hasMutableStatus.setErrorMessage(mLastReceiveError);
             }
             if(exceptionHandler != null) {
                 try {

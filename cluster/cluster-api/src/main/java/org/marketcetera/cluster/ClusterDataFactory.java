@@ -1,6 +1,5 @@
 package org.marketcetera.cluster;
 
-import org.marketcetera.core.DomainObjectFactory;
 
 /* $License$ */
 
@@ -12,7 +11,6 @@ import org.marketcetera.core.DomainObjectFactory;
  * @since $Release$
  */
 public interface ClusterDataFactory
-        extends DomainObjectFactory<ClusterData>
 {
     /**
      * Create a {@link ClusterDataFactory} object.

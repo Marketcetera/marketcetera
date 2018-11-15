@@ -1,0 +1,386 @@
+//  protoc -I=src/main/resources --proto_path=../../../../public/util/src/main/resources/ --java_out=src/main/java src/main/resources/rpc_admin.proto
+option java_generic_services = true;
+
+option java_package = "com.marketcetera.admin";
+option java_outer_classname = "AdminRpc";
+
+import "rpc_base.proto";
+
+message PermissionsForUsernameRequest {
+    required string sessionId = 1;
+}
+
+message PermissionsForUsernameResponse {
+    required Status status = 1;
+    optional string username = 2;
+    repeated string permissions = 3;
+}
+
+message FixSession {
+    required string name = 1;
+    required string host = 2;
+    required uint32 port = 3;
+    required uint32 affinity = 4;
+    required string brokerId = 5;
+    optional string description = 6;
+    required string sessionId = 7;
+    required bool acceptor = 8;
+    required Properties sessionSettings = 9;
+}
+
+message ActiveFixSession {
+    required FixSession fixSession = 1;
+    required string instance = 2;
+    required string status = 3;
+    required bool enabled = 4;
+    required uint32 targetSeqNum = 5;
+    required uint32 senderSeqNum = 6;
+}
+
+message CreateFixSessionRequest {
+    required string sessionId = 1;
+    required FixSession fixSession = 2;
+}
+
+message CreateFixSessionResponse {
+    required Status status = 1;
+    optional FixSession fixSession = 2;
+}
+
+message ReadFixSessionsRequest {
+    required string sessionId = 1;
+    optional PageRequest page = 2;
+}
+
+message ReadFixSessionsResponse {
+    required Status status = 1;
+    optional PageResponse page = 2;
+    repeated ActiveFixSession fixSession = 3;
+}
+
+message UpdateFixSessionRequest {
+    required string sessionId = 1;
+    required string name = 2;
+    required FixSession fixSession = 3;
+}
+
+message UpdateFixSessionResponse {
+    required Status status = 1;
+}
+
+message EnableFixSessionRequest {
+    required string sessionId = 1;
+    required string name = 2;
+}
+
+message EnableFixSessionResponse {
+    required Status status = 1;
+}
+
+message DisableFixSessionRequest {
+    required string sessionId = 1;
+    required string name = 2;
+}
+
+message DisableFixSessionResponse {
+    required Status status = 1;
+}
+
+message DeleteFixSessionRequest {
+    required string sessionId = 1;
+    required string name = 2;
+}
+
+message DeleteFixSessionResponse {
+    required Status status = 1;
+}
+
+message StartFixSessionRequest {
+    required string sessionId = 1;
+    required string name = 2;
+}
+
+message StartFixSessionResponse {
+    required Status status = 1;
+}
+
+message StopFixSessionRequest {
+    required string sessionId = 1;
+    required string name = 2;
+}
+
+message StopFixSessionResponse {
+    required Status status = 1;
+}
+
+message FixSessionAttributeDescriptor {
+    required string name = 1;
+    optional string defaultValue = 2;
+    optional string description = 3;
+    optional string pattern = 4;
+    required bool required = 5;
+    optional string advice = 6;
+}
+
+message ReadFixSessionAttributeDescriptorsRequest {
+    required string sessionId = 1;
+}
+
+message ReadFixSessionAttributeDescriptorsResponse {
+    required Status status = 1;
+    repeated FixSessionAttributeDescriptor fixSessionAttributeDescriptors = 2;
+}
+
+message UpdateSequenceNumbersRequest {
+    required string sessionId = 1;
+    required string name = 2;
+    optional int32 senderSequenceNumber = 3;
+    optional int32 targetSequenceNumber = 4;
+}
+
+message UpdateSequenceNumbersResponse {
+    required Status status = 1;
+}
+
+message User {
+    required string name = 1;
+    optional string description = 2;
+    required bool active = 3;
+}
+
+message CreateUserRequest {
+    required string sessionId = 1;
+    required User user = 2;
+    required string password = 3;
+}
+
+message CreateUserResponse {
+    required Status status = 1;
+    optional User user = 2;
+}
+
+message ReadUsersRequest {
+    required string sessionId = 1;
+    optional PageRequest page = 2;
+}
+
+message ReadUsersResponse {
+    required Status status = 1;
+    optional PageResponse page = 2;
+    repeated User user = 3;
+}
+
+message UpdateUserRequest {
+    required string sessionId = 1;
+    required string username = 2;
+    required User user = 3;
+}
+
+message UpdateUserResponse {
+    required Status status = 1;
+    optional User user = 2;
+}
+
+message DeleteUserRequest {
+    required string sessionId = 1;
+    required string username = 2;
+}
+
+message DeleteUserResponse {
+    required Status status = 1;
+}
+
+message DeactivateUserRequest {
+    required string sessionId = 1;
+    required string username = 2;
+}
+
+message DeactivateUserResponse {
+    required Status status = 1;
+}
+
+message ChangeUserPasswordRequest {
+    required string sessionId = 1;
+    required string username = 2;
+    required string oldPassword = 3;
+    required string newPassword = 4;
+}
+
+message ChangeUserPasswordResponse {
+    required Status status = 1;
+}
+
+message Permission {
+    required string name = 1;
+    optional string description = 2;
+}
+
+message CreatePermissionRequest {
+    required string sessionId = 1;
+    required Permission permission = 2;
+}
+
+message CreatePermissionResponse {
+    required Status status = 1;
+    optional Permission permission = 2;
+}
+
+message ReadPermissionsRequest {
+    required string sessionId = 1;
+    optional PageRequest page = 2;
+}
+
+message ReadPermissionsResponse {
+    required Status status = 1;
+    optional PageResponse page = 2;
+    repeated Permission permission = 3;
+}
+
+message UpdatePermissionRequest {
+    required string sessionId = 1;
+    required string permissionName = 2;
+    required Permission permission = 3;
+}
+
+message UpdatePermissionResponse {
+    required Status status = 1;
+    optional Permission permission = 2;
+}
+
+message DeletePermissionRequest {
+    required string sessionId = 1;
+    required string permissionName = 2;
+}
+
+message DeletePermissionResponse {
+    required Status status = 1;
+}
+
+message Role {
+    required string name = 1;
+    optional string description = 2;
+    repeated User user = 3;
+    repeated Permission permission = 4;
+}
+
+message CreateRoleRequest {
+    required string sessionId = 1;
+    required Role role = 2;
+    repeated string username = 3;
+    repeated string permissionName = 4;
+}
+
+message CreateRoleResponse {
+    required Status status = 1;
+    optional Role role = 2;
+}
+
+message ReadRolesRequest {
+    required string sessionId = 1;
+    optional PageRequest page = 2;
+}
+
+message ReadRolesResponse {
+    required Status status = 1;
+    optional PageResponse page = 2;
+    repeated Role role = 3;
+}
+
+message UpdateRoleRequest {
+    required string sessionId = 1;
+    required string roleName = 2;
+    required Role role = 3;
+    repeated string username = 4;
+    repeated string permissionName = 5;
+}
+
+message UpdateRoleResponse {
+    required Status status = 1;
+    optional Role role = 2;
+}
+
+message DeleteRoleRequest {
+    required string sessionId = 1;
+    required string roleName = 2;
+}
+
+message DeleteRoleResponse {
+    required Status status = 1;
+}
+
+message InstanceDataRequest {
+    required string sessionId = 1;
+    required uint32 affinity = 2;
+}
+
+message InstanceDataResponse {
+    required Status status = 1;
+    optional InstanceData instanceData = 2;
+}
+
+message InstanceData {
+    required string hostname = 2;
+    required uint32 port = 3;
+}
+
+message UserAttribute {
+    required User user = 1;
+    required string attributeType = 2;
+    required string attribute = 3;
+}
+
+message ReadUserAttributeRequest {
+    required string sessionId = 1;
+    required string username = 2;
+    required string attributeType = 3;
+}
+
+message ReadUserAttributeResponse {
+    required Status status = 1;
+    optional UserAttribute userAttribute = 2;
+}
+
+message WriteUserAttributeRequest {
+    required string sessionId = 1;
+    required string username = 2;
+    required string attributeType = 3;
+    required string attribute = 4;
+}
+
+message WriteUserAttributeResponse {
+    required Status status = 1;
+}
+
+service AdminRpcService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc getPermissionsForUsername(PermissionsForUsernameRequest) returns (PermissionsForUsernameResponse);
+    rpc createFixSession(CreateFixSessionRequest) returns (CreateFixSessionResponse);
+    rpc readFixSessions(ReadFixSessionsRequest) returns (ReadFixSessionsResponse);
+    rpc updateFixSession(UpdateFixSessionRequest) returns (UpdateFixSessionResponse);
+    rpc createUser(CreateUserRequest) returns (CreateUserResponse);
+    rpc readUsers(ReadUsersRequest) returns (ReadUsersResponse);
+    rpc updateUser(UpdateUserRequest) returns (UpdateUserResponse);
+    rpc deleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+    rpc deactivateUser(DeactivateUserRequest) returns (DeactivateUserResponse);
+    rpc changeUserPassword(ChangeUserPasswordRequest) returns (ChangeUserPasswordResponse);
+    rpc createPermission(CreatePermissionRequest) returns (CreatePermissionResponse);
+    rpc readPermissions(ReadPermissionsRequest) returns (ReadPermissionsResponse);
+    rpc updatePermission(UpdatePermissionRequest) returns (UpdatePermissionResponse);
+    rpc deletePermission(DeletePermissionRequest) returns (DeletePermissionResponse);
+    rpc createRole(CreateRoleRequest) returns (CreateRoleResponse);
+    rpc readRoles(ReadRolesRequest) returns (ReadRolesResponse);
+    rpc updateRole(UpdateRoleRequest) returns (UpdateRoleResponse);
+    rpc deleteRole(DeleteRoleRequest) returns (DeleteRoleResponse);
+    rpc getInstanceData(InstanceDataRequest) returns (InstanceDataResponse);
+    rpc readFixSessionAttributeDescriptors(ReadFixSessionAttributeDescriptorsRequest) returns (ReadFixSessionAttributeDescriptorsResponse);
+    rpc enableFixSession(EnableFixSessionRequest) returns (EnableFixSessionResponse);
+    rpc disableFixSession(DisableFixSessionRequest) returns (DisableFixSessionResponse);
+    rpc deleteFixSession(DeleteFixSessionRequest) returns (DeleteFixSessionResponse);
+    rpc startFixSession(StartFixSessionRequest) returns (StartFixSessionResponse);
+    rpc stopFixSession(StopFixSessionRequest) returns (StopFixSessionResponse);
+    rpc updateSequenceNumbers(UpdateSequenceNumbersRequest) returns (UpdateSequenceNumbersResponse);
+    rpc readUserAttribute(ReadUserAttributeRequest) returns (ReadUserAttributeResponse);
+    rpc writeUserAttribute(WriteUserAttributeRequest) returns (WriteUserAttributeResponse);
+}

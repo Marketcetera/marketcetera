@@ -29,6 +29,7 @@ public final class CollectionAssert
      * starts with the given message, which may be null if no such
      * custom message prefix is desired.
      *
+     * @param <T> a <code>T</code> value
      * @param message The identifying message.
      * @param expected The expected array.
      * @param actual The actual array.
@@ -82,6 +83,7 @@ public final class CollectionAssert
      * other. This assertion holds if both arrays are null, or if they
      * have one or more (but an equal number of) null elements.
      *
+     * @param <T> a <code>T</code> value
      * @param expected The expected array.
      * @param actual The actual array.
      */

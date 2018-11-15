@@ -48,7 +48,7 @@ import java.util.*;
  */
 public class MessageManager {
 
-    private static Map<String,MessageProvider> messageProviders = new LinkedHashMap<>();
+    private static Map messageProviders = new LinkedHashMap();
 
     /**
      * Add a custom <code>{@link MessageProvider}</code> to the
@@ -61,9 +61,7 @@ public class MessageManager {
      * @param messageProvider
      *            The <code>MessageProvider</code> to be added.
      */
-    public static void addMessageProvider(String providerId,
-                                          MessageProvider messageProvider)
-    {
+    public static void addMessageProvider(String providerId, MessageProvider messageProvider) {
         messageProviders.put(providerId, messageProvider);
     }
 
@@ -105,23 +103,20 @@ public class MessageManager {
      *                retrieved bundle
      * @return The localized text
      */
-    public static String getText(String id,
-                                 String entry,
-                                 Object[] arguments,
-                                 Locale locale)
-            throws MessageNotFoundException
-    {
+    public static String getText(String id, String entry, Object[] arguments,
+            Locale locale) throws MessageNotFoundException {
         if(messageProviders.isEmpty())
             throw new MessageNotFoundException("No MessageProvider registered");
-        for (Iterator<MessageProvider> i = messageProviders.values().iterator(); i.hasNext();) {
+        for (Iterator i = messageProviders.values().iterator(); i.hasNext();) {
             String text = ((MessageProvider) i.next()).getText(id, entry,
                     locale);
             if(text != null)
                 return (arguments != null && arguments.length > 0) ?
                         MessageFormat.format(text, arguments) : text;
         }
-        throw new MessageNotFoundException(MessageFormat.format(I18nUtils.INTERNAL_MESSAGES.getString(I18nUtils.MESSAGE_ENTRY_NOT_FOUND),
-                                                                (Object[])new String[] { id, entry }));
+        throw new MessageNotFoundException(MessageFormat.format(
+                I18nUtils.INTERNAL_MESSAGES.getString(I18nUtils.MESSAGE_ENTRY_NOT_FOUND),
+                new String[] { id, entry }));
     }
 
     /**
@@ -183,8 +178,9 @@ public class MessageManager {
             return (arguments != null && arguments.length > 0) ?
                     MessageFormat.format(text, arguments) : text;
         else
-            throw new MessageNotFoundException(MessageFormat.format(I18nUtils.INTERNAL_MESSAGES.getString(I18nUtils.MESSAGE_ENTRY_NOT_FOUND),
-                                                                    (Object[])new String[] { id, entry }));
+            throw new MessageNotFoundException(MessageFormat.format(
+                    I18nUtils.INTERNAL_MESSAGES.getString(I18nUtils.MESSAGE_ENTRY_NOT_FOUND),
+                    new String[] { id, entry }));
     }
 
     /**
@@ -223,18 +219,19 @@ public class MessageManager {
      * locale. The map contains keys of type {@link String}containing the keys
      * of the available message entries and values of type {@link String}
      * containing the localized message entries.
+     * 
+     * @param id a <code>String</code> value
+     * @param locale a <code>Local</code> value
+     * @return a <code>Map</code> value
      */
-    public static Map<String,String> getEntries(String id,
-                                                Locale locale)
-            throws MessageNotFoundException
-    {
-        if(messageProviders.isEmpty()) {
+    public static Map getEntries(String id, Locale locale)
+            throws MessageNotFoundException {
+        if(messageProviders.isEmpty())
             throw new MessageNotFoundException("No MessageProvider registered");
-        }
         MessageNotFoundException exception = null;
-        for(Iterator<MessageProvider> i = messageProviders.values().iterator(); i.hasNext();) {
+        for (Iterator i = messageProviders.values().iterator(); i.hasNext();) {
             try {
-                return (i.next()).getEntries(id, locale);
+                return ((MessageProvider) i.next()).getEntries(id, locale);
             } catch (MessageNotFoundException e) {
                 exception = e;
             }
@@ -247,16 +244,17 @@ public class MessageManager {
    * locale. The map contains keys of type {@link String}containing the keys
    * of the available message entries and values of type {@link String}
    * containing the localized message entries.
+   * 
+   * @param providerId a <code>String</code>value
+   * @param id a <code>String</code> value
+   * @param locale a <code>Locale</code> value
+   * @return a <code>Map</code> value
    */
-    public static Map<String,String> getEntries(String providerId,
-                                                String id,
-                                                Locale locale)
-          throws MessageNotFoundException
-    {
-        MessageProvider provider = messageProviders.get(providerId);
-        if(provider == null) {
-            throw new MessageNotFoundException("Provider '" + providerId + "' not installed");
-        }
-        return provider.getEntries(id, locale);
-    }
+  public static Map getEntries(String providerId, String id, Locale locale)
+          throws MessageNotFoundException {
+      MessageProvider provider = (MessageProvider) messageProviders.get(providerId);
+      if(provider == null)
+          throw new MessageNotFoundException("Provider '" + providerId + "' not installed");
+      return provider.getEntries(id, locale);
+  }
 }

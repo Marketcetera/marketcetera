@@ -39,7 +39,7 @@ public interface PagerDutyNotification
     /**
      * Indicate if the Pager Duty notification should be sent.
      *
-     * @return a <code>boolean</cod> value
+     * @return a <code>boolean</code> value
      */
     boolean shouldPagerDuty();
 }

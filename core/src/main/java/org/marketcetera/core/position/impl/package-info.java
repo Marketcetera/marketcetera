@@ -7,7 +7,7 @@
  * interfaces are used:
  * <ul>
  * <li>{@link PositionMetricsCalculator} - interface for algorithms processing
- * trade and market data to compute position and P&L information</li>
+ * trade and market data to compute position and P&amp;L information</li>
  * </ul>
  * 
  * @author will@marketcetera.com
@@ -15,4 +15,3 @@
  * @since 1.5.0
  */
 package org.marketcetera.core.position.impl;
-

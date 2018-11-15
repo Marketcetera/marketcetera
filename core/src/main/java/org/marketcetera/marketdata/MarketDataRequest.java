@@ -20,7 +20,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -28,7 +27,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -130,11 +128,11 @@ public class MarketDataRequest
     /**
      * Get the request id value.
      *
-     * @return a <code>String</code> value
+     * @return a <code>long</code> value
      */
-    public String getRequestId()
+    public long getRequestId()
     {
-        return request.getRequestId();
+        return request.getId();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -175,7 +173,7 @@ public class MarketDataRequest
     /**
      * Create a new MarketDataRequest instance.
      *
-     * @param inMarketDataRequestBean a <code>MarketDataRequestBean</code> value
+     * @param inMarketDataRequestBean
      */
     MarketDataRequest(MarketDataRequestBean inMarketDataRequestBean)
     {
@@ -214,7 +212,6 @@ public class MarketDataRequest
         doCommonSymbolValidation();
         validateSymbols();
         validateUnderlyingSymbols();
-        Validate.notNull(getRequestId());
     }
     /**
      * Sets any unset values to their default if a default exists. 
@@ -226,9 +223,6 @@ public class MarketDataRequest
         }
         if(request.getAssetClass() == null) {
             request.setAssetClass(EQUITY);
-        }
-        if(request.getRequestId().equals(null)) {
-            request.setRequestId(UUID.randomUUID().toString());
         }
     }
     /**

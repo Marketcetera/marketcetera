@@ -145,7 +145,8 @@ public class CSVConfig {
 
     /**
      * Set the fill pattern. Defaults to {@link #FILLNONE}
-     * <br/>Other options are : {@link #FILLLEFT} and {@link #FILLRIGHT}
+     *
+     * <p>Other options are : {@link #FILLLEFT} and {@link #FILLRIGHT}
      * @param fill the fill pattern.
      */
     public void setFill(int fill) {
@@ -258,8 +259,9 @@ public class CSVConfig {
     }
 
     /**
-     * Creates a config based on a stream. It tries to guess<br/>
-     * NOTE : The stream will be closed.
+     * Creates a config based on a stream. It tries to guess.
+     * 
+     * <p>NOTE : The stream will be closed.
      * @param inputStream the inputstream. 
      * @return the guessed config. 
      */

@@ -44,15 +44,15 @@ public class XMLMessageProvider implements MessageProvider {
 
     private static SAXParserFactory factory = SAXParserFactory.newInstance();
     
-    private Map<String,Message> messages = new HashMap<>();
+    private Map messages = new HashMap();
 
     public XMLMessageProvider(InputStream inputStream) {
         try {
-            Map<String,Message> applicationMessages = new HashMap<>();
+            Map applicationMessages = new HashMap();
             SAXParser parser = factory.newSAXParser();
             ConfigurationHandler handler = new ConfigurationHandler();
             parser.parse(new InputSource(inputStream), handler);
-            Map<String,Message> parsedMessages = handler.getMessages();
+            Map parsedMessages = handler.getMessages();
             applicationMessages.putAll(parsedMessages);
             messages.putAll(applicationMessages);
         } catch (Exception exception) {
@@ -65,9 +65,7 @@ public class XMLMessageProvider implements MessageProvider {
     /* (non-Javadoc)
      * @see org.apache.commons.i18n.MessageProvider#getText(java.lang.String, java.lang.String, java.util.Locale)
      */
-    public String getText(String id, String entry, Locale locale)
-            throws MessageNotFoundException
-    {
+    public String getText(String id, String entry, Locale locale) throws MessageNotFoundException {
         Message message = findMessage(id, locale);
         return message.getEntry(entry);
     }
@@ -75,9 +73,7 @@ public class XMLMessageProvider implements MessageProvider {
     /* (non-Javadoc)
      * @see org.apache.commons.i18n.MessageProvider#getEntries(java.lang.String, java.util.Locale)
      */
-    public Map<String,String> getEntries(String id, Locale locale)
-            throws MessageNotFoundException
-    {
+    public Map getEntries(String id, Locale locale) throws MessageNotFoundException {
         Message message = findMessage(id, locale);
         return message.getEntries();
     }
@@ -88,8 +84,9 @@ public class XMLMessageProvider implements MessageProvider {
             message = lookupMessage(id, Locale.getDefault());
         }
         if (message == null ) throw new MessageNotFoundException(
-                MessageFormat.format(I18nUtils.INTERNAL_MESSAGES.getString(I18nUtils.NO_MESSAGE_ENTRIES_FOUND),
-                                     (Object[])new String[] { id }));
+                MessageFormat.format(
+                        I18nUtils.INTERNAL_MESSAGES.getString(I18nUtils.NO_MESSAGE_ENTRIES_FOUND),
+                        new String[] { id }));
         return message;
     }
 
@@ -140,7 +137,7 @@ public class XMLMessageProvider implements MessageProvider {
             }
         }
         
-        Map<String,Message> getMessages() {
+        Map getMessages() {
             return messages;
         }
     }
@@ -148,7 +145,7 @@ public class XMLMessageProvider implements MessageProvider {
     static class Message {
         private final String id;
         private String language, country, variant;
-        private Map<String,String> entries = new HashMap<>();
+        private Map entries = new HashMap();
 
         public Message(String id) {
             this.id = id;
@@ -162,7 +159,7 @@ public class XMLMessageProvider implements MessageProvider {
             return (String)entries.get(key);
         }
 
-        public Map<String,String> getEntries() {
+        public Map getEntries() {
             return entries;
         }
 

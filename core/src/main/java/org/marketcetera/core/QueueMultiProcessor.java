@@ -63,7 +63,7 @@ public abstract class QueueMultiProcessor<Clazz>
      * <p>Subclasses may override this value to customize the batch size.
      * The default value is {@link Integer#MAX_VALUE}.
      *
-     * @return an <code>int</cod> value
+     * @return an <code>int</code> value
      */
     protected int getBatchSize()
     {

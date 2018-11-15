@@ -1,15 +1,14 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>samples</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>3.1.0</version>
   </parent>
   <artifactId>client-test</artifactId>
-  <version>4.0.0-SNAPSHOT</version>
+  <version>3.1.0</version>
   <name>Test MATP Client Applications</name>
   <url>http://maven.apache.org</url>
   <properties>
@@ -17,44 +16,20 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>fix-core</artifactId>
+      <groupId>org.marketcetera</groupId>
+      <artifactId>marketdata-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>trade-core</artifactId>
+      <groupId>org.marketcetera</groupId>
+      <artifactId>client</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>misc</artifactId>
+      <groupId>org.marketcetera</groupId>
+      <artifactId>saclient</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>trade-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>trade-rpc-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>dataflow-rpc-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>dataflow-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>marketdata-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>marketdata-rpc-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>rpc-core</artifactId>
+      <groupId>org.marketcetera</groupId>
+      <artifactId>strategy</artifactId>
     </dependency>
   </dependencies>
   <profiles>
@@ -64,11 +39,11 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
             <configuration>
               <mainClass>org.marketcetera.clienttest.ClientTest</mainClass>
-              <layout>ZIP</layout>
+              <classpathScope>runtime</classpathScope>
             </configuration>
           </plugin>
         </plugins>
@@ -79,26 +54,26 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
             <configuration>
               <mainClass>org.marketcetera.clienttest.MarketDataClientTest</mainClass>
-              <layout>ZIP</layout>
+              <classpathScope>runtime</classpathScope>
             </configuration>
           </plugin>
         </plugins>
       </build>
     </profile>
     <profile>
-      <id>executeDfClient</id>
+      <id>executeSaClient</id>
       <build>
         <plugins>
           <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
             <configuration>
-              <mainClass>org.marketcetera.clienttest.DataFlowClientTest</mainClass>
-              <layout>ZIP</layout>
+              <mainClass>org.marketcetera.clienttest.SaClientTest</mainClass>
+              <classpathScope>runtime</classpathScope>
             </configuration>
           </plugin>
         </plugins>
@@ -123,7 +98,7 @@
               <overWriteReleases>false</overWriteReleases>
               <overWriteSnapshots>false</overWriteSnapshots>
               <overWriteIfNewer>true</overWriteIfNewer>
-              <includeScope>runtime</includeScope>
+	      <includeScope>runtime</includeScope>
             </configuration>
           </execution>
         </executions>

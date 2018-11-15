@@ -79,11 +79,12 @@ public class SmartLinksDirectoryWalkerTest
             return mMaxDepth;
         }
 
+        @SuppressWarnings("rawtypes")
         @Override
         protected boolean handleDirectory
             (File directory,
              int depth,
-             Collection<String> results)
+             Collection results)
             throws IOException
         {
             return (super.handleDirectory(directory,depth,results) &&

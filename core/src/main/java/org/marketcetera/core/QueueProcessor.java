@@ -21,6 +21,7 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
 
 /* $License$ */
 
@@ -148,7 +149,7 @@ public abstract class QueueProcessor<Clazz>
                                                      threadDescriptor);
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | HazelcastInstanceNotActiveException e) {
             interrupted.set(true);
             Messages.INTERRUPTED.debug(this,
                                        threadDescriptor);

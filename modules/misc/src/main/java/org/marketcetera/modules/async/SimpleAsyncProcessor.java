@@ -77,7 +77,7 @@ import javax.management.*;
  * while the sink module processes the event (for example, logs it). 
  * <p>
  * Module Features
- * <table>
+ * <table summary="Describes the module attributes">
  * <tr><th>Capabilities</th><td>Data Emitter, Data Reciever</td></tr>
  * <tr><th>DataFlow Request Parameters</th><td>None.</td></tr>
  * <tr><th>Stops data flows</th><td>No.</td></tr>

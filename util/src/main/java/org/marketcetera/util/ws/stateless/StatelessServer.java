@@ -41,7 +41,7 @@ public class StatelessServer
     /**
      * Creates a new server node with the given server host name and port.
      *
-     * @param inHost a <code>String</code> value
+     * @param inHostname a <code>String</code> value
      * @param inPort an <code>int</code> value
      */
     public StatelessServer(String inHostname,

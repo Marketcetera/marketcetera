@@ -3,7 +3,6 @@ package org.marketcetera.cluster;
 import java.util.Collection;
 
 import org.marketcetera.cluster.service.ClusterMember;
-import org.marketcetera.core.BaseClient;
 
 /* $License$ */
 
@@ -15,7 +14,6 @@ import org.marketcetera.core.BaseClient;
  * @since $Release$
  */
 public interface ClusterClient
-        extends BaseClient
 {
     /**
      * Get the cluster members;

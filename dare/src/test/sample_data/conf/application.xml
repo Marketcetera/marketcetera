@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+  <import resource="properties.xml"/>
+  <import resource="dare/dare.xml"/>
+  <import resource="cluster.xml"/>
+  <import resource="test_artifacts.xml"/>
+  <context:component-scan base-package="org.marketcetera"/>
+  <jpa:repositories base-package="org.marketcetera"/>
+  <tx:annotation-driven/>
+  <!-- symbol resolvers: add additional resolvers as necessary in precedence order -->
+  <bean id="symbolResolverService" class="org.marketcetera.symbol.IterativeSymbolResolver">
+    <property name="symbolResolvers">
+      <list>
+        <bean class="org.marketcetera.symbol.PatternSymbolResolver"/>
+      </list>
+    </property>
+  </bean>
+  <bean id="systemInformationLogger" class="org.marketcetera.core.SystemInformationLogger"/>
+  <bean id="stompPortProxy" class="org.marketcetera.util.ws.stateful.PortUserProxy">
+    <property name="port" value="${metc.stomp.port}"/>
+    <property name="description" value="STOMP Service"/>
+  </bean>
+  <bean id="dareJmsBrokerPortProxy" class="org.marketcetera.util.ws.stateful.PortUserProxy">
+    <property name="port" value="${metc.jms.port}"/>
+    <property name="description" value="DARE JMS Service"/>
+  </bean>
+  <bean id="jmsJmxPortProxy" class="org.marketcetera.util.ws.stateful.PortUserProxy">
+    <property name="port" value="${metc.jms.jmx.port}"/>
+    <property name="description" value="JMS JMX Service"/>
+  </bean>
+  <bean id="jmxRemotePortUser" class="org.marketcetera.util.ws.stateful.JmxRemotePortUser"/>
+  <!-- monitors -->
+  <bean id="metricMonitor" class="org.marketcetera.metrics.MetricServiceLogReporter">
+    <property name="reportInterval" value="30"/>
+  </bean>
+  <bean id="primaryPoolMonitor" class="org.marketcetera.persist.PoolMonitor">
+    <property name="pool" ref="metc_sql_pool"/>
+    <property name="monitorInterval" value="30000"/>
+  </bean>
+</beans>

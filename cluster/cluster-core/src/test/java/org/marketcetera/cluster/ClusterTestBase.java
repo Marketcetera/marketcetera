@@ -18,6 +18,7 @@ import java.util.concurrent.locks.Lock;
 
 import org.apache.commons.lang.Validate;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.cluster.service.ClusterListener;
 import org.marketcetera.cluster.service.ClusterMember;
@@ -56,7 +57,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testQueue()
             throws Exception
     {
@@ -119,7 +120,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testMap()
             throws Exception
     {
@@ -148,7 +149,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testInstanceData()
             throws Exception
     {
@@ -172,7 +173,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testAttributes()
             throws Exception
     {
@@ -229,7 +230,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testAttributeChangeDetected()
             throws Exception
     {
@@ -276,7 +277,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testLock()
             throws Exception
     {
@@ -318,7 +319,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testNormalRunnableTask()
             throws Exception
     {
@@ -332,7 +333,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testOverlappingRunnableTasks()
             throws Exception
     {
@@ -352,7 +353,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testAutowiredRunnableTask()
             throws Exception
     {
@@ -367,7 +368,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testNormalCallableTask()
             throws Exception
     {
@@ -387,7 +388,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testOverlappingCallableTasks()
             throws Exception
     {
@@ -409,7 +410,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testAutowiredCallableTask()
             throws Exception
     {

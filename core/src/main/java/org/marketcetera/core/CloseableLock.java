@@ -2,6 +2,7 @@ package org.marketcetera.core;
 
 import java.io.Closeable;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 
 import org.apache.commons.lang.Validate;
 

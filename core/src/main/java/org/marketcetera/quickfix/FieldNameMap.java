@@ -14,10 +14,17 @@ import java.util.Map;
  * $Id$
  */
 @ClassVersion("$Id$")
-public class FieldNameMap<T> {
-
-    /** Creates a new instance of NameManager */
-    public FieldNameMap(int fieldID, Class<?> fieldClass) {
+public class FieldNameMap<T>
+{
+    /**
+     * Create a new FieldNameMap instance.
+     *
+     * @param fieldID an <code>int</code> value
+     * @param fieldClass a <code>Class&lt;?&gt;</code> value
+     */
+    public FieldNameMap(int fieldID,
+                        Class<?> fieldClass)
+    {
         addNames(fieldID, fieldClass);
     }
 

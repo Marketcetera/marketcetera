@@ -19,9 +19,9 @@ import java.beans.ConstructorProperties;
  * of the URN evaluate as equal.
  * <p>
  * The URNs have the following format
- * <br/>
+ * <br>
  * <code>metc:provType:provider:instance</code>
- *<br/>
+ *<br>
  * <b>where</b>:
  * <ul>
  *  <li><b>metc</b>: The URN prefix <code>metc</code> indicating a marketcetera URN</li>

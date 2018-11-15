@@ -3,7 +3,7 @@ package org.marketcetera.core;
 import java.io.File;
 
 import org.marketcetera.util.misc.ClassVersion;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /* $License$ */
 
@@ -38,7 +38,7 @@ public interface ApplicationInfoProvider
     /**
      * Gets the application context.
      *
-     * @return an <code>ApplicationContext</code> value
+     * @return a <code>ConfigurableApplicationContext</code> value
      */
-    public ApplicationContext getContext();
+    public ConfigurableApplicationContext getContext();
 }

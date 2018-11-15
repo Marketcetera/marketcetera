@@ -13,17 +13,17 @@
  * See {@link org.marketcetera.modules.remote.receiver.ReceiverModuleMXBean}
  * for details on the management interface for the module instance.
  * <p>
- * <h4>Logging:</h4>
+ * <em>Logging:</em>
  * <p>
  * Note that the receiver module depends on log4j as documented in
- * {@link org.marketcetera.modules.remote.receiver.ReceiverModuleMXBean#setLogLevel(org.marketcetera.event.LogEvent.Level)}.
+ * {@link ReceiverModuleMXBean#setLogLevel(org.marketcetera.event.LogEventLevel)}.
  * If log4j is not used as the logger provider for slf4j, modules that emit
  * log events into the receiver conditionally based on
  * <code>SLF4JLoggerProxy.is*Enabled()</code> calls will not emit events
  * correctly based on the currently configured value of receiver's log level
- * {@link org.marketcetera.modules.remote.receiver.ReceiverModuleMXBean#getLogLevel()}.
+ * {@link ReceiverModuleMXBean#getLogLevel()}.
  *
- * <h4>JAAS Configuration</h4>
+ * <em>JAAS Configuration</em>
  * <p>
  * The receiver module performs automatic JAAS Configuration. See
  * {@link org.marketcetera.modules.remote.receiver.JaasConfiguration} for

@@ -2,8 +2,7 @@ package org.marketcetera.fix;
 
 import java.util.Map;
 
-import org.marketcetera.core.DomainObject;
-import org.marketcetera.core.HasMutableView;
+import org.marketcetera.persist.SummaryNDEntityBase;
 
 /* $License$ */
 
@@ -15,20 +14,8 @@ import org.marketcetera.core.HasMutableView;
  * @since $Release$
  */
 public interface FixSession
-        extends HasMutableView<MutableFixSession>,DomainObject
+        extends SummaryNDEntityBase
 {
-    /**
-     * Get the name value.
-     *
-     * @return a <code>String</code> value
-     */
-    String getName();
-    /**
-     * Get the description value.
-     *
-     * @return a <code>String</code> value
-     */
-    String getDescription();
     /**
      * Get the affinity value.
      *
@@ -36,17 +23,23 @@ public interface FixSession
      */
     int getAffinity();
     /**
+     * Set the affinity value.
+     *
+     * @param inAffinity an <code>int</code> value
+     */
+    void setAffinity(int inAffinity);
+    /**
      * Get the broker ID value.
      *
      * @return a <code>String</code> value
      */
     String getBrokerId();
     /**
-     * Get the optional mapped broker ID value.
+     * Set the broker ID value.
      *
-     * @return a <code>String</code> value
+     * @param inBrokerId a <code>String</code> value
      */
-    String getMappedBrokerId();
+    void setBrokerId(String inBrokerId);
     /**
      * Get the session ID value.
      *
@@ -54,11 +47,35 @@ public interface FixSession
      */
     String getSessionId();
     /**
+     * Set the session ID value.
+     *
+     * @param inSessionId a <code>String</code> value
+     */
+    void setSessionId(String inSessionId);
+    /**
+     * Set the name value.
+     *
+     * @param inName a <code>String</code> value
+     */
+    void setName(String inName);
+    /**
+     * Set the description value.
+     *
+     * @param inDescription a <code>String</code> value
+     */
+    void setDescription(String inDescription);
+    /**
      * Indicates if the session is an acceptor session or an initiator session.
      *
      * @return a <code>boolean</code> value
      */
     boolean isAcceptor();
+    /**
+     * Sets the session acceptor setting. 
+     *
+     * @param inIsAcceptor a <code>boolean</code> value
+     */
+    void setIsAcceptor(boolean inIsAcceptor);
     /**
      * Indicates if the session is enabled or not.
      *
@@ -72,17 +89,35 @@ public interface FixSession
      */
     boolean isDeleted();
     /**
+     * Set the disabled value.
+     *
+     * @param inIsEnabled a <code>boolean</code> value
+     */
+    void setIsEnabled(boolean inIsEnabled);
+    /**
      * Get the port value.
      *
      * @return an <code>int</code> value
      */
     int getPort();
     /**
+     * Set the port value.
+     *
+     * @param inPort an <code>int</code> value
+     */
+    void setPort(int inPort);
+    /**
      * Get the host value.
      *
      * @return a <code>String</code> value
      */
     String getHost();
+    /**
+     * Set the host value.
+     *
+     * @param inHost a <code>String</code> value
+     */
+    void setHost(String inHost);
     /**
      * Get the session settings value.
      *

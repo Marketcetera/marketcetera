@@ -23,6 +23,7 @@ public final class CollectionUtils
      * Returns the last non-null element in the given list; or, if
      * there is no non-null element, it returns null.
      *
+     * @param <E> the element
      * @param l The list. It may be null, in which case null is
      * returned.
      *

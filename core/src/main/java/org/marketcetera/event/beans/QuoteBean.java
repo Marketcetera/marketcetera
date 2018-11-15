@@ -133,7 +133,7 @@ public final class QuoteBean
     /**
      * Sets the count value.
      *
-     * @param an <code>int</code> value
+     * @param inCount an <code>int</code> value
      */
     public void setCount(int inCount)
     {
@@ -151,7 +151,7 @@ public final class QuoteBean
     /**
      * Sets the level value.
      *
-     * @param an <code>int</code> value
+     * @param inLevel an <code>int</code> value
      */
     public void setLevel(int inLevel)
     {

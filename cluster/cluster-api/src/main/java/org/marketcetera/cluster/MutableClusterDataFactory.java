@@ -1,7 +1,5 @@
 package org.marketcetera.cluster;
 
-import org.marketcetera.core.MutableDomainObjectFactory;
-
 /* $License$ */
 
 /**
@@ -12,6 +10,19 @@ import org.marketcetera.core.MutableDomainObjectFactory;
  * @since $Release$
  */
 public interface MutableClusterDataFactory
-        extends ClusterDataFactory,MutableDomainObjectFactory<ClusterData,MutableClusterData>
+        extends ClusterDataFactory
 {
+    /**
+     * Create a new {@link MutableClusterData} object.
+     *
+     * @return a <code>MutableClusterData</code> value
+     */
+    MutableClusterData create();
+    /**
+     * Create a new {@link MutableClusterData} object.
+     *
+     * @param inClusterData a <code>ClusterData</code> value
+     * @return a <code>MutableClusterData</code> value
+     */
+    MutableClusterData create(ClusterData inClusterData);
 }

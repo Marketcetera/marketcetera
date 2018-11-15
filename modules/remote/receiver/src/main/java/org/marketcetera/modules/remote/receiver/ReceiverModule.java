@@ -24,8 +24,8 @@ import org.springframework.jms.core.JmsTemplate;
  * A module that can receive any kind of data and emit it on a
  * remotely accessible messaging topic so that the data can be received
  * by {@link org.marketcetera.modules.remote.receiver remote recipients}.
- * <br/> 
- * <table>
+ * 
+ * <table summary="Describes the module attributes">
  * <tr><th>Capabilities</th><td>Data Receiver</td></tr>
  * <tr><th>Stops data flows</th><td>No</td></tr>
  * <tr><th>Emits data flow errors</th><td>Yes, when it's unable to
@@ -36,7 +36,7 @@ import org.springframework.jms.core.JmsTemplate;
  * <tr><th>Management Interface</th><td>{@link ReceiverModuleMXBean}</td></tr>
  * <tr><th>Factory</th><td>{@link ReceiverFactory}</td></tr>
  * </table>
- * <br/>
+ * <p>
  * <b>Remoting Mechanism</b>
  * <p>
  * The module embeds a JMS message broker to transmit the messages to its
@@ -44,7 +44,7 @@ import org.springframework.jms.core.JmsTemplate;
  * all the messages are broadcast.
  * The broker is started when the module is started and stopped when
  * the module is stopped.
- * <br/>
+ * <p>
  * <b>Received Object Handling</b>
  * <p>
  * The module will transmit all the received objects serialized as
@@ -52,7 +52,7 @@ import org.springframework.jms.core.JmsTemplate;
  * serializable, the module generates an error receiving that object
  * which is handled and logged by the module framework. The module
  * ignores null objects.
- * <br/>
+ * <p>
  * <b>Authentication</b>
  * <p>
  * The remote clients of this module need to authenticate themselves to

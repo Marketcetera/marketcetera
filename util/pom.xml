@@ -1,17 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+<!--
+  - Author: tlerios@marketcetera.com
+  - Since: 0.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
-    <groupId>org.marketcetera</groupId>
-    <artifactId>public-parent</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+      <groupId>org.marketcetera</groupId>
+      <artifactId>public-parent</artifactId>
+      <version>3.1.0</version>
   </parent>
   <artifactId>util</artifactId>
   <packaging>jar</packaging>
+
   <name>Utilities</name>
+
   <dependencies>
+
     <!-- Compile. -->
     <dependency>
       <groupId>org.quickfixj</groupId>
@@ -25,34 +40,6 @@
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http</artifactId>
     </dependency>
-    <!-- these jetty dependencies are transitively included from cxf-rt-transports-http, but the included version, 9.4.7, is buggy -->
-    <!-- we include the specific dependencies because we're manually overriding the version to 9.4.8 -->
-    <!-- these can be removed when the transitive dependencies are changed to a fixed jetty version in cxf -->
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-server</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-util</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-io</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-security</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-continuation</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-http</artifactId>
-    </dependency>
-    <!-- end jetty dependencies -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -90,6 +77,14 @@
       <artifactId>guava</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.googlecode.protobuf-rpc-pro</groupId>
+      <artifactId>protobuf-streamer-pro</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.protobuf-rpc-pro</groupId>
+      <artifactId>protobuf-rpc-pro-duplex</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
     </dependency>
@@ -107,10 +102,7 @@
       <artifactId>log4j-1.2-api</artifactId>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
+
     <!-- Runtime. -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -127,6 +119,11 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
@@ -151,16 +148,16 @@
     <plugins>
       <!-- override configuration to fork 1 at a time -->
       <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <disableXmlReport>false</disableXmlReport>
-          <forkCount>1</forkCount>
-          <reuseForks>false</reuseForks>
-          <argLine>${mvn.test.options}</argLine>
-          <systemPropertyVariables>
-            <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
-          </systemPropertyVariables>
-        </configuration>
+	<artifactId>maven-surefire-plugin</artifactId>
+	<configuration>
+	  <disableXmlReport>false</disableXmlReport>
+	  <forkCount>1</forkCount>
+	  <reuseForks>false</reuseForks>
+	  <argLine>${mvn.test.options}</argLine>
+	  <systemPropertyVariables>
+	    <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
+	  </systemPropertyVariables>
+	</configuration>
       </plugin>
       <!-- Configure Eclipse IDE metadata. -->
       <plugin>
@@ -205,12 +202,12 @@
             <configuration>
               <mainClass>org.marketcetera.util.ws.sample.SampleClient</mainClass>
               <!--
-                  - -Dexec.args="-user user -password password -argument World"
-                  - Try 'badPassword' for password.
-                  - Try 'World', 'I18NException', 'AssertionError',
-                  -  'IllegalArgumentException' for argument.
-                  - Try non-default locale '-language fr -country CA'.
-              -->
+                - -Dexec.args="-user user -password password -argument World"
+                - Try 'badPassword' for password.
+                - Try 'World', 'I18NException', 'AssertionError',
+                -  'IllegalArgumentException' for argument.
+                - Try non-default locale '-language fr -country CA'.
+                -->
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>

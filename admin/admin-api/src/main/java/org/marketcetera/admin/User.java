@@ -1,7 +1,6 @@
 package org.marketcetera.admin;
 
 import org.marketcetera.persist.SummaryNDEntityBase;
-import org.marketcetera.trade.UserID;
 
 /* $License$ */
 
@@ -27,10 +26,4 @@ public interface User
      * @return a <code>String</code> value
      */
     String getHashedPassword();
-    /**
-     * Get the user id value.
-     *
-     * @return a <code>UserID</code> value
-     */
-    UserID getUserID();
 }

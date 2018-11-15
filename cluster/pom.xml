@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>public-parent</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>3.1.0</version>
   </parent>
   <artifactId>cluster-parent</artifactId>
   <packaging>pom</packaging>
@@ -14,9 +14,6 @@
   <modules>
     <module>cluster-api</module>
     <module>cluster-core</module>
-    <module>cluster-rpc-core</module>
-    <module>cluster-rpc-client</module>
-    <module>cluster-rpc-server</module>
-    <module>simple-cluster</module>
+    <module>cluster-simple</module>
   </modules>
 </project>

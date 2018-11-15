@@ -201,6 +201,7 @@ public class ActiveLocale
      * previously active locale is restored, and the callable's return
      * value is returned.
      *
+     * @param <V> the return value type
      * @param callable The callable.
      * @param locale The locale. It may be null.
      *

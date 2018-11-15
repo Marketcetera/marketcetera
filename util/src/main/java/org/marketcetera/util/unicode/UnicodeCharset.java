@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * A thin wrapper around {@link Charset} for the Unicode charsets.
  *
- * <h4>Notes:</h4>
+ * <em>Notes:</em>
  *
  * <p>Java inserts a BOM when a string is encoded into a byte array
  * with the generic (neither LE or BE) UTF-16 charset. Java does not

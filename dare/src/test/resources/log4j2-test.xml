@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d %-5p [%t] %C (%F:%L) - %m%n"/>
+    </Console>
+    <RollingRandomAccessFile name="METRICS" fileName="target/logs/metrics.log" filePattern="target/logs/metrics-%i.log.gz" append="true">
+      <PatternLayout pattern="%d{DATE} %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="100 MB"/>
+      </Policies>
+    </RollingRandomAccessFile>
+    <RollingRandomAccessFile name="FIX-INCOMING" fileName="target/logs/fix-incoming.log" filePattern="target/logs/fix-incoming-%i.log.gz" append="true">
+      <PatternLayout pattern="%d{DATE} %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="100 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="1000"/>
+    </RollingRandomAccessFile>
+    <RollingRandomAccessFile name="FIX-OUTGOING" fileName="target/logs/fix-outgoing.log" filePattern="target/logs/fix-outgoing-%i.log.gz" append="true">
+      <PatternLayout pattern="%d{DATE} %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="100 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="1000"/>
+    </RollingRandomAccessFile>
+    <RollingRandomAccessFile name="RESTORE" fileName="target/logs/restore.log" filePattern="target/logs/restore-%i.log.gz" append="true">
+      <PatternLayout pattern="%d{DATE} [%t] %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="100 MB"/>
+      </Policies>
+    </RollingRandomAccessFile>
+    <RollingRandomAccessFile name="BROKERS" fileName="target/logs/brokers${instanceName}.log" filePattern="target/logs/brokers${instanceName}-%i.log.gz" append="true">
+      <PatternLayout pattern="%d{DATE} %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="100 MB"/>
+      </Policies>
+    </RollingRandomAccessFile>
+  </Appenders>
+  <Loggers>
+    <Root level="warn">
+      <AppenderRef ref="STDOUT"/>
+    </Root>
+    <logger name="org.marketcetera" level="info"/>
+    <logger name="org.marketcetera" level="info"/>
+    <logger name="org.marketcetera.admin" level="trace"/>
+    <!-- logger name="org.marketcetera.ors.brokers.impl.BrokerServiceImpl" level="trace"/-->
+    <!-- logger name="org.marketcetera.ors.dao.impl.ReportServiceImpl" level="trace"/-->
+    <!-- logger name="org.marketcetera.ors.brokers.impl.ClusteredSessionConnector" level="trace"/-->
+    <!-- logger name="org.marketcetera.ors.brokers.impl.SessionSchedule" level="trace"/-->
+    <!-- logger name="org.marketcetera.ors.OrderRoutingSystem" level="trace"/-->
+    <!-- logger name="org.marketcetera.ors.QuickFIXApplication" level="trace"/-->
+    <logger name="metc.restore" level="info"/>
+    <logger name="metrics" level="info" additivity="false">
+      <AppenderRef ref="METRICS"/>
+    </logger>
+    <logger name="metc.restore" level="info" additivity="false">
+      <AppenderRef ref="RESTORE"/>
+      <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="metc.brokers" level="info" additivity="false">
+      <AppenderRef ref="BROKERS"/>
+      <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="quickfixj.event" level="info"/>
+    <logger name="quickfixj.msg.incoming" level="info" additivity="false">
+      <AppenderRef ref="FIX-INCOMING"/>
+    </logger>
+    <logger name="quickfixj.msg.outgoing" level="info" additivity="false">
+      <AppenderRef ref="FIX-OUTGOING"/>
+    </logger>
+  </Loggers>
+</Configuration>

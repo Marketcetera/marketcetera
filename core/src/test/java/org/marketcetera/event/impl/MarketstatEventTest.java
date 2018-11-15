@@ -1,6 +1,10 @@
 package org.marketcetera.event.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -8,12 +12,24 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.event.*;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.EventType;
+import org.marketcetera.event.FutureEvent;
+import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.Messages;
+import org.marketcetera.event.OptionMarketstatEvent;
+import org.marketcetera.event.SpreadEvent;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.Spread;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -60,6 +76,11 @@ public class MarketstatEventTest
        useInstrument = true;
        verify(setDefaults(getBuilder()));
        instrument = future;
+       useInstrument = false;
+       verify(setDefaults(getBuilder()));
+       useInstrument = true;
+       verify(setDefaults(getBuilder()));
+       instrument = spread;
        useInstrument = false;
        verify(setDefaults(getBuilder()));
        useInstrument = true;
@@ -124,7 +145,18 @@ public class MarketstatEventTest
         };
         futureBuilder.withInstrument(future);
         assertNotNull(futureBuilder.create());
-        
+        final MarketstatEventBuilder spreadBuilder = setDefaults(MarketstatEventBuilder.spreadMarketstat());
+        spreadBuilder.withInstrument(equity);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_SPREAD_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                spreadBuilder.create();
+            }
+        };
+        spreadBuilder.withInstrument(spread);
+        assertNotNull(spreadBuilder.create());
         final MarketstatEventBuilder currencyBuilder = setDefaults(MarketstatEventBuilder.currencyMarketstat());
         currencyBuilder.withInstrument(equity);
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_CURRENCY_REQUIRED.getText()) {
@@ -689,18 +721,24 @@ public class MarketstatEventTest
                      builder.getOption().getProviderSymbol());
         assertEquals(symbol,
                      builder.getFuture().getProviderSymbol());
+        assertEquals(symbol,
+                     builder.getSpread().getProviderSymbol());
         symbol = "";
         builder.withProviderSymbol(symbol);
         assertEquals(symbol,
                      builder.getOption().getProviderSymbol());
         assertEquals(symbol,
                      builder.getFuture().getProviderSymbol());
+        assertEquals(symbol,
+                     builder.getSpread().getProviderSymbol());
         symbol = "MQF/W/X";
         builder.withProviderSymbol(symbol);
         assertEquals(symbol,
                      builder.getOption().getProviderSymbol());
         assertEquals(symbol,
                      builder.getFuture().getProviderSymbol());
+        assertEquals(symbol,
+                     builder.getSpread().getProviderSymbol());
         verify(builder);
     }
     /**
@@ -740,12 +778,24 @@ public class MarketstatEventTest
         builder.withContractSize(Integer.MIN_VALUE);
         assertEquals(Integer.MIN_VALUE,
                      builder.getFuture().getContractSize());
+        assertEquals(Integer.MIN_VALUE,
+                     builder.getSpread().getLeg1Bean().getContractSize());
+        assertEquals(Integer.MIN_VALUE,
+                     builder.getSpread().getLeg2Bean().getContractSize());
         builder.withContractSize(0);
         assertEquals(0,
                      builder.getFuture().getContractSize());
+        assertEquals(0,
+                     builder.getSpread().getLeg1Bean().getContractSize());
+        assertEquals(0,
+                     builder.getSpread().getLeg2Bean().getContractSize());
         builder.withContractSize(Integer.MAX_VALUE);
         assertEquals(Integer.MAX_VALUE,
                      builder.getFuture().getContractSize());
+        assertEquals(Integer.MAX_VALUE,
+                     builder.getSpread().getLeg1Bean().getContractSize());
+        assertEquals(Integer.MAX_VALUE,
+                     builder.getSpread().getLeg2Bean().getContractSize());
         verify(builder);
     }
     /**
@@ -959,7 +1009,26 @@ public class MarketstatEventTest
                 futureBuilder.create();
             }
         };
-        
+        final MarketstatEventBuilder spreadBuilder = MarketstatEventBuilder.spreadMarketstat();
+        instrument = spread;
+        setDefaults(spreadBuilder).withInstrument(null);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_SPREAD_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                spreadBuilder.create();
+            }
+        };
+        setDefaults(spreadBuilder).withInstrument(equity);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_SPREAD_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                spreadBuilder.create();
+            }
+        };
         final MarketstatEventBuilder currencyBuilder = MarketstatEventBuilder.currencyMarketstat();
         instrument = currency;
         setDefaults(currencyBuilder).withInstrument(null);
@@ -1090,6 +1159,15 @@ public class MarketstatEventTest
             assertEquals(inBuilder.getFuture().getContractSize(),
                          futureEvent.getContractSize());
         }
+        if(event instanceof SpreadEvent) {
+            SpreadEvent spreadEvent = (SpreadEvent)event;
+            assertEquals(inBuilder.getFuture().getProviderSymbol(),
+                         spreadEvent.getProviderSymbol());
+            assertEquals(inBuilder.getSpread().getLeg1Bean().getContractSize(),
+                         spreadEvent.getLeg1ContractSize());
+            assertEquals(inBuilder.getSpread().getLeg2Bean().getContractSize(),
+                         spreadEvent.getLeg2ContractSize());
+        }
         Object newSource = new Object();
         event.setSource(newSource);
         assertEquals(newSource,
@@ -1155,6 +1233,8 @@ public class MarketstatEventTest
                 return MarketstatEventBuilder.optionMarketstat();
             } else if(instrument instanceof Future) {
                 return MarketstatEventBuilder.futureMarketstat();
+            } else if(instrument instanceof Spread) {
+                return MarketstatEventBuilder.spreadMarketstat();
             } else if(instrument instanceof Currency) {
                 return MarketstatEventBuilder.currencyMarketstat();
             }
@@ -1186,6 +1266,15 @@ public class MarketstatEventTest
     private final Future future = new Future("AAPL",
                                              FutureExpirationMonth.APRIL,
                                              12);
+    /**
+     * test spread value
+     */
+    private final Spread spread = new Spread(new Future("AAPL",
+                                                        FutureExpirationMonth.APRIL,
+                                                        12),
+                                             new Future("AAPL",
+                                                        FutureExpirationMonth.JUNE,
+                                                        12));
     /**
      * test currency
      */
