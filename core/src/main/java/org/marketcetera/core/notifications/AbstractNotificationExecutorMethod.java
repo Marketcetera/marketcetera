@@ -5,7 +5,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 /* $License$ */
 
 /**
- *
+ * Provides common behavior for notification executor methods.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -41,7 +41,7 @@ public abstract class AbstractNotificationExecutorMethod
     /**
      * Sets the maximumThreshold value.
      *
-     * @param an <code>INotification.Severity</code> value
+     * @param inMaximumThreshold an <code>INotification.Severity</code> value
      */
     public void setMaximumThreshold(INotification.Severity inMaximumThreshold)
     {
@@ -59,7 +59,7 @@ public abstract class AbstractNotificationExecutorMethod
     /**
      * Sets the minimum threshold value.
      *
-     * @param an <code>INotification.Severity</code> value
+     * @param inMinimumThreshold an <code>INotification.Severity</code> value
      */
     public void setMinimumThreshold(INotification.Severity inMinimumThreshold)
     {

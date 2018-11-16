@@ -41,19 +41,16 @@ public class OptionValidationHandler extends InstrumentValidationHandler<Option>
      * <p>
      * Verifies that the expiry field has either of the following formats
      * <ul>
-     * <li>YYYYMM</li>
-     * <li>YYYYMMDD</li>
-     * <li>YYYYMMwN</li>
+     *   <li>YYYYMM</li>
+     *   <li>YYYYMMDD</li>
+     *   <li>YYYYMMwN</li>
      * </ul>
      * where:
      * <ul>
-     * YYYY: represents the year
-     * <br/>
-     * MM: represents the month: 01-12
-     * <br/>
-     * DD: represents the day of the month: 01-31
-     * <br/>
-     * wN: represents the week number: w1-w5
+     *   <li>YYYY: represents the year</li>
+     *   <li>MM: represents the month: 01-12</li>
+     *   <li>DD: represents the day of the month: 01-31</li>
+     *   <li>wN: represents the week number: w1-w5</li>
      * </ul>
      *
      * @param inExpiry the expiry field of the option

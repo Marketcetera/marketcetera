@@ -32,7 +32,7 @@ public interface SAService
      * Returns the list of providers available at the strategy agent.
      *
      * @param inContext a <code>ClientContext</code> value
-     * @return a List&lt;ModuleURN&gt;</code> value
+     * @return a <code>List&lt;ModuleURN&gt;</code> value
      * @throws RemoteException if there were errors communicating with the remote strategy agent.
      */
     public List<ModuleURN> getProviders(@WebParam(name="context")ClientContext inContext)

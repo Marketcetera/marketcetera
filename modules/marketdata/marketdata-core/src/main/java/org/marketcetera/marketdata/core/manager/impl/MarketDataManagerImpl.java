@@ -220,7 +220,7 @@ public class MarketDataManagerImpl
     /**
      * Sets the subscriberTimeout value.
      *
-     * @param a <code>long</code> value
+     * @param inSubscriberTimeout a <code>long</code> value
      */
     public void setSubscriberTimeout(long inSubscriberTimeout)
     {
@@ -238,7 +238,7 @@ public class MarketDataManagerImpl
     /**
      * Sets the defaultMarketDataProvider value.
      *
-     * @param a <code>String</code> value
+     * @param inDefaultMarketDataProvider a <code>String</code> value
      */
     public void setDefaultMarketDataProvider(String inDefaultMarketDataProvider)
     {

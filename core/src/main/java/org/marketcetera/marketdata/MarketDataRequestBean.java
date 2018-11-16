@@ -106,7 +106,7 @@ public final class MarketDataRequestBean
     /**
      * Get the symbols value.
      *
-     * @return a <code>Set<String></code> value
+     * @return a <code>Set&lt;String&gt;</code> value
      */
     public Set<String> getSymbols()
     {
@@ -133,7 +133,7 @@ public final class MarketDataRequestBean
     /**
      * Get the underlyingSymbols value.
      *
-     * @return a <code>Set<String></code> value
+     * @return a <code>Set&lt;String&gt;</code> value
      */
     public Set<String> getUnderlyingSymbols()
     {
@@ -189,7 +189,7 @@ public final class MarketDataRequestBean
     /**
      * Get the parameters value.
      *
-     * @return a <code>Map<String,String></code> value
+     * @return a <code>Map&lt;String,String&gt;</code> value
      */
     public Map<String,String> getParameters()
     {
@@ -200,7 +200,7 @@ public final class MarketDataRequestBean
     /**
      * Get the content value.
      *
-     * @return a <code>Set<Content></code> value
+     * @return a <code>Set&lt;Content&gt;</code> value
      */
     public Set<Content> getContent()
     {

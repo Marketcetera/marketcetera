@@ -83,7 +83,7 @@ import com.google.common.cache.LoadingCache;
  * @author gmiller
  *         $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class FIXMessageUtil {
     /**
      * caches data dictionaries by FIX Version
@@ -270,15 +270,14 @@ public class FIXMessageUtil {
         return reject;
     }
     /**
-     * 
+     * Create a new business reject message.
      *
-     *
-     * @param inSessionId
-     * @param inMessage
-     * @param inReason
-     * @param inText
-     * @return
-     * @throws FieldNotFound
+     * @param inSessionId a <code>SessionID</code> value
+     * @param inMessage a <code>Message</code> value
+     * @param inReason an <code>int</code> value
+     * @param inText a <code>String</code> value
+     * @return a <code>Message</code> value
+     * @throws FieldNotFound if necessary fields cannot be found on the given message
      */
     public static Message createBusinessReject(SessionID inSessionId,
                                                Message inMessage,
@@ -991,222 +990,292 @@ public class FIXMessageUtil {
      * @param copyTo
      * @param copyFrom
      */
-    public static void copyFields(FieldMap copyTo,
-                                  FieldMap copyFrom)
-    {
-    	Iterator<Field<?>> iter = copyFrom.iterator();
-    	while (iter.hasNext()){
-    		Field<?> field = iter.next();
-    		try {
-				copyTo.setField(copyFrom.getField(new StringField(field.getTag())));
-			} catch (FieldNotFound e) {
-				// do nothing
-			}
-    	}
-    }
-
-    public static boolean isRequiredField(Message message, int whichField) {
-    	boolean required = false;
-		try {
-			String msgType;
-			msgType = message.getHeader().getString(MsgType.FIELD);
-			return isRequiredField(msgType, whichField);
-		} catch (Exception e) {
-			// Ignore
-		}
-		return required;
-    }
-
-    public static boolean isRequiredField(String msgType, int whichField){
-    	boolean required = false;
-		try {
-			DataDictionary dictionary = CurrentFIXDataDictionary
-					.getCurrentFIXDataDictionary().getDictionary();
-			required = dictionary.isRequiredField(msgType, whichField);
-		} catch (Exception anyException) {
-			// Ignore
-		}
-		return required;
-	}
-
-    //cl todo:need to check if this take care of custom fields
-    public static boolean isValidField(int whichField) {
-		boolean valid = false;
-		try {
-			DataDictionary dictionary = CurrentFIXDataDictionary
-					.getCurrentFIXDataDictionary().getDictionary();
-			valid = dictionary.isField(whichField);
-		} catch (Exception anyException) {
-			// Ignore
-		}
-		return valid;
-	}
-
     /**
-	 * Copy only required fields.
-	 */
-    public static void fillFieldsFromExistingMessage(Message outgoingMessage, Message existingMessage) {
-    	fillFieldsFromExistingMessage(outgoingMessage, existingMessage, true);
+     * Copy the fields from the given source to the given destination.
+     * 
+     * <p>Warning! This method does not handle groups.
+     *
+     * @param inDestination a <code>FieldMap</code> value
+     * @param inSource a <code>FieldMap</code> value
+     */
+    public static void copyFields(FieldMap inDestination,
+                                  FieldMap inSource)
+    {
+        Iterator<Field<?>> iter = inSource.iterator();
+        while (iter.hasNext()){
+            Field<?> field = iter.next();
+            try {
+                inDestination.setField(inSource.getField(new StringField(field.getTag())));
+            } catch (FieldNotFound e) {
+                // do nothing
+            }
+        }
     }
+    /**
+     * Indicate if the given field is required on the given message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inField an <code>int</code> value
+     * @return a <code>boolean</code> value
+     */
+    public static boolean isRequiredField(Message inMessage,
+                                          int inField)
+    {
+        boolean required = false;
+        try {
+            String msgType;
+            msgType = inMessage.getHeader().getString(MsgType.FIELD);
+            return isRequiredField(msgType, inField);
+        } catch (Exception e) {
+            // Ignore
+        }
+        return required;
+    }
+    /**
+     * Indicate if the given field is required for the given message type.
+     *
+     * @param inMsgType a <code>String</code> value
+     * @param inField an <code>int</code> value
+     * @return a <code>boolean</code> value
+     */
+    public static boolean isRequiredField(String inMsgType,
+                                          int inField)
+    {
+        boolean required = false;
+        try {
+            DataDictionary dictionary = CurrentFIXDataDictionary
+                    .getCurrentFIXDataDictionary().getDictionary();
+            required = dictionary.isRequiredField(inMsgType, inField);
+        } catch (Exception anyException) {
+            // Ignore
+        }
+        return required;
+    }
+    /**
+     * Indicate if the given field is valid.
+     *
+     * <p>Does this method handle custom fields?
+     * 
+     * @param inField an <code>int</code> value
+     * @return a <code>boolean</code> value
+     */
+    public static boolean isValidField(int inField)
+    {
+        boolean valid = false;
+        try {
+            DataDictionary dictionary = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getDictionary();
+            valid = dictionary.isField(inField);
+        } catch (Exception anyException) {
+            // Ignore
+        }
+        return valid;
+    }
+    /**
+     * Copy the required fields from the given existing message to the given outgoing message.
+     *
+     * @param inOutgoingMessage a <code>Message</code> value
+     * @param inExistingMessage a <code>Message</code> value
+     */
+    public static void fillFieldsFromExistingMessage(Message inOutgoingMessage,
+                                                     Message inExistingMessage)
+    {
+        fillFieldsFromExistingMessage(inOutgoingMessage,
+                                      inExistingMessage,
+                                      true);
+    }
+    /**
+     * Insert the given field if it is not already present.
+     *
+     * @param inFieldNumber an <code>int</code> value
+     * @param inValue a <code>String</code> value
+     * @param inFieldMap a <code>FieldMap</code> value
+     * @throws CoreException if an error occurs setting the value
+     */
+    public static void insertFieldIfMissing(int inFieldNumber,
+                                            String inValue,
+                                            FieldMap inFieldMap)
+            throws CoreException
+    {
+        if (inFieldMap.isSetField(inFieldNumber)){
+            StringField testField = new StringField(inFieldNumber);
+            try {
+                inFieldMap.getField(testField);
+                if(testField.getValue().equals(inValue)){
+                    return;
+                }
+            } catch (FieldNotFound ignored) {
+                //Unexpected as isSetField() returned true
+                //Don't do anything so that we set the field before we return.
+            }
+        }
+        inFieldMap.setField(new StringField(inFieldNumber, inValue));
+    }
+    /**
+     * Get the text value or encoded text value, in precedence order.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inDefaultString a <code>String</code> value to return if neither field is set
+     * @return a <code>String</code> value
+     */
+    public static String getTextOrEncodedText(Message inMessage, String inDefaultString)
+    {
+        String text = inDefaultString;
+        if (inMessage.isSetField(Text.FIELD)){
+            try {
+                text = inMessage.getString(Text.FIELD);
+            } catch (FieldNotFound ignored) {
+            }
+        } else {
+            try {
+                text = inMessage.getString(EncodedText.FIELD); //i18n_string todo use the correct MessageEncoding value
+            } catch (FieldNotFound ignored) {
+            }
+        }
+        return text;
+    }
+    /**
+     * Get the correlation field for the given version from the given message type.
+     *
+     * @param inVersion a <code>FIXVersion</code> value
+     * @param inMsgType a <code>String</code> value
+     * @return a <code>StringField</code> value
+     */
+    public static StringField getCorrelationField(FIXVersion inVersion,
+                                                  String inMsgType)
+    {
+        StringField reqIDField = null;
+        if (MsgType.COLLATERAL_REQUEST.equals(inMsgType) || MsgType.COLLATERAL_RESPONSE.equals(inMsgType)){
+            reqIDField = new CollReqID();
+        } else if (MsgType.CONFIRMATION_REQUEST.equals(inMsgType) || MsgType.CONFIRMATION.equals(inMsgType)){
+            reqIDField = new ConfirmReqID();
+        } else if (MsgType.DERIVATIVE_SECURITY_LIST_REQUEST.equals(inMsgType) || MsgType.DERIVATIVE_SECURITY_LIST.equals(inMsgType)){
+            reqIDField = new SecurityReqID();
+        } else if (MsgType.MARKET_DATA_REQUEST.equals(inMsgType) || MsgType.MARKET_DATA_INCREMENTAL_REFRESH.equals(inMsgType) || MsgType.MARKET_DATA_REQUEST_REJECT.equals(inMsgType) || MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH.equals(inMsgType)){
+            reqIDField = new MDReqID();
+        } else if (MsgType.NETWORK_STATUS_REQUEST.equals(inMsgType) || MsgType.NETWORK_STATUS_RESPONSE.equals(inMsgType)){
+            reqIDField = new NetworkRequestID();
+        } else if (MsgType.POSITION_MAINTENANCE_REQUEST.equals(inMsgType) || MsgType.POSITION_MAINTENANCE_REPORT.equals(inMsgType)
+                ||MsgType.REQUEST_FOR_POSITIONS.equals(inMsgType) || MsgType.REQUEST_FOR_POSITIONS_ACK.equals(inMsgType) || MsgType.POSITION_REPORT.equals(inMsgType)){
+            reqIDField = new PosReqID();
+        } else if (MsgType.QUOTE_REQUEST.equals(inMsgType) || MsgType.QUOTE_REQUEST_REJECT.equals(inMsgType) || MsgType.QUOTE.equals(inMsgType)){
+            reqIDField = new QuoteReqID();
+        } else if (MsgType.QUOTE_STATUS_REQUEST.equals(inMsgType) || MsgType.QUOTE_STATUS_REPORT.equals(inMsgType)){
+            if (FIXVersion.FIX42.equals(inVersion)){
+                reqIDField = new QuoteID();
+            } else {
+                reqIDField = new QuoteStatusReqID();
+            }
+        } else if (MsgType.RFQ_REQUEST.equals(inMsgType)){
+            reqIDField = new RFQReqID();
+        } else if (MsgType.SECURITY_DEFINITION_REQUEST.equals(inMsgType) || MsgType.SECURITY_DEFINITION.equals(inMsgType)
+                || MsgType.SECURITY_LIST_REQUEST.equals(inMsgType) || MsgType.SECURITY_LIST.equals(inMsgType)
+                || MsgType.SECURITY_TYPE_REQUEST.equals(inMsgType) || MsgType.SECURITY_TYPES.equals(inMsgType)){
+            reqIDField = new SecurityReqID();
+        } else if (MsgType.SECURITY_STATUS_REQUEST.equals(inMsgType) || MsgType.SECURITY_STATUS.equals(inMsgType)){
+            reqIDField = new SecurityStatusReqID();
+        } else if (MsgType.SETTLEMENT_INSTRUCTION_REQUEST.equals(inMsgType) || MsgType.SETTLEMENT_INSTRUCTIONS.equals(inMsgType)){
+            reqIDField = new SettlInstReqID();
+        } else if (MsgType.TRADE_CAPTURE_REPORT_REQUEST.equals(inMsgType) || MsgType.TRADE_CAPTURE_REPORT.equals(inMsgType) || MsgType.TRADE_CAPTURE_REPORT_REQUEST_ACK.equals(inMsgType)){
+            reqIDField = new TradeRequestID();
+        } else if (MsgType.TRADING_SESSION_STATUS_REQUEST.equals(inMsgType) || MsgType.TRADING_SESSION_STATUS.equals(inMsgType)){
+            reqIDField = new TradSesReqID();
+        } else if (MsgType.USER_REQUEST.equals(inMsgType) || MsgType.USER_RESPONSE.equals(inMsgType)){
+            reqIDField = new UserRequestID();
+        }
+        return reqIDField;
+    }
+    /**
+     * Merge the given market data messages.
+     *
+     * @param marketDataSnapshotFullRefresh a <code>Message</code> value
+     * @param inMarketDataIncrementalRefresh a <code>Message</code> value
+     * @param inFactory a <code>FIXMessageFactory</code> value
+     */
+    public static void mergeMarketDataMessages(Message marketDataSnapshotFullRefresh,
+                                               Message inMarketDataIncrementalRefresh,
+                                               FIXMessageFactory inFactory)
+    {
+        if (!isMarketDataSnapshotFullRefresh(marketDataSnapshotFullRefresh)){
+            throw new IllegalArgumentException(Messages.FIX_MD_MERGE_INVALID_INCOMING_SNAPSHOT.getText());
+        }
+        if (!isMarketDataIncrementalRefresh(inMarketDataIncrementalRefresh)){
+            throw new IllegalArgumentException(Messages.FIX_MD_MERGE_INVALID_INCOMING_INCREMENTAL.getText());
+        }
 
-	public static void insertFieldIfMissing(int fieldNumber, String value, FieldMap fieldMap) throws CoreException {
-		if (fieldMap.isSetField(fieldNumber)){
-			StringField testField = new StringField(fieldNumber);
-			try {
-				fieldMap.getField(testField);
-				if(testField.getValue().equals(value)){
-					return;
-				}
-			} catch (FieldNotFound ignored) {
-				//Unexpected as isSetField() returned true
-				//Don't do anything so that we set the field before we return.
-			}
-		}
-		fieldMap.setField(new StringField(fieldNumber, value));
-	}
+        HashMap<Character, Group> consolidatingSet = new HashMap<Character, Group>();
 
-	public static String getTextOrEncodedText(Message aMessage, String defaultString) {
-		String text = defaultString;
-		if (aMessage.isSetField(Text.FIELD)){
-			try {
-				text = aMessage.getString(Text.FIELD);
-			} catch (FieldNotFound ignored) {
-			}
-		} else {
-			try {
-				text = aMessage.getString(EncodedText.FIELD); //i18n_string todo use the correct MessageEncoding value
-			} catch (FieldNotFound ignored) {
-			}
-		}
-		return text;
-	}
-
-	/**
-	 *
-	 * @param msgType the msgType of the request message
-	 * @return the field that represents the request/response correlation ID in the request message
-	 */
-	public static StringField getCorrelationField(FIXVersion version, String msgType) {
-		StringField reqIDField = null;
-		if (MsgType.COLLATERAL_REQUEST.equals(msgType) || MsgType.COLLATERAL_RESPONSE.equals(msgType)){
-			reqIDField = new CollReqID();
-		} else if (MsgType.CONFIRMATION_REQUEST.equals(msgType) || MsgType.CONFIRMATION.equals(msgType)){
-			reqIDField = new ConfirmReqID();
-		} else if (MsgType.DERIVATIVE_SECURITY_LIST_REQUEST.equals(msgType) || MsgType.DERIVATIVE_SECURITY_LIST.equals(msgType)){
-			reqIDField = new SecurityReqID();
-		} else if (MsgType.MARKET_DATA_REQUEST.equals(msgType) || MsgType.MARKET_DATA_INCREMENTAL_REFRESH.equals(msgType) || MsgType.MARKET_DATA_REQUEST_REJECT.equals(msgType) || MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH.equals(msgType)){
-			reqIDField = new MDReqID();
-		} else if (MsgType.NETWORK_STATUS_REQUEST.equals(msgType) || MsgType.NETWORK_STATUS_RESPONSE.equals(msgType)){
-			reqIDField = new NetworkRequestID();
-		} else if (MsgType.POSITION_MAINTENANCE_REQUEST.equals(msgType) || MsgType.POSITION_MAINTENANCE_REPORT.equals(msgType)
-				||MsgType.REQUEST_FOR_POSITIONS.equals(msgType) || MsgType.REQUEST_FOR_POSITIONS_ACK.equals(msgType) || MsgType.POSITION_REPORT.equals(msgType)){
-			reqIDField = new PosReqID();
-		} else if (MsgType.QUOTE_REQUEST.equals(msgType) || MsgType.QUOTE_REQUEST_REJECT.equals(msgType) || MsgType.QUOTE.equals(msgType)){
-			reqIDField = new QuoteReqID();
-		} else if (MsgType.QUOTE_STATUS_REQUEST.equals(msgType) || MsgType.QUOTE_STATUS_REPORT.equals(msgType)){
-			if (FIXVersion.FIX42.equals(version)){
-				reqIDField = new QuoteID();
-			} else {
-				reqIDField = new QuoteStatusReqID();
-			}
-		} else if (MsgType.RFQ_REQUEST.equals(msgType)){
-			reqIDField = new RFQReqID();
-		} else if (MsgType.SECURITY_DEFINITION_REQUEST.equals(msgType) || MsgType.SECURITY_DEFINITION.equals(msgType)
-				|| MsgType.SECURITY_LIST_REQUEST.equals(msgType) || MsgType.SECURITY_LIST.equals(msgType)
-				|| MsgType.SECURITY_TYPE_REQUEST.equals(msgType) || MsgType.SECURITY_TYPES.equals(msgType)){
-			reqIDField = new SecurityReqID();
-		} else if (MsgType.SECURITY_STATUS_REQUEST.equals(msgType) || MsgType.SECURITY_STATUS.equals(msgType)){
-			reqIDField = new SecurityStatusReqID();
-		} else if (MsgType.SETTLEMENT_INSTRUCTION_REQUEST.equals(msgType) || MsgType.SETTLEMENT_INSTRUCTIONS.equals(msgType)){
-			reqIDField = new SettlInstReqID();
-		} else if (MsgType.TRADE_CAPTURE_REPORT_REQUEST.equals(msgType) || MsgType.TRADE_CAPTURE_REPORT.equals(msgType) || MsgType.TRADE_CAPTURE_REPORT_REQUEST_ACK.equals(msgType)){
-			reqIDField = new TradeRequestID();
-		} else if (MsgType.TRADING_SESSION_STATUS_REQUEST.equals(msgType) || MsgType.TRADING_SESSION_STATUS.equals(msgType)){
-			reqIDField = new TradSesReqID();
-		} else if (MsgType.USER_REQUEST.equals(msgType) || MsgType.USER_RESPONSE.equals(msgType)){
-			reqIDField = new UserRequestID();
-		}
-		return reqIDField;
-	}
-
-	public static void mergeMarketDataMessages(Message marketDataSnapshotFullRefresh, Message marketDataIncrementalRefresh, FIXMessageFactory factory){
-		if (!isMarketDataSnapshotFullRefresh(marketDataSnapshotFullRefresh)){
-			throw new IllegalArgumentException(Messages.FIX_MD_MERGE_INVALID_INCOMING_SNAPSHOT.getText());
-		}
-		if (!isMarketDataIncrementalRefresh(marketDataIncrementalRefresh)){
-			throw new IllegalArgumentException(Messages.FIX_MD_MERGE_INVALID_INCOMING_INCREMENTAL.getText());
-		}
-
-		HashMap<Character, Group> consolidatingSet = new HashMap<Character, Group>();
-
-		addGroupsToMap(marketDataSnapshotFullRefresh, factory, consolidatingSet);
-		addGroupsToMap(marketDataIncrementalRefresh, factory, consolidatingSet);
-		marketDataSnapshotFullRefresh.removeGroup(NoMDEntries.FIELD);
-		for (Group aGroup : consolidatingSet.values()) {
-			Group group = factory.createGroup(MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, NoMDEntries.FIELD);
-			group.setFields(aGroup);
-			marketDataSnapshotFullRefresh.addGroup(group);
-		}
-	}
-
-	private static void addGroupsToMap(Message marketDataMessage, FIXMessageFactory factory, HashMap<Character, Group> consolidatingSet){
-		try {
-			int noMDEntries = marketDataMessage.getInt(NoMDEntries.FIELD);
-			String msgType = marketDataMessage.getHeader().getString(MsgType.FIELD);
-			for (int i = 1; i <= noMDEntries; i++){
-				Group group = factory.createGroup(msgType, NoMDEntries.FIELD);
-				try {
-					marketDataMessage.getGroup(i, group);
-					consolidatingSet.put(group.getChar(MDEntryType.FIELD), group);
-				} catch (FieldNotFound e) {
-					//just continue
-				}
-			}
-		} catch (FieldNotFound e) {
-			// ignore
-		}
-
-	}
-	/**
-	 * package name for the quickfix fields
-	 */
-	private static final String QUICKFIX_PACKAGE = "quickfix.field."; //$NON-NLS-1$
-	/**
-	 * Create a <code>FIX</code> field of the given name.
-	 *
-	 * @param inFieldName a <code>String</code> value to containing the name of the field to create
-	 * @return a <code>Field&lt;?&gt;</code> value
-	 * @throws NullPointerException if <code>inFieldName</code> is null
-	 * @throws CoreException if the value cannot be converted to a field
-	 */
-	public static Field<?> getQuickFixFieldFromName(String inFieldName)
-	    throws CoreException
-	{
-	    if(inFieldName == null) {
-	        throw new NullPointerException();
-	    }
-	    Throwable error = null;
-	    try {
-	        // try the easy case first: the given field might be one of the pre-packaged quickfix fields
-	        return (Field<?>)Class.forName(QUICKFIX_PACKAGE + inFieldName).newInstance();
-	    } catch(ClassNotFoundException cnfe) {
-	        // if this exception is thrown, that means that the field does not correspond to a pre-packaged quickfix field
-	        // see if we can create a custom field - this means that the field name has to be parseable as an int
-	        try {
-	            int fieldInt = Integer.parseInt(inFieldName);
-	            return new CustomField<Integer>(fieldInt,
-	                                            null);
-	        } catch (Throwable t) {
-	            error = t;
-	        }
-	    } catch (Throwable t) {
-	        error = t;
-	    }
-	    // bah, can't create a field with the stuff we're given
-	    throw new CoreException(error,
-	                            new I18NBoundMessage1P(CANNOT_CREATE_FIX_FIELD,
-	                                                   inFieldName));
-	}
+        addGroupsToMap(marketDataSnapshotFullRefresh, inFactory, consolidatingSet);
+        addGroupsToMap(inMarketDataIncrementalRefresh, inFactory, consolidatingSet);
+        marketDataSnapshotFullRefresh.removeGroup(NoMDEntries.FIELD);
+        for (Group aGroup : consolidatingSet.values()) {
+            Group group = inFactory.createGroup(MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, NoMDEntries.FIELD);
+            group.setFields(aGroup);
+            marketDataSnapshotFullRefresh.addGroup(group);
+        }
+    }
+    /**
+     * Add the given groups to the given message.
+     *
+     * @param inMarketDataMessage a <code>Message</code> value
+     * @param inMessageFactory a <code>FIXMessageFactory</code> value
+     * @param inConsolidatingSet a <code>HashMap&lt;Character,Group&gt;</code> value
+     */
+    private static void addGroupsToMap(Message inMarketDataMessage,
+                                       FIXMessageFactory inMessageFactory,
+                                       HashMap<Character,Group> inConsolidatingSet)
+    {
+        try {
+            int noMDEntries = inMarketDataMessage.getInt(NoMDEntries.FIELD);
+            String msgType = inMarketDataMessage.getHeader().getString(MsgType.FIELD);
+            for (int i = 1; i <= noMDEntries; i++){
+                Group group = inMessageFactory.createGroup(msgType, NoMDEntries.FIELD);
+                try {
+                    inMarketDataMessage.getGroup(i, group);
+                    inConsolidatingSet.put(group.getChar(MDEntryType.FIELD), group);
+                } catch (FieldNotFound e) {
+                    //just continue
+                }
+            }
+        } catch (FieldNotFound e) {
+            // ignore
+        }
+    }
+    /**
+     * Create a <code>FIX</code> field of the given name.
+     *
+     * @param inFieldName a <code>String</code> value to containing the name of the field to create
+     * @return a <code>Field&lt;?&gt;</code> value
+     * @throws NullPointerException if <code>inFieldName</code> is null
+     * @throws CoreException if the value cannot be converted to a field
+     */
+    public static Field<?> getQuickFixFieldFromName(String inFieldName)
+            throws CoreException
+    {
+        if(inFieldName == null) {
+            throw new NullPointerException();
+        }
+        Throwable error = null;
+        try {
+            // try the easy case first: the given field might be one of the pre-packaged quickfix fields
+            return (Field<?>)Class.forName(QUICKFIX_PACKAGE + inFieldName).newInstance();
+        } catch(ClassNotFoundException cnfe) {
+            // if this exception is thrown, that means that the field does not correspond to a pre-packaged quickfix field
+            // see if we can create a custom field - this means that the field name has to be parseable as an int
+            try {
+                int fieldInt = Integer.parseInt(inFieldName);
+                return new CustomField<Integer>(fieldInt,
+                        null);
+            } catch (Throwable t) {
+                error = t;
+            }
+        } catch (Throwable t) {
+            error = t;
+        }
+        // bah, can't create a field with the stuff we're given
+        throw new CoreException(error,
+                                new I18NBoundMessage1P(CANNOT_CREATE_FIX_FIELD,
+                                                       inFieldName));
+    }
     /**
      * Converts the supplied fix message to a pretty string that can be logged.
      * The returned string prints the human readable representations of field
@@ -1222,12 +1291,11 @@ public class FIXMessageUtil {
     public static String toPrettyString(Message msg, FIXDataDictionary inDict) {
         HashMap<String, String> fields = fieldsToMap(msg, inDict);
         fields.put("HEADER", fieldsToMap(msg.getHeader(),  //$NON-NLS-1$
-                inDict).toString());
+                                         inDict).toString());
         fields.put("TRAILER", fieldsToMap(msg.getTrailer(),  //$NON-NLS-1$
-                inDict).toString());
+                                          inDict).toString());
         return fields.toString();
     }
-
     /**
      * Converts the supplied FieldMap to a map with human readable field
      * names (based on the supplied dictionary) as keys and field values
@@ -1241,7 +1309,8 @@ public class FIXMessageUtil {
      * @return The map containing supplied fieldMap's keys & values.
      */
     private static HashMap<String, String> fieldsToMap(FieldMap inMap,
-                                                      FIXDataDictionary inDict) {
+                                                       FIXDataDictionary inDict)
+    {
         HashMap<String, String> fields = new HashMap<String, String>();
         Iterator<Field<?>> iterator = inMap.iterator();
         while(iterator.hasNext()) {
@@ -1275,4 +1344,8 @@ public class FIXMessageUtil {
         }
         return fields;
     }
+    /**
+     * package name for the quickfix fields
+     */
+    private static final String QUICKFIX_PACKAGE = "quickfix.field."; //$NON-NLS-1$
 }

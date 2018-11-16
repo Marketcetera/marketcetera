@@ -11,7 +11,7 @@ import org.marketcetera.module.ModuleURN;
  * Factory for the {@link ReceiverModule}.
  * <p>
  * The factory has the following characteristics.
- * <table>
+ * <table summary="Describes the module attributes">
  * <tr><th>Provider URN:</th><td><code>metc:remote:receiver</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
  * <tr><th>Instance URN:</th><td><code>metc:remote:receiver:single</code></td></tr>

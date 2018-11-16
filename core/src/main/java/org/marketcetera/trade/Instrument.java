@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Each instrument has a symbol attribute. Sub-types may add more
  * attributes as needed to uniquely identify the instrument being traded.
  * <p>
- * Each instrument sub-type should override the {@link #equals(Object)} &
+ * Each instrument sub-type should override the {@link #equals(Object)} &amp;
  * {@link #hashCode()} methods to ensure that any two instrument instances that
  * refer to the same instrument are considered equal.
  * 

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+  <context:component-scan base-package="org.marketcetera"/>
+  <jpa:repositories base-package="org.marketcetera"/>
+  <tx:annotation-driven/>
+  <util:list id="propertiesFiles">
+    <value>file:target/local.properties</value>
+  </util:list>
+  <bean class= "org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+    <property name="locations" ref="propertiesFiles">
+    </property>
+  </bean>
+  <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
+  <bean id="metc_sql_pool" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+    <property name="driverClass" value="${metc.jdbc.driver}"/>
+    <property name="jdbcUrl" value="${metc.jdbc.url}"/>
+    <property name="user" value="${metc.jdbc.user}"/>
+    <property name="password" value="${metc.jdbc.password}"/>
+    <property name="preferredTestQuery" value="${metc.jdbc.testquery}"/>
+    <property name="maxPoolSize" value="10"/>
+    <property name="testConnectionOnCheckout" value="false"/>
+  </bean>
+  <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <property name="dataSource" ref="metc_sql_pool"/>
+    <property name="persistenceUnitName" value="test"/>
+    <property name="jpaVendorAdapter">
+      <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+    </property>
+    <property name="jpaProperties">
+      <props>
+        <prop key="hibernate.dialect">${metc.hibernate.dialect}</prop>
+        <prop key="hibernate.hbm2ddl.auto">create</prop>
+        <prop key="hibernate.show_sql">false</prop>
+        <prop key="hibernate.format_sql">false</prop>
+        <prop key="hibernate.jdbc.batch_size">1000</prop>
+        <prop key="hibernate.order_inserts">true</prop>
+        <prop key="hibernate.order_updates">true</prop>
+        <prop key="hibernate.jdbc.batch_versioned_data">true</prop>
+      </props>
+    </property>
+    <property name="packagesToScan">
+      <list>
+        <value>org.marketcetera</value>
+      </list>
+    </property>
+  </bean>
+  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="entityManagerFactory" />
+  </bean>
+  <bean id="hibernateMessageStoreConfiguration" class="org.marketcetera.fix.store.HibernateMessageStoreConfiguration">
+    <property name="messageTypeBlacklist">
+      <set/>
+    </property>
+  </bean>
+</beans>

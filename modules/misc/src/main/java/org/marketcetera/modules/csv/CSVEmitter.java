@@ -46,7 +46,7 @@ import org.apache.commons.csv.CSVStrategy;
  * </ul>
  * <p>
  * Module Features
- * <table>
+ * <table summary="Describes the module attributes">
  * <tr><th>Capabilities</th><td>Data Emitter</td></tr>
  * <tr><th>DataFlow Request Parameters</th><td>String, File or URL. Usage explained above.</td></tr>
  * <tr><th>Stops data flows</th><td>Yes, if there's no more data to emit or if there was an error reading data from the file/URL.</td></tr>

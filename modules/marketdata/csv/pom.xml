@@ -12,7 +12,7 @@
   <packaging>jar</packaging>
   <version>3.1.0</version>
 
-  <name>marketdata-csv</name>
+  <name>CSV Marketdata Module</name>
 
   <dependencies>
     <!-- Compile. -->

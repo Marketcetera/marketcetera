@@ -39,9 +39,10 @@ public class FIXDataDictionary {
      * Load a {@link DataDictionary} from the specified resource
      *
      * @param fixDataDictionaryPath  Path to the location of the data dictionary file
-     * @throws FIXFieldConverterNotAvailable
+     * @throws FIXFieldConverterNotAvailable if the field cannot be converted
      */
-    public FIXDataDictionary(String fixDataDictionaryPath) throws FIXFieldConverterNotAvailable
+    public FIXDataDictionary(String fixDataDictionaryPath)
+            throws FIXFieldConverterNotAvailable
     {
         DataDictionary theDict;
         try {
@@ -63,11 +64,13 @@ public class FIXDataDictionary {
         return mDictionary.getFieldName(fieldNumber);
     }
 
-    /** Send in the field number and field value you want to translate
+    /**
+     * Send in the field number and field value you want to translate.
+     * 
      * Example: Side.FIELD and Side.BUY results in "BUY"
      * Replaces all the _ with a space
-     * @param fieldNumber
-     * @param value
+     * @param fieldNumber an <code>int</code> value
+     * @param value a <code>String</code> value
      * @return human-readable conversion of a FIX constant, or NULL if the value was not found
      */
     public String getHumanFieldValue(int fieldNumber, String value)
@@ -78,26 +81,31 @@ public class FIXDataDictionary {
     public DataDictionary getDictionary() {
         return mDictionary;
     }
-
     /**
-     * Set the default version of FIX to use in the rest of the methods on this class
+     * Set the default version of FIX to use in the rest of the methods on this class.
+     * 
      * @param fixDataDictionaryPath  Path to the location of the data dictionary file
-     * @throws FIXFieldConverterNotAvailable
+     * @return a <code>FIXDataDictionary</code> value
+     * @throws CoreException if no field converter is available
      */
-    public static FIXDataDictionary initializeDataDictionary(String fixDataDictionaryPath) throws CoreException
+    public static FIXDataDictionary initializeDataDictionary(String fixDataDictionaryPath)
+            throws CoreException
     {
         return new FIXDataDictionary(fixDataDictionaryPath);
     }
-
-    /** Send in the field number and field value you want to translate
+    /**
+     * Send in the field number and field value you want to translate.
+     * 
      * Example: Side.FIELD and Side.BUY results in "BUY"
      * Replaces all the _ with a space
-     * @param dict
-     * @param fieldNumber
-     * @param value
+     * @param dict a <code>DataDictionary</code> value
+     * @param fieldNumber an <code>int</code> value
+     * @param value a <code>String</code> value
      * @return human-readable conversion of a FIX constant, or NULL if the value was not found
      */
-    public static String getHumanFieldValue(DataDictionary dict, int fieldNumber, String value)
+    public static String getHumanFieldValue(DataDictionary dict,
+                                            int fieldNumber,
+                                            String value)
     {
         String result = dict.getValueName(fieldNumber, value);
         return (result == null) ? result : result.replace('_', ' ');

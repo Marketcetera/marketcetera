@@ -135,7 +135,7 @@ public class SAClientParameters {
      * @param inURL a <code>String</code> value
      * @param inHostname a <code>String</code> value
      * @param inPort an <code>int</code> value
-     * @param contextClassProvider a <code>ContextClassProvider</code> value
+     * @param inContextClassProvider a <code>ContextClassProvider</code> value
      */
     @ConstructorProperties({ "username","password","URL","hostname","port","contextClasses" })
     public SAClientParameters(String inUsername,

@@ -219,6 +219,10 @@ public class MessageManager {
      * locale. The map contains keys of type {@link String}containing the keys
      * of the available message entries and values of type {@link String}
      * containing the localized message entries.
+     * 
+     * @param id a <code>String</code> value
+     * @param locale a <code>Local</code> value
+     * @return a <code>Map</code> value
      */
     public static Map getEntries(String id, Locale locale)
             throws MessageNotFoundException {
@@ -240,6 +244,11 @@ public class MessageManager {
    * locale. The map contains keys of type {@link String}containing the keys
    * of the available message entries and values of type {@link String}
    * containing the localized message entries.
+   * 
+   * @param providerId a <code>String</code>value
+   * @param id a <code>String</code> value
+   * @param locale a <code>Locale</code> value
+   * @return a <code>Map</code> value
    */
   public static Map getEntries(String providerId, String id, Locale locale)
           throws MessageNotFoundException {

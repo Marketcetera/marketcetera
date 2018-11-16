@@ -11,14 +11,14 @@ import org.marketcetera.module.ModuleURN;
  * Creates {@link HeadwaterModule} objects.
  * 
  * <p>The factory has the following characteristics.
- * <table>
+ * <table summary="Describes the module capabilities">
  * <tr><th>Provider URN:</th><td><code>metc:misc:headwater</code></td></tr>
  * <tr><th>Cardinality:</th><td>Multi-Instance</td></tr>
  * <tr><th>Auto-Instantiated:</th><td>No</td></tr>
  * <tr><th>Auto-Started:</th><td>Yes</td></tr>
  * <tr><th>Instantiation Arguments:</th><td>String: instance name</td></tr>
  * <tr><th>Module Type:</th><td>{@link HeadwaterModule}</td></tr>
- * </table></p>
+ * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

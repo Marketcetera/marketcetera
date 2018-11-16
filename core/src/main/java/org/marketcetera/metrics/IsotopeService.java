@@ -193,7 +193,7 @@ public class IsotopeService
     /**
      * Sets the fixIsotopeTag value.
      *
-     * @param an <code>int</code> value
+     * @param inFixIsotopeTag an <code>int</code> value
      */
     public void setFixIsotopeTag(int inFixIsotopeTag)
     {

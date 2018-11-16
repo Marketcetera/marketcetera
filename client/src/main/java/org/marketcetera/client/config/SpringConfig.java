@@ -169,7 +169,7 @@ public class SpringConfig
     /**
      * Sets the orderModifiers value.
      *
-     * @param a <code>Collection&lt;OrderModifier&gt;</code> value
+     * @param inOrderModifiers a <code>Collection&lt;OrderModifier&gt;</code> value
      */
     public void setOrderModifiers(Collection<OrderModifier> inOrderModifiers)
     {

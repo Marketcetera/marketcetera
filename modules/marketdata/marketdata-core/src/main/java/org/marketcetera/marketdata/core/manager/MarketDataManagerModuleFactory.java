@@ -12,7 +12,7 @@ import org.marketcetera.module.ModuleURN;
  * The provider / factory that creates the Market Data Module instance.
  * 
  * <p>The factory has the following characteristics.
- * <table>
+ * <table summary="Describes the module attributes">
  * <tr><th>Provider URN:</th><td><code>metc:mdata:manager</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
  * <tr><th>InstanceURN:</th><td><code>metc:mdata:manager:single</code></td></tr>

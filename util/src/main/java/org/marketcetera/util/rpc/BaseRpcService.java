@@ -154,7 +154,7 @@ public abstract class BaseRpcService<SessionClazz>
     /**
      * Get the serverServices value.
      *
-     * @return a <code>RpcServerServices<SessionClazz></code> value
+     * @return a <code>RpcServerServices&lt;SessionClazz&gt;</code> value
      */
     protected RpcServerServices<SessionClazz> getServerServices()
     {
@@ -163,7 +163,7 @@ public abstract class BaseRpcService<SessionClazz>
     /**
      * Sets the serverServices value.
      *
-     * @param inServerServices a <code>RpcServerServices<SessionClazz></code> value
+     * @param inServerServices a <code>RpcServerServices&lt;SessionClazz&gt;</code> value
      */
     protected void setServerServices(RpcServerServices<SessionClazz> inServerServices)
     {

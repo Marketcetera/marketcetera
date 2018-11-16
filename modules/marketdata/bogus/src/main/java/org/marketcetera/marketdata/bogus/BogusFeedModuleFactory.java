@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * <code>ModuleFactory</code> implementation for the <code>BogusFeed</code> market data provider.
  * <p>
  * The factory has the following characteristics.
- * <table>
+ * <table summary="Describes the module attributes">
  * <tr><th>Provider URN:</th><td><code>metc:mdata:bogus</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
  * <tr><th>Instance URN:</th><td><code>metc:mdata:bogus:single</code></td></tr>

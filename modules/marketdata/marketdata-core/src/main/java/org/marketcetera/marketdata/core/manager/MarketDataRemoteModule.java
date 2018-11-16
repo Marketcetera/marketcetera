@@ -35,7 +35,7 @@ import com.google.common.cache.CacheBuilder;
  * Provides a common module for remote market data flows.
  *
  * <p>Module Features
- * <table>
+ * <table summary="Describes the module attributes">
  * <tr><th>Capabilities</th><td>Data Requester</td></tr>
  * <tr><th>Stops data flows</th><td>Yes</td></tr>
  * <tr><th>Start Operation</th><td>None</td></tr>

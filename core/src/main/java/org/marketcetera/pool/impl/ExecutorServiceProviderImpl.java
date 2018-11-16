@@ -68,7 +68,7 @@ public class ExecutorServiceProviderImpl
     /**
      * Sets the maxPoolSize value.
      *
-     * @param an <code>int</code> value
+     * @param inMaxPoolSize an <code>int</code> value
      */
     public void setMaxPoolSize(int inMaxPoolSize)
     {
@@ -86,7 +86,7 @@ public class ExecutorServiceProviderImpl
     /**
      * Sets the allowCoreThreadTimeOut value.
      *
-     * @param a <code>boolean</code> value
+     * @param inAllowCoreThreadTimeOut a <code>boolean</code> value
      */
     public void setAllowCoreThreadTimeOut(boolean inAllowCoreThreadTimeOut)
     {
@@ -104,7 +104,7 @@ public class ExecutorServiceProviderImpl
     /**
      * Sets the corePoolSize value.
      *
-     * @param an <code>int</code> value
+     * @param inCorePoolSize an <code>int</code> value
      */
     public void setCorePoolSize(int inCorePoolSize)
     {
@@ -122,7 +122,7 @@ public class ExecutorServiceProviderImpl
     /**
      * Sets the keepAliveTime value.
      *
-     * @param an <code>int</code> value
+     * @param inKeepAliveTime an <code>int</code> value
      */
     public void setKeepAliveTime(int inKeepAliveTime)
     {

@@ -1,20 +1,20 @@
 package org.marketcetera.modules.remote.emitter;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleCreationException;
+import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
  * Factory for the remote {@link EmitterModule}. The remote emitter module
  * receives data from a remote
- * {@link org.marketcetera.modules.remote.receiver.ReceiverModule} and
+ * <code>ReceiverModule</code> and
  * emits it into local data flows.
  * <p>
  * The factory has the following characteristics.
- * <table>
+ * <table summary="Describes the module characteristics">
  * <tr><th>Provider URN:</th><td><code>metc:remote:emitter</code></td></tr>
  * <tr><th>Cardinality:</th><td>Multi-Instance</td></tr>
  * <tr><th>Auto-Instantiated:</th><td>No</td></tr>

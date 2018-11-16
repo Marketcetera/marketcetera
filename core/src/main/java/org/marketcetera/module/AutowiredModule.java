@@ -20,7 +20,10 @@ public @interface AutowiredModule
 {
     /**
      * Declares whether the annotated dependency is required.
+     * 
      * <p>Defaults to {@code true}.
+     *
+     * @return a <code>boolean</code> value
      */
     boolean required() default true;
 }

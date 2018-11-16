@@ -6,6 +6,7 @@ import java.util.Map;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.saclient.CreateStrategyParameters;
+import org.marketcetera.saclient.SAService;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */

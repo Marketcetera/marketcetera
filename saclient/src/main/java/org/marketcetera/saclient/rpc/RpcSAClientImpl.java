@@ -1,10 +1,5 @@
 package org.marketcetera.saclient.rpc;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -30,6 +25,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.saclient.AbstractSAClient;
 import org.marketcetera.saclient.ConnectionException;
 import org.marketcetera.saclient.CreateStrategyParameters;
+import org.marketcetera.saclient.SAClient;
 import org.marketcetera.saclient.SAClientParameters;
 import org.marketcetera.saclient.SAClientVersion;
 import org.marketcetera.saclient.rpc.RpcSAClient.Locale;
@@ -54,6 +50,11 @@ import com.googlecode.protobuf.pro.duplex.client.DuplexTcpClientPipelineFactory;
 import com.googlecode.protobuf.pro.duplex.execute.RpcServerCallExecutor;
 import com.googlecode.protobuf.pro.duplex.execute.ThreadPoolCallExecutor;
 import com.googlecode.protobuf.pro.duplex.logging.CategoryPerServiceLogger;
+
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
 
 /* $License$ */
 

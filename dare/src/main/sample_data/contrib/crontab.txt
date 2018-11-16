@@ -1,0 +1,6 @@
+MAILTO=colin@marketcetera.com
+#
+# Clear cached RAM every hour
+0 0 * * * sync; echo 3 > /proc/sys/vm/drop_caches
+# Daily archive (includes restart) at 23:47
+47 23 * * * /opt/Marketcetera/dare/contrib/archive.sh

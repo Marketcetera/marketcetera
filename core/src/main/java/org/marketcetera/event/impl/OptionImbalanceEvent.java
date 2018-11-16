@@ -104,11 +104,11 @@ public class OptionImbalanceEvent
      * @throws IllegalArgumentException if <code>UnderlyingInstrument</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>ExpirationType</code> is <code>null</code>
      */
-    public OptionImbalanceEvent(ImbalanceBean inImbalance,
-                                OptionBean inOption)
+    public OptionImbalanceEvent(ImbalanceBean inImbalanceBean,
+                                OptionBean inOptionBean)
     {
-        super(inImbalance);
-        option = OptionBean.copy(inOption);
+        super(inImbalanceBean);
+        option = OptionBean.copy(inOptionBean);
         option.validate();
     }
     /**
