@@ -19,6 +19,7 @@
     <property name="userName" ref="username"/>
     <property name="password" ref="password"/>
     <property name="transportListener" ref="delegate"/>
+    <property name="trustAllPackages" value="true"/>
   </bean>
   <!-- The delegate used for all communications -->
   <bean id="delegate" class="org.marketcetera.modules.remote.emitter.MessagingDelegate"/>

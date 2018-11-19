@@ -47,9 +47,10 @@ public interface MessageProvider {
     /**
      * @param id unique id that specifies a particular message  
      * @param locale the locale for which to return the entries
-     * @return returns a map <code>&lt;entry(String) -&gt; localized text(String)</code> of 
+     * @return returns a map <code>&lt;entry(String) -> localized text(String)<code> of 
      * message entries matching the given message id and locale 
      * @throws MessageNotFoundException thrown if no message could be found matching the given message id
      */
-    public Map getEntries(String id, Locale locale) throws MessageNotFoundException;
+    public Map<String,String> getEntries(String id, Locale locale)
+            throws MessageNotFoundException;
 }

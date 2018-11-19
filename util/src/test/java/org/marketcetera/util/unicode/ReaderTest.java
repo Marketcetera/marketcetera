@@ -108,9 +108,7 @@ public class ReaderTest
     public void emptyReader()
         throws Exception
     {
-        CloseableRegistry r=new CloseableRegistry();
-        r=new CloseableRegistry();
-        try {
+        try(CloseableRegistry r = new CloseableRegistry()) {
             ByteArrayInputStream is=new ByteArrayInputStream
                 (ArrayUtils.EMPTY_BYTE_ARRAY);
             r.register(new InputStreamWrapper(is));
@@ -170,8 +168,6 @@ public class ReaderTest
             } catch (IOException ex) {
                 // Desired.
             }
-        } finally {
-            r.close();
         }
     }
 }

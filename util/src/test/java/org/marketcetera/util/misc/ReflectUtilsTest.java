@@ -18,6 +18,7 @@ import static org.marketcetera.util.test.CollectionAssert.*;
 
 /* $License$ */
 
+@SuppressWarnings("unused")
 public class ReflectUtilsTest
     extends TestCaseBase
 {

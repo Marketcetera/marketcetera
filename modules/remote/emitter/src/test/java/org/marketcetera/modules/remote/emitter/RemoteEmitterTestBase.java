@@ -1,24 +1,25 @@
 package org.marketcetera.modules.remote.emitter;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateless.Node;
-import org.marketcetera.module.ModuleTestBase;
-import org.marketcetera.module.MockConfigProvider;
-import org.marketcetera.module.ModuleManager;
-import org.marketcetera.client.MockServer;
+import java.util.Collections;
+import java.util.HashMap;
+
+import javax.security.auth.login.AppConfigurationEntry;
+import javax.security.auth.login.Configuration;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.MockLoginModule;
-import org.marketcetera.modules.remote.receiver.ReceiverFactory;
+import org.marketcetera.client.MockServer;
+import org.marketcetera.module.MockConfigProvider;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleTestBase;
 import org.marketcetera.modules.remote.receiver.ClientLoginModule;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
-
-import javax.security.auth.login.Configuration;
-import javax.security.auth.login.AppConfigurationEntry;
-import java.util.Collections;
-import java.util.HashMap;
+import org.marketcetera.modules.remote.receiver.ReceiverFactory;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.stateless.Node;
 
 /* $License$ */
 /**

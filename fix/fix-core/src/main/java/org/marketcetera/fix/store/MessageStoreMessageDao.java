@@ -3,7 +3,7 @@ package org.marketcetera.fix.store;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /* $License$ */
 
@@ -15,7 +15,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  * @since $Release$
  */
 public interface MessageStoreMessageDao
-        extends JpaRepository<MessageStoreMessage,Long>,QueryDslPredicateExecutor<MessageStoreMessage>
+        extends JpaRepository<MessageStoreMessage,Long>,QuerydslPredicateExecutor<MessageStoreMessage>
 {
     /**
      * Delete all messages for the given session id.

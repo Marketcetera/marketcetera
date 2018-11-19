@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 @ClassVersion("$Id$")
 public abstract class SmartLinksDirectoryWalker
-    extends DirectoryWalker
+        extends DirectoryWalker<String>
 {
 
     // INSTANCE DATA.
@@ -100,12 +100,10 @@ public abstract class SmartLinksDirectoryWalker
      * @see DirectoryWalker#handleDirectory(File,int,Collection)
      */
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected boolean handleDirectory
-        (File directory,
-         int depth,
-         Collection results)
+    protected boolean handleDirectory(File directory,
+                                      int depth,
+                                      Collection<String> results)
         throws IOException
     {
         if ((FileType.get(directory)!=FileType.LINK_DIR) ||
@@ -140,10 +138,8 @@ public abstract class SmartLinksDirectoryWalker
      * @throws IOException Thrown if an I/O error occurs.
      */
 
-    @SuppressWarnings("unchecked")
-    public void apply
-        (File root,
-         Collection results)
+    public void apply(File root,
+                      Collection<String> results)
         throws IOException
     {
         FileType type=FileType.get(root);
@@ -188,10 +184,8 @@ public abstract class SmartLinksDirectoryWalker
      * @throws IOException Thrown if an I/O error occurs.
      */
 
-    @SuppressWarnings("unchecked")
-    public void apply
-        (String name,
-         Collection results)
+    public void apply(String name,
+                      Collection<String> results)
         throws IOException
     {
         apply(new File(name),results);

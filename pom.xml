@@ -32,20 +32,22 @@
   </developers>
   <properties>
     <mvn.javase.version>8</mvn.javase.version>
-    <mvn.spring.version>4.3.8.RELEASE</mvn.spring.version>
-    <mvn.cxf.version>3.1.11</mvn.cxf.version>
-    <mvn.querydsl.version>4.1.4</mvn.querydsl.version>
-    <mvn.springdatajpa.version>1.11.3.RELEASE</mvn.springdatajpa.version>
-    <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
-    <mvn.hibernate.version>5.1.5.Final</mvn.hibernate.version>
-    <mvn.hazelcast.version>3.8.1</mvn.hazelcast.version>
-    <mvn.slf4j.version>1.7.21</mvn.slf4j.version>
-    <mvn.log4j.version>2.1</mvn.log4j.version>
+    <mvn.spring.boot.version>2.1.0.RELEASE</mvn.spring.boot.version>
+    <mvn.cxf.version>3.2.1</mvn.cxf.version>
+    <mvn.log4j.version>2.11.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
   </properties>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <!-- Import dependency management from Spring Boot, this has to come first -->
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${mvn.spring.boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <!-- Compile: local modules -->
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -189,12 +191,6 @@
         <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.flywaydb</groupId>
-        <artifactId>flyway-core</artifactId>
-        <version>5.2.1</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dare</artifactId>
         <version>4.0.0-SNAPSHOT</version>
@@ -278,73 +274,6 @@
         <artifactId>cxf-rt-transports-http</artifactId>
         <version>${mvn.cxf.version}</version>
       </dependency>
-      <!-- Compile: Spring -->
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-webmvc</artifactId>
-        <version>${mvn.spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-core</artifactId>
-        <version>${mvn.spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-beans</artifactId>
-        <version>${mvn.spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-aop</artifactId>
-        <version>${mvn.spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-tx</artifactId>
-        <version>${mvn.spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-        <version>${mvn.spring.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-jms</artifactId>
-        <version>${mvn.spring.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.data</groupId>
-        <artifactId>spring-data-jpa</artifactId>
-        <version>${mvn.springdatajpa.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
       <!-- Compile: Other -->
       <dependency>
         <groupId>org.tensorflow</groupId>
@@ -357,36 +286,11 @@
         <version>0.2</version>
       </dependency>
       <dependency>
-        <groupId>com.sun.mail</groupId>
-        <artifactId>javax.mail</artifactId>
-        <version>1.5.4</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
-        <version>4.4</version>
-      </dependency>
-      <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
         <version>20140107</version>
         <scope>compile</scope>
       </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-core</artifactId>
-        <version>3.2.2</version>
-      </dependency>
-      <dependency>
-        <groupId>com.hazelcast</groupId>
-        <artifactId>hazelcast</artifactId>
-        <version>${mvn.hazelcast.version}</version>
-      </dependency> 
-      <dependency>
-        <groupId>com.hazelcast</groupId>
-        <artifactId>hazelcast-spring</artifactId>
-        <version>${mvn.hazelcast.version}</version>
-      </dependency> 
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
@@ -401,11 +305,6 @@
         <groupId>net.java.dev.glazedlists</groupId>
         <artifactId>glazedlists_java15</artifactId>
         <version>1.9.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${mvn.slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -457,37 +356,30 @@
         <artifactId>commons-beanutils</artifactId>
         <version>1.9.1</version>
       </dependency>
+      <!-- Binding for Log4J -->
       <dependency>
-        <groupId>org.hibernate.javax.persistence</groupId>
-        <artifactId>hibernate-jpa-2.1-api</artifactId>
-        <version>1.0.0.Final</version>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${mvn.log4j.version}</version>
+        <scope>runtime</scope>
       </dependency>
+      <!-- Log4j API and Core implementation required for binding -->
       <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-core</artifactId>
-        <version>${mvn.hibernate.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient-cache</artifactId>
-        <version>4.5.1</version>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-1.2-api</artifactId>
+        <version>${mvn.log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.5</version>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${mvn.log4j.version}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>jstl</artifactId>
-        <version>1.2</version>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${mvn.log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -526,16 +418,6 @@
         <groupId>org.apache.geronimo.specs</groupId>
         <artifactId>geronimo-jms_1.1_spec</artifactId>
         <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>joda-time</groupId>
-        <artifactId>joda-time</artifactId>
-        <version>2.9.9</version>
-      </dependency>
-      <dependency>
-        <groupId>org.joda</groupId>
-        <artifactId>joda-primitives</artifactId>
-        <version>1.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
@@ -621,32 +503,6 @@
         <version>1.1.2</version>
         <scope>runtime</scope>
       </dependency>
-      <dependency>
-        <groupId>com.querydsl</groupId>
-        <artifactId>querydsl-core</artifactId>
-        <version>${mvn.querydsl.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.querydsl</groupId>
-        <artifactId>querydsl-apt</artifactId>
-        <version>${mvn.querydsl.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.querydsl</groupId>
-        <artifactId>querydsl-jpa</artifactId>
-        <version>${mvn.querydsl.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.querydsl</groupId>
-        <artifactId>querydsl-sql</artifactId>
-        <version>${mvn.querydsl.version}</version>
-      </dependency>
       <!-- Runtime. -->
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -655,71 +511,9 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>com.hazelcast</groupId>
-        <artifactId>hazelcast-hibernate5</artifactId>
-        <version>1.2.1</version>
-        <scope>runtime</scope>
-      </dependency> 
-      <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-pool</artifactId>
-        <version>5.9.0</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-broker</artifactId>
-        <version>5.9.0</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-stomp</artifactId>
-        <version>5.9.0</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-jaas</artifactId>
-        <version>5.9.0</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-web</artifactId>
-        <version>${mvn.spring.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <!-- Binding for Log4J -->
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-slf4j-impl</artifactId>
-        <version>${mvn.log4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <!-- Log4j API and Core implementation required for binding -->
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-1.2-api</artifactId>
-        <version>${mvn.log4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-api</artifactId>
-        <version>${mvn.log4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>${mvn.log4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
         <groupId>com.lmax</groupId>
         <artifactId>disruptor</artifactId>
-        <version>3.3.0</version>
+        <version>3.4.2</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -783,51 +577,6 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-        <version>5.1.29</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.derby</groupId>
-        <artifactId>derby</artifactId>
-        <version>10.14.2.0</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>hsqldb</groupId>
-        <artifactId>hsqldb</artifactId>
-        <version>1.8.0.10</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-entitymanager</artifactId>
-        <version>${mvn.hibernate.version}</version>
-        <scope>runtime</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.postgresql</groupId>
-        <artifactId>postgresql</artifactId>
-        <!-- use this version for postgres 9 or earlier -->
-        <!--version>9.3-1101-jdbc41</version-->
-        <!-- use this version from postgres 10 -->
-        <version>42.2.5.jre6</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-c3p0</artifactId>
-        <version>${mvn.hibernate.version}</version>
-        <scope>runtime</scope>
-      </dependency>       
-      <dependency>
         <groupId>colt</groupId>
         <artifactId>colt</artifactId>
         <version>1.2.0</version>
@@ -855,6 +604,13 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>cluster-core</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
         <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
@@ -863,13 +619,6 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>eventbus-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>cluster-core</artifactId>
         <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
@@ -903,30 +652,6 @@
       </dependency>
       <!-- Testing: other. -->
       <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-test</artifactId>
-        <version>${mvn.spring.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-orm</artifactId>
-        <version>${mvn.spring.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-jdbc</artifactId>
-        <version>${mvn.spring.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.12</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>pl.pragmatists</groupId>
         <artifactId>JUnitParams</artifactId>
         <version>1.0.4</version>
@@ -939,27 +664,9 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>1.9.5</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>org.objenesis</groupId>
         <artifactId>objenesis</artifactId>
         <version>2.1</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-library</artifactId>
-        <version>1.3</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-core</artifactId>
-        <version>1.3</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
@@ -969,9 +676,19 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${mvn.spring.boot.version}</version>
+        </plugin>
+        <plugin>
           <groupId>org.flywaydb</groupId>
           <artifactId>flyway-maven-plugin</artifactId>
           <version>5.2.1</version>
+        </plugin>
+        <plugin>
+          <groupId>com.google.code.maven-replacer-plugin</groupId>
+          <artifactId>maven-replacer-plugin</artifactId>
+          <version>1.4.1</version>
         </plugin>
         <plugin>
           <groupId>com.mysema.maven</groupId>
@@ -995,7 +712,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>1.12</version>
+          <version>3.0.0</version>
           <executions>
             <execution>
               <id>add-source</id>
@@ -1032,7 +749,7 @@
         <!-- jar generation. -->
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>2.4</version>
+          <version>3.1.0</version>
           <executions>
             <execution>
               <id>build-test-jar</id>
@@ -1069,10 +786,10 @@
           </executions>
         </plugin>
         <!-- war generation. -->
-        <plugin>
+        <!--plugin>
           <artifactId>maven-war-plugin</artifactId>
           <version>2.1-alpha-1</version>
-        </plugin>
+        </plugin-->
         <!-- bundle generation. -->
         <plugin>
           <groupId>org.apache.felix</groupId>
@@ -1080,10 +797,10 @@
           <version>2.3.5</version>
         </plugin>
         <!-- mvn dependency:* -->
-        <plugin>
+        <!--plugin>
           <artifactId>maven-dependency-plugin</artifactId>
           <version>2.0</version>
-        </plugin>
+        </plugin-->
         <!-- mvn eclipse:* -->
         <plugin>
           <artifactId>maven-eclipse-plugin</artifactId>
@@ -1095,29 +812,22 @@
           </configuration>
         </plugin>
         <!-- mvn clean -->
-        <plugin>
+        <!--plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>2.3</version>
-        </plugin>
+        </plugin-->
         <!-- mvn antrun:* -->
-        <plugin>
+        <!--plugin>
           <artifactId>maven-antrun-plugin</artifactId>
           <version>1.3</version>
           <dependencies>
             <dependency>
               <groupId>org.apache.ant</groupId>
               <artifactId>ant-junit</artifactId>
-              <!--
-                  - Temporariy remove the brackets around the version
-                  - because the central repo metadata was missing this
-                  - version (http://jira.codehaus.org/browse/MANTRUN-113)
-                  - Removing the brackets will cause the JAR to ultimately
-                  - come from our internal repo.
-              -->
               <version>1.7.1</version>
             </dependency>
           </dependencies>
-        </plugin>
+        </plugin-->
         <!-- mvn exec:* -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>

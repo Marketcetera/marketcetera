@@ -75,6 +75,7 @@ public class MockServer {
      */
     public MockServer()
     {
+        
         mContext = new ClassPathXmlApplicationContext("mock_server.xml"); //$NON-NLS-1$
         mContext.registerShutdownHook();
         mContext.start();

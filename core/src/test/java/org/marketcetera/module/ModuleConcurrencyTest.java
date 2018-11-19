@@ -1,22 +1,27 @@
 package org.marketcetera.module;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.misc.NamedThreadFactory;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.junit.Test;
-import org.junit.After;
-import org.junit.Before;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.*;
 import java.util.Arrays;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.locks.ReentrantLock;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.misc.NamedThreadFactory;
 
 /* $License$ */
 /**
@@ -1224,8 +1229,8 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
         set.removeAll(Arrays.asList(inValue));
         return set.toArray(new DataFlowID[set.size()]);
     }
-    private ExpectedFailure createFlowFailure(final ModuleURN inURN,
-                                              ModuleState inExpectedState)
+    private ExpectedFailure<ModuleStateException> createFlowFailure(final ModuleURN inURN,
+                                                                    ModuleState inExpectedState)
             throws Exception {
         return new ExpectedFailure<ModuleStateException>(
                 Messages.DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT,
@@ -1238,8 +1243,8 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
             }
         };
     }
-    private ExpectedFailure createDeleteFailure(final ModuleURN inUrn,
-                                                Object inExpectedState)
+    private ExpectedFailure<ModuleStateException> createDeleteFailure(final ModuleURN inUrn,
+                                                                      Object inExpectedState)
             throws Exception {
         return new ExpectedFailure<ModuleStateException>(
                 Messages.DELETE_FAILED_MODULE_STATE_INCORRECT, inUrn.toString(),
@@ -1250,8 +1255,8 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
             }
         };
     }
-    private ExpectedFailure createStopFailure(final ModuleURN inUrn,
-                                              Object inExpectedState)
+    private ExpectedFailure<ModuleStateException> createStopFailure(final ModuleURN inUrn,
+                                                                    Object inExpectedState)
             throws Exception {
         return new ExpectedFailure<ModuleStateException>(
                 Messages.MODULE_NOT_STOPPED_STATE_INCORRECT, inUrn.toString(),
@@ -1261,8 +1266,8 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
             }
         };
     }
-    private ExpectedFailure createStartFailure(final ModuleURN inUrn,
-                                               Object inExpectedState)
+    private ExpectedFailure<ModuleStateException> createStartFailure(final ModuleURN inUrn,
+                                                                     Object inExpectedState)
             throws Exception {
         return new ExpectedFailure<ModuleStateException>(
                 Messages.MODULE_NOT_STARTED_STATE_INCORRECT, inUrn.toString(),

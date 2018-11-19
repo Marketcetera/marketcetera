@@ -86,19 +86,19 @@ public class ResourceBundleMessageProviderTest extends MessageProviderTestBase {
 
     public void testGetEntries() {
 //        ResourceBundleMessageProvider.install("messageBundle");
-        Map usEntries = new ResourceBundleMessageProvider("messageBundle").getEntries("helloWorld", Locale.US);
+        Map<String,String> usEntries = new ResourceBundleMessageProvider("messageBundle").getEntries("helloWorld", Locale.US);
         assertEquals("Default locale, no of entries", 3, usEntries.size());
         assertEquals("Default locale, titel", "Hello World", usEntries.get("title"));
         assertEquals("Default locale, text", "Hello World, we are in {0}.", usEntries.get("text"));
         assertEquals("This entry is not translated to any other languages", usEntries.get("notTranslated"));
 
-        Map germanEntries = new ResourceBundleMessageProvider("messageBundle").getEntries("helloWorld", Locale.GERMAN);
+        Map<String,String> germanEntries = new ResourceBundleMessageProvider("messageBundle").getEntries("helloWorld", Locale.GERMAN);
         assertEquals("No of entries", 3, germanEntries.size());
         assertEquals("Hallo Welt", germanEntries.get("title"));
         assertEquals("Hallo Welt, wir sind in {0}.", germanEntries.get("text"));
         assertEquals("This entry is not translated to any other languages", germanEntries.get("notTranslated"));
 
-        Map frenchEntries = new ResourceBundleMessageProvider("messageBundle").getEntries("helloWorld", Locale.FRENCH);
+        Map<String,String> frenchEntries = new ResourceBundleMessageProvider("messageBundle").getEntries("helloWorld", Locale.FRENCH);
         assertEquals("Fallback locale, no of entries", 3, frenchEntries.size());
         assertEquals("Fallback locale, titel", "Hello World", frenchEntries.get("title"));
         assertEquals("Fallback locale, text", "Hello World, we are in {0}.", frenchEntries.get("text"));

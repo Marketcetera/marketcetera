@@ -195,7 +195,7 @@ public abstract class MessageProviderTestBase extends TestCase {
     }
 
     private static void assertEnglishEntries(MessageProvider messageProvider, Locale locale, boolean hasNonTranslatedEntry) {
-        Map entries = messageProvider.getEntries("helloWorld", locale);
+        Map<String,String> entries = messageProvider.getEntries("helloWorld", locale);
         if(hasNonTranslatedEntry) {
             assertEquals("Locale = " + locale + ", No of entries", 3, entries.size());
             assertEquals("Locale = " + locale, "This entry is not translated to any other languages",
@@ -208,7 +208,7 @@ public abstract class MessageProviderTestBase extends TestCase {
     }
 
     private static void assertGermanEntries(MessageProvider messageProvider, Locale locale) {
-        Map entries = messageProvider.getEntries("helloWorld", locale);
+        Map<String,String> entries = messageProvider.getEntries("helloWorld", locale);
 
         // TODO: Consider whether all MessageProviders must behave the same way
         if(entries.size() == 3) // If non-translated entries included

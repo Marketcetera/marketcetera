@@ -147,7 +147,7 @@ public class JdbcMessageProviderTest extends MessageProviderTestBase {
         conn.close();
 
         // Explicit default locale
-        Map entries = jdbcMessageProvider.getEntries("helloWorld", Locale.ENGLISH);
+        Map<String,String> entries = jdbcMessageProvider.getEntries("helloWorld", Locale.ENGLISH);
         assertEquals("No of entries", 2, entries.size());
         assertEquals("Hello World", (String)entries.get("title"));
         assertEquals("I wish you a merry christmas!", (String)entries.get("text"));

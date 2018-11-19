@@ -2,7 +2,7 @@ package org.marketcetera.admin.impl;
 
 import org.marketcetera.admin.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 
 /* $License$ */
@@ -15,7 +15,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  * @since 1.0.1
  */
 public interface PersistentRoleDao
-        extends JpaRepository<PersistentRole,Long>,QueryDslPredicateExecutor<PersistentRole>
+        extends JpaRepository<PersistentRole,Long>,QuerydslPredicateExecutor<PersistentRole>
 {
     /**
      * Gets the role with the given name.

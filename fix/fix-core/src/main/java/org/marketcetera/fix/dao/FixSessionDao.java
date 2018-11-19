@@ -3,7 +3,7 @@ package org.marketcetera.fix.dao;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /* $License$ */
 
@@ -15,7 +15,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  * @since $Release$
  */
 public interface FixSessionDao
-        extends JpaRepository<PersistentFixSession,Long>,QueryDslPredicateExecutor<PersistentFixSession>
+        extends JpaRepository<PersistentFixSession,Long>,QuerydslPredicateExecutor<PersistentFixSession>
 {
     /**
      * Finds the FIX session with the given name.

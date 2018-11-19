@@ -144,13 +144,13 @@ public class ReportServiceImpl
         BooleanBuilder where = new BooleanBuilder();
         where = where.and(QPersistentIncomingMessage.persistentIncomingMessage.sessionId.eq(inSessionId.toString()));
         where = where.and(QPersistentIncomingMessage.persistentIncomingMessage.sendingTime.goe(inDate));
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC,
-                                            QPersistentIncomingMessage.persistentIncomingMessage.sendingTime.getMetadata().getName()),
-                             new Sort.Order(Sort.Direction.DESC,
-                                            QPersistentIncomingMessage.persistentIncomingMessage.msgSeqNum.getMetadata().getName()));
-        Pageable pageRequest = new PageRequest(0,
-                                               1,
-                                               sort);
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.DESC,
+                                           QPersistentIncomingMessage.persistentIncomingMessage.sendingTime.getMetadata().getName()),
+                            new Sort.Order(Sort.Direction.DESC,
+                                           QPersistentIncomingMessage.persistentIncomingMessage.msgSeqNum.getMetadata().getName()));
+        Pageable pageRequest = PageRequest.of(0,
+                                              1,
+                                              sort);
         SLF4JLoggerProxy.debug(this,
                                "Finding last seq nums for {} using {}",
                                inSessionId,
@@ -194,13 +194,13 @@ public class ReportServiceImpl
         if(inIds == null || inIds.isEmpty()) {
             return results;
         }
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC,
-                                            QPersistentIncomingMessage.persistentIncomingMessage.sendingTime.getMetadata().getName()),
-                             new Sort.Order(Sort.Direction.ASC,
-                                            QPersistentIncomingMessage.persistentIncomingMessage.msgSeqNum.getMetadata().getName()));
-        Pageable pageRequest = new PageRequest(0,
-                                               Integer.MAX_VALUE,
-                                               sort);
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC,
+                                           QPersistentIncomingMessage.persistentIncomingMessage.sendingTime.getMetadata().getName()),
+                            new Sort.Order(Sort.Direction.ASC,
+                                           QPersistentIncomingMessage.persistentIncomingMessage.msgSeqNum.getMetadata().getName()));
+        Pageable pageRequest = PageRequest.of(0,
+                                              Integer.MAX_VALUE,
+                                              sort);
         for(PersistentIncomingMessage incomingMessage : incomingMessageDao.findByIdIn(inIds,
                                                                                       pageRequest)) {
             results.add(incomingMessage);
@@ -225,7 +225,7 @@ public class ReportServiceImpl
         // delete report summaries first - need to use a manual query here to include the list param
         entityManager.createNativeQuery("DELETE FROM exec_reports WHERE report_id IN (:ids)").setParameter("ids",ids).executeUpdate();
         // now, delete the reports
-        persistentReportDao.delete(reports);
+        persistentReportDao.deleteAll(reports);
         return reports.size();
     }
     /* (non-Javadoc)
@@ -248,9 +248,9 @@ public class ReportServiceImpl
         BooleanBuilder where = new BooleanBuilder().and(QExecutionReportSummary.executionReportSummary.rootOrderId.eq(rootId));
         Sort sort = new Sort(Sort.Direction.DESC,
                              QExecutionReportSummary.executionReportSummary.sendingTime.getMetadata().getName());
-        PageRequest page = new PageRequest(0,
-                                           1,
-                                           sort);
+        PageRequest page = PageRequest.of(0,
+                                          1,
+                                          sort);
         SLF4JLoggerProxy.debug(this,
                                "Searching for status values for {}",
                                rootId);
@@ -286,9 +286,9 @@ public class ReportServiceImpl
         Sort sort = new Sort(Sort.Direction.ASC,
                              r.sendingTime.getMetadata().getName());
         // can expose the page and page size to allow paging through the api interfaces
-        PageRequest page = new PageRequest(0,
-                                           Integer.MAX_VALUE,
-                                           sort);
+        PageRequest page = PageRequest.of(0,
+                                          Integer.MAX_VALUE,
+                                          sort);
         Iterable<PersistentReport> reports = persistentReportDao.findAll(where,
                                                                          page);
         List<ReportBase> results = new ArrayList<ReportBase>();
@@ -307,9 +307,9 @@ public class ReportServiceImpl
         QExecutionReportSummary e = QExecutionReportSummary.executionReportSummary;
         Sort sort = new Sort(Sort.Direction.ASC,
                              e.sendingTime.getMetadata().getName());
-        PageRequest page = new PageRequest(inPageNumber,
-                                           inPageSize,
-                                           sort);
+        PageRequest page = PageRequest.of(inPageNumber,
+                                          inPageSize,
+                                          sort);
         return executionReportDao.findAll(page);
     }
     /* (non-Javadoc)
@@ -590,8 +590,8 @@ public class ReportServiceImpl
     public PersistentReport save(ReportBase inReport)
     {
         PersistentReport newReport = new PersistentReport(inReport,
-                                                          inReport.getActorID() == null ? null : userService.findOne(inReport.getActorID().getValue()),
-                                                          inReport.getViewerID() == null ? null : userService.findOne(inReport.getViewerID().getValue()));
+                                                          inReport.getActorID() == null ? null : userService.findById(inReport.getActorID().getValue()),
+                                                          inReport.getViewerID() == null ? null : userService.findById(inReport.getViewerID().getValue()));
         // check to see if the report already exists. if it does, just return it.
         BooleanBuilder where = new BooleanBuilder();
         where = where.and(QPersistentReport.persistentReport.msgSeqNum.eq(newReport.getMsgSeqNum()));
@@ -606,7 +606,7 @@ public class ReportServiceImpl
             sessionStart = new Date(0);
         }
         where = where.and(QPersistentReport.persistentReport.sendingTime.goe(getSessionStart(newReport.getSessionId())));
-        PersistentReport report = persistentReportDao.findOne(where);
+        PersistentReport report = persistentReportDao.findOne(where).orElse(null);
         if(report != null) {
             SLF4JLoggerProxy.debug(this,
                                    "Using existing report {} for {}",
