@@ -1,0 +1,12 @@
+syntax = "proto3";
+option java_generic_services = true;
+import "rpc_base.proto";
+
+option java_package = "org.marketcetera.rpc.sample";
+option java_outer_classname = "SampleRpc";
+
+service SampleRpcService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
+}
