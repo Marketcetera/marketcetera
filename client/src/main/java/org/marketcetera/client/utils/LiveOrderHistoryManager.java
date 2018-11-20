@@ -1,6 +1,12 @@
 package org.marketcetera.client.utils;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -12,6 +18,7 @@ import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.utils.OrderHistoryManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -139,6 +146,7 @@ public class LiveOrderHistoryManager
         // snapshotReports contains all the reports as dictated by the origin date
         if(!snapshotReports.isEmpty()) {
             for(ReportBase report : snapshotReports) {
+                // TODO this needs to be TradeMessage instead of ReportBase
                 LiveOrderHistoryManager.super.add(report);
             }
             snapshotReports.clear();
@@ -218,7 +226,7 @@ public class LiveOrderHistoryManager
     /**
      * collection which contains incoming reports from the live report channel
      */
-    private final BlockingDeque<ReportBase> updateReports = new LinkedBlockingDeque<ReportBase>();
+    private final BlockingDeque<TradeMessage> updateReports = new LinkedBlockingDeque<>();
     /**
      * date from which to gather status
      */

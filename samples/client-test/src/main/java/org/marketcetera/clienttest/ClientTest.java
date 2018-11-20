@@ -4,9 +4,8 @@ import java.math.BigDecimal;
 
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientManager;
+import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.ReportListener;
-import org.marketcetera.client.rpc.RpcClientFactory;
-import org.marketcetera.client.rpc.RpcClientParameters;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
@@ -37,12 +36,11 @@ public class ClientTest
         SLF4JLoggerProxy.info(ClientTest.class,
                               "Starting client test");
         // connect server client
-        RpcClientParameters parameters = new RpcClientParameters("user",
-                                                                 "password".toCharArray(),
-                                                                 "tcp://dare.marketcetera.com:61616",
-                                                                 "dare.marketcetera.com",
-                                                                 8999);
-        ClientManager.setClientFactory(new RpcClientFactory());
+        ClientParameters parameters = new ClientParameters("user",
+                                                           "password".toCharArray(),
+                                                           "tcp://dare.marketcetera.com:61616",
+                                                           "dare.marketcetera.com",
+                                                           8999);
         ClientManager.init(parameters);
         Client client = ClientManager.getInstance();
         client.reconnect();
