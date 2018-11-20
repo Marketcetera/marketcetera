@@ -3,6 +3,7 @@ package org.marketcetera.rpc.base;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
@@ -15,7 +16,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.util.Timestamps;
+import com.google.protobuf.Timestamp;
 
 import io.grpc.stub.StreamObserver;
 
@@ -41,7 +42,9 @@ public abstract class BaseRpcUtil
         if(inTimestamp == null) {
             return Optional.empty();
         }
-        return Optional.of(Timestamps.fromMillis(inTimestamp.getTime()));
+        Instant time = inTimestamp.toInstant();
+        Timestamp timestamp = Timestamp.newBuilder().setSeconds(time.getEpochSecond()).setNanos(time.getNano()).build();
+        return Optional.of(timestamp);
     }
     /**
      * Get the date from from the given timestamp.
@@ -54,7 +57,8 @@ public abstract class BaseRpcUtil
         if(inTimestamp == null) {
             return Optional.empty();
         }
-        return Optional.of(new Date(Timestamps.toMillis(inTimestamp)));
+        return Optional.of(Date.from(Instant.ofEpochSecond(inTimestamp.getSeconds(),
+                                                           inTimestamp.getNanos())));
     }
     /**
      * Get the string value from the given string.
