@@ -15,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Creates {@link SimpleUser} objects as specified.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SimpleUserInitializer.java 16673 2015-12-15 02:55:08Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: SimpleUserInitializer.java 16673 2015-12-15 02:55:08Z colin $")
+@ClassVersion("$Id$")
 public class SimpleUserInitializer
         implements InitializingBean
 {

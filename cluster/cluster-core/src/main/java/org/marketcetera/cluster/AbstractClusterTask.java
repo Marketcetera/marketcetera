@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Provides common behavior for cluster tasks.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractClusterTask.java 17134 2017-01-27 16:41:54Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 public abstract class AbstractClusterTask

@@ -19,7 +19,7 @@ import quickfix.StringField;
  * Sets the value of the given fields regardless of the original value.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: FieldOverrideMessageModifier.java 16522 2014-12-31 16:33:08Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
 public class FieldOverrideMessageModifier

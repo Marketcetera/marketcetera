@@ -12,9 +12,9 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author klim@marketcetera.com
  * @since 0.6.0
- * @version $Id: Messages.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: Messages.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public interface Messages
 {
     /**

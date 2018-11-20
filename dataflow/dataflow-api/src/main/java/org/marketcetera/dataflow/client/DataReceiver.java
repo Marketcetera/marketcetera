@@ -8,10 +8,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * by the strategies running on the strategy agent.
  *
  * @author anshul@marketcetera.com
- * @version $Id: DataReceiver.java 17223 2016-08-31 01:03:01Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: DataReceiver.java 17223 2016-08-31 01:03:01Z colin $")
+@ClassVersion("$Id$")
 public interface DataReceiver {
     /**
      * Provides the data received from the remote source.

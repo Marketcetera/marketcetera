@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: Messages.java 16154 2012-07-14 16:34:05Z colin $")
+@ClassVersion("$Id$")
 public interface Messages {
     /**
      * The message provider

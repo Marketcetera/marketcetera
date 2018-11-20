@@ -106,12 +106,12 @@ import quickfix.SessionID;
  * Provides access to report objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ReportServiceImpl.java 17344 2017-08-10 17:40:06Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
 @Service
 @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
-@ClassVersion("$Id: ReportServiceImpl.java 17344 2017-08-10 17:40:06Z colin $")
+@ClassVersion("$Id$")
 public class ReportServiceImpl
         implements ReportService, FixSessionListener
 {
@@ -1180,10 +1180,10 @@ public class ReportServiceImpl
      * Translates a position tuple to a position key.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: ReportServiceImpl.java 17344 2017-08-10 17:40:06Z colin $
+     * @version $Id$
      * @since 2.4.2
      */
-    @ClassVersion("$Id: ReportServiceImpl.java 17344 2017-08-10 17:40:06Z colin $")
+    @ClassVersion("$Id$")
     private interface PositionTransformer<I extends Instrument>
     {
         /**
@@ -1208,10 +1208,10 @@ public class ReportServiceImpl
      * Creates a predicate used to match rows to a given instrument.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: ReportServiceImpl.java 17344 2017-08-10 17:40:06Z colin $
+     * @version $Id$
      * @since 2.4.2
      */
-    @ClassVersion("$Id: ReportServiceImpl.java 17344 2017-08-10 17:40:06Z colin $")
+    @ClassVersion("$Id$")
     private interface SymbolMatcher<I extends Instrument>
     {
         /**

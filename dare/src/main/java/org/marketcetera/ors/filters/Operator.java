@@ -4,7 +4,7 @@ package org.marketcetera.ors.filters;
  * Indicates the operator to use in the comparison equation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ConditionalMessageModifier.java 16529 2015-01-19 16:06:58Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
 public enum Operator

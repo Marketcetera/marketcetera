@@ -20,7 +20,7 @@ import quickfix.field.OrigClOrdID;
  * Constructs root order ID values.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BasicRootOrderIdFactory.java 17345 2017-08-10 20:47:47Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 @Service

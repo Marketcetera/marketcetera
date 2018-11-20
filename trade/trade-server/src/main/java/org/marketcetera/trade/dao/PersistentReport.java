@@ -58,12 +58,12 @@ import quickfix.field.TargetCompID;
  * of when they were sent.
  *
  * @author anshul@marketcetera.com
- * @version $Id: PersistentReport.java 17338 2017-08-09 23:17:57Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @Entity
 @Table(name="reports")
-@ClassVersion("$Id: PersistentReport.java 17338 2017-08-09 23:17:57Z colin $")
+@ClassVersion("$Id$")
 public class PersistentReport
         extends EntityBase
         implements Report, HasTradeMessage

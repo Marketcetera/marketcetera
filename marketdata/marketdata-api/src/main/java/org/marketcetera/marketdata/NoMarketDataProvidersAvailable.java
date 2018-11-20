@@ -9,10 +9,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Indicates that there are no available market data providers to execute a market data request.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: NoMarketDataProvidersAvailable.java 17251 2016-09-08 23:18:29Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: NoMarketDataProvidersAvailable.java 17251 2016-09-08 23:18:29Z colin $")
+@ClassVersion("$Id$")
 public class NoMarketDataProvidersAvailable
         extends MarketDataRequestFailed
 {

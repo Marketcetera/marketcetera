@@ -17,9 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author tlerios@marketcetera.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
- * @version $Id: AsyncSaveReportHistoryServices.java 16608 2015-08-26 21:00:19Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: AsyncSaveReportHistoryServices.java 16608 2015-08-26 21:00:19Z colin $")
+@ClassVersion("$Id$")
 public class AsyncSaveReportHistoryServices
         extends BasicReportHistoryServices
 {
@@ -70,10 +70,10 @@ public class AsyncSaveReportHistoryServices
      * Process reports to be saved.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: AsyncSaveReportHistoryServices.java 16608 2015-08-26 21:00:19Z colin $
+     * @version $Id$
      * @since 2.4.2
      */
-    @ClassVersion("$Id: AsyncSaveReportHistoryServices.java 16608 2015-08-26 21:00:19Z colin $")
+    @ClassVersion("$Id$")
     private class QueueHandler
             extends QueueProcessor<ReportBase>
     {

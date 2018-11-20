@@ -17,10 +17,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Carries out validations for various order types.
  *
  * @author anshul@marketcetera.com
- * @version $Id: Validations.java 17516 2017-08-28 17:25:59Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: Validations.java 17516 2017-08-28 17:25:59Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class Validations {
     /**
      * Validates a new order. Following validations are performed.

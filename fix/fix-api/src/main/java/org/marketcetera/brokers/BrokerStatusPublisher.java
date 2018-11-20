@@ -8,10 +8,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides broker status to listeners.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BrokerStatusPublisher.java 17482 2017-08-16 16:46:47Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: BrokerStatusPublisher.java 17482 2017-08-16 16:46:47Z colin $")
+@ClassVersion("$Id$")
 public interface BrokerStatusPublisher
 {
     /**

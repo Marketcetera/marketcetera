@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * Indicates that an annotated class is a member of a cluster work unit.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ClusterWorkUnit.java 16666 2015-12-10 01:01:34Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 @Inherited

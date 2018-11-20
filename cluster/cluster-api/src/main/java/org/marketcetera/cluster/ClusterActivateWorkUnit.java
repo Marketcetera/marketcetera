@@ -10,7 +10,7 @@ import java.lang.annotation.RetentionPolicy;
  * Indicates the method that should be invoked when a clusterable unit is activated.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ClusterActivateWorkUnit.java 16666 2015-12-10 01:01:34Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 @Inherited

@@ -14,10 +14,10 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  * Provides data store access to {@link ExecutionReportSummary} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ExecutionReportDao.java 17497 2018-04-18 21:18:11Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: ExecutionReportDao.java 17497 2018-04-18 21:18:11Z colin $")
+@ClassVersion("$Id$")
 public interface ExecutionReportDao
         extends PagingAndSortingRepository<ExecutionReportSummary,Long>,QuerydslPredicateExecutor<ExecutionReportSummary>
 {

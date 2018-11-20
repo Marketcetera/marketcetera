@@ -11,10 +11,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Handles logon actions to a broker.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: LogonAction.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id: LogonAction.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public interface LogonAction
 {
     /**

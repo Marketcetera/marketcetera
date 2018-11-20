@@ -14,12 +14,12 @@ import quickfix.Message;
  *
  * @author tlerios@marketcetera.com
  * @since 2.0.0
- * @version $Id: RequestInfo.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: RequestInfo.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public interface RequestInfo
     extends ReadWriteInfo
 {

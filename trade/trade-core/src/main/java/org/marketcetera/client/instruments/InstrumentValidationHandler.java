@@ -13,10 +13,10 @@ import org.marketcetera.trade.client.OrderValidationException;
  * @param <I> The type of instrument handled by this function
  * 
  * @author anshul@marketcetera.com
- * @version $Id: InstrumentValidationHandler.java 17516 2017-08-28 17:25:59Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: InstrumentValidationHandler.java 17516 2017-08-28 17:25:59Z colin $")
+@ClassVersion("$Id$")
 public abstract class InstrumentValidationHandler<I extends Instrument>
         extends InstrumentFunctionHandler<I> {
     /**

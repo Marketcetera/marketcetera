@@ -19,10 +19,10 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  * @author colin@marketcetera.com
- * @version $Id: SEClient.java 17242 2016-09-02 16:46:48Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: SEClient.java 17242 2016-09-02 16:46:48Z colin $")
+@ClassVersion("$Id$")
 public interface DataFlowClient
         extends BaseClient,DataPublisher
 {

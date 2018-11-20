@@ -15,7 +15,7 @@ import quickfix.Message;
  * An example can be a modifier that always adds a {@link quickfix.field.SecurityID} field
  * containing the value of the {@link quickfix.field.Symbol} field.
  */
-@ClassVersion("$Id: MessageModifier.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public interface MessageModifier {
 
     /**

@@ -9,7 +9,7 @@ import org.marketcetera.trade.Order;
  * Selects a broker for an order.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Selector.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface Selector

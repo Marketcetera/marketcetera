@@ -9,7 +9,7 @@ import org.junit.BeforeClass;
  * Base class for market data provider <code>Module</code> tests that simulate data.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SimulatedMarketDataModuleTestBase.java 17569 2017-09-20 03:41:51Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public abstract class SimulatedMarketDataModuleTestBase

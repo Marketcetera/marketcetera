@@ -11,7 +11,7 @@ import org.marketcetera.admin.UserAttributeType;
  * Creates <code>UserAttribute</code> objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentUserAttributeFactory.java 84561 2015-03-31 18:18:14Z colin $
+ * @version $Id$
  * @since 1.2.0
  */
 public class PersistentUserAttributeFactory

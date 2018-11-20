@@ -32,7 +32,7 @@ import quickfix.SessionID;
  * Provides a <code>SessionConnector</code> interface that connects to the given session anywhere in the cluster.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ClusteredSessionConnector.java 85164 2016-03-03 21:27:19Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 public class ClusteredSessionConnector
@@ -218,7 +218,7 @@ public class ClusteredSessionConnector
      * Provides common behavior for cluster-aware tasks.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: ClusteredSessionConnector.java 85164 2016-03-03 21:27:19Z colin $
+     * @version $Id$
      * @since 1.0.1
      */
     private static abstract class AbstractTask<Clazz extends Serializable>
@@ -363,7 +363,7 @@ public class ClusteredSessionConnector
      * Sets the next sender sequence number.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: ClusteredSessionConnector.java 85164 2016-03-03 21:27:19Z colin $
+     * @version $Id$
      * @since 1.0.1
      */
     private static class SetNextSenderSequenceNumberTask
@@ -432,7 +432,7 @@ public class ClusteredSessionConnector
      * Sets the next target sequence number.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: ClusteredSessionConnector.java 85164 2016-03-03 21:27:19Z colin $
+     * @version $Id$
      * @since 1.0.1
      */
     private static class SetNextTargetSequenceNumberTask
@@ -501,7 +501,7 @@ public class ClusteredSessionConnector
      * Resets the sequence number.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: ClusteredSessionConnector.java 85164 2016-03-03 21:27:19Z colin $
+     * @version $Id$
      * @since 1.0.1
      */
     private static class ResetSequenceNumberTask
@@ -537,7 +537,7 @@ public class ClusteredSessionConnector
      * Resets the connection.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: ClusteredSessionConnector.java 85164 2016-03-03 21:27:19Z colin $
+     * @version $Id$
      * @since 1.0.1
      */
     private static class ResetConnectionTask
@@ -572,7 +572,7 @@ public class ClusteredSessionConnector
      * Disconnects the connection.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: ClusteredSessionConnector.java 85164 2016-03-03 21:27:19Z colin $
+     * @version $Id$
      * @since 1.0.1
      */
     private static class DisconnectConnectionTask

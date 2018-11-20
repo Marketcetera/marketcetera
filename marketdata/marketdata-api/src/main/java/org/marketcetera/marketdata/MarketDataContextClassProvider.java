@@ -37,10 +37,10 @@ import org.marketcetera.util.ws.ContextClassProvider;
  * Provides the context classes necessary for the Market Data Nexus service.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataContextClassProvider.java 17251 2016-09-08 23:18:29Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: MarketDataContextClassProvider.java 17251 2016-09-08 23:18:29Z colin $")
+@ClassVersion("$Id$")
 public class MarketDataContextClassProvider
         implements ContextClassProvider
 {

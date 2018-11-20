@@ -9,12 +9,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: SpringSelector.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: SpringSelector.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class SpringSelector
 {
 

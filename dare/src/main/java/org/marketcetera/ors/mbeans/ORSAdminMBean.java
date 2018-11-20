@@ -5,10 +5,10 @@ import org.marketcetera.core.ClassVersion;
 /**
  * MBean interface for ORS operations.
  * @author toli
- * @version $Id: ORSAdminMBean.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: ORSAdminMBean.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public interface ORSAdminMBean {
 
     /** Sends a {@link quickfix.fix44.UserRequest} message containing the password reset message */

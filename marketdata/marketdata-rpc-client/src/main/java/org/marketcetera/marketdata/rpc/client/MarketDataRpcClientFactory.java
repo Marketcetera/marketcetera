@@ -10,10 +10,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Creates <code>MarketDataServiceRpcClient</code> objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataRpcClientFactory.java 17251 2016-09-08 23:18:29Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: MarketDataRpcClientFactory.java 17251 2016-09-08 23:18:29Z colin $")
+@ClassVersion("$Id$")
 public class MarketDataRpcClientFactory
         implements RpcClientFactory<MarketDataRpcClientParameters,MarketDataRpcClient>,MarketDataClientFactory<MarketDataRpcClientParameters>
 {

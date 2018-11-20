@@ -8,10 +8,10 @@ import org.marketcetera.core.NoMoreIDsException;
 
 /**
  * @author toli
- * @version $Id: DBBackedIDFactory.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: DBBackedIDFactory.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public abstract class DBBackedIDFactory
         extends ExternalIDFactory
 {

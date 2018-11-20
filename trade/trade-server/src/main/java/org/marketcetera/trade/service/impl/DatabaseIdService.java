@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Provides business-level services for database-backed ids.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DatabaseIdService.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
 @Service

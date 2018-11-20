@@ -33,10 +33,10 @@ import quickfix.SessionID;
  * Provides access to reports.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ReportService.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: ReportService.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public interface ReportService
 {
     /**

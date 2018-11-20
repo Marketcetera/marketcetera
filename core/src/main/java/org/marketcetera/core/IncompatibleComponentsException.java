@@ -10,12 +10,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 2.1.0
- * @version $Id: IncompatibleComponentsException.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: IncompatibleComponentsException.java 16154 2012-07-14 16:34:05Z colin $")
+@ClassVersion("$Id$")
 public class IncompatibleComponentsException
     extends I18NException
 {

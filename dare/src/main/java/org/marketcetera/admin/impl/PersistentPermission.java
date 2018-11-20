@@ -17,7 +17,7 @@ import org.marketcetera.persist.NDEntityBase;
  * Provides a persistable implementation of <code>Permission</code>.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentPermission.java 84382 2015-01-20 19:43:06Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 @Entity(name="Permission")

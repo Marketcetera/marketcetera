@@ -85,11 +85,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
  * Provides access to report objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ReportServiceImpl.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
 @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
-@ClassVersion("$Id: ReportServiceImpl.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public class ReportServiceImpl
         implements ReportService, FixSessionListener
 {
@@ -1006,10 +1006,10 @@ public class ReportServiceImpl
      * Translates a position tuple to a position key.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: ReportServiceImpl.java 17266 2017-04-28 14:58:00Z colin $
+     * @version $Id$
      * @since 2.4.2
      */
-    @ClassVersion("$Id: ReportServiceImpl.java 17266 2017-04-28 14:58:00Z colin $")
+    @ClassVersion("$Id$")
     private interface PositionTransformer<I extends Instrument>
     {
         /**
@@ -1034,10 +1034,10 @@ public class ReportServiceImpl
      * Creates a predicate used to match rows to a given instrument.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: ReportServiceImpl.java 17266 2017-04-28 14:58:00Z colin $
+     * @version $Id$
      * @since 2.4.2
      */
-    @ClassVersion("$Id: ReportServiceImpl.java 17266 2017-04-28 14:58:00Z colin $")
+    @ClassVersion("$Id$")
     private interface SymbolMatcher<I extends Instrument>
     {
         /**

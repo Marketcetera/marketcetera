@@ -11,7 +11,7 @@ import org.marketcetera.util.l10n.MessageComparator;
  * Tests messages for the keytools package.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MessagesTest.java 16191 2012-06-27 00:13:01Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
 public class MessagesTest

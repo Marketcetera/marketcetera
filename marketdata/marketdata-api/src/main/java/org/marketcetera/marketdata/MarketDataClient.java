@@ -17,10 +17,10 @@ import org.marketcetera.util.ws.stateful.ClientContext;
  * Provides access to remote market data services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MDClient.java 17245 2016-09-03 01:25:42Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: MDClient.java 17245 2016-09-03 01:25:42Z colin $")
+@ClassVersion("$Id$")
 public interface MarketDataClient
         extends BaseClient
 {

@@ -13,7 +13,7 @@ import org.marketcetera.util.ws.tags.SessionId;
  * Tests {@link DataFlowRpcClient}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: RpcSAClientImplTest.java 17223 2016-08-31 01:03:01Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 public class DataFlowRpcServiceTest

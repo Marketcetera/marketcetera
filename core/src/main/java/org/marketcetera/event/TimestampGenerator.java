@@ -10,7 +10,7 @@ import org.marketcetera.event.TradeEvent;
  * Generates timestamp values.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: TimestampGenerator.java 84930 2015-10-07 02:32:22Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface TimestampGenerator

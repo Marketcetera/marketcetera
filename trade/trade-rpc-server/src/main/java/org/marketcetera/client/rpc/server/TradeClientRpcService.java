@@ -121,7 +121,7 @@ public class TradeClientRpcService<SessionClazz>
      * Trade RPC Service implementation.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: MarketDataRpcService.java 17251 2016-09-08 23:18:29Z colin $
+     * @version $Id$
      * @since $Release$
      */
     private class Service

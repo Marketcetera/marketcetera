@@ -95,10 +95,10 @@ import quickfix.ThreadedSocketInitiator;
  * @author tlerios@marketcetera.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 1.0.0
- * @version $Id: OrderRoutingSystem.java 17336 2017-08-01 20:14:09Z colin $
+ * @version $Id$
  */
 @ClusterWorkUnit(id="MATP.DARE",type=ClusterWorkUnitType.SINGLETON_RUNTIME)
-@ClassVersion("$Id: OrderRoutingSystem.java 17336 2017-08-01 20:14:09Z colin $")
+@ClassVersion("$Id$")
 public class OrderRoutingSystem
         implements BrokerStatusPublisher,BrokerStatusListener,SessionStatusPublisher,SessionStatusListener,FixSessionListener
 {

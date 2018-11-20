@@ -37,10 +37,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Provides basic services to save and query reports.
  *
  * @author anshul@marketcetera.com
- * @version $Id: BasicReportHistoryServices.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
-@ClassVersion("$Id: BasicReportHistoryServices.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public class BasicReportHistoryServices
         implements ReportHistoryServices
 {

@@ -10,10 +10,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Creates <code>DataFlowClient</code> instances.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SEClientFactory.java 17245 2016-09-03 01:25:42Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: SEClientFactory.java 17245 2016-09-03 01:25:42Z colin $")
+@ClassVersion("$Id$")
 public interface DataFlowClientFactory<ParameterClazz extends ClientParameters>
         extends ClientFactory<DataFlowClient,ParameterClazz>
 {

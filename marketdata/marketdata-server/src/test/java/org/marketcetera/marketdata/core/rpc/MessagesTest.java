@@ -12,10 +12,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Verifies that all the messages are correctly specified.
  *
  * @author anshul@marketcetera.com
- * @version $Id: MessagesTest.java 17242 2016-09-02 16:46:48Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: MessagesTest.java 17242 2016-09-02 16:46:48Z colin $")
+@ClassVersion("$Id$")
 public class MessagesTest {
     @Test
     public void messagesMatch() throws Exception {

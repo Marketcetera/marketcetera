@@ -21,7 +21,7 @@ import quickfix.field.ClOrdID;
  * Tags outgoing orders with a given value.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: OrderTagRecorder.java 16522 2014-12-31 16:33:08Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
 public class OrderTagRecorder

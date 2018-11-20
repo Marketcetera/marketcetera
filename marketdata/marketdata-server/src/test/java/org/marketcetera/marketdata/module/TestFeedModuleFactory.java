@@ -22,7 +22,7 @@ import org.marketcetera.module.ModuleURN;
  * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: TestFeedModuleFactory.java 17068 2015-12-07 17:26:31Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class TestFeedModuleFactory

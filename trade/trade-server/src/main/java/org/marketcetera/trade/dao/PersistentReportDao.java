@@ -18,10 +18,10 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
  * Provides datastore access to {@link PersistentReport} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentReportDao.java 17339 2017-08-10 02:14:34Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: PersistentReportDao.java 17339 2017-08-10 02:14:34Z colin $")
+@ClassVersion("$Id$")
 public interface PersistentReportDao
         extends JpaRepository<PersistentReport,Long>,QuerydslPredicateExecutor<PersistentReport>
 {

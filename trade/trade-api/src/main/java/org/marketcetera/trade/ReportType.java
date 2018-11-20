@@ -9,10 +9,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * clients of this package.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ReportType.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ReportType.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public enum ReportType {
     /**
      * Represents an execution report.

@@ -10,10 +10,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Indicates that a market data request contained a symbol that could not be handled by a market data provider.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UnknownSymbol.java 17251 2016-09-08 23:18:29Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: UnknownSymbol.java 17251 2016-09-08 23:18:29Z colin $")
+@ClassVersion("$Id$")
 public class UnknownSymbol
         extends CoreException
 {

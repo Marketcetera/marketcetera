@@ -38,10 +38,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * {@link #isRunning() is running} when the processing is complete.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AutoOrderHistoryManager.java 17530 2017-08-30 21:05:23Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id: AutoOrderHistoryManager.java 17530 2017-08-30 21:05:23Z colin $")
+@ClassVersion("$Id$")
 public class AutoOrderHistoryManager
         extends LiveOrderHistoryManager
         implements TradeMessageListener

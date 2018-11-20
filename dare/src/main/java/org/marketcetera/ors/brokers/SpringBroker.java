@@ -23,9 +23,9 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: SpringBroker.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: SpringBroker.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public class SpringBroker
         implements InitializingBean
 {

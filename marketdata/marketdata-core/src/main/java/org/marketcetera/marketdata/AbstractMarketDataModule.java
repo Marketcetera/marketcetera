@@ -65,11 +65,11 @@ import com.google.common.collect.Maps;
  * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractMarketDataModule.java 17571 2017-09-20 14:02:39Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @AutowiredModule
-@ClassVersion("$Id: AbstractMarketDataModule.java 17571 2017-09-20 14:02:39Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken, 
                                                C extends MarketDataFeedCredentials>
         extends Module

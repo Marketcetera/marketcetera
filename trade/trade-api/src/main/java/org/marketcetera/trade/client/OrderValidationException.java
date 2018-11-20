@@ -10,10 +10,10 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * them to the server.
  *
  * @author anshul@marketcetera.com
- * @version $Id: OrderValidationException.java 17516 2017-08-28 17:25:59Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderValidationException.java 17516 2017-08-28 17:25:59Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OrderValidationException extends I18NException {
     /**
      * Creates an instance.

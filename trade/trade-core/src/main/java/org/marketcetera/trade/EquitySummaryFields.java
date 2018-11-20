@@ -12,10 +12,10 @@ import java.math.BigDecimal;
  * Extracts report summary fields for an equity instrument.
  *
  * @author anshul@marketcetera.com
- * @version $Id: EquitySummaryFields.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: EquitySummaryFields.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class EquitySummaryFields extends InstrumentSummaryFields<Equity> {
     /**
      * Creates an instance that handles the specified instrument subclass.

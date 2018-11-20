@@ -31,7 +31,7 @@ import com.google.common.collect.Sets;
  * Provides an implementation of <code>MarketDataServiceAdapter</code> for testing.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MockMarketDataServiceAdapter.java 17251 2016-09-08 23:18:29Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 public class MockMarketDataServiceAdapter
@@ -240,7 +240,7 @@ public class MockMarketDataServiceAdapter
      * Records requests to {@link MockMarketDataServiceAdapter#getSnapshot(Instrument, Content, String)}.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: MockMarketDataServiceAdapter.java 17251 2016-09-08 23:18:29Z colin $
+     * @version $Id$
      * @since 2.4.0
      */
     public static class SnapshotRequest

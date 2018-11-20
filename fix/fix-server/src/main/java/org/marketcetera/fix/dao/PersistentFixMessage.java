@@ -16,7 +16,7 @@ import quickfix.Message;
  * Provides a persistent <code>FixMessage</code> implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentFixMessage.java 17316 2017-07-17 15:46:23Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 @Table(name="fix_messages")

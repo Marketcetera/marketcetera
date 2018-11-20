@@ -15,9 +15,9 @@ import quickfix.Message;
  * @author tlerios@marketcetera.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 1.0.0
- * @version $Id: OrderFilter.java 16522 2014-12-31 16:33:08Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: OrderFilter.java 16522 2014-12-31 16:33:08Z colin $")
+@ClassVersion("$Id$")
 public interface OrderFilter
 {
     /**
@@ -38,7 +38,7 @@ public interface OrderFilter
      * Contains meta information about an outgoing message.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: OrderFilter.java 16522 2014-12-31 16:33:08Z colin $
+     * @version $Id$
      * @since 2.4.2
      */
     public interface MessageInfo

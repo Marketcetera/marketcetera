@@ -6,7 +6,7 @@ package org.marketcetera.admin;
  * Indicates an authorization failure.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: NotAuthorizedException.java 84382 2015-01-20 19:43:06Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 public class NotAuthorizedException

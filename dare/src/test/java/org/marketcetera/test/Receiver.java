@@ -34,7 +34,7 @@ import quickfix.UnsupportedMessageType;
  * Receives messages and responds as directed.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Receiver.java 85105 2016-01-22 20:43:42Z colin $
+ * @version $Id$
  * @since 1.0.0-Milestone3
  */
 public class Receiver

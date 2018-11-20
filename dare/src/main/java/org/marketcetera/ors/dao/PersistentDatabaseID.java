@@ -14,13 +14,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * Supplies a persistent implementation of the next id in a series.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentDatabaseID.java 16522 2014-12-31 16:33:08Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
 @Entity
 @Table(name="id_repository")
 @NamedQuery(name="getNextId",query="select e from PersistentDatabaseID e")
-@ClassVersion("$Id: PersistentDatabaseID.java 16522 2014-12-31 16:33:08Z colin $")
+@ClassVersion("$Id$")
 public class PersistentDatabaseID
         extends EntityBase
 {

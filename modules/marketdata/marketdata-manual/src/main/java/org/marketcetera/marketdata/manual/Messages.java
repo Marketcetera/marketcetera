@@ -9,10 +9,10 @@ import org.marketcetera.util.log.*;
  * Internationalization messages for the manual market data adapter.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Messages.java 16191 2012-06-27 00:13:01Z colin $
+ * @version $Id$
  * @since $RELEASE$
  */
-@ClassVersion("$Id: Messages.java 16191 2012-06-27 00:13:01Z colin $")
+@ClassVersion("$Id$")
 public interface Messages
 {
     static final I18NMessageProvider PROVIDER = new I18NMessageProvider("marketdata_manual", //$NON-NLS-1$

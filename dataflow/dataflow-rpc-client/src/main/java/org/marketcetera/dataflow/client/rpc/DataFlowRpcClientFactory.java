@@ -10,10 +10,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Creates {@link DataFlowRpcClient} instances.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: StrategyAgentRpcClientFactory.java 17242 2016-09-02 16:46:48Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: StrategyAgentRpcClientFactory.java 17242 2016-09-02 16:46:48Z colin $")
+@ClassVersion("$Id$")
 public class DataFlowRpcClientFactory
         implements RpcClientFactory<DataFlowRpcClientParameters,DataFlowRpcClient>,DataFlowClientFactory<DataFlowRpcClientParameters>
 {

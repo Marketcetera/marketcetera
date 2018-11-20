@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Provides a cluster-aware <code>ServiceProvider</code> implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ClusteredServiceProvider.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
-@ClassVersion("$Id: ClusteredServiceProvider.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public class ClusteredServiceProvider
         extends ServiceProvider
 {

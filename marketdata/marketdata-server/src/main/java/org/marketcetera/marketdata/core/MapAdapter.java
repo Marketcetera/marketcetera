@@ -13,10 +13,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides an adapter to translate Map values to and from XML.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MapAdapter.java 17251 2016-09-08 23:18:29Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: MapAdapter.java 17251 2016-09-08 23:18:29Z colin $")
+@ClassVersion("$Id$")
 public class MapAdapter
         extends XmlAdapter<MapElements[],Map<String,String>>
 {

@@ -10,7 +10,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * Describes a cluster work unit.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ClusterWorkUnitSpec.java 16648 2015-10-23 20:24:13Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 public class SimpleClusterWorkUnitSpec

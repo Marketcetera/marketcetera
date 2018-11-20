@@ -11,10 +11,10 @@ import org.marketcetera.util.log.I18NMessageProvider;
  * Messages for this package.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Messages.java 17068 2015-12-07 17:26:31Z colin $
+ * @version $Id$
  * @since 0.6.0
  */
-@ClassVersion("$Id: Messages.java 17068 2015-12-07 17:26:31Z colin $")
+@ClassVersion("$Id$")
 public interface Messages
 {
     static final I18NMessageProvider PROVIDER = new I18NMessageProvider("marketdata_core_test", Messages.class.getClassLoader());  //$NON-NLS-1$

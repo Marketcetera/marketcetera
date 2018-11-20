@@ -10,7 +10,7 @@ import org.marketcetera.util.l10n.MessageComparator;
 
 /**
  * @since 0.6.0
- * @version $Id: MessagesTest.java 17251 2016-09-08 23:18:29Z colin $
+ * @version $Id$
  */
 public class MessagesTest
 {

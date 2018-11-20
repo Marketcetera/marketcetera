@@ -34,12 +34,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ExecutionReportSummary.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @Entity
 @Table(name="exec_reports")
-@ClassVersion("$Id: ExecutionReportSummary.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public class ExecutionReportSummary
         extends EntityBase
 {

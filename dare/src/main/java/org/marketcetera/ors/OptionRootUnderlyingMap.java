@@ -21,10 +21,10 @@ import com.google.common.collect.*;
  * This class can be safely used concurrently from multiple threads.
  *
  * @author anshul@marketcetera.com
- * @version $Id: OptionRootUnderlyingMap.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionRootUnderlyingMap.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class OptionRootUnderlyingMap implements InitializingBean {
     /**
      * Creates an instance.

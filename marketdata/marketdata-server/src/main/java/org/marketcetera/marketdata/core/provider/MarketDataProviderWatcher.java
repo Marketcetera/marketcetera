@@ -34,10 +34,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Monitors a market data provider and takes action based on what it finds.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataProviderWatcher.java 17068 2015-12-07 17:26:31Z colin $
+ * @version $Id$
  * @since $Release%
  */
-@ClassVersion("$Id: MarketDataProviderWatcher.java 17068 2015-12-07 17:26:31Z colin $")
+@ClassVersion("$Id$")
 public class MarketDataProviderWatcher
 {
     /**
@@ -216,7 +216,7 @@ public class MarketDataProviderWatcher
      * Schedulable watcher task that checks the status of the module to monitor and tries to restart it if necessary.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: MarketDataProviderWatcher.java 17068 2015-12-07 17:26:31Z colin $
+     * @version $Id$
      * @since 2.4.2
      */
     private class Watcher

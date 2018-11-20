@@ -41,7 +41,7 @@ import org.marketcetera.util.test.CollectionAssert;
  * <p>Unit tests for market data provider modules should extend this class.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataModuleTestBase.java 17569 2017-09-20 03:41:51Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public abstract class MarketDataModuleTestBase
@@ -302,7 +302,7 @@ public abstract class MarketDataModuleTestBase
      * Sample <code>SinkDataListener</code> implementation that stores the objects it receives.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: MarketDataModuleTestBase.java 17569 2017-09-20 03:41:51Z colin $
+     * @version $Id$
      * @since 1.0.0
      */
     public static class DataSink

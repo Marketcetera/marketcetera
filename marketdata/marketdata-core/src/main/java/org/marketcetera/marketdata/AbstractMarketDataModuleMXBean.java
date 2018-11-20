@@ -14,10 +14,10 @@ import org.marketcetera.module.DisplayName;
  * methods available.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractMarketDataModuleMXBean.java 17569 2017-09-20 03:41:51Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: AbstractMarketDataModuleMXBean.java 17569 2017-09-20 03:41:51Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 @MXBean(true)
 @DisplayName("Management Interface for Marketdata Feeds")
 public interface AbstractMarketDataModuleMXBean

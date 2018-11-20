@@ -1,6 +1,6 @@
 /*
  * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons-sandbox//i18n/src/java/org/apache/commons/i18n/MessageNotFoundException.java,v 1.1 2004/10/04 13:41:09 dflorey Exp $
- * $Revision: 480489 $
+ * $Revision$
  * $Date: 2006-11-29 01:00:46 -0800 (Wed, 29 Nov 2006) $
  *
  * ====================================================================

@@ -8,7 +8,7 @@ import java.util.Date;
  * Provides a custom {@link INotification} for {@link PagerDutyNotificationExecutorMethod}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PagerDutyNotification.java 85003 2015-11-13 15:57:55Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class PagerDutyNotificationImpl

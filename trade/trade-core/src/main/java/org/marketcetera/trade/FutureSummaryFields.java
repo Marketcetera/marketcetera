@@ -13,10 +13,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Extracts report summary fields for a future instrument.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: FutureSummaryFields.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
-@ClassVersion("$Id: FutureSummaryFields.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class FutureSummaryFields
         extends InstrumentSummaryFields<Future>
 {

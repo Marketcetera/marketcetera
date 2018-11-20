@@ -39,12 +39,12 @@ import com.google.common.collect.Sets;
  *
  * @author tlerios@marketcetera.com
  * @since 1.5.0
- * @version $Id: UserManager.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: UserManager.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public class UserManager
         implements ReportPublisher
 {

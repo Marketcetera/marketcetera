@@ -11,7 +11,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
  * Validates future instruments.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: FutureValidationHandler.java 17516 2017-08-28 17:25:59Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 public class FutureValidationHandler

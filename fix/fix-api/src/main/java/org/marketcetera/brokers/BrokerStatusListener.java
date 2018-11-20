@@ -15,7 +15,7 @@ import com.google.common.eventbus.Subscribe;
  * status delivery to other registered listeners.</p>
  *
  * @author tlerios@marketcetera.com
- * @version $Id: BrokerStatusListener.java 17709 2018-09-19 14:33:16Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public interface BrokerStatusListener

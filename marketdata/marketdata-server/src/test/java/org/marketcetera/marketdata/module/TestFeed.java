@@ -26,7 +26,7 @@ import com.google.common.collect.Lists;
  * Provides a test market data feed implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: TestFeed.java 17092 2016-01-21 14:42:31Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class TestFeed

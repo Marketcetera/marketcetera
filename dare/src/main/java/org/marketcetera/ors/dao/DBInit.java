@@ -17,10 +17,10 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  *
  * @author anshul@marketcetera.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DBInit.java 16522 2014-12-31 16:33:08Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: DBInit.java 16522 2014-12-31 16:33:08Z colin $")
+@ClassVersion("$Id$")
 public class DBInit
         extends ApplicationBase
 {

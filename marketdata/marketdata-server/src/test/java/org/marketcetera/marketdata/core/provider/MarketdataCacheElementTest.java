@@ -28,7 +28,7 @@ import org.marketcetera.trade.Instrument;
  * Tests {@link MarketDataCacheElement}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketdataCacheElementTest.java 17138 2016-03-07 18:59:32Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 public class MarketdataCacheElementTest

@@ -107,7 +107,7 @@ public class LocalTimezoneTimestampGenerator
      * Provides the current time.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: BrettJonesTimestampGenerator.java 85086 2016-01-14 01:07:50Z colin $
+     * @version $Id$
      * @since 1.4.11
      */
     public interface TimestampProvider

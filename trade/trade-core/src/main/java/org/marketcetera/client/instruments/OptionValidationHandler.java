@@ -18,10 +18,10 @@ import java.util.Calendar;
  * The option expiry date is validated by {@link #validateExpiry(String)}.
  *
  * @author anshul@marketcetera.com
- * @version $Id: OptionValidationHandler.java 17516 2017-08-28 17:25:59Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionValidationHandler.java 17516 2017-08-28 17:25:59Z colin $")
+@ClassVersion("$Id$")
 public class OptionValidationHandler extends InstrumentValidationHandler<Option> {
     /**
      * Creates an instance.

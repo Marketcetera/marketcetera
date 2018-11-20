@@ -42,7 +42,7 @@ import io.grpc.stub.StreamObserver;
  * Provides an RPC market data service implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataRpcService.java 17251 2016-09-08 23:18:29Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class MarketDataRpcService<SessionClazz>
@@ -98,7 +98,7 @@ public class MarketDataRpcService<SessionClazz>
      * Marketdata RPC Service implementation.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: MarketDataRpcService.java 17251 2016-09-08 23:18:29Z colin $
+     * @version $Id$
      * @since $Release$
      */
     private class Service

@@ -22,10 +22,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides market data services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataService.java 17245 2016-09-03 01:25:42Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: MarketDataService.java 17245 2016-09-03 01:25:42Z colin $")
+@ClassVersion("$Id$")
 public interface MarketDataService
         extends MarketDataStatusPublisher,MarketDataStatusBroadcaster,MarketDataCapabilityBroadcaster
 {

@@ -8,7 +8,7 @@ import org.marketcetera.core.CoreException;
  * Module implementation for {@link MockMarketDataFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MockFeedModule.java 17569 2017-09-20 03:41:51Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 public class MockFeedModule

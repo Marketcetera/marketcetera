@@ -8,7 +8,7 @@ import org.marketcetera.persist.SummaryEntityBase;
  * Represents an attribute associated with a user.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UserAttribute.java 84561 2015-03-31 18:18:14Z colin $
+ * @version $Id$
  * @since 1.2.0
  */
 public interface UserAttribute

@@ -12,10 +12,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Internationalized messages used by this package.
  *
  * @author anshul@marketcetera.com
- * @version $Id: Messages.java 16901 2014-05-11 16:14:11Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: Messages.java 16901 2014-05-11 16:14:11Z colin $")
+@ClassVersion("$Id$")
 public interface Messages
 {
     /**

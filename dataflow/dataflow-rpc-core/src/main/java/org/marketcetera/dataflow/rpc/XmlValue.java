@@ -13,12 +13,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * Wraps an arbitrary marshallable value.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: XmlValue.java 17233 2016-09-01 20:31:07Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 @XmlRootElement(name="valueWrapper")
 @XmlAccessorType(XmlAccessType.NONE)
-@ClassVersion("$Id: XmlValue.java 17233 2016-09-01 20:31:07Z colin $")
+@ClassVersion("$Id$")
 public class XmlValue
 {
     /**

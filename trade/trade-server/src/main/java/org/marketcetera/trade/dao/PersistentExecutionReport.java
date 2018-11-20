@@ -38,12 +38,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ExecutionReportSummary.java 17343 2017-08-10 16:43:21Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @Entity
 @Table(name="exec_reports")
-@ClassVersion("$Id: ExecutionReportSummary.java 17343 2017-08-10 16:43:21Z colin $")
+@ClassVersion("$Id$")
 public class PersistentExecutionReport
         extends EntityBase
         implements ExecutionReportSummary

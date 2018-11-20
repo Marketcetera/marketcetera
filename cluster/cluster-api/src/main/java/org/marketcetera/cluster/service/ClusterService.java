@@ -17,7 +17,7 @@ import org.marketcetera.cluster.RunnableClusterTask;
  * Provides cluster services for the Marketcetera Automated Trading Platform.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ClusterService.java 17134 2017-01-27 16:41:54Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 public interface ClusterService

@@ -23,10 +23,10 @@ import quickfix.field.MsgType;
  * Takes in a collection of message/header/trailer fields to always
  * modify on a passed-in message
  * @author gmiller
- * @version $Id: DefaultMessageModifier.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: DefaultMessageModifier.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class DefaultMessageModifier implements MessageModifier {
     private static final String ADMIN_MODIFIER_KEY = "ADMIN"; //$NON-NLS-1$
     private static final String APP_MODIFIER_KEY = "APP"; //$NON-NLS-1$

@@ -44,10 +44,10 @@ import org.springframework.context.Lifecycle;
  * {@link #isRunning() is running} when the processing is complete.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: LiveOrderHistoryManager.java 17560 2017-09-14 19:58:09Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id: LiveOrderHistoryManager.java 17560 2017-09-14 19:58:09Z colin $")
+@ClassVersion("$Id$")
 public class LiveOrderHistoryManager
         extends OrderHistoryManager
         implements Lifecycle

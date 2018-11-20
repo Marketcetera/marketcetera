@@ -22,7 +22,7 @@ import org.marketcetera.util.unicode.UnicodeInputStreamReader;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ExecuteSQLFromFile.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class ExecuteSQLFromFile
 {
     /**

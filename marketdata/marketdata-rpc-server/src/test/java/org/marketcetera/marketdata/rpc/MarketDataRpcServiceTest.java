@@ -15,7 +15,7 @@ import org.marketcetera.util.ws.tags.SessionId;
  * Tests the market data RPC client and server.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataRpcClientServerTest.java 17251 2016-09-08 23:18:29Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 public class MarketDataRpcServiceTest
