@@ -12,18 +12,18 @@ package org.marketcetera.admin;
 public interface UserAttributeFactory
 {
     /**
-     * Creates a <code>UserAttribute</code> object with the given attributes.
+     * Create a <code>UserAttribute</code> object with the given attributes.
      *
      * @param inUser a <code>User</code> value
      * @param inType a <code>UserAttributeType</code> value
-     * @param inAttribute a <code>String</code> value
+     * @param inAttribute a <code>String<code> value
      * @return a <code>UserAttribute</code> value
      */
     UserAttribute create(User inUser,
                          UserAttributeType inType,
                          String inAttribute);
     /**
-     * Creates a <code>UserAttribute</code> object from the given value.
+     * Create a <code>UserAttribute</code> object from the given value.
      *
      * @param inUserAttribute a <code>UserAttribute</code> value
      * @return a <code>UserAttribute</code> value

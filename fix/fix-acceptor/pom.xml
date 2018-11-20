@@ -19,7 +19,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>fix-core</artifactId>
+      <artifactId>cluster-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fix-server</artifactId>
     </dependency>
   </dependencies>
 </project>

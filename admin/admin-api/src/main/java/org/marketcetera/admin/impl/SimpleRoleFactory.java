@@ -1,7 +1,8 @@
 package org.marketcetera.admin.impl;
 
+import org.marketcetera.admin.MutableRole;
+import org.marketcetera.admin.MutableRoleFactory;
 import org.marketcetera.admin.Role;
-import org.marketcetera.admin.RoleFactory;
 
 /* $License$ */
 
@@ -13,18 +14,26 @@ import org.marketcetera.admin.RoleFactory;
  * @since $Release$
  */
 public class SimpleRoleFactory
-        implements RoleFactory
+        implements MutableRoleFactory
 {
     /* (non-Javadoc)
-     * @see com.marketcetera.admin.RoleFactory#create(java.lang.String, java.lang.String)
+     * @see org.marketcetera.admin.MutableRoleFactory#create(java.lang.String, java.lang.String)
      */
     @Override
-    public Role create(String inName,
-                       String inDescription)
+    public MutableRole create(String inName,
+                              String inDescription)
     {
         SimpleRole role = new SimpleRole();
         role.setName(inName);
         role.setDescription(inDescription);
         return role;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.MutableRoleFactory#create()
+     */
+    @Override
+    public MutableRole create()
+    {
+        return new SimpleRole();
     }
 }

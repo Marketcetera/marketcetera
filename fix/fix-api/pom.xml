@@ -19,15 +19,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>cluster-api</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>cluster-core</artifactId>
+      <artifactId>admin-api</artifactId>
     </dependency>
   </dependencies>
 </project>

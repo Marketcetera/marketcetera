@@ -1,18 +1,7 @@
 package org.marketcetera.admin;
 
-import java.util.Locale;
-
-import org.marketcetera.admin.AdminClient;
-import org.marketcetera.admin.AdminClientFactory;
-import org.marketcetera.admin.Permission;
-import org.marketcetera.admin.PermissionFactory;
-import org.marketcetera.admin.Role;
-import org.marketcetera.admin.RoleFactory;
-import org.marketcetera.admin.User;
-import org.marketcetera.admin.UserAttributeFactory;
-import org.marketcetera.admin.UserFactory;
+import org.marketcetera.rpc.client.RpcClientFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 
 /* $License$ */
 
@@ -24,55 +13,26 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since $Release$
  */
 public class AdminRpcClientFactory
-        implements AdminClientFactory
+        implements RpcClientFactory<AdminRpcClientParameters,AdminRpcClient>,AdminClientFactory<AdminRpcClientParameters>
 {
     /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminRpcClientFactory#create(java.lang.String, java.lang.String, java.lang.String, int)
+     * @see org.marketcetera.rpc.client.RpcClientFactory#create(org.marketcetera.rpc.client.RpcClientParameters)
      */
     @Override
-    public AdminClient create(String inUsername,
-                              String inPassword,
-                              String inHostname,
-                              int inPort)
+    public AdminRpcClient create(AdminRpcClientParameters inParameters)
     {
-        return create(inUsername,
-                      inPassword,
-                      inHostname,
-                      inPort,
-                      Locale.getDefault());
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminRpcClientFactory#create(java.lang.String, java.lang.String, java.lang.String, int, java.util.Locale)
-     */
-    @Override
-    public AdminClient create(String inUsername,
-                              String inPassword,
-                              String inHostname,
-                              int inPort,
-                              Locale inLocale)
-    {
-        AdminRpcClient client = new AdminRpcClient();
-        client.setHostname(inHostname);
-        client.setPassword(inPassword);
-        client.setPermissionFactory(permissionFactory);
-        client.setPort(inPort);
-        client.setRoleFactory(roleFactory);
-        client.setUserFactory(userFactory);
-        client.setUsername(inUsername);
-        client.setUserAttributeFactory(userAttributeFactory);
-        client.setLocale(inLocale);
-        return client;
+        AdminRpcClient adminClient = new AdminRpcClient(inParameters);
+        adminClient.setPermissionFactory(permissionFactory);
+        adminClient.setRoleFactory(roleFactory);
+        adminClient.setUserAttributeFactory(userAttributeFactory);
+        adminClient.setUserFactory(userFactory);
+        return adminClient;
     }
     /**
      * creates {@link UserAttributeFactory} objects
      */
     @Autowired
     private UserAttributeFactory userAttributeFactory;
-    /**
-     * creates {@link Role} objects
-     */
-    @Autowired
-    private RoleFactory roleFactory;
     /**
      * creates {@link Permission} objects
      */
@@ -83,4 +43,9 @@ public class AdminRpcClientFactory
      */
     @Autowired
     private UserFactory userFactory;
+    /**
+     * creates {@link Role} objects
+     */
+    @Autowired
+    private RoleFactory roleFactory;
 }

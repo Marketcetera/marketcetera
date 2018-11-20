@@ -28,7 +28,7 @@ public class ApplicationContextProvider
     /**
      * Sets the applicationContext value.
      *
-     * @param inApplicationContext an <code>ApplicationContext</code> value
+     * @param an <code>ApplicationContext</code> value
      */
     public void setApplicationContext(ApplicationContext inApplicationContext)
     {

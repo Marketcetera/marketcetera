@@ -1,0 +1,130 @@
+syntax = "proto3";
+option java_generic_services = true;
+option java_package = "org.marketcetera.trading.rpc";
+option java_outer_classname = "TradingRpc";
+import "rpc_base.proto";
+import "rpc_paging.proto";
+import "rpc_trading_types.proto";
+import "google/protobuf/timestamp.proto";
+
+message OpenOrdersRequest {
+    string sessionId = 1;
+    PageRequest pageRequest = 2;
+}
+
+message OpenOrdersResponse {
+    PageResponse pageResponse = 1;
+    repeated OrderSummary orders = 2;
+}
+
+message SendOrderRequest {
+    string sessionId = 1;
+    repeated Order order = 2;
+}
+
+message SendOrderResponse {
+    repeated OrderResponse orderResponse = 1;
+}
+
+message OrderResponse {
+    string orderid = 1;
+}
+
+message AddTradeMessageListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message TradeMessageListenerResponse {
+    TradeMessage tradeMessage = 1;
+}
+
+message RemoveTradeMessageListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message RemoveTradeMessageListenerResponse {
+}
+
+message ResolveSymbolRequest {
+    string sessionId = 1;
+    string symbol = 2;
+}
+
+message ResolveSymbolResponse {
+    Instrument instrument = 1;
+}
+
+message FindRootOrderIdRequest {
+    string sessionId = 1;
+    string orderId = 2;
+}
+
+message FindRootOrderIdResponse {
+    string rootOrderId = 1;
+}
+
+message GetPositionAsOfRequest {
+    string sessionId = 1;
+    Instrument instrument = 2;
+    google.protobuf.Timestamp timestamp = 3;
+}
+
+message GetPositionAsOfResponse {
+    Qty position = 1;
+}
+
+message GetAllPositionsAsOfRequest {
+    string sessionId = 1;
+    google.protobuf.Timestamp timestamp = 2;
+}
+
+message GetAllPositionsAsOfResponse {
+    repeated Position position = 1;
+}
+
+message GetAllPositionsByRootAsOfRequest {
+    string sessionId = 1;
+    google.protobuf.Timestamp timestamp = 2;
+    repeated string root = 3;
+}
+
+message GetAllPositionsByRootAsOfResponse {
+    repeated Position position = 1;
+}
+
+message AddReportRequest {
+    string sessionId = 1;
+    string brokerId = 2;
+    Hierarchy hierarchy = 3;
+    FixMessage message = 4;
+}
+
+message AddReportResponse {
+}
+
+message DeleteReportRequest {
+    string sessionId = 1;
+    string reportId = 2;
+}
+
+message DeleteReportResponse {
+}
+
+service TradingRpcService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
+    rpc getOpenOrders(OpenOrdersRequest) returns (OpenOrdersResponse);
+    rpc sendOrders(SendOrderRequest) returns (SendOrderResponse);
+    rpc addTradeMessageListener(AddTradeMessageListenerRequest) returns (stream TradeMessageListenerResponse);
+    rpc removeTradeMessageListener(RemoveTradeMessageListenerRequest) returns (RemoveTradeMessageListenerResponse);
+    rpc resolveSymbol(ResolveSymbolRequest) returns (ResolveSymbolResponse);
+    rpc findRootOrderId(FindRootOrderIdRequest) returns (FindRootOrderIdResponse);
+    rpc getPositionAsOf(GetPositionAsOfRequest) returns (GetPositionAsOfResponse);
+    rpc getAllPositionsAsOf(GetAllPositionsAsOfRequest) returns (GetAllPositionsAsOfResponse);
+    rpc getAllPositionsByRootAsOf(GetAllPositionsByRootAsOfRequest) returns (GetAllPositionsByRootAsOfResponse);
+    rpc addReport(AddReportRequest) returns (AddReportResponse);
+    rpc deleteReport(DeleteReportRequest) returns (DeleteReportResponse);
+}

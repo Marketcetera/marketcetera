@@ -35,7 +35,7 @@ public class PagerDutyNotificationExecutorMethod
     /**
      * Sets the pagerDutyUrl value.
      *
-     * @param inPagerDutyUrl a <code>String</code> value
+     * @param a <code>String</code> value
      */
     public void setPagerDutyUrl(String inPagerDutyUrl)
     {
@@ -53,7 +53,7 @@ public class PagerDutyNotificationExecutorMethod
     /**
      * Sets the pagerDutyServiceKey value.
      *
-     * @param inPagerDutyServiceKey a <code>String</code> value
+     * @param a <code>String</code> value
      */
     public void setPagerDutyServiceKey(String inPagerDutyServiceKey)
     {
@@ -71,7 +71,7 @@ public class PagerDutyNotificationExecutorMethod
     /**
      * Sets the pagerDutyEventType value.
      *
-     * @param inPagerDutyEventType a <code>String</code> value
+     * @param a <code>String</code> value
      */
     public void setPagerDutyEventType(String inPagerDutyEventType)
     {
@@ -89,7 +89,7 @@ public class PagerDutyNotificationExecutorMethod
     /**
      * Sets the pagerDutyClient value.
      *
-     * @param inPagerDutyClient a <code>String</code> value
+     * @param a <code>String</code> value
      */
     public void setPagerDutyClient(String inPagerDutyClient)
     {

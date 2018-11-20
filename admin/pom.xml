@@ -14,6 +14,7 @@
   <modules>
     <module>admin-api</module>
     <module>admin-client</module>
+    <module>admin-core</module>
     <module>admin-rpc-core</module>
   </modules>
 </project>

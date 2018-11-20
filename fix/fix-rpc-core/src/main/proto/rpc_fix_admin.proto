@@ -1,0 +1,216 @@
+syntax = "proto3";
+option java_generic_services = true;
+option java_package = "org.marketcetera.fix";
+option java_outer_classname = "FixAdminRpc";
+import "rpc_base.proto";
+import "rpc_paging.proto";
+import "rpc_cluster.proto";
+
+message FixSession {
+    string name = 1;
+    string host = 2;
+    uint32 port = 3;
+    uint32 affinity = 4;
+    string brokerId = 5;
+    string description = 6;
+    string sessionId = 7;
+    bool acceptor = 8;
+    Map sessionSettings = 9;
+    string mappedBrokerId = 10;
+}
+
+enum FixSessionStatus {
+    AffinityMismatchFixSessionStatus = 0;
+    BackupFixSessionStatus = 1;
+    ConnectedFixSessionStatus = 2;
+    DeletedFixSessionStatus = 3;
+    DisabledFixSessionStatus = 4;
+    DisconnectedFixSessionStatus = 5;
+    NotConnectedFixSessionStatus = 6;
+    StoppedFixSessionStatus = 7;
+    UnknownFixSessionStatus = 8;
+}
+
+message ActiveFixSession {
+    FixSession fixSession = 1;
+    ClusterData clusterData = 2;
+    FixSessionStatus fixSessionStatus = 3;
+    uint32 targetSeqNum = 4;
+    uint32 senderSeqNum = 5;
+    repeated BrokerAlgoSpec brokerAlgoSpecs = 6;
+}
+
+message BrokerAlgoTagSpec {
+    uint32 tag = 1;
+    string label = 2;
+    string description = 3;
+    string defaultValue = 4;
+    bool mandatory = 5;
+    bool isReadOnly = 6;
+    string advice = 7;
+    string pattern = 8;
+    Map options = 9;
+    string validator = 10;
+    string value = 11;
+}
+
+message BrokerAlgoSpec {
+    string name = 1;
+    string validator = 2;
+    repeated BrokerAlgoTagSpec brokerAlgoTagSpecs = 3;
+}
+
+message BrokerAlgoTag {
+    BrokerAlgoTagSpec brokerAlgoTagSpec = 1;
+    string value = 2;
+}
+
+message BrokerAlgo {
+    BrokerAlgoSpec brokerAlgoSpec = 1;
+    repeated BrokerAlgoTag brokerAlgoTags = 2;
+}
+
+message InstanceData {
+    string hostname = 1;
+    uint32 port = 2;
+}
+
+message CreateFixSessionRequest {
+    string sessionId = 1;
+    FixSession fixSession = 2;
+}
+
+message CreateFixSessionResponse {
+    FixSession fixSession = 1;
+}
+
+message ReadFixSessionsRequest {
+    string sessionId = 1;
+    PageRequest page = 2;
+}
+
+message ReadFixSessionsResponse {
+    PageResponse page = 1;
+    repeated ActiveFixSession fixSession = 2;
+}
+
+message UpdateFixSessionRequest {
+    string sessionId = 1;
+    string name = 2;
+    FixSession fixSession = 3;
+}
+
+message UpdateFixSessionResponse {
+}
+
+message EnableFixSessionRequest {
+    string sessionId = 1;
+    string name = 2;
+}
+
+message EnableFixSessionResponse {
+}
+
+message DisableFixSessionRequest {
+    string sessionId = 1;
+    string name = 2;
+}
+
+message DisableFixSessionResponse {
+}
+
+message DeleteFixSessionRequest {
+    string sessionId = 1;
+    string name = 2;
+}
+
+message DeleteFixSessionResponse {
+}
+
+message StartFixSessionRequest {
+    string sessionId = 1;
+    string name = 2;
+}
+
+message StartFixSessionResponse {
+}
+
+message StopFixSessionRequest {
+    string sessionId = 1;
+    string name = 2;
+}
+
+message StopFixSessionResponse {
+}
+
+message FixSessionAttributeDescriptor {
+    string name = 1;
+    string defaultValue = 2;
+    string description = 3;
+    string pattern = 4;
+    bool required = 5;
+    string advice = 6;
+}
+
+message ReadFixSessionAttributeDescriptorsRequest {
+    string sessionId = 1;
+}
+
+message ReadFixSessionAttributeDescriptorsResponse {
+    repeated FixSessionAttributeDescriptor fixSessionAttributeDescriptors = 1;
+}
+
+message UpdateSequenceNumbersRequest {
+    string sessionId = 1;
+    string name = 2;
+    int32 senderSequenceNumber = 3;
+    int32 targetSequenceNumber = 4;
+}
+
+message UpdateSequenceNumbersResponse {
+}
+
+message AddBrokerStatusListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message BrokerStatusListenerResponse {
+    ActiveFixSession activeFixSession = 1;
+}
+
+message RemoveBrokerStatusListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message RemoveBrokerStatusListenerResponse {
+}
+
+message InstanceDataRequest {
+    string sessionId = 1;
+    uint32 affinity = 2;
+}
+
+message InstanceDataResponse {
+    InstanceData instanceData = 1;
+}
+
+service FixAdminRpcService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc createFixSession(CreateFixSessionRequest) returns (CreateFixSessionResponse);
+    rpc readFixSessions(ReadFixSessionsRequest) returns (ReadFixSessionsResponse);
+    rpc updateFixSession(UpdateFixSessionRequest) returns (UpdateFixSessionResponse);
+    rpc readFixSessionAttributeDescriptors(ReadFixSessionAttributeDescriptorsRequest) returns (ReadFixSessionAttributeDescriptorsResponse);
+    rpc enableFixSession(EnableFixSessionRequest) returns (EnableFixSessionResponse);
+    rpc disableFixSession(DisableFixSessionRequest) returns (DisableFixSessionResponse);
+    rpc deleteFixSession(DeleteFixSessionRequest) returns (DeleteFixSessionResponse);
+    rpc startFixSession(StartFixSessionRequest) returns (StartFixSessionResponse);
+    rpc stopFixSession(StopFixSessionRequest) returns (StopFixSessionResponse);
+    rpc updateSequenceNumbers(UpdateSequenceNumbersRequest) returns (UpdateSequenceNumbersResponse);
+    rpc addBrokerStatusListener(AddBrokerStatusListenerRequest) returns (stream BrokerStatusListenerResponse);
+    rpc removeBrokerStatusListener(RemoveBrokerStatusListenerRequest) returns (RemoveBrokerStatusListenerResponse);
+    rpc getInstanceData(InstanceDataRequest) returns (InstanceDataResponse);
+}

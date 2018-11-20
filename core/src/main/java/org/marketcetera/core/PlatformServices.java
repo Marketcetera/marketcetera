@@ -1,5 +1,6 @@
 package org.marketcetera.core;
 
+import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.UUID;
@@ -11,8 +12,6 @@ import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
-
-import com.hazelcast.core.HazelcastInstanceNotActiveException;
 
 /* $License$ */
 
@@ -33,16 +32,10 @@ public abstract class PlatformServices
      */
     public static boolean isShutdown(Throwable inThrowable)
     {
-        if(inThrowable instanceof HazelcastInstanceNotActiveException) {
-            return true;
-        }
         if(inThrowable instanceof InterruptedException) {
             return true;
         }
-        if(ExceptionUtils.getRootCause(inThrowable) instanceof HazelcastInstanceNotActiveException) {
-            return true;
-        }
-        return ExceptionUtils.getFullStackTrace(inThrowable).contains(hazelcastInstanceIsNotActive);
+        return false;
     }
     /**
      * Get a human-readable message describing the root cause of the given exception.
@@ -132,16 +125,12 @@ public abstract class PlatformServices
                                inTarget);
     }
     /**
-     * Create a new PlatformServices instance.
+     * Create a new EnterprisePlatformServices instance.
      */
     private PlatformServices()
     {
         throw new UnsupportedOperationException();
     }
-    /**
-     * indicates that hazelcast is not active
-     */
-    private static final String hazelcastInstanceIsNotActive = "Hazelcast instance is not active"; //$NON-NLS-1$
     /**
      * describes the style of the table cell
      */
@@ -163,4 +152,8 @@ public abstract class PlatformServices
      * The precision used for storing all decimal values.
      */
     public static final int DECIMAL_PRECISION = 17;
+    /**
+     * constant representing one penny
+     */
+    public static final BigDecimal ONE_PENNY = new BigDecimal("0.01");
 }

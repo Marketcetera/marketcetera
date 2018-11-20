@@ -1,0 +1,80 @@
+syntax = "proto3";
+import "rpc_base.proto";
+import "rpc_paging.proto";
+import "rpc_trading_types.proto";
+import "rpc_marketdata_types.proto";
+option java_generic_services = true;
+option java_package = "org.marketcetera.marketdata.core.rpc";
+option java_outer_classname = "MarketDataRpc";
+
+message MarketDataRequest {
+    string sessionId = 1;
+    string request = 2;
+}
+
+message CancelRequest {
+    string sessionId = 1;
+    string requestId = 2;
+}
+
+message CancelResponse {
+}
+
+message EventsResponse {
+    string requestId = 1;
+    EventHolder event = 2;
+}
+
+message SnapshotRequest {
+    string sessionId = 1;
+    Instrument instrument = 2;
+    ContentAndCapability content = 3;
+    PageRequest page = 4;
+}
+
+message SnapshotResponse {
+    repeated EventHolder event = 1;
+    PageResponse pageResponse = 2;
+}
+
+message MarketDataStatus {
+    FeedStatus feedStatus = 1;
+    string provider = 2;
+}
+
+message AvailableCapabilityRequest {
+    string sessionId = 1;
+}
+
+message AvailableCapabilityResponse {
+    repeated ContentAndCapability capability = 1;
+}
+
+message AddMarketDataStatusListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message MarketDataStatusListenerResponse {
+    MarketDataStatus marketDataStatus = 1;
+}
+
+message RemoveMarketDataStatusListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message RemoveMarketDataStatusListenerResponse {
+}
+
+service MarketDataRpcService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
+    rpc request(MarketDataRequest) returns (stream EventsResponse);
+    rpc cancel(CancelRequest) returns (CancelResponse);
+    rpc getSnapshot(SnapshotRequest) returns (SnapshotResponse);
+    rpc getAvailableCapability(AvailableCapabilityRequest) returns (AvailableCapabilityResponse);
+    rpc addMarketDataStatusListener(AddMarketDataStatusListenerRequest) returns (stream MarketDataStatusListenerResponse);
+    rpc removeMarketDataStatusListener(RemoveMarketDataStatusListenerRequest) returns (RemoveMarketDataStatusListenerResponse);
+}

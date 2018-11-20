@@ -118,11 +118,9 @@ public abstract class ModuleFactory {
     }
 
     /**
-     * Returns the name of the module provider.
-     * 
-     * <p>A module provider URI has the following form:
-     * 
-     * <p><code>metc:provType:providerName</code>
+     * Returns the name of the module provider. A module
+     * provider URI has the following form.<br/>
+     * <code>metc:provType:providerName</code>
      *
      * @return the provider's URN
      */

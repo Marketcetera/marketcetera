@@ -1,59 +1,35 @@
 package org.marketcetera.admin;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-
-import javax.annotation.PostConstruct;
+import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.marketcetera.admin.AdminClient;
-import org.marketcetera.admin.AdminRpc;
-import org.marketcetera.admin.InstanceData;
-import org.marketcetera.admin.Permission;
-import org.marketcetera.admin.PermissionFactory;
-import org.marketcetera.admin.Role;
-import org.marketcetera.admin.RoleFactory;
-import org.marketcetera.admin.User;
-import org.marketcetera.admin.UserAttribute;
-import org.marketcetera.admin.UserAttributeFactory;
-import org.marketcetera.admin.UserAttributeType;
-import org.marketcetera.admin.UserFactory;
-import org.marketcetera.admin.AdminRpc.AdminRpcService.BlockingInterface;
-import org.marketcetera.admin.impl.SimpleFixSessionAttributeDescriptor;
-import org.marketcetera.admin.impl.SimpleInstanceData;
+import org.marketcetera.admin.rpc.AdminRpcUtil;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
-import org.marketcetera.fix.ActiveFixSession;
-import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionAttributeDescriptor;
-import org.marketcetera.fix.FixSessionStatus;
-import org.marketcetera.fix.SimpleFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
-import org.marketcetera.persist.PageResponse;
-import org.marketcetera.persist.Sort;
-import org.marketcetera.persist.SortDirection;
-import org.marketcetera.rpc.BaseRpcClient;
+import org.marketcetera.rpc.base.BaseRpc;
+import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
+import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
+import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
+import org.marketcetera.rpc.client.AbstractRpcClient;
+import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.rpc.BaseRpc;
-import org.marketcetera.util.rpc.BaseRpc.LoginRequest;
-import org.marketcetera.util.rpc.BaseRpc.LoginResponse;
-import org.marketcetera.util.rpc.BaseRpc.LogoutRequest;
-import org.marketcetera.util.rpc.BaseRpc.LogoutResponse;
 import org.marketcetera.util.ws.tags.AppId;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
-import com.google.protobuf.RpcController;
-import com.google.protobuf.ServiceException;
-import com.googlecode.protobuf.pro.duplex.RpcClientChannel;
+import com.google.common.collect.Sets;
+import com.marketcetera.admin.AdminRpc;
+import com.marketcetera.admin.AdminRpcServiceGrpc;
+import com.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceBlockingStub;
+import com.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceStub;
+
+import io.grpc.Channel;
 
 /* $License$ */
 
@@ -65,663 +41,43 @@ import com.googlecode.protobuf.pro.duplex.RpcClientChannel;
  * @since $Release$
  */
 public class AdminRpcClient
-        extends BaseRpcClient<AdminRpc.AdminRpcService.BlockingInterface>
+        extends AbstractRpcClient<AdminRpcServiceBlockingStub,AdminRpcServiceStub,AdminRpcClientParameters>
         implements AdminClient
 {
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminClient#createFixSession(com.marketcetera.fix.FixSession)
-     */
-    @Override
-    public FixSession createFixSession(FixSession inFixSession)
-    {
-        validateSession();
-        AdminRpc.CreateFixSessionRequest.Builder requestBuilder = AdminRpc.CreateFixSessionRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting create FIX session for {}",
-                                   getSessionId(),
-                                   inFixSession);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            if(inFixSession != null) {
-                AdminRpc.FixSession.Builder fixSessionBuilder = AdminRpc.FixSession.newBuilder();
-                fixSessionBuilder.setAcceptor(inFixSession.isAcceptor());
-                fixSessionBuilder.setAffinity(inFixSession.getAffinity());
-                if(inFixSession.getBrokerId() != null) {
-                    fixSessionBuilder.setBrokerId(inFixSession.getBrokerId());
-                }
-                if(inFixSession.getDescription() != null) {
-                    fixSessionBuilder.setDescription(inFixSession.getDescription());
-                }
-                if(inFixSession.getHost() != null) {
-                    fixSessionBuilder.setHost(inFixSession.getHost());
-                }
-                if(inFixSession.getName() != null) {
-                    fixSessionBuilder.setName(inFixSession.getName());
-                }
-                fixSessionBuilder.setPort(inFixSession.getPort());
-                if(inFixSession.getSessionId() != null) {
-                    fixSessionBuilder.setSessionId(inFixSession.getSessionId());
-                }
-                BaseRpc.Properties.Builder propertiesBuilder = BaseRpc.Properties.newBuilder();
-                for(Map.Entry<String,String> entry : inFixSession.getSessionSettings().entrySet()) {
-                    BaseRpc.Property.Builder propertyBuilder = BaseRpc.Property.newBuilder();
-                    if(entry.getKey() != null) {
-                        propertyBuilder.setKey(entry.getKey());
-                        propertyBuilder.setValue(entry.getValue());
-                        propertiesBuilder.addProperty(propertyBuilder.build());
-                    }
-                    propertyBuilder.clear();
-                }
-                fixSessionBuilder.setSessionSettings(propertiesBuilder.build());
-                requestBuilder.setFixSession(fixSessionBuilder.build());
-            }
-            AdminRpc.CreateFixSessionResponse response = getClientService().createFixSession(getController(),
-                                                                                             requestBuilder.build());
-            SimpleFixSession result = null;
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            if(response.hasFixSession()) {
-                // TODO fields
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   result);
-            return result;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminRpcClient#readFixSessions()
-     */
-    @Override
-    public List<ActiveFixSession> readFixSessions()
-    {
-        validateSession();
-        AdminRpc.ReadFixSessionsRequest.Builder requestBuilder = AdminRpc.ReadFixSessionsRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting FIX sessions",
-                                   getSessionId());
-            requestBuilder.setSessionId(getSessionId().getValue());
-            AdminRpc.ReadFixSessionsResponse response = getClientService().readFixSessions(getController(),
-                                                                                           requestBuilder.build());
-            List<ActiveFixSession> results = new ArrayList<>();
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            for(AdminRpc.ActiveFixSession rpcFixSession : response.getFixSessionList()) {
-                SimpleFixSession fixSession = new SimpleFixSession();
-                if(rpcFixSession.getFixSession().hasAcceptor()) {
-                    fixSession.setIsAcceptor(rpcFixSession.getFixSession().getAcceptor());
-                }
-                if(rpcFixSession.getFixSession().hasAffinity()) {
-                    fixSession.setAffinity(rpcFixSession.getFixSession().getAffinity());
-                }
-                if(rpcFixSession.getFixSession().hasBrokerId()) {
-                    fixSession.setBrokerId(rpcFixSession.getFixSession().getBrokerId());
-                }
-                if(rpcFixSession.getFixSession().hasDescription()) {
-                    fixSession.setDescription(rpcFixSession.getFixSession().getDescription());
-                }
-                if(rpcFixSession.getFixSession().hasHost()) {
-                    fixSession.setHost(rpcFixSession.getFixSession().getHost());
-                }
-                if(rpcFixSession.hasInstance()) {
-                    fixSession.setInstance(rpcFixSession.getInstance());
-                }
-                if(rpcFixSession.hasSenderSeqNum()) {
-                    fixSession.setSenderSequenceNumber(rpcFixSession.getSenderSeqNum());
-                }
-                if(rpcFixSession.hasTargetSeqNum()) {
-                    fixSession.setTargetSequenceNumber(rpcFixSession.getTargetSeqNum());
-                }
-                if(rpcFixSession.getFixSession().hasName()) {
-                    fixSession.setName(rpcFixSession.getFixSession().getName());
-                }
-                if(rpcFixSession.getFixSession().hasPort()) {
-                    fixSession.setPort(rpcFixSession.getFixSession().getPort());
-                }
-                if(rpcFixSession.getFixSession().hasSessionId()) {
-                    fixSession.setSessionId(rpcFixSession.getFixSession().getSessionId());
-                }
-                if(rpcFixSession.hasStatus()) {
-                    fixSession.setStatus(FixSessionStatus.valueOf(rpcFixSession.getStatus()));
-                }
-                if(rpcFixSession.getFixSession().hasSessionSettings()) {
-                    for(BaseRpc.Property property : rpcFixSession.getFixSession().getSessionSettings().getPropertyList()) {
-                        String key = property.hasKey()?property.getKey():null;
-                        String value = property.hasValue()?property.getValue():null;
-                        if(key != null) {
-                            fixSession.getSessionSettings().put(key,value);
-                        }
-                    }
-                }
-                results.add(fixSession);
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   results);
-            return results;
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
-            if(e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            }
-            throw new RuntimeException(e);
-        }
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminClient#readFixSessions(org.marketcetera.core.PageRequest)
-     */
-    @Override
-    public CollectionPageResponse<ActiveFixSession> readFixSessions(PageRequest inPageRequest)
-    {
-        validateSession();
-        AdminRpc.ReadFixSessionsRequest.Builder requestBuilder = AdminRpc.ReadFixSessionsRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting FIX sessions",
-                                   getSessionId());
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setPage(buildPageRequest(inPageRequest));
-            AdminRpc.ReadFixSessionsResponse response = getClientService().readFixSessions(getController(),
-                                                                                           requestBuilder.build());
-            List<ActiveFixSession> dataElements = new ArrayList<>();
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            for(AdminRpc.ActiveFixSession rpcFixSession : response.getFixSessionList()) {
-                SimpleFixSession fixSession = new SimpleFixSession();
-                if(rpcFixSession.getFixSession().hasAcceptor()) {
-                    fixSession.setIsAcceptor(rpcFixSession.getFixSession().getAcceptor());
-                }
-                if(rpcFixSession.getFixSession().hasAffinity()) {
-                    fixSession.setAffinity(rpcFixSession.getFixSession().getAffinity());
-                }
-                if(rpcFixSession.getFixSession().hasBrokerId()) {
-                    fixSession.setBrokerId(rpcFixSession.getFixSession().getBrokerId());
-                }
-                if(rpcFixSession.getFixSession().hasDescription()) {
-                    fixSession.setDescription(rpcFixSession.getFixSession().getDescription());
-                }
-                if(rpcFixSession.getFixSession().hasHost()) {
-                    fixSession.setHost(rpcFixSession.getFixSession().getHost());
-                }
-                if(rpcFixSession.hasInstance()) {
-                    fixSession.setInstance(rpcFixSession.getInstance());
-                }
-                if(rpcFixSession.hasSenderSeqNum()) {
-                    fixSession.setSenderSequenceNumber(rpcFixSession.getSenderSeqNum());
-                }
-                if(rpcFixSession.hasTargetSeqNum()) {
-                    fixSession.setTargetSequenceNumber(rpcFixSession.getTargetSeqNum());
-                }
-                if(rpcFixSession.getFixSession().hasName()) {
-                    fixSession.setName(rpcFixSession.getFixSession().getName());
-                }
-                if(rpcFixSession.getFixSession().hasPort()) {
-                    fixSession.setPort(rpcFixSession.getFixSession().getPort());
-                }
-                if(rpcFixSession.getFixSession().hasSessionId()) {
-                    fixSession.setSessionId(rpcFixSession.getFixSession().getSessionId());
-                }
-                if(rpcFixSession.hasStatus()) {
-                    fixSession.setStatus(FixSessionStatus.valueOf(rpcFixSession.getStatus()));
-                }
-                if(rpcFixSession.getFixSession().hasSessionSettings()) {
-                    for(BaseRpc.Property property : rpcFixSession.getFixSession().getSessionSettings().getPropertyList()) {
-                        String key = property.hasKey()?property.getKey():null;
-                        String value = property.hasValue()?property.getValue():null;
-                        if(key != null) {
-                            fixSession.getSessionSettings().put(key,value);
-                        }
-                    }
-                }
-                dataElements.add(fixSession);
-            }
-            CollectionPageResponse<ActiveFixSession> result = new CollectionPageResponse<>();
-            if(response.hasPage()) {
-                addPageToResponse(response.getPage(),
-                                  result);
-            }
-            result.setElements(dataElements);
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   result);
-            return result;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminClient#updateFixSession(java.lang.String, com.marketcetera.fix.FixSession)
-     */
-    @Override
-    public void updateFixSession(String inIncomingName,
-                                 FixSession inFixSession)
-    {
-        validateSession();
-        AdminRpc.UpdateFixSessionRequest.Builder requestBuilder = AdminRpc.UpdateFixSessionRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} update FIX session {}: {}",
-                                   getSessionId(),
-                                   inIncomingName,
-                                   inFixSession);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setName(inIncomingName);
-            if(inFixSession != null) {
-                AdminRpc.FixSession.Builder fixSessionBuilder = AdminRpc.FixSession.newBuilder();
-                fixSessionBuilder.setAcceptor(inFixSession.isAcceptor());
-                fixSessionBuilder.setAffinity(inFixSession.getAffinity());
-                if(inFixSession.getBrokerId() != null) {
-                    fixSessionBuilder.setBrokerId(inFixSession.getBrokerId());
-                }
-                if(inFixSession.getDescription() != null) {
-                    fixSessionBuilder.setDescription(inFixSession.getDescription());
-                }
-                if(inFixSession.getHost() != null) {
-                    fixSessionBuilder.setHost(inFixSession.getHost());
-                }
-                if(inFixSession.getName() != null) {
-                    fixSessionBuilder.setName(inFixSession.getName());
-                }
-                fixSessionBuilder.setPort(inFixSession.getPort());
-                if(inFixSession.getSessionId() != null) {
-                    fixSessionBuilder.setSessionId(inFixSession.getSessionId());
-                }
-                BaseRpc.Properties.Builder propertiesBuilder = BaseRpc.Properties.newBuilder();
-                for(Map.Entry<String,String> entry : inFixSession.getSessionSettings().entrySet()) {
-                    BaseRpc.Property.Builder propertyBuilder = BaseRpc.Property.newBuilder();
-                    if(entry.getKey() != null) {
-                        propertyBuilder.setKey(entry.getKey());
-                        propertyBuilder.setValue(entry.getValue());
-                        propertiesBuilder.addProperty(propertyBuilder.build());
-                    }
-                    propertyBuilder.clear();
-                }
-                fixSessionBuilder.setSessionSettings(propertiesBuilder.build());
-                requestBuilder.setFixSession(fixSessionBuilder.build());
-            }
-            AdminRpc.UpdateFixSessionResponse response = getClientService().updateFixSession(getController(),
-                                                                                             requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
-            if(e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            }
-            throw new RuntimeException(e);
-        }
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminClient#enableFixSession(java.lang.String)
-     */
-    @Override
-    public void enableFixSession(String inName)
-    {
-        validateSession();
-        AdminRpc.EnableFixSessionRequest.Builder requestBuilder = AdminRpc.EnableFixSessionRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} enable FIX session {}",
-                                   getSessionId(),
-                                   inName);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setName(inName);
-            AdminRpc.EnableFixSessionResponse response = getClientService().enableFixSession(getController(),
-                                                                                             requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
-            if(e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            }
-            throw new RuntimeException(e);
-        }
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminClient#disableFixSession(java.lang.String)
-     */
-    @Override
-    public void disableFixSession(String inName)
-    {
-        validateSession();
-        AdminRpc.DisableFixSessionRequest.Builder requestBuilder = AdminRpc.DisableFixSessionRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} disable FIX session {}",
-                                   getSessionId(),
-                                   inName);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setName(inName);
-            AdminRpc.DisableFixSessionResponse response = getClientService().disableFixSession(getController(),
-                                                                                               requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
-            if(e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            }
-            throw new RuntimeException(e);
-        }
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminClient#deleteFixSession(java.lang.String)
-     */
-    @Override
-    public void deleteFixSession(String inName)
-    {
-        validateSession();
-        AdminRpc.DeleteFixSessionRequest.Builder requestBuilder = AdminRpc.DeleteFixSessionRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} delete FIX session {}",
-                                   getSessionId(),
-                                   inName);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setName(inName);
-            AdminRpc.DeleteFixSessionResponse response = getClientService().deleteFixSession(getController(),
-                                                                                             requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
-            if(e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            }
-            throw new RuntimeException(e);
-        }
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminClient#stopFixSession(java.lang.String)
-     */
-    @Override
-    public void stopFixSession(String inName)
-    {
-        validateSession();
-        AdminRpc.StopFixSessionRequest.Builder requestBuilder = AdminRpc.StopFixSessionRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} stop FIX session {}",
-                                   getSessionId(),
-                                   inName);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setName(inName);
-            AdminRpc.StopFixSessionResponse response = getClientService().stopFixSession(getController(),
-                                                                                         requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
-            if(e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            }
-            throw new RuntimeException(e);
-        }
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminClient#startFixSession(java.lang.String)
-     */
-    @Override
-    public void startFixSession(String inName)
-    {
-        validateSession();
-        AdminRpc.StartFixSessionRequest.Builder requestBuilder = AdminRpc.StartFixSessionRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} start FIX session {}",
-                                   getSessionId(),
-                                   inName);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setName(inName);
-            AdminRpc.StartFixSessionResponse response = getClientService().startFixSession(getController(),
-                                                                                           requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
-            if(e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            }
-            throw new RuntimeException(e);
-        }
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminClient#updateSequenceNumbers(java.lang.String, int, int)
-     */
-    @Override
-    public void updateSequenceNumbers(String inSessionName,
-                                      int inSenderSequenceNumber,
-                                      int inTargetSequenceNumber)
-    {
-        validateSession();
-        AdminRpc.UpdateSequenceNumbersRequest.Builder requestBuilder = AdminRpc.UpdateSequenceNumbersRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} update sequence numbers for FIX session {} to {}:{}",
-                                   getSessionId(),
-                                   inSessionName,
-                                   inSenderSequenceNumber,
-                                   inTargetSequenceNumber);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setName(inSessionName);
-            requestBuilder.setSenderSequenceNumber(inSenderSequenceNumber);
-            requestBuilder.setTargetSequenceNumber(inTargetSequenceNumber);
-            AdminRpc.UpdateSequenceNumbersResponse response = getClientService().updateSequenceNumbers(getController(),
-                                                                                                       requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
-            if(e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            }
-            throw new RuntimeException(e);
-        }
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminClient#changeSenderSequenceNumber(java.lang.String, int)
-     */
-    @Override
-    public void updateSenderSequenceNumber(String inSessionName,
-                                           int inSenderSequenceNumber)
-    {
-        validateSession();
-        AdminRpc.UpdateSequenceNumbersRequest.Builder requestBuilder = AdminRpc.UpdateSequenceNumbersRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} update sender sequence number for FIX session {} to {}",
-                                   getSessionId(),
-                                   inSessionName,
-                                   inSenderSequenceNumber);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setName(inSessionName);
-            requestBuilder.setSenderSequenceNumber(inSenderSequenceNumber);
-            AdminRpc.UpdateSequenceNumbersResponse response = getClientService().updateSequenceNumbers(getController(),
-                                                                                                       requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
-            if(e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            }
-            throw new RuntimeException(e);
-        }
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminClient#changeTargetSequenceNumber(java.lang.String, int)
-     */
-    @Override
-    public void updateTargetSequenceNumber(String inSessionName,
-                                           int inTargetSequenceNumber)
-    {
-        validateSession();
-        AdminRpc.UpdateSequenceNumbersRequest.Builder requestBuilder = AdminRpc.UpdateSequenceNumbersRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} update target sequence number for FIX session {} to {}",
-                                   getSessionId(),
-                                   inSessionName,
-                                   inTargetSequenceNumber);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setName(inSessionName);
-            requestBuilder.setTargetSequenceNumber(inTargetSequenceNumber);
-            AdminRpc.UpdateSequenceNumbersResponse response = getClientService().updateSequenceNumbers(getController(),
-                                                                                                       requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
-            if(e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            }
-            throw new RuntimeException(e);
-        }
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminClient#getInstanceData(int)
-     */
-    @Override
-    public InstanceData getInstanceData(int inAffinity)
-    {
-        validateSession();
-        AdminRpc.InstanceDataRequest.Builder requestBuilder = AdminRpc.InstanceDataRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting instance data",
-                                   getSessionId());
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setAffinity(inAffinity);
-            AdminRpc.InstanceDataResponse response = getClientService().getInstanceData(getController(),
-                                                                                        requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            SimpleInstanceData result = new SimpleInstanceData();
-            if(response.hasInstanceData()) {
-                AdminRpc.InstanceData rpcInstanceData = response.getInstanceData();
-                if(rpcInstanceData.hasHostname()) {
-                    result.setHostname(rpcInstanceData.getHostname());
-                }
-                result.setPort(rpcInstanceData.getPort());
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   result);
-            return result;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
-        
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.admin.AdminClient#getFixSessionAttributeDescriptors()
-     */
-    @Override
-    public Collection<FixSessionAttributeDescriptor> getFixSessionAttributeDescriptors()
-    {
-        validateSession();
-        AdminRpc.ReadFixSessionAttributeDescriptorsRequest.Builder requestBuilder = AdminRpc.ReadFixSessionAttributeDescriptorsRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting FIX session attribute descriptors",
-                                   getSessionId());
-            requestBuilder.setSessionId(getSessionId().getValue());
-            AdminRpc.ReadFixSessionAttributeDescriptorsResponse response = getClientService().readFixSessionAttributeDescriptors(getController(),
-                                                                                                                                 requestBuilder.build());
-            Collection<FixSessionAttributeDescriptor> results = new ArrayList<>();
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            for(AdminRpc.FixSessionAttributeDescriptor rpcDescriptor : response.getFixSessionAttributeDescriptorsList()) {
-                SimpleFixSessionAttributeDescriptor descriptor = new SimpleFixSessionAttributeDescriptor();
-                if(rpcDescriptor.hasAdvice()) {
-                    descriptor.setAdvice(rpcDescriptor.getAdvice());
-                }
-                if(rpcDescriptor.hasDefaultValue()) {
-                    descriptor.setDefaultValue(rpcDescriptor.getDefaultValue());
-                }
-                if(rpcDescriptor.hasDescription()) {
-                    descriptor.setDescription(rpcDescriptor.getDescription());
-                }
-                if(rpcDescriptor.hasName()) {
-                    descriptor.setName(rpcDescriptor.getName());
-                }
-                if(rpcDescriptor.hasPattern()) {
-                    descriptor.setPattern(rpcDescriptor.getPattern());
-                }
-                if(rpcDescriptor.hasRequired()) {
-                    descriptor.setRequired(rpcDescriptor.getRequired());
-                }
-                results.add(descriptor);
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   results);
-            return results;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
-    }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminRpcClient#getPermissionsForUsername()
      */
     @Override
     public Set<String> getPermissionsForCurrentUser()
     {
-        validateSession();
-        AdminRpc.PermissionsForUsernameRequest.Builder requestBuilder = AdminRpc.PermissionsForUsernameRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting permissions",
-                                   getSessionId());
-            requestBuilder.setSessionId(getSessionId().getValue());
-            AdminRpc.PermissionsForUsernameResponse response = getClientService().getPermissionsForUsername(getController(),
-                                                                                                       requestBuilder.build());
-            Set<String> results = new HashSet<>();
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
+        return executeCall(new Callable<Set<String>>() {
+            @Override
+            public Set<String> call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} getting permissions for self",
+                                       getSessionId());
+                AdminRpc.PermissionsForUsernameRequest.Builder requestBuilder = AdminRpc.PermissionsForUsernameRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                AdminRpc.PermissionsForUsernameRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.PermissionsForUsernameResponse response = getBlockingStub().getPermissionsForUsername(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Set<String> results = Sets.newHashSet(response.getPermissionsList());
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       results);
+                return results;
             }
-            results.addAll(response.getPermissionsList());
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   results);
-            return results;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminRpcClient#changeUserPassword(java.lang.String, java.lang.String, java.lang.String)
@@ -731,38 +87,41 @@ public class AdminRpcClient
                                    String inOldPassword,
                                    String inNewPassword)
     {
-        validateSession();
-        AdminRpc.ChangeUserPasswordRequest.Builder requestBuilder = AdminRpc.ChangeUserPasswordRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting change user password for {}",
-                                   getSessionId(),
-                                   inUsername);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            inUsername = StringUtils.trimToNull(inUsername);
-            if(inUsername != null) {
-                requestBuilder.setUsername(inUsername);
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} changing password for {}",
+                                       getSessionId(),
+                                       inUsername);
+                AdminRpc.ChangeUserPasswordRequest.Builder requestBuilder = AdminRpc.ChangeUserPasswordRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                String value = StringUtils.trimToNull(inUsername);
+                if(value != null) {
+                    requestBuilder.setUsername(value);
+                }
+                value = StringUtils.trimToNull(inOldPassword);
+                if(value != null) {
+                    requestBuilder.setOldPassword(inOldPassword);
+                }
+                value = StringUtils.trimToNull(inNewPassword);
+                if(value != null) {
+                    requestBuilder.setNewPassword(inNewPassword);
+                }
+                AdminRpc.ChangeUserPasswordRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending request",
+                                       getSessionId());
+                AdminRpc.ChangeUserPasswordResponse response = getBlockingStub().changeUserPassword(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
             }
-            inOldPassword = StringUtils.trimToNull(inOldPassword);
-            if(inOldPassword != null) {
-                requestBuilder.setOldPassword(inOldPassword);
-            }
-            inNewPassword = StringUtils.trimToNull(inNewPassword);
-            if(inOldPassword != null) {
-                requestBuilder.setNewPassword(inNewPassword);
-            }
-            AdminRpc.ChangeUserPasswordResponse response = getClientService().changeUserPassword(getController(),
-                                                                                            requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} change password for {} succeeded",
-                                   getSessionId(),
-                                   inUsername);
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#createUser(com.marketcetera.admin.User, java.lang.String)
@@ -771,129 +130,79 @@ public class AdminRpcClient
     public User createUser(User inNewUser,
                            String inPassword)
     {
-        validateSession();
-        AdminRpc.CreateUserRequest.Builder requestBuilder = AdminRpc.CreateUserRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting create user for {}",
-                                   getSessionId(),
-                                   inNewUser);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            if(inNewUser != null) {
-                AdminRpc.User.Builder userBuilder = AdminRpc.User.newBuilder();
-                userBuilder.setActive(inNewUser.isActive());
-                if(inNewUser.getDescription() != null) {
-                    userBuilder.setDescription(inNewUser.getDescription());
-                }
-                if(inNewUser.getName() != null) {
-                    userBuilder.setName(inNewUser.getName());
-                }
-                requestBuilder.setUser(userBuilder.build());
-            }
-            inPassword = StringUtils.trimToNull(inPassword);
-            if(inPassword != null) {
+        return executeCall(new Callable<User>() {
+            @Override
+            public User call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} creating new user {}",
+                                       getSessionId(),
+                                       inNewUser);
+                AdminRpc.CreateUserRequest.Builder requestBuilder = AdminRpc.CreateUserRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                AdminRpcUtil.getRpcUser(inNewUser).ifPresent(value->requestBuilder.setUser(value));
                 requestBuilder.setPassword(inPassword);
+                AdminRpc.CreateUserRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.CreateUserResponse response = getBlockingStub().createUser(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Optional<User> result = AdminRpcUtil.getUser(response.getUser(),
+                                                             userFactory);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result.orElse(null);
             }
-            AdminRpc.CreateUserResponse response = getClientService().createUser(getController(),
-                                                                                 requestBuilder.build());
-            User result = null;
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            if(response.hasUser()) {
-                AdminRpc.User rpcUser = response.getUser();
-                boolean isActive = false;
-                String description = null;
-                String name = null;
-                String password = "********";
-                if(rpcUser.hasActive()) {
-                    isActive = rpcUser.getActive();
-                }
-                if(rpcUser.hasDescription()) {
-                    description = rpcUser.getDescription();
-                }
-                if(rpcUser.hasName()) {
-                    name = rpcUser.getName();
-                }
-                result = userFactory.create(name,
-                                            password,
-                                            description,
-                                            isActive);
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   result);
-            return result;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#updateUser(java.lang.String, com.marketcetera.admin.User)
      */
     @Override
     public User updateUser(String inUsername,
-                           User inUpdatedUser)
+                           User inUser)
     {
-        validateSession();
-        AdminRpc.UpdateUserRequest.Builder requestBuilder = AdminRpc.UpdateUserRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting user update for {}: {}",
-                                   getSessionId(),
-                                   inUsername,
-                                   inUpdatedUser);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            inUsername = StringUtils.trimToNull(inUsername);
-            if(inUsername != null) {
+        return executeCall(new Callable<User>() {
+            @Override
+            public User call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} updating user {} {}",
+                                       getSessionId(),
+                                       inUsername,
+                                       inUser);
+                AdminRpc.UpdateUserRequest.Builder requestBuilder = AdminRpc.UpdateUserRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                AdminRpcUtil.getRpcUser(inUser).ifPresent(value->requestBuilder.setUser(value));
                 requestBuilder.setUsername(inUsername);
+                AdminRpc.UpdateUserRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.UpdateUserResponse response = getBlockingStub().updateUser(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Optional<User> result = AdminRpcUtil.getUser(response.getUser(),
+                                                             userFactory);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result.orElse(null);
             }
-            if(inUpdatedUser != null) {
-                AdminRpc.User.Builder userBuilder = AdminRpc.User.newBuilder();
-                userBuilder.setActive(inUpdatedUser.isActive());
-                if(inUpdatedUser.getDescription() != null) {
-                    userBuilder.setDescription(inUpdatedUser.getDescription());
-                }
-                if(inUpdatedUser.getName() != null) {
-                    userBuilder.setName(inUpdatedUser.getName());
-                }
-                requestBuilder.setUser(userBuilder.build());
-            }
-            AdminRpc.UpdateUserResponse response = getClientService().updateUser(getController(),
-                                                                            requestBuilder.build());
-            User result = null;
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            if(response.hasUser()) {
-                AdminRpc.User rpcUser = response.getUser();
-                boolean isActive = false;
-                String description = null;
-                String name = null;
-                String password = "********";
-                if(rpcUser.hasActive()) {
-                    isActive = rpcUser.getActive();
-                }
-                if(rpcUser.hasDescription()) {
-                    description = rpcUser.getDescription();
-                }
-                if(rpcUser.hasName()) {
-                    name = rpcUser.getName();
-                }
-                result = userFactory.create(name,
-                                            password,
-                                            description,
-                                            isActive);
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   result);
-            return result;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminRpcClient#deleteUser(java.lang.String)
@@ -901,61 +210,67 @@ public class AdminRpcClient
     @Override
     public void deleteUser(String inUsername)
     {
-        validateSession();
-        AdminRpc.DeleteUserRequest.Builder requestBuilder = AdminRpc.DeleteUserRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting user delete for {}",
-                                   getSessionId(),
-                                   inUsername);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            inUsername = StringUtils.trimToNull(inUsername);
-            if(inUsername != null) {
-                requestBuilder.setUsername(inUsername);
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} deleting user {}",
+                                       getSessionId(),
+                                       inUsername);
+                AdminRpc.DeleteUserRequest.Builder requestBuilder = AdminRpc.DeleteUserRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                String value = StringUtils.trimToNull(inUsername);
+                if(value != null) {
+                    requestBuilder.setUsername(value);
+                }
+                AdminRpc.DeleteUserRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending request",
+                                       getSessionId());
+                AdminRpc.DeleteUserResponse response = getBlockingStub().deleteUser(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
             }
-            AdminRpc.DeleteUserResponse response = getClientService().deleteUser(getController(),
-                                                                            requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} delete user for {} succeeded",
-                                   getSessionId(),
-                                   inUsername);
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#deactivateUser(java.lang.String)
      */
     @Override
-    public void deactivateUser(String inName)
+    public void deactivateUser(String inUsername)
     {
-        validateSession();
-        AdminRpc.DeactivateUserRequest.Builder requestBuilder = AdminRpc.DeactivateUserRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting deactivate user for {}",
-                                   getSessionId(),
-                                   inName);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            inName = StringUtils.trimToNull(inName);
-            if(inName != null) {
-                requestBuilder.setUsername(inName);
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} deactivating user {}",
+                                       getSessionId(),
+                                       inUsername);
+                AdminRpc.DeactivateUserRequest.Builder requestBuilder = AdminRpc.DeactivateUserRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                String value = StringUtils.trimToNull(inUsername);
+                if(value != null) {
+                    requestBuilder.setUsername(value);
+                }
+                AdminRpc.DeactivateUserRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending request",
+                                       getSessionId());
+                AdminRpc.DeactivateUserResponse response = getBlockingStub().deactivateUser(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
             }
-            AdminRpc.DeactivateUserResponse response = getClientService().deactivateUser(getController(),
-                                                                                         requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} deactivate user for {} succeeded",
-                                   getSessionId(),
-                                   inName);
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#createRole(com.marketcetera.admin.Role)
@@ -963,83 +278,39 @@ public class AdminRpcClient
     @Override
     public Role createRole(Role inRole)
     {
-        validateSession();
-        AdminRpc.CreateRoleRequest.Builder requestBuilder = AdminRpc.CreateRoleRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting create role for {}",
-                                   getSessionId(),
-                                   inRole);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            if(inRole != null) {
-                AdminRpc.Role.Builder roleBuilder = AdminRpc.Role.newBuilder();
-                if(inRole.getDescription() != null) {
-                    roleBuilder.setDescription(inRole.getDescription());
-                }
-                if(inRole.getName() != null) {
-                    roleBuilder.setName(inRole.getName());
-                }
-                for(Permission permission : inRole.getPermissions()) {
-                    requestBuilder.addPermissionName(permission.getName());
-                }
-                for(User user : inRole.getSubjects()) {
-                    requestBuilder.addUsername(user.getName());
-                }
-                requestBuilder.setRole(roleBuilder.build());
+        return executeCall(new Callable<Role>() {
+            @Override
+            public Role call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} creating new Role {}",
+                                       getSessionId(),
+                                       inRole);
+                AdminRpc.CreateRoleRequest.Builder requestBuilder = AdminRpc.CreateRoleRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                AdminRpcUtil.getRpcRole(inRole).ifPresent(value->requestBuilder.setRole(value));
+                AdminRpc.CreateRoleRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.CreateRoleResponse response = getBlockingStub().createRole(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Optional<Role> result = AdminRpcUtil.getRole(response.getRole(),
+                                                             roleFactory,
+                                                             permissionFactory,
+                                                             userFactory);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result.orElse(null);
             }
-            AdminRpc.CreateRoleResponse response = getClientService().createRole(getController(),
-                                                                                 requestBuilder.build());
-            Role result = null;
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            if(response.hasRole()) {
-                AdminRpc.Role rpcRole = response.getRole();
-                String name = null;
-                String description = null;
-                if(rpcRole.hasDescription()) {
-                    description = rpcRole.getDescription();
-                }
-                if(rpcRole.hasName()) {
-                    name = rpcRole.getName();
-                }
-                result = roleFactory.create(name,
-                                            description);
-                for(AdminRpc.Permission rpcPermission : rpcRole.getPermissionList()) {
-                    description = null;
-                    name = null;
-                    if(rpcPermission.hasDescription()) {
-                        description = rpcPermission.getDescription();
-                    }
-                    if(rpcPermission.hasName()) {
-                        name = rpcPermission.getName();
-                    }
-                    result.getPermissions().add(permissionFactory.create(name,
-                                                                         description));
-                }
-                for(AdminRpc.User rpcUser : rpcRole.getUserList()) {
-                    description = null;
-                    name = null;
-                    if(rpcUser.hasDescription()) {
-                        description = rpcUser.getDescription();
-                    }
-                    if(rpcUser.hasName()) {
-                        name = rpcUser.getName();
-                    }
-                    result.getSubjects().add(userFactory.create(name,
-                                                                "********",
-                                                                description,
-                                                                rpcUser.getActive()));
-                }
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   result);
-            return result;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#readRoles()
@@ -1047,67 +318,7 @@ public class AdminRpcClient
     @Override
     public List<Role> readRoles()
     {
-        validateSession();
-        AdminRpc.ReadRolesRequest.Builder requestBuilder = AdminRpc.ReadRolesRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting roles",
-                                   getSessionId());
-            requestBuilder.setSessionId(getSessionId().getValue());
-            AdminRpc.ReadRolesResponse response = getClientService().readRoles(getController(),
-                                                                               requestBuilder.build());
-            List<Role> results = new ArrayList<>();
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            for(AdminRpc.Role rpcRole : response.getRoleList()) {
-                String description = null;
-                String name = null;
-                if(rpcRole.hasDescription()) {
-                    description = rpcRole.getDescription();
-                }
-                if(rpcRole.hasName()) {
-                    name = rpcRole.getName();
-                }
-                Role role = roleFactory.create(name,
-                                               description);
-                for(AdminRpc.Permission rpcPermission : rpcRole.getPermissionList()) {
-                    description = null;
-                    name = null;
-                    if(rpcPermission.hasDescription()) {
-                        description = rpcPermission.getDescription();
-                    }
-                    if(rpcPermission.hasName()) {
-                        name = rpcPermission.getName();
-                    }
-                    role.getPermissions().add(permissionFactory.create(name,
-                                                                       description));
-                }
-                for(AdminRpc.User rpcUser : rpcRole.getUserList()) {
-                    description = null;
-                    name = null;
-                    if(rpcUser.hasDescription()) {
-                        description = rpcUser.getDescription();
-                    }
-                    if(rpcUser.hasName()) {
-                        name = rpcUser.getName();
-                    }
-                    User subject = userFactory.create(name,
-                                                      "********",
-                                                      description,
-                                                      rpcUser.getActive());
-                    role.getSubjects().add(subject);
-                }
-                results.add(role);
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   results);
-            return results;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        return Lists.newArrayList(readRoles(new PageRequest(0,Integer.MAX_VALUE)).getElements());
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#readRoles(org.marketcetera.core.PageRequest)
@@ -1115,74 +326,48 @@ public class AdminRpcClient
     @Override
     public CollectionPageResponse<Role> readRoles(PageRequest inPageRequest)
     {
-        validateSession();
-        AdminRpc.ReadRolesRequest.Builder requestBuilder = AdminRpc.ReadRolesRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting roles",
-                                   getSessionId());
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setPage(buildPageRequest(inPageRequest));
-            AdminRpc.ReadRolesResponse response = getClientService().readRoles(getController(),
-                                                                               requestBuilder.build());
-            List<Role> results = new ArrayList<>();
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
+        return executeCall(new Callable<CollectionPageResponse<Role>>() {
+            @Override
+            public CollectionPageResponse<Role> call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} reading roles {}",
+                                       getSessionId(),
+                                       inPageRequest);
+                AdminRpc.ReadRolesRequest.Builder requestBuilder = AdminRpc.ReadRolesRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setPage(PagingRpcUtil.buildPageRequest(inPageRequest));
+                AdminRpc.ReadRolesRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.ReadRolesResponse response = getBlockingStub().readRoles(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                List<Role> results = Lists.newArrayList();
+                for(AdminRpc.Role rpcRole : response.getRoleList()) {
+                    AdminRpcUtil.getRole(rpcRole,
+                                         roleFactory,
+                                         permissionFactory,
+                                         userFactory).ifPresent(value->results.add(value));
+                }
+                CollectionPageResponse<Role> result = new CollectionPageResponse<>();
+                if(response.hasPage()) {
+                    PagingRpcUtil.addPageToResponse(response.getPage(),
+                                                    result);
+                }
+                result.setElements(results);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result;
             }
-            for(AdminRpc.Role rpcRole : response.getRoleList()) {
-                String description = null;
-                String name = null;
-                if(rpcRole.hasDescription()) {
-                    description = rpcRole.getDescription();
-                }
-                if(rpcRole.hasName()) {
-                    name = rpcRole.getName();
-                }
-                Role role = roleFactory.create(name,
-                                               description);
-                for(AdminRpc.Permission rpcPermission : rpcRole.getPermissionList()) {
-                    description = null;
-                    name = null;
-                    if(rpcPermission.hasDescription()) {
-                        description = rpcPermission.getDescription();
-                    }
-                    if(rpcPermission.hasName()) {
-                        name = rpcPermission.getName();
-                    }
-                    role.getPermissions().add(permissionFactory.create(name,
-                                                                       description));
-                }
-                for(AdminRpc.User rpcUser : rpcRole.getUserList()) {
-                    description = null;
-                    name = null;
-                    if(rpcUser.hasDescription()) {
-                        description = rpcUser.getDescription();
-                    }
-                    if(rpcUser.hasName()) {
-                        name = rpcUser.getName();
-                    }
-                    User subject = userFactory.create(name,
-                                                      "********",
-                                                      description,
-                                                      rpcUser.getActive());
-                    role.getSubjects().add(subject);
-                }
-                results.add(role);
-            }
-            CollectionPageResponse<Role> result = new CollectionPageResponse<>();
-            if(response.hasPage()) {
-                addPageToResponse(response.getPage(),
-                                  result);
-            }
-            result.setElements(results);
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   result);
-            return result;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#updateRole(java.lang.String, com.marketcetera.admin.Role)
@@ -1191,88 +376,41 @@ public class AdminRpcClient
     public Role updateRole(String inName,
                            Role inRole)
     {
-        validateSession();
-        AdminRpc.UpdateRoleRequest.Builder requestBuilder = AdminRpc.UpdateRoleRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting role update for {}: {}",
-                                   getSessionId(),
-                                   inName,
-                                   inRole);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            inName = StringUtils.trimToNull(inName);
-            if(inName != null) {
+        return executeCall(new Callable<Role>() {
+            @Override
+            public Role call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} updating role {} {}",
+                                       getSessionId(),
+                                       inName,
+                                       inRole);
+                AdminRpc.UpdateRoleRequest.Builder requestBuilder = AdminRpc.UpdateRoleRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                AdminRpcUtil.getRpcRole(inRole).ifPresent(value->requestBuilder.setRole(value));
                 requestBuilder.setRoleName(inName);
+                AdminRpc.UpdateRoleRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.UpdateRoleResponse response = getBlockingStub().updateRole(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Optional<Role> result = AdminRpcUtil.getRole(response.getRole(),
+                                                             roleFactory,
+                                                             permissionFactory,
+                                                             userFactory);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result.orElse(null);
             }
-            if(inRole != null) {
-                AdminRpc.Role.Builder roleBuilder = AdminRpc.Role.newBuilder();
-                if(inRole.getDescription() != null) {
-                    roleBuilder.setDescription(inRole.getDescription());
-                }
-                if(inRole.getName() != null) {
-                    roleBuilder.setName(inRole.getName());
-                }
-                requestBuilder.setRole(roleBuilder.build());
-                for(Permission permission : inRole.getPermissions()) {
-                    requestBuilder.addPermissionName(permission.getName());
-                }
-                for(User user : inRole.getSubjects()) {
-                    requestBuilder.addUsername(user.getName());
-                }
-            }
-            AdminRpc.UpdateRoleResponse response = getClientService().updateRole(getController(),
-                                                                                 requestBuilder.build());
-            Role result = null;
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            if(response.hasRole()) {
-                AdminRpc.Role rpcRole = response.getRole();
-                String roleName = null;
-                String description = null;
-                if(rpcRole.hasDescription()) {
-                    description = rpcRole.getDescription();
-                }
-                if(rpcRole.hasName()) {
-                    roleName = rpcRole.getDescription();
-                }
-                result = roleFactory.create(roleName,
-                                            description);
-                for(AdminRpc.Permission rpcPermission : rpcRole.getPermissionList()) {
-                    description = null;
-                    String name = null;
-                    if(rpcPermission.hasDescription()) {
-                        description = rpcPermission.getDescription();
-                    }
-                    if(rpcPermission.hasName()) {
-                        name = rpcPermission.getName();
-                    }
-                    result.getPermissions().add(permissionFactory.create(name,
-                                                                         description));
-                }
-                for(AdminRpc.User rpcUser : rpcRole.getUserList()) {
-                    description = null;
-                    String name = null;
-                    if(rpcUser.hasDescription()) {
-                        description = rpcUser.getDescription();
-                    }
-                    if(rpcUser.hasName()) {
-                        name = rpcUser.getName();
-                    }
-                    result.getSubjects().add(userFactory.create(name,
-                                                                "********",
-                                                                description,
-                                                                rpcUser.getActive()));
-                }
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   result);
-            return result;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#deleteRole(java.lang.String)
@@ -1280,30 +418,33 @@ public class AdminRpcClient
     @Override
     public void deleteRole(String inName)
     {
-        validateSession();
-        AdminRpc.DeleteRoleRequest.Builder requestBuilder = AdminRpc.DeleteRoleRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting role delete for {}",
-                                   getSessionId(),
-                                   inName);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            inName = StringUtils.trimToNull(inName);
-            if(inName != null) {
-                requestBuilder.setRoleName(inName);
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} deleting role {}",
+                                       getSessionId(),
+                                       inName);
+                AdminRpc.DeleteRoleRequest.Builder requestBuilder = AdminRpc.DeleteRoleRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                String value = StringUtils.trimToNull(inName);
+                if(value != null) {
+                    requestBuilder.setRoleName(value);
+                }
+                AdminRpc.DeleteRoleRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending request",
+                                       getSessionId());
+                AdminRpc.DeleteRoleResponse response = getBlockingStub().deleteRole(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
             }
-            AdminRpc.DeleteRoleResponse response = getClientService().deleteRole(getController(),
-                                                                                 requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} delete role for {} succeeded",
-                                   getSessionId(),
-                                   inName);
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminRpcClient#getUsers()
@@ -1311,30 +452,7 @@ public class AdminRpcClient
     @Override
     public List<User> readUsers()
     {
-        validateSession();
-        AdminRpc.ReadUsersRequest.Builder requestBuilder = AdminRpc.ReadUsersRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting users",
-                                   getSessionId());
-            requestBuilder.setSessionId(getSessionId().getValue());
-            AdminRpc.ReadUsersResponse response = getClientService().readUsers(getController(),
-                                                                               requestBuilder.build());
-            List<User> results = new ArrayList<>();
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            for(AdminRpc.User rpcUser : response.getUserList()) {
-                results.add(createUserFrom(rpcUser));
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   results);
-            return results;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        return Lists.newArrayList(readUsers(new PageRequest(0,Integer.MAX_VALUE)).getElements());
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#readUsers(org.marketcetera.core.PageRequest)
@@ -1342,54 +460,49 @@ public class AdminRpcClient
     @Override
     public CollectionPageResponse<User> readUsers(PageRequest inPageRequest)
     {
-        validateSession();
-        AdminRpc.ReadUsersRequest.Builder requestBuilder = AdminRpc.ReadUsersRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting users",
-                                   getSessionId());
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setPage(buildPageRequest(inPageRequest));
-            AdminRpc.ReadUsersResponse response = getClientService().readUsers(getController(),
-                                                                               requestBuilder.build());
-            List<User> dataElements = new ArrayList<>();
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            for(AdminRpc.User rpcUser : response.getUserList()) {
-                boolean isActive = false;
-                String description = null;
-                String name = null;
-                String password = "********";
-                if(rpcUser.hasActive()) {
-                    isActive = rpcUser.getActive();
+        return executeCall(new Callable<CollectionPageResponse<User>>() {
+            @Override
+            public CollectionPageResponse<User> call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} reading users {}",
+                                       getSessionId(),
+                                       inPageRequest);
+                AdminRpc.ReadUsersRequest.Builder requestBuilder = AdminRpc.ReadUsersRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setPage(PagingRpcUtil.buildPageRequest(inPageRequest));
+                AdminRpc.ReadUsersRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.ReadUsersResponse response = getBlockingStub().readUsers(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                List<User> results = Lists.newArrayList();
+                for(AdminRpc.User rpcUser : response.getUserList()) {
+                    Optional<User> user = AdminRpcUtil.getUser(rpcUser,
+                                                               userFactory);
+                    if(user.isPresent()) {
+                        results.add(user.get());
+                    }
                 }
-                if(rpcUser.hasDescription()) {
-                    description = rpcUser.getDescription();
+                CollectionPageResponse<User> result = new CollectionPageResponse<>();
+                if(response.hasPage()) {
+                    PagingRpcUtil.addPageToResponse(response.getPage(),
+                                                    result);
                 }
-                if(rpcUser.hasName()) {
-                    name = rpcUser.getName();
-                }
-                User user = userFactory.create(name,
-                                               password,
-                                               description,
-                                               isActive);
-                dataElements.add(user);
+                result.setElements(results);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result;
             }
-            CollectionPageResponse<User> result = new CollectionPageResponse<>();
-            if(response.hasPage()) {
-                addPageToResponse(response.getPage(),
-                                  result);
-            }
-            result.setElements(dataElements);
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   result);
-            return result;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#createPermission(com.marketcetera.admin.Permission)
@@ -1397,51 +510,37 @@ public class AdminRpcClient
     @Override
     public Permission createPermission(Permission inPermission)
     {
-        validateSession();
-        AdminRpc.CreatePermissionRequest.Builder requestBuilder = AdminRpc.CreatePermissionRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting create permission for {}",
-                                   getSessionId(),
-                                   inPermission);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            AdminRpc.Permission.Builder permissionBuilder = AdminRpc.Permission.newBuilder();
-            String description = StringUtils.trimToNull(inPermission.getDescription());
-            if(description != null) {
-                permissionBuilder.setDescription(description);
+        return executeCall(new Callable<Permission>() {
+            @Override
+            public Permission call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} creating {}",
+                                       getSessionId(),
+                                       inPermission);
+                AdminRpc.CreatePermissionRequest.Builder requestBuilder = AdminRpc.CreatePermissionRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                AdminRpcUtil.getRpcPermission(inPermission).ifPresent(value->requestBuilder.setPermission(value));
+                AdminRpc.CreatePermissionRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.CreatePermissionResponse response = getBlockingStub().createPermission(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Optional<Permission> result = AdminRpcUtil.getPermission(response.getPermission(),
+                                                                         permissionFactory);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result.orElse(null);
             }
-            String permissionName = StringUtils.trimToNull(inPermission.getName());
-            if(permissionName != null) {
-                permissionBuilder.setName(permissionName);
-            }
-            requestBuilder.setPermission(permissionBuilder.build());
-            AdminRpc.CreatePermissionResponse response = getClientService().createPermission(getController(),
-                                                                                             requestBuilder.build());
-            Permission result = null;
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            if(response.hasPermission()) {
-                AdminRpc.Permission rpcPermission = response.getPermission();
-                permissionName = null;
-                description = null;
-                if(rpcPermission.hasDescription()) {
-                    description = rpcPermission.getDescription();
-                }
-                if(rpcPermission.hasName()) {
-                    permissionName = rpcPermission.getName();
-                }
-                result = permissionFactory.create(permissionName,
-                                                  description);
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   result);
-            return result;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminRpcClient#readPermissions()
@@ -1449,56 +548,7 @@ public class AdminRpcClient
     @Override
     public List<Permission> readPermissions()
     {
-        validateSession();
-        AdminRpc.ReadPermissionsRequest.Builder requestBuilder = AdminRpc.ReadPermissionsRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting permissions",
-                                   getSessionId());
-            requestBuilder.setSessionId(getSessionId().getValue());
-            AdminRpc.ReadPermissionsResponse response = getClientService().readPermissions(getController(),
-                                                                                           requestBuilder.build());
-            List<Permission> results = new ArrayList<>();
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            for(AdminRpc.Permission rpcPermission : response.getPermissionList()) {
-                try {
-                    String permissionName = null;
-                    String description = null;
-                    if(rpcPermission.hasName()) {
-                        permissionName = rpcPermission.getName();
-                    }
-                    if(rpcPermission.hasDescription()) {
-                        description = rpcPermission.getDescription();
-                    }
-                    Permission permission = permissionFactory.create(permissionName,
-                                                                     description);
-                    results.add(permission);
-                } catch (Exception e) {
-                    String message = ExceptionUtils.getRootCauseMessage(e);
-                    if(SLF4JLoggerProxy.isDebugEnabled(this)) {
-                        SLF4JLoggerProxy.warn(this,
-                                              e,
-                                              "Unable to read {}: {}",
-                                              rpcPermission,
-                                              message);
-                    } else {
-                        SLF4JLoggerProxy.warn(this,
-                                              "Unable to read {}: {}",
-                                              rpcPermission,
-                                              message);
-                    }
-                }
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   results);
-            return results;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        return Lists.newArrayList(readPermissions(new PageRequest(0,Integer.MAX_VALUE)).getElements());
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#readPermissions(org.marketcetera.core.PageRequest)
@@ -1506,121 +556,86 @@ public class AdminRpcClient
     @Override
     public CollectionPageResponse<Permission> readPermissions(PageRequest inPageRequest)
     {
-        validateSession();
-        AdminRpc.ReadPermissionsRequest.Builder requestBuilder = AdminRpc.ReadPermissionsRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting permissions",
-                                   getSessionId());
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setPage(buildPageRequest(inPageRequest));
-            AdminRpc.ReadPermissionsResponse response = getClientService().readPermissions(getController(),
-                                                                                           requestBuilder.build());
-            Collection<Permission> dataElements = new ArrayList<>();
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            for(AdminRpc.Permission rpcPermission : response.getPermissionList()) {
-                try {
-                    String permissionName = null;
-                    String description = null;
-                    if(rpcPermission.hasName()) {
-                        permissionName = rpcPermission.getName();
-                    }
-                    if(rpcPermission.hasDescription()) {
-                        description = rpcPermission.getDescription();
-                    }
-                    Permission permission = permissionFactory.create(permissionName,
-                                                                     description);
-                    dataElements.add(permission);
-                } catch (Exception e) {
-                    String message = ExceptionUtils.getRootCauseMessage(e);
-                    if(SLF4JLoggerProxy.isDebugEnabled(this)) {
-                        SLF4JLoggerProxy.warn(this,
-                                              e,
-                                              "Unable to read {}: {}",
-                                              rpcPermission,
-                                              message);
-                    } else {
-                        SLF4JLoggerProxy.warn(this,
-                                              "Unable to read {}: {}",
-                                              rpcPermission,
-                                              message);
-                    }
+        return executeCall(new Callable<CollectionPageResponse<Permission>>() {
+            @Override
+            public CollectionPageResponse<Permission> call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} reading permissions {}",
+                                       getSessionId(),
+                                       inPageRequest);
+                AdminRpc.ReadPermissionsRequest.Builder requestBuilder = AdminRpc.ReadPermissionsRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setPage(PagingRpcUtil.buildPageRequest(inPageRequest));
+                AdminRpc.ReadPermissionsRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.ReadPermissionsResponse response = getBlockingStub().readPermissions(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                List<Permission> results = Lists.newArrayList();
+                for(AdminRpc.Permission rpcPermission : response.getPermissionList()) {
+                    AdminRpcUtil.getPermission(rpcPermission,permissionFactory).ifPresent(value->results.add(value));
                 }
+                CollectionPageResponse<Permission> result = new CollectionPageResponse<>();
+                if(response.hasPage()) {
+                    PagingRpcUtil.addPageToResponse(response.getPage(),
+                                                    result);
+                }
+                result.setElements(results);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result;
             }
-            CollectionPageResponse<Permission> result = new CollectionPageResponse<>();
-            if(response.hasPage()) {
-                addPageToResponse(response.getPage(),
-                                  result);
-            }
-            result.setElements(dataElements);
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   result);
-            return result;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminRpcClient#updatePermission(java.lang.String, com.marketcetera.admin.Permission)
      */
     @Override
-    public Permission updatePermission(String inPermissionName,
-                                       Permission inUpdatedPermission)
+    public Permission updatePermission(String inName,
+                                       Permission inPermission)
     {
-        validateSession();
-        AdminRpc.UpdatePermissionRequest.Builder requestBuilder = AdminRpc.UpdatePermissionRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting permission update for {}: {}",
-                                   getSessionId(),
-                                   inPermissionName,
-                                   inUpdatedPermission);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            inPermissionName = StringUtils.trimToNull(inPermissionName);
-            if(inPermissionName != null) {
-                requestBuilder.setPermissionName(inPermissionName);
+        return executeCall(new Callable<Permission>() {
+            @Override
+            public Permission call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} updating permission {} {}",
+                                       getSessionId(),
+                                       inName,
+                                       inPermission);
+                AdminRpc.UpdatePermissionRequest.Builder requestBuilder = AdminRpc.UpdatePermissionRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                AdminRpcUtil.getRpcPermission(inPermission).ifPresent(value->requestBuilder.setPermission(value));
+                requestBuilder.setPermissionName(inName);
+                AdminRpc.UpdatePermissionRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.UpdatePermissionResponse response = getBlockingStub().updatePermission(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Optional<Permission> result = AdminRpcUtil.getPermission(response.getPermission(),
+                                                                         permissionFactory);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result.orElse(null);
             }
-            if(inUpdatedPermission != null) {
-                AdminRpc.Permission.Builder permissionBuilder = AdminRpc.Permission.newBuilder();
-                if(inUpdatedPermission.getDescription() != null) {
-                    permissionBuilder.setDescription(inUpdatedPermission.getDescription());
-                }
-                if(inUpdatedPermission.getName() != null) {
-                    permissionBuilder.setName(inUpdatedPermission.getName());
-                }
-                requestBuilder.setPermission(permissionBuilder.build());
-            }
-            AdminRpc.UpdatePermissionResponse response = getClientService().updatePermission(getController(),
-                                                                                        requestBuilder.build());
-            Permission result = null;
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            if(response.hasPermission()) {
-                AdminRpc.Permission rpcPermission = response.getPermission();
-                String permissionName = null;
-                String description = null;
-                if(rpcPermission.hasDescription()) {
-                    description = rpcPermission.getDescription();
-                }
-                if(rpcPermission.hasName()) {
-                    permissionName = rpcPermission.getDescription();
-                }
-                result = permissionFactory.create(permissionName,
-                                                  description);
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   result);
-            return result;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminRpcClient#deletePermission(java.lang.String)
@@ -1628,30 +643,33 @@ public class AdminRpcClient
     @Override
     public void deletePermission(String inPermissionName)
     {
-        validateSession();
-        AdminRpc.DeletePermissionRequest.Builder requestBuilder = AdminRpc.DeletePermissionRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting permission delete for {}",
-                                   getSessionId(),
-                                   inPermissionName);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            inPermissionName = StringUtils.trimToNull(inPermissionName);
-            if(inPermissionName != null) {
-                requestBuilder.setPermissionName(inPermissionName);
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} deleting permission {}",
+                                       getSessionId(),
+                                       inPermissionName);
+                AdminRpc.DeletePermissionRequest.Builder requestBuilder = AdminRpc.DeletePermissionRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                String value = StringUtils.trimToNull(inPermissionName);
+                if(value != null) {
+                    requestBuilder.setPermissionName(value);
+                }
+                AdminRpc.DeletePermissionRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending request",
+                                       getSessionId());
+                AdminRpc.DeletePermissionResponse response = getBlockingStub().deletePermission(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
             }
-            AdminRpc.DeletePermissionResponse response = getClientService().deletePermission(getController(),
-                                                                                             requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} delete permission for {} succeeded",
-                                   getSessionId(),
-                                   inPermissionName);
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#getUserAttribute(java.lang.String, com.marketcetera.admin.UserAttributeType)
@@ -1660,49 +678,43 @@ public class AdminRpcClient
     public UserAttribute getUserAttribute(String inUsername,
                                           UserAttributeType inAttributeType)
     {
-        validateSession();
-        AdminRpc.ReadUserAttributeRequest.Builder requestBuilder = AdminRpc.ReadUserAttributeRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting user attribute {} for {}",
-                                   getSessionId(),
-                                   inAttributeType,
-                                   inUsername);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setAttributeType(inAttributeType.name());
-            requestBuilder.setUsername(inUsername);
-            AdminRpc.ReadUserAttributeResponse response = getClientService().readUserAttribute(getController(),
-                                                                                               requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
+        return executeCall(new Callable<UserAttribute>() {
+            @Override
+            public UserAttribute call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} getting user attribute {} for {}",
+                                       getSessionId(),
+                                       inAttributeType,
+                                       inUsername);
+                AdminRpc.ReadUserAttributeRequest.Builder requestBuilder = AdminRpc.ReadUserAttributeRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setUsername(inUsername);
+                AdminRpcUtil.getRpcUserAttributeType(inAttributeType).ifPresent(value->requestBuilder.setAttributeType(value));
+                AdminRpc.ReadUserAttributeRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.ReadUserAttributeResponse response = getBlockingStub().readUserAttribute(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                UserAttribute result = null;
+                if(response.hasUserAttribute()) {
+                    result = AdminRpcUtil.getUserAttribute(response.getUserAttribute(),
+                                                           userAttributeFactory,
+                                                           userFactory).orElse(null);
+                }
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result;
             }
-            UserAttribute userAttribute = null;
-            if(response.hasUserAttribute()) {
-                AdminRpc.UserAttribute rpcUserAttribute = response.getUserAttribute();
-                User user = null;
-                if(rpcUserAttribute.hasUser()) {
-                    user = createUserFrom(rpcUserAttribute.getUser());
-                }
-                String attribute = null;
-                if(rpcUserAttribute.hasAttribute()) {
-                    attribute = rpcUserAttribute.getAttribute();
-                }
-                UserAttributeType userAttributeType = null;
-                if(rpcUserAttribute.hasAttributeType()) {
-                    userAttributeType = UserAttributeType.valueOf(rpcUserAttribute.getAttributeType());
-                }
-                userAttribute = userAttributeFactory.create(user,
-                                                            userAttributeType,
-                                                            attribute);
-            }
-            SLF4JLoggerProxy.trace(this,
-                                   "{} returning {}",
-                                   getSessionId(),
-                                   userAttribute);
-            return userAttribute;
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#setUserAttribute(java.lang.String, com.marketcetera.admin.UserAttributeType, java.lang.String)
@@ -1712,39 +724,53 @@ public class AdminRpcClient
                                  UserAttributeType inAttributeType,
                                  String inAttribute)
     {
-        validateSession();
-        AdminRpc.WriteUserAttributeRequest.Builder requestBuilder = AdminRpc.WriteUserAttributeRequest.newBuilder();
-        try {
-            SLF4JLoggerProxy.trace(this,
-                                   "{} requesting write user attribute {} for {}: {}",
-                                   getSessionId(),
-                                   inAttributeType,
-                                   inUsername,
-                                   inAttribute);
-            requestBuilder.setSessionId(getSessionId().getValue());
-            requestBuilder.setAttributeType(inAttributeType.name());
-            requestBuilder.setUsername(inUsername);
-            requestBuilder.setAttribute(inAttribute==null?"":inAttribute);
-            AdminRpc.WriteUserAttributeResponse response = getClientService().writeUserAttribute(getController(),
-                                                                                                 requestBuilder.build());
-            if(response.getStatus().getFailed()) {
-                throw new RuntimeException(response.getStatus().getMessage());
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} setting user attribute {} to {} for {}",
+                                       getSessionId(),
+                                       inAttributeType,
+                                       inAttribute,
+                                       inUsername);
+                AdminRpc.WriteUserAttributeRequest.Builder requestBuilder = AdminRpc.WriteUserAttributeRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setUsername(inUsername);
+                AdminRpcUtil.getRpcUserAttributeType(inAttributeType).ifPresent(value->requestBuilder.setAttributeType(value));
+                String attributeValue = StringUtils.trimToNull(inAttribute);
+                if(attributeValue != null) {
+                    requestBuilder.setAttribute(inAttribute);
+                }
+                AdminRpc.WriteUserAttributeRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.WriteUserAttributeResponse response = getBlockingStub().writeUserAttribute(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
             }
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     /**
      * Validate and start the object.
      */
     @Override
-    @PostConstruct
     public void start()
     {
         Validate.notNull(permissionFactory,
                          "Permission factory required");
         Validate.notNull(userFactory,
                          "User factory required");
+        Validate.notNull(roleFactory,
+                         "Role factory required");
+        Validate.notNull(userAttributeFactory,
+                         "User attribute factory required");
         try {
             super.start();
         } catch (Exception e) {
@@ -1829,9 +855,14 @@ public class AdminRpcClient
         userAttributeFactory = inUserAttributeFactory;
     }
     /**
-     * Create a new AdminRpcClientImpl instance.
+     * Create a new AdminRpcClient instance.
+     *
+     * @param inParameters an <code>AdminRpcClientParameters</code> value
      */
-    AdminRpcClient() {}
+    AdminRpcClient(AdminRpcClientParameters inParameters)
+    {
+        super(inParameters);
+    }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.BaseRpcClient#getAppId()
      */
@@ -1849,144 +880,60 @@ public class AdminRpcClient
         return APP_ID_VERSION;
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.admin.BaseRpcClient#createClient(com.googlecode.protobuf.pro.duplex.RpcClientChannel)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#getBlockingStub(io.grpc.Channel)
      */
     @Override
-    protected BlockingInterface createClient(RpcClientChannel inChannel)
+    protected AdminRpcServiceBlockingStub getBlockingStub(Channel inChannel)
     {
-        return AdminRpc.AdminRpcService.newBlockingStub(inChannel);
+        return AdminRpcServiceGrpc.newBlockingStub(inChannel);
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.admin.BaseRpcClient#executeLogin(com.google.protobuf.RpcController, org.marketcetera.util.rpc.BaseRpc.LoginRequest)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#getAsyncStub(io.grpc.Channel)
      */
     @Override
-    protected LoginResponse executeLogin(RpcController inController,
-                                         LoginRequest inRequest)
-            throws ServiceException
+    protected AdminRpcServiceStub getAsyncStub(Channel inChannel)
     {
-        return getClientService().login(inController,
-                                        inRequest);
+        return AdminRpcServiceGrpc.newStub(inChannel);
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.admin.BaseRpcClient#executeLogout(com.google.protobuf.RpcController, org.marketcetera.util.rpc.BaseRpc.LogoutRequest)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#executeLogin(org.marketcetera.rpc.base.BaseRpc.LoginRequest)
      */
     @Override
-    protected LogoutResponse executeLogout(RpcController inController,
-                                           LogoutRequest inRequest)
-            throws ServiceException
+    protected LoginResponse executeLogin(BaseRpc.LoginRequest inRequest)
     {
-        return getClientService().logout(inController,
-                                         inRequest);
+        return getBlockingStub().login(inRequest);
     }
-    /**
-     * Create a user from the given RPC value.
-     *
-     * @param inRpcUser an <code>AdminRpc.User</code> value
-     * @return a <code>User</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#executeLogout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest)
      */
-    private User createUserFrom(AdminRpc.User inRpcUser)
+    @Override
+    protected LogoutResponse executeLogout(BaseRpc.LogoutRequest inRequest)
     {
-        boolean isActive = false;
-        String description = null;
-        String name = null;
-        String password = "********";
-        if(inRpcUser.hasActive()) {
-            isActive = inRpcUser.getActive();
-        }
-        if(inRpcUser.hasDescription()) {
-            description = inRpcUser.getDescription();
-        }
-        if(inRpcUser.hasName()) {
-            name = inRpcUser.getName();
-        }
-        User user = userFactory.create(name,
-                                       password,
-                                       description,
-                                       isActive);
-        return user;
+        return getBlockingStub().logout(inRequest);
     }
-    /**
-     * Add the results from the given RPC page to the given response object.
-     *
-     * @param inRpcPage a <code>BaseRpc.PageResponse</code> value
-     * @param inResponse a <code>PageResponse</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#executeHeartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
      */
-    private void addPageToResponse(BaseRpc.PageResponse inRpcPage,
-                                   PageResponse inResponse)
+    @Override
+    protected BaseRpc.HeartbeatResponse executeHeartbeat(HeartbeatRequest inRequest)
     {
-        if(inRpcPage.hasPageMaxSize()) {
-            inResponse.setPageMaxSize(inRpcPage.getPageMaxSize());
-        }
-        if(inRpcPage.hasPageNumber()) {
-            inResponse.setPageNumber(inRpcPage.getPageNumber());
-        }
-        if(inRpcPage.hasPageSize()) {
-            inResponse.setPageSize(inRpcPage.getPageSize());
-        }
-        if(inRpcPage.hasTotalPages()) {
-            inResponse.setTotalPages(inRpcPage.getTotalPages());
-        }
-        if(inRpcPage.hasTotalSize()) {
-            inResponse.setTotalSize(inRpcPage.getTotalSize());
-        }
-        if(inRpcPage.hasSortOrder()) {
-            List<Sort> sortOrder = Lists.newArrayList();
-            for(BaseRpc.Sort rpcSort : inRpcPage.getSortOrder().getSortList()) {
-                Sort sort = new Sort();
-                if(rpcSort.hasDirection()) {
-                    sort.setDirection(rpcSort.getDirection()==BaseRpc.SortDirection.ASCENDING?SortDirection.ASCENDING:SortDirection.DESCENDING);
-                }
-                if(rpcSort.hasProperty()) {
-                    sort.setProperty(rpcSort.getProperty());
-                }
-                sortOrder.add(sort);
-            }
-            inResponse.setSortOrder(sortOrder);
-        }
-    }
-    /**
-     * Build an RPC page request from the given request object.
-     *
-     * @param inPageRequest a <code>PageRequest</code> value
-     * @return a <code>BaseRpc.PageRequest</code> value
-     */
-    private BaseRpc.PageRequest buildPageRequest(PageRequest inPageRequest)
-    {
-        BaseRpc.PageRequest.Builder pageRequestBuilder = BaseRpc.PageRequest.newBuilder();
-        pageRequestBuilder.setPage(inPageRequest.getPageNumber());
-        pageRequestBuilder.setSize(inPageRequest.getPageSize());
-        if(inPageRequest.getSortOrder() != null && !inPageRequest.getSortOrder().isEmpty()) {
-            BaseRpc.SortOrder.Builder sortOrderBuilder = BaseRpc.SortOrder.newBuilder();
-            BaseRpc.Sort.Builder sortBuilder = BaseRpc.Sort.newBuilder();
-            for(Sort sort : inPageRequest.getSortOrder()) {
-                sortBuilder.setDirection(sort.getDirection()==SortDirection.ASCENDING?BaseRpc.SortDirection.ASCENDING:BaseRpc.SortDirection.DESCENDING);
-                sortBuilder.setProperty(sort.getProperty());
-                sortOrderBuilder.addSort(sortBuilder.build());
-                sortBuilder.clear();
-            }
-            pageRequestBuilder.setSortOrder(sortOrderBuilder.build());
-        }
-        return pageRequestBuilder.build();
+        return getBlockingStub().heartbeat(inRequest);
     }
     /**
      * creates {@link UserAttributeFactory} objects
      */
-    @Autowired
     private UserAttributeFactory userAttributeFactory;
     /**
      * creates {@link Permission} objects
      */
-    @Autowired
     private PermissionFactory permissionFactory;
     /**
      * creates {@link User} objects
      */
-    @Autowired
     private UserFactory userFactory;
     /**
      * creates {@link Role} objects
      */
-    @Autowired
     private RoleFactory roleFactory;
     /**
      * The client's application ID: the application name.

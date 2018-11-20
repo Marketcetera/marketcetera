@@ -37,7 +37,7 @@ import java.util.Map;
  * that emit lots of data into it. 
  * <p>
  * Module Features
- * <table summary="Indicates capabilities of this module">
+ * <table>
  * <tr><th>Capabilities</th><td>DataReceiver</td></tr>
  * <tr><th>Stops data flows</th><td>No</td></tr>
  * <tr><th>Start Operation</th><td>Does nothing</td></tr>

@@ -15,7 +15,7 @@ import quickfix.field.Symbol;
  * Typical usage is
  * <pre>
  * quickfix.Message message =...
- * {@link InstrumentFromMessage}.{@link #SELECTOR}.{@link DynamicInstrumentFunctionSelector#forValue(Object) forValue}(message).{@link #extract(FieldMap) extract}(message);
+ * {@link InstrumentFromMessage}.{@link #SELECTOR}.{@link DynamicInstrumentFunctionSelector#forValue(Object) forValue}(message).{@link #extract(quickfix.Message) extract}(message);
  * </pre>
  *
  * @author anshul@marketcetera.com

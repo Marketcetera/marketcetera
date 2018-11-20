@@ -28,7 +28,7 @@
  *     linked above.
  * </p>
  * <p>
- *     {@link org.marketcetera.module.ModuleURN URNs} are used to uniquely identify module types &amp; module
+ *     {@link org.marketcetera.module.ModuleURN URNs} are used to uniquely identify module types & module
  *     instances.
  * </p>
  * <p>
@@ -152,11 +152,11 @@
  * <p>
  *     Data of any type can be used for all these three usages. However, modules are
  *     strongly recommended to accept strings, in addition to any specific types they need,
- *     for usages 1 &amp; 2 above.
+ *     for usages 1 & 2 above.
  * </p>
  * <p>
  *     Module Framework API is available via an MXBean through JMX. And
- *     that API only supports string parameters for usages 1 &amp; 2 above. The module
+ *     that API only supports string parameters for usages 1 & 2 above. The module
  *     framework automatically converts string parameters to actual java types,
  *     for a limited set of types listed below, for usage 1 above.
  *     To the extent modules support string
@@ -278,7 +278,7 @@
  *     A module can acquire the capability to initiate a data flow by implementing
  *     {@link org.marketcetera.module.DataFlowRequester}. It can then create and
  *     cancel data flows via {@link org.marketcetera.module.DataFlowSupport}.
- *     A module can request &amp; cancel data flows when it's in the
+ *     A module can request & cancel data flows when it's in the
  *     {@link org.marketcetera.module.ModuleState#isStarted() started} state.
  *     It's expected that a module will typically create data flows when it's started
  *     from within its {@link org.marketcetera.module.Module#preStart()} method.
@@ -312,7 +312,7 @@
  * <p>
  *     Do note that if the module or the module factory implements
  *     {@link javax.management.DynamicMBean} make sure that the types used
- *     for various bean attributes &amp; operations are limited to standard java
+ *     for various bean attributes & operations are limited to standard java
  *     types. Otherwise, tools like jconsole will not be able to display
  *     information from those beans.
  * </p>
@@ -325,7 +325,7 @@
  * <p>
  *     The module framework functions are exported via
  *     {@link org.marketcetera.module.ModuleManagerMXBean}. All of its operations
- *     accept parameters of primitive &amp; string types, so that they can be easily
+ *     accept parameters of primitive & string types, so that they can be easily
  *     invoked by widely available jmx clients like jconsole. Operations to
  *     create module instances and data flows support special string syntax as
  *     these operations accept complex parameters. Look at the bean's class
@@ -416,7 +416,7 @@
  *     See documentation of {@link org.marketcetera.module.ModuleFactory}
  *     sub-classes for examples.
  * </p>
- * <table summary="Shows the usage of the module">
+ * <table>
  *   <tr><th>Provider URN:</th><td>The provider URN</td></tr>
  *   <tr><th>Cardinality:</th><td>If the factory creates a singleton module
  *       instance or if it can create module instances.</td></tr>
@@ -441,7 +441,7 @@
  *     See documentation of {@link org.marketcetera.module.Module}
  *     sub-classes for examples.
  * </p>
- * <table summary="Indicates the function of the module">
+ * <table>
  *   <tr><th>Capabilities</th><td>If the module can emit, receive data and if it
  *       can request data flows.</td></tr>
  *   <tr><th>DataFlow Request Parameters</th><td>The type of parameters that

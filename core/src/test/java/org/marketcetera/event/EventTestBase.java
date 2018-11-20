@@ -7,10 +7,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
+import org.marketcetera.event.impl.DepthOfBookEventBuilder;
 import org.marketcetera.event.impl.DividendEventBuilder;
+import org.marketcetera.event.impl.ImbalanceEventBuilder;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
+import org.marketcetera.event.impl.OptionEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
+import org.marketcetera.event.impl.TopOfBookEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.options.ExpirationType;
@@ -20,7 +26,8 @@ import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.SecurityType;
-import org.marketcetera.trade.Spread;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -33,6 +40,58 @@ import org.marketcetera.trade.Spread;
  */
 public class EventTestBase
 {
+    /**
+     * Generate a depth-of-book-event for the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>DepthOfBookEvent</code> value
+     */
+    public static DepthOfBookEvent generateDepthOfBookEvent(Instrument inInstrument)
+    {
+        DepthOfBookEventBuilder builder = DepthOfBookEventBuilder.depthOfBook();
+        BigDecimal bidPrice = generateDecimalValue();
+        BigDecimal askPrice = bidPrice.add(new BigDecimal("0.02"));
+        int bidDepth = random.nextInt(20);
+        int askDepth = random.nextInt(20);
+        BigDecimal PENNY = new BigDecimal("0.01");
+        List<BidEvent> bids = Lists.newArrayList();
+        List<AskEvent> asks = Lists.newArrayList();
+        for(int i=0;i<bidDepth;i++) {
+            bidPrice = bidPrice.subtract(PENNY.multiply(new BigDecimal(i)));
+            BidEvent bid = generateBidEvent(inInstrument,
+                                            bidPrice);
+            bid.setLevel(i+1);
+            bids.add(bid);
+        }
+        for(int i=0;i<askDepth;i++) {
+            askPrice = askPrice.add(PENNY.multiply(new BigDecimal(i)));
+            AskEvent ask = generateAskEvent(inInstrument,
+                                            askPrice);
+            ask.setLevel(i+1);
+            asks.add(ask);
+        }
+        builder.withAsks(asks).withBids(bids).withInstrument(inInstrument);
+        return builder.create();
+    }
+    /**
+     * Generate a top-of-book-event for the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>TopOfBookEvent</code> value
+     */
+    public static TopOfBookEvent generateTopOfBookEvent(Instrument inInstrument)
+    {
+        TopOfBookEventBuilder builder = TopOfBookEventBuilder.topOfBookEvent();
+        DepthOfBookEvent depthOfBookEvent = generateDepthOfBookEvent(inInstrument);
+        if(!depthOfBookEvent.getAsks().isEmpty()) {
+            builder.withAsk(depthOfBookEvent.getAsks().get(0));
+        }
+        if(!depthOfBookEvent.getBids().isEmpty()) {
+            builder.withBid(depthOfBookEvent.getBids().get(0));
+        }
+        builder.withInstrument(inInstrument);
+        return builder.create();
+    }
     /**
      * Generates an <code>AskEvent</code> for the given instrument.
      *
@@ -70,11 +129,14 @@ public class EventTestBase
     public static AskEvent generateAskEvent(Instrument inInstrument,
                                             BigDecimal inAskPrice)
     {
-        return QuoteEventBuilder.askEvent(inInstrument)
+        QuoteEventBuilder<AskEvent> builder = QuoteEventBuilder.askEvent(inInstrument)
                 .withExchange(generateExchange())
                 .withPrice(inAskPrice)
                 .withSize(generateDecimalValue())
-                .withQuoteDate(generateQuoteDate()).create();
+                .withQuoteDate(generateQuoteDate());
+        addOptionAttributes(builder,
+                            inInstrument);
+        return builder.create();
     }
     /**
      * Generates a <code>BidEvent</code> for the given instrument.
@@ -113,11 +175,14 @@ public class EventTestBase
     public static BidEvent generateBidEvent(Instrument inInstrument,
                                             BigDecimal inBidPrice)
     {
-        return QuoteEventBuilder.bidEvent(inInstrument)
+        QuoteEventBuilder<BidEvent> builder = QuoteEventBuilder.bidEvent(inInstrument)
                 .withExchange(generateExchange())
                 .withPrice(inBidPrice)
                 .withSize(generateDecimalValue())
-                .withQuoteDate(generateQuoteDate()).create();
+                .withQuoteDate(generateQuoteDate());
+        addOptionAttributes(builder,
+                            inInstrument);
+        return builder.create();
     }
     /**
      * Generates an <code>AskEvent</code> for the given <code>Equity</code>.
@@ -405,6 +470,7 @@ public class EventTestBase
                                                  .withSize(generateDecimalValue())
                                                  .withQuoteDate(new Date()).create();
     }
+    
     /**
      * Generates a future <code>BidEvent</code> with the given values.
      *
@@ -477,78 +543,8 @@ public class EventTestBase
                                                  .withSize(generateDecimalValue())
                                                  .withQuoteDate(new Date()).create();
     }
-    /**
-     * Generates a spread <code>BidEvent</code> with the given values.
-     *
-     * @param inInstrument a <code>Spread</code> value
-     * @param inAction a <code>QuoteAction</code> value
-     * @return a <code>BidEvent</code> value
-     */
-    public static BidEvent generateSpreadBidEvent(Spread inInstrument,
-                                                  QuoteAction inAction)
-    {
-        return QuoteEventBuilder.spreadBidEvent().withInstrument(inInstrument)
-                                                 .withAction(inAction)
-                                                 .withExchange("exchange")
-                                                 .withPrice(generateDecimalValue())
-                                                 .withSize(generateDecimalValue())
-                                                 .withContractSize(1)
-                                                 .withQuoteDate(new Date()).create();
-    }
-    /**
-     * Generates a spread <code>BidEvent</code> with the given values.
-     *
-     * @param inInstrument a <code>Spread</code> value
-     * @param inPrice a <code>BigDecimal</code> value
-     * @return a <code>BidEvent</code> value
-     */
-    public static BidEvent generateSpreadBidEvent(Spread inInstrument,
-                                                  BigDecimal inPrice)
-    {
-        return QuoteEventBuilder.spreadBidEvent().withInstrument(inInstrument)
-                                                 .withAction(QuoteAction.ADD)
-                                                 .withExchange("exchange")
-                                                 .withPrice(inPrice)
-                                                 .withContractSize(1)
-                                                 .withSize(generateDecimalValue())
-                                                 .withQuoteDate(new Date()).create();
-    }
-    /**
-     * Generates a spread <code>AskEvent</code> with the given values.
-     *
-     * @param inInstrument a <code>Spread</code> value
-     * @param inAction a <code>QuoteAction</code> value
-     * @return an <code>AskEvent</code> value
-     */
-    public static AskEvent generateSpreadAskEvent(Spread inInstrument,
-                                                  QuoteAction inAction)
-    {
-        return QuoteEventBuilder.spreadAskEvent().withInstrument(inInstrument)
-                                                 .withAction(inAction)
-                                                 .withExchange("exchange")
-                                                 .withPrice(generateDecimalValue())
-                                                 .withContractSize(1)
-                                                 .withSize(generateDecimalValue())
-                                                 .withQuoteDate(new Date()).create();
-    }
-    /**
-     * Generates a spread <code>AskEvent</code> with the given values.
-     *
-     * @param inInstrument a <code>Spread</code> value
-     * @param inPrice a <code>BigDecimal</code> value
-     * @return an <code>AskEvent</code> value
-     */
-    public static AskEvent generateSpreadAskEvent(Spread inInstrument,
-                                                  BigDecimal inPrice)
-    {
-        return QuoteEventBuilder.spreadAskEvent().withInstrument(inInstrument)
-                                                 .withAction(QuoteAction.ADD)
-                                                 .withExchange("exchange")
-                                                 .withPrice(inPrice)
-                                                 .withContractSize(1)
-                                                 .withSize(generateDecimalValue())
-                                                 .withQuoteDate(new Date()).create();
-    }
+    
+    
     /**
      * Generates an equity <code>BidEvent</code> with the given values.
      *
@@ -815,23 +811,18 @@ public class EventTestBase
      */
     public static TradeEvent generateTradeEvent(Instrument inInstrument)
     {
-        return generateTradeEvent(inInstrument,
-                                  generateExchange());
-    }
-    /**
-     * Generates a <code>TradeEvent</code> with the given value.
-     *
-     * @param inInstrument an <code>Instrument</code> value
-     * @param inExchange a <code>String</code> value
-     * @return a <code>TradeEvent</code> value
-     */
-    public static TradeEvent generateTradeEvent(Instrument inInstrument,
-                                                String inExchange)
-    {
+        if(inInstrument instanceof Option) {
+            return generateOptionTradeEvent((Option)inInstrument,
+                                            new Equity(inInstrument.getSymbol()));
+        }
         return TradeEventBuilder.tradeEvent(inInstrument)
-                .withExchange(inExchange)
+                .withExchange(generateExchange())
                 .withPrice(generateDecimalValue())
                 .withSize(generateDecimalValue())
+                .withTradeCondition("0xACAE")
+                .withProvider("test")
+                .withProviderSymbol(inInstrument.getFullSymbol())
+                .withSource(EventTestBase.class)
                 .withTradeDate(generateQuoteDate()).create();
     }
     /**
@@ -868,6 +859,7 @@ public class EventTestBase
                                                    .withExpirationType(ExpirationType.AMERICAN)
                                                    .withMultiplier(BigDecimal.ZERO)
                                                    .withUnderlyingInstrument(inUnderlyingInstrument)
+                                                   .withProviderSymbol(inInstrument.getFullSymbol())
                                                    .withTradeDate(new Date()).create();
     }
     /**
@@ -1068,6 +1060,10 @@ public class EventTestBase
      */
     public static MarketstatEvent generateMarketstatEvent(Instrument inInstrument)
     {
+        if(inInstrument instanceof Option) {
+            return generateOptionMarketstatEvent((Option)inInstrument,
+                                                 new Equity("METC"));
+        }
         long startMillis = System.currentTimeMillis();
         long oneDay = 1000 * 60 * 60 * 24;
         int counter = 0;
@@ -1081,6 +1077,7 @@ public class EventTestBase
                                                               .withPreviousCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
                                                               .withTradeHighTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
                                                               .withTradeLowTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                                              .withValue(generateDecimalValue())
                                                               .withOpenExchange("O")
                                                               .withHighExchange("H")
                                                               .withLowExchange("L")
@@ -1105,6 +1102,7 @@ public class EventTestBase
                                                         .withLowPrice(generateDecimalValue())
                                                         .withClosePrice(generateDecimalValue())
                                                         .withPreviousClosePrice(generateDecimalValue())
+                                                        .withValue(generateDecimalValue())
                                                         .withVolume(generateDecimalValue())
                                                         .withCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
                                                         .withPreviousCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
@@ -1117,6 +1115,87 @@ public class EventTestBase
                                                         .withHighExchange("H")
                                                         .withLowExchange("L")
                                                         .withCloseExchange("C").create();
+    }
+    /**
+     * Generate a <code>LogEvent</code> with random values.
+     *
+     * @return a <code>LogEvent</code> value
+     */
+    public static LogEvent generateLogEvent()
+    {
+        LogEventBuilder builder = LogEventBuilder.error();
+        builder.withRequestId(System.nanoTime());
+        builder.withException(new RuntimeException("This exception is expected"));
+        builder.withSource(EventTestBase.class);
+        builder.withMessage(Messages.VALIDATION_NULL_AMOUNT);
+        return builder.create();
+    }
+    /**
+     * Generate an <code>ImbalanceEvent</code> with random values.
+     *
+     * @return an <code>ImbalanceEvent</code> value
+     */
+    public static ImbalanceEvent generateImbalanceEvent()
+    {
+        return generateImbalanceEvent(new Equity("METC"));
+    }
+    /**
+     * Generate an <code>ImbalanceEvent</code> with random values and the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @return an <code>ImbalanceEvent</code> value
+     */
+    public static ImbalanceEvent generateImbalanceEvent(Instrument inInstrument)
+    {
+        ImbalanceEventBuilder builder = ImbalanceEventBuilder.Imbalance(inInstrument);
+        builder.withTimestamp(new Date());
+        builder.withAmountOutstanding(EventTestBase.generateDecimalValue());
+        builder.withAuctionType(AuctionType.values()[random.nextInt(AuctionType.values().length)]);
+        builder.withExchange(UUID.randomUUID().toString());
+        builder.withEventType(EventType.values()[random.nextInt(EventType.values().length)]);
+        builder.withFarPrice(EventTestBase.generateDecimalValue());
+        builder.withImbalanceVolume(EventTestBase.generateDecimalValue());
+        builder.withInstrumentStatus(InstrumentStatus.values()[random.nextInt(InstrumentStatus.values().length)]);
+        builder.withMarketStatus(MarketStatus.values()[random.nextInt(MarketStatus.values().length)]);
+        builder.withNearPrice(EventTestBase.generateDecimalValue());
+        builder.withPairedVolume(EventTestBase.generateDecimalValue());
+        builder.withReferencePrice(EventTestBase.generateDecimalValue());
+        builder.withImbalanceType(ImbalanceType.values()[random.nextInt(ImbalanceType.values().length)]);
+        builder.withShortSaleRestricted(random.nextBoolean());
+        addOptionAttributes(builder,
+                            inInstrument);
+        return builder.create();
+    }
+    /**
+     * Add option attributes to the given builder, if appropriate.
+     *
+     * @param inBuilder an <code>OptionEventBuilder&lt;?&gt;</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     */
+    public static void addOptionAttributes(OptionEventBuilder<?> inBuilder,
+                                           Instrument inInstrument)
+    {
+        addOptionAttributes(inBuilder,
+                            inInstrument,
+                            new Equity("METC"));
+    }
+    /**
+     * Add option attributes to the given builder, if appropriate.
+     *
+     * @param inBuilder an <code>OptionEventBuilder&lt;?&gt;</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inUnderlyingInstrument an <code>Instrument</code> value
+     */
+    public static void addOptionAttributes(OptionEventBuilder<?> inBuilder,
+                                           Instrument inInstrument,
+                                           Instrument inUnderlyingInstrument)
+    {
+        if(inInstrument instanceof Option) {
+            inBuilder.withExpirationType(ExpirationType.AMERICAN);
+            inBuilder.withMultiplier(EventTestBase.generateDecimalValue());
+            inBuilder.withUnderlyingInstrument(inUnderlyingInstrument);
+            inBuilder.withProviderSymbol(inInstrument.getFullSymbol());
+        }
     }
     /**
      * Generates a <code>DividendEvent</code> with preset values.

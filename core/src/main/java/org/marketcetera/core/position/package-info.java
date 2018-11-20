@@ -1,7 +1,7 @@
 /* $License$ */
 
 /**
- * This package provides the interface to real-time position and P&amp;L
+ * This package provides the interface to real-time position and P&L
  * data. The dynamically updated data is retrieved through
  * {@link PositionEngine}.
  * <p>

@@ -47,7 +47,7 @@ public class MultiMethodNotificationExecutor
     /**
      * Sets the executorMethods value.
      *
-     * @param inExecutorMethods a <code>List&lt;NotificationExecutorMethod&gt;</code> value
+     * @param a <code>List&lt;NotificationExecutorMethod&gt;</code> value
      */
     public void setExecutorMethods(List<NotificationExecutorMethod> inExecutorMethods)
     {

@@ -1,14 +1,17 @@
 package org.marketcetera.module;
 
-import org.marketcetera.marketdata.MockMarketDataFeedModuleFactory;
-import org.marketcetera.util.misc.ClassVersion;
-import org.junit.Test;
-import org.junit.After;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.util.regex.Pattern;
-import java.util.ServiceConfigurationError;
 import java.io.IOException;
+import java.util.ServiceConfigurationError;
+import java.util.regex.Pattern;
+
+import org.junit.After;
+import org.junit.Test;
+import org.marketcetera.persist.TransactionModuleFactory;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -59,18 +62,37 @@ public class ProviderLoadTest extends ModuleTestBase {
         loader.setFilterResources(Pattern.compile(".*test.*"));
         mManager = new ModuleManager(loader);
         mManager.init();
-        assertEquals(1, mManager.getProviders().size());
+        assertEquals(2, mManager.getProviders().size());
         assertEquals(SinkModuleFactory.PROVIDER_URN,mManager.getProviders().get(0));
-        assertEquals(1, mManager.getModuleInstances(null).size());
-        assertEquals(SinkModuleFactory.INSTANCE_URN,
-                mManager.getModuleInstances(null).get(0));
+        assertEquals(2, mManager.getModuleInstances(null).size());
+        boolean sinkFound = false;
+        boolean transactionFound = false;
+        for(ModuleURN moduleUrn : mManager.getModuleInstances(null)) {
+            if(moduleUrn.equals(SinkModuleFactory.INSTANCE_URN)) {
+                sinkFound = true;
+            }
+            if(moduleUrn.equals(TransactionModuleFactory.INSTANCE_URN)) {
+                transactionFound = true;
+            }
+        }
+        assertTrue(sinkFound);
+        assertTrue(transactionFound);
         //try refresh and verify nothing changes
         mManager.refresh();
-        assertEquals(1, mManager.getProviders().size());
-        assertEquals(SinkModuleFactory.PROVIDER_URN,mManager.getProviders().get(0));
-        assertEquals(1, mManager.getModuleInstances(null).size());
-        assertEquals(SinkModuleFactory.INSTANCE_URN,
-                mManager.getModuleInstances(null).get(0));
+        assertEquals(2, mManager.getProviders().size());
+        assertEquals(2, mManager.getModuleInstances(null).size());
+        sinkFound = false;
+        transactionFound = false;
+        for(ModuleURN moduleUrn : mManager.getModuleInstances(null)) {
+            if(moduleUrn.equals(SinkModuleFactory.INSTANCE_URN)) {
+                sinkFound = true;
+            }
+            if(moduleUrn.equals(TransactionModuleFactory.INSTANCE_URN)) {
+                transactionFound = true;
+            }
+        }
+        assertTrue(sinkFound);
+        assertTrue(transactionFound);
         //Now setup the manager with a refresh listener
         final Refresher refresher = new Refresher();
         mManager.setRefreshListener(refresher);
@@ -95,11 +117,20 @@ public class ProviderLoadTest extends ModuleTestBase {
             }
         }.getException().getCause() instanceof ServiceConfigurationError);
         //Nothing should've changed.
-        assertEquals(1, mManager.getProviders().size());
-        assertEquals(SinkModuleFactory.PROVIDER_URN,mManager.getProviders().get(0));
-        assertEquals(1, mManager.getModuleInstances(null).size());
-        assertEquals(SinkModuleFactory.INSTANCE_URN,
-                mManager.getModuleInstances(null).get(0));
+        assertEquals(2, mManager.getProviders().size());
+        assertEquals(2, mManager.getModuleInstances(null).size());
+        sinkFound = false;
+        transactionFound = false;
+        for(ModuleURN moduleUrn : mManager.getModuleInstances(null)) {
+            if(moduleUrn.equals(SinkModuleFactory.INSTANCE_URN)) {
+                sinkFound = true;
+            }
+            if(moduleUrn.equals(TransactionModuleFactory.INSTANCE_URN)) {
+                transactionFound = true;
+            }
+        }
+        assertTrue(sinkFound);
+        assertTrue(transactionFound);
         //verify refresher was invoked
         assertTrue(refresher.isInvoked());
         //Setup the refresher to not let module manager refresh itself
@@ -110,11 +141,20 @@ public class ProviderLoadTest extends ModuleTestBase {
         //verify refresher was invoked
         assertTrue(refresher.isInvoked());
         //Verify nothing changed.
-        assertEquals(1, mManager.getProviders().size());
-        assertEquals(SinkModuleFactory.PROVIDER_URN,mManager.getProviders().get(0));
-        assertEquals(1, mManager.getModuleInstances(null).size());
-        assertEquals(SinkModuleFactory.INSTANCE_URN,
-                mManager.getModuleInstances(null).get(0));
+        assertEquals(2, mManager.getProviders().size());
+        assertEquals(2, mManager.getModuleInstances(null).size());
+        sinkFound = false;
+        transactionFound = false;
+        for(ModuleURN moduleUrn : mManager.getModuleInstances(null)) {
+            if(moduleUrn.equals(SinkModuleFactory.INSTANCE_URN)) {
+                sinkFound = true;
+            }
+            if(moduleUrn.equals(TransactionModuleFactory.INSTANCE_URN)) {
+                transactionFound = true;
+            }
+        }
+        assertTrue(sinkFound);
+        assertTrue(transactionFound);
         //now change the refresher to throw an exception
         refresher.setThrowException(true);
         //refresh should fail
@@ -139,7 +179,7 @@ public class ProviderLoadTest extends ModuleTestBase {
                 EmitterModuleFactory.INSTANCE_URN,
                 SingleModuleFactory.INSTANCE_URN,
                 CopierModuleFactory.INSTANCE_URN,
-                MockMarketDataFeedModuleFactory.INSTANCE_URN});
+                TransactionModuleFactory.INSTANCE_URN});
     }
     private ModuleManager mManager;
     private static class Refresher implements RefreshListener {

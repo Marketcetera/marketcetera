@@ -14,7 +14,7 @@ import org.marketcetera.core.ClassVersion;
  * @version $Id$
  * @since 0.8.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface INotification
     extends Serializable
 {
@@ -25,7 +25,7 @@ public interface INotification
      * @version $Id$
      * @since 0.8.0
      */
-    @ClassVersion("$Id$")
+    @ClassVersion("$Id$") //$NON-NLS-1$
     public enum Severity
     {
         LOW,

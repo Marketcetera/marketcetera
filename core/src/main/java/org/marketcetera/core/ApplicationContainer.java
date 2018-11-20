@@ -52,7 +52,7 @@ public class ApplicationContainer
      * @see org.marketcetera.core.ApplicationInfoProvider#getContext()
      */
     @Override
-    public ConfigurableApplicationContext getContext()
+    public ApplicationContext getContext()
     {
         return context;
     }
@@ -211,20 +211,20 @@ public class ApplicationContainer
     public synchronized void start()
     {
         instance = this;
-        context = null;
-        try {
-            context = generateContext();
-        } catch (Exception e) {
-            SLF4JLoggerProxy.error(this,
-                                   e,
-                                   "Encountered startup problem");
-            if(e instanceof RuntimeException) {
-                throw (RuntimeException)e;
-            } else {
-                throw new RuntimeException(e);
-            }
-        }
-        context.registerShutdownHook();
+        context = parentContext;
+//        try {
+//            context = generateContext();
+//        } catch (Exception e) {
+//            SLF4JLoggerProxy.error(this,
+//                                   e,
+//                                   "Encountered startup problem");
+//            if(e instanceof RuntimeException) {
+//                throw (RuntimeException)e;
+//            } else {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//        context.registerShutdownHook();
         running.set(true);
     }
     /* (non-Javadoc)
@@ -253,7 +253,7 @@ public class ApplicationContainer
                                           task);
                 }
             }
-            context.stop();
+//            context.stop();
             context = null;
         } finally {
             running.set(false);
@@ -298,7 +298,7 @@ public class ApplicationContainer
     /**
      * Spring application context
      */
-    private ConfigurableApplicationContext context;
+    private ApplicationContext context;
     /**
      * singleton instance of the application container
      */

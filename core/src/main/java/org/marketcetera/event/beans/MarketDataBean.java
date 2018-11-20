@@ -124,7 +124,7 @@ public class MarketDataBean
     /**
      * Sets the receivedTimestamp value.
      *
-     * @param inReceivedTimestamp a <code>long</code> value
+     * @param a <code>long</code> value
      */
     public void setReceivedTimestamp(long inReceivedTimestamp)
     {
@@ -142,7 +142,7 @@ public class MarketDataBean
     /**
      * Sets the processedTimestamp value.
      *
-     * @param inProcessedTimestamp a <code>long</code> value
+     * @param a <code>long</code> value
      */
     public void setProcessedTimestamp(long inProcessedTimestamp)
     {

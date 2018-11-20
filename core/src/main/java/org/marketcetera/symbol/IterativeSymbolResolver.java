@@ -120,7 +120,7 @@ public class IterativeSymbolResolver
     /**
      * Sets the cacheSize value.
      *
-     * @param inCacheSize an <code>int</code> value
+     * @param an <code>int</code> value
      */
     public void setCacheSize(int inCacheSize)
     {

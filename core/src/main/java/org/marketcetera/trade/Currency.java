@@ -1,15 +1,12 @@
 package org.marketcetera.trade;
 
 import java.text.SimpleDateFormat;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -141,12 +138,13 @@ public class Currency extends Instrument implements Comparable<Currency>{
 			leftCCY = currencies[0];
 			rightCCY = currencies[1];
 			tradedCCY = currencies[0];
+			hashCode = symbol.hashCode();
 		} else {
 			leftCCY=null;
 			rightCCY=null;
 			tradedCCY=null;
-		}
-        hashCode = new HashCodeBuilder().append(fixSymbol).toHashCode();
+			hashCode=-1;
+		}		
 	}
 	
 	/**
@@ -232,7 +230,11 @@ public class Currency extends Instrument implements Comparable<Currency>{
 			this.farTenor = null;
 		}
 		this.setTradedCCY(baseCCY);
-        hashCode = new HashCodeBuilder().append(fixSymbol).toHashCode();
+		
+		// how to handle null nearTenor in this case?
+		String hashSymbol = this.fixSymbol+this.nearTenor+(this.farTenor==null?"":this.farTenor);
+		
+		this.hashCode   = hashSymbol.hashCode();
 	}
 	
 	public Currency(String leftCCY, String rightCCY, String nearTenor, String farTenor){
@@ -347,7 +349,33 @@ public class Currency extends Instrument implements Comparable<Currency>{
         if (getClass() != obj.getClass())
             return false;
         Currency other = (Currency) obj;
-        return new EqualsBuilder().append(fixSymbol,other.fixSymbol).isEquals();
+        if (nearTenor == null) {
+            if (other.nearTenor != null)
+                return false;
+        } else if (!nearTenor.equals(other.nearTenor))
+            return false;
+        if (farTenor == null) {
+            if (other.farTenor != null)
+                return false;
+        } else if (!farTenor.equals(other.farTenor))
+            return false;
+        if (leftCCY == null) {
+            if (other.leftCCY != null)
+                return false;
+        } else if (!leftCCY.equals(other.leftCCY))
+            return false;
+        if (rightCCY == null) {
+            if (other.rightCCY != null)
+                return false;
+        } else if (!rightCCY.equals(other.rightCCY))
+            return false;
+        if (tradedCCY == null) {
+            if (other.tradedCCY != null)
+                return false;
+        } else if (!tradedCCY.equals(other.tradedCCY))
+            return false;
+        return true;
+		
 	}
 
 	

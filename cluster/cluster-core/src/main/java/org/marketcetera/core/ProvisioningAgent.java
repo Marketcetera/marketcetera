@@ -44,9 +44,9 @@ public class ProvisioningAgent
                 newContext.start();
             }
         } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e,
-                                  "Unable to read provisioning file: " + inOriginalFileName);
+            PlatformServices.handleException(this,
+                                             "Unable to read provisioning file: " + inOriginalFileName,
+                                             e);
         }
     }
     /**
@@ -67,9 +67,9 @@ public class ProvisioningAgent
                                   "Watching {} for provisioning files",
                                   actualDirectory);
         } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e,
-                                  "Unable to watch for provisioning files");
+            PlatformServices.handleException(this,
+                                             "Unable to watch for provisioning files",
+                                             e);
         }
     }
     /**
@@ -84,7 +84,7 @@ public class ProvisioningAgent
     /**
      * Sets the pollingInterval value.
      *
-     * @param inPollingInterval a <code>long</code> value
+     * @param a <code>long</code> value
      */
     public void setPollingInterval(long inPollingInterval)
     {
@@ -102,7 +102,7 @@ public class ProvisioningAgent
     /**
      * Sets the provisioningDirectory value.
      *
-     * @param inProvisioningDirectory a <code>String</code> value
+     * @param a <code>String</code> value
      */
     public void setProvisioningDirectory(String inProvisioningDirectory)
     {
@@ -120,7 +120,7 @@ public class ProvisioningAgent
     /**
      * Sets the clusterService value.
      *
-     * @param inClusterService a <code>ClusterService</code> value
+     * @param a <code>ClusterService</code> value
      */
     public void setClusterService(ClusterService inClusterService)
     {

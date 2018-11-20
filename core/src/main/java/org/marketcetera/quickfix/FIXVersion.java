@@ -96,7 +96,10 @@ public enum FIXVersion
     {
         FIXVersion fixVersion = versionMap.get(inVersion);
         if(fixVersion == null) {
-            throw new IllegalArgumentException(Messages.FIX_VERSION_UNSUPPORTED.getText(inVersion));
+            fixVersion = applicationVersionMap.get(inVersion);
+            if(fixVersion == null) {
+                throw new IllegalArgumentException(Messages.FIX_VERSION_UNSUPPORTED.getText(inVersion));
+            }
         }
         return fixVersion;
     }

@@ -82,7 +82,7 @@ public class EmailNotificationExecutorMethod
     /**
      * Sets the notificationRecipients value.
      *
-     * @param inNotificationRecipients a <code>Map&lt;INotification.Severity,String&gt;</code> value
+     * @param a <code>Map&lt;INotification.Severity,String&gt;</code> value
      */
     public void setNotificationRecipients(Map<INotification.Severity,String> inNotificationRecipients)
     {

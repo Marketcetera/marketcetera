@@ -13,20 +13,13 @@ import quickfix.Session;
  * @author toli
  * @version $Id$
  */
-@ClassVersion("$Id$")
-public class FIXMessageSender
-{
-    /**
-     * Send outgoing message.
-     *
-     * @param inMsg a <code>Message</code> value
-     * @param targetID a <code>SessionID</code> value
-     * @throws SessionNotFound if the given session cannot be found
-     */
-    public void sendOutgoingMessage(Message inMsg,
-                                    SessionID targetID)
-            throws SessionNotFound
+
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class FIXMessageSender {
+    /** To be overridden by unit tests for capturing outgoing messages */
+    public void sendOutgoingMessage(Message inMsg, SessionID targetID) throws SessionNotFound
     {
         Session.sendToTarget(inMsg, targetID);
     }
+
 }

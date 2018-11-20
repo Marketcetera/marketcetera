@@ -58,12 +58,6 @@ public class MarketstatEventCacheTest
                    null); 
        verifyCache(new MarketstatEventCache(option),
                    null); 
-       verifyCache(new MarketstatEventCache(future),
-                   null); 
-       verifyCache(new MarketstatEventCache(currency),
-                   null); 
-       verifyCache(new MarketstatEventCache(spread),
-                   null); 
     }
     /**
      * Tests the ability to cache values.
@@ -77,12 +71,10 @@ public class MarketstatEventCacheTest
         final MarketstatEventBuilder equityBuilder = MarketstatEventBuilder.marketstat(equity);
         final MarketstatEventBuilder optionBuilder = MarketstatEventBuilder.marketstat(option);
         final MarketstatEventBuilder futureBuilder = MarketstatEventBuilder.marketstat(future);
-        final MarketstatEventBuilder spreadBuilder = MarketstatEventBuilder.marketstat(spread);
         final MarketstatEventBuilder currencyBuilder = MarketstatEventBuilder.marketstat(currency);
         final MarketstatEventCache equityCache = new MarketstatEventCache(equity);
         final MarketstatEventCache optionCache = new MarketstatEventCache(option);
         final MarketstatEventCache futureCache = new MarketstatEventCache(future);
-        final MarketstatEventCache spreadCache = new MarketstatEventCache(spread);
         final MarketstatEventCache currencyCache = new MarketstatEventCache(currency);
         new ExpectedFailure<IllegalArgumentException>()
         {
@@ -120,15 +112,6 @@ public class MarketstatEventCacheTest
                 currencyCache.cache(equityBuilder.create());
             }
         };
-        new ExpectedFailure<IllegalArgumentException>()
-        {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                spreadCache.cache(equityBuilder.create());
-            }
-        };
         // these values are not nullable, so set them up now
         optionBuilder.withExpirationType(ExpirationType.EUROPEAN);
         optionBuilder.withUnderlyingInstrument(equity);
@@ -139,9 +122,7 @@ public class MarketstatEventCacheTest
         doCacheTest(futureBuilder,
                     futureCache);
         doCacheTest(currencyBuilder,
-                    currencyCache);
-        doCacheTest(spreadBuilder,
-                    spreadCache);
+                currencyCache);
     }
     /**
      * Executes a set of cache tests with the given builder and cache.
@@ -492,13 +473,4 @@ public class MarketstatEventCacheTest
      * test currency
      */
     private final Currency currency = new Currency("USD/GBP");
-    /**
-     * test spread value
-     */
-    private final Spread spread = new Spread(new Future("AAPL",
-                                                        FutureExpirationMonth.APRIL,
-                                                        12),
-                                             new Future("AAPL",
-                                                        FutureExpirationMonth.JUNE,
-                                                        12));
 }

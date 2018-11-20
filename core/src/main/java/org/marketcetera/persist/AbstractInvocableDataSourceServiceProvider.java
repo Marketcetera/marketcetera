@@ -49,7 +49,6 @@ public abstract class AbstractInvocableDataSourceServiceProvider
     /**
      * Executes the given block with the appropriate resources provided and cleaned up.
      *
-     * @param <ReturnClazz> the type to return
      * @param inBlock a <code>CollectionCallable&lt;ReturnClazz&gt;</code> value
      * @return a <code>ReturnClazz</code> value
      * @throws Exception if an error occurs executing the call
@@ -66,7 +65,6 @@ public abstract class AbstractInvocableDataSourceServiceProvider
     /**
      * Executes the given block with the appropriate resources provided and cleaned up.
      *
-     * @param <ReturnClazz> the type to return
      * @param inBlock a <code>PreparedCollectionCallable&lt;ReturnClazz&gt;</code> value
      * @return a <code>ReturnClazz</code> value
      * @throws Exception if an error occurs executing the call

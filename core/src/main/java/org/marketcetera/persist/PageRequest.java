@@ -2,6 +2,12 @@ package org.marketcetera.persist;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import com.google.common.collect.Lists;
 
 /* $License$ */
@@ -13,6 +19,8 @@ import com.google.common.collect.Lists;
  * @version $Id$
  * @since $Release$
  */
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name="pageRequest")
 public class PageRequest
 {
     /**
@@ -80,15 +88,38 @@ public class PageRequest
         return this;
     }
     /**
+     * Create a new PageRequest instance.
+     */
+    public PageRequest() {}
+    /**
+     * Create a new MyPageRequest instance.
+     *
+     * @param inPage an <code>int</code> value
+     * @param inSize an <code>int</code> value
+     */
+    public PageRequest(int inPage,
+                       int inSize)
+    {
+        pageNumber = inPage;
+        pageSize = inSize;
+    }
+    /**
+     * page request which requests all data in a single page
+     */
+    public transient static final PageRequest ALL = new PageRequest(0,Integer.MAX_VALUE);
+    /**
      * optional sort directive
      */
+    @XmlElement
     private List<Sort> sortOrder = Lists.newArrayList();
     /**
      * zero-indexed page number
      */
+    @XmlAttribute
     private int pageNumber;
     /**
      * size of the page
      */
+    @XmlAttribute
     private int pageSize;
 }

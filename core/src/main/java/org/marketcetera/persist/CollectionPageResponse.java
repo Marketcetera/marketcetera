@@ -1,6 +1,10 @@
 package org.marketcetera.persist;
 
 import java.util.Collection;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.google.common.collect.Lists;
 
@@ -16,6 +20,30 @@ import com.google.common.collect.Lists;
 public class CollectionPageResponse<Clazz>
         extends PageResponse
 {
+    /**
+     * Create a new CollectionPageResponse instance.
+     */
+    public CollectionPageResponse() {}
+    /**
+     * Create a new CollectionPageResponse instance.
+     *
+     * @param inPageRequest a <code>Pageable</code> value
+     * @param inPage a <code>Page&lt;Clazz&gt:</code> value
+     */
+    public CollectionPageResponse(Pageable inPageRequest,
+                                  Page<Clazz> inPage)
+    {
+        setElements(inPage.getContent());
+        setHasContent(inPage.hasContent());
+        setPageMaxSize(inPage.getSize());
+        setPageNumber(inPage.getNumber());
+        setPageSize(inPage.getNumberOfElements());
+        setTotalPages(inPage.getTotalPages());
+        setTotalSize(inPage.getTotalElements());
+        List<Sort> sortOrder = Lists.newArrayList();
+        inPageRequest.getSort().forEach(order -> sortOrder.add(getSort(order)));
+        setSortOrder(sortOrder);
+    }
     /**
      * Get the elements value.
      *

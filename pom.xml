@@ -61,6 +61,141 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>dataflow-api</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>dataflow-server</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>dataflow-core</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>dataflow-rpc-core</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>dataflow-rpc-server</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>dataflow-rpc-client</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-api</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-server</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-core</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-rpc-core</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-rpc-server</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-rpc-client</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>admin-api</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>admin-server</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>admin-core</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>admin-rpc-core</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>admin-rpc-server</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>admin-rpc-client</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>trade-api</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>trade-modules</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>trade-server</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>trade-core</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>trade-rpc-core</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>trade-rpc-server</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>trade-rpc-client</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>rpc-core</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>cluster-rpc-core</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>migration</artifactId>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>
@@ -86,17 +221,17 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-manual</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-exsim</artifactId>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-recorder</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-core</artifactId>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
@@ -177,21 +312,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>admin-api</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>admin-rpc-core</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>admin-rpc-client</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>dare</artifactId>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>
@@ -207,7 +327,17 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>fix-initiator</artifactId>
+        <artifactId>fix-api</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fix-modules</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fix-server</artifactId>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
@@ -217,7 +347,17 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>fix-api</artifactId>
+        <artifactId>fix-rpc-core</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fix-rpc-server</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fix-rpc-client</artifactId>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
@@ -479,7 +619,7 @@
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-core</artifactId>
-	<!--version>1.12.0</version-->
+        <!--version>1.12.0</version-->
         <version>1.16.1</version>
       </dependency>
       <dependency>
@@ -611,6 +751,55 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>admin-rpc-core</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>admin-rpc-server</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-server</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fix-modules</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fix-server</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>trade-server</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>rpc-core</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>cluster-core</artifactId>
         <type>test-jar</type>
         <scope>test</scope>
@@ -682,15 +871,15 @@
     <!-- **** PLUGIN MANAGEMENT SECTION **** -->
     <pluginManagement>
       <plugins>
-	<plugin>
+        <plugin>
           <groupId>org.xolstice.maven.plugins</groupId>
           <artifactId>protobuf-maven-plugin</artifactId>
           <version>0.6.1</version>
           <configuration>
             <!--
-		The version of protoc must match protobuf-java. If you don't depend on
-		protobuf-java directly, you will be transitively depending on the
-		protobuf-java version that grpc depends on.
+                The version of protoc must match protobuf-java. If you don't depend on
+                protobuf-java directly, you will be transitively depending on the
+                protobuf-java version that grpc depends on.
             -->
             <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
             <pluginId>grpc-java</pluginId>
@@ -702,14 +891,14 @@
           <executions>
             <execution>
               <goals>
-		<goal>compile</goal>
-		<goal>compile-custom</goal>
-		<goal>test-compile</goal>
-		<goal>test-compile-custom</goal>
+                <goal>compile</goal>
+                <goal>compile-custom</goal>
+                <goal>test-compile</goal>
+                <goal>test-compile-custom</goal>
               </goals>
             </execution>
           </executions>
-	</plugin>
+        </plugin>
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
@@ -879,7 +1068,7 @@
               <reuseForks>false</reuseForks>
               <argLine>${mvn.test.options}</argLine>
               <systemPropertyVariables>
-		<org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
+                <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
               </systemPropertyVariables>
             </configuration>
           </plugin>
@@ -910,12 +1099,12 @@
               <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </plugin>
-	</plugins>
+        </plugins>
       </pluginManagement>
       <!-- **** PLUGINS SECTION **** -->
       <plugins>
-	<!-- source jar generation -->
-	<plugin>
+        <!-- source jar generation -->
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <version>2.1.2</version>
@@ -923,31 +1112,31 @@
             <execution>
               <id>attach-sources</id>
               <goals>
-		<goal>jar</goal>
+                <goal>jar</goal>
               </goals>
             </execution>
           </executions>
-	</plugin>
-	<!-- Place tests into a jar for use during testing of other packages -->
-	<plugin>
+        </plugin>
+        <!-- Place tests into a jar for use during testing of other packages -->
+        <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-	</plugin>
-	<!-- Adds the build number to each JAR -->
-	<plugin>
+        </plugin>
+        <!-- Adds the build number to each JAR -->
+        <plugin>
           <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
           <artifactId>svn-revision-number-maven-plugin</artifactId>
           <version>1.13</version>
           <executions>
             <execution>
               <goals>
-		<goal>revision</goal>
+                <goal>revision</goal>
               </goals>
             </execution>
           </executions>
           <configuration>
             <entries>
               <entry>
-		<prefix>svn</prefix>
+                <prefix>svn</prefix>
               </entry>
             </entries>
           </configuration>
@@ -968,87 +1157,87 @@
               <version>1.0.2</version>
             </dependency>
           </dependencies>
-	</plugin>
+        </plugin>
       </plugins>
       <extensions>
-	<extension>
+        <extension>
           <groupId>org.apache.maven.wagon</groupId>
           <artifactId>wagon-ssh</artifactId>
           <version>2.5</version>
-	</extension>
-	<extension>
+        </extension>
+        <extension>
           <groupId>kr.motd.maven</groupId>
           <artifactId>os-maven-plugin</artifactId>
           <version>1.6.1</version>
-	</extension>
+        </extension>
       </extensions>
       <resources>
-	<resource>
+        <resource>
           <directory>src/main/resources</directory>
           <filtering>true</filtering>
           <includes>
             <include>**/metc_version.properties</include>
           </includes>
-	</resource>
-	<resource>
+        </resource>
+        <resource>
           <directory>src/main/resources</directory>
           <filtering>false</filtering>
           <excludes>
             <exclude>**/metc_version.properties</exclude>
           </excludes>
-	</resource>
+        </resource>
       </resources>
     </build>
     <profiles>
       <profile>
-	<id>release-sign-artifacts</id>
-	<activation>
+        <id>release-sign-artifacts</id>
+        <activation>
           <property>
             <name>performRelease</name>
             <value>true</value>
           </property>
-	</activation>
-	<build>
+        </activation>
+        <build>
           <plugins>
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-gpg-plugin</artifactId>
               <version>1.6</version>
               <executions>
-		<execution>
+                <execution>
                   <id>sign-artifacts</id>
                   <phase>verify</phase>
                   <goals>
                     <goal>sign</goal>
                   </goals>
-		</execution>
+                </execution>
               </executions>
             </plugin>
             <plugin>
               <artifactId>maven-javadoc-plugin</artifactId>
               <version>3.0.1</version>
               <executions>
-		<execution>
+                <execution>
                   <id>attach-javadocs</id>
                   <goals>
                     <goal>jar</goal>
                   </goals>
-		</execution>
+                </execution>
               </executions>
               <configuration>
-		<doctitle>Marketcetera Platform ${project.version} API</doctitle>
-		<windowtitle>Marketcetera Platform ${project.version} API</windowtitle>
-		<overview>tools/javadoc/overview.html</overview>
-		<links>
+                <doctitle>Marketcetera Platform ${project.version} API</doctitle>
+                <windowtitle>Marketcetera Platform ${project.version} API</windowtitle>
+                <overview>tools/javadoc/overview.html</overview>
+                <links>
                   <link>https://java.sun.com/javase/${mvn.javase.version}/docs/api/</link>
                   <link>https://logging.apache.org/log4j/2.x/log4j-api/apidocs/</link>
                   <link>https://docs.spring.io/spring/docs/4.3.8.RELEASE/javadoc-api/</link>
                   <link>https://www.quickfixj.org/javadoc/1.6.3/</link>
-		</links>
+                </links>
               </configuration>
             </plugin>
           </plugins>
-	</build>
+        </build>
       </profile>    
     </profiles>
     <modules>
@@ -1056,51 +1245,54 @@
       <module>client</module>
       <module>cluster</module>
       <module>core</module>
+      <module>dataflow</module>
       <module>dare</module>
       <module>eventbus</module>
       <module>fix</module>
       <module>fork</module>
+      <module>marketdata</module>
       <module>modules</module>
       <module>orderloader</module>
       <module>rpc-core</module>
       <module>saclient</module>
       <module>samples</module>
       <module>strategyagent</module>
+      <module>trade</module>
       <module>tools</module>
       <module>util</module>
       <module>util-test</module>
     </modules>
     <repositories>
       <repository>
-	<id>internal</id>
-	<url>https://repo.marketcetera.org/maven</url>
-	<snapshots>
+        <id>internal</id>
+        <url>https://repo.marketcetera.org/maven</url>
+        <snapshots>
           <enabled>true</enabled>
-	</snapshots>
+        </snapshots>
       </repository>
       <repository>
-	<id>com.springsource.repository.bundles.release</id>
-	<name>EBR Spring Release Repository</name>
-	<url>http://repository.springsource.com/maven/bundles/release</url>
+        <id>com.springsource.repository.bundles.release</id>
+        <name>EBR Spring Release Repository</name>
+        <url>http://repository.springsource.com/maven/bundles/release</url>
       </repository>
       <repository>
-	<id>com.springsource.repository.bundles.external</id>
-	<name>EBR External Release Repository</name>
-	<url>http://repository.springsource.com/maven/bundles/external</url>
+        <id>com.springsource.repository.bundles.external</id>
+        <name>EBR External Release Repository</name>
+        <url>http://repository.springsource.com/maven/bundles/external</url>
       </repository>
     </repositories>
     <pluginRepositories>
       <pluginRepository>
-	<id>internal</id>
-	<url>https://repo.marketcetera.org/maven</url>
-	<snapshots>
+        <id>internal</id>
+        <url>https://repo.marketcetera.org/maven</url>
+        <snapshots>
           <enabled>false</enabled>
-	</snapshots>
+        </snapshots>
       </pluginRepository>
     </pluginRepositories>
     <reporting>
       <plugins>
-	<plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>3.0.1</version>
@@ -1114,17 +1306,17 @@
             <additionalparam>-views -all</additionalparam>
             <useStandardDocletOptions>true</useStandardDocletOptions>
           </configuration>
-	</plugin>
-	<plugin>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <version>3.3</version>
-	</plugin>
-	<plugin>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>2.7</version>
-	</plugin>
+        </plugin>
       </plugins>
     </reporting>
     <scm>

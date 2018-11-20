@@ -14,6 +14,8 @@
   <modules>
     <module>cluster-api</module>
     <module>cluster-core</module>
+    <module>cluster-rpc-client</module>
+    <module>cluster-rpc-core</module>
     <module>cluster-simple</module>
   </modules>
 </project>

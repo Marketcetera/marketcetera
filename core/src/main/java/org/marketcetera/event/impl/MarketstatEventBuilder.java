@@ -1,11 +1,10 @@
 package org.marketcetera.event.impl;
 
-import static org.marketcetera.event.Messages.VALIDATION_BOND_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_CURRENCY_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
-import static org.marketcetera.event.Messages.VALIDATION_SPREAD_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_BOND_REQUIRED;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -14,24 +13,9 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.beans.ConvertibleBondBean;
-import org.marketcetera.event.beans.CurrencyBean;
-import org.marketcetera.event.beans.FutureBean;
-import org.marketcetera.event.beans.MarketstatBean;
-import org.marketcetera.event.beans.OptionBean;
-import org.marketcetera.event.beans.SpreadBean;
+import org.marketcetera.event.beans.*;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.ConvertibleBond;
-import org.marketcetera.trade.Currency;
-import org.marketcetera.trade.DeliveryType;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Future;
-import org.marketcetera.trade.FutureType;
-import org.marketcetera.trade.FutureUnderlyingAssetType;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.Spread;
-import org.marketcetera.trade.StandardType;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -51,7 +35,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class MarketstatEventBuilder
-        implements EventBuilder<MarketstatEvent>,OptionEventBuilder<MarketstatEventBuilder>,FutureEventBuilder<MarketstatEventBuilder>,CurrencyEventBuilder<MarketstatEventBuilder>,ConvertibleBondEventBuilder<MarketstatEventBuilder>,SpreadEventBuilder<MarketstatEventBuilder>
+        implements EventBuilder<MarketstatEvent>, OptionEventBuilder<MarketstatEventBuilder>, FutureEventBuilder<MarketstatEventBuilder>, CurrencyEventBuilder<MarketstatEventBuilder>, ConvertibleBondEventBuilder<MarketstatEventBuilder>
 {
     /**
      * Returns a <code>MarketstatEventBuilder</code> suitable for constructing a new <code>MarketstatEvent</code> object.
@@ -72,10 +56,8 @@ public abstract class MarketstatEventBuilder
             return optionMarketstat().withInstrument(inInstrument);
         } else if(inInstrument instanceof Future) {
             return futureMarketstat().withInstrument(inInstrument);
-        } else if(inInstrument instanceof Spread) {
-            return spreadMarketstat().withInstrument(inInstrument);
         } else if(inInstrument instanceof Currency) {
-            return currencyMarketstat().withInstrument(inInstrument);
+        	return currencyMarketstat().withInstrument(inInstrument);
         } else if(inInstrument instanceof ConvertibleBond) {
             return convertibleBondMarketstat().withInstrument(inInstrument);
         } else {
@@ -173,28 +155,6 @@ public abstract class MarketstatEventBuilder
     }
     /**
      * Returns a <code>MarketstatEventBuilder</code> suitable for constructing a new <code>MarketstatEvent</code> object
-     * of type <code>Spread</code>.
-     *
-     * @return a <code>MarketstatEventBuilder</code> value
-     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Spread}
-     */
-    public static MarketstatEventBuilder spreadMarketstat()
-    {
-        return new MarketstatEventBuilder()
-        {
-            @Override
-            public MarketstatEvent create()
-            {
-                if(!(getMarketstat().getInstrument() instanceof Spread)) {
-                    throw new IllegalArgumentException(VALIDATION_SPREAD_REQUIRED.getText());
-                }
-                return new SpreadMarketstatEventImpl(getMarketstat(),
-                                                     getSpread());
-            }
-        };
-    }
-    /**
-     * Returns a <code>MarketstatEventBuilder</code> suitable for constructing a new <code>MarketstatEvent</code> object
      * of type <code>ConvertibleBond</code>.
      *
      * @return a <code>MarketstatEventBuilder</code> value
@@ -272,9 +232,7 @@ public abstract class MarketstatEventBuilder
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
-        } else if(inInstrument instanceof Spread) {
-            spread.setInstrument((Spread)inInstrument);
-        } else if(inInstrument instanceof Currency) {
+        }else if(inInstrument instanceof Currency) {
             currency.setInstrument((Currency)inInstrument);
         } else if(inInstrument instanceof ConvertibleBond) {
             convertibleBond.setInstrument((ConvertibleBond)inInstrument);
@@ -282,7 +240,6 @@ public abstract class MarketstatEventBuilder
         if(inInstrument == null) {
             option.setInstrument(null);
             future.setInstrument(null);
-            spread.setInstrument(null);
             currency.setInstrument(null);
             convertibleBond.setInstrument(null);
         }
@@ -506,8 +463,6 @@ public abstract class MarketstatEventBuilder
     public final MarketstatEventBuilder withDeliveryType(DeliveryType inDeliveryType)
     {
         future.setDeliveryType(inDeliveryType);
-        spread.getLeg1Bean().setDeliveryType(inDeliveryType);
-        spread.getLeg2Bean().setDeliveryType(inDeliveryType);
         return this;
     }
     /**
@@ -519,8 +474,6 @@ public abstract class MarketstatEventBuilder
     public final MarketstatEventBuilder withStandardType(StandardType inStandardType)
     {
         future.setStandardType(inStandardType);
-        spread.getLeg1Bean().setStandardType(inStandardType);
-        spread.getLeg2Bean().setStandardType(inStandardType);
         return this;
     }
     /**
@@ -532,8 +485,6 @@ public abstract class MarketstatEventBuilder
     public final MarketstatEventBuilder withFutureType(FutureType inFutureType)
     {
         future.setType(inFutureType);
-        spread.getLeg1Bean().setType(inFutureType);
-        spread.getLeg2Bean().setType(inFutureType);
         return this;
     }
     /**
@@ -545,8 +496,6 @@ public abstract class MarketstatEventBuilder
     public final MarketstatEventBuilder withUnderlyingAssetType(FutureUnderlyingAssetType inUnderlyingAssetType)
     {
         future.setUnderlyingAssetType(inUnderlyingAssetType);
-        spread.getLeg1Bean().setUnderlyingAssetType(inUnderlyingAssetType);
-        spread.getLeg2Bean().setUnderlyingAssetType(inUnderlyingAssetType);
         return this;
     }
     /**
@@ -559,7 +508,6 @@ public abstract class MarketstatEventBuilder
     {
         option.setProviderSymbol(inProviderSymbol);
         future.setProviderSymbol(inProviderSymbol);
-        spread.setProviderSymbol(inProviderSymbol);
         return this;
     }
     /**
@@ -571,8 +519,6 @@ public abstract class MarketstatEventBuilder
     public final MarketstatEventBuilder withContractSize(int inContractSize)
     {
         future.setContractSize(inContractSize);
-        spread.getLeg1Bean().setContractSize(inContractSize);
-        spread.getLeg2Bean().setContractSize(inContractSize);
         return this;
     }
     /**
@@ -857,12 +803,11 @@ public abstract class MarketstatEventBuilder
     @Override
     public String toString()
     {
-        return String.format("MarketstatEventBuilder [marketstat=%s, option=%s, future=%s, convertibleBond=%s, spread=%s]", //$NON-NLS-1$
+        return String.format("MarketstatEventBuilder [marketstat=%s, option=%s, future=%s, convertibleBond=%s]", //$NON-NLS-1$
                              marketstat,
                              option,
                              future,
-                             convertibleBond,
-                             spread);
+                             convertibleBond);
     }
     /**
      * Get the marketstat value.
@@ -890,15 +835,6 @@ public abstract class MarketstatEventBuilder
     protected final FutureBean getFuture()
     {
         return future;
-    }
-    /**
-     * Gets the spread value.
-     *
-     * @return a <code>SpreadBean</code> value
-     */
-    protected final SpreadBean getSpread()
-    {
-        return spread;
     }
     /**
      * Gets the currency value.
@@ -948,10 +884,6 @@ public abstract class MarketstatEventBuilder
      * the future attributes
      */
     private final FutureBean future = new FutureBean();
-    /**
-     * spread attributes
-     */
-    private final SpreadBean spread = new SpreadBean();
     /**
      * the currency attributes
      */

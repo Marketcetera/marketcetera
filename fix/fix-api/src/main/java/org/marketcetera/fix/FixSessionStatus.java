@@ -3,6 +3,8 @@ package org.marketcetera.fix;
 import java.util.EnumSet;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /* $License$ */
 
 /**
@@ -12,6 +14,7 @@ import java.util.Set;
  * @version $Id$
  * @since $Release$
  */
+@XmlRootElement
 public enum FixSessionStatus
 {
     /**
@@ -76,6 +79,15 @@ public enum FixSessionStatus
     public boolean isEnabled()
     {
         return enabled.contains(this);
+    }
+    /**
+     * Indicate if the session is logged on or not.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isLoggedOn()
+    {
+        return CONNECTED.equals(this);
     }
     /**
      * contains the statuses that indicate if a session is started or not

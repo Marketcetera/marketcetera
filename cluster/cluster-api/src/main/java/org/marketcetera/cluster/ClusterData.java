@@ -2,6 +2,9 @@ package org.marketcetera.cluster;
 
 import java.io.Serializable;
 
+import org.marketcetera.core.DomainObject;
+import org.marketcetera.core.HasMutableView;
+
 /* $License$ */
 
 /**
@@ -12,7 +15,7 @@ import java.io.Serializable;
  * @since $Release$
  */
 public interface ClusterData
-        extends Serializable
+        extends DomainObject,HasMutableView<MutableClusterData>,Serializable
 {
     /**
      * Get the instanceNumber value.

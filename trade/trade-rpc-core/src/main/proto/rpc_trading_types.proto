@@ -1,0 +1,258 @@
+syntax = "proto3";
+option java_generic_services = true;
+option java_package = "org.marketcetera.trading.rpc";
+option java_outer_classname = "TradingTypesRpc";
+import "rpc_base.proto";
+import "rpc_admin.proto";
+import "rpc_fix_admin.proto";
+import "google/protobuf/timestamp.proto";
+
+enum OrderType {
+    UnknownOrderType = 0;
+    Market = 1;
+    Limit = 2;
+    Stop = 3;
+    StopLimit = 4;
+    MarketOnClose = 5;
+    WithOrWithout = 6;
+    LimitOrBetter = 7;
+    LimitWithOrWithout = 8;
+    OnBasis = 9;
+    OnClose = 10;
+    LimitOnClose = 11;
+    ForexMarket = 12;
+    PreviouslyQuoted = 13;
+    PreviouslyIndicated = 14;
+    ForexLimit = 15;
+    ForexSwap = 16;
+    ForexPreviouslyQuoted = 17;
+    Funari = 18;
+    Pegged = 19;
+}
+
+enum OrderStatusType {
+    New = 0;
+    PartiallyFilled = 1;
+    Filled = 2;
+    DoneForDay = 3;
+    Canceled = 4;
+    Replaced = 5;
+    PendingCancel = 6;
+    Stopped = 7;
+    Rejected = 8;
+    Suspended = 9;
+    PendingNew = 10;
+    Calculated = 11;
+    Expired = 12;
+    AcceptedForBidding = 13;
+    PendingReplace = 14;
+    UnknownOrderStatus = 99;
+}
+
+enum Side {
+    UnknownSide = 0;
+    Buy = 1;
+    Sell = 2;
+    BuyMinus = 3;
+    SellPlus = 4;
+    SellShort = 5;
+    SellShortExempt = 6;
+    Undisclosed = 7;
+    Cross = 8;
+    CrossShort = 9;
+}
+
+enum SecurityType {
+    UnknownSecurityType = 0;
+    CommonStock = 1;
+    Option = 2;
+    Future = 3;
+    ConvertibleBond = 4;
+    Currency = 5;
+}
+
+enum OrderCapacity {
+    UnknownOrderCapacity = 0;
+    Agency = 1;
+    Proprietary = 2;
+    Individual = 3;
+    Principal = 4;
+    RisklessPrincipal = 5;
+    AgentOtherMember = 6;
+}
+
+enum PositionEffect {
+    UnknownPositionEffect = 0;
+    Open = 1;
+    Close = 2;
+}
+
+enum TimeInForce {
+    UnknownTimeInForce = 0;
+    Day = 1;
+    GoodTillCancel = 2;
+    AtTheOpening = 3;
+    ImmediateOrCancel = 4;
+    FillOrKill = 5;
+    GoodTillCrossing = 6;
+    GoodTillDate = 7;
+    AtTheClose = 8;
+}
+
+message Instrument {
+    string symbol = 1;
+    SecurityType securityType = 2;
+}
+
+message OrderSummary {
+    OrderStatusType orderStatus = 1;
+    TradeMessage report = 2;
+    string rootOrderId = 3;
+    string orderId = 4;
+    Qty cumulativeQuantity = 5;
+    string account = 6;
+    string brokerId = 7;
+    Side side = 8;
+    Instrument instrument = 9;
+    Qty averagePrice = 10;
+    Qty lastQuantity = 11;
+    Qty leavesQuantity = 12;
+    Qty orderQuantity = 13;
+    Qty lastPrice = 14;
+    Qty orderPrice = 15;
+    google.protobuf.Timestamp sendingTime = 16;
+    google.protobuf.Timestamp transactTime = 17;
+    User user = 18;
+}
+
+message FixMessage {
+    Map header = 1;
+    Map body = 2;
+    Map footer = 3;
+}
+
+message FIXOrder {
+    string brokerId = 1;
+    FixMessage message = 2;
+}
+
+enum MatpOrderType {
+    OrderSingleType = 0;
+    OrderReplaceType = 1;
+    OrderCancelType = 2;
+    FIXOrderType = 3;
+}
+
+enum ExecutionType {
+    UnknownExecutionType = 0;
+    NewExecutionType = 1;
+    PartialFillExecutionType = 2;
+    FillExecutionType = 3;
+    DoneForDayExecutionType = 4;
+    CanceledExecutionType = 5;
+    ReplaceExecutionType = 6;
+    PendingCancelExecutionType = 7;
+    StoppedExecutionType = 8;
+    RejectedExecutionType = 9;
+    SuspendedExecutionType = 10;
+    PendingNewExecutionType = 11;
+    CalculatedExecutionType = 12;
+    ExpiredExecutionType = 13;
+    RestatedExecutionType = 14;
+    PendingReplaceExecutionType = 15;
+    TradeExecutionType = 16;
+    TradeCorrectExecutionType = 17;
+    TradeCancelExecutionType = 18;
+    OrderStatusExecutionType = 19;
+}
+
+enum Hierarchy {
+    FlatHierarchy = 0;
+    ParentHierarchy = 1;
+    ChildHierarchy = 2;
+}
+
+enum Originator {
+    ServerOriginator = 0;
+    BrokerOriginator = 1;
+}
+
+message OrderBase {
+    string brokerId = 1;
+    string account = 2;
+    BrokerAlgo brokerAlgo = 3;
+    string brokerOrderId = 4;
+    Map customFields = 5;
+    Qty displayQuantity = 6;
+    string executionDestination = 7;
+    Instrument instrument = 8;
+    OrderCapacity orderCapacity = 9;
+    string orderId = 10;
+    OrderType orderType = 11;
+    bool pegToMidpoint = 12;
+    PositionEffect positionEffect = 13;
+    Qty price = 14;
+    Qty quantity = 15;
+    Side side = 16;
+    string text = 17;
+    TimeInForce timeInForce = 18;
+    string originalOrderId = 19;
+}
+
+message Order {
+    FIXOrder fixOrder = 1;
+    OrderBase orderBase = 2;
+    MatpOrderType matpOrderType = 3;
+}
+
+enum TradeMessageType {
+    TradeMessageExecutionReport = 0;
+    TradeMessageOrderCancelReject = 1;
+    TradeMessageFixResponse = 2;
+}
+
+message TradeMessage {
+    string account = 1;
+    string user = 2;
+    Qty averagePrice = 3;
+    string brokerId = 4;
+    string brokerOrderId = 5;
+    Qty cumulativeQuantity = 6;
+    string executionId = 7;
+    ExecutionType executionType = 8;
+    Hierarchy hierarchy = 9;
+    Instrument instrument = 10;
+    string lastMarket = 11;
+    Qty lastPrice = 12;
+    Qty lastQuantity = 13;
+    Qty leavesQuantity = 14;
+    OrderCapacity orderCapacity = 15;
+    Qty orderDisplayQuantity = 16;
+    string orderId = 17;
+    Qty orderQuantity = 18;
+    OrderStatusType orderStatus = 19;
+    OrderType orderType = 20;
+    string originalOrderId = 21;
+    Originator originator = 22;
+    PositionEffect positionEffect = 23;
+    Qty price = 24;
+    string reportId = 25;
+    google.protobuf.Timestamp sendingTime = 26;
+    Side side = 27;
+    string text = 28;
+    TimeInForce timeInForce = 29;
+    google.protobuf.Timestamp transactTime = 30;
+    FixMessage message = 31;
+    TradeMessageType tradeMessageType = 32;
+}
+
+message PositionKey {
+    Instrument instrument = 1;
+    string account = 2;
+    string traderId = 3;
+}
+
+message Position {
+    PositionKey positionKey = 1;
+    Qty position = 2;
+}

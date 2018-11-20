@@ -6,19 +6,22 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
-import org.marketcetera.core.fix.FixSettingsProvider;
-import org.marketcetera.core.fix.FixSettingsProviderFactory;
-import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionFactory;
-import org.marketcetera.fix.SessionService;
+import org.marketcetera.fix.FixSettingsProvider;
+import org.marketcetera.fix.FixSettingsProviderFactory;
+import org.marketcetera.fix.MutableFixSession;
+import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.store.MessageStoreSession;
 import org.marketcetera.fix.store.MessageStoreSessionDao;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import quickfix.Acceptor;
 import quickfix.Application;
@@ -31,9 +34,6 @@ import quickfix.SessionID;
 import quickfix.SessionSettings;
 import quickfix.mina.SessionConnector;
 import quickfix.mina.acceptor.AcceptorSessionProvider;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -56,7 +56,7 @@ public class PromiscuousAcceptorSessionProvider
     {
         if(targetCompId != null) {
             Validate.isTrue(targetCompId.equals(inSessionId.getSenderCompID()),
-                            "Invalid target comp id in " + FIXMessageUtil.getReversedSessionId(inSessionId));
+                            "Invalid target comp id in " + FIXMessageUtil.getReversedSessionId(inSessionId) + " expected: " + targetCompId + " to equal " + inSessionId.getSenderCompID());
         }
         Session fixSession = Session.lookupSession(inSessionId);
         if(fixSession != null) {
@@ -69,7 +69,7 @@ public class PromiscuousAcceptorSessionProvider
         }
         // check to see if we already have a session by this name
         MessageStoreSession existingSession = sessionDao.findBySessionId(inSessionId.toString());
-        FixSession session = fixSessionFactory.create();
+        MutableFixSession session = fixSessionFactory.create();
         session.setAffinity(clusterData.getInstanceNumber());
         session.setBrokerId(inSessionId.toString());
         session.setHost(fixSettingsProvider.getAcceptorHost());
@@ -81,7 +81,7 @@ public class PromiscuousAcceptorSessionProvider
         for(Map.Entry<String,String> entry : newSessionSettings.entrySet()) {
             session.getSessionSettings().put(entry.getKey(),entry.getValue());
         }
-        SessionSettings fixSessionSettings = sessionService.generateSessionSettings(Lists.newArrayList(session));
+        SessionSettings fixSessionSettings = brokerService.generateSessionSettings(Lists.newArrayList(session));
         fixSessionSettings.setString(Acceptor.SETTING_SOCKET_ACCEPT_ADDRESS,
                                      String.valueOf(fixSettingsProvider.getAcceptorHost()));
         fixSessionSettings.setString(Acceptor.SETTING_SOCKET_ACCEPT_PORT,
@@ -225,7 +225,7 @@ public class PromiscuousAcceptorSessionProvider
      * creates FixSession objects
      */
     @Autowired
-    private FixSessionFactory fixSessionFactory;
+    private MutableFixSessionFactory fixSessionFactory;
     /**
      * provides access to existing sessions
      */
@@ -237,10 +237,10 @@ public class PromiscuousAcceptorSessionProvider
     @Autowired
     private ClusterService clusterService;
     /**
-     * provides access to session services
+     * provides access to broker services
      */
     @Autowired
-    private SessionService sessionService;
+    private BrokerService brokerService;
     /**
      * constructs a FIX settings provider object
      */

@@ -16,18 +16,16 @@ public abstract class CFICode implements CharSequence{
 
 	private char [] chars = new char[6];
 
-    /**
-     * Create a new CFICode instance.
-     * 
-     * @param seq a <code>CharSequence</code> value
-     * @throws StringIndexOutOfBoundsException if seq is shorter than 6 chars
-     */
-    public CFICode(CharSequence seq)
-    {
-        for (int i = 0; i < 6; i++){
-            chars[i] = seq.charAt(i);
-        }
-    }
+	/**
+	 * 
+	 * @param seq
+	 * @throws StringIndexOutOfBoundsException if seq is shorter than 6 chars
+	 */
+	public CFICode(CharSequence seq){
+		for (int i = 0; i < 6; i++){
+			chars[i] = seq.charAt(i);
+		}
+	}
 	
 	public char charAt(int index) {
 		return chars [index];

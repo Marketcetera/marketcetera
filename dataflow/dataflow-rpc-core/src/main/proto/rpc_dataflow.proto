@@ -1,0 +1,203 @@
+syntax = "proto3";
+import "rpc_base.proto";
+import "rpc_paging.proto";
+import "google/protobuf/timestamp.proto";
+option java_generic_services = true;
+option java_package = "org.marketcetera.dataflow.rpc";
+option java_outer_classname = "DataFlowRpc";
+
+message ModuleURN {
+    string value = 1;
+}
+
+message ModuleInfo {
+    string payload = 1;
+}
+
+message DataFlowInfo {
+    string flowId = 1;
+    ModuleURN requesterUrn = 2;
+    ModuleURN stopperUrn = 3;
+    google.protobuf.Timestamp created = 4;
+    google.protobuf.Timestamp stopped = 5;
+    repeated DataFlowStep flowSteps = 6;
+}
+
+message DataFlowStep {
+    DataRequest dataRequest = 1;
+    ModuleURN moduleUrn = 2;
+    bool emitter = 3;
+    bool receiver = 4;
+    int64 numEmitted = 5;
+    int64 numReceived = 6;;
+    int64 numEmitErrors = 7;
+    int64 numReceiveErrors = 8;
+    string lastEmitError = 9;
+    string lastReceiveError = 10;
+}
+
+message DataRequest {
+    ModuleURN requestUrn = 1;
+    DataCoupling dataCoupling = 2;
+    string dataFlowExceptionHandler = 3;
+    string data = 4;
+}
+
+enum DataCoupling {
+    SYNC_DATA_COUPLING = 0;
+    ASYNC_DATA_COUPLING = 1;
+}
+
+message ProvidersRequest {
+    string sessionId = 1;
+}
+
+message ProvidersResponse {
+    repeated ModuleURN provider = 1;
+}
+
+message InstancesRequest {
+    string sessionId = 1;
+    ModuleURN provider = 2;
+}
+
+message InstancesResponse {
+    repeated ModuleURN instance = 1;
+}
+
+message ModuleInfoRequest {
+    string sessionId = 1;
+    ModuleURN instance = 2;
+}
+
+message ModuleInfoResponse {
+    ModuleInfo info = 1;
+}
+
+message StartModuleRequest {
+    string sessionId = 1;
+    ModuleURN instance = 2;
+}
+
+message StartModuleResponse {
+}
+
+message StopModuleRequest {
+    string sessionId = 1;
+    ModuleURN instance = 2;
+}
+
+message StopModuleResponse {
+}
+
+message DeleteModuleRequest {
+    string sessionId = 1;
+    ModuleURN instance = 2;
+}
+
+message DeleteModuleResponse {
+}
+
+message SendDataRequest {
+    string sessionId = 1;
+    string target = 2;
+    string payload = 3;
+}
+
+message SendDataResponse {
+}
+
+message CreateModuleRequest {
+    string sessionId = 1;
+    ModuleURN provider = 2;
+    repeated string parameters = 3;
+}
+
+message CreateModuleResponse {
+    ModuleURN instance = 1;
+}
+
+message CreateDataFlowRequest {
+    string sessionId = 1;
+    bool appendDataSink = 2;
+    repeated DataRequest dataRequests = 3;
+}
+
+message CreateDataFlowResponse {
+    string dataFlowId = 1;
+}
+
+message CancelDataFlowRequest {
+    string sessionId = 1;
+    string dataFlowId = 2;
+}
+
+message CancelDataFlowResponse {
+}
+
+message GetDataFlowInfoRequest {
+    string sessionId = 1;
+    string dataFlowId = 2;
+}
+
+message GetDataFlowInfoResponse {
+    DataFlowInfo dataFlowInfo = 1;
+}
+
+message GetDataFlowsRequest {
+    string sessionId = 1;
+    PageRequest pageRequest = 2;
+}
+
+message GetDataFlowsResponse {
+    PageResponse pageResponse = 1;
+    repeated string dataFlowIds = 2;
+}
+
+message GetDataFlowHistoryRequest {
+    string sessionId = 1;
+    PageRequest pageRequest = 2;
+}
+
+message GetDataFlowHistoryResponse {
+    PageResponse pageResponse = 1;
+    repeated DataFlowInfo dataFlowInfos = 2;
+}
+
+message AddDataReceiverRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message DataReceiverResponse {
+    string data = 1;
+}
+
+message RemoveDataReceiverRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message RemoveDataReceiverResponse {
+}
+
+service DataFlowRpcService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
+    rpc getProviders(ProvidersRequest) returns (ProvidersResponse);
+    rpc getInstances(InstancesRequest) returns (InstancesResponse);
+    rpc getModuleInfo(ModuleInfoRequest) returns (ModuleInfoResponse);
+    rpc startModule(StartModuleRequest) returns (StartModuleResponse);
+    rpc stopModule(StopModuleRequest) returns (StopModuleResponse);
+    rpc deleteModule(DeleteModuleRequest) returns (DeleteModuleResponse);
+    rpc createModule(CreateModuleRequest) returns (CreateModuleResponse);
+    rpc createDataFlow(CreateDataFlowRequest) returns (CreateDataFlowResponse);
+    rpc cancelDataFlow(CancelDataFlowRequest) returns (CancelDataFlowResponse);
+    rpc getDataFlowInfo(GetDataFlowInfoRequest) returns (GetDataFlowInfoResponse);
+    rpc getDataFlows(GetDataFlowsRequest) returns (GetDataFlowsResponse);
+    rpc getDataFlowHistory(GetDataFlowHistoryRequest) returns (GetDataFlowHistoryResponse);
+    rpc addDataReceiver(AddDataReceiverRequest) returns (stream DataReceiverResponse);
+    rpc removeDataReceiver(RemoveDataReceiverRequest) returns (RemoveDataReceiverResponse);
+    rpc sendData(SendDataRequest) returns (SendDataResponse);
+}

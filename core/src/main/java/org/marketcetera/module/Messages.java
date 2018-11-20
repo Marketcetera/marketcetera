@@ -179,5 +179,5 @@ public interface Messages {
     static final I18NMessage1P NO_APPLICATION_CONTEXT_MODULE = new I18NMessage1P(LOGGER,"no_application_context");   //$NON-NLS-1$
     static final I18NMessage1P CANNOT_AUTOWIRE_MODULE = new I18NMessage1P(LOGGER,"cannot_autowire_module");   //$NON-NLS-1$
     static final I18NMessage1P MODULE_REQUIRES_AUTOWIRING = new I18NMessage1P(LOGGER,"module_requires_autowiring");   //$NON-NLS-1$
-
+    static final I18NMessage2P WRONG_DATA_TYPE = new I18NMessage2P(LOGGER,"wrong_data_type"); //$NON-NLS-1$
 }

@@ -1,5 +1,11 @@
 package org.marketcetera.event.impl;
 
+import static org.marketcetera.event.Messages.VALIDATION_BOND_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_CURRENCY_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -15,13 +21,11 @@ import org.marketcetera.event.FutureEvent;
 import org.marketcetera.event.OptionEvent;
 import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.SpreadEvent;
 import org.marketcetera.event.beans.ConvertibleBondBean;
 import org.marketcetera.event.beans.CurrencyBean;
 import org.marketcetera.event.beans.FutureBean;
 import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.event.beans.QuoteBean;
-import org.marketcetera.event.beans.SpreadBean;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
@@ -32,7 +36,6 @@ import org.marketcetera.trade.FutureType;
 import org.marketcetera.trade.FutureUnderlyingAssetType;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
-import org.marketcetera.trade.Spread;
 import org.marketcetera.trade.StandardType;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -53,7 +56,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class QuoteEventBuilder<E extends QuoteEvent>
-        implements EventBuilder<E>, OptionEventBuilder<QuoteEventBuilder<E>>, FutureEventBuilder<QuoteEventBuilder<E>>,CurrencyEventBuilder<QuoteEventBuilder<E>>, ConvertibleBondEventBuilder<QuoteEventBuilder<E>>,SpreadEventBuilder<QuoteEventBuilder<E>>
+        implements EventBuilder<E>, OptionEventBuilder<QuoteEventBuilder<E>>, FutureEventBuilder<QuoteEventBuilder<E>>,CurrencyEventBuilder<QuoteEventBuilder<E>>, ConvertibleBondEventBuilder<QuoteEventBuilder<E>>
 {
     /**
      * Creates a <code>QuoteEvent</code> of the same type as the given event
@@ -94,16 +97,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             } else {
                 return new FutureBidEventImpl(quote,
                                               future);
-            }
-        }
-        if(inEvent instanceof SpreadEvent) {
-            SpreadBean spread = SpreadBean.getSpreadBeanFromEvent((SpreadEvent)inEvent);
-            if(inEvent instanceof AskEvent) {
-                return new SpreadAskEventImpl(quote,
-                                              spread);
-            } else {
-                return new SpreadBidEventImpl(quote,
-                                              spread);
             }
         }
         if(inEvent instanceof CurrencyEvent) {
@@ -173,16 +166,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             } else {
                 return (E)new FutureBidEventImpl(quote,
                                                  future);
-            }
-        }
-        if(inEvent instanceof SpreadEvent) {
-            SpreadBean spread = SpreadBean.getSpreadBeanFromEvent((SpreadEvent)inEvent);
-            if(inEvent instanceof AskEvent) {
-                return (E)new SpreadAskEventImpl(quote,
-                                                 spread);
-            } else {
-                return (E)new SpreadBidEventImpl(quote,
-                                                 spread);
             }
         }
         if(inEvent instanceof CurrencyEvent) {
@@ -259,16 +242,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  future);
             }
         }
-        if(inEvent instanceof SpreadEvent) {
-            SpreadBean spread = SpreadBean.getSpreadBeanFromEvent((SpreadEvent)inEvent);
-            if(inEvent instanceof AskEvent) {
-                return (E)new SpreadAskEventImpl(quote,
-                                                 spread);
-            } else {
-                return (E)new SpreadBidEventImpl(quote,
-                                                 spread);
-            }
-        }
         if(inEvent instanceof CurrencyEvent) {
             CurrencyBean currency = CurrencyBean.getCurrencyBeanFromEvent((CurrencyEvent)inEvent);
             if(inEvent instanceof AskEvent) {
@@ -334,16 +307,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  future);
             }
         }
-        if(inEvent instanceof SpreadEvent) {
-            SpreadBean spread = SpreadBean.getSpreadBeanFromEvent((SpreadEvent)inEvent);
-            if(inEvent instanceof AskEvent) {
-                return (E)new SpreadAskEventImpl(quote,
-                                                 spread);
-            } else {
-                return (E)new SpreadBidEventImpl(quote,
-                                                 spread);
-            }
-        }
         if(inEvent instanceof CurrencyEvent) {
         	CurrencyBean currency = CurrencyBean.getCurrencyBeanFromEvent((CurrencyEvent)inEvent);
             if(inEvent instanceof AskEvent) {
@@ -385,9 +348,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         } else if(inInstrument instanceof Option) {
             return optionAskEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof Future) {
-            return futureAskEvent().withInstrument(inInstrument);
-        } else if(inInstrument instanceof Spread) {
-            return spreadAskEvent().withInstrument(inInstrument);
+                return futureAskEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof Currency) {
             return currencyAskEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof ConvertibleBond) {
@@ -415,8 +376,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             return optionBidEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof Future) {
             return futureBidEvent().withInstrument(inInstrument);
-        } else if(inInstrument instanceof Spread) {
-            return spreadBidEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof Currency) {
             return currencyBidEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof ConvertibleBond) {
@@ -443,7 +402,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                 if(getQuote().getInstrument() instanceof Equity) {
                     return new EquityAskEventImpl(getQuote());
                 }
-                throw new IllegalArgumentException(org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED.getText());
+                throw new IllegalArgumentException(VALIDATION_EQUITY_REQUIRED.getText());
             }
         };
     }
@@ -465,7 +424,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                 if(getQuote().getInstrument() instanceof Equity) {
                     return new EquityBidEventImpl(getQuote());
                 }
-                throw new IllegalArgumentException(org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED.getText());
+                throw new IllegalArgumentException(VALIDATION_EQUITY_REQUIRED.getText());
             }
         };
     }
@@ -488,7 +447,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                     return new OptionAskEventImpl(getQuote(),
                                                   getOption());
                 }
-                throw new IllegalArgumentException(org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED.getText());
+                throw new IllegalArgumentException(VALIDATION_OPTION_REQUIRED.getText());
             }
         };
     }
@@ -511,7 +470,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                     return new OptionBidEventImpl(getQuote(),
                                                   getOption());
                 }
-                throw new IllegalArgumentException(org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED.getText());
+                throw new IllegalArgumentException(VALIDATION_OPTION_REQUIRED.getText());
             }
         };
     }
@@ -534,7 +493,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                     return new FutureAskEventImpl(getQuote(),
                                                   getFuture());
                 }
-                throw new IllegalArgumentException(org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED.getText());
+                throw new IllegalArgumentException(VALIDATION_FUTURE_REQUIRED.getText());
             }
         };
     }
@@ -557,53 +516,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                     return new FutureBidEventImpl(getQuote(),
                                                   getFuture());
                 }
-                throw new IllegalArgumentException(org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED.getText());
-            }
-        };
-    }
-    /**
-     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new Spread <code>AskEvent</code> object.
-     *
-     * @return a <code>QuoteEventBuilder&lt;AskEvent&gt;</code> value
-     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Spread}
-     */
-    public static QuoteEventBuilder<AskEvent> spreadAskEvent()
-    {
-        return new QuoteEventBuilder<AskEvent>() {
-            /* (non-Javadoc)
-             * @see org.marketcetera.event.EventBuilder#create()
-             */
-            @Override
-            public AskEvent create()
-            {
-                if(getQuote().getInstrument() instanceof Spread) {
-                    return new SpreadAskEventImpl(getQuote(),
-                                                  getSpread());
-                }
-                throw new IllegalArgumentException(org.marketcetera.event.Messages.VALIDATION_SPREAD_REQUIRED.getText());
-            }
-        };
-    }
-    /**
-     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new Spread <code>BidEvent</code> object.
-     *
-     * @return a <code>QuoteEventBuilder&lt;BidEvent&gt;</code> value
-     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link Spread}
-     */
-    public static QuoteEventBuilder<BidEvent> spreadBidEvent()
-    {
-        return new QuoteEventBuilder<BidEvent>() {
-            /* (non-Javadoc)
-             * @see org.marketcetera.event.EventBuilder#create()
-             */
-            @Override
-            public BidEvent create()
-            {
-                if(getQuote().getInstrument() instanceof Spread) {
-                    return new SpreadBidEventImpl(getQuote(),
-                                                  getSpread());
-                }
-                throw new IllegalArgumentException(org.marketcetera.event.Messages.VALIDATION_SPREAD_REQUIRED.getText());
+                throw new IllegalArgumentException(VALIDATION_FUTURE_REQUIRED.getText());
             }
         };
     }
@@ -626,7 +539,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                     return new CurrencyAskEventImpl(getQuote(),
                                                   getCurrency());
                 }
-                throw new IllegalArgumentException(org.marketcetera.event.Messages.VALIDATION_CURRENCY_REQUIRED.getText());
+                throw new IllegalArgumentException(VALIDATION_CURRENCY_REQUIRED.getText());
             }
         };
     }
@@ -649,7 +562,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                     return new CurrencyBidEventImpl(getQuote(),
                                                   getCurrency());
                 }
-                throw new IllegalArgumentException(org.marketcetera.event.Messages.VALIDATION_CURRENCY_REQUIRED.getText());
+                throw new IllegalArgumentException(VALIDATION_CURRENCY_REQUIRED.getText());
             }
         };
     }    
@@ -672,7 +585,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                     return new ConvertibleBondAskEventImpl(getQuote(),
                                                            getConvertibleBond());
                 }
-                throw new IllegalArgumentException(org.marketcetera.event.Messages.VALIDATION_BOND_REQUIRED.getText());
+                throw new IllegalArgumentException(VALIDATION_BOND_REQUIRED.getText());
             }
         };
     }
@@ -695,7 +608,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                     return new ConvertibleBondBidEventImpl(getQuote(),
                                                            getConvertibleBond());
                 }
-                throw new IllegalArgumentException(org.marketcetera.event.Messages.VALIDATION_BOND_REQUIRED.getText());
+                throw new IllegalArgumentException(VALIDATION_BOND_REQUIRED.getText());
             }
         };
     }
@@ -789,8 +702,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
-        } else if(inInstrument instanceof Spread) {
-            spread.setInstrument((Spread)inInstrument);
         } else if(inInstrument instanceof Currency) {
             currency.setInstrument((Currency)inInstrument);
         } else if(inInstrument instanceof ConvertibleBond) {
@@ -799,7 +710,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         if(inInstrument == null) {
             option.setInstrument(null);
             future.setInstrument(null);
-            spread.setInstrument(null);
             currency.setInstrument(null);
             convertibleBond.setInstrument(null);
         }
@@ -935,8 +845,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     public final QuoteEventBuilder<E> withDeliveryType(DeliveryType inDeliveryType)
     {
         future.setDeliveryType(inDeliveryType);
-        spread.getLeg1Bean().setDeliveryType(inDeliveryType);
-        spread.getLeg2Bean().setDeliveryType(inDeliveryType);
         return this;
     }
     /**
@@ -948,8 +856,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     public final QuoteEventBuilder<E> withStandardType(StandardType inStandardType)
     {
         future.setStandardType(inStandardType);
-        spread.getLeg1Bean().setStandardType(inStandardType);
-        spread.getLeg2Bean().setStandardType(inStandardType);
         return this;
     }
     /**
@@ -961,8 +867,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     public final QuoteEventBuilder<E> withFutureType(FutureType inFutureType)
     {
         future.setType(inFutureType);
-        spread.getLeg1Bean().setFutureType(inFutureType);
-        spread.getLeg2Bean().setFutureType(inFutureType);
         return this;
     }
     /**
@@ -974,8 +878,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     public final QuoteEventBuilder<E> withUnderlyingAssetType(FutureUnderlyingAssetType inUnderlyingAssetType)
     {
         future.setUnderlyingAssetType(inUnderlyingAssetType);
-        spread.getLeg1Bean().setUnderlyingAssetType(inUnderlyingAssetType);
-        spread.getLeg2Bean().setUnderlyingAssetType(inUnderlyingAssetType);
         return this;
     }
     /**
@@ -988,7 +890,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     {
         option.setProviderSymbol(inProviderSymbol);
         future.setProviderSymbol(inProviderSymbol);
-        spread.setProviderSymbol(inProviderSymbol);
         return this;
     }
     /**
@@ -1011,8 +912,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     public final QuoteEventBuilder<E> withContractSize(int inContractSize)
     {
         future.setContractSize(inContractSize);
-        spread.getLeg1Bean().setContractSize(inContractSize);
-        spread.getLeg2Bean().setContractSize(inContractSize);
         return this;
     }
     /* (non-Javadoc)
@@ -1264,12 +1163,11 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     @Override
     public String toString()
     {
-        return String.format("QuoteEventBuilder [option=%s, quote=%s, future=%s, convertibleBond=%s, spread=%s]", //$NON-NLS-1$
+        return String.format("QuoteEventBuilder [option=%s, quote=%s, future=%s, convertibleBond=%s]", //$NON-NLS-1$
                              option,
                              quote,
                              future,
-                             convertibleBond,
-                             spread);
+                             convertibleBond);
     }
     /**
      * Get the quote value.
@@ -1297,15 +1195,6 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     protected final FutureBean getFuture()
     {
         return future;
-    }
-    /**
-     * Get the spread value.
-     *
-     * @return a <code>SpreadBean</code> value
-     */
-    protected final SpreadBean getSpread()
-    {
-        return spread;
     }
     /**
      * Gets the currency value.
@@ -1345,8 +1234,4 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * the convertible bond attributes
      */
     private final ConvertibleBondBean convertibleBond = new ConvertibleBondBean();
-    /**
-     * spread attributes
-     */
-    private final SpreadBean spread = new SpreadBean();
 }

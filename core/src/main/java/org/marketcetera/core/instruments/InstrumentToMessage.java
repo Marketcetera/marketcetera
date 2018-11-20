@@ -6,6 +6,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
+import quickfix.Message;
 import quickfix.field.SecurityType;
 import quickfix.field.Symbol;
 
@@ -22,7 +23,7 @@ import quickfix.field.Symbol;
  * quickfix.Message message = ...
  * InstrumentToMessage itm = {@link InstrumentToMessage}.{@link #SELECTOR}.{@link StaticInstrumentFunctionSelector#forInstrument(Instrument) forInstrument}(instrument);
  * if(itm.{@link #isSupported(quickfix.DataDictionary, String) isSupported}(dataDictionary,msgType)) {
- *     itm.{@link #set(Instrument, String, FieldMap) set}(instrument, dataDictionary, msgType, message);
+ *     itm.{@link #set(Instrument, DataDictionary, String, Message) set}(instrument, dataDictionary, msgType, message);
  * }
  * </pre>
  *
@@ -44,7 +45,7 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
      * <p>
      * <b>NOTE:</b> This method is only meant to be used for unit testing.
      * It's not recommended that this method be used in production. Use
-     * {@link #set(Instrument, DataDictionary, String, FieldMap)} instead.
+     * {@link #set(org.marketcetera.trade.Instrument,quickfix.DataDictionary, String,quickfix.Message)} instead.
      *
      * @param inInstrument the instrument
      * @param inBeginString the begin string value of the FIX message

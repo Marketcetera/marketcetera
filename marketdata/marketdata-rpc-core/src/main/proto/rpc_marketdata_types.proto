@@ -1,0 +1,309 @@
+syntax = "proto3";
+import "rpc_base.proto";
+import "rpc_trading_types.proto";
+import "google/protobuf/timestamp.proto";
+option java_generic_services = true;
+option java_package = "org.marketcetera.marketdata.core.rpc";
+option java_outer_classname = "MarketDataTypesRpc";
+
+message EventHolder {
+    TradeEvent tradeEvent = 1;
+    QuoteEvent quoteEvent = 2;
+    DividendEvent dividendEvent = 3;
+    LogEvent logEvent = 4;
+    ImbalanceEvent imbalanceEvent = 5;
+    MarketstatEvent marketstatEvent = 6;
+    DepthOfBookEvent depthOfBookEvent = 7;
+    TopOfBookEvent topOfBookEvent = 8;
+}
+
+message Event {
+    int64 messageId = 1;
+    google.protobuf.Timestamp timestamp = 2;
+    string source = 3;
+    string provider = 4;
+    int64 requestId = 5;
+}
+
+message MarketstatEvent {
+    Event event = 1;
+    EventType eventType = 2;
+    Instrument instrument = 3;
+    Qty open = 4;
+    Qty high = 5;
+    Qty low = 6;
+    Qty close = 7;
+    Qty previousClose = 8;
+    Qty volume = 9;
+    Qty value = 10;
+    string closeDate = 11;
+    string previousCloseDate = 12;
+    string tradeHighTime = 13;
+    string tradeLowTime = 14;
+    string openExchange = 15;
+    string highExchange = 16;
+    string lowExchange = 17;
+    string closeExchange = 18;
+    OptionAttributes optionAttributes = 19;
+}
+
+message ImbalanceEvent {
+    Event event = 1;
+    EventType eventType = 2;
+    Instrument instrument = 3;
+    AuctionType auctionType = 4;
+    string exchange = 5;
+    Qty farPrice = 6;
+    Qty imbalanceVolume = 7;
+    InstrumentStatus instrumentStatus = 8;
+    MarketStatus marketStatus = 9;
+    Qty nearPrice = 10;
+    Qty pairedVolume = 11;
+    Qty referencePrice = 12;
+    ImbalanceType imbalanceType = 13;
+    bool isShortSaleRestricted = 14;
+    OptionAttributes optionAttributes = 15;
+}
+
+enum AuctionType {
+    INVALID_AUCTION_TYPE = 0;
+    OPEN_AUCTION_TYPE = 1;
+    CLOSE_AUCTION_TYPE = 2;
+    HALT_AUCTION_TYPE = 3;
+    MARKET_AUCTION_TYPE = 4;
+    IPO_AUCTION_TYPE = 5;
+    INTRADAY_AUCTION_TYPE = 6;
+}
+
+enum InstrumentStatus {
+    OPEN_REGULAR_INSTRUMENT_STATUS = 0;
+    OPEN_AUCTION_INSTRUMENT_STATUS = 1;
+    OPEN_FAST_INSTRUMENT_STATUS = 2;
+    OPEN_SLOW_INSTRUMENT_STATUS = 3;
+    CLOSED_REGULAR_INSTRUMENT_STATUS = 4;
+    CLOSED_PRE_MARKET_INSTRUMENT_STATUS = 5;
+    CLOSED_POST_MARKET_INSTRUMENT_STATUS = 6;
+    CLOSED_AUCTION_INSTRUMENT_STATUS = 7;
+    CLOSED_IMBALANCE_INSTRUMENT_STATUS = 8;
+    CLOSED_ROTATION_INSTRUMENT_STATUS = 9;
+    HALTED_REGULAR_INSTRUMENT_STATUS = 10;
+    HALTED_QUOTING_ALLOWED_INSTRUMENT_STATUS = 11;
+    HALTED_REGULATORY_INSTRUMENT_STATUS = 12;
+    HALTED_QUOTING_ALLOWED_REGULATORY_INSTRUMENT_STATUS = 13;
+    ACTIVE_REGULAR_INSTRUMENT_STATUS = 14;
+    ACTIVE_CLOSING_ORDERS_ONLY_INSTRUMENT_STATUS = 15;
+    INACTIVE_REGULAR_INSTRUMENT_STATUS = 16;
+    INACTIVE_SUSPENDED_INSTRUMENT_STATUS = 17;
+    INACTIVE_DELISTED_INSTRUMENT_STATUS = 18;
+    INACTIVE_EXPIRED_INSTRUMENT_STATUS = 19;
+    AUCTION_REGULAR_INSTRUMENT_STATUS = 20;
+    AUCTION_OPENING_INSTRUMENT_STATUS = 21;
+    AUCTION_CALL_OPENING_INSTRUMENT_STATUS = 22;
+    AUCTION_CLOSING_INSTRUMENT_STATUS = 23;
+    AUCTION_CALL_CLOSING_INSTRUMENT_STATUS = 24;
+    AUCTION_INTRADAY_INSTRUMENT_STATUS = 25;
+    AUCTION_VOLATILITY_INSTRUMENT_STATUS = 26;
+    AUCTION_CALL_INTRADAY_INSTRUMENT_STATUS = 27;
+    AUCTION_CALL_VOLATILITY_INSTRUMENT_STATUS = 28;
+    AUCTION_INSTRUMENT_STATUS = 29;
+    INVALID_INSTRUMENT_STATUS = 30;
+    HALTED_INSTRUMENT_STATUS = 31;
+    INACTIVE_INSTRUMENT_STATUS = 32;
+    CLOSED_INSTRUMENT_STATUS = 33;
+    ACTIVE_INSTRUMENT_STATUS = 34;
+    OPEN_INSTRUMENT_STATUS = 35;
+}
+
+enum MarketStatus {
+    OPEN_REGULAR_MARKET_STATUS = 0;
+    OPEN_AUCTION_MARKET_STATUS = 1;
+    OPEN_FAST_MARKET_STATUS = 2;
+    OPEN_SLOW_MARKET_STATUS = 3;
+    CLOSED_REGULAR_MARKET_STATUS = 4;
+    CLOSED_PRE_MARKET_MARKET_STATUS = 5;
+    CLOSED_POST_MARKET_MARKET_STATUS = 6;
+    CLOSED_AUCTION_MARKET_STATUS = 7;
+    CLOSED_IMBALANCE_MARKET_STATUS = 8;
+    CLOSED_ROTATION_MARKET_STATUS = 9;
+    HALTED_REGULAR_MARKET_STATUS = 10;
+    HALTED_QUOTING_ALLOWED_MARKET_STATUS = 11;
+    HALTED_REGULATORY_MARKET_STATUS = 12;
+    HALTED_QUOTING_ALLOWED_REGULATORY_MARKET_STATUS = 13;
+    ACTIVE_REGULAR_MARKET_STATUS = 14;
+    ACTIVE_CLOSING_ORDERS_ONLY_MARKET_STATUS = 15;
+    INACTIVE_REGULAR_MARKET_STATUS = 16;
+    INACTIVE_SUSPENDED_MARKET_STATUS = 17;
+    INACTIVE_DELISTED_MARKET_STATUS = 18;
+    INACTIVE_EXPIRED_MARKET_STATUS = 19;
+    AUCTION_REGULAR_MARKET_STATUS = 20;
+    AUCTION_OPENING_MARKET_STATUS = 21;
+    AUCTION_CALL_OPENING_MARKET_STATUS = 22;
+    AUCTION_CLOSING_MARKET_STATUS = 23;
+    AUCTION_CALL_CLOSING_MARKET_STATUS = 24;
+    AUCTION_INTRADAY_MARKET_STATUS = 25;
+    AUCTION_VOLATILITY_MARKET_STATUS = 26;
+    AUCTION_CALL_INTRADAY_MARKET_STATUS = 27;
+    AUCTION_CALL_VOLATILITY_MARKET_STATUS = 28;
+    AUCTION_MARKET_STATUS = 29;
+    INVALID_MARKET_STATUS = 30;
+    HALTED_MARKET_STATUS = 31;
+    INACTIVE_MARKET_STATUS = 32;
+    CLOSED_MARKET_STATUS = 33;
+    ACTIVE_MARKET_STATUS = 34;
+    OPEN_MARKET_STATUS = 35;
+}
+
+enum ImbalanceType {
+    INVALID_IMBALANCE_TYPE = 0;
+    NONE_IMBALANCE_TYPE = 1;
+    BUY_IMBALANCE_TYPE = 2;
+    SELL_IMBALANCE_TYPE = 3;
+}
+
+message LogEvent {
+    Event event = 1;
+    LogEventLevel logEventLevel = 2;
+    string message = 3;
+    Object exception = 4;
+}
+
+message EventTimestamps {
+    int64 processedTimestamp = 1;
+    int64 receivedTimestamp = 2;
+}
+
+message MarketDataEvent {
+    Event event = 1;
+    string exchange = 2;
+    Qty price = 3;
+    Qty size = 4;
+    google.protobuf.Timestamp exchangeTimestamp = 5;
+    EventType eventType = 6;
+    Instrument instrument = 7;
+    EventTimestamps eventTimestamps = 8;
+    OptionAttributes optionAttributes = 9;
+}
+
+message TradeEvent {
+    MarketDataEvent marketDataEvent = 1;
+    google.protobuf.Timestamp tradeDate = 2;
+    string tradeCondition = 3;
+}
+
+message DepthOfBookEvent {
+    Instrument instrument = 1;
+    repeated QuoteEvent bids = 2;
+    repeated QuoteEvent asks = 3;
+}
+
+message TopOfBookEvent {
+    Instrument instrument = 1;
+    QuoteEvent bid = 2;
+    QuoteEvent ask = 3;
+}
+
+message QuoteEvent {
+    MarketDataEvent marketDataEvent = 1;
+    google.protobuf.Timestamp quoteDate = 2;
+    QuoteAction quoteAction = 3;
+    int32 level = 4;
+    int32 count = 5;
+    bool isEmpty = 6;
+    bool isBid = 7;
+}
+
+message DividendEvent {
+    Event event = 1;
+    Qty amount = 2;
+    string currency = 3;
+    string declareDate = 4;
+    string executionDate = 5;
+    DividendFrequency frequency = 6;
+    Instrument instrument = 7;
+    string paymentDate = 8;
+    string recordDate = 9;
+    DividendStatus status = 10;
+    DividendType type = 11;
+    EventType eventType = 12;
+    OptionAttributes optionAttributes = 13;
+}
+
+enum LogEventLevel {
+    DEBUG_LOG_EVENT_LEVEL = 0;
+    INFO_LOG_EVENT_LEVEL = 1;
+    WARN_LOG_EVENT_LEVEL = 2;
+    ERROR_LOG_EVENT_LEVEL = 3;
+}
+
+enum DividendStatus {
+    UNOFFICIAL_DIVIDEND_STATUS = 0;
+    OFFICIAL_DIVIDEND_STATUS = 1;
+    UNKNOWN_DIVIDEND_STATUS = 2;
+}
+
+enum DividendType {
+    CURRENT_DIVIDEND_TYPE = 0;
+    SPECIAL_DIVIDEND_TYPE = 1;
+    FUTURE_DIVIDEND_TYPE = 2;
+    UNKNOWN_DIVIDEND_TYPE = 3;
+}
+
+enum DividendFrequency {
+    ANNUALLY_DIVIDEND_FREQUENCY = 0;
+    MONTHLY_DIVIDEND_FREQUENCY = 1;
+    QUARTERLY_DIVIDEND_FREQUENCY = 2;
+    SEMI_ANNUALLY_DIVIDEND_FREQUENCY = 3;
+    OTHER_DIVIDEND_FREQUENCY = 4;
+}
+
+enum QuoteAction {
+    ADD_QUOTE_ACTION = 0;
+    CHANGE_QUOTE_ACTION = 1;
+    DELETE_QUOTE_ACTION = 2;
+}
+
+enum ContentAndCapability {
+    TOP_OF_BOOK = 0;
+    OPEN_BOOK = 1;
+    MARKET_STAT = 2;
+    TOTAL_VIEW = 3;
+    LEVEL_2 = 4;
+    LATEST_TICK = 5;
+    BBO10 = 6;
+    NBBO = 7;
+    DIVIDEND = 8;
+    AGGREGATED_DEPTH = 9;
+    UNAGGREGATED_DEPTH = 10;
+    IMBALANCE = 11;
+    UNKNOWN = 12;
+    EVENT_BOUNDARY = 13;
+}
+
+enum FeedStatus {
+    OFFLINE_FEED_STATUS = 0;
+    ERROR_FEED_STATUS = 1;
+    AVAILABLE_FEED_STATUS = 2;
+    UNKNOWN_FEED_STATUS = 3;
+}
+
+enum EventType {
+    SNAPSHOT_PART = 0;
+    SNAPSHOT_FINAL = 1;
+    UPDATE_PART = 2;
+    UPDATE_FINAL = 3;
+    UNKNOWN_EVENT_TYPE = 4;
+}
+
+enum ExpirationType {
+    EUROPEAN_EXPIRATION_TYPE = 0;
+    AMERICAN_EXPIRATION_TYPE = 1;
+    UNKNOWN_EXPIRATION_TYPE = 2;
+}
+
+message OptionAttributes {
+    Instrument underlyingInstrument = 1;
+    ExpirationType expirationType = 2;
+    Qty multiplier = 3;
+    bool hasDeliverable = 4;
+    string providerSymbol = 5;
+}

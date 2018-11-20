@@ -114,6 +114,7 @@ public class UriScheme
      * @param inHostname a <code>String</code> value
      * @param inPort an <code>int</code> value
      * @return a <code>String</code> value containing a conforming URI
+     * @throws URISyntaxException if the given URI is not syntactically valid
      * @throws IllegalArgumentException if the host or port is not valid 
      */
     public String composeUriString(String inHostname,
