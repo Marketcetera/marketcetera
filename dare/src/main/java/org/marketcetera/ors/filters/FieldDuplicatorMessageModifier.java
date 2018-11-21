@@ -1,10 +1,7 @@
 package org.marketcetera.ors.filters;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.history.ReportHistoryServices;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.util.misc.ClassVersion;
-
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -49,9 +46,7 @@ public class FieldDuplicatorMessageModifier implements MessageModifier {
 
     @Override
     public boolean modifyMessage
-        (Message message,
-         ReportHistoryServices historyServices,
-         FIXMessageAugmentor augmentor)
+        (Message message)
         throws CoreException
     {
         try {

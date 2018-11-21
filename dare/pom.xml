@@ -20,10 +20,6 @@
     <!-- Compile. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>cluster-api</artifactId>
     </dependency>
     <dependency>
@@ -136,11 +132,11 @@
       <artifactId>core</artifactId>
       <type>test-jar</type>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>saclient</artifactId>
       <scope>test</scope>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>util-test</artifactId>

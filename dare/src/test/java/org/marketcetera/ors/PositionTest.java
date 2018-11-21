@@ -11,11 +11,11 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.admin.User;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
@@ -290,7 +290,7 @@ public class PositionTest
         sender = createInitiatorSession(sessionIndex);
         target = FIXMessageUtil.getReversedSessionId(sender);
         messageFactory = FIXVersion.getFIXVersion(sender).getMessageFactory();
-        session = brokerService.findFixSessionBySessionId(sender);
+        session = brokerService.getActiveFixSession(sender).getFixSession();
         brokerId = new BrokerID(session.getBrokerId());
     }
     /**
@@ -325,13 +325,13 @@ public class PositionTest
      * @param inInstrument an <code>Instrument</code> value
      * @param inExpectedPosition a <code>BigDecimal</code> value
      * @param inPositionDate a <code>Date</code> value
-     * @param inUser a <code>SimpleUser</code> value
+     * @param inUser a <code>User</code> value
      * @throws Exception if an unexpected error occurs
      */
     private void verifySinglePosition(Instrument inInstrument,
                                       BigDecimal inExpectedPosition,
                                       Date inPositionDate,
-                                      SimpleUser inUser)
+                                      User inUser)
             throws Exception
     {
         BigDecimal actualPosition = getSinglePosition(inUser,
@@ -372,13 +372,13 @@ public class PositionTest
      * @param inInstrument an <code>Instrument</code> value
      * @param inExpectedPosition a <code>BigDecimal</code> value
      * @param inPositionDate a <code>Date</code> value
-     * @param inUser a <code>SimpleUser</code> value
+     * @param inUser a <code>User</code> value
      * @throws Exception if an unexpected error occurs
      */
     private void verifyPositionFromAllPositions(Instrument inInstrument,
                                                 BigDecimal inExpectedPosition,
                                                 Date inPositionDate,
-                                                SimpleUser inUser)
+                                                User inUser)
             throws Exception
     {
         Map<PositionKey<? extends Instrument>,BigDecimal> allPositions = getAllPositions(inUser,
@@ -412,12 +412,12 @@ public class PositionTest
     /**
      * Get all positions as of the given date owned by or viewable by the given user.
      *
-     * @param inUser a <code>SimpleUser</code> value
+     * @param inUser a <code>User</code> value
      * @param inPositionDate a <code>Date</code> value
      * @return a <code>Map&lt;PositionKey&lt;? extends Instrument&gt;,BigDecimal&gt;</code> value
      * @throws Exception if an unexpected error occurs
      */
-    private Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositions(SimpleUser inUser,
+    private Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositions(User inUser,
                                                                               Date inPositionDate)
             throws Exception
     {
@@ -517,13 +517,13 @@ public class PositionTest
     /**
      * Get the position of the given instrument as of the given date owned or viewable by the given user.
      *
-     * @param inUser a <code>SimpleUser</code> value
+     * @param inUser a <code>User</code> value
      * @param inPositionDate a <code>Date</code> value
      * @param inInstrument an <code>Instrument</code> value
      * @return a <code>BigDecimal</code> value
      * @throws Exception if an unexpected error occurs
      */
-    private BigDecimal getSinglePosition(SimpleUser inUser,
+    private BigDecimal getSinglePosition(User inUser,
                                          Date inPositionDate,
                                          Instrument inInstrument)
             throws Exception
@@ -555,15 +555,15 @@ public class PositionTest
     /**
      * user with admin over {@link #normalUser}
      */
-    private SimpleUser adminUser;
+    private User adminUser;
     /**
      * user with which to conduct trading activities
      */
-    private SimpleUser normalUser;
+    private User normalUser;
     /**
      * unrelated user with no authority over {@link #normalUser}
      */
-    private SimpleUser otherUser;
+    private User otherUser;
     /**
      * sender session value
      */

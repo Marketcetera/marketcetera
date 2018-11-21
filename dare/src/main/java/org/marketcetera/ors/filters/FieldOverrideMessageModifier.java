@@ -4,10 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.history.ReportHistoryServices;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-
 
 import quickfix.Message;
 import quickfix.StringField;
@@ -30,9 +27,7 @@ public class FieldOverrideMessageModifier
      * @see com.marketcetera.ors.filters.MessageModifier#modifyMessage(quickfix.Message, com.marketcetera.ors.history.ReportHistoryServices, org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor)
      */
     @Override
-    public boolean modifyMessage(Message inMessage,
-                                 ReportHistoryServices inHistoryServices,
-                                 FIXMessageAugmentor inAugmentor)
+    public boolean modifyMessage(Message inMessage)
             throws CoreException
     {
         boolean modified = false;

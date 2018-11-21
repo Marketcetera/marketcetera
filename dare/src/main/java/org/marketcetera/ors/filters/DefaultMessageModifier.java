@@ -7,11 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.history.ReportHistoryServices;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
-
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -107,9 +104,7 @@ public class DefaultMessageModifier implements MessageModifier {
 
     @Override
     public boolean modifyMessage
-        (Message message,
-         ReportHistoryServices historyServices,
-         FIXMessageAugmentor augmentor)
+        (Message message)
         throws CoreException
     {
         String msgType = null;

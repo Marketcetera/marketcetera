@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.marketcetera.admin.AdminRpc;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.algo.BrokerAlgo;
@@ -69,7 +70,6 @@ import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
 
 import com.google.common.collect.Maps;
 import com.google.protobuf.Timestamp;
-import com.marketcetera.admin.AdminRpc;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

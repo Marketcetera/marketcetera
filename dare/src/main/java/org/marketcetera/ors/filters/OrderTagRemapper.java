@@ -1,11 +1,8 @@
 package org.marketcetera.ors.filters;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -28,9 +25,7 @@ public class OrderTagRemapper
      * @see com.marketcetera.ors.filters.MessageModifier#modifyMessage(quickfix.Message, com.marketcetera.ors.history.ReportHistoryServices, org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor)
      */
     @Override
-    public boolean modifyMessage(Message inMessage,
-                                 ReportHistoryServices inHistoryServices,
-                                 FIXMessageAugmentor inAugmentor)
+    public boolean modifyMessage(Message inMessage)
             throws CoreException
     {
         SLF4JLoggerProxy.debug(this,

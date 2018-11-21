@@ -49,11 +49,11 @@
         <scope>import</scope>
       </dependency>
       <!-- Compile: local modules -->
-      <dependency>
+      <!--dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>client</artifactId>
         <version>4.0.0-SNAPSHOT</version>
-      </dependency>
+      </dependency-->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
@@ -194,21 +194,16 @@
         <artifactId>cluster-rpc-core</artifactId>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>migration</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
+      <!--dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>orderloader</artifactId>
         <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
+      </dependency-->
+      <!--dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategyagent</artifactId>
         <version>4.0.0-SNAPSHOT</version>
-      </dependency>
+      </dependency-->
       <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-csv</artifactId>
@@ -254,11 +249,11 @@
         <artifactId>misc</artifactId>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>
-      <dependency>
+      <!--dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>strategy</artifactId>
         <version>4.0.0-SNAPSHOT</version>
-      </dependency>
+      </dependency-->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util</artifactId>
@@ -295,7 +290,7 @@
         <artifactId>tensorflow</artifactId>
         <version>4.0.0-SNAPSHOT</version>
       </dependency>
-      <dependency>
+      <!--dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>remote-receiver</artifactId>
         <version>4.0.0-SNAPSHOT</version>
@@ -304,12 +299,12 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>remote-emitter</artifactId>
         <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
+      </dependency-->
+      <!--dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>saclient</artifactId>
         <version>4.0.0-SNAPSHOT</version>
-      </dependency>
+      </dependency-->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dare</artifactId>
@@ -839,13 +834,13 @@
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
-      <dependency>
+      <!--dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>client</artifactId>
         <version>4.0.0-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
-      </dependency>
+      </dependency-->
       <!-- Testing: other. -->
       <dependency>
         <groupId>pl.pragmatists</groupId>
@@ -1242,7 +1237,7 @@
     </profiles>
     <modules>
       <module>admin</module>
-      <module>client</module>
+      <!--module>client</module-->
       <module>cluster</module>
       <module>core</module>
       <module>dataflow</module>
@@ -1252,11 +1247,11 @@
       <module>fork</module>
       <module>marketdata</module>
       <module>modules</module>
-      <module>orderloader</module>
+      <!--module>orderloader</module-->
       <module>rpc-core</module>
-      <module>saclient</module>
-      <module>samples</module>
-      <module>strategyagent</module>
+      <!--module>saclient</module-->
+      <!--module>samples</module-->
+      <!--module>strategyagent</module-->
       <module>trade</module>
       <module>tools</module>
       <module>util</module>

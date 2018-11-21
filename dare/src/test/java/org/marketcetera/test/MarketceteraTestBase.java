@@ -36,12 +36,12 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
-import org.marketcetera.admin.impl.PersistentPermissionDao;
+import org.marketcetera.admin.User;
+import org.marketcetera.admin.dao.PersistentPermissionDao;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.service.BrokerService;
-import org.marketcetera.client.Client;
-import org.marketcetera.client.ReportListener;
+import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.PriceQtyTuple;
 import org.marketcetera.core.fix.FixSettingsProvider;
@@ -49,14 +49,13 @@ import org.marketcetera.core.fix.FixSettingsProviderFactory;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.event.EventTestBase;
-import org.marketcetera.fix.ClusteredBrokerStatus;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSessionStatus;
+import org.marketcetera.fix.MutableFixSession;
+import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.dao.IncomingMessageDao;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
-import org.marketcetera.ors.dao.OrderStatusDao;
-import org.marketcetera.ors.dao.OrderStatusService;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
@@ -64,7 +63,6 @@ import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionTransType;
 import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.Instrument;
@@ -72,14 +70,21 @@ import org.marketcetera.trade.Messages;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.OrderBase;
-import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.TradeMessageListener;
+import org.marketcetera.trade.client.DirectTradeClientFactory;
+import org.marketcetera.trade.client.DirectTradeClientParameters;
+import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trade.dao.ExecutionReportDao;
+import org.marketcetera.trade.dao.OrderSummaryDao;
 import org.marketcetera.trade.dao.PersistentReportDao;
+import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -131,12 +136,13 @@ public class MarketceteraTestBase
         applicationContext = ApplicationContainer.getInstance().getContext();
         authorizationService = applicationContext.getBean(AuthorizationService.class);
         brokerService = applicationContext.getBean(BrokerService.class);
-        fixSessionFactory = applicationContext.getBean(FixSessionFactory.class);
+        fixSessionFactory = applicationContext.getBean(MutableFixSessionFactory.class);
         messageFactory = applicationContext.getBean(MessageFactory.class);
         executionReportDao = applicationContext.getBean(ExecutionReportDao.class);
         reportDao = applicationContext.getBean(PersistentReportDao.class);
-        orderStatusService = applicationContext.getBean(OrderStatusService.class);
-        orderStatusDao = applicationContext.getBean(OrderStatusDao.class);
+        orderSummaryService = applicationContext.getBean(OrderSummaryService.class);
+        orderStatusDao = applicationContext.getBean(OrderSummaryDao.class);
+        fixSessionProvider = applicationContext.getBean(FixSessionProvider.class);
         userService = applicationContext.getBean(UserService.class);
         permissionDao = applicationContext.getBean(PersistentPermissionDao.class);
         fixSettingsProvider = applicationContext.getBean(FixSettingsProviderFactory.class).create();
@@ -148,28 +154,25 @@ public class MarketceteraTestBase
                                   ExceptionUtils.getRootCause(e));
         }
         incomingMessageDao = applicationContext.getBean(IncomingMessageDao.class);
+        User testUser = userService.findByName("test");
         try {
-            client = applicationContext.getBean(Client.class);
+            DirectTradeClientFactory tradeClientFactory = applicationContext.getBean(DirectTradeClientFactory.class);
+            DirectTradeClientParameters tradeClientParameters = new DirectTradeClientParameters();
+            tradeClientParameters.setUsername(testUser.getName());
+            client = tradeClientFactory.create(tradeClientParameters);
+            client.start();
             reports.clear();
-            ReportListener reportListener = new ReportListener() {
+            TradeMessageListener reportListener = new TradeMessageListener() {
                 @Override
-                public void receiveExecutionReport(ExecutionReport inReport)
+                public void receiveTradeMessage(TradeMessage inTradeMessage)
                 {
-                    reports.add(inReport);
-                    synchronized(reports) {
-                        reports.notifyAll();
-                    }
-                }
-                @Override
-                public void receiveCancelReject(OrderCancelReject inReport)
-                {
-                    reports.add(inReport);
+                    reports.add(inTradeMessage);
                     synchronized(reports) {
                         reports.notifyAll();
                     }
                 }
             };
-            client.addReportListener(reportListener);
+            client.addTradeMessageListener(reportListener);
         } catch (Exception e) {
             SLF4JLoggerProxy.warn(this,
                                   "Client will not be available for this test: {}",
@@ -198,7 +201,8 @@ public class MarketceteraTestBase
                                   "{} cleanup beginning",
                                   name.getMethodName());
             if(client != null) {
-                client.removeReportListener(reportListener);
+                client.removeTradeMessageListener(tradeMessageListener);
+                client.stop();
             }
             try {
                 if(receiver != null) {
@@ -309,12 +313,12 @@ public class MarketceteraTestBase
     protected void resetSessions()
             throws Exception
     {
-        for(FixSession fixSession : brokerService.findFixSessions()) {
-            SessionID sessionId = new SessionID(fixSession.getSessionId());
-            BrokerID brokerId = new BrokerID(fixSession.getBrokerId());
-            brokerService.disableSession(sessionId);
+        for(ActiveFixSession fixSession : brokerService.getActiveFixSessions()) {
+            SessionID sessionId = new SessionID(fixSession.getFixSession().getSessionId());
+            BrokerID brokerId = new BrokerID(fixSession.getFixSession().getBrokerId());
+            fixSessionProvider.disableSession(sessionId);
             verifySessionDisabled(brokerId);
-            brokerService.delete(sessionId);
+            fixSessionProvider.delete(sessionId);
             verifySessionDeleted(brokerId);
         }
     }
@@ -351,10 +355,10 @@ public class MarketceteraTestBase
     /**
      * Wait for and retrieve the next report received from the client.
      *
-     * @return a <code>ReportBase</code> value
+     * @return a <code>TradeMessage</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected ReportBase waitForClientReport()
+    protected TradeMessage waitForClientReport()
             throws Exception
     {
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
@@ -385,8 +389,8 @@ public class MarketceteraTestBase
             public Boolean call()
                     throws Exception
             {
-                org.marketcetera.ors.history.OrderStatus orderStatus = orderStatusService.findByRootOrderIdAndOrderId(inRootOrderId,
-                                                                                                                      inOrderId);
+                OrderSummary orderStatus = orderSummaryService.findByRootOrderIdAndOrderId(inRootOrderId,
+                                                                                           inOrderId);
                 if(orderStatus == null) {
                     return false;
                 }
@@ -407,7 +411,7 @@ public class MarketceteraTestBase
         final BrokerID testAcceptorBrokerId = new BrokerID("local_acceptor" + inSessionIndex);
         verifyBrokerStatus(testAcceptorBrokerId,
                            null);
-        FixSession testSession = fixSessionFactory.create();
+        MutableFixSession testSession = fixSessionFactory.create();
         testSession.setAffinity(1);
         testSession.setBrokerId(testAcceptorBrokerId.getValue());
         testSession.setHost("localhost");
@@ -436,10 +440,10 @@ public class MarketceteraTestBase
             testSession.getSessionSettings().put(Session.SETTING_DEFAULT_APPL_VER_ID,
                                                  fixVersion.getApplicationVersion());
         }
-        testSession = brokerService.save(testSession);
-        testSession = onCreateAcceptorSession(testSession);
+        testSession = fixSessionProvider.save(testSession).getMutableView();
+        testSession = onCreateAcceptorSession(testSession).getMutableView();
         SessionID testAcceptorSessionId = new SessionID(testSession.getSessionId());
-        brokerService.enableSession(testAcceptorSessionId);
+        fixSessionProvider.enableSession(testAcceptorSessionId);
         verifySessionEnabled(testAcceptorBrokerId);
         createRemoteSenderSession(inSessionIndex);
         verifySessionLoggedOn(testAcceptorBrokerId);
@@ -492,7 +496,7 @@ public class MarketceteraTestBase
         }
         String session = beginString+":"+senderBase+inSessionIndex+"->"+getHostBase();
         SessionID sessionId = new SessionID(session);
-        FixSession testSession = fixSessionFactory.create();
+        MutableFixSession testSession = fixSessionFactory.create();
         testSession.setAffinity(1);
         testSession.setHost("localhost");
         testSession.setPort(hostAcceptorPort); 
@@ -547,7 +551,7 @@ public class MarketceteraTestBase
         final BrokerID testInitiatorBrokerId = new BrokerID("local_initiator" + inSessionIndex);
         verifyBrokerStatus(testInitiatorBrokerId,
                            null);
-        FixSession testSession = fixSessionFactory.create();
+        MutableFixSession testSession = fixSessionFactory.create();
         testSession.setAffinity(1);
         testSession.setBrokerId(testInitiatorBrokerId.getValue());
         testSession.setHost("localhost");
@@ -580,10 +584,10 @@ public class MarketceteraTestBase
             testSession.getSessionSettings().put(Session.SETTING_DEFAULT_APPL_VER_ID,
                                                  fixVersion.getApplicationVersion());
         }
-        testSession = brokerService.save(testSession);
-        testSession = onCreateInitiatorSession(testSession);
+        testSession = fixSessionProvider.save(testSession).getMutableView();
+        testSession = onCreateInitiatorSession(testSession).getMutableView();
         SessionID testInitiatorSessionId = new SessionID(testSession.getSessionId());
-        brokerService.enableSession(testInitiatorSessionId);
+        fixSessionProvider.enableSession(testInitiatorSessionId);
         verifySessionEnabled(testInitiatorBrokerId);
         createRemoteReceiverSession(inSessionIndex);
         verifySessionLoggedOn(testInitiatorBrokerId);
@@ -610,7 +614,7 @@ public class MarketceteraTestBase
             beginString = FixVersions.BEGINSTRING_FIXT11;
         }
         String session = beginString+":"+receiverBase + inSessionIndex + "->"+getHostBase();
-        FixSession testSession = fixSessionFactory.create();
+        MutableFixSession testSession = fixSessionFactory.create();
         testSession.setAffinity(1);
         testSession.setHost("localhost");
         testSession.setPort(remoteAcceptorPort); 
@@ -646,14 +650,28 @@ public class MarketceteraTestBase
         remoteReceiverSessions.put(inSessionIndex,
                                    new SessionID(session));
     }
-    protected void assertSymbol(Message inMessage,
+    /**
+     * Verify that the given message uses the given symbol.
+     *
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @param inSymbol a <code>String</code> value
+     * @throws Exception if the symbol cannot be verified
+     */
+    protected void verifySymbol(quickfix.Message inMessage,
                                 String inSymbol)
             throws Exception
     {
         assertEquals(inSymbol,
                      inMessage.getString(quickfix.field.Symbol.FIELD));
     }
-    protected void assertPrice(Message inMessage,
+    /**
+     * Verify that the given message uses the given price.
+     *
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @throws Exception if the price cannot be verified
+     */
+    protected void verifyPrice(quickfix.Message inMessage,
                                BigDecimal inPrice)
             throws Exception
     {
@@ -661,7 +679,14 @@ public class MarketceteraTestBase
                   quickfix.field.Price.FIELD,
                   inPrice);
     }
-    protected void assertLastPrice(Message inMessage,
+    /**
+     * Verify that the given message uses the given last price.
+     *
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @param inLastPrice a <code>BigDecimal</code> value
+     * @throws Exception if the last price cannot be verified
+     */
+    protected void verifyLastPrice(quickfix.Message inMessage,
                                    BigDecimal inLastPrice)
             throws Exception
     {
@@ -669,7 +694,7 @@ public class MarketceteraTestBase
                   quickfix.field.LastPx.FIELD,
                   inLastPrice);
     }
-    protected void assertLastQty(Message inMessage,
+    protected void assertLastQty(quickfix.Message inMessage,
                                  BigDecimal inLastQty)
             throws Exception
     {
@@ -1167,8 +1192,8 @@ public class MarketceteraTestBase
     protected void verifyAllBrokersReady()
             throws Exception
     {
-        for(FixSession fixSession : brokerService.findFixSessions()) {
-            verifySessionLoggedOn(new BrokerID(fixSession.getBrokerId()));
+        for(ActiveFixSession activeFixSession : brokerService.getActiveFixSessions()) {
+            verifySessionLoggedOn(new BrokerID(activeFixSession.getFixSession().getBrokerId()));
         }
     }
     protected void verifyStatusNew(OrderBase inOrder,
@@ -1199,12 +1224,19 @@ public class MarketceteraTestBase
         assertEquals(inOrder.getString(quickfix.field.ClOrdID.FIELD),
                      inReport.getString(quickfix.field.ClOrdID.FIELD));
     }
+    /**
+     * Get the broker ID associated with the given session ID.
+     *
+     * @param inSessionId a <code>SessionID</code> value
+     * @return a <code>BrokerID</code> value
+     * @throws AssertionError if there is no broker ID for the given session ID
+     */
     protected BrokerID getBrokerIdFor(SessionID inSessionId)
     {
-        FixSession session = brokerService.findFixSessionBySessionId(inSessionId);
+        ActiveFixSession activeSession = brokerService.getActiveFixSession(inSessionId);
         assertNotNull("Unknown FIX session: " + inSessionId,
-                      session);
-        return new BrokerID(session.getBrokerId());
+                      activeSession);
+        return new BrokerID(activeSession.getFixSession().getBrokerId());
     }
     /**
      * Verify that the given message is marked as a possible duplicate.
@@ -1292,7 +1324,7 @@ public class MarketceteraTestBase
             public Boolean call()
                     throws Exception
             {
-                ClusteredBrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
+                ActiveFixSession status = brokerService.getActiveFixSession(inBrokerId);
                 if(status == null) {
                     return false;
                 }
@@ -1314,7 +1346,7 @@ public class MarketceteraTestBase
             public Boolean call()
                     throws Exception
             {
-                ClusteredBrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
+                ActiveFixSession status = brokerService.getActiveFixSession(inBrokerId);
                 return status == null || status.getStatus() == FixSessionStatus.DELETED;
             }
         });
@@ -1333,11 +1365,11 @@ public class MarketceteraTestBase
             public Boolean call()
                     throws Exception
             {
-                ClusteredBrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
+                ActiveFixSession status = brokerService.getActiveFixSession(inBrokerId);
                 if(status == null) {
                     return false;
                 }
-                return status.getLoggedOn();
+                return status.getStatus().isLoggedOn();
             }
         });
     }
@@ -1402,11 +1434,11 @@ public class MarketceteraTestBase
             public Boolean call()
                     throws Exception
             {
-                ClusteredBrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
+                ActiveFixSession status = brokerService.getActiveFixSession(inBrokerId);
                 if(status == null) {
                     return false;
                 }
-                return !status.getLoggedOn();
+                return !status.getStatus().isLoggedOn();
             }
         });
     }
@@ -1424,7 +1456,7 @@ public class MarketceteraTestBase
             public Boolean call()
                     throws Exception
             {
-                ClusteredBrokerStatus status = brokerService.getBrokerStatus(inBrokerId);
+                ActiveFixSession status = brokerService.getActiveFixSession(inBrokerId);
                 if(status == null) {
                     return false;
                 }
@@ -1443,12 +1475,12 @@ public class MarketceteraTestBase
                                       Boolean inExpectedStatus)
             throws Exception
     {
-        ClusteredBrokerStatus brokerStatus = brokerService.getBrokerStatus(inBrokerId);
+        ActiveFixSession brokerStatus = brokerService.getActiveFixSession(inBrokerId);
         if(inExpectedStatus == null) {
             assertNull(brokerStatus);
         } else {
             assertEquals(inExpectedStatus,
-                         brokerStatus.getLoggedOn());
+                         brokerStatus.getStatus().isLoggedOn());
         }
     }
     /**
@@ -2319,23 +2351,23 @@ public class MarketceteraTestBase
         private final SessionID initiatorSessionId;
     }
     /**
-     * listens for reports
+     * listens for trade messages
      */
-    private ReportListener reportListener;
+    private TradeMessageListener tradeMessageListener;
     /**
      * stores reports received from the client
      */
-    protected final Deque<ReportBase> reports = Lists.newLinkedList();
+    protected final Deque<TradeMessage> reports = Lists.newLinkedList();
     /**
      * provides access to client trading services
      */
-    protected Client client;
+    protected TradeClient client;
     /**
      * provides fix settings
      */
     protected FixSettingsProvider fixSettingsProvider;
     /**
-     * 
+     * receives incoming FIX messages
      */
     private Receiver receiver;
     /**
@@ -2361,7 +2393,7 @@ public class MarketceteraTestBase
     /**
      * creates fix sessions
      */
-    protected FixSessionFactory fixSessionFactory;
+    protected MutableFixSessionFactory fixSessionFactory;
     /**
      * provides access to the exchange report data store
      */
@@ -2379,17 +2411,21 @@ public class MarketceteraTestBase
      */
     protected PersistentPermissionDao permissionDao;
     /**
-     * 
+     * provides access to order summary services
      */
-    protected OrderStatusService orderStatusService;
+    protected OrderSummaryService orderSummaryService;
     /**
-     * provides access to the order status data store
+     * provides access to the order summary data store
      */
-    protected OrderStatusDao orderStatusDao;
+    protected OrderSummaryDao orderStatusDao;
     /**
      * provides access to broker services
      */
     protected BrokerService brokerService;
+    /**
+     * provides access to fix session services
+     */
+    protected FixSessionProvider fixSessionProvider;
     /**
      * provides access to authorization services
      */
@@ -2407,9 +2443,12 @@ public class MarketceteraTestBase
      */
     protected ApplicationContext applicationContext;
     /**
-     * 
+     * default period of time to wait for a test condition to be true
      */
     protected long waitPeriod = 10000;
+    /**
+     * test instrument
+     */
     protected Instrument instrument;
     /**
      * port on which host systems will listen for FIX connections

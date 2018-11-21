@@ -7,13 +7,13 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.marketcetera.admin.HasUser;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
+import org.marketcetera.client.SubmitOrderWrapper;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.module.HasMutableStatus;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.HasStatus;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
@@ -29,7 +29,6 @@ import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXMessageWrapper;
-import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
@@ -78,6 +77,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import io.grpc.stub.StreamObserver;
+import quickfix.FieldNotFound;
 
 /* $License$ */
 
@@ -211,8 +211,8 @@ public class TradeClientRpcService<SessionClazz>
                         TradeRpcUtil.setOrderId(matpOrder,
                                                orderResponseBuilder);
                         User user = userService.findByName(sessionHolder.getUser());
-                        Object result = tradeService.submitOrderToOutgoingDataFlow(new RpcOrderWrapper(user,
-                                                                                                       matpOrder));
+                        Object result = tradeService.submitOrderToOutgoingDataFlow(new SubmitOrderWrapper(user,
+                                                                                                          matpOrder));
                         SLF4JLoggerProxy.debug(TradeClientRpcService.this,
                                                "Order submission returned {}",
                                                result);
@@ -222,6 +222,20 @@ public class TradeClientRpcService<SessionClazz>
                                 throw new RuntimeException(hasStatus.getErrorMessage());
                             }
                         }
+                        String orderId = unknownOrderId;
+                        if(result instanceof HasFIXMessage) {
+                            HasFIXMessage hasFixMessage = (HasFIXMessage)result;
+                            quickfix.Message message = hasFixMessage.getMessage();
+                            if(message.isSetField(quickfix.field.ClOrdID.FIELD)) {
+                                try {
+                                    orderId = message.getString(quickfix.field.ClOrdID.FIELD);
+                                } catch (FieldNotFound e) {
+                                    SLF4JLoggerProxy.warn(this,
+                                                          e);
+                                }
+                            }
+                        }
+                        orderResponseBuilder.setOrderid(orderId);
                     } catch (Exception e) {
                         SLF4JLoggerProxy.warn(TradeClientRpcService.this,
                                               e,
@@ -663,109 +677,6 @@ public class TradeClientRpcService<SessionClazz>
         private final TradingRpc.TradeMessageListenerResponse.Builder responseBuilder = TradingRpc.TradeMessageListenerResponse.newBuilder();
     }
     /**
-     * Wraps submitted orders.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    private static class RpcOrderWrapper
-            implements HasOrder,HasUser,HasMutableStatus
-    {
-        /* (non-Javadoc)
-         * @see org.marketcetera.trade.HasOrder#getOrder()
-         */
-        @Override
-        public Order getOrder()
-        {
-            return order;
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.admin.HasUser#getUser()
-         */
-        @Override
-        public User getUser()
-        {
-            return user;
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.trade.HasStatus#getFailed()
-         */
-        @Override
-        public boolean getFailed()
-        {
-            return failed;
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.trade.HasStatus#setFailed(boolean)
-         */
-        @Override
-        public void setFailed(boolean inFailed)
-        {
-            failed = inFailed;
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.trade.HasStatus#getMessage()
-         */
-        @Override
-        public String getErrorMessage()
-        {
-            return message;
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.trade.HasStatus#setMessage(java.lang.String)
-         */
-        @Override
-        public void setErrorMessage(String inMessage)
-        {
-            message = inMessage;
-        }
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
-        @Override
-        public String toString()
-        {
-            StringBuilder builder = new StringBuilder();
-            builder.append("RpcOrderWrapper [order=").append(order).append(", user=").append(user).append(", failed=")
-                    .append(failed).append(", message=").append(message).append(", start=").append(start).append("]");
-            return builder.toString();
-        }
-        /**
-         * Create a new RpcHasOrder instance.
-         *
-         * @param inUser a <code>User</code> value
-         * @param inOrder an <code>Order</code> value
-         */
-        private RpcOrderWrapper(User inUser,
-                                Order inOrder)
-        {
-            user = inUser;
-            order = inOrder;
-            failed = false;
-        }
-        /**
-         * message value
-         */
-        private volatile String message;
-        /**
-         * failed value
-         */
-        private volatile boolean failed;
-        /**
-         * user value
-         */
-        private final User user;
-        /**
-         * order value
-         */
-        private final Order order;
-        /**
-         * start time stamp
-         */
-        private final long start = System.nanoTime();
-    }
-    /**
      * provides authorization services
      */
     @Autowired
@@ -807,4 +718,8 @@ public class TradeClientRpcService<SessionClazz>
      * holds trade message listeners by id
      */
     private final Cache<String,BaseRpcUtil.AbstractServerListenerProxy<?>> listenerProxiesById = CacheBuilder.newBuilder().build();
+    /**
+     * order id for unknown orders
+     */
+    private final static String unknownOrderId = "unknown";
 }

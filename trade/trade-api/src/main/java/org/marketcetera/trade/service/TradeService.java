@@ -6,6 +6,7 @@ import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.SendOrderFailed;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessagePublisher;
 
@@ -58,6 +59,7 @@ public interface TradeService
      *
      * @param inOrder a <code>HasOrder</code> value
      * @return an <code>Object</code> value containing the result of the submission, if available
+     * @throws SendOrderFailed if the order could not be sent
      */
     Object submitOrderToOutgoingDataFlow(HasOrder inOrder);
 }

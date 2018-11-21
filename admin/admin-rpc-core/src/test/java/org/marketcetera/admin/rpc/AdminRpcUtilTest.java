@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
+import org.marketcetera.admin.AdminRpc;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.Role;
@@ -25,8 +26,6 @@ import org.marketcetera.admin.impl.SimpleRoleFactory;
 import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
 import org.marketcetera.core.PlatformServices;
-
-import com.marketcetera.admin.AdminRpc;
 
 /* $License$ */
 

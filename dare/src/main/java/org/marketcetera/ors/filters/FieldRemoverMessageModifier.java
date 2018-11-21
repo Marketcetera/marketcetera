@@ -6,12 +6,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.filters.MessageModifier;
-import org.marketcetera.ors.history.ReportHistoryServices;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -64,9 +60,7 @@ public class FieldRemoverMessageModifier
      * @see com.marketcetera.ors.filters.MessageModifier#modifyMessage(quickfix.Message, com.marketcetera.ors.history.ReportHistoryServices, org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor)
      */
     @Override
-    public boolean modifyMessage(Message inMessage,
-                                 ReportHistoryServices inHistoryServices,
-                                 FIXMessageAugmentor inAugmentor)
+    public boolean modifyMessage(Message inMessage)
             throws CoreException
     {
         boolean isModified = false;

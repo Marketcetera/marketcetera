@@ -2,6 +2,7 @@ package org.marketcetera.admin.rpc;
 
 import java.util.Optional;
 
+import org.marketcetera.admin.AdminRpc;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.Role;
@@ -11,8 +12,6 @@ import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeFactory;
 import org.marketcetera.admin.UserAttributeType;
 import org.marketcetera.admin.UserFactory;
-
-import com.marketcetera.admin.AdminRpc;
 
 /* $License$ */
 

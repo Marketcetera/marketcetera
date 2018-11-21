@@ -52,7 +52,7 @@ public class OrderStatusTest
         SessionID sender1 = createInitiatorSession(sessionIndex);
         SessionID target1 = FIXMessageUtil.getReversedSessionId(sender1);
         FIXMessageFactory messageFactory = FIXVersion.getFIXVersion(sender1).getMessageFactory();
-        FixSession session1 = brokerService.findFixSessionBySessionId(sender1);
+        FixSession session1 = brokerService.getActiveFixSession(sender1).getFixSession();
         BrokerID brokerId1 = new BrokerID(session1.getBrokerId());
         String order1OrderId = generateId();
         OrderSingle order = Factory.getInstance().createOrderSingle();

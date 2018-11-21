@@ -7,6 +7,8 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
+import org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceBlockingStub;
+import org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceStub;
 import org.marketcetera.admin.rpc.AdminRpcUtil;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
@@ -24,10 +26,6 @@ import org.marketcetera.util.ws.tags.AppId;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.marketcetera.admin.AdminRpc;
-import com.marketcetera.admin.AdminRpcServiceGrpc;
-import com.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceBlockingStub;
-import com.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceStub;
 
 import io.grpc.Channel;
 

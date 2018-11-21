@@ -2,10 +2,7 @@ package org.marketcetera.ors.filters;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.history.ReportHistoryServices;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.springframework.beans.factory.InitializingBean;
-
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -26,9 +23,7 @@ public class ConditionalMessageModifier
      * @see com.marketcetera.ors.filters.MessageModifier#modifyMessage(quickfix.Message, com.marketcetera.ors.history.ReportHistoryServices, org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor)
      */
     @Override
-    public boolean modifyMessage(Message inMessage,
-                                 ReportHistoryServices inHistoryServices,
-                                 FIXMessageAugmentor inAugmentor)
+    public boolean modifyMessage(Message inMessage)
             throws CoreException
     {
         boolean modified = false;

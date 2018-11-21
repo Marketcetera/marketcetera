@@ -1,6 +1,6 @@
 syntax = "proto3";
 option java_generic_services = true;
-option java_package = "com.marketcetera.admin";
+option java_package = "org.marketcetera.admin";
 option java_outer_classname = "AdminRpc";
 import "rpc_base.proto";
 import "rpc_paging.proto";

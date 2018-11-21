@@ -3,16 +3,8 @@ package org.marketcetera.ors.filters;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.marketcetera.ors.history.ReportHistoryServices;
-import org.marketcetera.ors.info.RequestInfo;
-import org.marketcetera.ors.info.SystemInfo;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
-
-
-import quickfix.Message;
 
 /**
  * Object that encapsulates a collection of message modifiers and
@@ -35,21 +27,11 @@ public class MessageModifierManager {
     }
 
     /** Apply all the order modifiers to this message */
-    public void modifyMessage(RequestInfo info)
+    public void modifyMessage(quickfix.Message inMessage)
         throws I18NException
     {
-        Message inMessage=(Message)info.getValue(RequestInfo.CURRENT_MESSAGE);
-        ReportHistoryServices historyServices = (ReportHistoryServices)(info.getSessionInfo().getSystemInfo().getValue(SystemInfo.HISTORY_SERVICES));
-        FIXMessageAugmentor augmentor = ((FIXMessageFactory)info.getValue(RequestInfo.FIX_MESSAGE_FACTORY)).getMsgAugmentor();
         for(MessageModifier oneModifier : messageModifiers) {
-            if(oneModifier instanceof RequestInfoAwareMessageModifier) {
-                ((RequestInfoAwareMessageModifier)oneModifier).modifyMessage(info);
-            } else {
-                if(oneModifier instanceof SessionAwareMessageModifier) {
-                    ((SessionAwareMessageModifier)oneModifier).setSessionInfo(info.getSessionInfo());
-                }
-                oneModifier.modifyMessage(inMessage,historyServices,augmentor);
-            }
+            oneModifier.modifyMessage(inMessage);
         }
     }
 }
