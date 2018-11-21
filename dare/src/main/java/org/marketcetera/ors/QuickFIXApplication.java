@@ -29,6 +29,9 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
+import org.marketcetera.brokers.SessionCustomization;
+import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.brokers.service.BrokerServiceImpl;
 import org.marketcetera.client.BrokerStatusListener;
 import org.marketcetera.client.BrokerStatusPublisher;
 import org.marketcetera.cluster.ClusterData;
@@ -38,31 +41,25 @@ import org.marketcetera.core.QueueProcessor;
 import org.marketcetera.core.file.DirectoryWatcherImpl;
 import org.marketcetera.core.file.DirectoryWatcherSubscriber;
 import org.marketcetera.core.fix.FixSettingsProviderFactory;
-import org.marketcetera.fix.ClusteredBrokerStatus;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributes;
 import org.marketcetera.fix.FixSessionDay;
 import org.marketcetera.fix.FixSessionStatus;
+import org.marketcetera.fix.OrderIntercepted;
 import org.marketcetera.fix.SessionRestorePayload;
 import org.marketcetera.fix.SessionRestorePayloadHandler;
 import org.marketcetera.fix.SessionService;
 import org.marketcetera.fix.provisioning.FixSessionRestoreExecutor;
 import org.marketcetera.metrics.IsotopeService;
-import org.marketcetera.ors.brokers.Broker;
-import org.marketcetera.ors.brokers.BrokerService;
-import org.marketcetera.ors.brokers.impl.BrokerServiceImpl;
 import org.marketcetera.ors.config.LogonAction;
 import org.marketcetera.ors.config.LogoutAction;
-import org.marketcetera.ors.dao.PersistentReportDao;
-import org.marketcetera.ors.dao.ReportService;
 import org.marketcetera.ors.filters.MessageFilter;
-import org.marketcetera.ors.history.RootOrderIdFactory;
 import org.marketcetera.ors.info.RequestInfo;
 import org.marketcetera.ors.info.RequestInfoImpl;
 import org.marketcetera.ors.info.SessionInfo;
 import org.marketcetera.ors.info.SessionInfoImpl;
 import org.marketcetera.ors.info.SystemInfo;
-import org.marketcetera.ors.outgoingorder.OutgoingMessageService;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.quickfix.SessionStatus;
@@ -75,13 +72,23 @@ import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.RootOrderIdFactory;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.dao.PersistentReportDao;
+import org.marketcetera.trade.service.OutgoingMessageService;
+import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsOperations;
+
+import com.codahale.metrics.Counter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
+import com.hazelcast.core.OperationTimeoutException;
 
 import quickfix.ApplicationExtended;
 import quickfix.DoNotSend;
@@ -107,12 +114,6 @@ import quickfix.field.SessionRejectReason;
 import quickfix.field.TargetCompID;
 import quickfix.field.Text;
 import quickfix.field.TradSesStatus;
-
-import com.codahale.metrics.Counter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.hazelcast.core.HazelcastInstanceNotActiveException;
-import com.hazelcast.core.OperationTimeoutException;
 
 /* $License$ */
 
@@ -226,13 +227,13 @@ public class QuickFIXApplication
                 });
             }
         } finally {
-            FixSession fixSession = brokerService.findFixSessionBySessionId(inSessionId);
+            ActiveFixSession fixSession = brokerService.getActiveFixSession(inSessionId);
             if(fixSession == null) {
                 SLF4JLoggerProxy.warn(this,
                                       "Ignoring onCreate for missing session {}",
                                       sessionName);
             } else {
-                updateStatus(fixSession,
+                updateStatus(fixSession.getFixSession(),
                              false);
             }
         }
@@ -274,17 +275,18 @@ public class QuickFIXApplication
         SLF4JLoggerProxy.info(FIXMessageUtil.FIX_RESTORE_LOGGER_NAME,
                               "Initiator {} logged on",
                               sessionName);
-        FixSession fixSession = brokerService.findFixSessionBySessionId(inSessionId);
+        ActiveFixSession fixSession = brokerService.getActiveFixSession(inSessionId);
         if(fixSession == null) {
             SLF4JLoggerProxy.warn(this,
                                   "Ignoring logon from missing session {}",
                                   sessionName);
             return;
         }
-        updateStatus(fixSession,
+        updateStatus(fixSession.getFixSession(),
                      true);
-        Broker broker = brokerService.generateBroker(fixSession);
-        if(broker.getSpringBroker().getLogonActions() != null) {
+        ActiveFixSession broker = brokerService.generateBroker(fixSession.getFixSession());
+        SessionCustomization sessionCustomization = brokerService.getSessionCustomization(broker.getFixSession());
+        if(sessionCustomization.getLogonActions() != null) {
             for(LogonAction action : broker.getSpringBroker().getLogonActions()) {
                 try {
                     action.onLogon(broker,
@@ -350,7 +352,7 @@ public class QuickFIXApplication
             }
             updateStatus(fixSession,
                          false);
-            Broker broker = brokerService.generateBroker(fixSession);
+            ActiveFixSession broker = brokerService.generateBroker(fixSession);
             Collection<LogoutAction> logoutActions = broker.getSpringBroker().getLogoutActions();
             if(logoutActions != null) {
                 for(LogoutAction action : logoutActions) {
@@ -432,7 +434,7 @@ public class QuickFIXApplication
         if(!isRunning.get()) {
             return;
         }
-        Broker broker = brokerService.getBroker(inSessionId);
+        ActiveFixSession broker = brokerService.getBroker(inSessionId);
         if(broker == null) {
             SLF4JLoggerProxy.warn(this,
                                   "Ignoring toAdmin for {} from missing session {}",
@@ -565,7 +567,7 @@ public class QuickFIXApplication
         if(!isRunning.get()) {
             return;
         }
-        Broker broker = brokerService.getBroker(inSessionId);
+        ActiveFixSession broker = brokerService.getBroker(inSessionId);
         if(broker == null) {
             SLF4JLoggerProxy.warn(this,
                                   "Ignoring toApp for {} from missing session {}",
@@ -617,7 +619,7 @@ public class QuickFIXApplication
         if(fixSession == null) {
             throw new IllegalArgumentException(Messages.QF_UNKNOWN_BROKER_ID.getText(inReport.getBrokerID()));
         }
-        Broker broker = brokerService.generateBroker(fixSession);
+        ActiveFixSession broker = brokerService.generateBroker(fixSession);
         SessionID sessionId = new SessionID(fixSession.getSessionId());
         Message msg = ((FIXMessageSupport)inReport).getMessage();
         try {
@@ -1273,7 +1275,7 @@ public class QuickFIXApplication
             throws UnsupportedMessageType
     {
         isotopeService.inject(inMessage);
-        Broker b=brokerService.getBroker(inSessionId);
+        ActiveFixSession b=brokerService.getBroker(inSessionId);
         Messages.QF_FROM_APP.info(getCategory(inMessage),inMessage,b);
         b.logMessage(inMessage);
         // Accept only certain message types.
@@ -1392,7 +1394,7 @@ public class QuickFIXApplication
 //            return;
 //        }
         // TODO is this crap necessary?
-        Broker broker = brokerService.generateBroker(inFixSession);
+        ActiveFixSession broker = brokerService.generateBroker(inFixSession);
         Messages.QF_SENDING_STATUS.info(this,
                                         inStatus,
                                         broker);
@@ -1414,7 +1416,7 @@ public class QuickFIXApplication
      * @param inHierarchy a <code>Hierarchy</code> value
      */
     private void sendToClientTrades(boolean inIsAdmin,
-                                    Broker inBroker,
+                                    ActiveFixSession inBroker,
                                     Message inMessage,
                                     Originator inOriginator,
                                     Hierarchy inHierarchy)
@@ -1556,7 +1558,7 @@ public class QuickFIXApplication
     {
         SessionID session = messagePackage.sessionId;
         Message msg = messagePackage.message;
-        Broker broker = null;
+        ActiveFixSession broker = null;
         try {
             broker = brokerService.getBroker(session);
             isotopeService.inject(msg);
