@@ -1,9 +1,8 @@
 package org.marketcetera.ors.filters;
 
+import org.marketcetera.admin.User;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.misc.ClassVersion;
-
 
 import quickfix.Message;
 
@@ -48,6 +47,6 @@ public interface OrderFilter
          *
          * @return a <code>SimpleUser</code> value
          */
-        public SimpleUser getUser();
+        public User getUser();
     }
 }

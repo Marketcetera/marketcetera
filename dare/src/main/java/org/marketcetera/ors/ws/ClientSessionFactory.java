@@ -1,23 +1,12 @@
 package org.marketcetera.ors.ws;
 
-import javax.xml.bind.JAXBException;
-
-import org.marketcetera.client.jms.JmsManager;
-import org.marketcetera.client.jms.JmsUtils;
-import org.marketcetera.ors.UserManager;
-import org.marketcetera.ors.dao.UserService;
+import org.marketcetera.admin.service.UserService;
 import org.marketcetera.ors.info.SystemInfo;
-import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.util.except.I18NRuntimeException;
-import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.SessionFactory;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsOperations;
-
-
 /**
  * A session factory.
  *
@@ -36,7 +25,7 @@ public class ClientSessionFactory
     // INSTANCE DATA.
 
     private final SystemInfo mSystemInfo;
-    private final JmsManager mJmsManager;
+//    private final JmsManager mJmsManager;
     private final UserManager mUserManager;
 
 
@@ -54,11 +43,11 @@ public class ClientSessionFactory
      */
 
     public ClientSessionFactory(SystemInfo systemInfo,
-                                JmsManager jmsManager,
+//                                JmsManager jmsManager,
                                 UserManager userManager)
     {
         mSystemInfo=systemInfo;
-        mJmsManager=jmsManager;
+//        mJmsManager=jmsManager;
         mUserManager=userManager;
     }
 
@@ -76,16 +65,16 @@ public class ClientSessionFactory
         return mSystemInfo;
     }
 
-    /**
-     * Returns the receiver's JMS manager.
-     *
-     * @return The manager.
-     */
-
-    private JmsManager getJmsManager()
-    {
-        return mJmsManager;
-    }
+//    /**
+//     * Returns the receiver's JMS manager.
+//     *
+//     * @return The manager.
+//     */
+//
+//    private JmsManager getJmsManager()
+//    {
+//        return mJmsManager;
+//    }
 
     /**
      * Returns the receiver's user manager.
@@ -106,22 +95,25 @@ public class ClientSessionFactory
                                        String user,
                                        SessionId id)
     {
-        JmsOperations jmsOps;
-        SimpleUser dbUser;
-        String topicName=JmsUtils.getReplyTopicName(id);
-        try {
-            jmsOps=getJmsManager().getOutgoingJmsFactory().createJmsTemplateX
-                (topicName,true);
-        } catch (JAXBException ex) {
-            throw new I18NRuntimeException
-                (ex,new I18NBoundMessage1P
-                 (Messages.CANNOT_CREATE_REPLY_TOPIC,topicName));
-        }
-        dbUser=(userService.findByName(user));
-        ClientSession session=new ClientSession
-            (getSystemInfo(),id,dbUser,jmsOps);
-        getUserManager().addSession(session);
-        return session;
+//        JmsOperations jmsOps;
+//        User dbUser;
+//        String topicName=JmsUtils.getReplyTopicName(id);
+//        try {
+//            jmsOps=getJmsManager().getOutgoingJmsFactory().createJmsTemplateX
+//                (topicName,true);
+//        } catch (JAXBException ex) {
+//            throw new I18NRuntimeException
+//                (ex,new I18NBoundMessage1P
+//                 (Messages.CANNOT_CREATE_REPLY_TOPIC,topicName));
+//        }
+//        dbUser=(userService.findByName(user));
+//        ClientSession session = new ClientSession(getSystemInfo(),
+//                                                  id,
+//                                                  dbUser,
+//                                                  jmsOps);
+//        getUserManager().addSession(session);
+//        return session;
+        throw new UnsupportedOperationException();
     }
 
     @Override

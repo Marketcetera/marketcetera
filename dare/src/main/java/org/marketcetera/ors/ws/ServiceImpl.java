@@ -8,13 +8,13 @@ import java.util.List;
 import javax.jws.WebParam;
 
 import org.marketcetera.admin.service.AuthorizationService;
+import org.marketcetera.admin.service.UserService;
 import org.marketcetera.client.Service;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.TradingPermissions;
-import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.ors.rpc.RpcServerAdapter;
 import org.marketcetera.persist.PersistenceException;

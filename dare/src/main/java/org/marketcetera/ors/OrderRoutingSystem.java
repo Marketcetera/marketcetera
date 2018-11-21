@@ -23,6 +23,8 @@ import javax.management.ObjectName;
 
 import org.apache.commons.lang.Validate;
 import org.joda.time.DateTime;
+import org.marketcetera.admin.service.UserService;
+import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.client.BrokerStatusListener;
 import org.marketcetera.client.BrokerStatusPublisher;
 import org.marketcetera.client.Service;
@@ -47,17 +49,11 @@ import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionListener;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.SessionService;
-import org.marketcetera.ors.brokers.BrokerService;
-import org.marketcetera.ors.brokers.FixSessionRestoreExecutor;
-import org.marketcetera.ors.dao.PersistentReportDao;
-import org.marketcetera.ors.dao.ReportService;
+import org.marketcetera.fix.provisioning.FixSessionRestoreExecutor;
 import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.ors.history.ReportHistoryServices;
-import org.marketcetera.ors.history.RootOrderIdFactory;
 import org.marketcetera.ors.info.SystemInfo;
 import org.marketcetera.ors.info.SystemInfoImpl;
-import org.marketcetera.ors.mbeans.ORSAdmin;
-import org.marketcetera.ors.outgoingorder.OutgoingMessageService;
 import org.marketcetera.ors.ws.ClientSession;
 import org.marketcetera.ors.ws.ClientSessionFactory;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
@@ -67,6 +63,10 @@ import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.quickfix.SessionStatus;
 import org.marketcetera.quickfix.SessionStatusListener;
 import org.marketcetera.quickfix.SessionStatusPublisher;
+import org.marketcetera.trade.RootOrderIdFactory;
+import org.marketcetera.trade.dao.PersistentReportDao;
+import org.marketcetera.trade.service.OutgoingMessageService;
+import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.Server;
@@ -202,20 +202,20 @@ public class OrderRoutingSystem
     /**
      * Get the userManager value.
      *
-     * @return a <code>UserManager</code> value
+     * @return a <code>UserService</code> value
      */
-    public UserManager getUserManager()
+    public UserService getUserService()
     {
         return userManager;
     }
     /**
      * Sets the userManager value.
      *
-     * @param inUserManager a <code>UserManager</code> value
+     * @param inUserService a <code>UserService</code> value
      */
-    public void setUserManager(UserManager inUserManager)
+    public void setUserService(UserService inUserService)
     {
-        userManager = inUserManager;
+        userManager = inUserService;
     }
     /**
      * Get the clientSessionFactory value.
@@ -616,7 +616,7 @@ public class OrderRoutingSystem
                 qfApp.setSystemInfo(systemInfo);
                 qfApp.setSupportedMessages(supportedMessages);
                 qfApp.setPersister(replyPersister);
-                qfApp.setUserManager(userManager);
+                qfApp.setUserService(userManager);
                 qfApp.setSender(quickFixSender);
                 qfApp.setToClientStatus(jmsManager.getOutgoingJmsFactory().createJmsTemplateX(Service.BROKER_STATUS_TOPIC,
                                                                                               true));
@@ -1232,7 +1232,7 @@ public class OrderRoutingSystem
     /**
      * manages users
      */
-    private UserManager userManager;
+    private UserService userManager;
     /**
      * creates client sessions
      */

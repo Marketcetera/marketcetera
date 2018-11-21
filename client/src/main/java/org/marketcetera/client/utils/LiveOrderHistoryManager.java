@@ -146,8 +146,7 @@ public class LiveOrderHistoryManager
         // snapshotReports contains all the reports as dictated by the origin date
         if(!snapshotReports.isEmpty()) {
             for(ReportBase report : snapshotReports) {
-                // TODO this needs to be TradeMessage instead of ReportBase
-                LiveOrderHistoryManager.super.add(report);
+                LiveOrderHistoryManager.super.add((TradeMessage)report);
             }
             snapshotReports.clear();
             SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,

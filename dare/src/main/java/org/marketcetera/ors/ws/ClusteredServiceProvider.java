@@ -1,8 +1,8 @@
 package org.marketcetera.ors.ws;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.client.brokers.BrokersStatus;
-import org.marketcetera.ors.brokers.BrokerService;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 

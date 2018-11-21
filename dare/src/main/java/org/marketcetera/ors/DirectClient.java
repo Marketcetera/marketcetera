@@ -15,7 +15,9 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.admin.service.AuthorizationService;
+import org.marketcetera.admin.service.UserService;
 import org.marketcetera.client.BrokerStatusListener;
 import org.marketcetera.client.BrokerStatusPublisher;
 import org.marketcetera.client.Client;
@@ -34,9 +36,6 @@ import org.marketcetera.core.Util;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.Event;
-import org.marketcetera.ors.dao.ReportService;
-import org.marketcetera.ors.dao.UserService;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.ws.ClientSession;
 import org.marketcetera.ors.ws.ServiceProvider;
 import org.marketcetera.trade.BrokerID;
@@ -57,6 +56,7 @@ import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
@@ -65,7 +65,6 @@ import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.util.ws.tags.VersionId;
 import org.marketcetera.util.ws.wrappers.LocaleWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-
 
 /* $License$ */
 
@@ -92,7 +91,7 @@ public class DirectClient
         Validate.notNull(brokerStatusPublishers);
         Validate.notNull(reportPublisher);
         Validate.notNull(requestHandler);
-        user = userService.findByName(username);
+        user = (SimpleUser)userService.findByName(username);
         Validate.notNull(user);
         params = new ClientParameters(username,
                                       username.toCharArray(),

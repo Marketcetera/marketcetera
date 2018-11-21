@@ -8,15 +8,14 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.LongIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.time.TimeFactory;
 import org.marketcetera.core.time.TimeFactoryImpl;
-import org.marketcetera.ors.LongIDFactory;
-import org.marketcetera.ors.dao.ReportService;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
@@ -26,6 +25,7 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -234,7 +234,8 @@ public class BasicReportHistoryServices
     @Override
     public void delete(ReportBase inReport)
     {
-    	reportService.delete(inReport);
+        // TODO
+        throw new UnsupportedOperationException();
     }
     /**
      * Get the purgeDate value.

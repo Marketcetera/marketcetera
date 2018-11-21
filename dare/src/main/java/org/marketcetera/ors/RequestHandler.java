@@ -11,10 +11,15 @@ import java.util.concurrent.Callable;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.admin.NotAuthorizedException;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.admin.service.AuthorizationService;
+import org.marketcetera.admin.service.UserService;
 import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.HasBrokerAlgo;
+import org.marketcetera.brokers.Selector;
+import org.marketcetera.brokers.SessionCustomization;
+import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.client.EventListener;
 import org.marketcetera.client.EventPublisher;
 import org.marketcetera.client.brokers.BrokerUnavailable;
@@ -27,25 +32,21 @@ import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.TopOfBookEvent;
+import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.fix.OrderIntercepted;
 import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.core.manager.MarketDataManager;
 import org.marketcetera.metrics.ConditionsFactory;
 import org.marketcetera.metrics.IsotopeService;
 import org.marketcetera.metrics.ThreadedMetric;
-import org.marketcetera.ors.brokers.Broker;
-import org.marketcetera.ors.brokers.BrokerService;
-import org.marketcetera.ors.brokers.Selector;
-import org.marketcetera.ors.dao.ReportService;
 import org.marketcetera.ors.filters.OrderFilter;
 import org.marketcetera.ors.info.RequestInfo;
 import org.marketcetera.ors.info.RequestInfoImpl;
 import org.marketcetera.ors.info.SessionInfo;
-import org.marketcetera.ors.outgoingorder.OutgoingMessageService;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.QuickFIXSender;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.FIXOrder;
@@ -61,6 +62,8 @@ import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.service.OutgoingMessageService;
+import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
@@ -68,10 +71,13 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Sets;
+
 import quickfix.ConfigError;
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.SessionID;
 import quickfix.SessionNotFound;
 import quickfix.field.AvgPx;
 import quickfix.field.BusinessRejectReason;
@@ -88,8 +94,6 @@ import quickfix.field.SenderCompID;
 import quickfix.field.SendingTime;
 import quickfix.field.TargetCompID;
 import quickfix.field.Text;
-
-import com.google.common.collect.Sets;
 
 /* $License$ */
 
@@ -130,7 +134,7 @@ public class RequestHandler
     private final List<OrderFilter> mAllowedOrders = new ArrayList<>();
     private ReplyPersister mPersister;
     private QuickFIXSender mSender;
-    private UserManager mUserManager;
+    private UserService mUserManager;
     private IDFactory mIDFactory;
     private DataDictionary mDataDictionary;
     // CONSTRUCTORS.
@@ -200,9 +204,9 @@ public class RequestHandler
     /**
      * Sets the userManager value.
      *
-     * @param inUserManager a <code>UserManager</code> value
+     * @param inUserManager a <code>UserService</code> value
      */
-    public void setUserManager(UserManager inUserManager)
+    public void setUserManager(UserService inUserManager)
     {
         mUserManager = inUserManager;
     }
@@ -240,7 +244,7 @@ public class RequestHandler
         return mPersister;
     }
 
-    public UserManager getUserManager()
+    public UserService getUserManager()
     {
         return mUserManager;
     }
@@ -290,13 +294,13 @@ public class RequestHandler
      * @return The factory.
      */
 
-    private FIXMessageFactory getBestMsgFactory
-        (Broker b)
+    private FIXMessageFactory getBestMsgFactory(ActiveFixSession b)
     {
         if (b==null) {
             return getMsgFactory();
         }
-        return b.getFIXMessageFactory();
+//        return b.getFIXMessageFactory();
+        throw new UnsupportedOperationException(); // TODO
     }
 
     /**
@@ -309,13 +313,13 @@ public class RequestHandler
      * @return The data dictionary.
      */
 
-    private DataDictionary getBestDataDictionary
-        (Broker b)
+    private DataDictionary getBestDataDictionary(ActiveFixSession b)
     {
         if (b==null) {
             return getDataDictionary();
         }
-        return b.getDataDictionary();
+//        return FIXMessageUtil.getDataDictionary(new SessionID(b.getFixSession().getSessionId()))
+        throw new UnsupportedOperationException(); // TODO
     }
 
     private ExecID getNextExecId()
@@ -346,7 +350,7 @@ public class RequestHandler
      * @return The rejection.
      */
     private Message createRejection(I18NException inException,
-                                    Broker inBroker,
+                                    ActiveFixSession inBroker,
                                     Order inOrder)
     {
         // Special handling of unsupported incoming messages.
@@ -463,7 +467,7 @@ public class RequestHandler
         Order order=null;
         SimpleUser actor = null;
         BrokerID brokerId=null;
-        Broker broker=null;
+        ActiveFixSession broker = null;
         Message qMsg=null;
         Message qMsgToSend=null;
         boolean sendOrder = true;
@@ -521,33 +525,38 @@ public class RequestHandler
             requestInfo.setValue(RequestInfo.BROKER_ID,
                                  brokerId);
             // Ensure broker ID maps to existing broker.
-            broker = brokerService.getBroker(brokerId);
+            broker = brokerService.getActiveFixSession(brokerId);
             if(broker == null) {
                 throw new I18NException(Messages.RH_UNKNOWN_BROKER_ID);
             }
             // check to see if the selected broker is a virtual broker
-            if(broker.getMappedBrokerId() != null) {
+            if(broker.getFixSession().getMappedBrokerId() != null) {
                 SLF4JLoggerProxy.debug(this,
                                        "Selected broker id {} is virtual and maps to {}",
                                        brokerId,
-                                       broker.getMappedBrokerId());
-                brokerId = broker.getMappedBrokerId();
-                broker = brokerService.getBroker(brokerId);
+                                       broker.getFixSession().getMappedBrokerId());
+                brokerId = new BrokerID(broker.getFixSession().getMappedBrokerId());
+                broker = brokerService.getActiveFixSession(brokerId);
                 if(broker == null) {
                     throw new I18NException(Messages.RH_UNKNOWN_BROKER_ID);
                 }
             }
+            FIXVersion fixVersion = FIXVersion.getFIXVersion(new SessionID(broker.getFixSession().getSessionId()));
+            FIXMessageFactory fixMessageFactory = fixVersion.getMessageFactory();
+            SessionCustomization sessionCustomization = brokerService.getSessionCustomization(broker.getFixSession());
+            FIXMessageAugmentor fixMessageAugmentor = fixMessageFactory.getMsgAugmentor();
+            DataDictionary dataDictionary = FIXMessageUtil.getDataDictionary(fixVersion);
             requestInfo.setValue(RequestInfo.BROKER,
                                  broker);
             requestInfo.setValue(RequestInfo.FIX_MESSAGE_FACTORY,
-                                 broker.getFIXMessageFactory());
+                                 fixMessageFactory);
             ThreadedMetric.event("requestHandler.brokerSelected"); //$NON-NLS-1$
             // if algos are specified, apply them (before transforming to FIX)
             if(order instanceof HasBrokerAlgo) {
                 BrokerAlgo brokerAlgo = ((HasBrokerAlgo)order).getBrokerAlgo();
                 if(brokerAlgo != null) {
                     if(order instanceof NewOrReplaceOrder) {
-                        Set<BrokerAlgoSpec> cannonicalAlgoSpecs = broker.getSpringBroker().getBrokerAlgoSpecs();
+                        Set<BrokerAlgoSpec> cannonicalAlgoSpecs = broker.getBrokerAlgos();
                         BrokerAlgoSpec cannonicalAlgoSpec = null;
                         for(BrokerAlgoSpec cannonicalAlgoSpecCandidate : cannonicalAlgoSpecs) {
                             if(cannonicalAlgoSpecCandidate.equals(brokerAlgo.getAlgoSpec())) {
@@ -565,15 +574,15 @@ public class RequestHandler
                     }
                 }
             }
-            // optionally reprice
+            // optionally re-price
             if(order instanceof NewOrReplaceOrder) {
                 NewOrReplaceOrder newOrReplaceOrder = (NewOrReplaceOrder)order;
                 if(newOrReplaceOrder.getPegToMidpoint()) {
                     try {
-                        if(marketDataManager == null) {
+                        if(marketDataService == null) {
                             throw new IllegalArgumentException("Market data nexus unavailable");
                         }
-                        Event marketData = marketDataManager.requestMarketDataSnapshot(newOrReplaceOrder.getInstrument(),
+                        Event marketData = marketDataService.requestMarketDataSnapshot(newOrReplaceOrder.getInstrument(),
                                                                                        Content.TOP_OF_BOOK,
                                                                                        null);
                         if(marketData == null) {
@@ -605,8 +614,8 @@ public class RequestHandler
             }
             // Convert to a QuickFIX/J message.
             try {
-                qMsg = FIXConverter.toQMessage(broker.getFIXMessageFactory(),
-                                               broker.getDataDictionary(),
+                qMsg = FIXConverter.toQMessage(fixMessageFactory,
+                                               dataDictionary,
                                                order);
             } catch (I18NException ex) {
                 throw new I18NException(ex,Messages.RH_CONVERSION_FAILED);
@@ -616,11 +625,11 @@ public class RequestHandler
             broker.logMessage(qMsg);
             ThreadedMetric.event("requestHandler.orderConverted"); //$NON-NLS-1$
             // Ensure broker is allowed for this user
-            if(!broker.getSpringBroker().isUserAllowed(actor.getName())) {
+            if(!brokerService.isUserAllowed(brokerId, user)) {
                 throw new I18NException(Messages.RH_UNKNOWN_BROKER_ID);
             }
             // Ensure broker is available.
-            if(!broker.getLoggedOn()) {
+            if(!broker.getStatus().isLoggedOn()) {
                 throw new BrokerUnavailable(Messages.RH_UNAVAILABLE_BROKER);
             }
             // Ensure the order is allowed.
@@ -640,7 +649,8 @@ public class RequestHandler
             }
             ThreadedMetric.event("requestHandler.orderAllowed"); //$NON-NLS-1$
             // Apply message modifiers.
-            if(broker.getModifiers()!=null) {
+            
+            if(broker.getModifiers() != null) {
                 requestInfo.setValue(RequestInfo.CURRENT_MESSAGE,
                                      qMsg);
                 try {
@@ -804,7 +814,7 @@ public class RequestHandler
      * provides access to market data services (optionally required)
      */
     @Autowired(required=false)
-    private MarketDataManager marketDataManager;
+    private MarketDataService marketDataService;
     /**
      * provides access to report services
      */

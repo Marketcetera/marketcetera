@@ -25,8 +25,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import junitparams.JUnitParamsRunner;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +38,8 @@ import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.marketcetera.admin.impl.PersistentPermissionDao;
 import org.marketcetera.admin.service.AuthorizationService;
+import org.marketcetera.admin.service.UserService;
+import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ReportListener;
 import org.marketcetera.core.ApplicationContainer;
@@ -55,13 +55,8 @@ import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.dao.IncomingMessageDao;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
-import org.marketcetera.ors.brokers.BrokerService;
-import org.marketcetera.ors.dao.ExecutionReportDao;
 import org.marketcetera.ors.dao.OrderStatusDao;
 import org.marketcetera.ors.dao.OrderStatusService;
-import org.marketcetera.ors.dao.PersistentReportDao;
-import org.marketcetera.ors.dao.ReportService;
-import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
@@ -83,6 +78,9 @@ import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.dao.ExecutionReportDao;
+import org.marketcetera.trade.dao.PersistentReportDao;
+import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ApplicationContext;
@@ -90,6 +88,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import junitparams.JUnitParamsRunner;
 import quickfix.Acceptor;
 import quickfix.DataDictionary;
 import quickfix.FixVersions;
@@ -100,9 +102,6 @@ import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
 import quickfix.field.MsgType;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 /* $License$ */
 

@@ -70,4 +70,15 @@ public interface MarketDataService
      * @return a <code>Set&lt;Capability&gt;</code> value
      */
     Set<Capability> getAvailableCapability();
+    /**
+     *
+     *
+     * @param inInstrument
+     * @param inTopOfBook
+     * @param inObject
+     * @return
+     */
+    Event requestMarketDataSnapshot(Instrument inInstrument,
+                                    Content inTopOfBook,
+                                    Object inObject);
 }

@@ -3,11 +3,10 @@ package org.marketcetera.ors.history;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.QueueProcessor;
-import org.marketcetera.ors.dao.ReportService;
 import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
-
 
 /* $License$ */
 

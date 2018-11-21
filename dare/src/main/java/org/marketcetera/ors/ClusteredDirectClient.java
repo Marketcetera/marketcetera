@@ -14,6 +14,8 @@ import javax.annotation.PreDestroy;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.marketcetera.brokers.Selector;
+import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.Validations;
@@ -24,17 +26,14 @@ import org.marketcetera.cluster.QueueDescriptor;
 import org.marketcetera.cluster.SimpleQueueDescriptor;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.ApplicationVersion;
-import org.marketcetera.fix.ClusteredBrokerStatus;
-import org.marketcetera.ors.brokers.BrokerService;
-import org.marketcetera.ors.brokers.Selector;
+import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.ors.ws.ClientSession;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
@@ -253,12 +252,12 @@ public class ClusteredDirectClient
                 SLF4JLoggerProxy.debug(this,
                                        "This instance does not appear to be able to handle {}, submitting to cluster queue",
                                        inEnvelope);
-                // validate session ID first, because the other instances in the cluster will trust us when we hand them the order with the session
-                SessionHolder<ClientSession> sessionInfo = getRequestHandler().getUserManager().getSessionManager().get(inEnvelope.getSessionId());
-                if(sessionInfo == null) {
-                    throw new I18NException(new I18NBoundMessage1P(Messages.RH_SESSION_EXPIRED,
-                                                                   inEnvelope.getSessionId()));
-                }
+//                // validate session ID first, because the other instances in the cluster will trust us when we hand them the order with the session
+//                SessionHolder<ClientSession> sessionInfo = getRequestHandler().getUserManager().getSessionManager().get(inEnvelope.getSessionId());
+//                if(sessionInfo == null) {
+//                    throw new I18NException(new I18NBoundMessage1P(Messages.RH_SESSION_EXPIRED,
+//                                                                   inEnvelope.getSessionId()));
+//                }
                 clusterService.addToQueue(requestHandlerProcessingQueue,
                                           new DareRequestPackage(inEnvelope));
             } else {
@@ -376,7 +375,8 @@ public class ClusteredDirectClient
         SLF4JLoggerProxy.debug(this,
                                "Checking to see if {} can be handled by this instance",
                                inOrder);
-        ClusteredBrokerStatus status = brokerService.getBrokerStatus(inOrder.getOrder().getBrokerID());
+        ActiveFixSession activeFixSession = brokerService.getActiveFixSession(inOrder.getOrder().getBrokerID());
+        FixSessionStatus status = activeFixSession.getStatus();
         if(status == null) {
             SLF4JLoggerProxy.debug(this,
                                    "{} cannot be handled by this host because there is no host data for {}",
@@ -385,7 +385,7 @@ public class ClusteredDirectClient
             return false;
         }
         // doesn't matter (here) whether the host is logged on or not, just whether this session is active or not on this host
-        if(status.getClusterData().equals(instanceData) && status.getStatus().isPrimary()) {
+        if(activeFixSession.getClusterData().equals(instanceData) && status.isPrimary()) {
             SLF4JLoggerProxy.debug(this,
                                    "{} can be handled by this host as per {}",
                                    inOrder,

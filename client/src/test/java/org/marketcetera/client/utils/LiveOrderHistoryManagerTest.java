@@ -25,6 +25,7 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.utils.OrderHistoryManagerTest;
 
 /* $License$ */
@@ -114,7 +115,7 @@ public class LiveOrderHistoryManagerTest
                                                                              null,
                                                                              OrderStatus.Filled);
         assertFalse(report1.getOrderStatus().isCancellable());
-        manager.add(report1);
+        manager.add((TradeMessage)report1);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -131,7 +132,7 @@ public class LiveOrderHistoryManagerTest
                                                                              null,
                                                                              OrderStatus.PartiallyFilled);
         assertTrue(report2.getOrderStatus().isCancellable());
-        manager.add(report2);
+        manager.add((TradeMessage)report2);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -231,7 +232,7 @@ public class LiveOrderHistoryManagerTest
         ReportBase report1 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
                                                                              null,
                                                                              OrderStatus.New);
-        manager.add(report1);
+        manager.add((TradeMessage)report1);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -243,7 +244,7 @@ public class LiveOrderHistoryManagerTest
         ReportBase report2 = OrderHistoryManagerTest.generateExecutionReport(report1.getOrderID().getValue(),
                                                                              null,
                                                                              OrderStatus.Filled);
-        manager.add(report2);
+        manager.add((TradeMessage)report2);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -269,7 +270,7 @@ public class LiveOrderHistoryManagerTest
         final ReportBase report1 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
                                                                                    null,
                                                                                    OrderStatus.New);
-        manager.add(report1);
+        manager.add((TradeMessage)report1);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -281,7 +282,7 @@ public class LiveOrderHistoryManagerTest
         ReportBase report2 = OrderHistoryManagerTest.generateExecutionReport(report1.getOrderID().getValue(),
                                                                              null,
                                                                              OrderStatus.PendingReplace);
-        manager.add(report2);
+        manager.add((TradeMessage)report2);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -301,7 +302,7 @@ public class LiveOrderHistoryManagerTest
         final ReportBase report3 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
                                                                                    report1.getOrderID().getValue(),
                                                                                    OrderStatus.Replaced);
-        manager.add(report3);
+        manager.add((TradeMessage)report3);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -322,7 +323,7 @@ public class LiveOrderHistoryManagerTest
         final ReportBase report4 = OrderHistoryManagerTest.generateExecutionReport(report3.getOrderID().getValue(),
                                                                                    null,
                                                                                    OrderStatus.PartiallyFilled);
-        manager.add(report4);
+        manager.add((TradeMessage)report4);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -342,7 +343,7 @@ public class LiveOrderHistoryManagerTest
         final ReportBase report5 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
                                                                                    report4.getOrderID().getValue(),
                                                                                    OrderStatus.PendingReplace);
-        manager.add(report5);
+        manager.add((TradeMessage)report5);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -363,7 +364,7 @@ public class LiveOrderHistoryManagerTest
         final ReportBase report6 = OrderHistoryManagerTest.generateExecutionReport(report5.getOrderID().getValue(),
                                                                                    report4.getOrderID().getValue(),
                                                                                    OrderStatus.Replaced);
-        manager.add(report6);
+        manager.add((TradeMessage)report6);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -384,7 +385,7 @@ public class LiveOrderHistoryManagerTest
         final ReportBase report7 = OrderHistoryManagerTest.generateExecutionReport(report6.getOrderID().getValue(),
                                                                                    null,
                                                                                    OrderStatus.PendingCancel);
-        manager.add(report7);
+        manager.add((TradeMessage)report7);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -403,7 +404,7 @@ public class LiveOrderHistoryManagerTest
                      openOrders.get(report7.getOrderID()));
         final ReportBase report8 = OrderHistoryManagerTest.generateOrderCancelReject("order-" + counter.incrementAndGet(),
                                                                                      report7.getOrderID().getValue());
-        manager.add(report8);
+        manager.add((TradeMessage)report8);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()

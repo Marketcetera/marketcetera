@@ -1,11 +1,9 @@
 package org.marketcetera.ors.info;
 
-import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.util.misc.ClassVersion;
-
 
 import quickfix.Message;
 
