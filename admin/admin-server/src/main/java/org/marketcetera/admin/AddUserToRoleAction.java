@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Add an existing user to an existing role.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AddUserToRoleAction.java 17796 2018-11-20 18:47:57Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class AddUserToRoleAction

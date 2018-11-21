@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Adds an existing user as a subject to an existing supervisor role.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AddUserToSupervisorRoleAction.java 17796 2018-11-20 18:47:57Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class AddUserToSupervisorRoleAction

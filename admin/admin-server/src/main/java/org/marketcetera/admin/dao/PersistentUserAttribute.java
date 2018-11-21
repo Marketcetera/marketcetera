@@ -20,7 +20,7 @@ import org.marketcetera.persist.EntityBase;
  * Provides a persistent <code>UserAttribute</code> implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentUserAttribute.java 85209 2016-03-22 19:42:24Z colin $
+ * @version $Id$
  * @since 1.2.0
  */
 @Table(name="user_attributes")

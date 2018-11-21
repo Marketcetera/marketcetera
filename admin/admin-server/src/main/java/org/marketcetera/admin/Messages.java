@@ -14,7 +14,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: Messages.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public interface Messages {
     /**
      * The message provider

@@ -47,7 +47,7 @@ import org.marketcetera.util.log.I18NMessage0P;
 @Entity(name="user")
 @Table(name = "users",uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
 @AttributeOverride(name = "name", column = @Column(nullable = false))
-@ClassVersion("$Id: PersistentUser.java 17319 2017-07-17 18:56:02Z colin $")
+@ClassVersion("$Id$")
 public class PersistentUser
         extends NDEntityBase
         implements MutableUser

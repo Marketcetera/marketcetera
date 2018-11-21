@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Provides services for <code>UserAttribute</code> objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UserAttributeServiceImpl.java 84561 2015-03-31 18:18:14Z colin $
+ * @version $Id$
  * @since 1.2.0
  */
 @Transactional(readOnly=true,propagation=Propagation.REQUIRED)

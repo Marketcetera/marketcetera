@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Changes the password of a given user.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ChangePasswordAction.java 17796 2018-11-20 18:47:57Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class ChangePasswordAction

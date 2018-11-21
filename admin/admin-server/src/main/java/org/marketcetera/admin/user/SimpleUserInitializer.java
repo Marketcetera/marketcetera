@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Creates {@link PersistentUser} objects as specified.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SimpleUserInitializer.java 17339 2017-08-10 02:14:34Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: SimpleUserInitializer.java 17339 2017-08-10 02:14:34Z colin $")
+@ClassVersion("$Id$")
 public class SimpleUserInitializer
         implements InitializingBean
 {

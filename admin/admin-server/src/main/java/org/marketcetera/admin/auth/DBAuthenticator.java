@@ -24,10 +24,10 @@ import org.springframework.stereotype.Service;
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: DBAuthenticator.java 17344 2017-08-10 17:40:06Z colin $
+ * @version $Id$
  */
 @Service
-@ClassVersion("$Id: DBAuthenticator.java 17344 2017-08-10 17:40:06Z colin $")
+@ClassVersion("$Id$")
 public class DBAuthenticator
         implements Authenticator
 {

@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Initializes the authorization system.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AuthorizationInitializer.java 17796 2018-11-20 18:47:57Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 public class AuthorizationInitializer

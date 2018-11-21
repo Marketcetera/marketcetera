@@ -12,7 +12,7 @@ import com.google.common.collect.Sets;
  * Describes the attributes of a {@link SupervisorPermission}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SupervisorPermissionDescriptor.java 17796 2018-11-20 18:47:57Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class SupervisorPermissionDescriptor

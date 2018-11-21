@@ -13,10 +13,10 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
  * Provides datastore access to {@link PersistentUser} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UserDao.java 17339 2017-08-10 02:14:34Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: UserDao.java 17339 2017-08-10 02:14:34Z colin $")
+@ClassVersion("$Id$")
 public interface UserDao
         extends JpaRepository<PersistentUser,Long>,QuerydslPredicateExecutor<PersistentUser>
 {
