@@ -27,6 +27,8 @@ import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.brokers.BrokerStatusPublisher;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.ClusterWorkUnit;
+import org.marketcetera.cluster.ClusterWorkUnitType;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.PlatformServices;
@@ -38,6 +40,8 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributes;
 import org.marketcetera.fix.FixSessionStatus;
+import org.marketcetera.fix.OrderIntercepted;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.fix.SessionRestorePayload;
 import org.marketcetera.fix.SessionRestorePayloadHandler;
 import org.marketcetera.fix.provisioning.FixSessionRestoreExecutor;
@@ -48,18 +52,24 @@ import org.marketcetera.ors.ReportReceiver;
 import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.SessionStatusListener;
 import org.marketcetera.quickfix.SessionStatusPublisher;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.Hierarchy;
+import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.RootOrderIdFactory;
+import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.service.OutgoingMessageService;
 import org.marketcetera.trade.service.ReportService;
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.quickfix.AnalyzedMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codahale.metrics.Counter;
@@ -95,6 +105,7 @@ import quickfix.field.TradSesStatus;
  * @version $Id$
  * @since $Release$
  */
+@ClusterWorkUnit(id="MATP.DARE",type=ClusterWorkUnitType.SINGLETON_RUNTIME)
 public class DeployAnywhereRoutingEngine
         implements ApplicationExtended,ReportReceiver,BrokerStatusPublisher,SessionStatusPublisher,DirectoryWatcherSubscriber
 {
@@ -132,13 +143,13 @@ public class DeployAnywhereRoutingEngine
                 });
             }
         } finally {
-            ActiveFixSession fixSession = brokerService.getActiveFixSession(inSessionId);
+            ServerFixSession fixSession = brokerService.getServerFixSession(inSessionId);
             if(fixSession == null) {
                 SLF4JLoggerProxy.warn(this,
                                       "Ignoring onCreate for missing session {}",
                                       sessionName);
             } else {
-                updateStatus(fixSession.getFixSession(),
+                updateStatus(fixSession.getActiveFixSession().getFixSession(),
                              false);
             }
         }
@@ -460,6 +471,45 @@ public class DeployAnywhereRoutingEngine
         fixInjectorDirectory = inFixInjectorDirectory;
     }
     /**
+     * Get the dontForwardMessages value.
+     *
+     * @return a <code>Set&lt;String&gt;</code> value
+     */
+    public Set<String> getDontForwardMessages()
+    {
+        return dontForwardMessages;
+    }
+    /**
+     * Sets the dontForwardMessages value.
+     *
+     * @param inDontForwardMessages a <code>Set&lt;String&gt;</code> value
+     */
+    public void setDontForwardMessages(Set<String> inDontForwardMessages)
+    {
+        dontForwardMessages.clear();
+        if(inDontForwardMessages != null) {
+            dontForwardMessages.addAll(inDontForwardMessages);
+        }
+    }
+    /**
+     * Get the allowDeliverToCompID value.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean getAllowDeliverToCompID()
+    {
+        return allowDeliverToCompID;
+    }
+    /**
+     * Sets the allowDeliverToCompID value.
+     *
+     * @param inAllowDeliverToCompID a <code>boolean</code> value
+     */
+    public void setAllowDeliverToCompID(boolean inAllowDeliverToCompID)
+    {
+        allowDeliverToCompID = inAllowDeliverToCompID;
+    }
+    /**
      * Process the given application message.
      *
      * @param inMessage a <code>Message</code> value
@@ -472,11 +522,12 @@ public class DeployAnywhereRoutingEngine
                            int inPriority)
             throws UnsupportedMessageType
     {
-        ActiveFixSession activeFixSession = brokerService.getActiveFixSession(inSessionId);
+        ServerFixSession ServerFixSession = brokerService.getServerFixSession(inSessionId);
         Messages.QF_FROM_APP.info(getCategory(inMessage),
                                   inMessage,
-                                  activeFixSession);
-        activeFixSession.logMessage(inMessage);
+                                  ServerFixSession);
+        logMessage(inMessage,
+                   ServerFixSession);
         // accept only certain message types
         if(getSupportedMessages() != null && !getSupportedMessages().isAccepted(inMessage)) {
             Messages.QF_DISALLOWED_MESSAGE.info(getCategory(inMessage));
@@ -489,6 +540,22 @@ public class DeployAnywhereRoutingEngine
                                       inPriority));
     }
     /**
+     * Logs the given message, analyzed using the receiver's data
+     * dictionary, at the debugging level.
+     *
+     * @param msg The message.
+     */
+    private void logMessage(Message msg,
+                            ServerFixSession inBroker)
+    {
+        Object category=(FIXMessageUtil.isHeartbeat(msg)?
+                         HEARTBEAT_CATEGORY:this);
+        if(SLF4JLoggerProxy.isDebugEnabled(category)) {
+            Messages.ANALYZED_MESSAGE.debug(category,
+                                            new AnalyzedMessage(inBroker.getDataDictionary(),msg).toString());
+        }
+    }
+    /**
      * Processes the given message package.
      *
      * @param messagePackage a <code>MessagePackage</code> value
@@ -497,9 +564,9 @@ public class DeployAnywhereRoutingEngine
     {
         SessionID session = messagePackage.sessionId;
         Message msg = messagePackage.message;
-        ActiveFixSession broker = null;
+        ServerFixSession serverFixSession = null;
         try {
-            broker = brokerService.getActiveFixSession(session);
+            serverFixSession = brokerService.getServerFixSession(session);
             switch(messagePackage.getMessageType()) {
                 case FROM_ADMIN: {
                     Object category = getCategory(msg);
@@ -507,11 +574,12 @@ public class DeployAnywhereRoutingEngine
                     if(shouldDisplayMessage) {
                         Messages.QF_FROM_ADMIN.info(category,
                                                     msg,
-                                                    broker);
-                        broker.logMessage(msg);
+                                                    serverFixSession);
+                        logMessage(msg,
+                                   serverFixSession);
                         // Send message to client.
                         sendToClientTrades(true,
-                                           broker,
+                                           serverFixSession,
                                            msg,
                                            Originator.Broker,
                                            messagePackage.getHierarchy());
@@ -522,23 +590,22 @@ public class DeployAnywhereRoutingEngine
                     try {
                         // Report trading session status in a human-readable format.
                         if(FIXMessageUtil.isTradingSessionStatus(msg)) {
-                            FIXVersion fixVersion = FIXVersion.getFIXVersion(broker.getFixSession().getSessionId());
-                            FIXDataDictionary dataDictionary = null; // TODO
+                            FIXDataDictionary dataDictionary = serverFixSession.getFIXDataDictionary();
                             Messages.QF_TRADE_SESSION_STATUS.info(getCategory(msg),
                                                                   dataDictionary.getHumanFieldValue(TradSesStatus.FIELD,
                                                                                                     msg.getString(TradSesStatus.FIELD)));
                         }
                         // Send message to client.
                         sendToClientTrades(false,
-                                           broker,
+                                           serverFixSession,
                                            msg,
                                            Originator.Broker,
                                            messagePackage.hierarchy);
                         if(!allowDeliverToCompID && msg.getHeader().isSetField(DeliverToCompID.FIELD)) {
                             // OpenFIX certification: we reject all DeliverToCompID since we don't redeliver.
                             try {
-                                Message reject = broker.getFIXMessageFactory().createSessionReject(msg,
-                                                                                                   SessionRejectReason.COMPID_PROBLEM);
+                                Message reject = serverFixSession.getFIXMessageFactory().createSessionReject(msg,
+                                                                                                             SessionRejectReason.COMPID_PROBLEM);
                                 reject.setString(Text.FIELD,
                                                  Messages.QF_COMP_ID_REJECT.getText(msg.getHeader().getString(DeliverToCompID.FIELD)));
                                 getSender().sendToTarget(reject,
@@ -546,7 +613,7 @@ public class DeployAnywhereRoutingEngine
                             } catch (SessionNotFound ex) {
                                 Messages.QF_COMP_ID_REJECT_FAILED.error(getCategory(msg),
                                                                         ex,
-                                                                        broker.toString());
+                                                                        serverFixSession.toString());
                             }
                             break;
                         }
@@ -587,8 +654,8 @@ public class DeployAnywhereRoutingEngine
     private void updateStatus(FixSession inFixSession,
                               boolean inStatus)
     {
-        FixSessionStatus status;
-        BrokerID brokerId = new BrokerID(inFixSession.getBrokerId());
+      FixSessionStatus status;
+      BrokerID brokerId = new BrokerID(inFixSession.getBrokerId());
         if(inStatus) {
             status = FixSessionStatus.CONNECTED;
         } else {
@@ -612,9 +679,9 @@ public class DeployAnywhereRoutingEngine
                 }
             }
         }
-        ActiveFixSession brokerStatus = brokerService.generateBroker(inFixSession);
+        ServerFixSession brokerStatus = brokerService.getServerFixSession(brokerId);
         brokerService.reportBrokerStatus(brokerId,
-                                         brokerStatus.getStatus());
+                                         brokerStatus.getActiveFixSession().getStatus());
 //        if(oldStatus == inStatus) {
 //            return;
 //        }
@@ -624,7 +691,91 @@ public class DeployAnywhereRoutingEngine
                                         inStatus,
                                         broker);
         for(BrokerStatusListener listener : brokerStatusListeners) {
-            listener.receiveBrokerStatus(brokerStatus);
+            listener.receiveBrokerStatus(brokerStatus.getActiveFixSession());
+        }
+    }
+    /**
+     * Sends the given message to the subscribed clients.
+     *
+     * @param inIsAdmin a <code>boolean</code> value
+     * @param inServerFixSession a <code>ServerFixSession</code> value
+     * @param inMessage a <code>Message</code> value
+     * @param inOriginator an <code>Originator</code> value
+     * @param inHierarchy a <code>Hierarchy</code> value
+     */
+    private void sendToClientTrades(boolean inIsAdmin,
+                                    ServerFixSession inServerFixSession,
+                                    Message inMessage,
+                                    Originator inOriginator,
+                                    Hierarchy inHierarchy)
+    {
+        UserID actor = null;
+        if(!inIsAdmin) {
+            actor = outgoingMessageService.getMessageOwner(inMessage,
+                                                           new SessionID(inServerFixSession.getActiveFixSession().getFixSession().getSessionId()),
+                                                           new BrokerID(inServerFixSession.getActiveFixSession().getFixSession().getBrokerId()));
+        }
+        // Apply message modifiers.
+        boolean orderIntercepted = false;
+        if((inOriginator == Originator.Broker) && (inServerFixSession.getResponseModifiers() != null)) {
+            try {
+                inServerFixSession.getResponseModifiers().modifyMessage(inMessage);
+            } catch (OrderIntercepted e) {
+                SLF4JLoggerProxy.info(this,
+                                      "{} intercepted",
+                                      inMessage);
+                orderIntercepted = true;
+            } catch (I18NException ex) {
+                Messages.QF_MODIFICATION_FAILED.warn(getCategory(inMessage),
+                                                     ex,
+                                                     inMessage,
+                                                     inServerFixSession);
+            }
+        }
+        TradeMessage reply;
+        try {
+            reply = FIXConverter.fromQMessage(inMessage,
+                                              inOriginator,
+                                              new BrokerID(inServerFixSession.getActiveFixSession().getFixSession().getBrokerID()),
+                                              inHierarchy,
+                                              actor,
+                                              actor);
+        } catch (MessageCreationException ex) {
+            Messages.QF_REPORT_FAILED.error(getCategory(inMessage),
+                                            ex,
+                                            inMessage,
+                                            inServerFixSession);
+            return;
+        }
+        try {
+            // Persist and send reply.
+            getPersister().persistReply(reply);
+        } finally {
+            Messages.QF_SENDING_REPLY.info(getCategory(inMessage),reply);
+            try {
+                String msgType = inMessage.getHeader().getString(MsgType.FIELD);
+                // check to see if the message has been blacklisted
+                if(dontForwardMessages.contains(msgType)) {
+                    SLF4JLoggerProxy.debug(this,
+                                           "{} is in the blacklist of messages {} for clients and will not be forwarded", //$NON-NLS-1$
+                                           inMessage,
+                                           dontForwardMessages);
+                    return;
+                }
+            } catch (FieldNotFound e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "On send to client: {}",
+                                      ExceptionUtils.getRootCauseMessage(e));
+                return;
+            }
+            if(orderIntercepted) {
+                SLF4JLoggerProxy.debug(this,
+                                      "{} intercepted and not sent to client",
+                                      reply);
+            } else {
+                getUserManager().convertAndSend(reply);
+            }
         }
     }
     /**
@@ -1160,6 +1311,10 @@ public class DeployAnywhereRoutingEngine
      */
     private static final Set<String> standardMessageTypes = Sets.newHashSet(MsgType.ORDER_CANCEL_REJECT,MsgType.EXECUTION_REPORT);
     /**
+     * messages that should not be forwarded to clients (empty to forward all messages)
+     */
+    private final Set<String> dontForwardMessages = Sets.newHashSet(MsgType.LOGON,MsgType.HEARTBEAT,MsgType.TEST_REQUEST,MsgType.RESEND_REQUEST,MsgType.REJECT,MsgType.SEQUENCE_RESET,MsgType.LOGOUT);
+    /**
      * logger category used for heartbeats
      */
     private static final String HEARTBEAT_CATEGORY = DeployAnywhereRoutingEngine.class.getName()+".HEARTBEATS"; //$NON-NLS-1$
@@ -1216,6 +1371,10 @@ public class DeployAnywhereRoutingEngine
      */
     private String fixInjectorDirectory;
     /**
+     * determines whether we allow the redeliverToCompID flag or not
+     */
+    private boolean allowDeliverToCompID = false;
+    /**
      * provides access to cluster services
      */
     @Autowired
@@ -1245,4 +1404,9 @@ public class DeployAnywhereRoutingEngine
      */
     @Autowired
     private RootOrderIdFactory rootOrderIdFactory;
+    /**
+     * provides access to outgoing message services
+     */
+    @Autowired
+    private OutgoingMessageService outgoingMessageService;
 }

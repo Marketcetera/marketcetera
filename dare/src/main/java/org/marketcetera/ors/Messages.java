@@ -102,6 +102,7 @@ public interface Messages
     static final I18NMessage1P QF_NO_ROOT_ORDER_ID = new I18NMessage1P(LOGGER,"qf_no_root_order_id"); //$NON-NLS-1$
     static final I18NMessage1P QF_STANDARD_SHUTDOWN = new I18NMessage1P(LOGGER,"qf_standard_shutdown"); //$NON-NLS-1$
     static final I18NMessage1P QF_SHUTDOWN_ERROR = new I18NMessage1P(LOGGER,"qf_shutdown_error"); //$NON-NLS-1$
+    static final I18NMessage1P ANALYZED_MESSAGE = new I18NMessage1P(LOGGER,"analyzed_message"); //$NON-NLS-1$
 
     static final I18NMessage1P RH_REJ_CONVERSION_FAILED=
         new I18NMessage1P(LOGGER,"rh_rej_conversion_failed"); //$NON-NLS-1$
