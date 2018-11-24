@@ -47,7 +47,7 @@ public class ReportBaseImpl
     }
 
     @Override
-    public BrokerID getBrokerID() {
+    public BrokerID getBrokerId() {
         return mBrokerID;
     }
 

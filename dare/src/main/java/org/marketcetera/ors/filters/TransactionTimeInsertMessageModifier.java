@@ -2,11 +2,14 @@ package org.marketcetera.ors.filters;
 
 import java.util.Date;
 
+import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 
 import quickfix.FieldNotFound;
+import quickfix.Message;
 import quickfix.field.TransactTime;
 
 /**
@@ -19,9 +22,12 @@ import quickfix.field.TransactTime;
 public class TransactionTimeInsertMessageModifier
         implements MessageModifier
 {
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.MessageModifier#modify(org.marketcetera.fix.ServerFixSession, quickfix.Message)
+     */
     @Override
-    public boolean modifyMessage(quickfix.Message inOrder)
-            throws CoreException
+    public boolean modify(ServerFixSession inServerFixSession,
+                          Message inOrder)
     {
         // Only put the field in if it's not present
         if(!inOrder.isSetField(quickfix.field.TransactTime.FIELD)) {

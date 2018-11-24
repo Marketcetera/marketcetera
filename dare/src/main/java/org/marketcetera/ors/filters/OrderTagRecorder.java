@@ -5,7 +5,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.FieldNotFound;
@@ -25,11 +27,11 @@ public class OrderTagRecorder
         implements MessageModifier
 {
     /* (non-Javadoc)
-     * @see com.marketcetera.ors.filters.MessageModifier#modifyMessage(quickfix.Message, com.marketcetera.ors.history.ReportHistoryServices, org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor)
+     * @see org.marketcetera.brokers.MessageModifier#modify(org.marketcetera.fix.ServerFixSession, quickfix.Message)
      */
     @Override
-    public boolean modifyMessage(Message inMessage)
-            throws CoreException
+    public boolean modify(ServerFixSession inServerFixSession,
+                          Message inMessage)
     {
         Map<Integer,String> tags = null;
         ClOrdID orderID = new ClOrdID();

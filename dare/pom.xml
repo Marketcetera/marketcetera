@@ -20,6 +20,10 @@
     <!-- Compile. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>eventbus-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cluster-api</artifactId>
     </dependency>
     <dependency>

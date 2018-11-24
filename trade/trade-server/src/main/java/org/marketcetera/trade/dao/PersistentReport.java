@@ -80,7 +80,7 @@ public class PersistentReport
                             PersistentUser inViewer)
     {
         mReportBase = inReport;
-        setBrokerID(inReport.getBrokerID());
+        setBrokerID(inReport.getBrokerId());
         setSendingTime(inReport.getSendingTime());
         if(inReport instanceof HasFIXMessage) {
             setFixMessage(((HasFIXMessage) inReport).getMessage().toString());

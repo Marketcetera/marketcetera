@@ -56,7 +56,7 @@ public class OutgoingMessagePersistenceModule
                                                                   inData.getClass().getSimpleName()));
         }
         OutgoingMessage outgoingMessage = outgoingMessageFactory.create(((HasFIXMessage)inData).getMessage(),
-                                                                        ((HasBrokerID)inData).getBrokerID(),
+                                                                        ((HasBrokerID)inData).getBrokerId(),
                                                                         ((HasSessionId)inData).getSessionId(),
                                                                         ((HasUser)inData).getUser());
         outgoingMessage = outgoingMessageService.save(outgoingMessage);

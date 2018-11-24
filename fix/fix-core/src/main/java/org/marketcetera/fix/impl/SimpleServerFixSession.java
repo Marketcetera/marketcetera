@@ -112,7 +112,7 @@ public class SimpleServerFixSession
     public FIXDataDictionary getFIXDataDictionary()
     {
         if(dataDictionary == null) {
-            dataDictionary=new FIXDataDictionary(getDataDictionary());
+            dataDictionary = new FIXDataDictionary(getDataDictionary());
         }
         return dataDictionary;
     }

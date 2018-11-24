@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.marketcetera.algo.BrokerAlgoSpec;
+import org.marketcetera.brokers.LogonAction;
+import org.marketcetera.brokers.LogoutAction;
 import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.brokers.SessionCustomization;
 
@@ -69,6 +71,22 @@ public class SimpleSessionCustomization
     public Set<String> getUserBlacklist()
     {
         return userBlacklist;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.SessionCustomization#getLogonActions()
+     */
+    @Override
+    public List<LogonAction> getLogonActions()
+    {
+        return logonActions;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.SessionCustomization#getLogoutActions()
+     */
+    @Override
+    public List<LogoutAction> getLogoutActions()
+    {
+        return logoutActions;
     }
     /**
      * Sets the name value.
@@ -148,4 +166,12 @@ public class SimpleSessionCustomization
      * user blacklist value
      */
     private Set<String> userBlacklist = Sets.newHashSet();
+    /**
+     * logon actions value
+     */
+    private List<LogonAction> logonActions = Lists.newArrayList();
+    /**
+     * logout actions value
+     */
+    private List<LogoutAction> logoutActions = Lists.newArrayList();
 }

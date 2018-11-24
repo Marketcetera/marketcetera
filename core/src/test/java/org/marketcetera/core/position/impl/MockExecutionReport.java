@@ -215,7 +215,7 @@ public class MockExecutionReport
 	}
 
 	@Override
-	public BrokerID getBrokerID() {
+	public BrokerID getBrokerId() {
 		return null;
 	}
 

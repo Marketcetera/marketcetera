@@ -363,7 +363,7 @@ public class PersistentOrderSummary
         orderStatus = inExecutionReport.getOrderStatus();
         side = inExecutionReport.getSide();
         account = inExecutionReport.getAccount();
-        brokerId = inExecutionReport.getBrokerID();
+        brokerId = inExecutionReport.getBrokerId();
         if(inExecutionReport.getCumulativeQuantity() != null) {
             cumulativeQuantity = inExecutionReport.getCumulativeQuantity();
         }

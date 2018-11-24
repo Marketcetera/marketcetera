@@ -1,5 +1,7 @@
 package org.marketcetera.trade.impl;
 
+import javax.annotation.PostConstruct;
+
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.RootOrderIdFactory;
@@ -8,6 +10,9 @@ import org.marketcetera.trade.dao.ExecutionReportDao;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -115,6 +120,63 @@ public class BasicRootOrderIdFactory
             throw new UnsupportedOperationException();
         }
     }
+    /* (non-Javadoc)
+     * @see com.marketcetera.ors.history.RootOrderIdFactory#receiveOutgoingMessage(quickfix.Message)
+     */
+    @Override
+    public void receiveOutgoingMessage(Message inMessage)
+    {
+        try {
+            String msgType = inMessage.getHeader().getString(quickfix.field.MsgType.FIELD);
+            switch(msgType) {
+                case quickfix.field.MsgType.ORDER_SINGLE:
+                    String clOrdId = inMessage.getString(quickfix.field.ClOrdID.FIELD);
+                    SLF4JLoggerProxy.debug(this,
+                                           "Caching root order id {} for {}",
+                                           clOrdId,
+                                           inMessage);
+                    rootOrderIdCache.put(new OrderID(clOrdId),
+                                         new OrderID(clOrdId));
+                    break;
+                case quickfix.field.MsgType.ORDER_CANCEL_REPLACE_REQUEST:
+                case quickfix.field.MsgType.ORDER_CANCEL_REQUEST:
+                    clOrdId = inMessage.getString(quickfix.field.ClOrdID.FIELD);
+                    OrderID origClOrdId = new OrderID(inMessage.getString(quickfix.field.OrigClOrdID.FIELD));
+                    OrderID cachedRootOrderId = rootOrderIdCache.getIfPresent(origClOrdId);
+                    if(cachedRootOrderId == null) {
+                        SLF4JLoggerProxy.debug(this,
+                                               "No cached root order id for {}, searching the database",
+                                               origClOrdId);
+                        cachedRootOrderId = executionReportDao.findRootIDForOrderID(origClOrdId);
+                    }
+                    if(cachedRootOrderId == null) {
+                        SLF4JLoggerProxy.debug(this,
+                                               "No cached root order id for {}",
+                                               origClOrdId);
+                        cachedRootOrderId = executionReportDao.findRootIDForOrderID(origClOrdId);
+                    } else {
+                        SLF4JLoggerProxy.debug(this,
+                                               "Caching root order id {} for {}",
+                                               clOrdId,
+                                               inMessage);
+                        rootOrderIdCache.put(new OrderID(clOrdId),
+                                             cachedRootOrderId);
+                    }
+                    break;
+            }
+        } catch (FieldNotFound e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e);
+        }
+    }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        rootOrderIdCache = CacheBuilder.newBuilder().maximumSize(cacheSize).build();
+    }
     /**
      * Get the executionReportDao value.
      *
@@ -133,6 +195,14 @@ public class BasicRootOrderIdFactory
     {
         executionReportDao = inExecutionReportDao;
     }
+    /**
+     * number of root order ids cache
+     */
+    private int cacheSize = 10000;
+    /**
+     * caches root order id values
+     */
+    private Cache<OrderID,OrderID> rootOrderIdCache;
     /**
      * provides datastore access to execution reports
      */

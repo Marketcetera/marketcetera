@@ -1838,10 +1838,10 @@ public abstract class TradeRpcUtil
     public static void setBrokerId(ReportBase inReportBase,
                                    TradingTypesRpc.TradeMessage.Builder inBuilder)
     {
-        if(inReportBase.getBrokerID() == null) {
+        if(inReportBase.getBrokerId() == null) {
             return;
         }
-        inBuilder.setBrokerId(String.valueOf(inReportBase.getBrokerID()));
+        inBuilder.setBrokerId(String.valueOf(inReportBase.getBrokerId()));
     }
     /**
      * Set the broker ID from value the given trade message on the given builder.
@@ -1852,10 +1852,10 @@ public abstract class TradeRpcUtil
     public static void setBrokerId(FIXResponse inReport,
                                    TradingTypesRpc.TradeMessage.Builder inBuilder)
     {
-        if(inReport.getBrokerID() == null) {
+        if(inReport.getBrokerId() == null) {
             return;
         }
-        inBuilder.setBrokerId(String.valueOf(inReport.getBrokerID()));
+        inBuilder.setBrokerId(String.valueOf(inReport.getBrokerId()));
     }
     /**
      * Set the broker order ID from the given report on the given builder.

@@ -6,9 +6,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -22,9 +23,9 @@ import quickfix.field.MsgType;
  * @author gmiller
  * @version $Id$
  */
-
-@ClassVersion("$Id$")
-public class DefaultMessageModifier implements MessageModifier {
+public class DefaultMessageModifier
+        implements MessageModifier
+{
     private static final String ADMIN_MODIFIER_KEY = "ADMIN"; //$NON-NLS-1$
     private static final String APP_MODIFIER_KEY = "APP"; //$NON-NLS-1$
     private static final String GLOBAL_MODIFIER_KEY = "*"; //$NON-NLS-1$
@@ -101,11 +102,12 @@ public class DefaultMessageModifier implements MessageModifier {
     public void setTrailerFields(Map<String, String> fields) throws CoreException {
         setFieldsHelper(fields, MessageFieldType.TRAILER);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.MessageModifier#modify(org.marketcetera.fix.ServerFixSession, quickfix.Message)
+     */
     @Override
-    public boolean modifyMessage
-        (Message message)
-        throws CoreException
+    public boolean modify(ServerFixSession inServerFixSession,
+                          Message message)
     {
         String msgType = null;
         boolean modified = false;

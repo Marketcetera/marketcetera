@@ -129,7 +129,7 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
                 String.valueOf(getAccount()),
                 String.valueOf(getAveragePrice()),
                 String.valueOf(getCumulativeQuantity()),
-                String.valueOf(getBrokerID()),
+                String.valueOf(getBrokerId()),
                 String.valueOf(getExecutionID()),
                 String.valueOf(getExecutionType()),
                 String.valueOf(getLastMarket()),

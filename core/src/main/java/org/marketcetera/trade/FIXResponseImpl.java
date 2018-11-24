@@ -109,7 +109,7 @@ public class FIXResponseImpl
     // FIXResponse.
 
     @Override
-    public BrokerID getBrokerID()
+    public BrokerID getBrokerId()
     {
         return mBrokerID;
     }
@@ -143,7 +143,7 @@ public class FIXResponseImpl
     @Override
     public synchronized String toString()
     {
-        return Messages.FIX_RESPONSE_TO_STRING.getText(String.valueOf(getBrokerID()),
+        return Messages.FIX_RESPONSE_TO_STRING.getText(String.valueOf(getBrokerId()),
                                                        String.valueOf(getOriginator()),
                                                        String.valueOf(getHierarchy()),
                                                        String.valueOf(getMessage()),

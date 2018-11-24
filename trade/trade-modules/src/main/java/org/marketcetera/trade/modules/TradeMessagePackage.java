@@ -38,7 +38,7 @@ public class TradeMessagePackage
      * @see org.marketcetera.trade.HasBrokerID#getBrokerID()
      */
     @Override
-    public BrokerID getBrokerID()
+    public BrokerID getBrokerId()
     {
         return new BrokerID(serverFixSession.getActiveFixSession().getFixSession().getBrokerId());
     }

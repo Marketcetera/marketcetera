@@ -52,4 +52,16 @@ public interface SessionCustomization
      * @return a <code>Set&lt;String&gt;</code> value or <code>null</code>
      */
     Set<String> getUserBlacklist();
+    /**
+     * Get the logon actions value.
+     *
+     * @return a <code>List&lt;LogonAction&gt;</code> value
+     */
+    List<LogonAction> getLogonActions();
+    /**
+     * Get the logout actions value.
+     *
+     * @return a <code>List&lt;LogoutAction&gt;</code> value
+     */
+    List<LogoutAction> getLogoutActions();
 }

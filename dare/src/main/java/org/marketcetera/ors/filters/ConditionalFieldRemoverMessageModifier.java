@@ -6,9 +6,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -20,7 +21,6 @@ import quickfix.field.MsgType;
  * Removes fields based on conditions.
  *
  */
-@ClassVersion("$Id$")
 public class ConditionalFieldRemoverMessageModifier
         implements MessageModifier
 {
@@ -45,11 +45,11 @@ public class ConditionalFieldRemoverMessageModifier
         }
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.ors.filters.MessageModifier#modifyMessage(quickfix.Message, com.marketcetera.ors.history.ReportHistoryServices, org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor)
+     * @see org.marketcetera.brokers.MessageModifier#modify(org.marketcetera.fix.ServerFixSession, quickfix.Message)
      */
     @Override
-    public boolean modifyMessage(Message inMessage)
-            throws CoreException
+    public boolean modify(ServerFixSession inServerFixSession,
+                          Message inMessage)
     {
         boolean isModified = false;
         boolean matchFlag = false;

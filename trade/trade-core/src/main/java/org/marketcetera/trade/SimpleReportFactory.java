@@ -38,7 +38,7 @@ public class SimpleReportFactory
         SimpleReport simpleReport = new SimpleReport();
         simpleReport.setActor(inUser);
         if(inTradeMessage instanceof HasBrokerID) {
-            simpleReport.setBrokerID(((HasBrokerID)inTradeMessage).getBrokerID());
+            simpleReport.setBrokerID(((HasBrokerID)inTradeMessage).getBrokerId());
         }
         Message fixMessage = null;
         if(inTradeMessage instanceof HasFIXMessage) {

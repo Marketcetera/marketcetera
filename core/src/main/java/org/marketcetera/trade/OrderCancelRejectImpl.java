@@ -75,7 +75,7 @@ public class OrderCancelRejectImpl
 
     @Override
     public synchronized String toString() {
-        return Messages.ORDER_CANCEL_REJECT_TO_STRING.getText(String.valueOf(getBrokerID()),
+        return Messages.ORDER_CANCEL_REJECT_TO_STRING.getText(String.valueOf(getBrokerId()),
                                                               String.valueOf(getOrderID()),
                                                               String.valueOf(getOrderStatus()),
                                                               String.valueOf(getOriginalOrderID()),

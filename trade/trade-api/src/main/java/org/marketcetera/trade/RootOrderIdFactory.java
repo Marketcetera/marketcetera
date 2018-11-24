@@ -35,4 +35,10 @@ public interface RootOrderIdFactory
      * @return an <code>OrderID</code> value or <code>null</code> if no root order id exists
      */
     OrderID getRootOrderId(Message inMessage);
+    /**
+     * Records outgoing messages, if necessary.
+     *
+     * @param inMessage a <code>Message</code> value
+     */
+    void receiveOutgoingMessage(Message inMessage);
 }

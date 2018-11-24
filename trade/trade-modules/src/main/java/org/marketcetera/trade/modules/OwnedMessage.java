@@ -73,7 +73,7 @@ public class OwnedMessage
      * @see org.marketcetera.trade.HasBrokerID#getBrokerID()
      */
     @Override
-    public BrokerID getBrokerID()
+    public BrokerID getBrokerId()
     {
         return brokerId;
     }
@@ -105,15 +105,6 @@ public class OwnedMessage
     public void setUser(User inUser)
     {
         user = inUser;
-    }
-    /**
-     * Get the brokerId value.
-     *
-     * @return a <code>BrokerID</code> value
-     */
-    public BrokerID getBrokerId()
-    {
-        return brokerId;
     }
     /**
      * Sets the brokerId value.
