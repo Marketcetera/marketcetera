@@ -102,9 +102,13 @@
       <artifactId>cluster-simple</artifactId>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>admin-rpc-server</artifactId>
+    </dependency>
+    <!--dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http-jetty</artifactId>
@@ -136,11 +140,6 @@
       <artifactId>core</artifactId>
       <type>test-jar</type>
     </dependency>
-    <!--dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>saclient</artifactId>
-      <scope>test</scope>
-    </dependency-->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>util-test</artifactId>
@@ -176,10 +175,6 @@
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
     </dependency>
     <dependency>
@@ -200,6 +195,24 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>admin-rpc-client</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.vaadin.external.google</groupId>
+          <artifactId>android-json</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-to-slf4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <build>
@@ -500,16 +513,12 @@
                   <key>metc.instanceport.com.sun.management.jmxremote.port</key>
                   <value>9950</value>
                 </systemProperty>
-                <!-- systemProperty>
-                     <key>metc.system.agentpath:/tmp/libyjpagent.so</key>
-                     <value></value>
-                   </systemProperty-->
-                 </systemProperties>
-                 <classpathScope>test</classpathScope>
-               </configuration>
-             </plugin>
-           </plugins>
-         </build>
-       </profile>
-     </profiles>
-   </project>
+              </systemProperties>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

@@ -5,7 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
   <!-- fix session descriptor initializer -->
-  <bean id="fixSessionAttributeDescriptorInitializer" class="org.marketcetera.ors.brokers.impl.FixSessionAttributeDescriptorInitializer">
+  <bean id="fixSessionAttributeDescriptorInitializer" class="org.marketcetera.fix.provisioning.FixSessionAttributeDescriptorInitializer">
     <property name="descriptors">
       <list>
         <bean class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptor">

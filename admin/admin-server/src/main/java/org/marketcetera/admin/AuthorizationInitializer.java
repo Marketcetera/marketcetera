@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.admin.service.AuthorizationService;
+import org.marketcetera.admin.service.PasswordService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +40,10 @@ public class AuthorizationInitializer
                                           "Adding user {}",
                                           userDescriptor);
                     SimpleUser user = new SimpleUser();
-//                    user.setActive(userDescriptor.getIsActive());
-//                    user.setDescription(userDescriptor.getDescription());
-//                    user.setName(userDescriptor.getName());
-//                    user.setPassword(userDescriptor.getPassword().toCharArray());
-//                    user.setSuperuser(userDescriptor.getIsSuperuser());
-//                    userService.save(user);
-                    throw new UnsupportedOperationException(); // TODO
+                    user.setDescription(userDescriptor.getDescription());
+                    user.setName(userDescriptor.getName());
+                    user.setHashedPassword(passwordService.getHash(userDescriptor.getPassword()));
+                    userService.save(user);
                 } else {
                     SLF4JLoggerProxy.info(this,
                                           "Not adding user {} because a user by that name already exists",
@@ -340,4 +338,9 @@ public class AuthorizationInitializer
      */
     @Autowired
     private SupervisorPermissionFactory supervisorPermissionFactory;
+    /**
+     * provides password services
+     */
+    @Autowired
+    private PasswordService passwordService;
 }

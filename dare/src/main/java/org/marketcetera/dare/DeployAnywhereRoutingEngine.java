@@ -377,7 +377,9 @@ public class DeployAnywhereRoutingEngine
                                   brokerService.getSessionName(inSessionId));
             return;
         }
-        Messages.QF_TO_APP.info(getCategory(inMessage),inMessage,serverFixSession);
+        Messages.QF_TO_APP.info(getCategory(inMessage),
+                                inMessage,
+                                serverFixSession);
         logMessage(inMessage,
                    serverFixSession);
         try {
@@ -926,6 +928,48 @@ public class DeployAnywhereRoutingEngine
         return clusterWorkUnitUid;
     }
     /**
+     * Get the dontForwardMessages value.
+     *
+     * @return a <code>Set&lt;String&gt;</code> value
+     */
+    public Set<String> getDontForwardMessages()
+    {
+        return dontForwardMessages;
+    }
+    /**
+     * Sets the dontForwardMessages value.
+     *
+     * @param inDontForwardMessages a <code>Set&lt;String&gt;</code> value
+     */
+    public void setDontForwardMessages(Set<String> inDontForwardMessages)
+    {
+        dontForwardMessages.clear();
+        if(inDontForwardMessages != null) {
+            dontForwardMessages.addAll(inDontForwardMessages);
+        }
+    }
+    /**
+     * Get the forwardMessages value.
+     *
+     * @return a <code>Set&lt;String&gt;</code> value
+     */
+    public Set<String> getForwardMessages()
+    {
+        return forwardMessages;
+    }
+    /**
+     * Sets the forwardMessages value.
+     *
+     * @param inForwardMessages a <code>Set&lt;String&gt;</code> value
+     */
+    public void setForwardMessages(Set<String> inForwardMessages)
+    {
+        forwardMessages.clear();
+        if(forwardMessages != null) {
+            forwardMessages.addAll(forwardMessages);
+        }
+    }
+    /**
      * Indicate if this node has been activated.
      *
      * @return a <code>boolean</code> value
@@ -1041,27 +1085,6 @@ public class DeployAnywhereRoutingEngine
     public void setFixInjectorDirectory(String inFixInjectorDirectory)
     {
         fixInjectorDirectory = inFixInjectorDirectory;
-    }
-    /**
-     * Get the dontForwardMessages value.
-     *
-     * @return a <code>Set&lt;String&gt;</code> value
-     */
-    public Set<String> getDontForwardMessages()
-    {
-        return dontForwardMessages;
-    }
-    /**
-     * Sets the dontForwardMessages value.
-     *
-     * @param inDontForwardMessages a <code>Set&lt;String&gt;</code> value
-     */
-    public void setDontForwardMessages(Set<String> inDontForwardMessages)
-    {
-        dontForwardMessages.clear();
-        if(inDontForwardMessages != null) {
-            dontForwardMessages.addAll(inDontForwardMessages);
-        }
     }
     /**
      * Get the allowDeliverToCompID value.
@@ -1440,6 +1463,22 @@ public class DeployAnywhereRoutingEngine
 //            return;
 //        }
         try {
+            String msgType = inMessage.getHeader().getString(quickfix.field.MsgType.FIELD);
+            // check to see if the message has been blacklisted
+            if(dontForwardMessages.contains(msgType)) {
+                SLF4JLoggerProxy.debug(this,
+                                       "{} is in the blacklist of messages {} for clients and will not be forwarded", //$NON-NLS-1$
+                                       inMessage,
+                                       dontForwardMessages);
+                return;
+            }
+            if(!forwardMessages.isEmpty() && !forwardMessages.contains(msgType)) {
+                SLF4JLoggerProxy.debug(this,
+                                       "{} is not in the whitelist of messages {} for clients and will not be forwarded", //$NON-NLS-1$
+                                       inMessage,
+                                       forwardMessages);
+                return;
+            }
             if(orderIntercepted) {
                 eventBusService.post(new SimpleIncomingOrderInterceptedEvent(fixMessageEvent.getSessionId(),
                                                                              fixMessageEvent.getMessage()));
@@ -1450,6 +1489,11 @@ public class DeployAnywhereRoutingEngine
                 // TODO this could go on a special channel...
                 eventBusService.post(fixMessageEvent);
             }
+        } catch (quickfix.FieldNotFound e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "On send to client: {}",
+                                  ExceptionUtils.getRootCauseMessage(e));
         } finally {
 //            Messages.QF_SENDING_REPLY.info(getCategory(inMessage),
 //                                           reply);
@@ -2022,6 +2066,10 @@ public class DeployAnywhereRoutingEngine
                                                                     quickfix.field.MsgType.REJECT,
                                                                     quickfix.field.MsgType.SEQUENCE_RESET,
                                                                     quickfix.field.MsgType.LOGOUT);
+    /**
+     * messages that should be forwarded to client (empty for all messages)
+     */
+    private final Set<String> forwardMessages = Sets.newHashSet();
     /**
      * logger category used for heartbeats
      */

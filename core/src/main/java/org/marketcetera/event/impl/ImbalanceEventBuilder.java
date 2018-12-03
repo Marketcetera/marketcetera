@@ -1,16 +1,41 @@
 package org.marketcetera.event.impl;
 
-import static org.marketcetera.event.Messages.*;
+import static org.marketcetera.event.Messages.VALIDATION_BOND_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_CURRENCY_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_SPREAD_REQUIRED;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.marketcetera.event.*;
-import org.marketcetera.event.beans.*;
+import org.marketcetera.event.AuctionType;
+import org.marketcetera.event.EventType;
+import org.marketcetera.event.ImbalanceEvent;
+import org.marketcetera.event.ImbalanceType;
+import org.marketcetera.event.InstrumentStatus;
+import org.marketcetera.event.MarketStatus;
+import org.marketcetera.event.beans.ConvertibleBondBean;
+import org.marketcetera.event.beans.CurrencyBean;
+import org.marketcetera.event.beans.FutureBean;
+import org.marketcetera.event.beans.ImbalanceBean;
+import org.marketcetera.event.beans.OptionBean;
+import org.marketcetera.event.beans.SpreadBean;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.ConvertibleBond;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.DeliveryType;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureType;
+import org.marketcetera.trade.FutureUnderlyingAssetType;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.Spread;
+import org.marketcetera.trade.StandardType;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -30,7 +55,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class ImbalanceEventBuilder
-        implements EventBuilder<ImbalanceEvent>, OptionEventBuilder<ImbalanceEventBuilder>, FutureEventBuilder<ImbalanceEventBuilder>, CurrencyEventBuilder<ImbalanceEventBuilder>, ConvertibleBondEventBuilder<ImbalanceEventBuilder>
+        implements EventBuilder<ImbalanceEvent>, OptionEventBuilder<ImbalanceEventBuilder>, FutureEventBuilder<ImbalanceEventBuilder>, CurrencyEventBuilder<ImbalanceEventBuilder>, ConvertibleBondEventBuilder<ImbalanceEventBuilder>, SpreadEventBuilder<ImbalanceEventBuilder>
 {
     /**
      * Returns a <code>ImbalanceEventBuilder</code> suitable for constructing a new <code>ImbalanceEvent</code> object.
@@ -55,6 +80,8 @@ public abstract class ImbalanceEventBuilder
             return currencyImbalance().withInstrument(inInstrument);
         } else if(inInstrument instanceof ConvertibleBond) {
             return convertibleBondImbalance().withInstrument(inInstrument);
+        } else if(inInstrument instanceof Spread) {
+            return spreadImbalance().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -164,6 +191,28 @@ public abstract class ImbalanceEventBuilder
                 }
                 return new ConvertibleBondImbalanceEvent(getImbalance(),
                                                          getConvertibleBond());
+            }
+        };
+    }
+    /**
+     * Returns an <code>ImbalanceEventBuilder</code> suitable for constructing a new <code>ImbalanceEvent</code> object
+     * of type <code>Future</code>.
+     *
+     * @return an <code>ImbalanceEventBuilder</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Spread}
+     */
+    public static ImbalanceEventBuilder spreadImbalance()
+    {
+        return new ImbalanceEventBuilder()
+        {
+            @Override
+            public ImbalanceEvent create()
+            {
+                if(!(getImbalance().getInstrument() instanceof Spread)) {
+                    throw new IllegalArgumentException(VALIDATION_SPREAD_REQUIRED.getText());
+                }
+                return new SpreadImbalanceEvent(getImbalance(),
+                                                getSpread());
             }
         };
     }
@@ -782,6 +831,15 @@ public abstract class ImbalanceEventBuilder
         return convertibleBond;
     }
     /**
+     * Gets the spread value.
+     *
+     * @return a <code>SpreadBean</code> value
+     */
+    protected final SpreadBean getSpread()
+    {
+        return spread;
+    }
+    /**
      * the Imbalance attributes 
      */
     private ImbalanceBean imbalance = new ImbalanceBean();
@@ -801,4 +859,8 @@ public abstract class ImbalanceEventBuilder
      * the convertible bond attributes
      */
     private final ConvertibleBondBean convertibleBond = new ConvertibleBondBean();
+    /**
+     * the spread attributes
+     */
+    private final SpreadBean spread = new SpreadBean();
 }

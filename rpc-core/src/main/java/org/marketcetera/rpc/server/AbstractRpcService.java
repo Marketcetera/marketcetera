@@ -19,6 +19,7 @@ import org.marketcetera.util.ws.tags.NodeId;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.util.ws.tags.VersionId;
 import org.marketcetera.util.ws.wrappers.LocaleWrapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -333,9 +334,11 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
     /**
      * manages sessions
      */
+    @Autowired
     private SessionManager<SessionClazz> sessionManager;
     /**
      * provides authentication services
      */
+    @Autowired
     private Authenticator authenticator;
 }

@@ -15,7 +15,6 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /* $License$ */
 
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
  * @since 1.0.0
  * @version $Id$
  */
-@Service
 @ClassVersion("$Id$")
 public class DBAuthenticator
         implements Authenticator

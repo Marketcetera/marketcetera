@@ -16,6 +16,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.Lifecycle;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /* $License$ */
@@ -212,19 +213,21 @@ public class ApplicationContainer
     {
         instance = this;
         context = parentContext;
-//        try {
-//            context = generateContext();
-//        } catch (Exception e) {
-//            SLF4JLoggerProxy.error(this,
-//                                   e,
-//                                   "Encountered startup problem");
-//            if(e instanceof RuntimeException) {
-//                throw (RuntimeException)e;
-//            } else {
-//                throw new RuntimeException(e);
-//            }
-//        }
-//        context.registerShutdownHook();
+        try {
+            context = generateContext();
+        } catch (Exception e) {
+            SLF4JLoggerProxy.error(this,
+                                   e,
+                                   "Encountered startup problem");
+            if(e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
+        if(context instanceof AbstractApplicationContext) {
+            ((AbstractApplicationContext)context).registerShutdownHook();
+        }
         running.set(true);
     }
     /* (non-Javadoc)

@@ -42,14 +42,6 @@
       <AppenderRef ref="STDOUT"/>
     </Root>
     <logger name="org.marketcetera" level="info"/>
-    <logger name="org.marketcetera" level="info"/>
-    <logger name="org.marketcetera.admin" level="trace"/>
-    <!-- logger name="org.marketcetera.ors.brokers.impl.BrokerServiceImpl" level="trace"/-->
-    <!-- logger name="org.marketcetera.ors.dao.impl.ReportServiceImpl" level="trace"/-->
-    <!-- logger name="org.marketcetera.ors.brokers.impl.ClusteredSessionConnector" level="trace"/-->
-    <!-- logger name="org.marketcetera.ors.brokers.impl.SessionSchedule" level="trace"/-->
-    <!-- logger name="org.marketcetera.ors.OrderRoutingSystem" level="trace"/-->
-    <!-- logger name="org.marketcetera.ors.QuickFIXApplication" level="trace"/-->
     <logger name="metc.restore" level="info"/>
     <logger name="metrics" level="info" additivity="false">
       <AppenderRef ref="METRICS"/>

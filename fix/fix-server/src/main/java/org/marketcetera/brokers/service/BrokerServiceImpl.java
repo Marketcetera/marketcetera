@@ -99,9 +99,13 @@ public class BrokerServiceImpl
         if(underlyingFixSession == null) {
             return null;
         }
+        ClusterData clusterData = getClusterData(new SessionID(underlyingFixSession.getSessionId()));
+        if(clusterData == null) {
+            return null;
+        }
         SessionCustomization sessionCustomization = getSessionCustomization(underlyingFixSession);
         return activeFixSessionFactory.create(underlyingFixSession,
-                                              getClusterData(new SessionID(underlyingFixSession.getSessionId())),
+                                              clusterData,
                                               getFixSessionStatus(inBrokerId),
                                               sessionCustomization);
     }
@@ -128,9 +132,13 @@ public class BrokerServiceImpl
         for(FixSession fixSession : fixSessions) {
             BrokerID brokerId = new BrokerID(fixSession.getBrokerId());
             SessionID sessionId = new SessionID(fixSession.getSessionId());
+            ClusterData clusterData = getClusterData(sessionId);
+            if(clusterData == null) {
+                return null;
+            }
             FixSessionStatus sessionStatus = getFixSessionStatus(brokerId);
             activeFixSessions.add(activeFixSessionFactory.create(fixSession,
-                                                                 getClusterData(sessionId),
+                                                                 clusterData,
                                                                  sessionStatus,
                                                                  getSessionCustomization(fixSession)));
         }
@@ -147,9 +155,13 @@ public class BrokerServiceImpl
         for(FixSession fixSession : intermediateResult.getElements()) {
             BrokerID brokerId = new BrokerID(fixSession.getBrokerId());
             SessionID sessionId = new SessionID(fixSession.getSessionId());
+            ClusterData clusterData = getClusterData(sessionId);
+            if(clusterData == null) {
+                return null;
+            }
             FixSessionStatus sessionStatus = getFixSessionStatus(brokerId);
             result.getElements().add(activeFixSessionFactory.create(fixSession,
-                                                                    getClusterData(sessionId),
+                                                                    clusterData,
                                                                     sessionStatus,
                                                                     getSessionCustomization(fixSession)));
         }

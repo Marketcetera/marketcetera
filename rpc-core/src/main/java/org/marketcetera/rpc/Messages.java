@@ -1,9 +1,8 @@
 package org.marketcetera.rpc;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
-import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.I18NMessage3P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -26,7 +25,7 @@ public interface Messages
      * The message logger.
      */
     static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
-    static final I18NMessage2P SERVER_STARTING = new I18NMessage2P(LOGGER,"server_starting");   //$NON-NLS-1$
+    static final I18NMessage3P SERVER_STARTING = new I18NMessage3P(LOGGER,"server_starting");   //$NON-NLS-1$
     static final I18NMessage1P SERVICE_STARTING = new I18NMessage1P(LOGGER,"service_starting");   //$NON-NLS-1$
-    static final I18NMessage0P SERVER_STOPPING = new I18NMessage0P(LOGGER,"server_stopping");   //$NON-NLS-1$
+    static final I18NMessage1P SERVER_STOPPING = new I18NMessage1P(LOGGER,"server_stopping");   //$NON-NLS-1$
 }

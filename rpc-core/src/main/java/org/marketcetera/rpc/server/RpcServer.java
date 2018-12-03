@@ -52,6 +52,7 @@ public class RpcServer
         Validate.notNull(hostname);
         Validate.isTrue(port > 0 && port < 65536);
         Messages.SERVER_STARTING.info(this,
+                                      description,
                                       hostname,
                                       String.valueOf(port));
         // TODO bind to host?
@@ -62,7 +63,7 @@ public class RpcServer
         server = serverBuilder.build();
         server.start();
         ports.add(new PortDescriptor(port,
-                "RPC Service"));
+                                     description));
         alive.set(true);
     }
     /**
@@ -72,7 +73,8 @@ public class RpcServer
     public synchronized void stop()
     {
         try {
-            Messages.SERVER_STOPPING.info(this);
+            Messages.SERVER_STOPPING.info(this,
+                                          description);
             if(server != null) {
                 try {
                     server.shutdownNow();
@@ -150,6 +152,24 @@ public class RpcServer
         serverServiceDefinitions = inServerServiceDefinitions;
     }
     /**
+     * Get the description value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getDescription()
+    {
+        return description;
+    }
+    /**
+     * Sets the description value.
+     *
+     * @param inDescription a <code>String</code> value
+     */
+    public void setDescription(String inDescription)
+    {
+        description = inDescription;
+    }
+    /**
      * indicates if the server is alive or not
      */
     private final AtomicBoolean alive = new AtomicBoolean(false);
@@ -173,4 +193,8 @@ public class RpcServer
      * indicates ports in use
      */
     private final Collection<PortDescriptor> ports = Lists.newArrayList();
+    /**
+     * server description
+     */
+    private String description = "RPC Server";
 }

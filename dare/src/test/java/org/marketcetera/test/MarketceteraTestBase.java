@@ -408,7 +408,7 @@ public class MarketceteraTestBase
     protected SessionID createAcceptorSession(int inSessionIndex)
             throws Exception
     {
-        final BrokerID testAcceptorBrokerId = new BrokerID("local_acceptor" + inSessionIndex);
+        final BrokerID testAcceptorBrokerId = new BrokerID("local-acceptor" + inSessionIndex);
         verifyBrokerStatus(testAcceptorBrokerId,
                            null);
         MutableFixSession testSession = fixSessionFactory.create();
@@ -416,7 +416,7 @@ public class MarketceteraTestBase
         testSession.setBrokerId(testAcceptorBrokerId.getValue());
         testSession.setHost("localhost");
         testSession.setPort(hostAcceptorPort);
-        testSession.setName("local_acceptor" + inSessionIndex);
+        testSession.setName("local-acceptor" + inSessionIndex);
         FIXVersion fixVersion = getFixVersion();
         String beginString = fixVersion.getVersion();
         if(fixVersion.isFixT()) {
@@ -548,7 +548,7 @@ public class MarketceteraTestBase
     protected SessionID createInitiatorSession(int inSessionIndex)
             throws Exception
     {
-        final BrokerID testInitiatorBrokerId = new BrokerID("local_initiator" + inSessionIndex);
+        final BrokerID testInitiatorBrokerId = new BrokerID("local-initiator" + inSessionIndex);
         verifyBrokerStatus(testInitiatorBrokerId,
                            null);
         MutableFixSession testSession = fixSessionFactory.create();
@@ -556,7 +556,7 @@ public class MarketceteraTestBase
         testSession.setBrokerId(testInitiatorBrokerId.getValue());
         testSession.setHost("localhost");
         testSession.setPort(remoteAcceptorPort);
-        testSession.setName("local_initiator" + inSessionIndex);
+        testSession.setName("local-initiator" + inSessionIndex);
         FIXVersion fixVersion = getFixVersion();
         String beginString = fixVersion.getVersion();
         if(fixVersion.isFixT()) {
