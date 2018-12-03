@@ -285,17 +285,13 @@ public class PositionTest
     private void setupSession(FIXVersion inFixVersion)
             throws Exception
     {
-        try {
-            fixVersion = inFixVersion;
-            int sessionIndex = counter.incrementAndGet();
-            sender = createInitiatorSession(sessionIndex);
-            target = FIXMessageUtil.getReversedSessionId(sender);
-            messageFactory = FIXVersion.getFIXVersion(sender).getMessageFactory();
-            session = brokerService.getActiveFixSession(sender).getFixSession();
-            brokerId = new BrokerID(session.getBrokerId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        fixVersion = inFixVersion;
+        int sessionIndex = counter.incrementAndGet();
+        sender = createInitiatorSession(sessionIndex);
+        target = FIXMessageUtil.getReversedSessionId(sender);
+        messageFactory = FIXVersion.getFIXVersion(sender).getMessageFactory();
+        session = brokerService.getActiveFixSession(sender).getFixSession();
+        brokerId = new BrokerID(session.getBrokerId());
     }
     /**
      * Verify the position of the given instrument at the given time matches the given expected value.

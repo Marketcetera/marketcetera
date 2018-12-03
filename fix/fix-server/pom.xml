@@ -29,6 +29,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>admin-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>eventbus-api</artifactId>
+    </dependency>
     <!-- local test -->
     <dependency>
       <groupId>${project.groupId}</groupId>

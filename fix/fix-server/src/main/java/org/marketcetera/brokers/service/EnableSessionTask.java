@@ -2,9 +2,11 @@ package org.marketcetera.brokers.service;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.cluster.AbstractCallableClusterTask;
+import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionListener;
 import org.marketcetera.fix.SessionNameProvider;
+import org.marketcetera.fix.event.FixSessionEnabledEvent;
+import org.marketcetera.fix.event.SimpleFixSessionEnabledEvent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,23 +29,22 @@ public class EnableSessionTask
     public Boolean call()
             throws Exception
     {
-        SLF4JLoggerProxy.debug(this,
-                               "Calling enable for {} on {} with listeners: {}",
-                               session,
-                               getClusterService().getInstanceData(),
-                               brokerService.getFixSessionListeners());
-        for(FixSessionListener fixSessionListener : brokerService.getFixSessionListeners()) {
-            try {
-                fixSessionListener.sessionEnabled(session);
-            } catch (Exception e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e,
-                                      "Enable session listener failed for {}: {}",
-                                      sessionNameProvider.getSessionName(new SessionID(session.getSessionId())),
-                                      ExceptionUtils.getRootCauseMessage(e));
-            }
+        FixSessionEnabledEvent fixSessionEnabledEvent = new SimpleFixSessionEnabledEvent(new quickfix.SessionID(session.getSessionId()));
+        try {
+            eventBusService.post(fixSessionEnabledEvent);
+            SLF4JLoggerProxy.debug(this,
+                                   "Posting {} for {}",
+                                   fixSessionEnabledEvent,
+                                   getClusterService().getInstanceData());
+            return true;
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "Enable session listener failed for {}: {}",
+                                  sessionNameProvider.getSessionName(new SessionID(session.getSessionId())),
+                                  ExceptionUtils.getRootCauseMessage(e));
+            return false;
         }
-        return true;
     }
     /**
      * Create a new EnableSessionTask instance.
@@ -56,18 +57,18 @@ public class EnableSessionTask
         session = inSession;
     }
     /**
-     * cluster-local broker service value
-     */
-    @Autowired
-    private transient BrokerService brokerService;
-    /**
      * provides access to session names
      */
     @Autowired
     private transient SessionNameProvider sessionNameProvider;
     /**
+     * provides access to event bus services
+     */
+    @Autowired
+    private transient EventBusService eventBusService;
+    /**
      * fix session to be enabled
      */
     private final FixSession session;
-    private static final long serialVersionUID = -7107454502447518827L;
+    private static final long serialVersionUID = 3859791872967122363L;
 }

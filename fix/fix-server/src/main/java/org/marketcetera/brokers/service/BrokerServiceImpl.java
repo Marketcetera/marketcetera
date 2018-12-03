@@ -951,6 +951,11 @@ public class BrokerServiceImpl
                     break;
                 }
             }
+            if(clusterData == null) {
+                SLF4JLoggerProxy.warn(this,
+                                      "Unable to determine cluster data for {}",
+                                      inSessionId);
+            }
             return clusterData;
         } catch (Exception e) {
             SLF4JLoggerProxy.warn(this,
