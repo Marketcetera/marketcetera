@@ -32,10 +32,6 @@ public class EnableSessionTask
         FixSessionEnabledEvent fixSessionEnabledEvent = new SimpleFixSessionEnabledEvent(new quickfix.SessionID(session.getSessionId()));
         try {
             eventBusService.post(fixSessionEnabledEvent);
-            SLF4JLoggerProxy.debug(this,
-                                   "Posting {} for {}",
-                                   fixSessionEnabledEvent,
-                                   getClusterService().getInstanceData());
             return true;
         } catch (Exception e) {
             SLF4JLoggerProxy.warn(this,

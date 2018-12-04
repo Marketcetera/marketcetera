@@ -1,11 +1,16 @@
 package org.marketcetera.brokers.service;
 
-import org.marketcetera.brokers.service.BrokerService;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.cluster.AbstractCallableClusterTask;
+import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionListener;
+import org.marketcetera.fix.SessionNameProvider;
+import org.marketcetera.fix.event.FixSessionDisabledEvent;
+import org.marketcetera.fix.event.SimpleFixSessionDisabledEvent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import quickfix.SessionID;
 
 /**
  * Indicates to each cluster member that a particular session has been disabled.
@@ -28,10 +33,18 @@ public class DisableSessionTask
                                "Calling disable for {} on {}",
                                session,
                                getClusterService().getInstanceData());
-        for(FixSessionListener fixSessionListener : brokerService.getFixSessionListeners()) {
-            fixSessionListener.sessionDisabled(session);
+        FixSessionDisabledEvent fixSessionDisabledEvent = new SimpleFixSessionDisabledEvent(new quickfix.SessionID(session.getSessionId()));
+        try {
+            eventBusService.post(fixSessionDisabledEvent);
+            return true;
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "Disable session listener failed for {}: {}",
+                                  sessionNameProvider.getSessionName(new SessionID(session.getSessionId())),
+                                  ExceptionUtils.getRootCauseMessage(e));
+            return false;
         }
-        return true;
     }
     /**
      * Create a new DisableSessionTask instance.
@@ -44,10 +57,15 @@ public class DisableSessionTask
         session = inSession;
     }
     /**
-     * cluster-local broker service value
+     * provides access to session names
      */
     @Autowired
-    private transient BrokerService brokerService;
+    private transient SessionNameProvider sessionNameProvider;
+    /**
+     * provides access to event bus services
+     */
+    @Autowired
+    private transient EventBusService eventBusService;
     /**
      * fix session to be disabled
      */

@@ -10,6 +10,7 @@ import javax.annotation.PreDestroy;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mchange.v2.c3p0.PooledDataSource;
 
@@ -32,7 +33,7 @@ public class PoolMonitor
     {
         Validate.notNull(pool);
         final String dataSourceName = pool.getDataSourceName();
-        monitorService = Executors.newSingleThreadScheduledExecutor();
+        monitorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("DatabasePoolMonitor").build());
         monitorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run()

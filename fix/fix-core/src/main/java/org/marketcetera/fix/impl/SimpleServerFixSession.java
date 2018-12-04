@@ -66,6 +66,14 @@ public class SimpleServerFixSession
         }
     }
     /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return getActiveFixSession().getFixSession().getBrokerId();
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.fix.ServerFixSession#getActiveFixSession()
      */
     @Override

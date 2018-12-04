@@ -88,6 +88,7 @@ import com.codahale.metrics.Counter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
 import com.hazelcast.core.OperationTimeoutException;
 
@@ -172,7 +173,7 @@ public class DeployAnywhereRoutingEngine
         updateStatus(fixSession.getActiveFixSession().getFixSession(),
                      true);
         SessionCustomization sessionCustomization = brokerService.getSessionCustomization(fixSession.getActiveFixSession().getFixSession());
-        if(sessionCustomization.getLogonActions() != null) {
+        if(sessionCustomization != null && sessionCustomization.getLogonActions() != null) {
             for(LogonAction action : sessionCustomization.getLogonActions()) {
                 try {
                     action.onLogon(fixSession,
@@ -230,7 +231,7 @@ public class DeployAnywhereRoutingEngine
             updateStatus(fixSession.getActiveFixSession().getFixSession(),
                          false);
             SessionCustomization sessionCustomization = brokerService.getSessionCustomization(fixSession.getActiveFixSession().getFixSession());
-            if(sessionCustomization.getLogoutActions() != null) {
+            if(sessionCustomization != null && sessionCustomization.getLogoutActions() != null) {
                 for(LogoutAction action : sessionCustomization.getLogoutActions()) {
                     try {
                         action.onLogout(fixSession,
@@ -486,14 +487,13 @@ public class DeployAnywhereRoutingEngine
     @Subscribe
     public void sessionDisabled(FixSessionDisabledEvent inEvent)
     {
-        ServerFixSession serverFixSession = brokerService.getServerFixSession(inEvent.getSessionId());
-        if(serverFixSession == null) {
+        FixSession fixSession = fixSessionProvider.findFixSessionBySessionId(inEvent.getSessionId());
+        if(fixSession == null) {
             SLF4JLoggerProxy.debug(this,
                                    "Ignoring disabled session {} because it no longer exists",
                                    inEvent.getSessionId());
             return;
         }
-        FixSession fixSession = serverFixSession.getActiveFixSession().getFixSession();
         if(!fixSession.isAcceptor()) {
             synchronized(sessionLock) {
                 quickfix.SessionID sessionId = new quickfix.SessionID(fixSession.getSessionId());
@@ -532,14 +532,13 @@ public class DeployAnywhereRoutingEngine
     @Subscribe
     public void sessionEnabled(FixSessionEnabledEvent inEvent)
     {
-        ServerFixSession serverFixSession = brokerService.getServerFixSession(inEvent.getSessionId());
-        if(serverFixSession == null) {
+        FixSession fixSession = fixSessionProvider.findFixSessionBySessionId(inEvent.getSessionId());
+        if(fixSession == null) {
             SLF4JLoggerProxy.debug(this,
                                    "Ignoring enabled session {} because it no longer exists",
                                    inEvent.getSessionId());
             return;
         }
-        FixSession fixSession = serverFixSession.getActiveFixSession().getFixSession();
         if(fixSession.isAcceptor()) {
             SLF4JLoggerProxy.debug(this,
                                    "Ignoring enabled acceptor session {}",
@@ -1239,11 +1238,11 @@ public class DeployAnywhereRoutingEngine
     private void logMessage(quickfix.Message inMessage,
                             ServerFixSession inBroker)
     {
-        Object category=(FIXMessageUtil.isHeartbeat(inMessage)?
-                         HEARTBEAT_CATEGORY:this);
+        Object category = (FIXMessageUtil.isHeartbeat(inMessage)?HEARTBEAT_CATEGORY:this);
         if(SLF4JLoggerProxy.isDebugEnabled(category)) {
             Messages.ANALYZED_MESSAGE.debug(category,
-                                            new AnalyzedMessage(inBroker.getDataDictionary(),inMessage).toString());
+                                            new AnalyzedMessage(inBroker.getDataDictionary(),
+                                                                inMessage).toString());
         }
     }
     /**
@@ -2105,7 +2104,7 @@ public class DeployAnywhereRoutingEngine
     /**
      * executes jobs at scheduled times
      */
-    private ScheduledExecutorService scheduledService = Executors.newScheduledThreadPool(2);
+    private ScheduledExecutorService scheduledService = Executors.newScheduledThreadPool(2,new ThreadFactoryBuilder().setNameFormat("DAREScheduler%d").build());
     /**
      * supported messages value
      */

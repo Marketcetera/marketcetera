@@ -17,6 +17,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -36,6 +37,7 @@ import org.marketcetera.cluster.service.ClusterListener;
 import org.marketcetera.cluster.service.ClusterMember;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.ApplicationContextProvider;
+import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.fix.AcceptorSessionAttributes;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
@@ -51,6 +53,7 @@ import org.marketcetera.fix.ServerFixSessionFactory;
 import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.fix.SessionSchedule;
 import org.marketcetera.fix.SessionSettingsGenerator;
+import org.marketcetera.fix.event.FixSessionStatusEvent;
 import org.marketcetera.fix.impl.SimpleActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
@@ -69,6 +72,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 import quickfix.ConfigError;
 import quickfix.FieldConvertError;
@@ -720,6 +724,9 @@ public class BrokerServiceImpl
     @Override
     public void memberAdded(ClusterMember inAddedMember)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "{} added",
+                               inAddedMember);
         updateBrokerStatus();
     }
     /* (non-Javadoc)
@@ -728,6 +735,9 @@ public class BrokerServiceImpl
     @Override
     public void memberRemoved(ClusterMember inRemovedMember)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "{} removed",
+                               inRemovedMember);
         updateBrokerStatus();
     }
     /* (non-Javadoc)
@@ -736,7 +746,24 @@ public class BrokerServiceImpl
     @Override
     public void memberChanged(ClusterMember inChangedMember)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "{} changed",
+                               inChangedMember);
         updateBrokerStatus();
+    }
+    /**
+     * Receive FIX session status events.
+     *
+     * @param inEvent a <code>FixSessionStatusEvent</code> value
+     */
+    @Subscribe
+    public void receiveFixSessionStatus(FixSessionStatusEvent inEvent)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Received {}",
+                               inEvent);
+        reportBrokerStatus(inEvent.getBrokerId(),
+                           inEvent.getFixSessionStatus());
     }
     /**
      * Get the clusterService value.
@@ -778,8 +805,25 @@ public class BrokerServiceImpl
                                                 sessionCustomization);
             }
         }
+        eventBusService.register(this);
         SLF4JLoggerProxy.info(this,
                               "Broker service started");
+    }
+    /**
+     * Stop the service.
+     */
+    @PreDestroy
+    public void stop()
+    {
+        try {
+            eventBusService.unregister(this);
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e);
+        } finally {
+            SLF4JLoggerProxy.info(this,
+                                  "Broker service stopped");
+        }
     }
     /**
      * Updates all broker status
@@ -951,11 +995,6 @@ public class BrokerServiceImpl
                     break;
                 }
             }
-            if(clusterData == null) {
-                SLF4JLoggerProxy.warn(this,
-                                      "Unable to determine cluster data for {}",
-                                      inSessionId);
-            }
             return clusterData;
         } catch (Exception e) {
             SLF4JLoggerProxy.warn(this,
@@ -1041,6 +1080,11 @@ public class BrokerServiceImpl
      */
     @Autowired
     private ServerFixSessionFactory serverFixSessionFactory;
+    /**
+     * provides access to event bus services
+     */
+    @Autowired
+    private EventBusService eventBusService;
     /**
      * publishes broker status changes
      */

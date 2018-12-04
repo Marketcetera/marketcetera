@@ -42,6 +42,11 @@
       <AppenderRef ref="STDOUT"/>
     </Root>
     <logger name="org.marketcetera" level="info"/>
+    <logger name="org.marketcetera.fix.dao.PersistentFixSessionProvider" level="trace"/>
+    <logger name="org.marketcetera.brokers.service.EnableSessionTask" level="trace"/>
+    <logger name="org.marketcetera.dare.DeployAnywhereRoutingEngine" level="trace"/>
+    <logger name="org.marketcetera.brokers.service.BrokerServiceImpl" level="trace"/>
+    <logger name="org.marketcetera.eventbus.guava.GuavaEventBusService" level="trace"/>
     <logger name="metc.restore" level="info"/>
     <logger name="metrics" level="info" additivity="false">
       <AppenderRef ref="METRICS"/>
