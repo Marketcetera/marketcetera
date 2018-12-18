@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.marketcetera.core.Cacheable;
+import org.marketcetera.core.Cachable;
 import org.marketcetera.ors.dao.PersistentOutgoingMessage;
 import org.marketcetera.ors.dao.PersistentOutgoingMessageDao;
 import org.marketcetera.ors.domain.OutgoingMessage;
@@ -37,7 +37,7 @@ import com.google.common.collect.Lists;
  * @since $Release$
  */
 public class OutgoingMessageServiceImpl
-        implements OutgoingMessageService, Cacheable
+        implements OutgoingMessageService, Cachable
 {
     /* (non-Javadoc)
      * @see com.marketcetera.ors.outgoingorder.OrderService#cache(quickfix.Message, org.marketcetera.trade.UserID)

@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.marketcetera.core.Cacheable;
+import org.marketcetera.core.Cachable;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
@@ -42,7 +42,7 @@ import com.google.common.collect.Lists;
  * @since $Release$
  */
 public class EventFromFixGenerator
-        implements Cacheable
+        implements Cachable
 {
     /**
      * Get all manager order books.

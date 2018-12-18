@@ -2,7 +2,7 @@ package org.marketcetera.ors.history;
 
 import javax.annotation.PostConstruct;
 
-import org.marketcetera.core.Cacheable;
+import org.marketcetera.core.Cachable;
 import org.marketcetera.ors.dao.ExecutionReportDao;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
@@ -28,7 +28,7 @@ import com.google.common.cache.CacheBuilder;
  * @since 2.5.0
  */
 public class BasicRootOrderIdFactory
-        implements RootOrderIdFactory,Cacheable
+        implements RootOrderIdFactory,Cachable
 {
     /* (non-Javadoc)
      * @see com.marketcetera.ors.history.RootOrderIdFactory#getRootOrderId(quickfix.Message)
