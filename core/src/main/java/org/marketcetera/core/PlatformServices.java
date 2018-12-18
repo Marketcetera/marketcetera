@@ -34,7 +34,7 @@ public abstract class PlatformServices
      */
     public static String getServiceName(Class<?> inClass)
     {
-        return Arrays.toString(StringUtils.splitByCharacterTypeCamelCase(inClass.getSimpleName())).replaceAll("\\[|\\]|,","");
+        return Arrays.toString(StringUtils.splitByCharacterTypeCamelCase(inClass.getSimpleName())).replaceAll("\\[|\\]|,|(Impl)","");
     }
     /**
      * Determines if the given exception indicates a shutdown.
