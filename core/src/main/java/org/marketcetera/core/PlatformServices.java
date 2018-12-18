@@ -2,6 +2,7 @@ package org.marketcetera.core;
 
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -25,6 +26,16 @@ import com.hazelcast.core.HazelcastInstanceNotActiveException;
  */
 public abstract class PlatformServices
 {
+    /**
+     * Get a human-readable description of the given class.
+     *
+     * @param inClass a <code>Class&lt;?&gt;</code> value
+     * @return a <code>String</code> value
+     */
+    public static String getServiceName(Class<?> inClass)
+    {
+        return Arrays.toString(StringUtils.splitByCharacterTypeCamelCase(inClass.getSimpleName())).replaceAll("\\[|\\]|,","");
+    }
     /**
      * Determines if the given exception indicates a shutdown.
      *
