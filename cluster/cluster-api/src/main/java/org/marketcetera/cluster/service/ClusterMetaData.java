@@ -10,7 +10,7 @@ import org.marketcetera.cluster.ClusterWorkUnitDescriptor;
  * Holds data about each cluster member.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: HazelcastClusterService.java 16827 2016-05-24 14:40:08Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface ClusterMetaData

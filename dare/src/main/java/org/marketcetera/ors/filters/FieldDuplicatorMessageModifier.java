@@ -34,10 +34,10 @@ import quickfix.StringField;
  *  ...
  * </pre>
  * @author toli
- * @version $Id: FieldDuplicatorMessageModifier.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: FieldDuplicatorMessageModifier.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class FieldDuplicatorMessageModifier implements MessageModifier {
     private int destField;
     private int sourceField;

@@ -13,7 +13,7 @@ import quickfix.field.OrderQty;
 import quickfix.field.Price;
 import quickfix.field.Symbol;
 
-@ClassVersion("$Id: OrderLimitFilter.java 16468 2014-05-12 00:36:56Z colin $$")
+@ClassVersion("$Id$$")
 public class OrderLimitFilter
     implements OrderFilter
 {

@@ -51,7 +51,7 @@ import quickfix.Message;
  * Provides Server services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ServiceProvider.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 public class ServiceProvider

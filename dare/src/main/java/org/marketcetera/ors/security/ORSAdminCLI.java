@@ -32,7 +32,7 @@ import org.springframework.context.Lifecycle;
  * @author anshul@marketcetera.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
-@ClassVersion("$Id: ORSAdminCLI.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class ORSAdminCLI
         implements Lifecycle
 {

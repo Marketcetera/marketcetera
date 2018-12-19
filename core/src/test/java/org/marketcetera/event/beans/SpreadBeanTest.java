@@ -22,7 +22,7 @@ import org.marketcetera.trade.StandardType;
  * Tests {@link SpreadBean}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SpreadBeanTest.java 16994 2015-03-09 21:18:25Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
 public class SpreadBeanTest

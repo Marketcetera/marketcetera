@@ -19,10 +19,10 @@ import quickfix.Message;
  * provides functions to apply all the modifiers to a particular message.
  *
  * @author toli
- * @version $Id: MessageModifierManager.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: MessageModifierManager.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public class MessageModifierManager {
     private List<MessageModifier> messageModifiers;
 

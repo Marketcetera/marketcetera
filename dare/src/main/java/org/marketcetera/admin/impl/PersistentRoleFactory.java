@@ -8,7 +8,7 @@ import org.marketcetera.admin.RoleFactory;
  * Creates {@link PersistentRole} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentRoleFactory.java 84382 2015-01-20 19:43:06Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 public class PersistentRoleFactory

@@ -16,9 +16,9 @@ import quickfix.field.TransactTime;
  * Inserts the {@link TransactTime} field into an order if it's not currently present
  *
  * @author Toli Kuznets
- * @version $Id: TransactionTimeInsertMessageModifier.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: TransactionTimeInsertMessageModifier.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class TransactionTimeInsertMessageModifier implements MessageModifier
 {
     @Override

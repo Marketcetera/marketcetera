@@ -47,7 +47,7 @@ import org.marketcetera.util.log.I18NMessage0P;
 @Entity(name="user")
 @Table(name = "users",uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
 @AttributeOverride(name = "name", column = @Column(nullable = false))
-@ClassVersion("$Id: SimpleUser.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public class SimpleUser
         extends NDEntityBase
         implements User

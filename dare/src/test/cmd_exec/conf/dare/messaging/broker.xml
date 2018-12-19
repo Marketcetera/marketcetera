@@ -5,7 +5,7 @@
   -
   - Author: tlerios@marketcetera.com
   - Since: 1.0.0
-  - Version: $Id: broker.xml 17420 2018-01-08 23:41:27Z colin $
+  - Version: $Id$
   - $License$
   -->
 <beans xmlns="http://www.springframework.org/schema/beans"

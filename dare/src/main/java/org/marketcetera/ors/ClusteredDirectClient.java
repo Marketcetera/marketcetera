@@ -53,7 +53,7 @@ import com.hazelcast.core.HazelcastInstanceNotActiveException;
  * Provides in-process access the client services augmented by a full cluster.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ClusteredDirectClient.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 public class ClusteredDirectClient
@@ -271,7 +271,7 @@ public class ClusteredDirectClient
      * Generates a session id on a remote cluster member.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: ClusteredDirectClient.java 17266 2017-04-28 14:58:00Z colin $
+     * @version $Id$
      * @since 2.5.0
      */
     private static class GenerateSessionIdTask<SessionClazz>
@@ -403,7 +403,7 @@ public class ClusteredDirectClient
      * Waits for messages to process coming from the cluster queue.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: ClusteredDirectClient.java 17266 2017-04-28 14:58:00Z colin $
+     * @version $Id$
      * @since 2.5.0
      */
     private class QueueListener
@@ -528,7 +528,7 @@ public class ClusteredDirectClient
      * Combines the data that describe a FIX message that needs to be sent.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: ClusteredDirectClient.java 17266 2017-04-28 14:58:00Z colin $
+     * @version $Id$
      * @since 2.5.0
      */
     private static class DareRequestPackage

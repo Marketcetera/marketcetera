@@ -14,7 +14,7 @@ import org.apache.commons.io.FileUtils;
  * Manages directories needed for testing.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: TestDirectoryManager.java 85060 2015-12-16 03:19:37Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class TestDirectoryManager

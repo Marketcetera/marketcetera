@@ -9,7 +9,7 @@ import org.marketcetera.core.publisher.IPublisher;
  * Transmits notifications to the user.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: NotificationExecutor.java 85003 2015-11-13 15:57:55Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface NotificationExecutor

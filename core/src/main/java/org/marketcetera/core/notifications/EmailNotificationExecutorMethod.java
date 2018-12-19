@@ -28,7 +28,7 @@ import com.google.common.collect.Multimap;
  * Sends notifications via email.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: EmailNotificationExecutor.java 85060 2015-12-16 03:19:37Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class EmailNotificationExecutorMethod

@@ -11,12 +11,12 @@ import org.marketcetera.util.ws.tags.SessionId;
  *
  * @author tlerios@marketcetera.com
  * @since 2.0.0
- * @version $Id: SessionInfo.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: SessionInfo.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public interface SessionInfo
     extends ReadWriteInfo
 {

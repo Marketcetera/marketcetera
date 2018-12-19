@@ -23,13 +23,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides a Spread implementation of {@link TradeEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SpreadTradeEventImpl.java 17054 2015-09-29 13:59:20Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 @ThreadSafe
 @XmlRootElement(name="SpreadTrade")
 @XmlAccessorType(XmlAccessType.NONE)
-@ClassVersion("$Id: SpreadTradeEventImpl.java 17054 2015-09-29 13:59:20Z colin $")
+@ClassVersion("$Id$")
 public class SpreadTradeEventImpl
         extends AbstractTradeEventImpl
         implements SpreadEvent

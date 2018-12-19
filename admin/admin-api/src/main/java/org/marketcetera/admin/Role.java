@@ -10,7 +10,7 @@ import org.marketcetera.persist.SummaryNDEntityBase;
  * Provides a means to assign permissions to perform various tasks.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Role.java 84382 2015-01-20 19:43:06Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 public interface Role

@@ -12,7 +12,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  * Provides data store access to <code>PersistentUserAttribute</code> values.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentUserAttributeDao.java 84561 2015-03-31 18:18:14Z colin $
+ * @version $Id$
  * @since 1.2.0
  */
 public interface PersistentUserAttributeDao

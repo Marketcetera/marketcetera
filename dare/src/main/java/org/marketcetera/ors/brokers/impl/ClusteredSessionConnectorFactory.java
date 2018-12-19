@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Constructs <code>SessionConnector</code> values from <code>Brokers</code> values
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ClusteredSessionConnectorFactory.java 85105 2016-01-22 20:43:42Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 @NotThreadSafe

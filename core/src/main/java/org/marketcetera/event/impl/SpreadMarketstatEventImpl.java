@@ -23,13 +23,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides a Spread implementation of {@link MarketstatEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: FutureMarketstatEventImpl.java 16867 2014-03-23 23:06:05Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 @ThreadSafe
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name="futureMarketstat")
-@ClassVersion("$Id: FutureMarketstatEventImpl.java 16867 2014-03-23 23:06:05Z colin $")
+@ClassVersion("$Id$")
 public class SpreadMarketstatEventImpl
         extends AbstractMarketstatEventImpl
         implements SpreadEvent

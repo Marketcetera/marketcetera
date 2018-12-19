@@ -9,10 +9,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Receives reports and processes them according to the implementer's nature.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ReportReceiver.java 16522 2014-12-31 16:33:08Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: ReportReceiver.java 16522 2014-12-31 16:33:08Z colin $")
+@ClassVersion("$Id$")
 public interface ReportReceiver
 {
     /**

@@ -8,7 +8,7 @@
 ##
 ## Author: klim@marketcetera.com
 ## Since: 1.5.0
-## Version: $Id: setEnv.sh 84077 2014-09-22 21:57:31Z colin $
+## Version: $Id$
 ##
 
 METC_HOME="/opt/Marketcetera"

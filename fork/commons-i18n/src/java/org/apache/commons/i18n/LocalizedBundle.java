@@ -1,6 +1,6 @@
 /*
  * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons-sandbox//i18n/src/java/org/apache/commons/i18n/LocalizedBundle.java,v 1.3 2004/12/29 17:03:55 dflorey Exp $
- * $Revision: 480489 $
+ * $Revision$
  * $Date: 2006-11-29 01:00:46 -0800 (Wed, 29 Nov 2006) $
  *
  * ====================================================================

@@ -6,7 +6,7 @@ package org.marketcetera.fix;
  * Provides a connection to a session.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SessionConnector.java 85164 2016-03-03 21:27:19Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 public interface SessionConnector

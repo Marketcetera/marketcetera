@@ -8,7 +8,7 @@ import java.io.File;
  * Receives directory watcher updates.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DirectoryWatcherSubscriber.java 83882 2014-08-01 22:31:54Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface DirectoryWatcherSubscriber

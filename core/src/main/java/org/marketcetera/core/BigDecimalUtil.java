@@ -14,7 +14,7 @@
  *
  *                     www.ObjectLab.co.uk
  *
- * $Id: AbstractDateCalculator.java 309 2010-03-23 21:01:49Z marchy $
+ * $Id$
  *
  * Copyright 2006 the original author or authors.
  *

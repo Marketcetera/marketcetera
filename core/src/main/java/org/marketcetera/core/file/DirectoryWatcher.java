@@ -8,7 +8,7 @@ package org.marketcetera.core.file;
  * <p>Implementers are guaranteed by contract to provide a thread-safe implementation.</p>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DirectoryWatcher.java 83882 2014-08-01 22:31:54Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface DirectoryWatcher

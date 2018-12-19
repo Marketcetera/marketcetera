@@ -19,7 +19,7 @@ import org.marketcetera.persist.PageRequest;
  * Provides services related to users and permissions.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AuthorizationService.java 84382 2015-01-20 19:43:06Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 public interface AuthorizationService

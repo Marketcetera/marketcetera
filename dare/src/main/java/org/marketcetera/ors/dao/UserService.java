@@ -16,10 +16,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides access to {@link SimpleUser} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UserService.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: UserService.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public interface UserService
 {
     /**

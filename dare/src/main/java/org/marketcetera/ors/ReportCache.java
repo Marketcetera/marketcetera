@@ -12,10 +12,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Caches latest report by OrderID.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ReportCache.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id: ReportCache.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public enum ReportCache
 {
     INSTANCE;

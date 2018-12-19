@@ -11,7 +11,7 @@ import org.marketcetera.admin.Role;
  * Describes the attributes of a {@link Role}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: RoleDescriptor.java 84462 2015-03-09 00:04:29Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 public class RoleDescriptor

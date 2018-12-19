@@ -73,7 +73,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Provides in-process access the client services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DirectClient.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 public class DirectClient

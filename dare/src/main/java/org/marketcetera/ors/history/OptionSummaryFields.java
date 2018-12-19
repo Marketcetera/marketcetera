@@ -12,10 +12,10 @@ import java.math.BigDecimal;
  * Extracts report summary fields for an option instrument.
  *
  * @author anshul@marketcetera.com
- * @version $Id: OptionSummaryFields.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionSummaryFields.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class OptionSummaryFields extends InstrumentSummaryFields<Option> {
     /**
      * Creates an instance that handles the specified instrument subclass.

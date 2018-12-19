@@ -14,10 +14,10 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  * Provides datastore access to {@link SimpleUser} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UserDao.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: UserDao.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public interface UserDao
         extends JpaRepository<SimpleUser,Long>,QueryDslPredicateExecutor<SimpleUser>
 {

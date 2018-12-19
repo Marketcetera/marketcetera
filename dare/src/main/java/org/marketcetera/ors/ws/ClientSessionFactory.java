@@ -23,12 +23,12 @@ import org.springframework.jms.core.JmsOperations;
  *
  * @author tlerios@marketcetera.com
  * @since 1.5.0
- * @version $Id: ClientSessionFactory.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: ClientSessionFactory.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class ClientSessionFactory
         implements SessionFactory<ClientSession>
 {

@@ -24,7 +24,7 @@ import com.google.common.cache.CacheBuilder;
  * Constructs root order ID values.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BasicRootOrderIdFactory.java 17467 2018-03-12 19:28:37Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 public class BasicRootOrderIdFactory

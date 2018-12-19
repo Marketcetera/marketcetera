@@ -1,7 +1,7 @@
 package org.marketcetera.eventbus;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -12,9 +12,9 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author klim@marketcetera.com
  * @since 0.6.0
- * @version $Id: Messages.java 17411 2017-04-28 14:50:38Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: Messages.java 17411 2017-04-28 14:50:38Z colin $")
+@ClassVersion("$Id$")
 public interface Messages
 {
     /**
@@ -28,5 +28,6 @@ public interface Messages
     /*
      * The messages.
      */
-    static final I18NMessage0P EVENTBUS_SERVICE_STARTING = new I18NMessage0P(LOGGER,"eventbus_service_starting"); //$NON-NLS-1$
+    static final I18NMessage1P SERVICE_STARTING = new I18NMessage1P(LOGGER,"service_starting"); //$NON-NLS-1$
+    static final I18NMessage1P SERVICE_STOPPING = new I18NMessage1P(LOGGER,"service_stopping"); //$NON-NLS-1$
 }

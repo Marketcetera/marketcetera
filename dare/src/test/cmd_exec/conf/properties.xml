@@ -5,7 +5,7 @@
   -
   - Author: tlerios@marketcetera.com
   - Since: 1.0.0
-  - Version: $Id: properties.xml 17266 2017-04-28 14:58:00Z colin $
+  - Version: $Id$
   - $License$
   -->
 <beans xmlns="http://www.springframework.org/schema/beans"

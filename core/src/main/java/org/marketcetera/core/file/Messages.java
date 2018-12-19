@@ -11,7 +11,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
  * Provides messages for this package.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Messages.java 84991 2015-11-06 16:53:53Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface Messages

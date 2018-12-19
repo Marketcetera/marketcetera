@@ -98,9 +98,9 @@ import com.google.common.collect.Sets;
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: RequestHandler.java 17492 2018-04-03 13:57:25Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: RequestHandler.java 17492 2018-04-03 13:57:25Z colin $")
+@ClassVersion("$Id$")
 public class RequestHandler 
         implements ReceiveOnlyHandler<DataEnvelope>,EventPublisher
 {

@@ -9,7 +9,7 @@ import org.marketcetera.ors.info.SessionInfo;
  * pertaining to the current request.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SessionAwareMessageModifier.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
 public interface SessionAwareMessageModifier

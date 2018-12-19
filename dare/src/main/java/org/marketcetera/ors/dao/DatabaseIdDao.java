@@ -9,10 +9,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Provides datastore access to {@link PersistentDatabaseID} values.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DatabaseIdDao.java 16522 2014-12-31 16:33:08Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: DatabaseIdDao.java 16522 2014-12-31 16:33:08Z colin $")
+@ClassVersion("$Id$")
 public interface DatabaseIdDao
         extends JpaRepository<PersistentDatabaseID,Long>
 {

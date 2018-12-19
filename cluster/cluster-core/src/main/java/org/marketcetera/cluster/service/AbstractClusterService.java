@@ -62,7 +62,7 @@ import com.google.common.collect.Sets;
  * Provides common behavior for a <code>ClusterService</code> implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: HazelcastClusterService.java 16827 2016-05-24 14:40:08Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public abstract class AbstractClusterService
@@ -901,7 +901,7 @@ public abstract class AbstractClusterService
      * Evaluates cluster work units.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: HazelcastClusterService.java 16827 2016-05-24 14:40:08Z colin $
+     * @version $Id$
      * @since $Release$
      */
     protected class WorkUnitEvaluationTask

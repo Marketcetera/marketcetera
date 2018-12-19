@@ -53,12 +53,12 @@ import quickfix.field.TargetCompID;
  * of when they were sent.
  *
  * @author anshul@marketcetera.com
- * @version $Id: PersistentReport.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @Entity
 @Table(name="reports")
-@ClassVersion("$Id: PersistentReport.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public class PersistentReport
         extends EntityBase
 {

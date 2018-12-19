@@ -16,7 +16,7 @@ import quickfix.Message;
  * This is particularly useful when calculating positions to make sure that partial fills aren't counted twice.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: RootOrderIdFactory.java 17444 2018-02-18 03:37:14Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 public interface RootOrderIdFactory

@@ -41,7 +41,7 @@
  *
  * @author tlerios@marketcetera.com
  * @since 2.0.0
- * @version $Id: package-info.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

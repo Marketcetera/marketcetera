@@ -6,7 +6,7 @@ package org.marketcetera.admin;
  * Provides common behavior for POJOs with a name and description.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractNamedDescriptor.java 84382 2015-01-20 19:43:06Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 public abstract class AbstractNamedDescriptor

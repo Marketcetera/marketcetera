@@ -14,12 +14,12 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: SpringBrokers.java 16966 2016-09-15 04:00:32Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: SpringBrokers.java 16966 2016-09-15 04:00:32Z colin $")
+@ClassVersion("$Id$")
 public class SpringBrokers
     implements InitializingBean
 {

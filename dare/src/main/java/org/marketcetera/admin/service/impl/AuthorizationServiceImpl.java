@@ -49,7 +49,7 @@ import com.google.common.collect.Sets;
  * Provides access to authorization services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AuthorizationServiceImpl.java 84563 2015-03-31 18:39:06Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 @Transactional(readOnly=true,propagation=Propagation.REQUIRED)

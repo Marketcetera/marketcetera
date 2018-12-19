@@ -17,10 +17,10 @@ import quickfix.field.SymbolSfx;
 import quickfix.field.TargetSubID;
 
 /**
- * $Id: MessageRouteManager.java 16468 2014-05-12 00:36:56Z colin $
+ * $Id$
  * @author gmiller
  */
-@ClassVersion("$Id: MessageRouteManager.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class MessageRouteManager {
 
 

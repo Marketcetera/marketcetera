@@ -122,9 +122,9 @@ import com.hazelcast.core.OperationTimeoutException;
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $")
+@ClassVersion("$Id$")
 public class QuickFIXApplication
         implements ApplicationExtended, ReportReceiver, BrokerStatusPublisher, SessionStatusPublisher, DirectoryWatcherSubscriber
 {
@@ -1640,7 +1640,7 @@ public class QuickFIXApplication
      * Processes messages for a given session.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+     * @version $Id$
      * @since $Release$
      */
     @SuppressWarnings("unused")
@@ -1796,7 +1796,7 @@ public class QuickFIXApplication
      * Processes executions for a given order.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+     * @version $Id$
      * @since $Release$
      */
     private class OrderMessageProcessingQueue
@@ -1881,7 +1881,7 @@ public class QuickFIXApplication
      * Times out an order queue if it has been unused for a period of time.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+     * @version $Id$
      * @since $Release$
      */
     private class OrderQueueTimeoutTask
@@ -1955,10 +1955,10 @@ public class QuickFIXApplication
      * Indicates the type of message.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+     * @version $Id$
      * @since 2.1.4
      */
-    @ClassVersion("$Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $")
+    @ClassVersion("$Id$")
     private enum MessageType
     {
         FROM_ADMIN,
@@ -1968,10 +1968,10 @@ public class QuickFIXApplication
      * Encapsulates a message to be processed.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+     * @version $Id$
      * @since 2.1.4
      */
-    @ClassVersion("$Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $")
+    @ClassVersion("$Id$")
     private static class MessagePackage
             implements Serializable, Comparable<MessagePackage>
     {
@@ -2113,7 +2113,7 @@ public class QuickFIXApplication
      * Uniquely identifies a family of orders.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+     * @version $Id$
      * @since $Release$
      */
     private static class MessageKey
