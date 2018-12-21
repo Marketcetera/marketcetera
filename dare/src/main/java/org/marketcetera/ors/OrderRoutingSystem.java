@@ -77,6 +77,7 @@ import org.springframework.jms.listener.SimpleMessageListenerContainer;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import quickfix.ConfigError;
 import quickfix.DefaultSessionFactory;
@@ -473,7 +474,7 @@ public class OrderRoutingSystem
         int instanceId = clusterData.getInstanceNumber();
         clusterWorkUnitUid = OrderRoutingSystem.class.getSimpleName() + "-" + instanceId;
         brokerService.addFixSessionListener(this);
-        statusUpdater = Executors.newSingleThreadScheduledExecutor();
+        statusUpdater = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat(getClass().getSimpleName()+"-StatusUpdater-%d").build());
         backupStatusTask = new Runnable() {
             @Override
             public void run()

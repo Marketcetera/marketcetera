@@ -55,6 +55,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /* $License$ */
 
@@ -1097,7 +1098,7 @@ public abstract class AbstractClusterService
     /**
      * schedules tasks
      */
-    private ScheduledExecutorService scheduledService = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledExecutorService scheduledService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("ClusterService-%d").build());
     /**
      * Performs static initialization for this class
      * 
