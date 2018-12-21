@@ -23,7 +23,6 @@ public abstract class AbstractEventBusService
     @PostConstruct
     public void start()
     {
-        serviceDescription = PlatformServices.getServiceName(getClass());
         Messages.SERVICE_STARTING.info(this,
                                        getServiceDescription());
         eventBusService.register(this);
@@ -50,7 +49,7 @@ public abstract class AbstractEventBusService
     /**
      * service description value
      */
-    private String serviceDescription;
+    private String serviceDescription = PlatformServices.getServiceName(getClass());
     /**
      * provides access to event bus services
      */
