@@ -135,12 +135,17 @@ public class MarketDataRpcService<SessionClazz>
                                       MarketDataRequest inRequest)
             throws ServiceException
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Received {}",
+                               inRequest);
         RpcMarketdata.MarketDataResponse.Builder responseBuilder = RpcMarketdata.MarketDataResponse.newBuilder();
         try {
             serverServices.validateAndReturnSession(inRequest.getSessionId());
             return responseBuilder.setId(serviceAdapter.request(org.marketcetera.marketdata.MarketDataRequestBuilder.newRequestFromString(inRequest.getRequest()),
                                                                 inRequest.getStreamEvents())).build();
         } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e);
             return responseBuilder.setFailed(true).setId(-1).setMessage(ExceptionUtils.getRootCauseMessage(e)).build();
         }
     }
