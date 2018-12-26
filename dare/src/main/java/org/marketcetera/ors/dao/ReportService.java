@@ -24,7 +24,6 @@ import org.marketcetera.trade.ReportID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.domain.Page;
 
-
 import quickfix.SessionID;
 
 /* $License$ */

@@ -97,10 +97,10 @@ public class GuavaEventBusService
             return;
         }
         for(String topic : inTopics) {
-            SLF4JLoggerProxy.trace(this,
-                                   "Posting {} to {}",
-                                   inEvent,
-                                   topic);
+            SLF4JLoggerProxy.info(eventCategory,
+                                  "{}:{}",
+                                  topic,
+                                  inEvent);
             topics.getUnchecked(topic).post(inEvent);
         }
     }

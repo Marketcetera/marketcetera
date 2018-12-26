@@ -53,6 +53,13 @@
         <SizeBasedTriggeringPolicy size="100 MB"/>
       </Policies>
     </RollingRandomAccessFile>
+    <RollingRandomAccessFile name="EVENTS" fileName="target/logs/event.log" filePattern="target/logs/event-%d{yyyy-MM-dd-HH}-%i.log.gz" append="true">
+      <PatternLayout pattern="%d %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="100 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="1000"/>
+    </RollingRandomAccessFile>
   </Appenders>
   <Loggers>
     <Root level="warn">
@@ -83,6 +90,9 @@
     </logger>
     <logger name="metc.startup" level="info" additivity="false">
       <AppenderRef ref="STDOUT"/>
+    </logger>
+    <logger name="metc.events" level="INFO" additivity="false">
+      <AppenderRef ref="EVENTS"/>
     </logger>
     <logger name="org.marketcetera.ors.brokers.Broker.HEARTBEATS" level="error"/>
     <logger name="org.marketcetera.ors.QuickFIXApplication.HEARTBEATS" level="error"/>
