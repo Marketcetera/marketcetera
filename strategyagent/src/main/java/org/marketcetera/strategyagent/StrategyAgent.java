@@ -214,7 +214,10 @@ public class StrategyAgent
         }
         try {
             //Configure the application. If it fails, exit
-            String[] args = ApplicationContainer.getInstance().getArguments();
+            String[] args = new String[0];
+            if(ApplicationContainer.getInstance() != null) {
+                args = ApplicationContainer.getInstance().getArguments();
+            }
             if(args != null && args.length > 0) {
                 int parseErrors = parseCommands(args[0]);
                 if(parseErrors > 0) {
