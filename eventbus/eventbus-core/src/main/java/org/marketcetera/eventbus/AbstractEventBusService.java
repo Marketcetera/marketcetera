@@ -42,7 +42,7 @@ public abstract class AbstractEventBusService
      *
      * @return a <code>String</code> value
      */
-    protected String getServiceDescription()
+    public String getServiceDescription()
     {
         return serviceDescription;
     }
