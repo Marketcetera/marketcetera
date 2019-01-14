@@ -182,9 +182,9 @@ public class StrategyAgent
     public void stop()
     {
         if(notificationExecutor != null) {
-            notificationExecutor.notify(Notification.low("Strategy Agent Stopped",
-                                                         "Stategy Agent Stopped at " + new DateTime(),
-                                                         StrategyAgent.class.getSimpleName()));
+            notificationExecutor.notify(Notification.info("Strategy Agent Stopped",
+                                                          "Stategy Agent Stopped at " + new DateTime(),
+                                                          StrategyAgent.class.getSimpleName()));
         }
         stopRemoteService();
     }
@@ -248,9 +248,9 @@ public class StrategyAgent
         // run the commands
         executeCommands();
         if(notificationExecutor != null) {
-            notificationExecutor.notify(Notification.low("Strategy Agent Started",
-                                                         "Stategy Agent Started at " + new DateTime(),
-                                                         StrategyAgent.class.getSimpleName()));
+            notificationExecutor.notify(Notification.debug("Strategy Agent Started",
+                                                           "Stategy Agent Started at " + new DateTime(),
+                                                           StrategyAgent.class.getSimpleName()));
         }
         running.set(true);
     }

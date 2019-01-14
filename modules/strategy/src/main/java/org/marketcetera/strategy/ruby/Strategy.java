@@ -654,7 +654,7 @@ public class Strategy
     public final void notify_low(String inSubject,
                                  String inBody)
     {
-        sendNotification(Notification.low(inSubject,
+        sendNotification(Notification.debug(inSubject,
                                           inBody,
                                           this.toString()));
     }
@@ -667,7 +667,7 @@ public class Strategy
     public final void notify_medium(String inSubject,
                                     String inBody)
     {
-        sendNotification(Notification.medium(inSubject,
+        sendNotification(Notification.warn(inSubject,
                                              inBody,
                                              this.toString()));
     }
@@ -680,7 +680,7 @@ public class Strategy
     public final void notify_high(String inSubject,
                                   String inBody)
     {
-        sendNotification(Notification.high(inSubject,
+        sendNotification(Notification.error(inSubject,
                                            inBody,
                                            this.toString()));
     }

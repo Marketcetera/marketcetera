@@ -1231,7 +1231,11 @@ public final class ModuleManager
             throws BeansException
     {
         try(CloseableLock lock = CloseableLock.create(applicationContextLock.writeLock())) {
+            lock.lock();
             applicationContext = inApplicationContext;
+            if(ApplicationContextProvider.getInstance() != null) {
+                ApplicationContextProvider.getInstance().setApplicationContext(applicationContext);
+            }
         }
     }
     /**

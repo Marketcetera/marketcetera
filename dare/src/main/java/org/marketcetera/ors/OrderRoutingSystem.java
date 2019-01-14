@@ -499,9 +499,9 @@ public class OrderRoutingSystem
                                1000,
                                TimeUnit.MILLISECONDS);
         if(notificationExecutor != null) {
-            notificationExecutor.notify(Notification.low("DARE Started",
-                                                         "DARE Started at " + new DateTime(),
-                                                         OrderRoutingSystem.class.getSimpleName()));
+            notificationExecutor.notify(Notification.info("DARE Started",
+                                                          "DARE Started at " + new DateTime(),
+                                                          OrderRoutingSystem.class.getSimpleName()));
         }
         Messages.APP_STARTED.info(this);
     }
@@ -720,9 +720,9 @@ public class OrderRoutingSystem
             }
         } finally {
             if(notificationExecutor != null) {
-                notificationExecutor.notify(Notification.low("DARE Stopped",
-                                                             "DARE Stopped at " + new DateTime(),
-                                                             OrderRoutingSystem.class.getSimpleName()));
+                notificationExecutor.notify(Notification.info("DARE Stopped",
+                                                              "DARE Stopped at " + new DateTime(),
+                                                              OrderRoutingSystem.class.getSimpleName()));
             }
             Messages.APP_STOP_SUCCESS.info(this);
         }

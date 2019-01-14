@@ -85,8 +85,8 @@ public abstract class CEPTestBase extends ModuleTestBase {
         sug1.setIdentifier("acura");
         sug2 = Factory.getInstance().createOrderSingleSuggestion();
         sug2.setIdentifier("integra");
-        not1 = Notification.low("kathmandu", "kathmandu", this.toString());
-        not2 = Notification.low("pokhara", "pokhara", this.toString());
+        not1 = Notification.debug("kathmandu", "kathmandu", this.toString());
+        not2 = Notification.debug("pokhara", "pokhara", this.toString());
         os1 = sFactory.createOrderSingle();
         os1.setBrokerID(new BrokerID("os1"));
         os2 = sFactory.createOrderSingle();

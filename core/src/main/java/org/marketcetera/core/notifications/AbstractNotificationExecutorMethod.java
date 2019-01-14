@@ -101,17 +101,17 @@ public abstract class AbstractNotificationExecutorMethod
      */
     protected boolean verifySeverityThreshold(INotification inNotification)
     {
-        INotification.Severity calculatedMinimum = minimumThreshold == null ? INotification.Severity.LOW : minimumThreshold;
-        INotification.Severity calculatedMaximum = maximumThreshold == null ? INotification.Severity.HIGH : maximumThreshold;
-        INotification.Severity workingSeverity = inNotification.getSeverity() == null ? INotification.Severity.LOW : inNotification.getSeverity();
+        INotification.Severity calculatedMinimum = minimumThreshold == null ? INotification.Severity.DEBUG : minimumThreshold;
+        INotification.Severity calculatedMaximum = maximumThreshold == null ? INotification.Severity.ERROR : maximumThreshold;
+        INotification.Severity workingSeverity = inNotification.getSeverity() == null ? INotification.Severity.DEBUG : inNotification.getSeverity();
         return workingSeverity.ordinal() >= calculatedMinimum.ordinal() && workingSeverity.ordinal() <= calculatedMaximum.ordinal();
     }
     /**
      * threshold at or above which to notify
      */
-    private INotification.Severity maximumThreshold = INotification.Severity.HIGH;
+    private INotification.Severity maximumThreshold = INotification.Severity.ERROR;
     /**
      * threshold at or above which to notify
      */
-    private INotification.Severity minimumThreshold = INotification.Severity.LOW;
+    private INotification.Severity minimumThreshold = INotification.Severity.DEBUG;
 }
