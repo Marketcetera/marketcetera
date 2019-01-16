@@ -1,35 +1,22 @@
 package org.marketcetera.trade.utils;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.apache.commons.lang3.Validate;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Messages;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.util.collections.UnmodifiableDeque;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import org.nocrala.tools.texttablefmt.BorderStyle;
-import org.nocrala.tools.texttablefmt.CellStyle;
+import org.nocrala.tools.texttablefmt.*;
 import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
-import org.nocrala.tools.texttablefmt.ShownBorders;
-import org.nocrala.tools.texttablefmt.Table;
 
 /* $License$ */
 
@@ -92,29 +79,24 @@ public class OrderHistoryManager
         }
     }
     /**
-     * Adds the given <code>TradeMessage</code> to the order history.
+     * Adds the given <code>ReportBase</code> to the order history.
      *
-     * @param inReport a <code>TradeMessage</code> value
+     * @param inReport a <code>ReportBase</code> value
      */
-    public void add(TradeMessage inTradeMessage)
+    public void add(ReportBase inReport)
     {
-        Validate.notNull(inTradeMessage);
-        if(!(inTradeMessage instanceof ReportBase)) {
-            return;
-        }
-        ReportBase report = (ReportBase)inTradeMessage;
-        if(report.getOrderStatus() == null ||
-           report.getOrderID() == null) {
+        if(inReport.getOrderStatus() == null ||
+           inReport.getOrderID() == null) {
             Messages.SKIPPNG_MALFORMED_REPORT.warn(this,
-                                                   report);
+                                                   inReport);
             return;
         }
         SLF4JLoggerProxy.debug(this,
                                "Adding {} to order history",
-                               report);
+                               inReport);
         synchronized(orders) {
-            OrderID actualOrderID = report.getOrderID();
-            OrderID originalOrderID = report.getOriginalOrderID();
+            OrderID actualOrderID = inReport.getOrderID();
+            OrderID originalOrderID = inReport.getOriginalOrderID();
             // find the order history for this report
             // first, look for a match of the actual order ID (simple, non-replace order case)
             OrderHistory history = orders.get(actualOrderID);
@@ -152,37 +134,37 @@ public class OrderHistoryManager
                                        orders);
             }
             // add the report to the order history
-            history.add(report);
+            history.add(inReport);
             SLF4JLoggerProxy.debug(this,
                                    "Added {} to {}",
-                                   report,
+                                   inReport,
                                    history);
             // check to see if the report represents an open order
-            if(report.getOrderStatus().isCancellable()) {
+            if(inReport.getOrderStatus().isCancellable()) {
                 // if a report is cancellable, at least by our current understanding, the report has to be an ExecutionReport (not an OrderCancelReject)
-                if(report instanceof ExecutionReport) {
+                if(inReport instanceof ExecutionReport) {
                     SLF4JLoggerProxy.debug(this,
                                            "{} represents an open order ({}), updating live order list for {}", //$NON-NLS-1$
-                                           report.getOrderID(),
-                                           report.getOrderStatus(),
+                                           inReport.getOrderID(),
+                                           inReport.getOrderStatus(),
                                            history);
-                    openOrders.put(report.getOrderID(),
-                                   (ExecutionReport)report);
+                    openOrders.put(inReport.getOrderID(),
+                                   (ExecutionReport)inReport);
                 }
             } else {
                 SLF4JLoggerProxy.debug(this,
                                        "{} represents a closed order ({}) updating live order list for {}", //$NON-NLS-1$
-                                       report.getOrderID(),
-                                       report.getOrderStatus(),
+                                       inReport.getOrderID(),
+                                       inReport.getOrderStatus(),
                                        history);
-                openOrders.remove(report.getOrderID());
+                openOrders.remove(inReport.getOrderID());
             }
-            if(report.getOriginalOrderID() != null) {
+            if(inReport.getOriginalOrderID() != null) {
                 SLF4JLoggerProxy.debug(this,
                                        "{} replaces {}, updating live order list", //$NON-NLS-1$
-                                       report.getOrderID(),
-                                       report.getOriginalOrderID());
-                openOrders.remove(report.getOriginalOrderID());
+                                       inReport.getOrderID(),
+                                       inReport.getOriginalOrderID());
+                openOrders.remove(inReport.getOriginalOrderID());
             }
             if(SLF4JLoggerProxy.isTraceEnabled(this)) {
                 SLF4JLoggerProxy.trace(this,

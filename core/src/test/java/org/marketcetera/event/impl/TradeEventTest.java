@@ -12,20 +12,24 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.event.CurrencyEvent;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.FutureEvent;
 import org.marketcetera.event.Messages;
 import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.SpreadEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.FutureExpirationMonth;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.Spread;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -61,18 +65,12 @@ public class TradeEventTest
     public void builderTypes()
             throws Exception
     {
-       instrument = option; useInstrument = false;
-       verify(setDefaults(getBuilder()));
-       instrument = option; useInstrument = true;
-       verify(setDefaults(getBuilder()));
-       instrument = equity; useInstrument = false;
-       verify(setDefaults(getBuilder()));
-       instrument = equity; useInstrument = true;
-       verify(setDefaults(getBuilder()));
-       instrument = future; useInstrument = false;
-       verify(setDefaults(getBuilder()));
-       instrument = future; useInstrument = true;
-       verify(setDefaults(getBuilder()));
+        for(Instrument loopInstrument : instruments) {
+            for(Boolean loopUseInstrument : trueFalse) {
+                instrument = loopInstrument; useInstrument = loopUseInstrument;
+                verify(setDefaults(getBuilder()));
+            }
+        }
        // create a new kind of instrument
        new ExpectedFailure<UnsupportedOperationException>() {
            @Override
@@ -122,6 +120,26 @@ public class TradeEventTest
             }
         };
         verify(setDefaults(TradeEventBuilder.futureTradeEvent()).withInstrument(future));
+        // currency
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_CURRENCY_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                setDefaults(TradeEventBuilder.currencyTradeEvent()).withInstrument(equity).create();
+            }
+        };
+        verify(setDefaults(TradeEventBuilder.currencyTradeEvent()).withInstrument(currency));
+        // spread
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_SPREAD_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                setDefaults(TradeEventBuilder.spreadTradeEvent()).withInstrument(equity).create();
+            }
+        };
+        verify(setDefaults(TradeEventBuilder.spreadTradeEvent()).withInstrument(spread));
     }
     /**
      * Tests {@link TradeEventBuilder#hasDeliverable(boolean)}.
@@ -200,22 +218,28 @@ public class TradeEventTest
                      builder.getOption().getProviderSymbol());
         assertEquals(symbol,
                      builder.getFuture().getProviderSymbol());
+        assertEquals(symbol,
+                     builder.getSpread().getProviderSymbol());
         symbol = "";
         builder.withProviderSymbol(symbol);
         assertEquals(symbol,
                      builder.getOption().getProviderSymbol());
         assertEquals(symbol,
                      builder.getFuture().getProviderSymbol());
+        assertEquals(symbol,
+                     builder.getSpread().getProviderSymbol());
         symbol = "MSQ/W/X";
         builder.withProviderSymbol(symbol);
         assertEquals(symbol,
                      builder.getOption().getProviderSymbol());
         assertEquals(symbol,
                      builder.getFuture().getProviderSymbol());
+        assertEquals(symbol,
+                     builder.getSpread().getProviderSymbol());
         verify(builder);
     }
     /**
-     * 
+     * Test trade condition attribute.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -292,6 +316,16 @@ public class TradeEventTest
     public void withInstrument()
             throws Exception
     {
+        for(Instrument loopInstrument : instruments) {
+            instrument = loopInstrument;
+            TradeEventBuilder<TradeEvent> builder = setDefaults(getBuilder());
+            builder.withInstrument(instrument);
+            assertEquals(instrument,
+                         builder.getTradeData().getInstrument());
+            assertEquals(instrument.getSymbol(),
+                         builder.getTradeData().getInstrumentAsString());
+            verify(builder);
+        }
         TradeEventBuilder<TradeEvent> builder = setDefaults(getBuilder());
         instrument = null;
         builder.withInstrument(instrument);
@@ -301,31 +335,6 @@ public class TradeEventTest
                      builder.getTradeData().getInstrumentAsString());
         assertEquals(instrument,
                      builder.getOption().getInstrument());
-        instrument = equity;
-        builder.withInstrument(instrument);
-        assertEquals(instrument,
-                     builder.getTradeData().getInstrument());
-        assertEquals(instrument.getSymbol(),
-                     builder.getTradeData().getInstrumentAsString());
-        assertFalse(instrument.equals(builder.getOption().getInstrument()));
-        instrument = option;
-        builder = setDefaults(getBuilder());
-        builder.withInstrument(instrument);
-        assertEquals(instrument,
-                     builder.getTradeData().getInstrument());
-        assertEquals(instrument.getSymbol(),
-                     builder.getTradeData().getInstrumentAsString());
-        assertEquals(instrument,
-                     builder.getOption().getInstrument());
-        verify(builder);
-        instrument = future;
-        builder = setDefaults(getBuilder());
-        builder.withInstrument(instrument);
-        assertEquals(instrument,
-                     builder.getTradeData().getInstrument());
-        assertEquals(instrument.getSymbol(),
-                     builder.getTradeData().getInstrumentAsString());
-        verify(builder);
     }
     /**
      * Tests {@link TradeEventBuilder#withMessageId(long)}.
@@ -505,25 +514,20 @@ public class TradeEventTest
     public void withUnderylingInstrument()
             throws Exception
     {
+        for(Instrument loopInstrument : instruments) {
+            TradeEventBuilder<TradeEvent> builder = setDefaults(getBuilder());
+            instrument = loopInstrument;
+            builder = setDefaults(getBuilder());
+            builder.withUnderlyingInstrument(instrument);
+            assertEquals(instrument,
+                         builder.getOption().getUnderlyingInstrument());
+            verify(builder);
+        }
         TradeEventBuilder<TradeEvent> builder = setDefaults(getBuilder());
         instrument = null;
         builder.withUnderlyingInstrument(instrument);
         assertEquals(instrument,
                      builder.getOption().getUnderlyingInstrument());
-        instrument = equity;
-        builder.withUnderlyingInstrument(instrument);
-        assertEquals(instrument,
-                     builder.getOption().getUnderlyingInstrument());
-        instrument = option;
-        builder = setDefaults(getBuilder());
-        builder.withUnderlyingInstrument(instrument);
-        assertEquals(instrument,
-                     builder.getOption().getUnderlyingInstrument());
-        verify(builder);
-        instrument = future;
-        builder = setDefaults(getBuilder());
-        builder.withUnderlyingInstrument(instrument);
-        verify(builder);
     }
     /**
      * Tests event <code>hashCode</code> and <code>equals</code>.
@@ -634,6 +638,16 @@ public class TradeEventTest
             assertEquals(inBuilder.getFuture().getContractSize(),
                          futureEvent.getContractSize());
         }
+        if(event instanceof CurrencyEvent) {
+            CurrencyEvent currencyEvent = (CurrencyEvent)event;
+            assertEquals(inBuilder.getCurrency().getContractSize(),
+                         currencyEvent.getContractSize());
+        }
+        if(event instanceof SpreadEvent) {
+            SpreadEvent spreadEvent = (SpreadEvent)event;
+            assertEquals(inBuilder.getSpread().getProviderSymbol(),
+                         spreadEvent.getProviderSymbol());
+        }
         Object newSource = new Object();
         event.setSource(newSource);
         assertEquals(newSource,
@@ -685,6 +699,10 @@ public class TradeEventTest
                 return TradeEventBuilder.optionTradeEvent();
             } else if(instrument instanceof Future) {
                 return TradeEventBuilder.futureTradeEvent();
+            } else if(instrument instanceof Spread) {
+                return TradeEventBuilder.spreadTradeEvent();
+            } else if(instrument instanceof Currency) {
+                return TradeEventBuilder.currencyTradeEvent();
             }
         }
         throw new UnsupportedOperationException();
@@ -711,9 +729,30 @@ public class TradeEventTest
                                              FutureExpirationMonth.MARCH,
                                              15);
     /**
+     * test spread value
+     */
+    private final Spread spread = new Spread(new Future("AAPL",
+                                                        FutureExpirationMonth.APRIL,
+                                                        12),
+                                             new Future("AAPL",
+                                                        FutureExpirationMonth.JUNE,
+                                                        12));
+    /**
+     * test currency
+     */
+    private final Currency currency = new Currency("USD","INR","","");
+    /**
      * instrument used during tests
      */
     private Instrument instrument = equity;
+    /**
+     * all test instruments
+     */
+    private Instrument[] instruments = new Instrument[] { equity, option, future, spread, currency };
+    /**
+     * true/false collection
+     */
+    private Boolean[] trueFalse = new Boolean[] { true, false };
     /**
      * id counter used to guarantee unique events
      */

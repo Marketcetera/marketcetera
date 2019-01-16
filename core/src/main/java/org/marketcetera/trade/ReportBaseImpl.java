@@ -1,12 +1,11 @@
 package org.marketcetera.trade;
 
+import org.marketcetera.util.misc.ClassVersion;
+import quickfix.Message;
+
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
-
-import org.marketcetera.util.misc.ClassVersion;
-
-import quickfix.Message;
 
 /* $License$ */
 /**
@@ -23,7 +22,7 @@ import quickfix.Message;
 @ClassVersion("$Id$")
 public class ReportBaseImpl
         extends FIXMessageWrapper
-        implements ReportBase,HasMutableReportID
+        implements ReportBase
 {
 
     @Override
@@ -65,14 +64,7 @@ public class ReportBaseImpl
     public ReportID getReportID() {
         return mReportID;
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.HasMutableReportID#setReportID(org.marketcetera.trade.ReportID)
-     */
-    @Override
-    public void setReportID(ReportID inReportId)
-    {
-        mReportID = inReportId;
-    }
+
     @Override
     public Originator getOriginator() {
         return mOriginator;

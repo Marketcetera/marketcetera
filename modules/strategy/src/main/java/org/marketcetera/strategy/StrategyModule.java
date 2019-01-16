@@ -58,7 +58,12 @@ import javax.management.NotificationListener;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.marketcetera.brokers.BrokerStatus;
+import org.marketcetera.client.Client;
+import org.marketcetera.client.ClientInitException;
+import org.marketcetera.client.ClientManager;
+import org.marketcetera.client.ClientModuleFactory;
+import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.CloseableLock;
 import org.marketcetera.core.Util;
@@ -100,8 +105,6 @@ import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.Suggestion;
-import org.marketcetera.trade.client.TradingClient;
-import org.marketcetera.trade.client.TradingClientFactory;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
@@ -111,11 +114,10 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
+import quickfix.Message;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.sun.mail.iap.ConnectionException;
-
-import quickfix.Message;
 
 /* $License$ */
 
@@ -265,13 +267,7 @@ final class StrategyModule
                                           String inCEPSource,
                                           String inNamespace)
     {
-        if(inRequest == null ||
-           inStatements == null ||
-           inStatements.length == 0 ||
-           inCEPSource == null ||
-           inCEPSource.isEmpty() ||
-           inNamespace == null ||
-           inNamespace.isEmpty()) {
+        if(inRequest == null || inStatements == null || inStatements.length == 0 || inCEPSource == null || inCEPSource.isEmpty() || inNamespace == null || inNamespace.isEmpty()) {
             StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_COMBINED_DATA_REQUEST,
                                                                   String.valueOf(strategy),
                                                                   inRequest,
@@ -644,6 +640,7 @@ final class StrategyModule
      */
     @Override
     public List<BrokerStatus> getBrokers()
+        throws ConnectionException, ClientInitException
     {
         return clientFactory.getClient().getBrokersStatus().getBrokers();
     }
@@ -1243,12 +1240,16 @@ final class StrategyModule
      * Constructs a <code>ModuleURN</code> to use to request market data.
      *
      * @param inSource a <code>String</code> value containing the name of the provider
-     * @return
+     * @return a <code>ModuleURN</code> value
      */
-    private static ModuleURN constructMarketDataUrn(String inSource)
+    private ModuleURN constructMarketDataUrn(String inSource)
     {
-        return new ModuleURN(String.format("metc:mdata:%s", //$NON-NLS-1$
-                                           inSource));
+        if(config != null && config.getMarketDataRequestProxy() != null) {
+            inSource = config.getMarketDataRequestProxy();
+        }
+        ModuleURN source = new ModuleURN(String.format("metc:mdata:%s", //$NON-NLS-1$
+                                                       inSource));
+        return source;
     }
     /**
      * Create a new StrategyModule instance.
@@ -1783,6 +1784,25 @@ final class StrategyModule
         }
     }
     /**
+     * Constructs a <code>Client</code> connection.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since 2.1.0
+     */
+    @ClassVersion("$Id$")
+    static interface ClientFactory
+    {
+        /**
+         * Returns the <code>Client</code> instance to use to connect to the server. 
+         *
+         * @return a <code>Client</code> value
+         * @throws ClientInitException if the client could not be created
+         */
+        Client getClient()
+                throws ClientInitException;
+    }
+    /**
      * the name of the strategy being run - this name is chosen by the module caller and has no mandatory correlation 
      * to the contents of the strategy
      */
@@ -1849,14 +1869,21 @@ final class StrategyModule
     @GuardedBy("dataFlowLock")
     private DataFlowID orsFlow;
     /**
-     * provides access to the trading client
+     * default method for connecting to the client
      */
-    @Autowired
-    private TradingClientFactory tradingClientFactory;
+    static volatile ClientFactory clientFactory = new ClientFactory() {
+        @Override
+        public Client getClient()
+                throws ClientInitException
+        {
+            return ClientManager.getInstance();
+        }
+    };
     /**
-     * provides access to trading client services
+     * optional config module
      */
-    private TradingClient tradingClient;
+    @Autowired(required=false)
+    private StrategyModuleConfig config;
     /**
      * counter used to guarantee unique identifiers
      */

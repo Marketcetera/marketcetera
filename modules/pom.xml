@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!--
+  - Author: anshul@marketcetera.com
+  - Since: 0.9.0
+  - Version: $Id$
+  - $License$
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
       <groupId>org.marketcetera</groupId>
       <artifactId>public-parent</artifactId>
-      <version>4.0.0-SNAPSHOT</version>
+      <version>3.1.0</version>
   </parent>
   <artifactId>modules</artifactId>
   <packaging>pom</packaging>
@@ -16,8 +20,7 @@
     <module>machine-learning</module>
     <module>marketdata</module>
     <module>misc</module>
-    <!--module>remote</module-->
-    <!--module>strategy</module-->
-    <module>fix-modules</module>
+    <module>strategy</module>
+    <module>remote</module>
   </modules>
 </project>

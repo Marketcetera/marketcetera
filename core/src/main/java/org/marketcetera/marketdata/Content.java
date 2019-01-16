@@ -81,25 +81,32 @@ public enum Content
     public boolean isRelevantTo(Class<? extends Event> inEventClass)
     {
         switch(this) {
-            case AGGREGATED_DEPTH:
-            case BBO10:
-            case LEVEL_2:
-            case NBBO:
-            case OPEN_BOOK:
-            case TOP_OF_BOOK:
-            case TOTAL_VIEW:
-            case UNAGGREGATED_DEPTH:
+            case AGGREGATED_DEPTH :
                 return QuoteEvent.class.isAssignableFrom(inEventClass);
-            case MARKET_STAT:
-                return MarketstatEvent.class.isAssignableFrom(inEventClass);
-            case LATEST_TICK:
-                return TradeEvent.class.isAssignableFrom(inEventClass);
-            case DIVIDEND:
+            case BBO10 :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
+            case DIVIDEND :
                 return DividendEvent.class.isAssignableFrom(inEventClass);
-            case IMBALANCE:
+            case IMBALANCE :
                 return ImbalanceEvent.class.isAssignableFrom(inEventClass);
+            case LATEST_TICK :
+                return TradeEvent.class.isAssignableFrom(inEventClass);
+            case LEVEL_2 :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
+            case NBBO :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
+            case MARKET_STAT :
+                return MarketstatEvent.class.isAssignableFrom(inEventClass);
+            case OPEN_BOOK :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
+            case TOP_OF_BOOK :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
+            case TOTAL_VIEW :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
+            case UNAGGREGATED_DEPTH :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
             default :
-                throw new UnsupportedOperationException(name());
+                throw new UnsupportedOperationException(inEventClass.getSimpleName());
         }
     }
     /**

@@ -60,8 +60,7 @@ public class SystemFIXMessageFactory extends FIXMessageFactory {
     }
 
     @Override
-    public void addSendingTime(Message inMessage)
-    {
+    protected void addSendingTime(Message inCancelMessage) {
         //Do not add sending time.
     }
 

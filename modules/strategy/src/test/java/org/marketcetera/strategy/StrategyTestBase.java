@@ -54,11 +54,18 @@ import org.apache.commons.lang.SystemUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.marketcetera.brokers.BrokerStatus;
-import org.marketcetera.brokers.BrokerStatusListener;
-import org.marketcetera.brokers.ClusteredBrokerStatus;
-import org.marketcetera.brokers.ClusteredBrokersStatus;
-import org.marketcetera.brokers.MockBrokerStatusGenerator;
+import org.marketcetera.client.BrokerStatusListener;
+import org.marketcetera.client.Client;
+import org.marketcetera.client.ClientInitException;
+import org.marketcetera.client.ClientManager;
+import org.marketcetera.client.ClientParameters;
+import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.OrderModifier;
+import org.marketcetera.client.OrderValidationException;
+import org.marketcetera.client.ReportListener;
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
@@ -115,8 +122,6 @@ import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.UserID;
-import org.marketcetera.trade.client.OrderValidationException;
-import org.marketcetera.trade.client.ReportListener;
 import org.marketcetera.util.log.I18NMessage;
 import org.marketcetera.util.ws.tags.SessionId;
 
@@ -645,21 +650,21 @@ public class StrategyTestBase
         }
     }
     public static class MockClient
-            implements TradingClient
+        implements Client
     {
-//        public static class MockClientFactory
-//                implements TradingClientFactory
-//        {
-//            /* (non-Javadoc)
-//             * @see org.marketcetera.client.ClientFactory#getClient(org.marketcetera.client.ClientParameters)
-//             */
-//            @Override
-//            public TradingClient getClient(TradingClientParameters inClientParameters)
-//                    throws ClientInitException, ConnectionException
-//            {
-//                return new MockClient();
-//            }
-//        }
+        public static class MockClientFactory
+                implements org.marketcetera.client.ClientFactory
+        {
+            /* (non-Javadoc)
+             * @see org.marketcetera.client.ClientFactory#getClient(org.marketcetera.client.ClientParameters)
+             */
+            @Override
+            public Client getClient(ClientParameters inClientParameters)
+                    throws ClientInitException, ConnectionException
+            {
+                return new MockClient();
+            }
+        }
         /**
          * indicates whether calls to {@link #getBrokersStatus()} should fail automatically
          */
@@ -717,10 +722,18 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#close()
+         */
+        @Override
+        public void close()
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
          * @see org.marketcetera.client.Client#getBrokersStatus()
          */
         @Override
-        public ClusteredBrokersStatus getBrokersStatus()
+        public BrokersStatus getBrokersStatus()
                 throws ConnectionException
         {
             if(getBrokersFails) {
@@ -1278,21 +1291,21 @@ public class StrategyTestBase
     /**
      * Generates a random set of broker status objects.
      *
-     * @return a <code>ClusteredBrokersStatus</code> value
+     * @return a <code>BrokerStatus</code> value
      */
-    public static final ClusteredBrokersStatus generateBrokersStatus()
+    public static final BrokersStatus generateBrokersStatus()
     {
-        List<ClusteredBrokerStatus> brokers = new ArrayList<>();
+        List<BrokerStatus> brokers = new ArrayList<BrokerStatus>();
         for(int counter=0;counter<9;counter++) {
-            brokers.add(MockBrokerStatusGenerator.generateBrokerStatus("Broker-" + System.nanoTime(),
-                                                                       new BrokerID("broker-" + ++counter),
-                                                                       random.nextBoolean()));
+            brokers.add(new BrokerStatus("Broker-" + System.nanoTime(),
+                                         new BrokerID("broker-" + ++counter),
+                                         random.nextBoolean()));
         }
         // make sure at least one broker is logged on
-        brokers.add(MockBrokerStatusGenerator.generateBrokerStatus("Broker-" + System.nanoTime(),
-                                                                   new BrokerID("broker-10"),
-                                                                   true));
-        return new ClusteredBrokersStatus(brokers);
+        brokers.add(new BrokerStatus("Broker-" + System.nanoTime(),
+                                     new BrokerID("broker-10"),
+                                     true));
+        return new BrokersStatus(brokers);
     }
     /**
      * A period of time during which a value is in effect.
@@ -2352,7 +2365,7 @@ public class StrategyTestBase
     /**
      * a set of test brokers
      */
-    protected static ClusteredBrokersStatus brokers;
+    protected static BrokersStatus brokers;
     /**
      * determines how many execution reports should be produced for each order received
      */

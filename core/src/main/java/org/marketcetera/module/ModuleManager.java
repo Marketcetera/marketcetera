@@ -109,21 +109,6 @@ public final class ModuleManager
         }
     }
     /**
-     * Start instance modules if necessary.
-     *
-     * @param inModuleManager a <code>ModuleManager</code> value
-     * @param inInstanceUrns a <code>ModuleURN[]</code> value
-     */
-    public static void startModulesIfNecessary(ModuleManager inModuleManager,
-                                               ModuleURN...inInstanceUrns)
-    {
-        for(ModuleURN instanceUrn : inInstanceUrns) {
-            if(!inModuleManager.getModuleInfo(instanceUrn).getState().isStarted()) {
-                inModuleManager.start(instanceUrn);
-            }
-        }
-    }
-    /**
      * Creates an instance that uses the same classloader as this class
      * to load module providers.
      */
@@ -1268,7 +1253,8 @@ public final class ModuleManager
             if(applicationContext == null) {
                 Messages.NO_APPLICATION_CONTEXT_MODULE.warn(this,
                                                             inModule.getURN());
-                if(inModule.getClass().isAnnotationPresent(AutowiredModule.class)) {
+                AutowiredModule autowiredModule = inModule.getClass().getAnnotation(AutowiredModule.class);
+                if(autowiredModule != null && autowiredModule.required()) {
                     throw new ModuleException(new I18NBoundMessage1P(Messages.MODULE_REQUIRES_AUTOWIRING,
                                                                      inModule.getURN()));
                 }

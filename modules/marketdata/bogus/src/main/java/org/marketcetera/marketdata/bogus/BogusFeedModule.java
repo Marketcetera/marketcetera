@@ -19,15 +19,15 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$")  //$NON-NLS-1$
 public final class BogusFeedModule
         extends AbstractMarketDataModule<BogusFeedToken,
                                          BogusFeedCredentials>
 {
     /**
-     * Create a new BogusFeedModule instance.
+     * Create a new BogusFeedEmitter instance.
      * 
-     * @throws CoreException if an error occurs starting the module
+     * @throws CoreException 
      */
     BogusFeedModule()
         throws CoreException
