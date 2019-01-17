@@ -213,13 +213,31 @@ public interface MDPackage
     int MD_TOP_OF_BOOK__ASK_PRICE = MD_ITEM_FEATURE_COUNT + 3;
 
     /**
+     * The feature id for the '<em><b>Bid Exchange</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int MD_TOP_OF_BOOK__BID_EXCHANGE = MD_ITEM_FEATURE_COUNT + 4;
+
+    /**
+     * The feature id for the '<em><b>Ask Exchange</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int MD_TOP_OF_BOOK__ASK_EXCHANGE = MD_ITEM_FEATURE_COUNT + 5;
+
+    /**
      * The number of structural features of the '<em>Top Of Book</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int MD_TOP_OF_BOOK_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 4;
+    int MD_TOP_OF_BOOK_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 6;
 
     /**
      * The meta object id for the '{@link org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl <em>Marketstat</em>}' class.
@@ -435,13 +453,22 @@ public interface MDPackage
     int MD_QUOTE__TIME = MD_ITEM_FEATURE_COUNT + 3;
 
     /**
+     * The feature id for the '<em><b>Exchange</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int MD_QUOTE__EXCHANGE = MD_ITEM_FEATURE_COUNT + 4;
+
+    /**
      * The number of structural features of the '<em>Quote</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int MD_QUOTE_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 4;
+    int MD_QUOTE_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 5;
 
     /**
      * The meta object id for the '<em>Depth Of Book Product</em>' data type.
@@ -591,6 +618,28 @@ public interface MDPackage
      * @generated
      */
     EAttribute getMDTopOfBook_AskPrice();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getBidExchange <em>Bid Exchange</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Bid Exchange</em>'.
+     * @see org.marketcetera.photon.model.marketdata.MDTopOfBook#getBidExchange()
+     * @see #getMDTopOfBook()
+     * @generated
+     */
+    EAttribute getMDTopOfBook_BidExchange();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getAskExchange <em>Ask Exchange</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Ask Exchange</em>'.
+     * @see org.marketcetera.photon.model.marketdata.MDTopOfBook#getAskExchange()
+     * @see #getMDTopOfBook()
+     * @generated
+     */
+    EAttribute getMDTopOfBook_AskExchange();
 
     /**
      * Returns the meta object for class '{@link org.marketcetera.photon.model.marketdata.MDMarketstat <em>Marketstat</em>}'.
@@ -788,6 +837,17 @@ public interface MDPackage
     EAttribute getMDQuote_Time();
 
     /**
+     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDQuote#getExchange <em>Exchange</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Exchange</em>'.
+     * @see org.marketcetera.photon.model.marketdata.MDQuote#getExchange()
+     * @see #getMDQuote()
+     * @generated
+     */
+    EAttribute getMDQuote_Exchange();
+
+    /**
      * Returns the meta object for data type '{@link org.marketcetera.marketdata.Content <em>Depth Of Book Product</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -933,6 +993,22 @@ public interface MDPackage
          * @generated
          */
         EAttribute MD_TOP_OF_BOOK__ASK_PRICE = eINSTANCE.getMDTopOfBook_AskPrice();
+
+        /**
+         * The meta object literal for the '<em><b>Bid Exchange</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute MD_TOP_OF_BOOK__BID_EXCHANGE = eINSTANCE.getMDTopOfBook_BidExchange();
+
+        /**
+         * The meta object literal for the '<em><b>Ask Exchange</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute MD_TOP_OF_BOOK__ASK_EXCHANGE = eINSTANCE.getMDTopOfBook_AskExchange();
 
         /**
          * The meta object literal for the '{@link org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl <em>Marketstat</em>}' class.
@@ -1084,6 +1160,14 @@ public interface MDPackage
          * @generated
          */
         EAttribute MD_QUOTE__TIME = eINSTANCE.getMDQuote_Time();
+
+        /**
+         * The meta object literal for the '<em><b>Exchange</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute MD_QUOTE__EXCHANGE = eINSTANCE.getMDQuote_Exchange();
 
         /**
          * The meta object literal for the '<em>Depth Of Book Product</em>' data type.

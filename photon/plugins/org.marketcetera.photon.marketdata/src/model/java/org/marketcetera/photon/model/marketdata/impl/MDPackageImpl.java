@@ -286,6 +286,26 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
+    public EAttribute getMDTopOfBook_BidExchange()
+    {
+        return (EAttribute) mdTopOfBookEClass.getEStructuralFeatures().get(4);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getMDTopOfBook_AskExchange()
+    {
+        return (EAttribute) mdTopOfBookEClass.getEStructuralFeatures().get(5);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EClass getMDMarketstat()
     {
         return mdMarketstatEClass;
@@ -450,6 +470,16 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
+    public EAttribute getMDQuote_Exchange()
+    {
+        return (EAttribute) mdQuoteEClass.getEStructuralFeatures().get(4);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EDataType getDepthOfBookProduct()
     {
         return depthOfBookProductEDataType;
@@ -519,6 +549,10 @@ public class MDPackageImpl
                          MD_TOP_OF_BOOK__ASK_SIZE);
         createEAttribute(mdTopOfBookEClass,
                          MD_TOP_OF_BOOK__ASK_PRICE);
+        createEAttribute(mdTopOfBookEClass,
+                         MD_TOP_OF_BOOK__BID_EXCHANGE);
+        createEAttribute(mdTopOfBookEClass,
+                         MD_TOP_OF_BOOK__ASK_EXCHANGE);
 
         mdMarketstatEClass = createEClass(MD_MARKETSTAT);
         createEAttribute(mdMarketstatEClass,
@@ -555,6 +589,8 @@ public class MDPackageImpl
                          MD_QUOTE__SOURCE);
         createEAttribute(mdQuoteEClass,
                          MD_QUOTE__TIME);
+        createEAttribute(mdQuoteEClass,
+                         MD_QUOTE__EXCHANGE);
 
         // Create data types
         depthOfBookProductEDataType = createEDataType(DEPTH_OF_BOOK_PRODUCT);
@@ -636,6 +672,12 @@ public class MDPackageImpl
         initEAttribute(getMDTopOfBook_AskPrice(),
                        ecorePackage.getEBigDecimal(),
                        "askPrice", null, 0, 1, MDTopOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(getMDTopOfBook_BidExchange(),
+                       ecorePackage.getEString(),
+                       "bidExchange", "", 0, 1, MDTopOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$ //$NON-NLS-2$
+        initEAttribute(getMDTopOfBook_AskExchange(),
+                       ecorePackage.getEString(),
+                       "askExchange", "", 0, 1, MDTopOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$ //$NON-NLS-2$
 
         initEClass(mdMarketstatEClass,
                    MDMarketstat.class,
@@ -695,6 +737,9 @@ public class MDPackageImpl
         initEAttribute(getMDQuote_Time(),
                        ecorePackage.getELong(),
                        "time", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(getMDQuote_Exchange(),
+                       ecorePackage.getEString(),
+                       "Exchange", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
         // Initialize data types
         initEDataType(depthOfBookProductEDataType,

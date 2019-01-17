@@ -214,6 +214,10 @@ public final class MarketDataView
                      SWT.RIGHT,
                      listener);
         createColumn(table,
+                     "BidExch",
+                     SWT.LEFT,
+                     listener);
+        createColumn(table,
                      FIXFieldLocalizer.getLocalizedFIXFieldName(BidSize.class.getSimpleName()),
                      SWT.RIGHT,
                      listener);
@@ -228,6 +232,10 @@ public final class MarketDataView
         createColumn(table,
                      FIXFieldLocalizer.getLocalizedFIXFieldName(OfferSize.class.getSimpleName()),
                      SWT.RIGHT,
+                     listener);
+        createColumn(table,
+                     "AskExch",
+                     SWT.LEFT,
                      listener);
         createColumn(table,
                      FIXFieldLocalizer.getLocalizedFIXFieldName(PrevClosePx.class.getSimpleName()),
@@ -278,6 +286,9 @@ public final class MarketDataView
                                MDPackage.Literals.MD_LATEST_TICK__SIZE),
             createCompositeMap(domain,
                                "topOfBook", //$NON-NLS-1$
+                               MDPackage.Literals.MD_TOP_OF_BOOK__BID_EXCHANGE),
+            createCompositeMap(domain,
+                               "topOfBook", //$NON-NLS-1$
                                MDPackage.Literals.MD_TOP_OF_BOOK__BID_SIZE),
             createCompositeMap(domain,
                                "topOfBook", //$NON-NLS-1$
@@ -288,6 +299,9 @@ public final class MarketDataView
             createCompositeMap(domain,
                                "topOfBook",
                                MDPackage.Literals.MD_TOP_OF_BOOK__ASK_SIZE), //$NON-NLS-1$
+            createCompositeMap(domain,
+                               "topOfBook", //$NON-NLS-1$
+                               MDPackage.Literals.MD_TOP_OF_BOOK__ASK_EXCHANGE),
             createCompositeMap(domain,
                                "marketStat", //$NON-NLS-1$
                                MDPackage.Literals.MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE),
@@ -358,25 +372,29 @@ public final class MarketDataView
                                 newOrder(mdi,
                                          Side.Sell,
                                          mdi.getTopOfBook().getBidPrice(),
-                                         mdi.getTopOfBook().getBidSize());
+                                         mdi.getTopOfBook().getBidSize(),
+                                         mdi.getTopOfBook().getBidExchange());
                                 break;
                             case BID_SZ: // join the bid
                                 newOrder(mdi,
                                          Side.Buy,
                                          mdi.getTopOfBook().getBidPrice(),
-                                         null);
+                                         null,
+                                         mdi.getTopOfBook().getBidExchange());
                                 break;
                             case OFFER_PX: // lift the offer
                                 newOrder(mdi,
                                          Side.Buy,
                                          mdi.getTopOfBook().getAskPrice(),
-                                         mdi.getTopOfBook().getAskSize());
+                                         mdi.getTopOfBook().getAskSize(),
+                                         mdi.getTopOfBook().getAskExchange());
                                 break;
                             case OFFER_SZ: // join the ask
                                 newOrder(mdi,
                                          Side.Sell,
                                          mdi.getTopOfBook().getAskPrice(),
-                                         null);
+                                         null,
+                                         mdi.getTopOfBook().getAskExchange());
                                 break;
                            default:
                         	   break;
@@ -393,11 +411,13 @@ public final class MarketDataView
      * @param inSide a <code>Side</code> value
      * @param inPrice a <code>BigDecimal</code> value
      * @param inQuantity a <code>BigDecimal</code> value
+     * @param inExchange a <code>String</code> value
      */
     private void newOrder(final MarketDataViewItem inMarketDataViewItem,
                           final Side inSide,
                           final BigDecimal inPrice,
-                          final BigDecimal inQuantity)
+                          final BigDecimal inQuantity,
+                          final String inExchange)
     {
         busyRun(new Runnable() {
             public void run() {
@@ -409,6 +429,7 @@ public final class MarketDataView
                 newOrder.setOrderType(OrderType.Limit);
                 newOrder.setSide(inSide);
                 newOrder.setQuantity(defaultOrderSize);
+                newOrder.setExecutionDestination(inExchange);
                 if (inQuantity != null && inQuantity.compareTo(defaultOrderSize) == -1) {
                     newOrder.setQuantity(inQuantity);
                 }
@@ -607,6 +628,15 @@ public final class MarketDataView
                     compare = tradeSize1.compareTo(tradeSize2);
                 }
                 break;
+            case BID_EXCH:
+                String bidExchange1 = item1.getTopOfBook().getBidExchange();
+                String bidExchange2 = item2.getTopOfBook().getBidExchange();
+                compare = compareNulls(bidExchange1,
+                                       bidExchange2);
+                if(compare == 0) {
+                    compare = bidExchange1.compareTo(bidExchange2);
+                }
+                break;
             case BID_SZ:
                 BigDecimal bidSize1 = item1.getTopOfBook().getBidSize();
                 BigDecimal bidSize2 = item2.getTopOfBook().getBidSize();
@@ -637,6 +667,15 @@ public final class MarketDataView
                 compare = compareNulls(askSize1, askSize2);
                 if (compare == 0) {
                     compare = askSize1.compareTo(askSize2);
+                }
+                break;
+            case OFFER_EXCH:
+                String askExchange1 = item1.getTopOfBook().getAskExchange();
+                String askExchange2 = item2.getTopOfBook().getAskExchange();
+                compare = compareNulls(askExchange1,
+                                       askExchange2);
+                if(compare == 0) {
+                    compare = askExchange1.compareTo(askExchange2);
                 }
                 break;
             case PREV_CLOSE:
@@ -1019,7 +1058,7 @@ public final class MarketDataView
     private final static String INSTRUMENT_LIST = "Instrument_List"; //$NON-NLS-1$
 
     public static enum MD_TABLE_COLUMNS {
-        MD_SYMBOL, EXCHANGE, LAST_PX, LAST_SZ, BID_SZ, BID_PX, OFFER_PX, OFFER_SZ, PREV_CLOSE, OPEN_PX, HIGH_PX, LOW_PX, TRD_VOLUME,
+        MD_SYMBOL, EXCHANGE, LAST_PX, LAST_SZ, BID_EXCH, BID_SZ, BID_PX, OFFER_PX, OFFER_SZ, OFFER_EXCH, PREV_CLOSE, OPEN_PX, HIGH_PX, LOW_PX, TRD_VOLUME,
     }
     /**
      * indicates the initial symbol list to use

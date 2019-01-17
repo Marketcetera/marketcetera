@@ -1,8 +1,5 @@
 package org.marketcetera.photon.ui;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -10,7 +7,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.photon.event.LoginEvent;
+import org.marketcetera.photon.event.LogoutEvent;
+
+import com.google.common.eventbus.Subscribe;
 
 /* $License$ */
 
@@ -37,34 +37,7 @@ public class UsernameWidget
         GridLayoutFactory.swtDefaults().generateLayout(composite);
         usernameValue.setText(nouser);
         currentUsername = nouser;
-        task = new TimerTask() {
-            public void run() {
-                try {
-                    if(!usernameValue.isDisposed()) {
-                        usernameValue.getDisplay().asyncExec(new Runnable() {
-                            public void run() {
-                                if(!usernameValue.isDisposed()) {
-                                    String username = PhotonPlugin.getDefault().getCurrentUser();
-                                    if(username == null) {
-                                        username = nouser;
-                                    }
-                                    if(username.equals(currentUsername)) {
-                                        return;
-                                    }
-                                    usernameValue.setText(username);
-                                    currentUsername = username;
-                                    task.cancel();
-                                }
-                            }
-                        });
-                    }
-                } catch (Exception e) {
-                    SLF4JLoggerProxy.warn(PhotonPlugin.MAIN_CONSOLE_LOGGER_NAME,
-                                          e);
-                }
-            }
-        };
-        timer.schedule(task, 0, 1000);
+        PhotonPlugin.getDefault().register(this);
         return composite;
     }
     /* (non-Javadoc)
@@ -73,11 +46,50 @@ public class UsernameWidget
     @Override
     public void dispose()
     {
-        if(task != null) {
-            task.cancel();
-            task = null;
-        }
+        PhotonPlugin.getDefault().unregister(this);
         super.dispose();
+    }
+    /**
+     * Receive a logon event.
+     *
+     * @param inLogonEvent a <code>LogonEvent</code> value
+     */
+    @Subscribe
+    public void receiveLogon(LoginEvent inLogonEvent)
+    {
+        if(usernameValue == null || usernameValue.isDisposed()) {
+            return;
+        }
+        String newUsername = inLogonEvent.getUsername();
+        if(currentUsername.equals(newUsername)) {
+            return;
+        }
+        currentUsername = newUsername;
+        if(currentUsername == null) {
+            currentUsername = nouser;
+        }
+        updateWidget();
+    }
+    /**
+     * Receive a logout event.
+     *
+     * @param inLogoutEvent a <code>LogoutEvent</code> value
+     */
+    @Subscribe
+    public void receiveLogout(LogoutEvent inLogoutEvent)
+    {
+        currentUsername = nouser;
+        updateWidget();
+    }
+    private void updateWidget()
+    {
+        usernameValue.getDisplay().asyncExec(new Runnable() {
+            @Override
+            public void run()
+            {
+                usernameValue.setText(currentUsername);
+            }}
+        );
     }
     /**
      * holds the current username
@@ -87,14 +99,6 @@ public class UsernameWidget
      * control which displays the username
      */
     private Label usernameValue;
-    /**
-     * updates logged in username
-     */
-    private static final Timer timer = new Timer("UserUpdateTimer"); //$NON-NLS-1$
-    /**
-     * task responsible for updating logged in user
-     */
-    private TimerTask task;
     /**
      * indicates no authenticated user
      */

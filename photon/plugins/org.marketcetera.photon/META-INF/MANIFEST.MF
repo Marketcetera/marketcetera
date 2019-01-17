@@ -37,6 +37,9 @@ Require-Bundle: org.marketcetera.core,
  org.marketcetera.modules.mdata.core
 Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.actions,
+ org.marketcetera.photon.commands,
+ org.marketcetera.photon.event,
+ org.marketcetera.photon.messagehistory,
  org.marketcetera.photon.parser,
  org.marketcetera.photon.preferences,
  org.marketcetera.photon.ui,
@@ -44,7 +47,10 @@ Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.ui.marketdata,
  org.marketcetera.photon.views,
  org.marketcetera.photon.views.fixmessagedetail,
- org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport
+ org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport,
+ org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data,
+ org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.providers,
+ org.marketcetera.photon.views.providers
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Eclipse-ExtensibleAPI: true

@@ -23,6 +23,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDQuote#getSize <em>Size</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDQuote#getSource <em>Source</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDQuote#getTime <em>Time</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.MDQuote#getExchange <em>Exchange</em>}</li>
  * </ul>
  * </p>
  *
@@ -78,5 +79,31 @@ public interface MDQuote
      * @generated
      */
     long getTime();
+
+    /**
+     * Returns the value of the '<em><b>Exchange</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Exchange</em>' attribute isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Exchange</em>' attribute.
+     * @see #setExchange(String)
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDQuote_Exchange()
+     * @model
+     * @generated
+     */
+    String getExchange();
+
+    /**
+     * Sets the value of the '{@link org.marketcetera.photon.model.marketdata.MDQuote#getExchange <em>Exchange</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Exchange</em>' attribute.
+     * @see #getExchange()
+     * @generated
+     */
+    void setExchange(String value);
 
 } // MDQuote

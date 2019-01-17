@@ -29,6 +29,8 @@ import org.marketcetera.util.misc.ClassVersion;
  *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDTopOfBookImpl#getBidPrice <em>Bid Price</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDTopOfBookImpl#getAskSize <em>Ask Size</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDTopOfBookImpl#getAskPrice <em>Ask Price</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDTopOfBookImpl#getBidExchange <em>Bid Exchange</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDTopOfBookImpl#getAskExchange <em>Ask Exchange</em>}</li>
  * </ul>
  * </p>
  *
@@ -119,6 +121,46 @@ public class MDTopOfBookImpl
      * @ordered
      */
     protected volatile BigDecimal askPrice = ASK_PRICE_EDEFAULT;
+
+    /**
+     * The default value of the '{@link #getBidExchange() <em>Bid Exchange</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getBidExchange()
+     * @generated
+     * @ordered
+     */
+    protected static final String BID_EXCHANGE_EDEFAULT = ""; //$NON-NLS-1$
+
+    /**
+     * The cached value of the '{@link #getBidExchange() <em>Bid Exchange</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getBidExchange()
+     * @generated
+     * @ordered
+     */
+    protected volatile String bidExchange = BID_EXCHANGE_EDEFAULT;
+
+    /**
+     * The default value of the '{@link #getAskExchange() <em>Ask Exchange</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getAskExchange()
+     * @generated
+     * @ordered
+     */
+    protected static final String ASK_EXCHANGE_EDEFAULT = ""; //$NON-NLS-1$
+
+    /**
+     * The cached value of the '{@link #getAskExchange() <em>Ask Exchange</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getAskExchange()
+     * @generated
+     * @ordered
+     */
+    protected volatile String askExchange = ASK_EXCHANGE_EDEFAULT;
 
     /**
      * <!-- begin-user-doc -->
@@ -254,6 +296,60 @@ public class MDTopOfBookImpl
      * <!-- end-user-doc -->
      * @generated
      */
+    public String getBidExchange()
+    {
+        return bidExchange;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setBidExchange(String newBidExchange)
+    {
+        String oldBidExchange = bidExchange;
+        bidExchange = newBidExchange;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_TOP_OF_BOOK__BID_EXCHANGE,
+                                          oldBidExchange,
+                                          bidExchange));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public String getAskExchange()
+    {
+        return askExchange;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setAskExchange(String newAskExchange)
+    {
+        String oldAskExchange = askExchange;
+        askExchange = newAskExchange;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_TOP_OF_BOOK__ASK_EXCHANGE,
+                                          oldAskExchange,
+                                          askExchange));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     @Override
     public Object eGet(int featureID,
                        boolean resolve,
@@ -268,6 +364,10 @@ public class MDTopOfBookImpl
                 return getAskSize();
             case MDPackage.MD_TOP_OF_BOOK__ASK_PRICE:
                 return getAskPrice();
+            case MDPackage.MD_TOP_OF_BOOK__BID_EXCHANGE:
+                return getBidExchange();
+            case MDPackage.MD_TOP_OF_BOOK__ASK_EXCHANGE:
+                return getAskExchange();
         }
         return super.eGet(featureID,
                           resolve,
@@ -296,6 +396,12 @@ public class MDTopOfBookImpl
             case MDPackage.MD_TOP_OF_BOOK__ASK_PRICE:
                 setAskPrice((BigDecimal) newValue);
                 return;
+            case MDPackage.MD_TOP_OF_BOOK__BID_EXCHANGE:
+                setBidExchange((String) newValue);
+                return;
+            case MDPackage.MD_TOP_OF_BOOK__ASK_EXCHANGE:
+                setAskExchange((String) newValue);
+                return;
         }
         super.eSet(featureID,
                    newValue);
@@ -322,6 +428,12 @@ public class MDTopOfBookImpl
             case MDPackage.MD_TOP_OF_BOOK__ASK_PRICE:
                 setAskPrice(ASK_PRICE_EDEFAULT);
                 return;
+            case MDPackage.MD_TOP_OF_BOOK__BID_EXCHANGE:
+                setBidExchange(BID_EXCHANGE_EDEFAULT);
+                return;
+            case MDPackage.MD_TOP_OF_BOOK__ASK_EXCHANGE:
+                setAskExchange(ASK_EXCHANGE_EDEFAULT);
+                return;
         }
         super.eUnset(featureID);
     }
@@ -343,6 +455,10 @@ public class MDTopOfBookImpl
                 return ASK_SIZE_EDEFAULT == null ? askSize != null : !ASK_SIZE_EDEFAULT.equals(askSize);
             case MDPackage.MD_TOP_OF_BOOK__ASK_PRICE:
                 return ASK_PRICE_EDEFAULT == null ? askPrice != null : !ASK_PRICE_EDEFAULT.equals(askPrice);
+            case MDPackage.MD_TOP_OF_BOOK__BID_EXCHANGE:
+                return BID_EXCHANGE_EDEFAULT == null ? bidExchange != null : !BID_EXCHANGE_EDEFAULT.equals(bidExchange);
+            case MDPackage.MD_TOP_OF_BOOK__ASK_EXCHANGE:
+                return ASK_EXCHANGE_EDEFAULT == null ? askExchange != null : !ASK_EXCHANGE_EDEFAULT.equals(askExchange);
         }
         return super.eIsSet(featureID);
     }
@@ -367,6 +483,10 @@ public class MDTopOfBookImpl
         result.append(askSize);
         result.append(", askPrice: "); //$NON-NLS-1$
         result.append(askPrice);
+        result.append(", bidExchange: "); //$NON-NLS-1$
+        result.append(bidExchange);
+        result.append(", askExchange: "); //$NON-NLS-1$
+        result.append(askExchange);
         result.append(')');
         return result.toString();
     }

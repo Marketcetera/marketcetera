@@ -53,6 +53,10 @@
         <details key="suppressedSetVisibility" value="true"/>
       </eAnnotations>
     </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bidExchange" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="askExchange" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        defaultValueLiteral=""/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="MDMarketstat" eSuperTypes="#//MDItem">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="closePrice" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal">
@@ -121,6 +125,7 @@
         <details key="suppressedSetVisibility" value="true"/>
       </eAnnotations>
     </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Exchange" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="DepthOfBookProduct" instanceClassName="org.marketcetera.marketdata.Content"/>
   <eClassifiers xsi:type="ecore:EDataType" name="Instrument" instanceClassName="org.marketcetera.trade.Instrument"/>

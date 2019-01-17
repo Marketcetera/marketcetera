@@ -811,6 +811,7 @@ public class MarketData
                         ((MDQuoteImpl)currentEvent).setSize(newEvent.getSize());
                         ((MDQuoteImpl)currentEvent).setSource(newEvent.getExchange());
                         ((MDQuoteImpl)currentEvent).setTime(newEvent.getQuoteDate().getTime());
+                        ((MDQuoteImpl)currentEvent).setExchange(newEvent.getExchange());
                     }
                 }
             }
@@ -826,6 +827,7 @@ public class MarketData
                     quoteItem.setSize(newQuote.getSize());
                     quoteItem.setSource(newQuote.getExchange());
                     quoteItem.setTime(newQuote.getQuoteDate().getTime());
+                    quoteItem.setExchange(newQuote.getExchange());
                     newItems.add(quoteItem);
                 }
                 inCurrentList.addAll(newItems);
@@ -848,6 +850,9 @@ public class MarketData
                 return false;
             }
             if(inMdQuote.getSize().compareTo(inQuote.getSize()) != 0) {
+                return false;
+            }
+            if(inMdQuote.getExchange().compareTo(inQuote.getExchange()) != 0) {
                 return false;
             }
             return true;
@@ -928,6 +933,7 @@ public class MarketData
         {
             inItem.setPrice(null);
             inItem.setSize(null);
+            inItem.setExchange(null);
         }
     };
     /**
@@ -950,12 +956,14 @@ public class MarketData
                     inItem.setInstrument(ask.getInstrument());
                     inItem.setAskPrice(ask.getPrice());
                     inItem.setAskSize(ask.getSize());
+                    inItem.setAskExchange(ask.getExchange());
                     askFound = true;
                 } else if(quote instanceof BidEvent) {
                     BidEvent bid = (BidEvent)quote;
                     inItem.setInstrument(bid.getInstrument());
                     inItem.setBidPrice(bid.getPrice());
                     inItem.setBidSize(bid.getSize());
+                    inItem.setBidExchange(bid.getExchange());
                     bidFound = true;
                 }
             }
@@ -981,6 +989,7 @@ public class MarketData
         {
             inItem.setBidPrice(null);
             inItem.setBidSize(null);
+            inItem.setBidExchange(null);
         }
         /**
          * Clear the ask price.
@@ -991,6 +1000,7 @@ public class MarketData
         {
             inItem.setAskPrice(null);
             inItem.setAskSize(null);
+            inItem.setAskExchange(null);
         }
     };
     /**

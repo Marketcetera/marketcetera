@@ -12,7 +12,11 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -22,7 +26,11 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
@@ -35,14 +43,34 @@ import org.marketcetera.photon.core.ISymbolResolver;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.marketdata.ui.ReconnectMarketDataJob;
 import org.marketcetera.photon.preferences.PhotonPage;
-import org.marketcetera.photon.views.*;
-import org.marketcetera.quickfix.*;
+import org.marketcetera.photon.views.CurrencyOrderTicketController;
+import org.marketcetera.photon.views.CurrencyOrderTicketModel;
+import org.marketcetera.photon.views.FutureOrderTicketController;
+import org.marketcetera.photon.views.FutureOrderTicketModel;
+import org.marketcetera.photon.views.IOrderTicketController;
+import org.marketcetera.photon.views.OptionOrderTicketController;
+import org.marketcetera.photon.views.OptionOrderTicketModel;
+import org.marketcetera.photon.views.SecondaryIDCreator;
+import org.marketcetera.photon.views.StockOrderTicketController;
+import org.marketcetera.photon.views.StockOrderTicketModel;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.Strategy;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.NewOrReplaceOrder;
+import org.marketcetera.trade.Option;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 import org.rubypeople.rdt.core.RubyCore;
+
+import com.google.common.eventbus.EventBus;
 
 /* $License$ */
 
@@ -306,7 +334,33 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     public Logger getMainLogger() {
         return mainConsoleLogger;
     }
-
+    /**
+     * Post the given event to the event bus.
+     *
+     * @param inEvent an <code>Object</code> value
+     */
+    public void post(Object inEvent)
+    {
+        eventBus.post(inEvent);
+    }
+    /**
+     * Register the given listener with the event bus.
+     *
+     * @param inListener an <code>Object</code> value
+     */
+    public void register(Object inListener)
+    {
+        eventBus.register(inListener);
+    }
+    /**
+     * Unregister the given listener with the event bus.
+     *
+     * @param inListener an <code>Object</code> value
+     */
+    public void unregister(Object inListener)
+    {
+        eventBus.unregister(inListener);
+    }
     public static Logger getMainConsoleLogger() {
         return getDefault().getMainLogger();
     }
@@ -593,6 +647,8 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
      * Delay for rereading log4j configuration.
      */
     private static final int LOGGER_WATCH_DELAY = 20 * 1000;
+    
+    private static final EventBus eventBus = new EventBus();
 
     /**
      * Configure Logs

@@ -16,6 +16,8 @@ import org.marketcetera.photon.core.ILogoutService;
 import org.marketcetera.photon.core.ISymbolResolver;
 import org.marketcetera.photon.core.LogoutService;
 import org.marketcetera.photon.core.SymbolResolver;
+import org.marketcetera.photon.event.LoginEvent;
+import org.marketcetera.photon.event.LogoutEvent;
 import org.marketcetera.photon.positions.ui.IPositionLabelProvider;
 import org.marketcetera.photon.ui.LoginDialog;
 import org.marketcetera.util.misc.ClassVersion;
@@ -70,14 +72,17 @@ public class Activator implements BundleActivator {
                         }
                     });
                     if (cancelled.get()) {
+                        PhotonPlugin.getDefault().post(new LogoutEvent());
                         break;
                     }
                     if (helper.authenticate(credentials.get())) {
                         mCredentials = credentials.get();
                         PhotonPlugin.getDefault().setCurrentUser(mCredentials.getUsername());
+                        PhotonPlugin.getDefault().post(new LoginEvent(mCredentials.getUsername()));
                         return true;
                     }
                 }
+                PhotonPlugin.getDefault().post(new LogoutEvent());
                 return false;
             } else {
                 return helper.authenticate(current);
@@ -87,6 +92,7 @@ public class Activator implements BundleActivator {
         @Override
         public void invalidate() {
             mCredentials = null;
+            PhotonPlugin.getDefault().post(new LogoutEvent());
         }
     }
 

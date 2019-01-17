@@ -30,6 +30,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDQuoteImpl#getSize <em>Size</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDQuoteImpl#getSource <em>Source</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDQuoteImpl#getTime <em>Time</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.impl.MDQuoteImpl#getExchange <em>Exchange</em>}</li>
  * </ul>
  * </p>
  *
@@ -120,6 +121,26 @@ public class MDQuoteImpl
      * @ordered
      */
     protected volatile long time = TIME_EDEFAULT;
+
+    /**
+     * The default value of the '{@link #getExchange() <em>Exchange</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getExchange()
+     * @generated
+     * @ordered
+     */
+    protected static final String EXCHANGE_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getExchange() <em>Exchange</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getExchange()
+     * @generated
+     * @ordered
+     */
+    protected volatile String exchange = EXCHANGE_EDEFAULT;
 
     /**
      * <!-- begin-user-doc -->
@@ -255,6 +276,33 @@ public class MDQuoteImpl
      * <!-- end-user-doc -->
      * @generated
      */
+    public String getExchange()
+    {
+        return exchange;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setExchange(String newExchange)
+    {
+        String oldExchange = exchange;
+        exchange = newExchange;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_QUOTE__EXCHANGE,
+                                          oldExchange,
+                                          exchange));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     @Override
     public Object eGet(int featureID,
                        boolean resolve,
@@ -269,6 +317,8 @@ public class MDQuoteImpl
                 return getSource();
             case MDPackage.MD_QUOTE__TIME:
                 return getTime();
+            case MDPackage.MD_QUOTE__EXCHANGE:
+                return getExchange();
         }
         return super.eGet(featureID,
                           resolve,
@@ -297,6 +347,9 @@ public class MDQuoteImpl
             case MDPackage.MD_QUOTE__TIME:
                 setTime((Long) newValue);
                 return;
+            case MDPackage.MD_QUOTE__EXCHANGE:
+                setExchange((String) newValue);
+                return;
         }
         super.eSet(featureID,
                    newValue);
@@ -323,6 +376,9 @@ public class MDQuoteImpl
             case MDPackage.MD_QUOTE__TIME:
                 setTime(TIME_EDEFAULT);
                 return;
+            case MDPackage.MD_QUOTE__EXCHANGE:
+                setExchange(EXCHANGE_EDEFAULT);
+                return;
         }
         super.eUnset(featureID);
     }
@@ -344,6 +400,8 @@ public class MDQuoteImpl
                 return SOURCE_EDEFAULT == null ? source != null : !SOURCE_EDEFAULT.equals(source);
             case MDPackage.MD_QUOTE__TIME:
                 return time != TIME_EDEFAULT;
+            case MDPackage.MD_QUOTE__EXCHANGE:
+                return EXCHANGE_EDEFAULT == null ? exchange != null : !EXCHANGE_EDEFAULT.equals(exchange);
         }
         return super.eIsSet(featureID);
     }
@@ -368,6 +426,8 @@ public class MDQuoteImpl
         result.append(source);
         result.append(", time: "); //$NON-NLS-1$
         result.append(time);
+        result.append(", Exchange: "); //$NON-NLS-1$
+        result.append(exchange);
         result.append(')');
         return result.toString();
     }

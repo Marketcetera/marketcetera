@@ -20,6 +20,8 @@ import org.marketcetera.util.misc.ClassVersion;
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getBidPrice <em>Bid Price</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getAskSize <em>Ask Size</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getAskPrice <em>Ask Price</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getBidExchange <em>Bid Exchange</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getAskExchange <em>Ask Exchange</em>}</li>
  * </ul>
  * </p>
  *
@@ -75,5 +77,29 @@ public interface MDTopOfBook
      * @generated
      */
     BigDecimal getAskPrice();
+
+    String getBidExchange();
+
+    /**
+     * Sets the value of the '{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getBidExchange <em>Bid Exchange</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Bid Exchange</em>' attribute.
+     * @see #getBidExchange()
+     * @generated
+     */
+    void setBidExchange(String value);
+
+    String getAskExchange();
+
+    /**
+     * Sets the value of the '{@link org.marketcetera.photon.model.marketdata.MDTopOfBook#getAskExchange <em>Ask Exchange</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Ask Exchange</em>' attribute.
+     * @see #getAskExchange()
+     * @generated
+     */
+    void setAskExchange(String value);
 
 } // MDTopOfBook
