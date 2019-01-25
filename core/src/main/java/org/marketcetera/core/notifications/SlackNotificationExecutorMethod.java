@@ -109,7 +109,6 @@ public class SlackNotificationExecutorMethod
                 payloadBuilder.append("\\n");
                 payloadBuilder.append("```");
                 String body = getBody(inNotification);
-                body = body.replaceAll("\n","\\n");
                 payloadBuilder.append(body);
                 payloadBuilder.append("```\"");
                 if(params != null) {
