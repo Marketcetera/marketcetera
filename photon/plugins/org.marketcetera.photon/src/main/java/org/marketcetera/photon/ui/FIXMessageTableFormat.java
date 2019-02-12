@@ -348,11 +348,7 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
              */
             else if(objValue instanceof BigDecimal && fieldNum != 201) {
                 BigDecimal n = (BigDecimal)objValue;
-                if(n.scale() <= NUM_DIGITS) {
-                    return n.toPlainString();
-                } else {
-                    return n.setScale(NUM_DIGITS, BigDecimal.ROUND_DOWN).toPlainString() + "..."; //$NON-NLS-1$
-                }
+                return n.toPlainString();
             }
             if(textValue == null) {
                 textValue = objValue.toString();
