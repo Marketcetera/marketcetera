@@ -1,6 +1,7 @@
 package org.marketcetera.photon.internal.positions.ui;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
@@ -220,8 +221,11 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
         if (n == null) {
             return Messages.POSITIONS_TABLE_UNKNOWN_VALUE__LABEL.getText();
         } else if (n instanceof BigDecimal) {
-            return ((BigDecimal) n).setScale(2, BigDecimal.ROUND_HALF_UP)
-                    .toPlainString();
+            BigDecimal value = (BigDecimal)n;
+            if(value.scale() < 2) {
+                value = value.setScale(2,RoundingMode.HALF_UP);
+            }
+            return value.toPlainString();
         } else {
             return n.toString();
         }

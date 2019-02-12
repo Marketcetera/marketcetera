@@ -14,8 +14,11 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.ecore.EAttribute;
 import org.marketcetera.core.position.MarketDataSupport;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
+import org.marketcetera.photon.marketdata.MarketDataEventBus;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
 import org.marketcetera.photon.model.marketdata.MDPackage;
@@ -31,6 +34,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
 
 /* $License$ */
 
@@ -77,25 +81,58 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	 */
 	private static final BigDecimal NULL = new BigDecimal(Integer.MIN_VALUE);
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param marketData
-	 *            the market data provider
-	 * @throws IllegalArgumentException
-	 *             if marketData is null
-	 */
-	public PhotonPositionMarketData(IMarketData marketData) {
-		Validate.notNull(marketData);
-		mMarketData = marketData;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param inMarketData the market data provider
+     * @throws IllegalArgumentException if marketData is null
+     */
+    public PhotonPositionMarketData(IMarketData inMarketData)
+    {
+        Validate.notNull(inMarketData);
+        mMarketData = inMarketData;
+        MarketDataEventBus.register(this);
+    }
+    /**
+     * Receive an updated market stat event.
+     *
+     * @param inEvent a <code>MarketstatEvent</code> value
+     */
+    @Subscribe
+    public void receiveMarketStat(MarketstatEvent inEvent)
+    {
+        Instrument instrument = inEvent.getInstrument();
+        BigDecimal newValue = inEvent.getClose();
+        updateCache(instrument, newValue, mClosingPriceCache);
+        InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
+        synchronized (mListeners) {
+            if (mDisposed.get()) return;
+            for (InstrumentMarketDataListener listener : mListeners.get(instrument)) {
+                listener.closePriceChanged(event);
+            }
+        }
+    }
+    @Subscribe
+    public void receiveTrade(TradeEvent inEvent)
+    {
+        Instrument instrument = inEvent.getInstrument();
+        BigDecimal newValue = inEvent.getPrice();
+        updateCache(instrument, newValue, mLatestTickCache);
+        InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
+        synchronized (mListeners) {
+            if (mDisposed.get()) return;
+            for (InstrumentMarketDataListener listener : mListeners.get(instrument)) {
+                listener.symbolTraded(event);
+            }
+        }
+    }
 
 	@Override
 	public BigDecimal getLastTradePrice(Instrument instrument) {
-		Validate.notNull(instrument);
-		// implementation choice to only return the last trade price if it's already known
-		// not worth it to set up a new data flow
-		return getCachedValue(mLatestTickCache, instrument);
+	    Validate.notNull(instrument);
+	    // implementation choice to only return the last trade price if it's already known
+	    // not worth it to set up a new data flow
+	    return getCachedValue(mLatestTickCache, instrument);
 	}
 
 	@Override
@@ -268,8 +305,10 @@ public class PhotonPositionMarketData implements MarketDataSupport {
         return true;
     }
 
-	@Override
-	public void dispose() {
+    @Override
+    public void dispose()
+    {
+        MarketDataEventBus.unregister(this);
 		if (mDisposed.compareAndSet(false, true)) {
 			Set<Map.Entry<Instrument, InstrumentMarketDataListener>> entries;
 			synchronized (mListeners) {

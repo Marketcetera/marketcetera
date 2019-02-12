@@ -36,6 +36,7 @@ import org.marketcetera.marketdata.core.webservice.ConnectionException;
 import org.marketcetera.marketdata.core.webservice.UnknownRequestException;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
+import org.marketcetera.photon.marketdata.MarketDataEventBus;
 import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDItem;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
@@ -925,6 +926,7 @@ public class MarketData
                     inItem.setExchange(trade.getExchange());
                     inItem.setPrice(trade.getPrice());
                     inItem.setSize(trade.getSize());
+                    MarketDataEventBus.post(trade);
                 }
             }
         }
@@ -1025,6 +1027,7 @@ public class MarketData
                     inItem.setVolumeTraded(statEvent.getLow()); // this is actually low price
                     inItem.setPreviousClosePrice(statEvent.getPreviousClose()); // this is right!
                     inItem.setClosePrice(statEvent.getClose());
+                    MarketDataEventBus.post(statEvent);
                 }
             }
         }

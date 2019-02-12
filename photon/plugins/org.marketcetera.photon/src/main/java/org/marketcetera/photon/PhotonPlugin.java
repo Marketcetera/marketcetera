@@ -82,8 +82,10 @@ import com.google.common.eventbus.EventBus;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public class PhotonPlugin extends AbstractUIPlugin implements Messages,
-        IPropertyChangeListener {
+public class PhotonPlugin
+        extends AbstractUIPlugin
+        implements Messages,IPropertyChangeListener
+{
 
     public static final String ID = "org.marketcetera.photon"; //$NON-NLS-1$
 

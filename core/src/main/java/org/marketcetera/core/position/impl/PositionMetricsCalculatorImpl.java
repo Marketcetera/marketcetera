@@ -132,8 +132,10 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
      * @param closePrice
      *            the price at which the position is closing
      */
-    private void processClose(final BigDecimal quantity, final BigDecimal openPrice,
-            final BigDecimal closePrice) {
+    private void processClose(final BigDecimal quantity,
+                              final BigDecimal openPrice,
+                              final BigDecimal closePrice)
+    {
         // subtract closePrice from openPrice since quantity has opposite sign
         // more readable may be:
         // quantity.negate().multiply(closePrice.subtract(openPrice))
@@ -186,7 +188,16 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
         public int signum() {
             return quantity.signum();
         }
-
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("CostElement [quantity=").append(quantity).append(", cost=").append(cost).append("]");
+            return builder.toString();
+        }
     }
 
     private class PositionElement {
@@ -196,6 +207,16 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
         public PositionElement(BigDecimal quantity, BigDecimal price) {
             this.quantity = quantity;
             this.price = price;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("PositionElement [quantity=").append(quantity).append(", price=").append(price).append("]");
+            return builder.toString();
         }
     }
 

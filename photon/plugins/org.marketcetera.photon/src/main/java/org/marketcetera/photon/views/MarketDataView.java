@@ -318,7 +318,7 @@ public final class MarketDataView
                                "marketStat", //$NON-NLS-1$
                                MDPackage.Literals.MD_MARKETSTAT__VOLUME_TRADED)
         };
-        mViewer.setLabelProvider(new ObservableMapLabelProvider(maps));
+        mViewer.setLabelProvider(new MarketDataViewLabelProvider(maps));
         mViewer.setUseHashlookup(true);
         mItems = WritableList.withElementType(MarketDataViewItem.class);
         mViewer.setInput(mItems);
@@ -1032,7 +1032,82 @@ public final class MarketDataView
         }
     }
     /**
-     * 
+     * Provides labels and format for the market data view table.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class MarketDataViewLabelProvider
+            extends ObservableMapLabelProvider
+    {
+        /**
+         * Create a new MarketDataViewTableFormat instance.
+         *
+         * @param inAttributeMap
+         */
+        public MarketDataViewLabelProvider(IObservableMap inAttributeMap)
+        {
+            super(inAttributeMap);
+        }
+        /**
+         * Create a new MarketDataViewTableFormat instance.
+         *
+         * @param inAttributeMaps
+         */
+        public MarketDataViewLabelProvider(IObservableMap[] inAttributeMaps)
+        {
+            super(inAttributeMaps);
+        }
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider#getColumnText(java.lang.Object, int)
+         */
+        @Override
+        public String getColumnText(Object inElement,
+                                    int inColumnIndex)
+        {
+            if(inElement == null) {
+                return null;
+            }
+            MarketDataViewItem item = (MarketDataViewItem)inElement;
+            switch(inColumnIndex) {
+                case 0:
+                    return item.getSymbol();
+                case 1:
+                    return item.getLatestTick().getExchange();
+                case 2:
+                    return item.getLatestTick().getPrice()==null?null:item.getLatestTick().getPrice().toPlainString();
+                case 3:
+                    return item.getLatestTick().getSize()==null?null:item.getLatestTick().getSize().toPlainString();
+                case 4:
+                    return item.getTopOfBook()==null?null:item.getTopOfBook().getBidExchange();
+                case 5:
+                    return item.getTopOfBook()==null?null:item.getTopOfBook().getBidSize()==null?null:item.getTopOfBook().getBidSize().toPlainString();
+                case 6:
+                    return item.getTopOfBook()==null?null:item.getTopOfBook().getBidPrice()==null?null:item.getTopOfBook().getBidPrice().toPlainString();
+                case 7:
+                    return item.getTopOfBook()==null?null:item.getTopOfBook().getAskPrice()==null?null:item.getTopOfBook().getAskPrice().toPlainString();
+                case 8:
+                    return item.getTopOfBook()==null?null:item.getTopOfBook().getAskSize()==null?null:item.getTopOfBook().getAskSize().toPlainString();
+                case 9:
+                    return item.getTopOfBook()==null?null:item.getTopOfBook().getAskExchange();
+                case 10:
+                    return item.getMarketStat()==null?null:item.getMarketStat().getPreviousClosePrice()==null?null:item.getMarketStat().getPreviousClosePrice().toPlainString();
+                case 11:
+                    return item.getMarketStat()==null?null:item.getMarketStat().getOpenPrice()==null?null:item.getMarketStat().getOpenPrice().toPlainString();
+                case 12:
+                    return item.getMarketStat()==null?null:item.getMarketStat().getHighPrice()==null?null:item.getMarketStat().getHighPrice().toPlainString();
+                case 13:
+                    return item.getMarketStat()==null?null:item.getMarketStat().getLowPrice()==null?null:item.getMarketStat().getLowPrice().toPlainString();
+                case 14:
+                    return item.getMarketStat()==null?null:item.getMarketStat().getVolumeTraded()==null?null:item.getMarketStat().getVolumeTraded().toPlainString();
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }
+    }
+    /**
+     * provides a service to use when adding instruments
      */
     private ScheduledExecutorService addInstrumentService = Executors.newScheduledThreadPool(1);
     /**
