@@ -50,8 +50,6 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 
 	private static final Class<?>[] NUMERIC_TYPES = { Number.class, Date.class,
 			Calendar.class };
-	
-	private static final int NUM_DIGITS = 6;
 
 	private final String assignedViewID;
 
