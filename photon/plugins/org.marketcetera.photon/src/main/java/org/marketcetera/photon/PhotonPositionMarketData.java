@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.Validate;
@@ -14,7 +13,9 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.ecore.EAttribute;
 import org.marketcetera.core.position.MarketDataSupport;
+import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
@@ -58,10 +59,8 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	 * mListeners synchronizes access to the following three collections.
 	 */
 	private final SetMultimap<Instrument, InstrumentMarketDataListener> mListeners = HashMultimap.create();
-	private final Map<Instrument, IMarketDataReference<MDLatestTick>> mLatestTickReferences = Maps
-			.newHashMap();
-	private final Map<Instrument, IMarketDataReference<MDMarketstat>> mStatReferences = Maps
-			.newHashMap();
+	private final Map<Instrument, IMarketDataReference<MDLatestTick>> mLatestTickReferences = Maps.newHashMap();
+	private final Map<Instrument, IMarketDataReference<MDMarketstat>> mStatReferences = Maps.newHashMap();
     /*
      * These caches allow easy implementation of getLastTradePrice,
      * getClosingPrice, getOptionMultiplier and getFutureMultiplier. They also allow notification to
@@ -69,11 +68,12 @@ public class PhotonPositionMarketData implements MarketDataSupport {
      * which is especially important with closing price and option multiplier
      * that rarely change.
      */
-    private final ConcurrentMap<Instrument, BigDecimal> mLatestTickCache = new ConcurrentHashMap<Instrument, BigDecimal>();
-    private final ConcurrentMap<Instrument, BigDecimal> mClosingPriceCache = new ConcurrentHashMap<Instrument, BigDecimal>();
-    private final ConcurrentMap<Instrument, BigDecimal> mOptionMultiplierCache = new ConcurrentHashMap<Instrument, BigDecimal>();
-    private final ConcurrentMap<Instrument, BigDecimal> mFutureMultiplierCache = new ConcurrentHashMap<Instrument, BigDecimal>();
-
+    private final Map<Instrument, BigDecimal> mLatestTickCache = new ConcurrentHashMap<Instrument, BigDecimal>();
+    private final Map<Instrument, BigDecimal> mClosingPriceCache = new ConcurrentHashMap<Instrument, BigDecimal>();
+    private final Map<Instrument, BigDecimal> mOptionMultiplierCache = new ConcurrentHashMap<Instrument, BigDecimal>();
+    private final Map<Instrument, BigDecimal> mFutureMultiplierCache = new ConcurrentHashMap<Instrument, BigDecimal>();
+    private final Map<Instrument, BigDecimal> mBidCache = new ConcurrentHashMap<Instrument,BigDecimal>();
+    private final Map<Instrument, BigDecimal> mAskCache = new ConcurrentHashMap<Instrument,BigDecimal>();
 	/*
 	 * Marks null price for the ConcurrentMap caches which don't allow null. This is better than
 	 * removing keys since it allows the concurrent put method to be used in {@link
@@ -112,21 +112,57 @@ public class PhotonPositionMarketData implements MarketDataSupport {
             }
         }
     }
+    /**
+     * Receive a trade event.
+     *
+     * @param inEvent a <code>TradeEvent</code> value
+     */
     @Subscribe
     public void receiveTrade(TradeEvent inEvent)
     {
         Instrument instrument = inEvent.getInstrument();
         BigDecimal newValue = inEvent.getPrice();
-        updateCache(instrument, newValue, mLatestTickCache);
-        InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
+        updateCache(instrument,
+                    newValue,
+                    mLatestTickCache);
+        InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this,
+                                                                        newValue);
         synchronized (mListeners) {
             if (mDisposed.get()) return;
-            for (InstrumentMarketDataListener listener : mListeners.get(instrument)) {
+            for(InstrumentMarketDataListener listener : mListeners.get(instrument)) {
                 listener.symbolTraded(event);
             }
         }
     }
-
+    /**
+     * Receive a quote event.
+     *
+     * @param inEvent a <code>QuoteEvent</code> value
+     */
+    @Subscribe
+    public void receiveQuote(QuoteEvent inEvent)
+    {
+        Instrument instrument = inEvent.getInstrument();
+        BigDecimal newValue = inEvent.getPrice();
+        Map<Instrument,BigDecimal> quoteCache = inEvent instanceof BidEvent ? mBidCache : mAskCache;
+        updateCache(instrument,
+                    newValue,
+                    quoteCache);
+        InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this,
+                                                                        newValue);
+        synchronized(mListeners) {
+            if(mDisposed.get()) {
+                return;
+            }
+            for(InstrumentMarketDataListener listener : mListeners.get(instrument)) {
+                if(inEvent instanceof BidEvent) {
+                    listener.bidChanged(event);
+                } else {
+                    listener.askChanged(event);
+                }
+            }
+        }
+    }
 	@Override
 	public BigDecimal getLastTradePrice(Instrument instrument) {
 	    Validate.notNull(instrument);
@@ -158,13 +194,6 @@ public class PhotonPositionMarketData implements MarketDataSupport {
         // not worth it to set up a new data flow
         return getCachedValue(mFutureMultiplierCache, future);
 	}
-
-	private BigDecimal getCachedValue(final ConcurrentMap<Instrument, BigDecimal> cache,
-			final Instrument symbol) {
-	    BigDecimal cached = cache.get(symbol);
-		return cached == NULL ? null : cached;
-	}
-
     @Override
     public void addInstrumentMarketDataListener(Instrument inInstrument,
                                                 InstrumentMarketDataListener inListener)
@@ -229,7 +258,18 @@ public class PhotonPositionMarketData implements MarketDataSupport {
             ref.dispose();
         }
     }
-
+    /**
+     * Get the cached value for the given instrument from the given cache.
+     *
+     * @param inCache a <code>Map&lt;Instrument,BigDecimal&gt;</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>BigDecimal</code> value or <code>null</code>
+     */
+    private BigDecimal getCachedValue(Map<Instrument,BigDecimal> inCache,
+                                      Instrument inInstrument) {
+        BigDecimal cached = inCache.get(inInstrument);
+        return cached == NULL ? null : cached;
+    }
 	private void fireSymbolTraded(final MDLatestTick item) {
 	    Instrument instrument = item.getInstrument();
         BigDecimal newValue = item.getPrice();
@@ -289,7 +329,7 @@ public class PhotonPositionMarketData implements MarketDataSupport {
      */
     private boolean updateCache(final Instrument instrument,
                                 BigDecimal newValue,
-                                final ConcurrentMap<Instrument,BigDecimal> cache)
+                                Map<Instrument,BigDecimal> cache)
     {
         BigDecimal oldValue = cache.put(instrument,
                                         newValue == null ? NULL : newValue);

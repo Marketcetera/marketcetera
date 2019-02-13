@@ -968,6 +968,7 @@ public class MarketData
                     inItem.setBidExchange(bid.getExchange());
                     bidFound = true;
                 }
+                MarketDataEventBus.post(quote);
             }
             if(!bidFound) {
                 clearBid(inItem);
