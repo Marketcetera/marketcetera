@@ -19,7 +19,9 @@ import org.marketcetera.core.position.Trade;
  * @version $Id$
  * @since 1.5.0
  */
-public class BasicCalculator implements PositionMetricsCalculator {
+public class BasicCalculator
+        implements PositionMetricsCalculator
+{
 
     private List<Trade<?>> mTrades = new ArrayList<Trade<?>>();
     private BigDecimal mTick;
@@ -34,7 +36,22 @@ public class BasicCalculator implements PositionMetricsCalculator {
     public PositionMetrics tick(String current) {
         return tick(new BigDecimal(current));
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.position.impl.PositionMetricsCalculator#bid(java.math.BigDecimal)
+     */
+    @Override
+    public PositionMetrics bid(BigDecimal inBidPrice)
+    {
+        return createPositionMetrics();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.position.impl.PositionMetricsCalculator#ask(java.math.BigDecimal)
+     */
+    @Override
+    public PositionMetrics ask(BigDecimal inAskPrice)
+    {
+        return createPositionMetrics();
+    }
     @Override
     public PositionMetrics tick(BigDecimal current) {
         this.mTick = current;
@@ -46,12 +63,17 @@ public class BasicCalculator implements PositionMetricsCalculator {
         mTrades.add(trade);
         return createPositionMetrics();
     }
-
-    private PositionMetrics createPositionMetrics() {
+    /**
+     * Create the position metrics based on the current values.
+     *
+     * @return a <code>PositionMetrics</code> value
+     */
+    private PositionMetrics createPositionMetrics()
+    {
         BigDecimal positionPL = getPositionPL();
         BigDecimal tradingPL = getTradingPL();
         BigDecimal totalPL = null;
-        if (mTick != null) {
+        if(mTick != null) {
             totalPL = positionPL.add(tradingPL);
         }
         return new PositionMetricsImpl(mIncomingPosition, getPosition(), positionPL,

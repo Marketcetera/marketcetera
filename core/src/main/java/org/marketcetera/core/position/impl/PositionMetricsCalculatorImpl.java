@@ -1,13 +1,12 @@
 package org.marketcetera.core.position.impl;
 
 import java.math.BigDecimal;
-import java.text.MessageFormat;
 import java.util.LinkedList;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.Trade;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -20,7 +19,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public final class PositionMetricsCalculatorImpl implements PositionMetricsCalculator {
+public final class PositionMetricsCalculatorImpl
+        implements PositionMetricsCalculator
+{
 
     private final BigDecimal mIncomingPosition;
     private final CostElement mPositionCost = new CostElement();
@@ -31,6 +32,9 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
     private BigDecimal mLastTradePrice;
     private BigDecimal mPosition;
     private BigDecimal mRealizedPL = BigDecimal.ZERO;
+    private BigDecimal lastBidPrice;
+    private BigDecimal lastAskPrice;
+    private boolean quoteChange;
 
     /**
      * Constructor.
@@ -52,10 +56,30 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
             mPositionElements.add(new PositionElement(mPosition, closingPrice));
         }
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.position.impl.PositionMetricsCalculator#bid(java.math.BigDecimal)
+     */
+    @Override
+    public PositionMetrics bid(BigDecimal inBidPrice)
+    {
+        lastBidPrice = inBidPrice;
+        quoteChange = true;
+        return createPositionMetrics();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.position.impl.PositionMetricsCalculator#ask(java.math.BigDecimal)
+     */
+    @Override
+    public PositionMetrics ask(BigDecimal inAskPrice)
+    {
+        lastAskPrice = inAskPrice;
+        quoteChange = true;
+        return createPositionMetrics();
+    }
     @Override
     public synchronized PositionMetrics tick(final BigDecimal tradePrice) {
         mLastTradePrice = tradePrice;
+        quoteChange = false;
         return createPositionMetrics();
     }
 
@@ -132,41 +156,54 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
      * @param closePrice
      *            the price at which the position is closing
      */
-    private void processClose(final BigDecimal quantity, final BigDecimal openPrice,
-            final BigDecimal closePrice) {
+    private void processClose(final BigDecimal quantity,
+                              final BigDecimal openPrice,
+                              final BigDecimal closePrice)
+    {
         // subtract closePrice from openPrice since quantity has opposite sign
         // more readable may be:
         // quantity.negate().multiply(closePrice.subtract(openPrice))
         mRealizedPL = mRealizedPL.add(quantity.multiply(openPrice.subtract(closePrice)));
         mUnrealizedCost.add(quantity, openPrice);
     }
-
-    private PositionMetrics createPositionMetrics() {
+    /**
+     * Create the position metrics based on the current state.
+     *
+     * @return a <code>PositionMetrics</code> value
+     */
+    private PositionMetrics createPositionMetrics()
+    {
         BigDecimal unrealizedPL = null;
         BigDecimal realizedPL = null;
         BigDecimal tradingPL = null;
         BigDecimal positionPL = null;
         BigDecimal totalPL = null;
-        if (mClosingPriceAvailable) {
+        BigDecimal positionPrice;
+        if(quoteChange) {
+            if(BigDecimalUtil.isNegative(mPosition)) {
+                positionPrice = lastBidPrice;
+            } else {
+                positionPrice = lastAskPrice;
+            }
+        } else {
+            positionPrice = mLastTradePrice;
+        }
+        if(mClosingPriceAvailable) {
             realizedPL = mRealizedPL;
-            if (mLastTradePrice != null) {
-                positionPL = mPositionCost.getPL(mLastTradePrice);
-                unrealizedPL = mUnrealizedCost.getPL(mLastTradePrice);
-                tradingPL = tradingCost.getPL(mLastTradePrice);
+            if(mLastTradePrice != null) {
+                positionPL = mPositionCost.getPL(positionPrice);
+                unrealizedPL = mUnrealizedCost.getPL(positionPrice);
+                tradingPL = tradingCost.getPL(positionPrice);
                 totalPL = realizedPL.add(unrealizedPL);
             }
         }
         PositionMetricsImpl positionMetrics = new PositionMetricsImpl(mIncomingPosition,
-                mPosition, positionPL, tradingPL, realizedPL, unrealizedPL, totalPL);
-        // Theoretically, both ways of calculating total PL should give the same results
-        assert !mClosingPriceAvailable || mLastTradePrice == null
-                || totalPL.compareTo(positionPL.add(tradingPL)) == 0 : positionMetrics;
-        if (SLF4JLoggerProxy.isDebugEnabled(this)) {
-            if (mLastTradePrice != null && totalPL.compareTo(positionPL.add(tradingPL)) != 0) {
-                SLF4JLoggerProxy.debug(this, MessageFormat.format(
-                        "There is a discrepancy in the total PL.\n{0}", positionMetrics)); //$NON-NLS-1$
-            }
-        }
+                                                                      mPosition,
+                                                                      positionPL,
+                                                                      tradingPL,
+                                                                      realizedPL,
+                                                                      unrealizedPL,
+                                                                      totalPL);
         return positionMetrics;
     }
 
@@ -186,7 +223,16 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
         public int signum() {
             return quantity.signum();
         }
-
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("CostElement [quantity=").append(quantity).append(", cost=").append(cost).append("]");
+            return builder.toString();
+        }
     }
 
     private class PositionElement {
@@ -196,6 +242,16 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
         public PositionElement(BigDecimal quantity, BigDecimal price) {
             this.quantity = quantity;
             this.price = price;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("PositionElement [quantity=").append(quantity).append(", price=").append(price).append("]");
+            return builder.toString();
         }
     }
 
