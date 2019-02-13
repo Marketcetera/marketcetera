@@ -188,6 +188,9 @@ public final class PositionMetricsCalculatorImpl
         } else {
             positionPrice = mLastTradePrice;
         }
+        if(positionPrice == null) {
+            positionPrice = BigDecimal.ZERO;
+        }
         if(mClosingPriceAvailable) {
             realizedPL = mRealizedPL;
             if(mLastTradePrice != null) {
