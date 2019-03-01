@@ -1115,7 +1115,9 @@ public final class MarketDataView
         private String render(BigDecimal inValue)
         {
             inValue = inValue.stripTrailingZeros();
-            if(inValue.scale() < 2) {
+            if(BigDecimal.ZERO.compareTo(inValue) == 0) {
+                inValue = inValue.setScale(2);
+            } else if(inValue.scale() < 2) {
                 inValue = inValue.setScale(2,RoundingMode.HALF_UP);
             }
             return inValue.toPlainString();

@@ -1,6 +1,7 @@
 package org.marketcetera.photon.ui;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -346,6 +347,12 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
              */
             else if(objValue instanceof BigDecimal && fieldNum != 201) {
                 BigDecimal n = (BigDecimal)objValue;
+                n = n.stripTrailingZeros();
+                if(BigDecimal.ZERO.compareTo(n) == 0) {
+                    n = n.setScale(2);
+                } else if(n.scale() < 2) {
+                    n = n.setScale(2,RoundingMode.HALF_UP);
+                }
                 return n.toPlainString();
             }
             if(textValue == null) {

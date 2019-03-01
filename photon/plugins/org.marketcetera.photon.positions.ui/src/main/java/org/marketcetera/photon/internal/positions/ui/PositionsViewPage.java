@@ -223,7 +223,9 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
         } else if (n instanceof BigDecimal) {
             BigDecimal value = (BigDecimal)n;
             value = value.stripTrailingZeros();
-            if(value.scale() < 2) {
+            if(BigDecimal.ZERO.compareTo(value) == 0) {
+                value = value.setScale(2);
+            } else if(value.scale() < 2) {
                 value = value.setScale(2,RoundingMode.HALF_UP);
             }
             return value.toPlainString();
