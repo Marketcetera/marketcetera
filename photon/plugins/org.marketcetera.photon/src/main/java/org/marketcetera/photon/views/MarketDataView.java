@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -1076,34 +1077,48 @@ public final class MarketDataView
                 case 1:
                     return item.getLatestTick().getExchange();
                 case 2:
-                    return item.getLatestTick().getPrice()==null?null:item.getLatestTick().getPrice().toPlainString();
+                    return item.getLatestTick().getPrice()==null?null:render(item.getLatestTick().getPrice());
                 case 3:
-                    return item.getLatestTick().getSize()==null?null:item.getLatestTick().getSize().toPlainString();
+                    return item.getLatestTick().getSize()==null?null:render(item.getLatestTick().getSize());
                 case 4:
                     return item.getTopOfBook()==null?null:item.getTopOfBook().getBidExchange();
                 case 5:
-                    return item.getTopOfBook()==null?null:item.getTopOfBook().getBidSize()==null?null:item.getTopOfBook().getBidSize().toPlainString();
+                    return item.getTopOfBook()==null?null:item.getTopOfBook().getBidSize()==null?null:render(item.getTopOfBook().getBidSize());
                 case 6:
-                    return item.getTopOfBook()==null?null:item.getTopOfBook().getBidPrice()==null?null:item.getTopOfBook().getBidPrice().toPlainString();
+                    return item.getTopOfBook()==null?null:item.getTopOfBook().getBidPrice()==null?null:render(item.getTopOfBook().getBidPrice());
                 case 7:
-                    return item.getTopOfBook()==null?null:item.getTopOfBook().getAskPrice()==null?null:item.getTopOfBook().getAskPrice().toPlainString();
+                    return item.getTopOfBook()==null?null:item.getTopOfBook().getAskPrice()==null?null:render(item.getTopOfBook().getAskPrice());
                 case 8:
-                    return item.getTopOfBook()==null?null:item.getTopOfBook().getAskSize()==null?null:item.getTopOfBook().getAskSize().toPlainString();
+                    return item.getTopOfBook()==null?null:item.getTopOfBook().getAskSize()==null?null:render(item.getTopOfBook().getAskSize());
                 case 9:
                     return item.getTopOfBook()==null?null:item.getTopOfBook().getAskExchange();
                 case 10:
-                    return item.getMarketStat()==null?null:item.getMarketStat().getPreviousClosePrice()==null?null:item.getMarketStat().getPreviousClosePrice().toPlainString();
+                    return item.getMarketStat()==null?null:item.getMarketStat().getPreviousClosePrice()==null?null:render(item.getMarketStat().getPreviousClosePrice());
                 case 11:
-                    return item.getMarketStat()==null?null:item.getMarketStat().getOpenPrice()==null?null:item.getMarketStat().getOpenPrice().toPlainString();
+                    return item.getMarketStat()==null?null:item.getMarketStat().getOpenPrice()==null?null:render(item.getMarketStat().getOpenPrice());
                 case 12:
-                    return item.getMarketStat()==null?null:item.getMarketStat().getHighPrice()==null?null:item.getMarketStat().getHighPrice().toPlainString();
+                    return item.getMarketStat()==null?null:item.getMarketStat().getHighPrice()==null?null:render(item.getMarketStat().getHighPrice());
                 case 13:
-                    return item.getMarketStat()==null?null:item.getMarketStat().getLowPrice()==null?null:item.getMarketStat().getLowPrice().toPlainString();
+                    return item.getMarketStat()==null?null:item.getMarketStat().getLowPrice()==null?null:render(item.getMarketStat().getLowPrice());
                 case 14:
-                    return item.getMarketStat()==null?null:item.getMarketStat().getVolumeTraded()==null?null:item.getMarketStat().getVolumeTraded().toPlainString();
+                    return item.getMarketStat()==null?null:item.getMarketStat().getVolumeTraded()==null?null:render(item.getMarketStat().getVolumeTraded());
                 default:
                     throw new UnsupportedOperationException();
             }
+        }
+        /**
+         * Renders a big decimal value as a string for display.
+         *
+         * @param inValue a <code>BigDecimal</code> value
+         * @return a <code>String</code> value
+         */
+        private String render(BigDecimal inValue)
+        {
+            inValue = inValue.stripTrailingZeros();
+            if(inValue.scale() < 2) {
+                inValue = inValue.setScale(2,RoundingMode.HALF_UP);
+            }
+            return inValue.toPlainString();
         }
     }
     /**

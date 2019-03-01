@@ -222,6 +222,7 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
             return Messages.POSITIONS_TABLE_UNKNOWN_VALUE__LABEL.getText();
         } else if (n instanceof BigDecimal) {
             BigDecimal value = (BigDecimal)n;
+            value = value.stripTrailingZeros();
             if(value.scale() < 2) {
                 value = value.setScale(2,RoundingMode.HALF_UP);
             }
