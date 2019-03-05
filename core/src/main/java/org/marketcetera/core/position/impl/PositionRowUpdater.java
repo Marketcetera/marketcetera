@@ -301,11 +301,15 @@ public final class PositionRowUpdater {
             }
         }
     }
-
-    private PositionMetrics recalculate() {
-        PositionMetricsCalculatorImpl calculator = new PositionMetricsCalculatorImpl(
-                mPositionRow.getPositionMetrics().getIncomingPosition(),
-                mClosePrice);
+    /**
+     * Recalculate the position rows.
+     *
+     * @return a <code>PositionMetrics</code> value
+     */
+    private PositionMetrics recalculate()
+    {
+        PositionMetricsCalculatorImpl calculator = new PositionMetricsCalculatorImpl(mPositionRow.getPositionMetrics().getIncomingPosition(),
+                                                                                     mClosePrice);
         // TODO: instrument specific functionality should be abstracted
         if (mPositionRow.getInstrument() instanceof Option) {
             mCalculator = new MultiplierCalculator(calculator, mMultiplier);

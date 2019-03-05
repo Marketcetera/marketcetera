@@ -45,15 +45,23 @@ public final class PositionMetricsCalculatorImpl
      *            the closing price that will be used to calculate position PL
      * @throws IllegalArgumentException if incomingPosition is null
      */
-    public PositionMetricsCalculatorImpl(final BigDecimal incomingPosition, BigDecimal closingPrice) {
+    public PositionMetricsCalculatorImpl(final BigDecimal incomingPosition,
+                                         BigDecimal closingPrice)
+    {
         Validate.notNull(incomingPosition);
         mIncomingPosition = incomingPosition;
         mPosition = incomingPosition;
+        closingPrice = closingPrice == null ? BigDecimal.ZERO : closingPrice;
         mClosingPriceAvailable = closingPrice != null;
-        if (mClosingPriceAvailable) {
-            mPositionCost.add(mPosition, closingPrice);
-            mUnrealizedCost.add(mPosition, closingPrice);
-            mPositionElements.add(new PositionElement(mPosition, closingPrice));
+        if(mClosingPriceAvailable) {
+            mPositionCost.add(mPosition,
+                              closingPrice);
+            mUnrealizedCost.add(mPosition,
+                                closingPrice);
+            mPositionElements.add(new PositionElement(mPosition,
+                                                      closingPrice));
+        } else {
+            System.out.println("COLIN: closing price unavailable");
         }
     }
     /* (non-Javadoc)
@@ -190,6 +198,9 @@ public final class PositionMetricsCalculatorImpl
         }
         if(positionPrice == null) {
             positionPrice = BigDecimal.ZERO;
+        }
+        if(mLastTradePrice == null) {
+            mLastTradePrice = lastBidPrice == null ? lastAskPrice : lastBidPrice;
         }
         if(mClosingPriceAvailable) {
             realizedPL = mRealizedPL;
