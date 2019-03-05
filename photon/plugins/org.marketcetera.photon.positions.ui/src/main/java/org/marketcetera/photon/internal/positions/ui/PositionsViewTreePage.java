@@ -87,10 +87,6 @@ public class PositionsViewTreePage extends PositionsViewPage {
             case 0:
                 return getGroupingValue(baseObject);
             case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
                 if (baseObject.getGrouping() != null) {
                     // summary row
                     return ""; //$NON-NLS-1$
@@ -179,7 +175,7 @@ public class PositionsViewTreePage extends PositionsViewPage {
                 }, new PositionRowConfigurer());
         // make grouping unrealized PL a bit wider
         mTree.getColumn(0).setWidth(150);
-        mTree.getColumn(6).setWidth(90);
+        mTree.getColumn(4).setWidth(90);
         mChooser = TreeComparatorChooser.install(mViewer, sorted, false);
         if (memento != null) {
             ColumnState.restore(mTree, memento);

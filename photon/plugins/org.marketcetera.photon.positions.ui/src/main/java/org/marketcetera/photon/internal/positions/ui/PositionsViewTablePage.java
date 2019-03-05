@@ -141,7 +141,7 @@ public class PositionsViewTablePage extends PositionsViewPage {
                 mTableFormat, new PositionRowConfigurer());
         mChooser = TableComparatorChooser.install(mViewer, sorted, false);
         // make unrealized PL a bit wider
-        mTable.getColumn(8).setWidth(90);
+        mTable.getColumn(4).setWidth(90);
         if (memento != null) {
             ColumnState.restore(mTable, memento);
             String sortState = memento.getString(TABLE_SORT_STATE_KEY);

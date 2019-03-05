@@ -238,19 +238,9 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
             TableFormat<PositionRow> {
         private static final String[] COLUMN_NAMES = new String[] {
                 Messages.POSITIONS_TABLE_INSTRUMENT_COLUMN__HEADING.getText(),
-                Messages.POSITIONS_TABLE_OPTION_ROOT_COLUMN__HEADING.getText(),
-                Messages.POSITIONS_TABLE_OPTION_EXPIRY_COLUMN__HEADING
-                        .getText(),
-                Messages.POSITIONS_TABLE_OPTION_TYPE_COLUMN__HEADING.getText(),
-                Messages.POSITIONS_TABLE_OPTION_STRIKE_PRICE_COLUMN__HEADING
-                        .getText(),
                 Messages.POSITIONS_TABLE_POSITION_COLUMN__HEADING.getText(),
-                Messages.POSITIONS_TABLE_INCOMING_COLUMN__HEADING.getText(),
-                Messages.POSITIONS_TABLE_POSITION_PL_COLUMN__HEADING.getText(),
-                Messages.POSITIONS_TABLE_TRADING_PL_COLUMN__HEADING.getText(),
                 Messages.POSITIONS_TABLE_REALIZED_PL_COLUMN__HEADING.getText(),
-                Messages.POSITIONS_TABLE_UNREALIZED_PL_COLUMN__HEADING
-                        .getText(),
+                Messages.POSITIONS_TABLE_UNREALIZED_PL_COLUMN__HEADING.getText(),
                 Messages.POSITIONS_TABLE_TOTAL_PL_COLUMN__HEADING.getText() };
 
         private int mOffset;
@@ -275,45 +265,17 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
         public Object getColumnValue(PositionRow baseObject, int column) {
             // TODO: instrument specific functionality that can be abstracted
             Instrument instrument = baseObject.getInstrument();
-            Option option = (instrument instanceof Option) ? (Option) instrument : null;
-            Future future = (instrument instanceof Future) ? (Future)instrument : null;
             PositionMetrics metrics = baseObject.getPositionMetrics();
             switch (column - mOffset) {
             case 0:
                 return getInstrumentLabel(instrument);
             case 1:
-                if(option != null) {
-                    return option.getSymbol();
-                }
-                if(future != null) {
-                    return future.getSymbol();
-                }
-                return null;
-            case 2:
-                if(option != null) {
-                    return InstrumentPrettyPrinter.printOptionExpiry(option);
-                }
-                if(future != null) {
-                    return InstrumentPrettyPrinter.printFutureExpiry(future);
-                }
-                return null;
-            case 3:
-                return option == null ? null : option.getType();
-            case 4:
-                return option == null ? null : option.getStrikePrice();
-            case 5:
                 return metrics.getPosition();
-            case 6:
-                return metrics.getIncomingPosition();
-            case 7:
-                return metrics.getPositionPL();
-            case 8:
-                return metrics.getTradingPL();
-            case 9:
+            case 2:
                 return metrics.getRealizedPL();
-            case 10:
+            case 3:
                 return metrics.getUnrealizedPL();
-            case 11:
+            case 4:
                 return metrics.getTotalPL();
             default:
                 throw new IllegalArgumentException(String.valueOf(column));

@@ -23,6 +23,7 @@ import org.marketcetera.photon.marketdata.MarketDataEventBus;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
 import org.marketcetera.photon.model.marketdata.MDPackage;
+import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
@@ -61,6 +62,7 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	private final SetMultimap<Instrument, InstrumentMarketDataListener> mListeners = HashMultimap.create();
 	private final Map<Instrument, IMarketDataReference<MDLatestTick>> mLatestTickReferences = Maps.newHashMap();
 	private final Map<Instrument, IMarketDataReference<MDMarketstat>> mStatReferences = Maps.newHashMap();
+    private final Map<Instrument, IMarketDataReference<MDTopOfBook>> mTopOfBookReferences = Maps.newHashMap();
     /*
      * These caches allow easy implementation of getLastTradePrice,
      * getClosingPrice, getOptionMultiplier and getFutureMultiplier. They also allow notification to
@@ -219,40 +221,58 @@ public class PhotonPositionMarketData implements MarketDataSupport {
                     statRef.get().eAdapters().add(mClosingPriceAdapter);
                 }
             }
+            IMarketDataReference<MDTopOfBook> topOfBookRef = mMarketData.getTopOfBook(inInstrument);
+            if(topOfBookRef == null) {
+                topOfBookRef = mMarketData.getTopOfBook(inInstrument);
+                if(topOfBookRef != null && topOfBookRef.get() != null) {
+                    mTopOfBookReferences.put(inInstrument,
+                                             topOfBookRef);
+                }
+            }
             mListeners.put(inInstrument, inListener);
         }
     }
 
-	@Override
-	public void removeInstrumentMarketDataListener(Instrument instrument, InstrumentMarketDataListener listener) {
-		Validate.noNullElements(new Object[] { instrument, listener });
-		List<IMarketDataReference<?>> toDispose = Lists.newArrayList();
-		synchronized (mListeners) {
-			IMarketDataReference<MDLatestTick> ref = mLatestTickReferences.get(instrument);
-			IMarketDataReference<MDMarketstat> statRef = mStatReferences.get(instrument);
-			Set<InstrumentMarketDataListener> listeners = mListeners.get(instrument);
-			listeners.remove(listener);
-			if (listeners.isEmpty()) {
-				if (ref != null) {
-					MDLatestTick tick = ref.get();
-					if (tick != null) {
-						tick.eAdapters().remove(mLatestTickAdapter);
-						mLatestTickReferences.remove(instrument);
-						mLatestTickCache.remove(instrument);
-						toDispose.add(ref);
-					}
-				}
-				if (statRef != null) {
-					MDMarketstat stat = statRef.get();
-					if (stat != null) {
-						stat.eAdapters().remove(mClosingPriceAdapter);
-						mStatReferences.remove(instrument);
-						mClosingPriceCache.remove(instrument);
-						toDispose.add(statRef);
-					}
-				}
-			}
-		}
+    @Override
+    public void removeInstrumentMarketDataListener(Instrument instrument,
+                                                   InstrumentMarketDataListener listener)
+    {
+        Validate.noNullElements(new Object[] { instrument, listener });
+        List<IMarketDataReference<?>> toDispose = Lists.newArrayList();
+        synchronized (mListeners) {
+            IMarketDataReference<MDLatestTick> ref = mLatestTickReferences.get(instrument);
+            IMarketDataReference<MDMarketstat> statRef = mStatReferences.get(instrument);
+            IMarketDataReference<MDTopOfBook> topOfBookRef = mTopOfBookReferences.get(instrument);
+            Set<InstrumentMarketDataListener> listeners = mListeners.get(instrument);
+            listeners.remove(listener);
+            if(listeners.isEmpty()) {
+                if(ref != null) {
+                    MDLatestTick tick = ref.get();
+                    if(tick != null) {
+                        tick.eAdapters().remove(mLatestTickAdapter);
+                        mLatestTickReferences.remove(instrument);
+                        mLatestTickCache.remove(instrument);
+                        toDispose.add(ref);
+                    }
+                }
+                if(statRef != null) {
+                    MDMarketstat stat = statRef.get();
+                    if(stat != null) {
+                        stat.eAdapters().remove(mClosingPriceAdapter);
+                        mStatReferences.remove(instrument);
+                        mClosingPriceCache.remove(instrument);
+                        toDispose.add(statRef);
+                    }
+                }
+                if(topOfBookRef != null) {
+                    MDTopOfBook topOfBook = topOfBookRef.get();
+                    if(topOfBook != null) {
+                        mTopOfBookReferences.remove(instrument);
+                        toDispose.add(topOfBookRef);
+                    }
+                }
+            }
+        }
         // dispose outside of the lock to avoid deadlock
         for(IMarketDataReference<?> ref : toDispose) {
             ref.dispose();
