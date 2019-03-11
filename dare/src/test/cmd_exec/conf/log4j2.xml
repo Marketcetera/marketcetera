@@ -104,6 +104,7 @@
     <!-- provides a nicely printed log of the messages -->
     <logger name="org.marketcetera.ors.brokers.Broker" level="debug"/>
     <logger name="quickfixj.event" level="info"/>
+    <logger name="display.quickfix.mina.initiator.IoSessionInitiator" level="info"/>
     <logger name="quickfixj.msg.incoming" level="info" additivity="false">
       <AppenderRef ref="FIX-INCOMING"/>
     </logger>
