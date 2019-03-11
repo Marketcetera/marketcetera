@@ -166,7 +166,7 @@
       <dependency>
         <groupId>quickfixj</groupId>
         <artifactId>quickfixj-all</artifactId>
-        <version>1.5.3-bd</version>
+        <version>1.5.3a-bd</version>
       </dependency>
       <!-- Compile: CXF -->
       <dependency>

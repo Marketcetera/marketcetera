@@ -1,11 +1,12 @@
 package org.marketcetera.core.notifications;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
 /**
- *
+ * Provides common behavior for notification executor methods.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -25,7 +26,7 @@ public abstract class AbstractNotificationExecutorMethod
                 doNotify(inNotification);
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
-                                      e);
+                                      ExceptionUtils.getRootCauseMessage(e));
             }
         }
     }
