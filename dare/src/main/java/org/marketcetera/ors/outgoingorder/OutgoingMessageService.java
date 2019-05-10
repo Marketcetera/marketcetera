@@ -1,7 +1,7 @@
 package org.marketcetera.ors.outgoingorder;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.ors.domain.OutgoingMessage;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.UserID;
 

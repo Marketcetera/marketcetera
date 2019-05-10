@@ -4,9 +4,9 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.ors.dao.UserService;
-import org.marketcetera.ors.security.SimpleUser;
 import org.springframework.beans.factory.annotation.Autowired;
 
 

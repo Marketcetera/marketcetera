@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.NoMoreIDsException;
@@ -16,7 +17,6 @@ import org.marketcetera.core.time.TimeFactory;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.ors.LongIDFactory;
 import org.marketcetera.ors.dao.ReportService;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;

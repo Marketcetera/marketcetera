@@ -5,10 +5,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;

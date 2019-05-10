@@ -10,6 +10,7 @@ import javax.persistence.PersistenceException;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.CoreException;
@@ -21,7 +22,6 @@ import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.ors.brokers.BrokerService;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.history.ReportHistoryServices;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.BrokerID;

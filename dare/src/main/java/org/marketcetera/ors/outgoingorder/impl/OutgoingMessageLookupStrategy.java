@@ -2,11 +2,11 @@ package org.marketcetera.ors.outgoingorder.impl;
 
 import java.util.Iterator;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.ors.dao.PersistentOutgoingMessage;
 import org.marketcetera.ors.dao.PersistentOutgoingMessageDao;
 import org.marketcetera.ors.dao.QPersistentOutgoingMessage;
 import org.marketcetera.ors.outgoingorder.IdentifyOwnerStrategy;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

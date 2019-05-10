@@ -19,8 +19,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.marketcetera.admin.User;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.core.instruments.InstrumentFromMessage;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.EntityBase;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Equity;

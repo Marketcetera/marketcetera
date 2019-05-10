@@ -15,6 +15,7 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.client.BrokerStatusListener;
 import org.marketcetera.client.BrokerStatusPublisher;
@@ -36,7 +37,6 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.Event;
 import org.marketcetera.ors.dao.ReportService;
 import org.marketcetera.ors.dao.UserService;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.ws.ClientSession;
 import org.marketcetera.ors.ws.ServiceProvider;
 import org.marketcetera.trade.BrokerID;

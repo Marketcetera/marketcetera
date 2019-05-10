@@ -9,11 +9,11 @@ import javax.persistence.PersistenceContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.admin.User;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.ors.dao.UserDao;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.security.ORSLoginModule;
 import org.marketcetera.ors.security.QSimpleUser;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.persist.SortDirection;

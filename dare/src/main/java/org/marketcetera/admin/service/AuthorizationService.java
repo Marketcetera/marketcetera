@@ -8,7 +8,7 @@ import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.Role;
 import org.marketcetera.admin.SupervisorPermission;
 import org.marketcetera.admin.User;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 

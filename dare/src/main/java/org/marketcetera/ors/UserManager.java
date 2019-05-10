@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.marketcetera.admin.User;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.client.ExtendedReportListener;
 import org.marketcetera.client.ReportListener;
@@ -16,7 +17,6 @@ import org.marketcetera.client.ReportPublisher;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.info.SessionInfo;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.ws.ClientSession;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXResponse;

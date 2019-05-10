@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.SystemUtils;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.persist.PersistenceException;

@@ -17,10 +17,10 @@ import org.marketcetera.admin.AdminClientFactory;
 import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.PermissionFactory;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.admin.rpc.AdminRpcService;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.test.MarketceteraTestBase;
 
 
@@ -123,7 +123,7 @@ public class AdminRpcServiceTest
                      adminClient.readUsers().size());
     }
     /**
-     * Test {@link AdminClient#updateUser(String, org.marketcetera.ors.security.SimpleUser)}.
+     * Test {@link AdminClient#updateUser(String, org.marketcetera.admin.impl.SimpleUser)}.
      *
      * @throws Exception if an unexpected error occurs
      */

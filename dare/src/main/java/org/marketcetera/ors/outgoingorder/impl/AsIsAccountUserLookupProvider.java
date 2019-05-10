@@ -1,8 +1,8 @@
 package org.marketcetera.ors.outgoingorder.impl;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.outgoingorder.AccountUserLookupProvider;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.UserID;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -9,9 +9,6 @@ import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
-import org.marketcetera.util.rpc.BaseClient;
-
-
 
 /* $License$ */
 
@@ -23,14 +20,13 @@ import org.marketcetera.util.rpc.BaseClient;
  * @since $Release$
  */
 public interface AdminClient
-        extends BaseClient
 {
     /**
      * Get permissions for the current user.
      *
-     * @return a <code>Set&lt;String&gt;</code> value
+     * @return a <code>Set&lt;Permission&gt;</code> value
      */
-    Set<String> getPermissionsForCurrentUser();
+    Set<Permission> getPermissionsForCurrentUser();
     /**
      * Create the given FIX session.
      *

@@ -3,7 +3,7 @@ package org.marketcetera.ors.dao;
 import java.util.List;
 
 import org.marketcetera.admin.User;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.UserID;

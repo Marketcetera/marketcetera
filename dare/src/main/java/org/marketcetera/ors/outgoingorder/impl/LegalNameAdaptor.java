@@ -3,9 +3,9 @@ package org.marketcetera.ors.outgoingorder.impl;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.outgoingorder.AccountUserLookupProvider;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;

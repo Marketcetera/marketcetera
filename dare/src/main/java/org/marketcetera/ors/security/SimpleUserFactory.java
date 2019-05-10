@@ -2,6 +2,7 @@ package org.marketcetera.ors.security;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserFactory;
+import org.marketcetera.admin.impl.SimpleUser;
 
 /* $License$ */
 

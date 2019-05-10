@@ -1,8 +1,8 @@
 package org.marketcetera.ors.dao;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.ors.domain.OutgoingMessage;
 import org.marketcetera.ors.domain.OutgoingMessageFactory;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.BrokerID;
 
 import quickfix.Message;

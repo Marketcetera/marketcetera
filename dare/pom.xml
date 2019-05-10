@@ -36,7 +36,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>admin-rpc-core</artifactId>
+      <artifactId>admin-core</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -194,7 +194,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>admin-rpc-client</artifactId>
+      <artifactId>admin-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

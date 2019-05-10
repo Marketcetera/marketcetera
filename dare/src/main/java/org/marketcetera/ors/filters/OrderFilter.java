@@ -1,7 +1,7 @@
 package org.marketcetera.ors.filters;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.misc.ClassVersion;
 
 

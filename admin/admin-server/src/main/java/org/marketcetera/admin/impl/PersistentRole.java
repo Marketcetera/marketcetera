@@ -12,7 +12,6 @@ import javax.persistence.Table;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.Role;
 import org.marketcetera.admin.User;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.NDEntityBase;
 
 
@@ -66,7 +65,7 @@ public class PersistentRole
     /**
      * subjects assigned to this role
      */
-    @ManyToMany(fetch=FetchType.EAGER,targetEntity=SimpleUser.class)
+    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentUser.class)
     private Set<User> subjects = new HashSet<>();
     /**
      * permissions granted to this role

@@ -3,10 +3,10 @@ package org.marketcetera.ors.dao;
 import java.util.List;
 import java.util.Set;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.ors.history.OrderStatus;
 import org.marketcetera.ors.history.PersistentOrderStatus;
 import org.marketcetera.ors.history.PersistentReport;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.springframework.data.domain.Page;

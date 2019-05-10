@@ -1,6 +1,6 @@
 package org.marketcetera.ors.domain;
 
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.trade.BrokerID;
 
 import quickfix.Message;

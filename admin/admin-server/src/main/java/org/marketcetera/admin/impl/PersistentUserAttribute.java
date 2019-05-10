@@ -12,7 +12,6 @@ import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeType;
 import org.marketcetera.persist.EntityBase;
 
-
 /* $License$ */
 
 /**
@@ -125,7 +124,7 @@ public class PersistentUserAttribute
     /**
      * owning user value
      */
-    @ManyToOne(targetEntity=org.marketcetera.ors.security.SimpleUser.class)
+    @ManyToOne(targetEntity=PersistentUser.class)
     @JoinColumn(name="user_id")
     private User user;
     /**

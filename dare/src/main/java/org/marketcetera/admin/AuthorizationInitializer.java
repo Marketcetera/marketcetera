@@ -12,9 +12,9 @@ import org.marketcetera.admin.RoleFactory;
 import org.marketcetera.admin.SupervisorPermission;
 import org.marketcetera.admin.SupervisorPermissionFactory;
 import org.marketcetera.admin.User;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.ors.dao.UserService;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.core.Cacheable;
 import org.marketcetera.ors.dao.PersistentOutgoingMessage;
 import org.marketcetera.ors.dao.PersistentOutgoingMessageDao;
@@ -11,7 +12,6 @@ import org.marketcetera.ors.domain.OutgoingMessage;
 import org.marketcetera.ors.domain.OutgoingMessageFactory;
 import org.marketcetera.ors.outgoingorder.IdentifyOwnerStrategy;
 import org.marketcetera.ors.outgoingorder.OutgoingMessageService;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

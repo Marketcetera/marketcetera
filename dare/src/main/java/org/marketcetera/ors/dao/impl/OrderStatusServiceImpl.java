@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.ors.TradingPermissions;
 import org.marketcetera.ors.dao.OrderStatusDao;
@@ -12,7 +13,6 @@ import org.marketcetera.ors.history.OrderStatus;
 import org.marketcetera.ors.history.PersistentOrderStatus;
 import org.marketcetera.ors.history.PersistentReport;
 import org.marketcetera.ors.history.QPersistentOrderStatus;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.springframework.beans.factory.annotation.Autowired;

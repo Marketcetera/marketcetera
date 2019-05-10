@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.persist.EntityBase;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionType;

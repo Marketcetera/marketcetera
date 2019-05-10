@@ -2,10 +2,8 @@ package org.marketcetera.admin.impl;
 
 import java.util.Set;
 
-import org.marketcetera.ors.security.SimpleUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-
 
 /* $License$ */
 
@@ -27,11 +25,10 @@ public interface PersistentSupervisorPermissionDao
      */
     PersistentSupervisorPermission findByName(String inName);
     /**
-     * 
+     * Find the supervisor permissions by the given user.
      *
-     *
-     * @param inSupervisor
-     * @return
+     * @param inSupervisor a <code>PersistentUser</code> value
+     * @return a <code>Set&lt;PersistentSupervisorPermission&gt;</code> value
      */
-    Set<PersistentSupervisorPermission> findBySupervisor(SimpleUser inSupervisor);
+    Set<PersistentSupervisorPermission> findBySupervisor(PersistentUser inSupervisor);
 }

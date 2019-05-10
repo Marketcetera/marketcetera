@@ -1,12 +1,12 @@
 package org.marketcetera.ors.ws;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.client.IncompatibleComponentsException;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
 import org.marketcetera.ors.dao.UserService;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;

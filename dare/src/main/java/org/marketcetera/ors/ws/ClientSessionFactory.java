@@ -2,12 +2,12 @@ package org.marketcetera.ors.ws;
 
 import javax.xml.bind.JAXBException;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.JmsUtils;
 import org.marketcetera.ors.UserManager;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.info.SystemInfo;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.except.I18NRuntimeException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;

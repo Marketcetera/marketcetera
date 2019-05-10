@@ -2,6 +2,7 @@ package org.marketcetera.ors.security;
 
 import java.util.List;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

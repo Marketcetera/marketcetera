@@ -2,10 +2,10 @@ package org.marketcetera.ors.filters;
 
 import java.util.Map;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.info.SessionInfo;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 
 

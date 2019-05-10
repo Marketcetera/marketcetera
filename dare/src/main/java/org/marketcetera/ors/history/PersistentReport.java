@@ -15,10 +15,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.FixMessage;
 import org.marketcetera.fix.dao.PersistentFixMessage;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.EntityBase;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;

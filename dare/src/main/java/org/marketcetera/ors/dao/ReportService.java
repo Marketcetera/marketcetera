@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.fix.IncomingMessage;
 import org.marketcetera.ors.history.ExecutionReportSummary;
 import org.marketcetera.ors.history.PersistentReport;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;

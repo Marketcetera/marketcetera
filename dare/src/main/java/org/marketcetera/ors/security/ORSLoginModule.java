@@ -25,6 +25,7 @@ import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.persist.PersistenceException;

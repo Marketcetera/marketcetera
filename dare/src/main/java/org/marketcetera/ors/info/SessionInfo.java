@@ -1,6 +1,6 @@
 package org.marketcetera.ors.info;
 
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.tags.SessionId;

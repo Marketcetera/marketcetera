@@ -14,7 +14,6 @@ import javax.persistence.Table;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.SupervisorPermission;
 import org.marketcetera.admin.User;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.NDEntityBase;
 
 
@@ -89,12 +88,12 @@ public class PersistentSupervisorPermission
      * supervisor value
      */
     @JoinColumn(name="user_id")
-    @ManyToOne(targetEntity=SimpleUser.class,optional=false)
+    @ManyToOne(targetEntity=PersistentUser.class,optional=false)
     private User supervisor; 
     /**
      * subjects assigned to this supervisor
      */
-    @ManyToMany(fetch=FetchType.EAGER,targetEntity=SimpleUser.class)
+    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentUser.class)
     private Set<User> subjects = new HashSet<>();
     /**
      * permissions granted to this role

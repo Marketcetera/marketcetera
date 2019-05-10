@@ -1,9 +1,9 @@
 package org.marketcetera.ors.ws;
 
+import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.ors.info.SessionInfo;
 import org.marketcetera.ors.info.SessionInfoImpl;
 import org.marketcetera.ors.info.SystemInfo;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.springframework.jms.core.JmsOperations;
