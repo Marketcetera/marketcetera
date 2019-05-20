@@ -1,6 +1,5 @@
-package org.marketcetera.ors.dao;
+package org.marketcetera.admin.impl;
 
-import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,7 +10,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 /* $License$ */
 
 /**
- * Provides datastore access to {@link SimpleUser} objects.
+ * Provides datastore access to {@link PersistentUser} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: UserDao.java 17266 2017-04-28 14:58:00Z colin $
@@ -19,15 +18,15 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
  */
 @ClassVersion("$Id: UserDao.java 17266 2017-04-28 14:58:00Z colin $")
 public interface UserDao
-        extends JpaRepository<SimpleUser,Long>,QuerydslPredicateExecutor<SimpleUser>
+        extends JpaRepository<PersistentUser,Long>,QuerydslPredicateExecutor<PersistentUser>
 {
     /**
      * Finds the user with the given username.
      *
      * @param inUsername a <code>String</code> value
-     * @return a <code>SimpleUser</code> value
+     * @return a <code>PersistentUser</code> value
      */
-    SimpleUser findByName(String inUsername);
+    PersistentUser findByName(String inUsername);
     /**
      * Updates the user data for the user with the given name. 
      *

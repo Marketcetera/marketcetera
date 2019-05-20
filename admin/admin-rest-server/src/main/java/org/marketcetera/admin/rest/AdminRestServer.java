@@ -1,5 +1,6 @@
 package org.marketcetera.admin.rest;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -15,9 +16,9 @@ import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
+import org.marketcetera.fix.SimpleFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -47,159 +48,193 @@ import io.swagger.annotations.ApiResponses;
 @ConfigurationProperties("admin")
 @Api(value="Admin server operations")
 public class AdminRestServer
-        implements AdminClient
 {
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#getPermissionsForCurrentUser()
+    /**
+     * Get permissions for the current user.
+     *
+     * @param inPrincipal a <code>Principal</code> value
+     * @return a <code>Set&lt;Permission&gt;</code> value
      */
-    @Override
     @ResponseBody
-    @RequestMapping(consumes={"application/json","application/xml"},method=RequestMethod.GET,produces= {"application/json","application/xml"},value="/admin/getPermissions")
+    @RequestMapping(consumes={"application/json","application/xml"},method=RequestMethod.GET,produces={"application/json","application/xml"},value="/admin/getPermissions")
     @ApiOperation(value="Gets user permissions",response=Set.class,protocols= "http,https",
                   notes="Get the permissions for the user")
     @ApiResponses(value={ @ApiResponse(code=200,message="Successfully returned permissions"),
                           @ApiResponse(code=401,message="Not logged in") })
-    public Set<Permission> getPermissionsForCurrentUser()
+    public Set<Permission> getPermissionsForCurrentUser(Principal inPrincipal)
     {
-        return authzService.findAllPermissionsByUsername(sessionHolder.getUser());
+        return authzService.findAllPermissionsByUsername(inPrincipal.getName());
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#createFixSession(org.marketcetera.fix.FixSession)
-     */
-    @Override
-    public FixSession createFixSession(FixSession inFixSession)
+    @ResponseBody
+    @RequestMapping(consumes={"application/json","application/xml"},method=RequestMethod.PUT,produces={"application/json","application/xml"},value="/admin/createFixSession")
+    @ApiOperation(value="Create a new FIX session",response=Set.class,protocols= "http,https",
+                  notes="Creates a new, disabled FIX session")
+    @ApiResponses(value={ @ApiResponse(code=200,message="Successfully created FIX session"),
+                          @ApiResponse(code=401,message="Not logged in") })
+    public SimpleFixSession createFixSession(SimpleFixSession inFixSession)
     {
+        /*
+        String sessionId = inRequest.getSessionId();
+        SLF4JLoggerProxy.trace(this,
+                               "{} received create FIX session for {}", //$NON-NLS-1$
+                               DESCRIPTION,
+                               sessionId);
+        AdminRpc.CreateFixSessionResponse.Builder responseBuilder = AdminRpc.CreateFixSessionResponse.newBuilder();
+        BaseRpc.Status.Builder statusBuilder = BaseRpc.Status.newBuilder();
+        statusBuilder.setFailed(false);
+        statusBuilder.setSessionId(sessionId);
+        try {
+            SessionHolder<SessionClazz> sessionHolder = getServerServices().validateAndReturnSession(sessionId);
+            authzService.authorize(sessionHolder.getUser(),
+                                   AdminPermissions.AddSessionAction.name());
+            if(inRequest.hasFixSession()) {
+                AdminRpc.FixSession rpcFixSession = inRequest.getFixSession();
+                SimpleFixSession fixSession = new SimpleFixSession();
+                if(rpcFixSession.hasAcceptor()) {
+                    fixSession.setIsAcceptor(rpcFixSession.getAcceptor());
+                }
+                if(rpcFixSession.hasAffinity()) {
+                    fixSession.setAffinity(rpcFixSession.getAffinity());
+                }
+                if(rpcFixSession.hasBrokerId()) {
+                    fixSession.setBrokerId(rpcFixSession.getBrokerId());
+                }
+                if(rpcFixSession.hasDescription()) {
+                    fixSession.setDescription(rpcFixSession.getDescription());
+                }
+                if(rpcFixSession.hasHost()) {
+                    fixSession.setHost(rpcFixSession.getHost());
+                }
+                if(rpcFixSession.hasName()) {
+                    fixSession.setName(rpcFixSession.getName());
+                }
+                if(rpcFixSession.hasPort()) {
+                    fixSession.setPort(rpcFixSession.getPort());
+                }
+                if(rpcFixSession.hasSessionId()) {
+                    fixSession.setSessionId(rpcFixSession.getSessionId());
+                }
+                if(rpcFixSession.hasSessionSettings()) {
+                    Map<String,String> sessionSettings = new HashMap<>();
+                    BaseRpc.Properties rpcProperties = rpcFixSession.getSessionSettings();
+                    for(BaseRpc.Property rpcProperty : rpcProperties.getPropertyList()) {
+                        if(rpcProperty.hasKey()) {
+                            sessionSettings.put(rpcProperty.getKey(),
+                                                rpcProperty.getValue());
+                        }
+                    }
+                    fixSession.setSessionSettings(sessionSettings);
+                }
+                FixSession newFixSession = brokerService.save(fixSession);
+                AdminRpc.FixSession.Builder fixSessionBuilder = AdminRpc.FixSession.newBuilder();
+                fixSessionBuilder.setAcceptor(newFixSession.isAcceptor());
+                fixSessionBuilder.setAffinity(newFixSession.getAffinity());
+                if(newFixSession.getBrokerId() != null) {
+                    fixSessionBuilder.setBrokerId(newFixSession.getBrokerId());
+                }
+                if(newFixSession.getDescription() != null) {
+                    fixSessionBuilder.setDescription(newFixSession.getDescription());
+                }
+                if(newFixSession.getHost() != null) {
+                    fixSessionBuilder.setHost(newFixSession.getHost());
+                }
+                if(newFixSession.getName() != null) {
+                    fixSessionBuilder.setName(newFixSession.getName());
+                }
+                fixSessionBuilder.setPort(newFixSession.getPort());
+                if(newFixSession.getSessionId() != null) {
+                    fixSessionBuilder.setSessionId(newFixSession.getSessionId());
+                }
+                BaseRpc.Properties.Builder propertiesBuilder = BaseRpc.Properties.newBuilder();
+                for(Map.Entry<String,String> entry : newFixSession.getSessionSettings().entrySet()) {
+                    BaseRpc.Property.Builder propertyBuilder = BaseRpc.Property.newBuilder();
+                    if(entry.getKey() != null) {
+                        propertyBuilder.setKey(entry.getKey());
+                        propertyBuilder.setValue(entry.getValue());
+                    }
+                    propertiesBuilder.addProperty(propertyBuilder.build());
+                }
+                fixSessionBuilder.setSessionSettings(propertiesBuilder.build());
+                responseBuilder.setFixSession(fixSessionBuilder.build());
+            }
+        } catch (Exception e) {
+            statusBuilder.setFailed(true);
+            statusBuilder.setMessage(ExceptionUtils.getRootCauseMessage(e));
+        }
+        responseBuilder.setStatus(statusBuilder.build());
+        AdminRpc.CreateFixSessionResponse response = responseBuilder.build();
+        SLF4JLoggerProxy.trace(this,
+                               "Returning {} for {}",
+                               response,
+                               sessionId);
+        return response;
+         */
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#readFixSessions()
-     */
-    @Override
     public List<ActiveFixSession> readFixSessions()
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#readFixSessions(org.marketcetera.persist.PageRequest)
-     */
-    @Override
     public CollectionPageResponse<ActiveFixSession> readFixSessions(PageRequest inPageRequest)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#updateFixSession(java.lang.String, org.marketcetera.fix.FixSession)
-     */
-    @Override
     public void updateFixSession(String inIncomingName,
                                  FixSession inFixSession)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#enableFixSession(java.lang.String)
-     */
-    @Override
     public void enableFixSession(String inName)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#disableFixSession(java.lang.String)
-     */
-    @Override
     public void disableFixSession(String inName)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#deleteFixSession(java.lang.String)
-     */
-    @Override
     public void deleteFixSession(String inName)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#stopFixSession(java.lang.String)
-     */
-    @Override
     public void stopFixSession(String inName)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#startFixSession(java.lang.String)
-     */
-    @Override
     public void startFixSession(String inName)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#readUsers()
-     */
-    @Override
     public List<User> readUsers()
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#readUsers(org.marketcetera.persist.PageRequest)
-     */
-    @Override
     public CollectionPageResponse<User> readUsers(PageRequest inPageRequest)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#createUser(org.marketcetera.admin.User, java.lang.String)
-     */
-    @Override
     public User createUser(User inNewUser,
                            String inPassword)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#updateUser(java.lang.String, org.marketcetera.admin.User)
-     */
-    @Override
     public User updateUser(String inUsername,
                            User inUpdatedUser)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#changeUserPassword(java.lang.String, java.lang.String, java.lang.String)
-     */
-    @Override
     public void changeUserPassword(String inUsername,
                                    String inOldPassword,
                                    String inNewPassword)
@@ -207,153 +242,78 @@ public class AdminRestServer
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#deleteUser(java.lang.String)
-     */
-    @Override
     public void deleteUser(String inUsername)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#deactivateUser(java.lang.String)
-     */
-    @Override
     public void deactivateUser(String inName)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#createPermission(org.marketcetera.admin.Permission)
-     */
-    @Override
     public Permission createPermission(Permission inPermission)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#readPermissions()
-     */
-    @Override
     public List<Permission> readPermissions()
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#readPermissions(org.marketcetera.persist.PageRequest)
-     */
-    @Override
     public CollectionPageResponse<Permission> readPermissions(PageRequest inPageRequest)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#updatePermission(java.lang.String, org.marketcetera.admin.Permission)
-     */
-    @Override
     public Permission updatePermission(String inPermissionName,
                                        Permission inUpdatedPermission)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#deletePermission(java.lang.String)
-     */
-    @Override
     public void deletePermission(String inPermissionName)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#createRole(org.marketcetera.admin.Role)
-     */
-    @Override
     public Role createRole(Role inRole)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#readRoles()
-     */
-    @Override
     public List<Role> readRoles()
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#readRoles(org.marketcetera.persist.PageRequest)
-     */
-    @Override
     public CollectionPageResponse<Role> readRoles(PageRequest inPageRequest)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#deleteRole(java.lang.String)
-     */
-    @Override
     public void deleteRole(String inName)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#updateRole(java.lang.String, org.marketcetera.admin.Role)
-     */
-    @Override
     public Role updateRole(String inName,
                            Role inRole)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#getInstanceData(int)
-     */
-    @Override
     public InstanceData getInstanceData(int inAffinity)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#getFixSessionAttributeDescriptors()
-     */
-    @Override
     public Collection<FixSessionAttributeDescriptor> getFixSessionAttributeDescriptors()
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#updateSequenceNumbers(java.lang.String, int, int)
-     */
-    @Override
     public void updateSequenceNumbers(String inSessionName,
                                       int inSenderSequenceNumber,
                                       int inTargetSequenceNumber)
@@ -361,44 +321,24 @@ public class AdminRestServer
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#updateSenderSequenceNumber(java.lang.String, int)
-     */
-    @Override
     public void updateSenderSequenceNumber(String inSessionName,
                                            int inSenderSequenceNumber)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#updateTargetSequenceNumber(java.lang.String, int)
-     */
-    @Override
     public void updateTargetSequenceNumber(String inSessionName,
                                            int inTargetSequenceNumber)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#getUserAttribute(java.lang.String, org.marketcetera.admin.UserAttributeType)
-     */
-    @Override
     public UserAttribute getUserAttribute(String inUsername,
                                           UserAttributeType inAttributeType)
     {
         throw new UnsupportedOperationException(); // TODO
         
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.AdminClient#setUserAttribute(java.lang.String, org.marketcetera.admin.UserAttributeType, java.lang.String)
-     */
-    @Override
     public void setUserAttribute(String inUsername,
                                  UserAttributeType inAttributeType,
                                  String inAttribute)

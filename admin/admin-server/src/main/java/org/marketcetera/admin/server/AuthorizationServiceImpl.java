@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.admin.NotAuthorizedException;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.Role;
 import org.marketcetera.admin.SupervisorPermission;
@@ -21,12 +20,13 @@ import org.marketcetera.admin.impl.PersistentRole;
 import org.marketcetera.admin.impl.PersistentRoleDao;
 import org.marketcetera.admin.impl.PersistentSupervisorPermission;
 import org.marketcetera.admin.impl.PersistentSupervisorPermissionDao;
+import org.marketcetera.admin.impl.PersistentUser;
 import org.marketcetera.admin.impl.QPersistentPermission;
 import org.marketcetera.admin.impl.QPersistentRole;
+import org.marketcetera.admin.impl.UserDao;
 import org.marketcetera.admin.service.AuthorizationService;
+import org.marketcetera.admin.service.NotAuthorizedException;
 import org.marketcetera.core.Pair;
-import org.marketcetera.ors.dao.UserDao;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.persist.SortDirection;
@@ -151,10 +151,21 @@ public class AuthorizationServiceImpl
      * @see com.marketcetera.admin.service.AuthorizationService#getSubjectUsersFor(com.marketcetera.ors.security.SimpleUser, java.lang.String)
      */
     @Override
-    public Set<PersistentUser> getSubjectUsersFor(PersistentUser inSupervisorUser,
-                                              String inPermissionName)
+    public Set<User> getSubjectUsersFor(User inSupervisorUser,
+                                        String inPermissionName)
     {
-        return subjectUsersByKey.getUnchecked(new GetSubjectUsersKey(inSupervisorUser,inPermissionName));
+        Set<User> users = Sets.newHashSet();
+        PersistentUser user;
+        if(inSupervisorUser instanceof PersistentUser) {
+            user = (PersistentUser)inSupervisorUser;
+        } else {
+            user = userDao.findByName(inSupervisorUser.getName());
+        }
+        if(user != null) {
+            users.addAll(subjectUsersByKey.getUnchecked(new GetSubjectUsersKey(user,
+                                                                               inPermissionName)));
+        }
+        return users;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.service.AuthorizationService#findSupervisorPermissionByName(java.lang.String)
@@ -602,7 +613,7 @@ public class AuthorizationServiceImpl
         /**
          * Get the user value.
          *
-         * @return a <code>SimpleUser</code> value
+         * @return a <code>PersistentUser</code> value
          */
         private PersistentUser getUser()
         {
@@ -620,7 +631,7 @@ public class AuthorizationServiceImpl
         /**
          * Create a new GetSubjectUsersKey instance.
          *
-         * @param inUser a <code>SimpleUser</code> value
+         * @param inUser a <code>PersistentUser</code> value
          * @param inPermissionName a <code>String</code> value
          */
         private GetSubjectUsersKey(PersistentUser inUser,

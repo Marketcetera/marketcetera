@@ -9,10 +9,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.marketcetera.fix.ActiveFixSession;
-import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.persist.NDEntityBase;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
 
 /* $License$ */
@@ -26,6 +26,7 @@ import org.marketcetera.persist.NDEntityBase;
  */
 @XmlRootElement(name="fixSession")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class SimpleFixSession
         extends NDEntityBase
         implements FixSession, ActiveFixSession
