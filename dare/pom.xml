@@ -105,10 +105,14 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>admin-rpc-server</artifactId>
     </dependency>
-    <!--dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>admin-rest-server</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
-    </dependency-->
+    </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http-jetty</artifactId>
