@@ -12,6 +12,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.marketcetera.admin.service.BrokerService;
 import org.marketcetera.cluster.AbstractCallableClusterTask;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.fix.FixSettingsProvider;
@@ -19,7 +20,6 @@ import org.marketcetera.core.fix.FixSettingsProviderFactory;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributes;
 import org.marketcetera.fix.SessionConnector;
-import org.marketcetera.ors.brokers.BrokerService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 

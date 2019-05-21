@@ -1,4 +1,4 @@
-package org.marketcetera.ors.brokers;
+package org.marketcetera.admin.service;
 
 import java.util.Collection;
 import java.util.Date;
@@ -14,6 +14,7 @@ import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionListener;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.SessionNameProvider;
+import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;

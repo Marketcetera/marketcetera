@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.marketcetera.admin.AdminClient;
+import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.admin.InstanceData;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.Role;
@@ -19,6 +20,7 @@ import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.SimpleFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -56,7 +58,7 @@ public class AdminRestServer
      * @return a <code>Set&lt;Permission&gt;</code> value
      */
     @ResponseBody
-    @RequestMapping(consumes={"application/json","application/xml"},method=RequestMethod.GET,produces={"application/json","application/xml"},value="/admin/getPermissions")
+    @RequestMapping(method=RequestMethod.GET,produces={"application/json","application/xml"},value="/admin/getPermissions")
     @ApiOperation(value="Gets user permissions",response=Set.class,protocols= "http,https",
                   notes="Get the permissions for the user")
     @ApiResponses(value={ @ApiResponse(code=200,message="Successfully returned permissions"),
@@ -65,14 +67,30 @@ public class AdminRestServer
     {
         return authzService.findAllPermissionsByUsername(inPrincipal.getName());
     }
+    /**
+     * 
+     *
+     *
+     * @param inPrincipal
+     * @param inFixSession
+     * @return
+     */
     @ResponseBody
     @RequestMapping(consumes={"application/json","application/xml"},method=RequestMethod.PUT,produces={"application/json","application/xml"},value="/admin/createFixSession")
     @ApiOperation(value="Create a new FIX session",response=Set.class,protocols= "http,https",
                   notes="Creates a new, disabled FIX session")
     @ApiResponses(value={ @ApiResponse(code=200,message="Successfully created FIX session"),
                           @ApiResponse(code=401,message="Not logged in") })
-    public SimpleFixSession createFixSession(SimpleFixSession inFixSession)
+    public SimpleFixSession createFixSession(Principal inPrincipal,
+                                             SimpleFixSession inFixSession)
     {
+        SLF4JLoggerProxy.trace(this,
+                               "{} create FIX session {}", //$NON-NLS-1$
+                               inPrincipal,
+                               inFixSession);
+        authzService.authorize(inPrincipal.getName(),
+                               AdminPermissions.AddSessionAction.name());
+        FixSession newFixSession = brokerService.save(inFixSession);
         /*
         String sessionId = inRequest.getSessionId();
         SLF4JLoggerProxy.trace(this,
