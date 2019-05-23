@@ -1247,7 +1247,6 @@
     </profiles>
     <modules>
       <module>admin</module>
-      <!--module>client</module-->
       <module>cluster</module>
       <module>core</module>
       <module>dataflow</module>
@@ -1257,11 +1256,8 @@
       <module>fork</module>
       <module>marketdata</module>
       <module>modules</module>
-      <!--module>orderloader</module-->
+      <module>packages</module>
       <module>rpc-core</module>
-      <!--module>saclient</module-->
-      <!--module>samples</module-->
-      <!--module>strategyagent</module-->
       <module>trade</module>
       <module>tools</module>
       <module>util</module>
