@@ -36,6 +36,15 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>trade-server</artifactId>
     </dependency>
+    <!-- other compile -->
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger-ui</artifactId>
+    </dependency>
     <!-- Compile: QuickFIX/J -->
     <dependency>
       <groupId>org.quickfixj</groupId>

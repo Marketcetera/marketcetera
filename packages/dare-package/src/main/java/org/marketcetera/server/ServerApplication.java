@@ -1,5 +1,7 @@
 package org.marketcetera.server;
 
+import java.util.Collections;
+
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.brokers.service.FixSessionProvider;
@@ -25,6 +27,13 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
 
 /* $License$ */
 
@@ -142,6 +151,35 @@ public class ServerApplication
     public MessageOwnerService getMessageOwnerService()
     {
         return new MessageOwnerServiceImpl();
+    }
+    /**
+     * Create the Swagger API component.
+     *
+     * @return a <code>Docket</code> value
+     */
+    @Bean
+    public Docket api()
+    { 
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(PathSelectors.ant("/matp/*"))
+                .build()
+                .apiInfo(apiInfo());
+    }
+    private ApiInfo apiInfo()
+    {
+        return new ApiInfo(
+          "Marketcetera Automated Trading Engine REST API", 
+          "REST API for MATP", 
+          "API TOS", 
+          "Terms of service", 
+          new Contact("Colin DuPlantis", 
+                      "www.marketcetera.com",
+                      "info@marketcetera.com"), 
+          "License of API",
+          "API license URL",
+          Collections.emptyList());
     }
     /**
      * web services port
