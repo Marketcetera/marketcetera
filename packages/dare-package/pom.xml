@@ -14,6 +14,33 @@
     <version>4.0.0-SNAPSHOT</version>
   </parent>
   <dependencies>
+    <!-- local compile -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>admin-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>admin-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fix-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cluster-simple</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-server</artifactId>
+    </dependency>
+    <!-- Compile: QuickFIX/J -->
+    <dependency>
+      <groupId>org.quickfixj</groupId>
+      <artifactId>quickfixj-all</artifactId>
+    </dependency>
     <!-- local runtime -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -69,12 +96,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <!-- local runtime -->
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>cluster-simple</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <!-- spring runtime -->
     <dependency>
