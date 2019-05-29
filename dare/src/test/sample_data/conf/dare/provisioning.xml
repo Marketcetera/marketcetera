@@ -357,4 +357,84 @@
       </set>
     </property>
   </bean>
+  <bean id="sessionCustomizationAlgoTagsOnly" class="org.marketcetera.ors.brokers.SessionCustomization">
+    <property name="name" value="sessionCustomizationAlgoTagsOnly"/>
+    <property name="brokerAlgos">
+      <set>
+        <ref bean="vwapAlgoSpec"/>
+        <!-- ref bean="smartAlgoSpec"/-->
+        <!-- ref bean="trailingStopAlgoSpec"/-->
+      </set>
+    </property>
+  </bean>
+  <!-- algo definitions -->
+  <bean id="vwapAlgoSpec" class="org.marketcetera.algo.BrokerAlgoSpec">
+    <property name="name" value="VWAP"/>
+    <property name="algoTagSpecs">
+      <set>
+        <bean class="org.marketcetera.algo.BrokerAlgoTagSpec">
+          <property name="tag" value="9600"/>
+          <property name="label" value="Algo Type (9600)"/>
+          <property name="description" value="Describes the type of algo"/>
+          <property name="isMandatory" value="true"/>
+          <property name="isReadOnly" value="true"/>
+          <property name="defaultValue" value="1"/>
+        </bean>
+        <bean class="org.marketcetera.algo.BrokerAlgoTagSpec">
+          <property name="tag" value="9601"/>
+          <property name="label" value="Interval (9601)"/>
+          <property name="description" value="Interval in ms at which to place child orders"/>
+          <property name="isMandatory" value="true"/>
+          <property name="pattern" value="^[0-9]{1,}$"/>
+          <property name="advice" value="must be a number"/>
+        </bean>
+        <bean class="org.marketcetera.algo.BrokerAlgoTagSpec">
+          <property name="tag" value="9602"/>
+          <property name="label" value="Slices (9602)"/>
+          <property name="description" value="Number of child orders to send"/>
+          <property name="isMandatory" value="true"/>
+          <property name="pattern" value="^[0-9]{1,}$"/>
+          <property name="advice" value="must be a number"/>
+        </bean>
+      </set>
+    </property>
+  </bean>
+  <bean id="smartAlgoSpec" class="org.marketcetera.algo.BrokerAlgoSpec">
+    <property name="name" value="SMART"/>
+    <property name="algoTagSpecs">
+      <set>
+        <bean class="org.marketcetera.algo.BrokerAlgoTagSpec">
+          <property name="tag" value="9600"/>
+          <property name="label" value="Algo Type (9600)"/>
+          <property name="description" value="Describes the type of algo"/>
+          <property name="isMandatory" value="true"/>
+          <property name="isReadOnly" value="true"/>
+          <property name="defaultValue" value="2"/>
+        </bean>
+      </set>
+    </property>
+  </bean>
+  <bean id="trailingStopAlgoSpec" class="org.marketcetera.algo.BrokerAlgoSpec">
+    <property name="name" value="Trailing Stop"/>
+    <property name="algoTagSpecs">
+      <set>
+        <bean class="org.marketcetera.algo.BrokerAlgoTagSpec">
+          <property name="tag" value="9600"/>
+          <property name="label" value="Algo Type (9600)"/>
+          <property name="description" value="Describes the type of algo"/>
+          <property name="isMandatory" value="true"/>
+          <property name="isReadOnly" value="true"/>
+          <property name="defaultValue" value="3"/>
+        </bean>
+        <bean class="org.marketcetera.algo.BrokerAlgoTagSpec">
+          <property name="tag" value="9603"/>
+          <property name="label" value="Offset (9603)"/>
+          <property name="description" value="Trailing stop offset"/>
+          <property name="isMandatory" value="true"/>
+          <property name="pattern" value="^[0-9]{1,}(\.[0-9]{2,6}){0,1}$"/>
+          <property name="advice" value="must be a number in dollars and cents"/>
+        </bean>
+      </set>
+    </property>
+  </bean>
 </beans>

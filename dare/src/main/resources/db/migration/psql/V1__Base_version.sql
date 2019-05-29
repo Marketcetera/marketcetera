@@ -473,7 +473,7 @@ INSERT INTO public.fix_session_attributes (fix_session_id, value, name) VALUES (
 -- Data for Name: fix_sessions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.fix_sessions (id, last_updated, update_count, affinity, broker_id, description, host, acceptor, deleted, enabled, name, port, session_id) VALUES (45, '2018-11-13 08:00:22.838', 1, 1, 'exsim', NULL, 'exchange.marketcetera.com', false, false, true, 'MATP Exchange Simulator', 7001, 'FIXT.1.1:colin-core-callisto->MRKTC-EXCH');
+INSERT INTO public.fix_sessions (id, last_updated, update_count, affinity, broker_id, description, host, acceptor, deleted, enabled, name, port, session_id) VALUES (45, '2018-11-13 08:00:22.838', 1, 1, 'exsim', NULL, 'localhost', false, false, true, 'MATP Exchange Simulator', 17001, 'FIXT.1.1:colin-core-callisto->MRKTC-EXCH');
 
 
 --

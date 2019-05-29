@@ -45,7 +45,6 @@
     <property name="executionPoolTtl" value="${metc.executionPoolTtl}"/>
     <property name="maxExecutionPools" value="${metc.maxExecutionPools}"/>
     <!-- property name="fixInjectorDirectory" value="/tmp/injector-instance"/-->
-    <property name="productKey" value="${metc.product.key}"/>
   </bean>
   <!-- ORS Reply Persister -->
   <bean id="replyPersister" class="org.marketcetera.ors.ReplyPersister">
