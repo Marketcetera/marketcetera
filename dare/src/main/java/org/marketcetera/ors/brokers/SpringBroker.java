@@ -142,7 +142,7 @@ public class SpringBroker
     /**
      * Sets the mappedBroker value.
      *
-     * @param a <code>String</code> value
+     * @param inMappedBrokerId a <code>String</code> value
      */
     public void setMappedBrokerId(String inMappedBrokerId)
     {
@@ -263,7 +263,7 @@ public class SpringBroker
     /**
      * Sets the logoutActions value.
      *
-     * @param a <code>Collection&lt;LogoutAction&gt;</code> value
+     * @param inLogoutActions a <code>Collection&lt;LogoutAction&gt;</code> value
      */
     public void setLogoutActions(Collection<LogoutAction> inLogoutActions)
     {
@@ -272,7 +272,7 @@ public class SpringBroker
     /**
      * Sets the logonActions value.
      *
-     * @param a <code>Collection&lt;LogonAction&gt;</code> value
+     * @param inLogonActions a <code>Collection&lt;LogonAction&gt;</code> value
      */
     public void setLogonActions(Collection<LogonAction> inLogonActions)
     {
@@ -326,7 +326,7 @@ public class SpringBroker
     /**
      * Sets the instanceAffinity value.
      *
-     * @param an <code>int</code> value
+     * @param inInstanceAffinity an <code>int</code> value
      */
     public void setInstanceAffinity(int inInstanceAffinity)
     {

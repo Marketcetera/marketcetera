@@ -46,7 +46,6 @@ public class Brokers
      * persistence operations.
      *
      * @param springBrokers The configurations.
-     * @param historyServices The report history services provider.
      */
 
     public Brokers(SpringBrokers springBrokers)
@@ -106,9 +105,9 @@ public class Brokers
     /**
      * Returns the status of the receiver's brokers.
      *
+     * @param inUsername a <code>String</code> value
      * @return The status.
      */
-
     public BrokersStatus getStatus(String inUsername)
     {
         List<BrokerStatus> list = new ArrayList<BrokerStatus>();

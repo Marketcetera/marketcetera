@@ -35,9 +35,9 @@ public class BrokerListSelector
     /**
      * Creates a new selector based on the given configuration.
      *
+     * @param brokers a <code>Brokers</code> value
      * @param springSelector The configuration.
      */
-
     public BrokerListSelector(Brokers brokers,
                               SpringSelector springSelector)
     {

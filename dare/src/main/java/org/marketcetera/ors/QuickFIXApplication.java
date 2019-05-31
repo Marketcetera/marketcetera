@@ -792,7 +792,7 @@ public class QuickFIXApplication
     /**
      * Sets the productKey value.
      *
-     * @param a <code>String</code> value
+     * @param inProductKey a <code>String</code> value
      */
     public void setProductKey(String inProductKey)
     {
@@ -801,7 +801,7 @@ public class QuickFIXApplication
     /**
      * Sets the systemInfo value.
      *
-     * @param a <code>SystemInfo</code> value
+     * @param inSystemInfo a <code>SystemInfo</code> value
      */
     public void setSystemInfo(SystemInfo inSystemInfo)
     {
@@ -810,7 +810,7 @@ public class QuickFIXApplication
     /**
      * Sets the supportedMessages value.
      *
-     * @param a <code>MessageFilter</code> value
+     * @param inSupportedMessages a <code>MessageFilter</code> value
      */
     public void setSupportedMessages(MessageFilter inSupportedMessages)
     {
@@ -819,7 +819,7 @@ public class QuickFIXApplication
     /**
      * Sets the persister value.
      *
-     * @param a <code>ReplyPersister</code> value
+     * @param inPersister a <code>ReplyPersister</code> value
      */
     public void setPersister(ReplyPersister inPersister)
     {
@@ -828,7 +828,7 @@ public class QuickFIXApplication
     /**
      * Sets the sender value.
      *
-     * @param a <code>QuickFIXSender</code> value
+     * @param inSender a <code>QuickFIXSender</code> value
      */
     public void setSender(QuickFIXSender inSender)
     {
@@ -837,7 +837,7 @@ public class QuickFIXApplication
     /**
      * Sets the userManager value.
      *
-     * @param a <code>UserManager</code> value
+     * @param inUserManager a <code>UserManager</code> value
      */
     public void setUserManager(UserManager inUserManager)
     {
@@ -846,7 +846,7 @@ public class QuickFIXApplication
     /**
      * Sets the toClientStatus value.
      *
-     * @param a <code>JmsOperations</code> value
+     * @param inToClientStatus a <code>JmsOperations</code> value
      */
     public void setToClientStatus(JmsOperations inToClientStatus)
     {
@@ -855,7 +855,7 @@ public class QuickFIXApplication
     /**
      * Sets the toTradeRecorder value.
      *
-     * @param a <code>JmsOperations</code> value
+     * @param inToTradeRecorder a <code>JmsOperations</code> value
      */
     public void setToTradeRecorder(JmsOperations inToTradeRecorder)
     {
@@ -1077,7 +1077,7 @@ public class QuickFIXApplication
     /**
      * Sets the rootOrderIdFactory value.
      *
-     * @param a <code>RootOrderIdFactory</code> value
+     * @param inRootOrderIdFactory a <code>RootOrderIdFactory</code> value
      */
     public void setRootOrderIdFactory(RootOrderIdFactory inRootOrderIdFactory)
     {
@@ -1203,7 +1203,7 @@ public class QuickFIXApplication
     /**
      * Sets the outgoingMessageService value.
      *
-     * @param an <code>OutgoingMessageService</code> value
+     * @param inOutgoingMessageService an <code>OutgoingMessageService</code> value
      */
     public void setOutgoingMessageService(OutgoingMessageService inOutgoingMessageService)
     {

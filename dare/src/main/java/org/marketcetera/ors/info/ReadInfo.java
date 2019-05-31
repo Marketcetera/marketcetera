@@ -97,6 +97,7 @@ public interface ReadInfo
      * receiver's map, provided one is set and is either null or an
      * object of the given class.
      *
+     * @param <T> the instance type of the returned value
      * @param key The key.
      * @param cls The class.
      *
@@ -106,7 +107,6 @@ public interface ReadInfo
      * the given key, or if the value is non-null and of a class other
      * than the given one.
      */
-
     <T> T getValueIfInstanceOf
         (String key,
          Class<T> cls)
@@ -117,6 +117,7 @@ public interface ReadInfo
      * receiver's map, provided one is set and is non-null and an
      * object of the given class.
      *
+     * @param <T> the instance type of the returned value
      * @param key The key.
      * @param cls The class.
      *

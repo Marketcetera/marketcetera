@@ -24,8 +24,8 @@ public class GeneratedSessionId
     /**
      * Create a new GeneratedSessionId instance.
      *
-     * @param inSessionId
-     * @param inClusterData
+     * @param inSessionId a <code>SessionId</code> value
+     * @param inClusterData a <code>ClusterData</code> value
      */
     public GeneratedSessionId(SessionId inSessionId,
                               ClusterData inClusterData)
@@ -53,7 +53,7 @@ public class GeneratedSessionId
     /**
      * Sets the sessionId value.
      *
-     * @param a <code>SessionId</code> value
+     * @param inSessionId a <code>SessionId</code> value
      */
     public void setSessionId(SessionId inSessionId)
     {
@@ -71,7 +71,7 @@ public class GeneratedSessionId
     /**
      * Sets the clusterData value.
      *
-     * @param a <code>ClusterData</code> value
+     * @param inClusterData a <code>ClusterData</code> value
      */
     public void setClusterData(ClusterData inClusterData)
     {

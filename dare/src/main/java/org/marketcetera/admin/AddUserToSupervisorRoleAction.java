@@ -21,6 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class AddUserToSupervisorRoleAction
 {
+    /**
+     * Validate and start the object.
+     */
     @PostConstruct
     public void start()
     {
@@ -59,7 +62,7 @@ public class AddUserToSupervisorRoleAction
     /**
      * Sets the subjectUsername value.
      *
-     * @param a <code>String</code> value
+     * @param inSubjectUsername a <code>String</code> value
      */
     public void setSubjectUsername(String inSubjectUsername)
     {
@@ -77,18 +80,18 @@ public class AddUserToSupervisorRoleAction
     /**
      * Sets the supervisorPermissionName value.
      *
-     * @param a <code>String</code> value
+     * @param inSupervisorPermissionName a <code>String</code> value
      */
     public void setSupervisorPermissionName(String inSupervisorPermissionName)
     {
         supervisorPermissionName = inSupervisorPermissionName;
     }
     /**
-     * 
+     * subject username value
      */
     private String subjectUsername;
     /**
-     * 
+     * supervisor permission name value
      */
     private String supervisorPermissionName;
     /**

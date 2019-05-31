@@ -182,7 +182,7 @@ public class ORSLoginModule
     /**
      * Sets the txManager value.
      *
-     * @param a <code>JpaTransactionManager</code> value
+     * @param inTxManager a <code>JpaTransactionManager</code> value
      */
     public static void setTxManager(JpaTransactionManager inTxManager)
     {

@@ -64,15 +64,15 @@ public interface BrokerService
     /**
      * Finds the fix session corresponding to the given name.
      *
-     * @param inFixSessionName a <code>String<code> value
-     * @return a <code>FixSession<code> value or <code>null</code>
+     * @param inFixSessionName a <code>String</code> value
+     * @return a <code>FixSession</code> value or <code>null</code>
      */
     FixSession findFixSessionByName(String inFixSessionName);
     /**
      * Find the fix session corresponding to the given id.
      *
-     * @param inId a <code>long<code> value
-     * @return a <code>FixSession<code> value or <code>null</code>
+     * @param inId a <code>long</code> value
+     * @return a <code>FixSession</code> value or <code>null</code>
      */
     FixSession findFixSessionById(long inId);
     /**
@@ -183,8 +183,8 @@ public interface BrokerService
     /**
      * Finds the fix session corresponding to the given broker ID.
      *
-     * @param inBrokerId a <code>String<code> value
-     * @return a <code>FixSession<code> value or <code>null</code>
+     * @param inBrokerId a <code>String</code> value
+     * @return a <code>FixSession</code> value or <code>null</code>
      */
     FixSession findFixSessionByBrokerId(BrokerID inBrokerId);
     /**
@@ -228,7 +228,7 @@ public interface BrokerService
      */
     AcceptorSessionAttributes getFixSettingsFor(int inAffinity);
     /**
-     * Generates a <code>SessionSettings<code> value based on the given collection of fix sessions.
+     * Generates a <code>SessionSettings</code> value based on the given collection of fix sessions.
      *
      * @param inFixSessions a <code>Collection&lt;FixSession&gt;</code> value
      * @return a <code>SessionSettings</code> value
@@ -237,7 +237,7 @@ public interface BrokerService
     /**
      * Finds the fix session with the given session id.
      *
-     * @param inFixSessionListener a <code>FixSessionListener</code> value
+     * @param inSessionId a <code>SessionID</code> value
      * @return a <code>FixSession</code> value or <code>null</code>
      */
     FixSession findFixSessionBySessionId(SessionID inSessionId);

@@ -108,7 +108,7 @@ public class FixSessionInitializer
     /**
      * Sets the brokers value.
      *
-     * @param inBrokers a <code>List<Brokers></code> value
+     * @param inBrokers a <code>List&lt;Brokers&gt;</code> value
      */
     public void setBrokers(List<Brokers> inBrokers)
     {

@@ -52,7 +52,7 @@ public class DBInit
     /**
      * Initializes the schema and create the admin user.
      * 
-     * @throws IOException 
+     * @throws IOException if the process cannot be completed
      */
     public static void initORSDB()
             throws IOException

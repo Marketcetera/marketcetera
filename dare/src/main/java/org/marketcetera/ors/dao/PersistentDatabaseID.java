@@ -36,7 +36,7 @@ public class PersistentDatabaseID
     /**
      * Sets the nextAllowedId value.
      *
-     * @param a <code>long</code> value
+     * @param inNextAllowedId a <code>long</code> value
      */
     public void setNextAllowedId(long inNextAllowedId)
     {

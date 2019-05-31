@@ -6,7 +6,6 @@ import org.marketcetera.ors.security.SimpleUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
-
 /* $License$ */
 
 /**
@@ -27,11 +26,10 @@ public interface PersistentSupervisorPermissionDao
      */
     PersistentSupervisorPermission findByName(String inName);
     /**
-     * 
+     * Find the supervisor permissions for the given supervisor user.
      *
-     *
-     * @param inSupervisor
-     * @return
+     * @param inSupervisor a <code>SimpleUser</code> value
+     * @return a <code>Set&lt;PersistentSupervisorPermission&gt;</code> value
      */
     Set<PersistentSupervisorPermission> findBySupervisor(SimpleUser inSupervisor);
 }

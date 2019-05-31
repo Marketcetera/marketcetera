@@ -166,7 +166,7 @@ public class SimpleUser
      * match the currently configured password.
      * <p>
      * The new password is not saved to the database. To save
-     * the new password to the database, invoke {@link #save()}
+     * the new password to the database, invoke save.
      *
      * @param newPassword the new password, cannot be empty.
      *

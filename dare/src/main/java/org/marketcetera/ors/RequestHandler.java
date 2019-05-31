@@ -164,7 +164,7 @@ public class RequestHandler
     /**
      * Sets the allowedOrders value.
      *
-     * @param inAllowedOrders a <code>List<OrderFilter></code> value
+     * @param inAllowedOrders a <code>List&lt;OrderFilter&gt;</code> value
      */
     public void setAllowedOrders(List<OrderFilter> inAllowedOrders)
     {

@@ -1136,7 +1136,7 @@ public class OrderRoutingSystem
     /**
      * Sets the notificationExecutor value.
      *
-     * @param a <code>NotificationExecutor</code> value
+     * @param inNotificationExecutor a <code>NotificationExecutor</code> value
      */
     public void setNotificationExecutor(NotificationExecutor inNotificationExecutor)
     {

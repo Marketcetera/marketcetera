@@ -18,6 +18,9 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public enum ReportCache
 {
+    /**
+     * static instance to use to cache reports
+     */
     INSTANCE;
     /**
      * Gets the latest <code>ExecutionReport</code> for the given order ID value.
@@ -50,10 +53,9 @@ public enum ReportCache
         }
     }
     /**
-     * 
+     * Clear the cache of the given report. 
      *
-     *
-     * @param inReport
+     * @param inReport an <code>ExecutionReport</code> value
      */
     public void clear(ExecutionReport inReport)
     {

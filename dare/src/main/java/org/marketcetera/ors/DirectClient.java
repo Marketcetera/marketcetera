@@ -80,7 +80,7 @@ public class DirectClient
         implements Client
 {
     /**
-     * Validates and starts the object.
+     * Validate and start the object.
      */
     @PostConstruct
     public void start()
@@ -690,7 +690,7 @@ public class DirectClient
     /**
      * Get the sessionManager value.
      *
-     * @return a <code>SessionManager<ClientSession></code> value
+     * @return a <code>SessionManager&lt;ClientSession&gt;</code> value
      */
     public SessionManager<ClientSession> getSessionManager()
     {
@@ -699,7 +699,7 @@ public class DirectClient
     /**
      * Sets the sessionManager value.
      *
-     * @param inSessionManager a <code>SessionManager<ClientSession></code> value
+     * @param inSessionManager a <code>SessionManager&lt;ClientSession&gt;</code> value
      */
     public void setSessionManager(SessionManager<ClientSession> inSessionManager)
     {

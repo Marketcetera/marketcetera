@@ -59,7 +59,6 @@ public class Broker
      * history services provider for persistence operations.
      *
      * @param springBroker The configuration.
-     * @param historyServices The report history services provider.
      */
 
     public Broker(SpringBroker springBroker)

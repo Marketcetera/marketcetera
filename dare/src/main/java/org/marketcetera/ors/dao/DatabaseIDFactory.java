@@ -46,7 +46,7 @@ public class DatabaseIDFactory
     /**
      * Sets the cacheQuantity value.
      *
-     * @param a <code>long</code> value
+     * @param inCacheQuantity a <code>long</code> value
      */
     public void setCacheQuantity(long inCacheQuantity)
     {

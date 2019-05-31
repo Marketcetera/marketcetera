@@ -1,6 +1,38 @@
 package org.marketcetera.ors.security;
 
-import static org.marketcetera.ors.security.Messages.*;
+import static org.marketcetera.ors.security.Messages.CLI_ARG_LOGIN_PASSWORD_VALUE;
+import static org.marketcetera.ors.security.Messages.CLI_ARG_LOGIN_VALUE;
+import static org.marketcetera.ors.security.Messages.CLI_ARG_USER_ACTIVE_VALUE;
+import static org.marketcetera.ors.security.Messages.CLI_ARG_USER_NAME_VALUE;
+import static org.marketcetera.ors.security.Messages.CLI_ARG_USER_PASSWORD_VALUE;
+import static org.marketcetera.ors.security.Messages.CLI_ARG_USER_SUPERUSER_VALUE;
+import static org.marketcetera.ors.security.Messages.CLI_CMD_ADD_USER;
+import static org.marketcetera.ors.security.Messages.CLI_CMD_CHANGE_PASSWORD;
+import static org.marketcetera.ors.security.Messages.CLI_CMD_CHANGE_SUPERUSER;
+import static org.marketcetera.ors.security.Messages.CLI_CMD_DELETE_USER;
+import static org.marketcetera.ors.security.Messages.CLI_CMD_LIST_USERS;
+import static org.marketcetera.ors.security.Messages.CLI_CMD_RESTORE_USER;
+import static org.marketcetera.ors.security.Messages.CLI_DESC_OPTIONS_HEADER;
+import static org.marketcetera.ors.security.Messages.CLI_ERR_INACTIVE_USER;
+import static org.marketcetera.ors.security.Messages.CLI_ERR_INVALID_LOGIN;
+import static org.marketcetera.ors.security.Messages.CLI_ERR_OPTION_MISSING;
+import static org.marketcetera.ors.security.Messages.CLI_ERR_UNAUTH_CHANGE_SUPERUSER;
+import static org.marketcetera.ors.security.Messages.CLI_ERR_UNAUTH_DELETE;
+import static org.marketcetera.ors.security.Messages.CLI_ERR_UNAUTH_RESTORE;
+import static org.marketcetera.ors.security.Messages.CLI_OUT_USER_CHG_PASS;
+import static org.marketcetera.ors.security.Messages.CLI_OUT_USER_CHG_SUPERUSER;
+import static org.marketcetera.ors.security.Messages.CLI_OUT_USER_CREATED;
+import static org.marketcetera.ors.security.Messages.CLI_OUT_USER_DELETED;
+import static org.marketcetera.ors.security.Messages.CLI_OUT_USER_RESTORED;
+import static org.marketcetera.ors.security.Messages.CLI_PARM_OP_ACTIVE;
+import static org.marketcetera.ors.security.Messages.CLI_PARM_OP_PASSWORD;
+import static org.marketcetera.ors.security.Messages.CLI_PARM_OP_SUPERUSER;
+import static org.marketcetera.ors.security.Messages.CLI_PARM_OP_USER;
+import static org.marketcetera.ors.security.Messages.CLI_PARM_PASSWORD;
+import static org.marketcetera.ors.security.Messages.CLI_PARM_USER;
+import static org.marketcetera.ors.security.Messages.CLI_PROMPT_NEW_PASSWORD;
+import static org.marketcetera.ors.security.Messages.CLI_PROMPT_PASSWORD;
+import static org.marketcetera.ors.security.Messages.CLI_UNAUTHORIZED_ACTION;
 
 import java.io.Console;
 import java.io.PrintStream;
@@ -9,7 +41,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.OptionGroup;
+import org.apache.commons.cli.Options;
 import org.apache.commons.lang.SystemUtils;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.ors.dao.UserService;
@@ -27,7 +64,7 @@ import org.springframework.context.Lifecycle;
  * The CLI to manage users and password on ORS.
  * Invoke {@link #parseAndRun(String[])} to run a CLI command. This method
  * can be invoked multiple times to invoke several commands.
- * The CLI instance can eventually be destroyed by invoking {@link #close()} 
+ * The CLI instance can eventually be destroyed by invoking {@link #stop()}
  *
  * @author anshul@marketcetera.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>

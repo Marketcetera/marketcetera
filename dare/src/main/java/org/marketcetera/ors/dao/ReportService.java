@@ -203,6 +203,7 @@ public interface ReportService
      * Saves the given report.
      *
      * @param inReport a <code>ReportBase</code> value
+     * @return a <code>PersistentReport</code> value
      */
     public PersistentReport save(ReportBase inReport);
     /**

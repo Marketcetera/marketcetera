@@ -215,7 +215,7 @@ public class SessionCustomization
     /**
      * Sets the brokerAlgos value.
      *
-     * @param a <code>Set&lt;BrokerAlgoSpec&gt;</code> value
+     * @param inBrokerAlgos a <code>Set&lt;BrokerAlgoSpec&gt;</code> value
      */
     public void setBrokerAlgos(Set<BrokerAlgoSpec> inBrokerAlgos)
     {

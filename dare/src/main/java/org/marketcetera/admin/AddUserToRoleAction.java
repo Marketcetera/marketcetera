@@ -9,7 +9,6 @@ import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 /* $License$ */
 
 /**
@@ -21,6 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class AddUserToRoleAction
 {
+    /**
+     * Validate and start the object.
+     */
     @PostConstruct
     public void start()
     {
@@ -59,7 +61,7 @@ public class AddUserToRoleAction
     /**
      * Sets the username value.
      *
-     * @param a <code>String</code> value
+     * @param inUsername a <code>String</code> value
      */
     public void setUsername(String inUsername)
     {
@@ -77,18 +79,18 @@ public class AddUserToRoleAction
     /**
      * Sets the roleName value.
      *
-     * @param a <code>String</code> value
+     * @param inRoleName a <code>String</code> value
      */
     public void setRoleName(String inRoleName)
     {
         roleName = inRoleName;
     }
     /**
-     * 
+     * username value
      */
     private String username;
     /**
-     * 
+     * rolename value
      */
     private String roleName;
     /**

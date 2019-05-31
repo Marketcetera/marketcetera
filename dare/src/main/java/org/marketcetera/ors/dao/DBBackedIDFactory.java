@@ -40,7 +40,7 @@ public abstract class DBBackedIDFactory
     /** Intended to be overwritten by subclasses
      * Extra validity check before performing the request.
      * Checks the factory state, if inconsistent, throws an exception
-     * @throws org.marketcetera.core.NoMoreIDsException
+     * @throws NoMoreIDsException if no more ids are available
      */
     protected void factoryValidityCheck() throws NoMoreIDsException
     {
@@ -54,7 +54,8 @@ public abstract class DBBackedIDFactory
     }
 
     /** Helper function intended to be overwritten by subclasses.
-     * Thsi is where the real requiest for IDs happens
+     * This is where the real request for IDs happens
+     * @throws Exception if the request cannot be completed
      */
     protected abstract void performIDRequest() throws Exception;
 
