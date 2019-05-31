@@ -59,7 +59,7 @@ public abstract class RowProcessor {
 
     /**
      * Returns the total number of orders processed. The returned
-     * value is the sum of {@link #getNumFailed()} & {@link #getNumSuccess()}.
+     * value is the sum of {@link #getNumFailed()} &amp; {@link #getNumSuccess()}.
      *
      * @return the total number of orders processed.
      */

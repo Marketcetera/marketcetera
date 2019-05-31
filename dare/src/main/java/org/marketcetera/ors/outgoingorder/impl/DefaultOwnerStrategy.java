@@ -60,7 +60,7 @@ public class DefaultOwnerStrategy
     /**
      * Sets the username value.
      *
-     * @param a <code>String</code> value
+     * @param inUsername a <code>String</code> value
      */
     public void setUsername(String inUsername)
     {
@@ -78,7 +78,7 @@ public class DefaultOwnerStrategy
     /**
      * Sets the userService value.
      *
-     * @param a <code>UserService</code> value
+     * @param inUserService a <code>UserService</code> value
      */
     public void setUserService(UserService inUserService)
     {

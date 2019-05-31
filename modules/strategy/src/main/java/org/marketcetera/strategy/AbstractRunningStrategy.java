@@ -247,6 +247,7 @@ public abstract class AbstractRunningStrategy
      * <p>All running strategies have access to this properties store.
      * 
      * @param inKey a <code>String</code> value
+     * @return a <code>String</code> value
      */
     protected static String getProperty(String inKey)
     {
@@ -922,7 +923,7 @@ public abstract class AbstractRunningStrategy
      * caller takes steps to mitigate the bottleneck.
      *
      * @param inDelay a <code>long</code> value indicating how many milliseconds
-     *   to wait before executing the callback.  A value <= 0 will be interpreted
+     *   to wait before executing the callback.  A value &lt;= 0 will be interpreted
      *   as a request for an immediate callback.
      * @param inData an <code>Object</code> value to deliver along with the callback,
      *   may be null
@@ -947,11 +948,11 @@ public abstract class AbstractRunningStrategy
      * delay other callbacks from the same {@link RunningStrategy} unless the
      * caller takes steps to mitigate the bottleneck.
      * @param inDelay a <code>long</code> value indicating how many milliseconds
-     *   to wait before executing the first callback. A value <= 0 will be interpreted
+     *   to wait before executing the first callback. A value &lt;= 0 will be interpreted
      *   as a request for an immediate callback.
      * @param inPeriod a <code>long</code> value indicating how many milliseconds
      *   to wait before executing the second callback, and thereafter repeatedly
-     *   The value must be > 0.
+     *   The value must be &gt; 0.
      * @param inData an <code>Object</code> value to deliver along with the callback,
      *   may be null
      */

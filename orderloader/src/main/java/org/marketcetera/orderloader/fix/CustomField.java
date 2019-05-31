@@ -93,9 +93,9 @@ public class CustomField<T>
     /**
      * Fields are treated as custom when the header name is not "standard" and
      * the name can be parsed as an int.
-     * @param inName
+     * @param inName a <code>String</code> value
      * @return Custom field for the passed in key
-     * @throws OrderParsingException
+     * @throws OrderParsingException if the order cannot be parsed
      */
     public static CustomField<?> getCustomField(String inName)
         throws OrderParsingException

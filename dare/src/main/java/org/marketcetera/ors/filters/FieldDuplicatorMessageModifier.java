@@ -26,11 +26,11 @@ import quickfix.StringField;
  *  &lt;bean id="outgoingMessageHandler" class="com.marketcetera.ors.OutgoingMessageHandler" scope="prototype"&gt;
  *  ...
  *      &lt;property name="orderModifiers"&gt;
- *          &lt;list>
+ *          &lt;list&gt;
  *              &lt;ref bean="defaultOrderModifier"/&gt;
  *              &lt;ref bean="fieldDuplicator"/&gt;
- *          &lt;/list>
- *      &lt;/property>
+ *          &lt;/list&gt;
+ *      &lt;/property&gt;
  *  ...
  * </pre>
  * @author toli

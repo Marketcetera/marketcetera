@@ -28,17 +28,17 @@ import com.google.common.cache.CacheBuilder;
 /**
  * Converts conventional data types to {@link Tensor} objects.
  * 
- * <p>Module Features
- * <table>
+ * <p>Module Features</p>
+ * <table summary="TensorFlowConverterModule capabilities">
  * <tr><th>Capabilities</th><td>Data Emitter, Data Receiver</td></tr>
  * <tr><th>DataFlow Request Parameters</th><td>none</td></tr>
  * <tr><th>Stops data flows</th><td>n/a</td></tr>
  * <tr><th>Start Operation</th><td>n/a</td></tr>
  * <tr><th>Stop Operation</th><td>n/a</td></tr>
- * <tr><th>Management Interface</th>n/a</td></tr>
+ * <tr><th>Management Interface</th><td>n/a</td></tr>
  * <tr><th>Factory</th><td>{@link TensorFlowConverterModuleFactory}</td></tr>
  * </table>
- * </p>
+ *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$

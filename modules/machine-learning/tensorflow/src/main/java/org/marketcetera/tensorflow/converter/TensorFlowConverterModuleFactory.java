@@ -12,15 +12,15 @@ import org.tensorflow.Tensor;
 /**
  * Provider that will convert incoming data flow data to {@link Tensor} types.
  *
- * <p>The factory has the following characteristics.
- * <table>
+ * <p>The factory has the following characteristics.</p>
+ * <table summary="TensorFlowConverterModuleFactory characteristics">
  * <tr><th>Provider URN:</th><td><code>metc:tensorflow:converter</code></td></tr>
  * <tr><th>Cardinality:</th><td>Single Instance</td></tr>
  * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>
  * <tr><th>Auto-Started:</th><td>Yes</td></tr>
  * <tr><th>Instantiation Arguments:</th><td>n/a</td></tr>
  * <tr><th>Module Type:</th><td>{@link TensorFlowConverterModule}</td></tr>
- * </table></p>
+ * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

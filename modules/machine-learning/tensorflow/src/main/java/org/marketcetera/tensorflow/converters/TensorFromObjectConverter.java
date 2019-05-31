@@ -16,7 +16,7 @@ public interface TensorFromObjectConverter<T>
     /**
      * Get the type of object this converter can handle.
      *
-     * @return a <code>Class&lt;T&gt</code> value
+     * @return a <code>Class&lt;T&gt;</code> value
      */
     Class<T> getType();
     /**

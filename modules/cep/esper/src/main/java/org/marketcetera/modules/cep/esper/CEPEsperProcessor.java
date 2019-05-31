@@ -48,7 +48,7 @@ import java.util.*;
  * reported and ignored.
  * <p>
  * Module Features
- * <table>
+ * <table summary="CEPEsperProcessor capabilities">
  * <tr><th>Capabilities</th><td>Data Emitter, Data Receiver</td></tr>
  * <tr><th>DataFlow Request Parameters</th><td><code>String</code>: CEP query; <code>String[]</code>: Multiple CEP queries</td></tr>
  * <tr><th>Stops data flows</th><td>If it encounters an error when creating statements in external time mode.</td></tr>

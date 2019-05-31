@@ -27,7 +27,7 @@ import quickfix.Message;
 /* $License$ */
 
 /**
- * Provides an adapter between an {@link RPCServer} and its implementation.
+ * Provides an adapter between an RPC Server and its implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

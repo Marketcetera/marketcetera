@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * restarted for the changes to take effect.
  * <p>
  * Module Features
- * <table>
+ * <table summary="MarketceteraFeedModule features">
  * <tr><th>Management Interface</th><td>{@link MarketceteraFeedMXBean}</td></tr>
  * <tr><th>Factory</th><td>{@link MarketceteraFeedModuleFactory}</td></tr>
  * <tr><th colspan="2">For all other aspects see {@link AbstractMarketDataModule parent}</th></tr>

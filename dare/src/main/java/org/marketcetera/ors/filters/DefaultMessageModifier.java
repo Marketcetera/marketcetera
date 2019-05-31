@@ -167,7 +167,7 @@ public class DefaultMessageModifier implements MessageModifier {
 
         /**
      * The fields are of form:
-     * <fieldName>(predicate)=<fieldValue>
+     * <code>(predicate)=</code>
      * Where fieldName is an integer number.
      * So we parse out the field name, store it as an int, and store the value as an object.
      * The predicate is optional

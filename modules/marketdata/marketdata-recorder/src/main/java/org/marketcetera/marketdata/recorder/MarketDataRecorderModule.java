@@ -54,7 +54,7 @@ import com.codahale.metrics.MetricRegistry;
  * Provides an implementation that writes market data to files in a given directory.
  * <p>
  * Module Features
- * <table>
+ * <table summary="MarketDataRecorderModule featues">
  * <tr><th>Capabilities</th><td>Data Receiver,Data Emitter</td></tr>
  * <tr><th>Stops data flows</th><td>No</td></tr>
  * <tr><th>Start Operation</th><td>Checks that the directory exists and is writable</td></tr>
@@ -116,7 +116,7 @@ public class MarketDataRecorderModule
     /**
      * Sets the config value.
      *
-     * @param a <code>MarketDataRecorderModuleConfiguration</code> value
+     * @param inConfig a <code>MarketDataRecorderModuleConfiguration</code> value
      */
     public void setConfig(MarketDataRecorderModuleConfiguration inConfig)
     {

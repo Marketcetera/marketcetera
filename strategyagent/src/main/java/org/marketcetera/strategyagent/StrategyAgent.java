@@ -84,7 +84,7 @@ public class StrategyAgent
     /**
      * Sets the contextClasses value.
      *
-     * @param a <code>Class&lt;?&gt;[]</code> value
+     * @param inContextClasses a <code>Class&lt;?&gt;[]</code> value
      */
     public void setContextClasses(Class<?>[] inContextClasses)
     {

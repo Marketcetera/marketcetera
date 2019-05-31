@@ -51,7 +51,7 @@ public class MarketDataRecorderModuleConfiguration
     /**
      * Sets the timestampGenerator value.
      *
-     * @param a <code>TimestampGenerator</code> value
+     * @param inTimestampGenerator a <code>TimestampGenerator</code> value
      */
     public void setTimestampGenerator(TimestampGenerator inTimestampGenerator)
     {
@@ -83,7 +83,7 @@ public class MarketDataRecorderModuleConfiguration
     /**
      * Sets the sessionReset value.
      *
-     * @param a <code>String</code> value
+     * @param inSessionReset a <code>String</code> value
      */
     public void setSessionReset(String inSessionReset)
     {

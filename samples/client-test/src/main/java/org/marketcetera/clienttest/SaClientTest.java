@@ -16,7 +16,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 /* $License$ */
 
 /**
- *
+ * Tests {@link SAClient}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -29,7 +29,7 @@ public class SaClientTest
      *
      * @param inArgs a <code>String[]</code> value
      */
-    public static void main(String[] args)
+    public static void main(String[] inArgs)
     {
         SLF4JLoggerProxy.info(ClientTest.class,
                               "Starting strategy engine client test");
