@@ -781,24 +781,6 @@ public class QuickFIXApplication
         return mSystemInfo;
     }
     /**
-     * Get the productKey value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getProductKey()
-    {
-        return productKey;
-    }
-    /**
-     * Sets the productKey value.
-     *
-     * @param inProductKey a <code>String</code> value
-     */
-    public void setProductKey(String inProductKey)
-    {
-        productKey = inProductKey;
-    }
-    /**
      * Sets the systemInfo value.
      *
      * @param inSystemInfo a <code>SystemInfo</code> value
@@ -2213,10 +2195,6 @@ public class QuickFIXApplication
      * provides data store access to persistent report objects
      */
     private PersistentReportDao reportDao;
-    /**
-     * provides authorization for particular brokers
-     */
-    private String productKey;
     /**
      * holds processing queues for root order id
      */

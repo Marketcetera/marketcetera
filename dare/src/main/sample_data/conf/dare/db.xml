@@ -4,7 +4,12 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
   <!-- Exception translation bean post processor -->
   <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
-  <!-- Marketcetera database settings -->
+  <!-- Flyway configuration -->
+  <bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
+    <property name="baselineOnMigrate" value="true" />
+    <property name="locations" value="classpath:/db/migration/${metc.flyway.vendor}" />
+    <property name="dataSource" ref="metc_sql_pool" />
+  </bean>
   <bean id="metc_sql_pool" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
     <property name="dataSourceName" value="matp"/>
     <property name="user" value="${metc.jdbc.user}"/>
@@ -22,7 +27,7 @@
     <property name="statementCacheNumDeferredCloseThreads" value="${metc.jdbc.statement.cache.num.deferred.close.threads}"/>
     <property name="checkoutTimeout" value="${metc.jdbc.checkout.timeout}"/>
   </bean>
-  <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="metc-hcast">
+  <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="flyway">
     <property name="dataSource" ref="metc_sql_pool"/>
     <property name="persistenceUnitName" value="metc"/>
     <property name="jpaVendorAdapter">

@@ -327,24 +327,6 @@ public class OrderRoutingSystem
         requestHandler = inRequestHandler;
     }
     /**
-     * Get the product key value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getProductKey()
-    {
-        return productKey;
-    }
-    /**
-     * Sets the product key value.
-     *
-     * @param inProductKey a <code>String</code> value
-     */
-    public void setProductKey(String inProductKey)
-    {
-        productKey = inProductKey;
-    }
-    /**
      * Get the maxExecutionPools value.
      *
      * @return an <code>int</code> value
@@ -622,7 +604,6 @@ public class OrderRoutingSystem
                 qfApp.setToClientStatus(jmsManager.getOutgoingJmsFactory().createJmsTemplateX(Service.BROKER_STATUS_TOPIC,
                                                                                               true));
                 qfApp.setToTradeRecorder(null); // CD 20101202 - Removed as I don't think this is used any more and just consumes memory
-                qfApp.setProductKey(productKey);
                 qfApp.setAllowDeliverToCompID(allowDeliverToCompID);
                 qfApp.addBrokerStatusListener(this);
                 qfApp.addSessionStatusListener(this);
@@ -1254,10 +1235,6 @@ public class OrderRoutingSystem
      * handles outgoing requests from client
      */
     private ReceiveOnlyHandler<DataEnvelope> requestHandler;
-    /**
-     * key data which allows access to ORS services
-     */
-    private String productKey;
     /**
      * determines whether we allow the redeliverToCompID flag or not
      */
