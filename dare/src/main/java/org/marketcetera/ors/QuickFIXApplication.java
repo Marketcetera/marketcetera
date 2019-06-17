@@ -83,6 +83,12 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsOperations;
 
+import com.codahale.metrics.Counter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
+import com.hazelcast.core.OperationTimeoutException;
+
 import quickfix.ApplicationExtended;
 import quickfix.DoNotSend;
 import quickfix.FieldNotFound;
@@ -107,12 +113,6 @@ import quickfix.field.SessionRejectReason;
 import quickfix.field.TargetCompID;
 import quickfix.field.Text;
 import quickfix.field.TradSesStatus;
-
-import com.codahale.metrics.Counter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.hazelcast.core.HazelcastInstanceNotActiveException;
-import com.hazelcast.core.OperationTimeoutException;
 
 /* $License$ */
 
@@ -492,6 +492,15 @@ public class QuickFIXApplication
                                                      inMessage,
                                                      broker.toString());
             }
+        }
+        // this is necessary due to a race condition on logon for QFJ where for FIXT only where the DefaultVerID isn't set
+        //  until after logon, but is necessary for logon
+        if(inSessionId.isFIXT() && FIXMessageUtil.isLogon(inMessage) && !inMessage.getHeader().isSetField(quickfix.field.ApplVerID.FIELD)) {
+            String defaultApplVerId = broker.getSpringBroker().getDescriptor().getDictionary().get("DefaultApplVerID");
+            if(defaultApplVerId == null) {
+                defaultApplVerId = quickfix.field.ApplVerID.FIX50SP2;
+            }
+            Session.lookupSession(inSessionId).setTargetDefaultApplicationVersionID(new quickfix.field.ApplVerID(defaultApplVerId));
         }
         Object category = getCategory(inMessage);
         boolean shouldDisplayMessage = !category.equals(HEARTBEAT_CATEGORY) || SLF4JLoggerProxy.isDebugEnabled(HEARTBEAT_CATEGORY);
