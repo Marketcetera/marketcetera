@@ -7,53 +7,46 @@
     <Console name="STDOUT" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{DATE} %5p [%t] %c{3} (%F:%L) - %m%n"/>
     </Console>
-    <RollingRandomAccessFile name="FILE" fileName="target/logs/dare${instanceName}.log" filePattern="target/logs/dare${instanceName}-%i.log.gz" append="true">
+    <RollingRandomAccessFile name="FILE" fileName="target/logs/dare${instanceName}.log" filePattern="target/logs/dare${instanceName}-%d{yyyy-MM-dd-HH}-%i.log.gz" append="true">
       <PatternLayout pattern="%d{DATE} %5p [%t] %c{3} (%F:%L) - %m%n"/>
       <Policies>
         <SizeBasedTriggeringPolicy size="100 MB"/>
       </Policies>
       <DefaultRolloverStrategy max="1000"/>
     </RollingRandomAccessFile>
-    <RollingRandomAccessFile name="FIX-INCOMING" fileName="target/logs/fix-incoming${instanceName}.log" filePattern="target/logs/fix-incoming${instanceName}-%i.log.gz" append="true">
+    <RollingRandomAccessFile name="FIX-INCOMING" fileName="target/logs/fix-incoming${instanceName}.log" filePattern="target/logs/fix-incoming${instanceName}-%d{yyyy-MM-dd-HH}-%i.log.gz" append="true">
       <PatternLayout pattern="%d{DATE} %m%n"/>
       <Policies>
         <SizeBasedTriggeringPolicy size="100 MB"/>
       </Policies>
       <DefaultRolloverStrategy max="1000"/>
     </RollingRandomAccessFile>
-    <RollingRandomAccessFile name="FIX-OUTGOING" fileName="target/logs/fix-outgoing${instanceName}.log" filePattern="target/logs/fix-outgoing${instanceName}-%i.log.gz" append="true">
+    <RollingRandomAccessFile name="FIX-OUTGOING" fileName="target/logs/fix-outgoing${instanceName}.log" filePattern="target/logs/fix-outgoing${instanceName}-%d{yyyy-MM-dd-HH}-%i.log.gz" append="true">
       <PatternLayout pattern="%d{DATE} %m%n"/>
       <Policies>
         <SizeBasedTriggeringPolicy size="100 MB"/>
       </Policies>
       <DefaultRolloverStrategy max="1000"/>
     </RollingRandomAccessFile>
-    <RollingRandomAccessFile name="ISOTOPES" fileName="target/logs/isotopes${instanceName}.log" filePattern="target/logs/isotopes${instanceName}-%i.log.gz" append="true">
-      <PatternLayout pattern="%m%n"/>
-      <Policies>
-        <SizeBasedTriggeringPolicy size="100 MB"/>
-      </Policies>
-      <DefaultRolloverStrategy max="1000"/>
-    </RollingRandomAccessFile>
-    <RollingRandomAccessFile name="METRICS" fileName="target/logs/metrics${instanceName}.log" filePattern="target/logs/metrics${instanceName}-%i.log.gz" append="true">
+    <RollingRandomAccessFile name="METRICS" fileName="target/logs/metrics${instanceName}.log" filePattern="target/logs/metrics${instanceName}-%d{yyyy-MM-dd-HH}-%i.log.gz" append="true">
       <PatternLayout pattern="%d{DATE} %m%n"/>
       <Policies>
         <SizeBasedTriggeringPolicy size="100 MB"/>
       </Policies>
     </RollingRandomAccessFile>
-    <RollingRandomAccessFile name="RESTORE" fileName="target/logs/restore${instanceName}.log" filePattern="target/logs/restore${instanceName}-%i.log.gz" append="true">
+    <RollingRandomAccessFile name="RESTORE" fileName="target/logs/restore${instanceName}.log" filePattern="target/logs/restore${instanceName}-%d{yyyy-MM-dd-HH}-%i.log.gz" append="true">
       <PatternLayout pattern="%d{DATE} [%t] %m%n"/>
       <Policies>
         <SizeBasedTriggeringPolicy size="100 MB"/>
       </Policies>
     </RollingRandomAccessFile>
-    <RollingRandomAccessFile name="BROKERS" fileName="target/logs/brokers${instanceName}.log" filePattern="target/logs/brokers${instanceName}-%i.log.gz" append="true">
+    <RollingRandomAccessFile name="BROKERS" fileName="target/logs/brokers${instanceName}.log" filePattern="target/logs/brokers${instanceName}-%d{yyyy-MM-dd-HH}-%i.log.gz" append="true">
       <PatternLayout pattern="%d{DATE} %m%n"/>
       <Policies>
         <SizeBasedTriggeringPolicy size="100 MB"/>
       </Policies>
     </RollingRandomAccessFile>
-    <RollingRandomAccessFile name="EVENTS" fileName="target/logs/event.log" filePattern="target/logs/event-%d{yyyy-MM-dd-HH}-%i.log.gz" append="true">
+    <RollingRandomAccessFile name="EVENTS" fileName="target/logs/event${instanceName}.log" filePattern="target/logs/event${instanceName}-%d{yyyy-MM-dd-HH}-%i.log.gz" append="true">
       <PatternLayout pattern="%d %m%n"/>
       <Policies>
         <SizeBasedTriggeringPolicy size="100 MB"/>
@@ -75,9 +68,6 @@
       <AppenderRef ref="BROKERS"/>
       <AppenderRef ref="FILE"/>
       <AppenderRef ref="STDOUT"/>
-    </logger>
-    <logger name="metc.isotopes" level="warn" additivity="false">
-      <AppenderRef ref="ISOTOPES"/>
     </logger>
     <logger name="metrics" level="info" additivity="false">
       <AppenderRef ref="METRICS"/>
