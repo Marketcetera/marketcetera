@@ -10,7 +10,7 @@ import org.marketcetera.module.ModuleURN;
  * See {@link CEPSystemProcessor} for an explanation of how the System CEP module works.
  * <p>
  * The factory has the following characteristics.
- * <table>
+ * <table summary="CEPSystemFactory Characteristics">
  * <tr><th>Provider URN:</th><td><code>metc:cep:system</code></td></tr>
  * <tr><th>Cardinality:</th><td>Multi-Instance</td></tr>
  * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>
@@ -28,7 +28,6 @@ import org.marketcetera.module.ModuleURN;
 public final class CEPSystemFactory extends ModuleFactory {
     /**
      * Creates an instance.
-     *
      */
     public CEPSystemFactory() {
         super(PROVIDER_URN, Messages.PROVIDER_DESCRIPTION, true, true,

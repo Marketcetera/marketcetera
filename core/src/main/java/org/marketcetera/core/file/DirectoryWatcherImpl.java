@@ -29,7 +29,7 @@ import com.google.common.collect.Sets;
  * Watches the given directories for files to be added or modified.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DirectoryWatcherImpl.java 83882 2014-08-01 22:31:54Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @ThreadSafe

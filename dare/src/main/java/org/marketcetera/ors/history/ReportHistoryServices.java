@@ -25,10 +25,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides services to save and query reports.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ReportHistoryServices.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ReportHistoryServices.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public interface ReportHistoryServices {
 
     /**

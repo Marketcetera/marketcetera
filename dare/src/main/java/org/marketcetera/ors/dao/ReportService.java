@@ -24,7 +24,6 @@ import org.marketcetera.trade.ReportID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.domain.Page;
 
-
 import quickfix.SessionID;
 
 /* $License$ */
@@ -33,10 +32,10 @@ import quickfix.SessionID;
  * Provides access to reports.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ReportService.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: ReportService.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public interface ReportService
 {
     /**
@@ -204,6 +203,7 @@ public interface ReportService
      * Saves the given report.
      *
      * @param inReport a <code>ReportBase</code> value
+     * @return a <code>PersistentReport</code> value
      */
     public PersistentReport save(ReportBase inReport);
     /**

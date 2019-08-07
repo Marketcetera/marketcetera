@@ -6,7 +6,7 @@ package org.marketcetera.cluster;
  * Describes a cluster queue.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: QueueDescriptor.java 16534 2015-02-10 20:17:33Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 public interface QueueDescriptor<Clazz>

@@ -8,12 +8,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 2.0.0
- * @version $Id: ReadInfo.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: ReadInfo.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public interface ReadInfo
 {
 
@@ -97,6 +97,7 @@ public interface ReadInfo
      * receiver's map, provided one is set and is either null or an
      * object of the given class.
      *
+     * @param <T> the instance type of the returned value
      * @param key The key.
      * @param cls The class.
      *
@@ -106,7 +107,6 @@ public interface ReadInfo
      * the given key, or if the value is non-null and of a class other
      * than the given one.
      */
-
     <T> T getValueIfInstanceOf
         (String key,
          Class<T> cls)
@@ -117,6 +117,7 @@ public interface ReadInfo
      * receiver's map, provided one is set and is non-null and an
      * object of the given class.
      *
+     * @param <T> the instance type of the returned value
      * @param key The key.
      * @param cls The class.
      *

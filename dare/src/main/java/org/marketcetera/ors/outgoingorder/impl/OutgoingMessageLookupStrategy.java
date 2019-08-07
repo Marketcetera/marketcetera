@@ -107,7 +107,7 @@ public class OutgoingMessageLookupStrategy
     /**
      * Sets the outgoingMessageDao value.
      *
-     * @param a <code>PersistentOutgoingMessageDao</code> value
+     * @param inOutgoingMessageDao a <code>PersistentOutgoingMessageDao</code> value
      */
     public void setOutgoingMessageDao(PersistentOutgoingMessageDao inOutgoingMessageDao)
     {

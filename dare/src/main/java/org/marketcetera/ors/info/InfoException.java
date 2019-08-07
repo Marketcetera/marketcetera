@@ -9,12 +9,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author tlerios@marketcetera.com
  * @since 2.0.0
- * @version $Id: InfoException.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: InfoException.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class InfoException
     extends I18NException
 {

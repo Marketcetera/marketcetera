@@ -57,7 +57,6 @@
  *            <a href="#strategy_structure_api_actions_requestprocessedmarketdata"><code>requestProcessedMarketData</code></a>. 
  *            Data requests initiated during <code>onStart</code> may cause data to be delivered before 
  *            <code>onStart</code> completes.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_data_onstop">onStop</em>
  *            <br>
@@ -69,7 +68,6 @@
  *            It is not necessary to cancel initiated data flows as all data requests made by a strategy  
  *            are automatically canceled.  It is not permitted to make new data requests, send or cancel 
  *            orders, or send suggestions in <code>onStop</code>.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_data_onask">onAsk</em>
  *            <br>
@@ -79,7 +77,6 @@
  *            </pre>
  *            Called when the strategy receives an ask event.  Ask events are received
  *            if the strategy has submitted a market data or complex event processing request.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_data_onbid">onBid</em>
  *            <br>
@@ -89,7 +86,6 @@
  *            </pre>
  *            Called when the strategy receives a bid event.  Bid events are received
  *            if the strategy has submitted a market data or complex event processing request.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_data_ontrade">onTrade</em>
  *            <br>
@@ -99,7 +95,6 @@
  *            </pre>
  *            Called when the strategy receives a trade event.  Trade events are received
  *            if the strategy has submitted a market data or complex event processing request.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_data_onmarketstat">onMarketstat</em>
  *            <br>
@@ -109,7 +104,6 @@
  *            </pre>
  *            Called when the strategy receives a marketstat event.  Marketstat events are received
  *            if the strategy has submitted a market data or complex event processing request.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_data_ondividend">onDividend</em>
  *            <br>
@@ -119,7 +113,6 @@
  *            </pre>
  *            Called when the strategy receives a dividend event.  Dividend events are received
  *            if the strategy has submitted a market data or complex event processing request.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_data_oncancelreject">onCancelReject</em>
  *            <br>
@@ -131,7 +124,6 @@
  *            are received if the strategy is connected to the Marketcetera server.  Note that
  *            the strategy will received order cancel reject events for all rejected orders, not just the
  *            orders the strategy created.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_data_onexecutionreport">onExecutionReport</em>
  *            <br>
@@ -143,7 +135,6 @@
  *            are received if the strategy is connected to the Marketcetera server.  Note that
  *            the strategy will received execution report events for all orders, not just the
  *            orders the strategy created.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_data_oncallback">onCallback</em>
  *            <br>
@@ -155,7 +146,6 @@
  *            via <a href="#strategy_structure_api_services_requestcallbackafter"><code>requestCallbackAfter(long,java.lang.Object)</code></a>
  *            or <a href="#strategy_structure_api_services_requestcallbackat"><code>requestCallbackAt(long,java.lang.Object)</code></a>. 
  *            The object returned is the same object that is passed to the request. 
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_data_onother">onOther</em>
  *            <br>
@@ -164,7 +154,6 @@
  *                on_other(data)
  *            </pre>
  *            Called when the strategy receives an object that does not fall into any of the above categories
- *        </p>
  *        <h4 id="strategy_structure_api_services">Services</h4>
  *        Services refers to the set of methods a strategy may execute that provide data.
  *        <p>
@@ -178,7 +167,6 @@
  *            if no such parameter exists.  Parameters are specified to the
  *            strategy at start time as a map of key/value pairs.  The parameters specified
  *            are private to the given strategy.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_services_getproperty">getProperty</em>
  *            <br>
@@ -191,7 +179,6 @@
  *            Unlike <a href="#strategy_structure_api_services_getparameter"><code>getParameter</code></a>,
  *            properties are common to all running strategies in the same Marketcetera process.  Changes
  *            made by one strategy will be visible to all other strategies.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_services_getexecutionreports">getExecutionReports</em>
  *            <br>
@@ -205,8 +192,7 @@
  *            values returned may not correspond to the aggregate set of execution reports supplied  
  *            via <a href="#strategy_structure_api_data_onexecutionreport"><code>onExecutionReport</code></a>
  *            as <code>getExecutionReports</code> is limited to execution reports from orders sent by this 
- *            stategy and <code>onExecutionReport</code> receives all execution reports. 
- *        </p>
+ *            strategy and <code>onExecutionReport</code> receives all execution reports. 
  *        <p>
  *            <em id="strategy_structure_api_services_getbrokers">getBrokers</em>
  *            <br>
@@ -216,7 +202,6 @@
  *            </pre>
  *            Retrieves the brokers known to the Marketcetera server.  The strategy must be connected 
  *            to the Marketcetera server to retrieve brokers. 
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_services_getpositionasof">getPositionAsOf</em>
  *            <br>
@@ -229,7 +214,6 @@
  *            The strategy must be connected to the Marketcetera server to retrieve positions.  If the position cannot 
  *            be retrieved, this method will return <code>null</code>/<code>nil</code>.  If there is no current position 
  *            in the given symbol at the given time, this method will return <code>0</code>.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_services_geturn">getURN</em>
  *            <br>
@@ -238,7 +222,6 @@
  *                get_urn()
  *            </pre>
  *            Retrieves the <code>ModuleURN</code> of the strategy
- *        </p>
  *        <h4 id="strategy_structure_api_actions">Actions</h4>
  *        Actions refers to the set of methods a strategy may execute each of which effects a specific change.
  *        <p>
@@ -250,7 +233,6 @@
  *            </pre>
  *            Sets the given key to the given value, creating the given key if it does exist, otherwise overwriting the existing value.
  *            All strategies share properties in common, so one strategy may change data another strategy created.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_requestcallbackafter">requestCallbackAfter</em>
  *            <br>
@@ -260,7 +242,6 @@
  *            </pre>
  *            Requests a callback from the Marketcetera platform after the given delay in milliseconds has elapsed.  The Marketcetera platform will 
  *            execute <a href="#strategy_structure_api_data_oncallback"><code>onCallback</code></a>, passing it the given object.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_requestcallbackat">requestCallbackAt</em>
  *            <br>
@@ -270,7 +251,6 @@
  *            </pre>
  *            Requests a callback from the Marketcetera platform at the given time, specified in milliseconds since <a href="http://en.wikipedia.org/wiki/Unix_time">epoch</a>.  The Marketcetera platform will 
  *            execute <a href="#strategy_structure_api_data_oncallback"><code>onCallback</code></a>, passing it the given object.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_requestmarketdata">requestMarketData</em>
  *            <br>
@@ -288,7 +268,6 @@
  *            or <a href="#strategy_structure_api_actions_cancelalldatarequests"><code>cancelAllDataRequests()</code></a>.
  *            This method returns an identifier that refers to this market data request.  The identifier can be used to cancel 
  *            the market data request.  If the request fails, the method returns <code>0</code>.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_canceldatarequest">cancelDataRequest</em>
  *            <br>
@@ -299,7 +278,6 @@
  *            Cancels the data request associated with the given id.  If the id does not correspond to an active
  *            data request created by this strategy in this session, this method does nothing.  This method may
  *            be used to cancel either a market data or complex event processor request.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_cancelalldatarequests">cancelAllDataRequests</em>
  *            <br>
@@ -309,7 +287,6 @@
  *            </pre>
  *            Cancels all active data (both market data and complex event processor) requests 
  *            created by this strategy in this session.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_requestcepdata">requestCEPData</em>
  *            <br>
@@ -325,7 +302,6 @@
  *            or <a href="#strategy_structure_api_actions_cancelalldatarequests"><code>cancelAllDataRequests()</code></a>.
  *            This method returns an identifier that refers to this complex event processor request.  The identifier can be 
  *            used to cancel the complex event processor request.  If the request fails, the method returns <code>0</code>.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_requestprocessedmarketdata">requestProcessedMarketData</em>
  *            <br>
@@ -336,7 +312,7 @@
  *            Requests market data specified by the given comma-separated list of symbols from the given market data source 
  *            processed by the given complex event processor query executed in the given complex event processor source.  The format  
  *            of the arguments is identical to that of the union of 
- *            <a href="#strategy_structure_api_actions_requestmarketdata"></code>requestMarketData</code></a> and 
+ *            <a href="#strategy_structure_api_actions_requestmarketdata"><code>requestMarketData</code></a> and 
  *            <a href="#strategy_structure_api_actions_requestcepdata"><code>requestCEPData</code></a>.  The data will 
  *            be delivered as incremental updates via the appropriate <a href="#strategy_structure_api_data">data method</a>. 
  *            The data will continue to arrive until the request is canceled via 
@@ -344,7 +320,6 @@
  *            <a href="#strategy_structure_api_actions_cancelalldatarequests"><code>cancelAllRequests()</code></a>.  
  *            This method returns an identifier that refers to this request.  
  *            The identifier can be used to cancel the request.  If the request fails, the method returns <code>0</code>.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_suggesttrade">suggestTrade</em>
  *            <br>
@@ -358,7 +333,6 @@
  *            trade suggestion is created.  There is no way to cancel a trade suggestion nor can a trade suggestion that is
  *            converted to an order be canceled by the strategy that created the suggestion.  It is recommended that the
  *            score for a trade suggestion fall in the interval [0.0,1.0].  The identifier can be any value desired. 
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_send">send</em>
  *            <br>
@@ -368,7 +342,6 @@
  *            </pre>
  *            Sends an object to the destination specified when the strategy is created.  The value returned indicates whether
  *            the object was successfully transmitted or not.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_cancelorder">cancelOrder</em>
  *            <br>
@@ -381,7 +354,6 @@
  *            <code>OrderCancel</code> is returned.  It is submitted if <code>inSendOrder</code> is true, otherwise it
  *            is the caller's responsibility to submit the order manually with <code>sendOther</code>.  Note that successful execution of
  *            this method does not guarantee that an order will be canceled, just that the cancel request was sent.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_cancelreplace">cancelReplace</em>
  *            <br>
@@ -397,7 +369,6 @@
  *            canceled and replaced, just that the cancel and replace request was sent.  If <code>submitOrder</code> is
  *            false, the order will be returned but not submitted.  It is the caller's responsibility to submit the order manually.
  *            This would be done, for example, if the user needed to customize the <code>CancelOrder</code> before it is submitted.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_cancelallorders">cancelAllOrders</em>
  *            <br>
@@ -409,7 +380,6 @@
  *            strategy session.  The cancel requests will be sent to the same destination specified for orders.  The return
  *            value indicates how many cancel requests were successfully sent.  Note that successful execution of
  *            this method does not guarantee that an order will be canceled, just that the cancel requests were sent.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_sendmessage">sendMessage</em>
  *            <br>
@@ -422,7 +392,6 @@
  *            <a href="#strategy_structure_api_services_getbrokers"><code>getBrokers()</code></a>.  This method is intended
  *            to be used in special cases when <a href="#strategy_structure_api_services_sendorder"><code>sendOrder</code></a>
  *            is not adequate.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_sendeventtocep">sendEventToCEP</em>
  *            <br>
@@ -432,7 +401,6 @@
  *            </pre>
  *            Sends the given event to the specified CEP source.  The default query namespace for the strategy is the target
  *            within the given CEP source.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_sendevent">sendEvent</em>
  *            <br>
@@ -443,7 +411,6 @@
  *            Sends the given event to the event subscribers for this strategy.  Each strategy may have a number of
  *            subscribers that express interest in events published by it.  This method will send the given event to
  *            those subscribers.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_notifylow">notifyLow</em>
  *            <br>
@@ -453,7 +420,6 @@
  *            </pre>
  *            Transmits a low priority notification with the given subject and body.    The notifications are emitted
  *            to the strategy output stream.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_notifymedium">notifyMedium</em>
  *            <br>
@@ -463,7 +429,6 @@
  *            </pre>
  *            Transmits a medium priority notification with the given subject and body.    The notifications are emitted
  *            to the strategy output stream.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_notifyhigh">notifyHigh</em>
  *            <br>
@@ -473,7 +438,6 @@
  *            </pre>
  *            Transmits a high priority notification with the given subject and body.  The notifications are emitted
  *            to the strategy output stream.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_debug">debug</em>
  *            <br>
@@ -483,7 +447,6 @@
  *            </pre>
  *            Emits the given message to the strategy log stream.  This message will be emitted only if the appropriate
  *            logger category is activated for the strategy module.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_info">info</em>
  *            <br>
@@ -493,9 +456,8 @@
  *            </pre>
  *            Emits the given message to the strategy log stream.  This message will be emitted only if the appropriate
  *            logger category is activated for the strategy module.
- *        </p>
  *        <p>
- *            <em id="strategy_structure_api_actions_info">warn</em>
+ *            <em id="strategy_structure_api_actions_warn">warn</em>
  *            <br>
  *            <pre>
  *                void warn(java.lang.String)
@@ -503,9 +465,8 @@
  *            </pre>
  *            Emits the given message to the strategy log stream.  This message will be emitted only if the appropriate
  *            logger category is activated for the strategy module.
- *        </p>
  *        <p>
- *            <em id="strategy_structure_api_actions_info">error</em>
+ *            <em id="strategy_structure_api_actions_error">error</em>
  *            <br>
  *            <pre>
  *                void error(java.lang.String)
@@ -513,7 +474,6 @@
  *            </pre>
  *            Emits the given message to the strategy log stream.  This message will be emitted only if the appropriate
  *            logger category is activated for the strategy module.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_createdataflow">createDataFlow</em>
  *            <br>
@@ -524,7 +484,6 @@
  *            Creates a data flow between modules as described by the given <code>DataRequest</code> objects.  Appends data to the
  *            data sink if so indicated.  Normal rules apply with respect to modules being available for data flows.  The <code>DataFlowID</code>
  *            returned may be used to cancel the data flow.  When the strategy ends, all data flows are automatically halted.
- *        </p>
  *        <p>
  *            <em id="strategy_structure_api_actions_canceldataflow">cancelDataFlow</em>
  *            <br>
@@ -533,9 +492,8 @@
  *                cancel_data_flow(dataFlowID)
  *            </pre>
  *            Cancels the data flow with the given <code>DataFlowID</code>.
- *        </p>
  *        
- *        <h2 id="operation">Strategy Operation</h3>
+ *        <h2 id="operation">Strategy Operation</h2>
  *        
  *        <h3 id="operation_parameters">Parameters</h3>
  *        Strategies may be given a map of string-based key/value pairs at creation time.  These values are private to the

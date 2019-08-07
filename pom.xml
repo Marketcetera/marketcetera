@@ -32,10 +32,10 @@
   </developers>
   <properties>
     <mvn.javase.version>8</mvn.javase.version>
-    <mvn.spring.boot.version>2.1.0.RELEASE</mvn.spring.boot.version>
+    <mvn.spring.boot.version>2.1.5.RELEASE</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
     <mvn.log4j.version>2.11.1</mvn.log4j.version>
-    <mvn.test.options>-Xmx2048m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
+    <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
   </properties>
   <dependencyManagement>
@@ -881,9 +881,8 @@
     <plugins>
       <!-- source jar generation -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.2</version>
+        <version>3.0.1</version>
         <executions>
           <execution>
             <id>attach-sources</id>

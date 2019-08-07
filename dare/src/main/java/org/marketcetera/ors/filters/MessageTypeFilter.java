@@ -10,12 +10,12 @@ import quickfix.field.MsgType;
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: MessageTypeFilter.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: MessageTypeFilter.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class MessageTypeFilter
     implements MessageFilter
 {

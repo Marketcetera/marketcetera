@@ -20,7 +20,7 @@ public interface FixSessionRestoreExecutor<T1 extends SessionRestorePayload,T2 e
      * Indicates a session create event.
      *
      * @param inSessionId a <code>SessionID</code> value
-     * @param inMessageHandler
+     * @param inMessageHandler a <code>SessionRestorePaylogHandler&lt;T1&gt;</code> value
      */
     void sessionCreate(SessionID inSessionId,
                        SessionRestorePayloadHandler<T1> inMessageHandler);

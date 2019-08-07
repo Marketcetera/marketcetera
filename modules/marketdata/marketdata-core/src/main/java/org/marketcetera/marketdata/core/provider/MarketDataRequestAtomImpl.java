@@ -11,7 +11,7 @@ import org.marketcetera.marketdata.core.request.MarketDataRequestAtom;
  * Represents a single market data request item.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractMarketDataProvider.java 17068 2015-12-07 17:26:31Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 @Immutable

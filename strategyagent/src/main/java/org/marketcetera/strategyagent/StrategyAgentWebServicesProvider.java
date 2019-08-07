@@ -89,7 +89,7 @@ public class StrategyAgentWebServicesProvider
     /**
      * Get the sessionManager value.
      *
-     * @return a <code>SessionManager<ClientSession></code> value
+     * @return a <code>SessionManager&lt;ClientSession&gt;</code> value
      */
     public SessionManager<ClientSession> getSessionManager()
     {
@@ -98,7 +98,7 @@ public class StrategyAgentWebServicesProvider
     /**
      * Sets the sessionManager value.
      *
-     * @param inSessionManager a <code>SessionManager<ClientSession></code> value
+     * @param inSessionManager a <code>SessionManager&lt;ClientSession&gt;</code> value
      */
     public void setSessionManager(SessionManager<ClientSession> inSessionManager)
     {
@@ -170,7 +170,7 @@ public class StrategyAgentWebServicesProvider
     /**
      * Get the server value.
      *
-     * @return a <code>Server<ClientSession></code> value
+     * @return a <code>Server&lt;ClientSession&gt;</code> value
      */
     @Override
     public Server<ClientSession> getServer()

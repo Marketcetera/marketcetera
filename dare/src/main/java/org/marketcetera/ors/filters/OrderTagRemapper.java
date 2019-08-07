@@ -18,7 +18,7 @@ import quickfix.field.OrdStatus;
  * Remaps saved order tags.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: OrderTagRemapper.java 16522 2014-12-31 16:33:08Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
 public class OrderTagRemapper

@@ -28,9 +28,9 @@ import quickfix.field.Username;
  *
  * @author toli
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ORSAdmin.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: ORSAdmin.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public class ORSAdmin
         implements ORSAdminMBean
 {

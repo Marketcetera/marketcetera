@@ -19,10 +19,10 @@ import quickfix.field.SecurityType;
  * Filters orders by asset class.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AssetClassFilter.java 16522 2014-12-31 16:33:08Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: AssetClassFilter.java 16522 2014-12-31 16:33:08Z colin $")
+@ClassVersion("$Id$")
 public class AssetClassFilter
         implements OrderFilter, InitializingBean
 {

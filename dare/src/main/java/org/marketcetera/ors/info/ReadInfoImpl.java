@@ -16,12 +16,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 2.0.0
- * @version $Id: ReadInfoImpl.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: ReadInfoImpl.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 class ReadInfoImpl
     implements ReadInfo
 {

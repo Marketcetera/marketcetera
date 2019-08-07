@@ -6,7 +6,7 @@ package org.marketcetera.admin;
  * Enumerates user attribute type values.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UserAttributeType.java 84561 2015-03-31 18:18:14Z colin $
+ * @version $Id$
  * @since 1.2.0
  */
 public enum UserAttributeType

@@ -77,6 +77,7 @@ import org.springframework.jms.listener.SimpleMessageListenerContainer;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import quickfix.ConfigError;
 import quickfix.DefaultSessionFactory;
@@ -95,10 +96,10 @@ import quickfix.ThreadedSocketInitiator;
  * @author tlerios@marketcetera.com
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 1.0.0
- * @version $Id: OrderRoutingSystem.java 17336 2017-08-01 20:14:09Z colin $
+ * @version $Id$
  */
 @ClusterWorkUnit(id="MATP.DARE",type=ClusterWorkUnitType.SINGLETON_RUNTIME)
-@ClassVersion("$Id: OrderRoutingSystem.java 17336 2017-08-01 20:14:09Z colin $")
+@ClassVersion("$Id$")
 public class OrderRoutingSystem
         implements BrokerStatusPublisher,BrokerStatusListener,SessionStatusPublisher,SessionStatusListener,FixSessionListener
 {
@@ -326,24 +327,6 @@ public class OrderRoutingSystem
         requestHandler = inRequestHandler;
     }
     /**
-     * Get the product key value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getProductKey()
-    {
-        return productKey;
-    }
-    /**
-     * Sets the product key value.
-     *
-     * @param inProductKey a <code>String</code> value
-     */
-    public void setProductKey(String inProductKey)
-    {
-        productKey = inProductKey;
-    }
-    /**
      * Get the maxExecutionPools value.
      *
      * @return an <code>int</code> value
@@ -473,7 +456,7 @@ public class OrderRoutingSystem
         int instanceId = clusterData.getInstanceNumber();
         clusterWorkUnitUid = OrderRoutingSystem.class.getSimpleName() + "-" + instanceId;
         brokerService.addFixSessionListener(this);
-        statusUpdater = Executors.newSingleThreadScheduledExecutor();
+        statusUpdater = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat(getClass().getSimpleName()+"-StatusUpdater-%d").build());
         backupStatusTask = new Runnable() {
             @Override
             public void run()
@@ -498,9 +481,9 @@ public class OrderRoutingSystem
                                1000,
                                TimeUnit.MILLISECONDS);
         if(notificationExecutor != null) {
-            notificationExecutor.notify(Notification.low("DARE Started",
-                                                         "DARE Started at " + new DateTime(),
-                                                         OrderRoutingSystem.class.getSimpleName()));
+            notificationExecutor.notify(Notification.info("DARE Started",
+                                                          "DARE Started at " + new DateTime(),
+                                                          OrderRoutingSystem.class.getSimpleName()));
         }
         Messages.APP_STARTED.info(this);
     }
@@ -621,7 +604,6 @@ public class OrderRoutingSystem
                 qfApp.setToClientStatus(jmsManager.getOutgoingJmsFactory().createJmsTemplateX(Service.BROKER_STATUS_TOPIC,
                                                                                               true));
                 qfApp.setToTradeRecorder(null); // CD 20101202 - Removed as I don't think this is used any more and just consumes memory
-                qfApp.setProductKey(productKey);
                 qfApp.setAllowDeliverToCompID(allowDeliverToCompID);
                 qfApp.addBrokerStatusListener(this);
                 qfApp.addSessionStatusListener(this);
@@ -719,9 +701,9 @@ public class OrderRoutingSystem
             }
         } finally {
             if(notificationExecutor != null) {
-                notificationExecutor.notify(Notification.low("DARE Stopped",
-                                                             "DARE Stopped at " + new DateTime(),
-                                                             OrderRoutingSystem.class.getSimpleName()));
+                notificationExecutor.notify(Notification.info("DARE Stopped",
+                                                              "DARE Stopped at " + new DateTime(),
+                                                              OrderRoutingSystem.class.getSimpleName()));
             }
             Messages.APP_STOP_SUCCESS.info(this);
         }
@@ -1135,7 +1117,7 @@ public class OrderRoutingSystem
     /**
      * Sets the notificationExecutor value.
      *
-     * @param a <code>NotificationExecutor</code> value
+     * @param inNotificationExecutor a <code>NotificationExecutor</code> value
      */
     public void setNotificationExecutor(NotificationExecutor inNotificationExecutor)
     {
@@ -1253,10 +1235,6 @@ public class OrderRoutingSystem
      * handles outgoing requests from client
      */
     private ReceiveOnlyHandler<DataEnvelope> requestHandler;
-    /**
-     * key data which allows access to ORS services
-     */
-    private String productKey;
     /**
      * determines whether we allow the redeliverToCompID flag or not
      */

@@ -47,7 +47,7 @@ import com.sun.security.auth.UserPrincipal;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ORSLoginModule.java 16832 2016-05-27 14:53:57Z colin $")
+@ClassVersion("$Id$")
 public class ORSLoginModule
         implements LoginModule
 {
@@ -182,7 +182,7 @@ public class ORSLoginModule
     /**
      * Sets the txManager value.
      *
-     * @param a <code>JpaTransactionManager</code> value
+     * @param inTxManager a <code>JpaTransactionManager</code> value
      */
     public static void setTxManager(JpaTransactionManager inTxManager)
     {

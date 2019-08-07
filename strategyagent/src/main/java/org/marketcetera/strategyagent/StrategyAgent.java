@@ -84,7 +84,7 @@ public class StrategyAgent
     /**
      * Sets the contextClasses value.
      *
-     * @param a <code>Class&lt;?&gt;[]</code> value
+     * @param inContextClasses a <code>Class&lt;?&gt;[]</code> value
      */
     public void setContextClasses(Class<?>[] inContextClasses)
     {
@@ -182,9 +182,9 @@ public class StrategyAgent
     public void stop()
     {
         if(notificationExecutor != null) {
-            notificationExecutor.notify(Notification.low("Strategy Agent Stopped",
-                                                         "Stategy Agent Stopped at " + new DateTime(),
-                                                         StrategyAgent.class.getSimpleName()));
+            notificationExecutor.notify(Notification.info("Strategy Agent Stopped",
+                                                          "Stategy Agent Stopped at " + new DateTime(),
+                                                          StrategyAgent.class.getSimpleName()));
         }
         stopRemoteService();
     }
@@ -214,7 +214,10 @@ public class StrategyAgent
         }
         try {
             //Configure the application. If it fails, exit
-            String[] args = ApplicationContainer.getInstance().getArguments();
+            String[] args = new String[0];
+            if(ApplicationContainer.getInstance() != null) {
+                args = ApplicationContainer.getInstance().getArguments();
+            }
             if(args != null && args.length > 0) {
                 int parseErrors = parseCommands(args[0]);
                 if(parseErrors > 0) {
@@ -245,9 +248,9 @@ public class StrategyAgent
         // run the commands
         executeCommands();
         if(notificationExecutor != null) {
-            notificationExecutor.notify(Notification.low("Strategy Agent Started",
-                                                         "Stategy Agent Started at " + new DateTime(),
-                                                         StrategyAgent.class.getSimpleName()));
+            notificationExecutor.notify(Notification.debug("Strategy Agent Started",
+                                                           "Stategy Agent Started at " + new DateTime(),
+                                                           StrategyAgent.class.getSimpleName()));
         }
         running.set(true);
     }

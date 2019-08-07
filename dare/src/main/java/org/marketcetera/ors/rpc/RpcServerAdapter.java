@@ -27,13 +27,13 @@ import quickfix.Message;
 /* $License$ */
 
 /**
- * Provides an adapter between an {@link RPCServer} and its implementation.
+ * Provides an adapter between an RPC Server and its implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: RpcServerAdapter.java 16522 2014-12-31 16:33:08Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: RpcServerAdapter.java 16522 2014-12-31 16:33:08Z colin $")
+@ClassVersion("$Id$")
 public interface RpcServerAdapter
 {
     /**

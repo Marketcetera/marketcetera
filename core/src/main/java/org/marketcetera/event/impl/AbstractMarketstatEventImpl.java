@@ -274,19 +274,19 @@ abstract class AbstractMarketstatEventImpl
         return String.format("Statistics for %s [%s] -> Open: %s High: %s Low: %s Close: %s (%s) Previous Close: %s (%s) %s %s %s %s Volume: %s Value: %s", //$NON-NLS-1$
                              getInstrument().getSymbol(),
                              getEventType(),
-                             getOpen(),
-                             getHigh(),
-                             getLow(),
-                             getClose(),
+                             getOpen()==null?BigDecimal.ZERO:getOpen().toPlainString(),
+                             getHigh()==null?BigDecimal.ZERO:getHigh().toPlainString(),
+                             getLow()==null?BigDecimal.ZERO:getLow().toPlainString(),
+                             getClose()==null?BigDecimal.ZERO:getClose().toPlainString(),
                              closeDateString,
-                             getPreviousClose(),
+                             getPreviousClose()==null?BigDecimal.ZERO:getPreviousClose().toPlainString(),
                              previousCloseDateString,
                              getOpenExchange(),
                              getHighExchange(),
                              getLowExchange(),
                              getCloseExchange(),
-                             getVolume(),
-                             getValue());
+                             getVolume()==null?BigDecimal.ZERO:getVolume().toPlainString(),
+                             getValue()==null?BigDecimal.ZERO:getValue().toPlainString());
     }
    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()

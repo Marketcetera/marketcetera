@@ -71,11 +71,11 @@ import org.marketcetera.util.log.I18NBoundMessage3P;
  * more detailed behavior.
  * 
  * <p>The default implementation expects data in the following format:
- * <table>
+ * <table summary="BasicCSVFeedEventTranslator data format">
  *   <tr><td>Column0</td><td><strong>BID</strong></td><td><strong>ASK</strong></td><td><strong>TRADE</strong></td><td><strong>DIVIDEND</strong></td><td><strong>STAT</strong></td></tr>
  *   <tr><td>Column1</td><td><strong>Timestamp</strong></td><td><strong>Timestamp</strong></td><td><strong>Timestamp</strong></td><td><strong>Timestamp</strong></td><td><strong>Timestamp</strong></td></tr>
  *   <tr><td>Column2</td><td><strong>Symbol</strong></td><td><strong>Symbol</strong></td><td><strong>Symbol</strong></td><td><strong>Equity Symbol</strong></td><td><strong>Symbol</strong></td></tr>
- *   <tr><td>Column3</td><td><strong>QuoteDate</strong></td><td><strong>QuoteDate</strong></td><td><strong>TradeDate</strong></td><td><strong>Amount<strong></td><td><em>Open Price</em></td></tr>
+ *   <tr><td>Column3</td><td><strong>QuoteDate</strong></td><td><strong>QuoteDate</strong></td><td><strong>TradeDate</strong></td><td><strong>Amount</strong></td><td><em>Open Price</em></td></tr>
  *   <tr><td>Column4</td><td><strong>Exchange</strong></td><td><strong>Exchange</strong></td><td><strong>Exchange</strong></td><td><strong>Currency</strong></td><td><em>High Price</em></td></tr>
  *   <tr><td>Column5</td><td><strong>Price</strong></td><td><strong>Price</strong></td><td><strong>Price</strong></td><td><strong>Type</strong></td><td><em>Low Price</em></td></tr>
  *   <tr><td>Column6</td><td><strong>Size</strong></td><td><strong>Size</strong></td><td><strong>Size</strong></td><td><strong>Frequency</strong></td><td><em>Close Price</em></td></tr>

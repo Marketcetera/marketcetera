@@ -98,9 +98,9 @@ import com.google.common.collect.Sets;
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: RequestHandler.java 17492 2018-04-03 13:57:25Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: RequestHandler.java 17492 2018-04-03 13:57:25Z colin $")
+@ClassVersion("$Id$")
 public class RequestHandler 
         implements ReceiveOnlyHandler<DataEnvelope>,EventPublisher
 {
@@ -164,7 +164,7 @@ public class RequestHandler
     /**
      * Sets the allowedOrders value.
      *
-     * @param inAllowedOrders a <code>List<OrderFilter></code> value
+     * @param inAllowedOrders a <code>List&lt;OrderFilter&gt;</code> value
      */
     public void setAllowedOrders(List<OrderFilter> inAllowedOrders)
     {
@@ -570,27 +570,26 @@ public class RequestHandler
                 NewOrReplaceOrder newOrReplaceOrder = (NewOrReplaceOrder)order;
                 if(newOrReplaceOrder.getPegToMidpoint()) {
                     try {
-                        if(marketDataManager == null) {
-                            throw new IllegalArgumentException("Market data nexus unavailable");
+                        if(marketDataManager != null) {
+                            Event marketData = marketDataManager.requestMarketDataSnapshot(newOrReplaceOrder.getInstrument(),
+                                                                                           Content.TOP_OF_BOOK,
+                                                                                           null);
+                            if(marketData == null) {
+                                throw new IllegalArgumentException("No market data available for " + newOrReplaceOrder.getInstrument().getFullSymbol());
+                            }
+                            TopOfBookEvent topOfBook = (TopOfBookEvent)marketData;
+                            BidEvent bid = topOfBook.getBid();
+                            AskEvent ask = topOfBook.getAsk();
+                            if(bid == null || ask == null) {
+                                throw new IllegalArgumentException("Insufficient liquidity to peg-to-midpoint for " + newOrReplaceOrder.getInstrument().getFullSymbol());
+                            }
+                            BigDecimal totalPrice = bid.getPrice().add(ask.getPrice());
+                            BigDecimal newPrice = totalPrice.divide(new BigDecimal(2)).setScale(6,RoundingMode.HALF_UP);
+                            newOrReplaceOrder.setPrice(newPrice);
+                            Messages.RH_REPRICING.info(this,
+                                                       newOrReplaceOrder.getOrderID(),
+                                                       newPrice);
                         }
-                        Event marketData = marketDataManager.requestMarketDataSnapshot(newOrReplaceOrder.getInstrument(),
-                                                                                       Content.TOP_OF_BOOK,
-                                                                                       null);
-                        if(marketData == null) {
-                            throw new IllegalArgumentException("No market data available for " + newOrReplaceOrder.getInstrument().getFullSymbol());
-                        }
-                        TopOfBookEvent topOfBook = (TopOfBookEvent)marketData;
-                        BidEvent bid = topOfBook.getBid();
-                        AskEvent ask = topOfBook.getAsk();
-                        if(bid == null || ask == null) {
-                            throw new IllegalArgumentException("Insufficient liquidity to peg-to-midpoint for " + newOrReplaceOrder.getInstrument().getFullSymbol());
-                        }
-                        BigDecimal totalPrice = bid.getPrice().add(ask.getPrice());
-                        BigDecimal newPrice = totalPrice.divide(new BigDecimal(2)).setScale(6,RoundingMode.HALF_UP);
-                        newOrReplaceOrder.setPrice(newPrice);
-                        Messages.RH_REPRICING.info(this,
-                                                   newOrReplaceOrder.getOrderID(),
-                                                   newPrice);
                     } catch (Exception e) {
                         String cause = PlatformServices.getMessage(e);
                         Messages.RH_PEG_TO_MIDPOINT_FAILED.warn(this,

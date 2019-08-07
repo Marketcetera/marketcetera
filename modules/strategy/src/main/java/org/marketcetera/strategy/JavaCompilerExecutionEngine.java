@@ -39,7 +39,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 /* $License$ */
 
 /**
- * Executes a Java strategy using the <a href="http://www.jcp.org/en/jsr/detail?id=199">Java Compiler API</code>.
+ * Executes a Java strategy using the <a href="http://www.jcp.org/en/jsr/detail?id=199">Java Compiler API</a>.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

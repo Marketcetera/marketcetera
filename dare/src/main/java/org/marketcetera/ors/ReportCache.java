@@ -12,12 +12,15 @@ import org.marketcetera.util.misc.ClassVersion;
  * Caches latest report by OrderID.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ReportCache.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id: ReportCache.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public enum ReportCache
 {
+    /**
+     * static instance to use to cache reports
+     */
     INSTANCE;
     /**
      * Gets the latest <code>ExecutionReport</code> for the given order ID value.
@@ -50,10 +53,9 @@ public enum ReportCache
         }
     }
     /**
-     * 
+     * Clear the cache of the given report. 
      *
-     *
-     * @param inReport
+     * @param inReport an <code>ExecutionReport</code> value
      */
     public void clear(ExecutionReport inReport)
     {

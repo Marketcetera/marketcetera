@@ -73,14 +73,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Provides in-process access the client services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DirectClient.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 public class DirectClient
         implements Client
 {
     /**
-     * Validates and starts the object.
+     * Validate and start the object.
      */
     @PostConstruct
     public void start()
@@ -690,7 +690,7 @@ public class DirectClient
     /**
      * Get the sessionManager value.
      *
-     * @return a <code>SessionManager<ClientSession></code> value
+     * @return a <code>SessionManager&lt;ClientSession&gt;</code> value
      */
     public SessionManager<ClientSession> getSessionManager()
     {
@@ -699,7 +699,7 @@ public class DirectClient
     /**
      * Sets the sessionManager value.
      *
-     * @param inSessionManager a <code>SessionManager<ClientSession></code> value
+     * @param inSessionManager a <code>SessionManager&lt;ClientSession&gt;</code> value
      */
     public void setSessionManager(SessionManager<ClientSession> inSessionManager)
     {

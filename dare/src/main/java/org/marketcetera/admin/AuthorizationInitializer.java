@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Initializes the authorization system.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AuthorizationInitializer.java 84382 2015-01-20 19:43:06Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 public class AuthorizationInitializer
@@ -42,21 +42,27 @@ public class AuthorizationInitializer
         Validate.notNull(roleFactory);
         if(users != null) {
             for(UserDescriptor userDescriptor : users) {
-                if(userService.findByName(userDescriptor.getName()) == null) {
-                    SLF4JLoggerProxy.info(this,
-                                          "Adding user {}",
-                                          userDescriptor);
-                    SimpleUser user = new SimpleUser();
+                try {
+                    SimpleUser user = userService.findByName(userDescriptor.getName());
+                    if(user == null) {
+                        SLF4JLoggerProxy.info(this,
+                                              "Adding user {}",
+                                              userDescriptor);
+                        user = new SimpleUser();
+                    } else {
+                        SLF4JLoggerProxy.info(this,
+                                              "{} already exists, applying updates if necessary",
+                                              userDescriptor);
+                    }
                     user.setActive(userDescriptor.getIsActive());
                     user.setDescription(userDescriptor.getDescription());
                     user.setName(userDescriptor.getName());
-                    user.setPassword(userDescriptor.getPassword().toCharArray());
                     user.setSuperuser(userDescriptor.getIsSuperuser());
+                    user.resetUserPassword(userDescriptor.getPassword());
                     userService.save(user);
-                } else {
-                    SLF4JLoggerProxy.info(this,
-                                          "Not adding user {} because a user by that name already exists",
-                                          userDescriptor);
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(this,
+                                          e);
                 }
             }
         }

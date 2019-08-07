@@ -3,7 +3,7 @@ package org.marketcetera.core;
 import java.io.File;
 
 import org.marketcetera.util.misc.ClassVersion;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationContext;
 
 /* $License$ */
 
@@ -16,6 +16,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  */
 @ClassVersion("$Id$")
 public class StaticApplicationInfoProvider
+        extends ApplicationBase
         implements ApplicationInfoProvider
 {
     /* (non-Javadoc)
@@ -24,7 +25,7 @@ public class StaticApplicationInfoProvider
     @Override
     public File getAppDir()
     {
-        return ApplicationContainer.getInstance().getAppDir();
+        return new File(APP_DIR);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.ApplicationInfoProvider#getConfDir()
@@ -32,7 +33,7 @@ public class StaticApplicationInfoProvider
     @Override
     public File getConfDir()
     {
-        return ApplicationContainer.getInstance().getConfDir();
+        return new File(CONF_DIR);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.ApplicationInfoProvider#getArguments()
@@ -40,14 +41,17 @@ public class StaticApplicationInfoProvider
     @Override
     public String[] getArguments()
     {
+        if(ApplicationContainer.getInstance() == null) {
+            return new String[0];
+        }
         return ApplicationContainer.getInstance().getArguments();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.ApplicationInfoProvider#getContext()
      */
     @Override
-    public ConfigurableApplicationContext getContext()
+    public ApplicationContext getContext()
     {
-        return ApplicationContainer.getInstance().getContext();
+        return ApplicationContextProvider.getInstance().getApplicationContext();
     }
 }

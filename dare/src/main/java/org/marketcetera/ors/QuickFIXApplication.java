@@ -83,6 +83,12 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsOperations;
 
+import com.codahale.metrics.Counter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
+import com.hazelcast.core.OperationTimeoutException;
+
 import quickfix.ApplicationExtended;
 import quickfix.DoNotSend;
 import quickfix.FieldNotFound;
@@ -108,12 +114,6 @@ import quickfix.field.TargetCompID;
 import quickfix.field.Text;
 import quickfix.field.TradSesStatus;
 
-import com.codahale.metrics.Counter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.hazelcast.core.HazelcastInstanceNotActiveException;
-import com.hazelcast.core.OperationTimeoutException;
-
 /* $License$ */
 
 /**
@@ -122,9 +122,9 @@ import com.hazelcast.core.OperationTimeoutException;
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $")
+@ClassVersion("$Id$")
 public class QuickFIXApplication
         implements ApplicationExtended, ReportReceiver, BrokerStatusPublisher, SessionStatusPublisher, DirectoryWatcherSubscriber
 {
@@ -493,6 +493,15 @@ public class QuickFIXApplication
                                                      broker.toString());
             }
         }
+        // this is necessary due to a race condition on logon for QFJ where for FIXT only where the DefaultVerID isn't set
+        //  until after logon, but is necessary for logon
+        if(inSessionId.isFIXT() && FIXMessageUtil.isLogon(inMessage) && !inMessage.getHeader().isSetField(quickfix.field.ApplVerID.FIELD)) {
+            String defaultApplVerId = broker.getSpringBroker().getDescriptor().getDictionary().get("DefaultApplVerID");
+            if(defaultApplVerId == null) {
+                defaultApplVerId = quickfix.field.ApplVerID.FIX50SP2;
+            }
+            Session.lookupSession(inSessionId).setTargetDefaultApplicationVersionID(new quickfix.field.ApplVerID(defaultApplVerId));
+        }
         Object category = getCategory(inMessage);
         boolean shouldDisplayMessage = !category.equals(HEARTBEAT_CATEGORY) || SLF4JLoggerProxy.isDebugEnabled(HEARTBEAT_CATEGORY);
         if(shouldDisplayMessage) {
@@ -781,27 +790,9 @@ public class QuickFIXApplication
         return mSystemInfo;
     }
     /**
-     * Get the productKey value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getProductKey()
-    {
-        return productKey;
-    }
-    /**
-     * Sets the productKey value.
-     *
-     * @param a <code>String</code> value
-     */
-    public void setProductKey(String inProductKey)
-    {
-        productKey = inProductKey;
-    }
-    /**
      * Sets the systemInfo value.
      *
-     * @param a <code>SystemInfo</code> value
+     * @param inSystemInfo a <code>SystemInfo</code> value
      */
     public void setSystemInfo(SystemInfo inSystemInfo)
     {
@@ -810,7 +801,7 @@ public class QuickFIXApplication
     /**
      * Sets the supportedMessages value.
      *
-     * @param a <code>MessageFilter</code> value
+     * @param inSupportedMessages a <code>MessageFilter</code> value
      */
     public void setSupportedMessages(MessageFilter inSupportedMessages)
     {
@@ -819,7 +810,7 @@ public class QuickFIXApplication
     /**
      * Sets the persister value.
      *
-     * @param a <code>ReplyPersister</code> value
+     * @param inPersister a <code>ReplyPersister</code> value
      */
     public void setPersister(ReplyPersister inPersister)
     {
@@ -828,7 +819,7 @@ public class QuickFIXApplication
     /**
      * Sets the sender value.
      *
-     * @param a <code>QuickFIXSender</code> value
+     * @param inSender a <code>QuickFIXSender</code> value
      */
     public void setSender(QuickFIXSender inSender)
     {
@@ -837,7 +828,7 @@ public class QuickFIXApplication
     /**
      * Sets the userManager value.
      *
-     * @param a <code>UserManager</code> value
+     * @param inUserManager a <code>UserManager</code> value
      */
     public void setUserManager(UserManager inUserManager)
     {
@@ -846,7 +837,7 @@ public class QuickFIXApplication
     /**
      * Sets the toClientStatus value.
      *
-     * @param a <code>JmsOperations</code> value
+     * @param inToClientStatus a <code>JmsOperations</code> value
      */
     public void setToClientStatus(JmsOperations inToClientStatus)
     {
@@ -855,7 +846,7 @@ public class QuickFIXApplication
     /**
      * Sets the toTradeRecorder value.
      *
-     * @param a <code>JmsOperations</code> value
+     * @param inToTradeRecorder a <code>JmsOperations</code> value
      */
     public void setToTradeRecorder(JmsOperations inToTradeRecorder)
     {
@@ -1077,7 +1068,7 @@ public class QuickFIXApplication
     /**
      * Sets the rootOrderIdFactory value.
      *
-     * @param a <code>RootOrderIdFactory</code> value
+     * @param inRootOrderIdFactory a <code>RootOrderIdFactory</code> value
      */
     public void setRootOrderIdFactory(RootOrderIdFactory inRootOrderIdFactory)
     {
@@ -1203,7 +1194,7 @@ public class QuickFIXApplication
     /**
      * Sets the outgoingMessageService value.
      *
-     * @param an <code>OutgoingMessageService</code> value
+     * @param inOutgoingMessageService an <code>OutgoingMessageService</code> value
      */
     public void setOutgoingMessageService(OutgoingMessageService inOutgoingMessageService)
     {
@@ -1640,7 +1631,7 @@ public class QuickFIXApplication
      * Processes messages for a given session.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+     * @version $Id$
      * @since $Release$
      */
     @SuppressWarnings("unused")
@@ -1796,7 +1787,7 @@ public class QuickFIXApplication
      * Processes executions for a given order.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+     * @version $Id$
      * @since $Release$
      */
     private class OrderMessageProcessingQueue
@@ -1881,7 +1872,7 @@ public class QuickFIXApplication
      * Times out an order queue if it has been unused for a period of time.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+     * @version $Id$
      * @since $Release$
      */
     private class OrderQueueTimeoutTask
@@ -1955,10 +1946,10 @@ public class QuickFIXApplication
      * Indicates the type of message.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+     * @version $Id$
      * @since 2.1.4
      */
-    @ClassVersion("$Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $")
+    @ClassVersion("$Id$")
     private enum MessageType
     {
         FROM_ADMIN,
@@ -1968,10 +1959,10 @@ public class QuickFIXApplication
      * Encapsulates a message to be processed.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+     * @version $Id$
      * @since 2.1.4
      */
-    @ClassVersion("$Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $")
+    @ClassVersion("$Id$")
     private static class MessagePackage
             implements Serializable, Comparable<MessagePackage>
     {
@@ -2113,7 +2104,7 @@ public class QuickFIXApplication
      * Uniquely identifies a family of orders.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17444 2018-02-18 03:37:14Z colin $
+     * @version $Id$
      * @since $Release$
      */
     private static class MessageKey
@@ -2213,10 +2204,6 @@ public class QuickFIXApplication
      * provides data store access to persistent report objects
      */
     private PersistentReportDao reportDao;
-    /**
-     * provides authorization for particular brokers
-     */
-    private String productKey;
     /**
      * holds processing queues for root order id
      */

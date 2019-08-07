@@ -6,7 +6,7 @@ package org.marketcetera.cluster;
  * Provides common behavior for clusterable tasks.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: RunnableClusterTask.java 17131 2017-01-25 16:16:17Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 public abstract class AbstractRunnableClusterTask

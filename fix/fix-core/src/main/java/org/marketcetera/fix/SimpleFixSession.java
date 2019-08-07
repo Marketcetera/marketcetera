@@ -21,7 +21,7 @@ import org.marketcetera.persist.NDEntityBase;
  * Provides a simple FIX session implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: FixSessionDto.java 85311 2016-05-24 14:49:00Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 @XmlRootElement(name="fixSession")

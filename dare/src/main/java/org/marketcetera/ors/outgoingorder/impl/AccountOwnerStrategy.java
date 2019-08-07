@@ -74,7 +74,7 @@ public class AccountOwnerStrategy
     /**
      * Sets the accountUserLookupProvider value.
      *
-     * @param an <code>AccountUserLookupProvider</code> value
+     * @param inAccountUserLookupProvider an <code>AccountUserLookupProvider</code> value
      */
     public void setAccountUserLookupProvider(AccountUserLookupProvider inAccountUserLookupProvider)
     {

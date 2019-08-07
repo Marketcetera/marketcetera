@@ -2,8 +2,10 @@ package org.marketcetera.eventbus.guava;
 
 import javax.annotation.PostConstruct;
 
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.eventbus.Messages;
+import org.marketcetera.eventbus.Unloggable;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +33,8 @@ public class GuavaEventBusService
     @PostConstruct
     public void start()
     {
-        Messages.EVENTBUS_SERVICE_STARTING.info(this);
+        Messages.SERVICE_STARTING.info(this,
+                                       PlatformServices.getServiceName(getClass()));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.eventbus.EventbusService#subscribe(java.lang.Object)
@@ -95,10 +98,17 @@ public class GuavaEventBusService
             return;
         }
         for(String topic : inTopics) {
-            SLF4JLoggerProxy.trace(this,
-                                   "Posting {} to {}",
-                                   inEvent,
-                                   topic);
+            if(inEvent instanceof Unloggable) {
+                SLF4JLoggerProxy.debug(eventCategory,
+                                       "{}:{}",
+                                       topic,
+                                       inEvent);
+            } else {
+                SLF4JLoggerProxy.info(eventCategory,
+                                      "{}:{}",
+                                      topic,
+                                      inEvent);
+            }
             topics.getUnchecked(topic).post(inEvent);
         }
     }

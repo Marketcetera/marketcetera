@@ -270,16 +270,6 @@ CREATE TABLE IF NOT EXISTS `message_store_messages` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `message_store_messages`
---
-
-LOCK TABLES `message_store_messages` WRITE;
-/*!40000 ALTER TABLE `message_store_messages` DISABLE KEYS */;
-INSERT INTO `message_store_messages` (`id`, `last_updated`, `update_count`, `session_id`, `message`, `msg_seq_num`) VALUES (120,'2018-11-13 14:33:16.454',0,'FIXT.1.1:colin-core-europa->MRKTC-EXCH','8=FIXT.1.19=9535=A34=149=colin-core-europa52=20181113-14:33:16.35256=MRKTC-EXCH98=0108=30141=Y1137=910=057',1);
-/*!40000 ALTER TABLE `message_store_messages` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `message_store_sessions`
 --
 
@@ -296,16 +286,6 @@ CREATE TABLE IF NOT EXISTS `message_store_sessions` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `message_store_sessions`
---
-
-LOCK TABLES `message_store_sessions` WRITE;
-/*!40000 ALTER TABLE `message_store_sessions` DISABLE KEYS */;
-INSERT INTO `message_store_sessions` (`id`, `last_updated`, `update_count`, `session_id`, `creation_time`, `sender_seq_num`, `target_seq_num`) VALUES (119,'2018-11-13 14:33:16.504',4,'FIXT.1.1:colin-core-europa->MRKTC-EXCH','2018-11-13 14:33:16.430',2,2);
-/*!40000 ALTER TABLE `message_store_sessions` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `order_status`

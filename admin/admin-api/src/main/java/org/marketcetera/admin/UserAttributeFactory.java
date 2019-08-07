@@ -6,7 +6,7 @@ package org.marketcetera.admin;
  * Creates <code>UserAttribute</code> objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UserAttributeFactory.java 84561 2015-03-31 18:18:14Z colin $
+ * @version $Id$
  * @since 1.2.0
  */
 public interface UserAttributeFactory

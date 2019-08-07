@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * <p>
  * Module Features
- * <table>
+ * <table summary="CEPSystemProcessor Capabilities">
  * <tr><th>Capabilities</th><td>Data Emitter, Data Receiver</td></tr>
  * <tr><th>DataFlow Request Parameters</th><td><code>String</code>: The CEP query</td></tr>
  * <tr><th>Stops data flows</th><td>No</td></tr>
@@ -28,9 +28,9 @@ import java.util.Map;
  *
  * The maps in the data structure are as follows:
  * <ul>
- * <li>{@link #mTypeLookupMap} is a mapping of all expected types to underlying classes (ie string --> class)
+ * <li>{@link #mTypeLookupMap} is a mapping of all expected types to underlying classes (ie string --&gt; class)
  * for the purposes of doing the 'select * from <em>alias</em>' query</li>
- * <li>{@link #mRequestMap} - map of {@link RequestID} --> pair of {class, {@link DataEmitterSupport}}. Given a requestID,
+ * <li>{@link #mRequestMap} - map of {@link RequestID} --&gt; pair of {class, {@link DataEmitterSupport}}. Given a requestID,
  * we can get the class and corresponding emitter registered to listen on that type. For cancels,
  * we pull out all the classes, and remove the emitter subscribed to listen on that event type</li>
  * </ul>
@@ -131,7 +131,10 @@ public class CEPSystemProcessor extends Module
     }
 
     /** Checks to see if we are looking at an alias or a fully-qualified class name.
-     * Any known alias or valid FQCN is allowed
+     * 
+     * <p>Any known alias or valid FQCN is allowed.</p>
+     * @param className a <code>String</code> value
+     * @return a <code>Class&lt;?&gt;</code> value
      */
     protected Class<?> getClassForRequest(String className) {
         // first check to see if it's a known pre-canned type

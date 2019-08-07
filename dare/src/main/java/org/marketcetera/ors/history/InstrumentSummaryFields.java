@@ -16,10 +16,10 @@ import java.math.BigDecimal;
  * @param <I> The type of instrument handled by this function
  * 
  * @author anshul@marketcetera.com
- * @version $Id: InstrumentSummaryFields.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: InstrumentSummaryFields.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public abstract class InstrumentSummaryFields<I extends Instrument>
         extends InstrumentFunctionHandler<I> {
     /**

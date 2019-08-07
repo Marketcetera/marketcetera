@@ -11,7 +11,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
  * Provides datastore access to {@link Role} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentRoleDao.java 84462 2015-03-09 00:04:29Z colin $
+ * @version $Id$
  * @since 1.0.1
  */
 public interface PersistentRoleDao

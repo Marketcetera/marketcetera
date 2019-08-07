@@ -28,7 +28,7 @@ import org.marketcetera.module.ModuleURN;
  * </ol>
  * <p>
  * The factory has the following characteristics.
- * <table>
+ * <table summary="StrategyModuleFactory characteristics">
  * <tr><th>Provider URN:</th><td><code>metc:strategy:system</code></td></tr>
  * <tr><th>Cardinality:</th><td>Multi-Instance</td></tr>
  * <tr><th>Auto-Instantiated:</th><td>No</td></tr>

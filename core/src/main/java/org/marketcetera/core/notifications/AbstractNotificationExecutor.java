@@ -12,7 +12,7 @@ import org.marketcetera.core.publisher.PublisherEngine;
  * Provides common behaviors to notification executor implementors.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractNotificationExecutor.java 85003 2015-11-13 15:57:55Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public abstract class AbstractNotificationExecutor

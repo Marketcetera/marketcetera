@@ -6,7 +6,7 @@ package org.marketcetera.cluster;
  * Indicates the type of work unit in a cluster.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ClusterWorkUnitType.java 16619 2015-09-09 20:40:03Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 public enum ClusterWorkUnitType

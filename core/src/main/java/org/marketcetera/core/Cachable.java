@@ -9,7 +9,7 @@ package org.marketcetera.core;
  * @version $Id$
  * @since $Release$
  */
-public interface Cacheable
+public interface Cachable
 {
     /**
      * Clear the cached data.

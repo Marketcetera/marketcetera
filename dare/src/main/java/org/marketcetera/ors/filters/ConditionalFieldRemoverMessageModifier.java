@@ -23,7 +23,7 @@ import quickfix.field.MsgType;
  * Removes fields based on conditions.
  *
  */
-@ClassVersion("$Id: ConditionalFieldRemoverMessageModifier.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class ConditionalFieldRemoverMessageModifier
         implements MessageModifier
 {

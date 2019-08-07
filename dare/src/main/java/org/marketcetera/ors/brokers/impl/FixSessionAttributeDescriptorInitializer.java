@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.ors.brokers.BrokerService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

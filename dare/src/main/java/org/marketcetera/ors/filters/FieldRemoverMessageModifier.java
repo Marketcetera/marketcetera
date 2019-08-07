@@ -23,10 +23,10 @@ import quickfix.field.MsgType;
  * Removes fields if present from FIX messages.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: FieldRemoverMessageModifier.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id: FieldRemoverMessageModifier.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public class FieldRemoverMessageModifier
         implements MessageModifier
 {

@@ -115,8 +115,8 @@ public class FIXProcessor extends RowProcessor {
     }
     /** Translate the incoming field name from String to a FIX standard
      * using reflection. the quickfix.field package has all of these defined
-     * as quickfix.field.<Name> so we just need to create a class for each
-     * english string.
+     * as quickfix.field.Name so we just need to create a class for each
+     * English string.
      *
      * If the field is not found, it could be a "undertermined" field in
      * which case we check to see if it parses out to an integer.

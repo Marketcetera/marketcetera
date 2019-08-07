@@ -21,7 +21,7 @@ import com.sun.management.OperatingSystemMXBean;
  * Monitors system statistics.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SystemMonitor.java 83882 2014-08-01 22:31:54Z colin $
+ * @version $Id$
  * @since 1.3.1
  */
 @ThreadSafe
@@ -302,7 +302,7 @@ public class SystemMonitor
      * Records system statistics.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: SystemMonitor.java 83882 2014-08-01 22:31:54Z colin $
+     * @version $Id$
      * @since 1.3.1
      */
     private static class Stats

@@ -21,7 +21,7 @@ public class StrategyException
     /**
      * Create a new StrategyException instance.
      *
-     * @param inNested
+     * @param inNested a <code>Throwable</code>value
      */
     public StrategyException(Throwable inNested)
     {
@@ -30,7 +30,7 @@ public class StrategyException
     /**
      * Create a new StrategyException instance.
      *
-     * @param inMessage
+     * @param inMessage an <code>I18NBoundMessage</code> value
      */
     public StrategyException(I18NBoundMessage inMessage)
     {
@@ -39,8 +39,8 @@ public class StrategyException
     /**
      * Create a new StrategyException instance.
      *
-     * @param inNested
-     * @param inMessage
+     * @param inNested a <code>Throwable</code>value
+     * @param inMessage an <code>I18NBoundMessage</code> value
      */
     public StrategyException(Throwable inNested,
                              I18NBoundMessage inMessage)

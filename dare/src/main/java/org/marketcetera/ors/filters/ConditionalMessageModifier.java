@@ -16,7 +16,7 @@ import quickfix.Message;
  * Modifies a message if a given condition is met.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ConditionalMessageModifier.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
 public class ConditionalMessageModifier

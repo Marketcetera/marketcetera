@@ -9,10 +9,10 @@ import org.marketcetera.util.log.*;
  *
  *
  * @author anshul@marketcetera.com
- * @version $Id: Messages.java 16468 2014-05-12 00:36:56Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: Messages.java 16468 2014-05-12 00:36:56Z colin $")
+@ClassVersion("$Id$")
 public interface Messages {
     /**
      * The message provider

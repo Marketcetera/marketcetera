@@ -6,7 +6,7 @@
  * that knows how to parse the data according to the particulars of a given CSV file.  The subclass can be compiled and placed on the classpath
  * or an instantiated object can be constructed and passed to the {@link CSVFeedCredentials} constructor.</p>
  * 
- * <p>To use the <code>CSVFeed</code>, create a {@link MarketDataRequest} and pass it to the feed similarly to how other feeds process
+ * <p>To use the <code>CSVFeed</code>, create a {@link org.marketcetera.marketdata.MarketDataRequest} and pass it to the feed similarly to how other feeds process
  * market data requests.  This can be via the Strategy API, in which case the request should use 
  * {@link org.marketcetera.marketdata.MarketDataRequestBuilder#withProvider(String)} and specify {@link CSVFeedModuleFactory#getProviderDescription()}
  * or by using the module framework and passing a <code>MarketDataRequest</code> to {@link CSVFeedModule#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)}.</p>

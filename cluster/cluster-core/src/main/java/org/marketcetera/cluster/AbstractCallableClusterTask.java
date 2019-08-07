@@ -6,7 +6,7 @@ package org.marketcetera.cluster;
  * Provides common behavior for tasks that can be called on remote cluster members.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: CallableClusterTask.java 16534 2015-02-10 20:17:33Z colin $
+ * @version $Id$
  * @since 2.5.0
  */
 public abstract class AbstractCallableClusterTask<Clazz>

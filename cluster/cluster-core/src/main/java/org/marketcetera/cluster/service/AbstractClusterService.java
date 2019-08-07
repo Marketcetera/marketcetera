@@ -55,6 +55,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /* $License$ */
 
@@ -62,7 +63,7 @@ import com.google.common.collect.Sets;
  * Provides common behavior for a <code>ClusterService</code> implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: HazelcastClusterService.java 16827 2016-05-24 14:40:08Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public abstract class AbstractClusterService
@@ -901,7 +902,7 @@ public abstract class AbstractClusterService
      * Evaluates cluster work units.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: HazelcastClusterService.java 16827 2016-05-24 14:40:08Z colin $
+     * @version $Id$
      * @since $Release$
      */
     protected class WorkUnitEvaluationTask
@@ -1097,7 +1098,7 @@ public abstract class AbstractClusterService
     /**
      * schedules tasks
      */
-    private ScheduledExecutorService scheduledService = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledExecutorService scheduledService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("ClusterService-%d").build());
     /**
      * Performs static initialization for this class
      * 

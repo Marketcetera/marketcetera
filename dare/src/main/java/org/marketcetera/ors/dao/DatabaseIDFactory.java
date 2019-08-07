@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Constructs unique identifiers backed by the database.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DatabaseIDFactory.java 17266 2017-04-28 14:58:00Z colin $
+ * @version $Id$
  * @since 2.4.2
  */
-@ClassVersion("$Id: DatabaseIDFactory.java 17266 2017-04-28 14:58:00Z colin $")
+@ClassVersion("$Id$")
 public class DatabaseIDFactory
         extends DBBackedIDFactory
 {
@@ -46,7 +46,7 @@ public class DatabaseIDFactory
     /**
      * Sets the cacheQuantity value.
      *
-     * @param a <code>long</code> value
+     * @param inCacheQuantity a <code>long</code> value
      */
     public void setCacheQuantity(long inCacheQuantity)
     {
