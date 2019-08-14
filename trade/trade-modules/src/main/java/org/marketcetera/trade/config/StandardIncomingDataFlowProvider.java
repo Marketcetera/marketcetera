@@ -6,8 +6,8 @@ import org.marketcetera.dataflow.config.DataFlowProvider;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleManager;
-import org.marketcetera.modules.fix.FixDataRequest;
-import org.marketcetera.modules.fix.FixInitiatorModuleFactory;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.trade.TradeConstants;
 import org.marketcetera.trade.modules.TradeMessageBroadcastModuleFactory;
@@ -36,13 +36,16 @@ public class StandardIncomingDataFlowProvider
     public DataRequest[] getDataFlow(ModuleManager inModuleManager)
     {
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
-        FixDataRequest fixDataRequest = new FixDataRequest();
-        fixDataRequest.setIncludeAdmin(false);
-        fixDataRequest.setIncludeApp(true);
-        fixDataRequest.getMessageWhiteList().clear();
-        fixDataRequest.getMessageBlackList().clear();
-        dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
-                                               fixDataRequest));
+//        FixDataRequest fixDataRequest = new FixDataRequest();
+//        fixDataRequest.setIncludeAdmin(false);
+//        fixDataRequest.setIncludeApp(true);
+//        fixDataRequest.getMessageWhiteList().clear();
+//        fixDataRequest.getMessageBlackList().clear();
+//        dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
+//                                               fixDataRequest));
+        ModuleURN headwaterUrn = HeadwaterModule.createHeadwaterModule(TradeConstants.incomingDataFlowName,
+                                                                       inModuleManager);
+        dataRequestBuilder.add(new DataRequest(headwaterUrn));
         dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(TradeMessagePersistenceModuleFactory.INSTANCE_URN));

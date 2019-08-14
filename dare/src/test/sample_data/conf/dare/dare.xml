@@ -93,4 +93,5 @@
   <bean id="supervisorPermissionFactory" class="org.marketcetera.admin.dao.PersistentSupervisorPermissionFactory"/>
   <bean id="mutableActiveFixSessionFactory" class="org.marketcetera.fix.impl.SimpleActiveFixSessionFactory"/>
   <bean id="serverFixSessionFactory" class="org.marketcetera.fix.impl.SimpleServerFixSessionFactory"/>
+  <bean id="directTradeClientFactory" class="org.marketcetera.trade.client.DirectTradeClientFactory"/>
 </beans>

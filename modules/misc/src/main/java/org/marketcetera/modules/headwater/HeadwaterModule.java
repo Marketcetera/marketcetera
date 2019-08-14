@@ -56,6 +56,9 @@ public class HeadwaterModule
                 return instances.get(inInstanceName);
             } else {
                 ModuleManager moduleManager = ModuleManager.getInstance();
+                if(moduleManager == null) {
+                    throw new IllegalStateException("ModuleManager not intialized");
+                }
                 moduleManager.createModule(HeadwaterModuleFactory.PROVIDER_URN,
                                            inInstanceName);
                 return instances.get(inInstanceName);
