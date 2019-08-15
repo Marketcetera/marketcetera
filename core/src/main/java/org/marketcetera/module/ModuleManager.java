@@ -39,7 +39,6 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -73,7 +72,7 @@ import org.springframework.context.ApplicationContextAware;
  *     the module when stopping and removing it.</li>
  *  <li>Module lifecycle operations like start and stop, acquire Module
  *      {@link Module#getLock() write lock} when changing
- *      the module state during the operation. The {@link Module#preStart()} &
+ *      the module state during the operation. The {@link Module#preStart()} &amp;
  *      {@link Module#preStop()} methods are invoked without acquiring any
  *      locks on the module.</li>
  *  <li>Data flow creation operations acquire Module
@@ -1247,7 +1246,11 @@ public final class ModuleManager
             throws BeansException
     {
         try(CloseableLock lock = CloseableLock.create(applicationContextLock.writeLock())) {
+            lock.lock();
             applicationContext = inApplicationContext;
+            if(ApplicationContextProvider.getInstance() != null) {
+                ApplicationContextProvider.getInstance().setApplicationContext(applicationContext);
+            }
         }
     }
     /**
@@ -1269,7 +1272,8 @@ public final class ModuleManager
             if(applicationContext == null) {
                 Messages.NO_APPLICATION_CONTEXT_MODULE.warn(this,
                                                             inModule.getURN());
-                if(inModule.getClass().isAnnotationPresent(AutowiredModule.class)) {
+                AutowiredModule autowiredModule = inModule.getClass().getAnnotation(AutowiredModule.class);
+                if(autowiredModule != null && autowiredModule.required()) {
                     throw new ModuleException(new I18NBoundMessage1P(Messages.MODULE_REQUIRES_AUTOWIRING,
                                                                      inModule.getURN()));
                 }
@@ -1286,20 +1290,6 @@ public final class ModuleManager
                     SLF4JLoggerProxy.debug(this,
                                            "Autowiring {} complete",
                                            inModule);
-                    if(beanFactory instanceof ConfigurableListableBeanFactory) {
-                        String safeBeanName = inModule.getURN().getValue().replaceAll(":","_");
-                        safeBeanName += String.valueOf(System.nanoTime());
-                        SLF4JLoggerProxy.debug(this,
-                                               "Registering {} as {}",
-                                               inModule,
-                                               safeBeanName);
-                        ((ConfigurableListableBeanFactory)beanFactory).registerSingleton(safeBeanName,
-                                                                                         inModule);
-                    } else {
-                        SLF4JLoggerProxy.warn(this,
-                                              "Unable to register bean {}",
-                                              inModule);
-                    }
                 } catch (RuntimeException e) {
                     Messages.CANNOT_AUTOWIRE_MODULE.warn(this,
                                                          e,

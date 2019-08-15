@@ -30,7 +30,7 @@ import com.google.common.cache.LoadingCache;
  * @version $Id$
  * @since $Release$
  */
-@AutowiredModule
+@AutowiredModule(required=false)
 public class MarketDataCacheModule
         extends AbstractDataReemitterModule
         implements MarketDataCacheProvider
