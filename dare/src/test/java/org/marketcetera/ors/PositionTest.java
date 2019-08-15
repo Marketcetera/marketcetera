@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -80,7 +81,7 @@ public class PositionTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Test@Ignore
     public void testSinglePositionNoParameterTest()
             throws Exception
     {
@@ -95,7 +96,6 @@ public class PositionTest
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    @Ignore
     @Parameters(method="instrumentFixVersionParameters")
     public void testSinglePosition(Instrument inInstrument,
                                    FIXVersion inFixVersion)
@@ -112,7 +112,6 @@ public class PositionTest
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    @Ignore
     @Parameters(method="instrumentFixVersionParameters")
     public void testAllPositions(Instrument inInstrument,
                                  FIXVersion inFixVersion)
@@ -127,7 +126,6 @@ public class PositionTest
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    @Ignore
     public void testAllPositionsNoParameters()
             throws Exception
     {
@@ -339,11 +337,31 @@ public class PositionTest
                                       User inUser)
             throws Exception
     {
-        BigDecimal actualPosition = getSinglePosition(inUser,
-                                                      inPositionDate,
-                                                      inInstrument);
-        assertTrue("Expected: " + inExpectedPosition.toPlainString() + " actual: " + actualPosition.toPlainString() + " for " + inUser + " as of " + new DateTime(inPositionDate),
-                   inExpectedPosition.compareTo(actualPosition) == 0);
+        try {
+            wait(new Callable<Boolean>() {
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    BigDecimal actualPosition = getSinglePosition(inUser,
+                                                                  inPositionDate,
+                                                                  inInstrument);
+                    if(actualPosition == null) {
+                        return false;
+                    }
+                    return actualPosition.compareTo(inExpectedPosition) == 0;
+                }}
+            );
+        } catch (AssertionError e) {
+            BigDecimal actualPosition = getSinglePosition(inUser,
+                                                          inPositionDate,
+                                                          inInstrument);
+            assertNotNull("No position for " + inInstrument + " for " + inUser + " as of " + inPositionDate,
+                          actualPosition);
+            assertTrue("Expected: " + inExpectedPosition.toPlainString() + " actual: " + actualPosition.toPlainString() + " for " + inUser + " as of " + new DateTime(inPositionDate),
+                       inExpectedPosition.compareTo(actualPosition) == 0);
+            throw e;
+        }
     }
     /**
      * Verify the position of the given instrument as of the given date.

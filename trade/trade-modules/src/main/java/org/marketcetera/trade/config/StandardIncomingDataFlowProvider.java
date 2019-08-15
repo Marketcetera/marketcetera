@@ -43,8 +43,7 @@ public class StandardIncomingDataFlowProvider
 //        fixDataRequest.getMessageBlackList().clear();
 //        dataRequestBuilder.add(new DataRequest(FixInitiatorModuleFactory.INSTANCE_URN,
 //                                               fixDataRequest));
-        ModuleURN headwaterUrn = HeadwaterModule.createHeadwaterModule(TradeConstants.incomingDataFlowName,
-                                                                       inModuleManager);
+        ModuleURN headwaterUrn = HeadwaterModule.getInstance(TradeConstants.incomingDataFlowName).getURN();
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
         dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));

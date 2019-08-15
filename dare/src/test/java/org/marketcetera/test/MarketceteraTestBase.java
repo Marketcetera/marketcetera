@@ -163,7 +163,7 @@ public class MarketceteraTestBase
                                   ExceptionUtils.getRootCause(e));
         }
         incomingMessageDao = applicationContext.getBean(IncomingMessageDao.class);
-        User testUser = userService.findByName("test");
+        User testUser = userService.findByName("trader");
         try {
             DirectTradeClientFactory tradeClientFactory = applicationContext.getBean(DirectTradeClientFactory.class);
             DirectTradeClientParameters tradeClientParameters = new DirectTradeClientParameters();
@@ -229,18 +229,29 @@ public class MarketceteraTestBase
             remoteAcceptorSessions.clear();
             remoteSenderSessions.clear();
             remoteReceiverSessions.clear();
-            asyncExecutorService.shutdownNow();
+            if(asyncExecutorService != null) {
+                asyncExecutorService.shutdownNow();
+                asyncExecutorService = null;
+            }
         } finally {
             SLF4JLoggerProxy.info(this,
                                   "{} done",
                                   name.getMethodName());
         }
     }
+    /**
+     * Initialize and prepare the module manager and data flows, if necessary.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     protected void initializeModuleManager()
             throws Exception
     {
-        ModuleManager moduleManager = new ModuleManager();
-        moduleManager.init();
+        ModuleManager moduleManager = ModuleManager.getInstance();
+        if(moduleManager == null) {
+            moduleManager = new ModuleManager();
+            moduleManager.init();
+        }
         ModuleManager.startModulesIfNecessary(moduleManager,
                                               TransactionModuleFactory.INSTANCE_URN,
                                               OrderConverterModuleFactory.INSTANCE_URN,
@@ -341,7 +352,6 @@ public class MarketceteraTestBase
             throws Exception
     {
         for(ActiveFixSession fixSession : brokerService.getActiveFixSessions()) {
-            System.out.println("COLIN: checking " + fixSession);
             quickfix.SessionID sessionId = new quickfix.SessionID(fixSession.getFixSession().getSessionId());
             BrokerID brokerId = new BrokerID(fixSession.getFixSession().getBrokerId());
             fixSessionProvider.disableSession(sessionId);
@@ -398,6 +408,32 @@ public class MarketceteraTestBase
             }
         },10);
         return reports.getLast();
+    }
+    /**
+     * Wait for the given block to be verified in 10s.
+     *
+     * @param inBlock a <code>Callable&lt;Boolean&gt;</code> value
+     * @throws Exception if the block cannot be verified in 10s
+     */
+    protected void wait(Callable<Boolean> inBlock)
+            throws Exception
+    {
+        wait(inBlock,
+             10);
+    }
+    /**
+     * Wait for the given block to be verified in the given timeout.
+     *
+     * @param inBlock a <code>Callable&lt;Boolean&gt;</code> value
+     * @param inSecondsTimeout an <code>int</code> value
+     * @throws Exception if the block cannot be verified in 10s
+     */
+    protected void wait(Callable<Boolean> inBlock,
+                        int inSecondsTimeout)
+            throws Exception
+    {
+        MarketDataFeedTestBase.wait(inBlock,
+                                    inSecondsTimeout);
     }
     /**
      * Verify that the order status for the given root/order id pair exists.

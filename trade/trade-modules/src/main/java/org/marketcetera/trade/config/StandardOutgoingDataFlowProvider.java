@@ -38,8 +38,7 @@ public class StandardOutgoingDataFlowProvider
     public DataRequest[] getDataFlow(ModuleManager inModuleManager)
     {
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
-        ModuleURN headwaterUrn = HeadwaterModule.createHeadwaterModule(TradeConstants.outgoingDataFlowName,
-                                                                       inModuleManager);
+        ModuleURN headwaterUrn = HeadwaterModule.getInstance(TradeConstants.outgoingDataFlowName).getURN();
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
         dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(OrderConverterModuleFactory.INSTANCE_URN));

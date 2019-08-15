@@ -36,8 +36,7 @@ public class StandardReportInjectionDataFlowProvider
     public DataRequest[] getDataFlow(ModuleManager inModuleManager)
     {
         List<DataRequest> dataRequestBuilder = Lists.newArrayList();
-        ModuleURN headwaterUrn = HeadwaterModule.createHeadwaterModule(TradeConstants.reportInjectionDataFlowName,
-                                                                       inModuleManager);
+        ModuleURN headwaterUrn = HeadwaterModule.getInstance(TradeConstants.reportInjectionDataFlowName).getURN();
         dataRequestBuilder.add(new DataRequest(headwaterUrn));
         dataRequestBuilder.add(new DataRequest(TransactionModuleFactory.INSTANCE_URN));
         dataRequestBuilder.add(new DataRequest(TradeMessageConverterModuleFactory.INSTANCE_URN));

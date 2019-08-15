@@ -826,33 +826,6 @@ public class ReportServiceImpl
                                  mostRecentReport);
         }
     }
-    private void generateOrderSummary(ReportBase inReportBase,
-                                      OrderID inRootId,
-                                      PersistentReport inReport)
-    {
-        OrderSummary orderStatus;
-        if(inReportBase instanceof OrderCancelReject) {
-            // need to search for some particulars to help us fill out this record
-            orderStatus = orderStatusService.findMostRecentExecutionByRootOrderId(inRootId);
-        } else {
-            orderStatus = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
-                                                                         inReportBase.getOrderID());
-            if(orderStatus == null && inReportBase.getOriginalOrderID() != null) {
-                orderStatus = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
-                                                                             inReportBase.getOriginalOrderID());
-            }
-        }
-        if(orderStatus == null) {
-            orderStatus = new PersistentOrderSummary(inReport,
-                                                     inReportBase,
-                                                     inRootId);
-            orderStatus = orderStatusService.save(orderStatus);
-        } else {
-            orderStatusService.update(orderStatus,
-                                      inReport,
-                                      inReportBase);
-        }
-    }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getRootOrderIdFor(org.marketcetera.trade.OrderID)
      */
@@ -1017,6 +990,40 @@ public class ReportServiceImpl
     public void setCacheSize(int inCacheSize)
     {
         cacheSize = inCacheSize;
+    }
+    /**
+     * Generate and persist order summary for the given artifacts.
+     *
+     * @param inReportBase a <code>ReportBase</code> value
+     * @param inRootId an <code>OrderID</code> value
+     * @param inReport a <code>PersistentReport</code> value
+     */
+    private void generateOrderSummary(ReportBase inReportBase,
+                                      OrderID inRootId,
+                                      PersistentReport inReport)
+    {
+        OrderSummary orderStatus;
+        if(inReportBase instanceof OrderCancelReject) {
+            // need to search for some particulars to help us fill out this record
+            orderStatus = orderStatusService.findMostRecentExecutionByRootOrderId(inRootId);
+        } else {
+            orderStatus = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
+                                                                         inReportBase.getOrderID());
+            if(orderStatus == null && inReportBase.getOriginalOrderID() != null) {
+                orderStatus = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
+                                                                             inReportBase.getOriginalOrderID());
+            }
+        }
+        if(orderStatus == null) {
+            orderStatus = new PersistentOrderSummary(inReport,
+                                                     inReportBase,
+                                                     inRootId);
+            orderStatus = orderStatusService.save(orderStatus);
+        } else {
+            orderStatusService.update(orderStatus,
+                                      inReport,
+                                      inReportBase);
+        }
     }
     /**
      * Get the planned session start for the given session id.
