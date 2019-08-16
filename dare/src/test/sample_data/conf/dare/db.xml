@@ -5,12 +5,13 @@
   <!-- Exception translation bean post processor -->
   <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
   <!-- Flyway configuration -->
-   <bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
-     <property name="baselineOnMigrate" value="true" />
-     <property name="locations" value="classpath:/db/migration/${metc.flyway.vendor}" />
-     <property name="dataSource" ref="metc_sql_pool" />
-   </bean>
-   <bean id="metc_sql_pool" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+  <bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
+    <property name="baselineOnMigrate" value="true" />
+    <property name="locations" value="classpath:/db/migration/${metc.flyway.vendor}" />
+    <property name="dataSource" ref="metc_sql_pool" />
+    <property name="cleanOnValidationError" value="true"/>
+  </bean>
+  <bean id="metc_sql_pool" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
     <property name="driverClass" value="${metc.jdbc.driver}"/>
     <property name="jdbcUrl" value="${metc.jdbc.url}"/>
     <property name="user" value="${metc.jdbc.user}"/>

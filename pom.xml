@@ -32,7 +32,7 @@
   </developers>
   <properties>
     <mvn.javase.version>8</mvn.javase.version>
-    <mvn.spring.boot.version>2.1.5.RELEASE</mvn.spring.boot.version>
+    <mvn.spring.boot.version>2.1.7.RELEASE</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
     <mvn.log4j.version>2.11.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
@@ -49,11 +49,6 @@
         <scope>import</scope>
       </dependency>
       <!-- Compile: local modules -->
-      <!--dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>client</artifactId>
-          <version>4.0.1-SNAPSHOT</version>
-          </dependency-->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
@@ -199,16 +194,6 @@
         <artifactId>cluster-rpc-core</artifactId>
         <version>4.0.1-SNAPSHOT</version>
       </dependency>
-      <!--dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>orderloader</artifactId>
-          <version>4.0.1-SNAPSHOT</version>
-          </dependency-->
-      <!--dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>strategyagent</artifactId>
-          <version>4.0.1-SNAPSHOT</version>
-          </dependency-->
       <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-csv</artifactId>
@@ -254,11 +239,6 @@
         <artifactId>misc</artifactId>
         <version>4.0.1-SNAPSHOT</version>
       </dependency>
-      <!--dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>strategy</artifactId>
-          <version>4.0.1-SNAPSHOT</version>
-          </dependency-->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>util</artifactId>
@@ -295,21 +275,6 @@
         <artifactId>tensorflow</artifactId>
         <version>4.0.1-SNAPSHOT</version>
       </dependency>
-      <!--dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>remote-receiver</artifactId>
-          <version>4.0.1-SNAPSHOT</version>
-          </dependency>
-          <dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>remote-emitter</artifactId>
-          <version>4.0.1-SNAPSHOT</version>
-          </dependency-->
-      <!--dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>saclient</artifactId>
-          <version>4.0.1-SNAPSHOT</version>
-          </dependency-->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dare</artifactId>
@@ -849,13 +814,6 @@
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
-      <!--dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>client</artifactId>
-          <version>4.0.1-SNAPSHOT</version>
-          <type>test-jar</type>
-          <scope>test</scope>
-          </dependency-->
       <!-- Testing: other. -->
       <dependency>
         <groupId>pl.pragmatists</groupId>
@@ -1019,23 +977,11 @@
             </execution>
           </executions>
         </plugin>
-        <!-- war generation. -->
-        <!--plugin>
-            <artifactId>maven-war-plugin</artifactId>
-            <version>2.1-alpha-1</version>
-            </plugin-->
-        <!-- bundle generation. -->
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <version>2.3.5</version>
         </plugin>
-        <!-- mvn dependency:* -->
-        <!--plugin>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <version>2.0</version>
-            </plugin-->
-        <!-- mvn eclipse:* -->
         <plugin>
           <artifactId>maven-eclipse-plugin</artifactId>
           <version>2.10</version>
@@ -1045,23 +991,6 @@
             <downloadJavadocs>true</downloadJavadocs>
           </configuration>
         </plugin>
-        <!-- mvn clean -->
-        <!--plugin>
-            <artifactId>maven-clean-plugin</artifactId>
-            <version>2.3</version>
-            </plugin-->
-        <!-- mvn antrun:* -->
-        <!--plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.3</version>
-            <dependencies>
-            <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant-junit</artifactId>
-            <version>1.7.1</version>
-            </dependency>
-            </dependencies>
-            </plugin-->
         <!-- mvn exec:* -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
