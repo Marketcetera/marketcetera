@@ -57,4 +57,8 @@ public interface EventBusService
      * default topic
      */
     public static final String defaultTopic = "metc.default.topic";
+    /**
+     * provides a common logger category
+     */
+    public static final String eventCategory = "metc.events";
 }

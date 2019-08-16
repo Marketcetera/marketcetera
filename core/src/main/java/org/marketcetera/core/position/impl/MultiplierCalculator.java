@@ -20,7 +20,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class MultiplierCalculator implements PositionMetricsCalculator {
+public class MultiplierCalculator
+        implements PositionMetricsCalculator
+{
 
     private final PositionMetricsCalculator mDelegate;
     private final BigDecimal mMultiplier;
@@ -38,7 +40,22 @@ public class MultiplierCalculator implements PositionMetricsCalculator {
         mDelegate = delegate;
         mMultiplier = multiplier;
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.position.impl.PositionMetricsCalculator#bid(java.math.BigDecimal)
+     */
+    @Override
+    public PositionMetrics bid(BigDecimal inBidPrice)
+    {
+        return multiply(mDelegate.bid(inBidPrice));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.position.impl.PositionMetricsCalculator#ask(java.math.BigDecimal)
+     */
+    @Override
+    public PositionMetrics ask(BigDecimal inAskPrice)
+    {
+        return multiply(mDelegate.ask(inAskPrice));
+    }
     @Override
     public PositionMetrics tick(BigDecimal tradePrice) {
         return multiply(mDelegate.tick(tradePrice));

@@ -17,11 +17,11 @@
     <property name="password" value="${metc.jdbc.password}"/>
     <property name="maxPoolSize" value="${metc.jdbc.pool.size}"/>
     <property name="preferredTestQuery" value="${metc.jdbc.testquery}"/>
-    <property name="testConnectionOnCheckout" value="true"/>
+    <property name="testConnectionOnCheckout" value="false"/>
   </bean>
   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="flyway">
     <property name="dataSource" ref="metc_sql_pool"/>
-    <property name="persistenceUnitName" value="test"/>
+    <property name="persistenceUnitName" value="dev"/>
     <property name="jpaVendorAdapter">
       <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
     </property>

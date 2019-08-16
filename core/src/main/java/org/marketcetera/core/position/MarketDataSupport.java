@@ -99,39 +99,45 @@ public interface MarketDataSupport {
      * interface, extend {@link InstrumentMarketDataListenerBase}.
      */
     @ClassVersion("$Id$")
-    public interface InstrumentMarketDataListener {
-
+    public interface InstrumentMarketDataListener
+    {
         /**
          * Callback for receiving trade notifications.
          * 
-         * @param event
-         *            event describing the change
+         * @param inEvent an <code>InstrumentMarketDataEvent</code> describing the change
          */
-        void symbolTraded(InstrumentMarketDataEvent event);
-
+        void symbolTraded(InstrumentMarketDataEvent inEvent);
+        /**
+         * Callback for receiving bid notifications.
+         * 
+         * @param inEvent an <code>InstrumentMarketDataEvent</code> describing the change
+         */
+        void bidChanged(InstrumentMarketDataEvent inEvent);
+        /**
+         * Callback for receiving ask notifications.
+         * 
+         * @param inEvent an <code>InstrumentMarketDataEvent</code> describing the change
+         */
+        void askChanged(InstrumentMarketDataEvent inEvent);
         /**
          * Callback for receiving close price change notifications.
          * 
-         * @param event
-         *            event describing the change
+         * @param inEvent an <code>InstrumentMarketDataEvent</code> describing the change
          */
-        void closePriceChanged(InstrumentMarketDataEvent event);
-
+        void closePriceChanged(InstrumentMarketDataEvent inEvent);
         /**
          * Callback for receiving the option multiplier.
          * 
-         * @param event
-         *            event describing the change
+         * @param inEvent an <code>InstrumentMarketDataEvent</code> describing the change
          */
-        void optionMultiplierChanged(InstrumentMarketDataEvent event);
+        void optionMultiplierChanged(InstrumentMarketDataEvent inEvent);
         
         /**
          * Callback for receiving the future multiplier.
          * 
-         * @param event
-         *            event describing the change
+         * @param inEvent an <code>InstrumentMarketDataEvent</code> describing the change
          */
-        void futureMultiplierChanged(InstrumentMarketDataEvent event);
+        void futureMultiplierChanged(InstrumentMarketDataEvent inEvent);
     }
 
     /**
@@ -139,58 +145,84 @@ public interface MarketDataSupport {
      * extend callbacks they care about.
      */
     @ClassVersion("$Id$")
-    public abstract class InstrumentMarketDataListenerBase implements
-            InstrumentMarketDataListener {
-
+    public abstract class InstrumentMarketDataListenerBase
+            implements InstrumentMarketDataListener
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener#symbolTraded(org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent)
+         */
         @Override
-        public void closePriceChanged(InstrumentMarketDataEvent event) {
+        public void symbolTraded(InstrumentMarketDataEvent inEvent)
+        {
         }
-
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener#closePriceChanged(org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent)
+         */
         @Override
-        public void symbolTraded(InstrumentMarketDataEvent event) {
+        public void closePriceChanged(InstrumentMarketDataEvent inEvent)
+        {
         }
-
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener#optionMultiplierChanged(org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent)
+         */
         @Override
-        public void optionMultiplierChanged(InstrumentMarketDataEvent event) {
+        public void optionMultiplierChanged(InstrumentMarketDataEvent inEvent)
+        {
         }
-        
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener#futureMultiplierChanged(org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent)
+         */
         @Override
-        public void futureMultiplierChanged(InstrumentMarketDataEvent event) {
+        public void futureMultiplierChanged(InstrumentMarketDataEvent inEvent)
+        {
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener#quoteChanged(org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent)
+         */
+        @Override
+        public void bidChanged(InstrumentMarketDataEvent inEvent)
+        {
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener#askChanged(org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent)
+         */
+        @Override
+        public void askChanged(InstrumentMarketDataEvent inEvent)
+        {
         }
     }
-
     /**
      * Event object for {@link InstrumentMarketDataListener}.
      */
     @ClassVersion("$Id$")
-    public static class InstrumentMarketDataEvent extends EventObject {
-
+    public static class InstrumentMarketDataEvent
+            extends EventObject
+    {
         /**
          * Constructor.
          * 
-         * @param source
-         *            the object on which the Event initially occurred
-         * @param newPrice
-         *            the new value for the symbol price, may be null to
-         *            indicate market data is no longer available
+         * @param inSource the object on which the Event initially occurred
+         * @param inNewPrice the new value for the symbol price, may be null to indicate market data is no longer available
          */
-        public InstrumentMarketDataEvent(Object source, BigDecimal newPrice) {
-            super(source);
-            mNewAmount = newPrice;
+        public InstrumentMarketDataEvent(Object inSource,
+                                         BigDecimal inNewPrice)
+        {
+            super(inSource);
+            newPrice = inNewPrice;
         }
-
         /**
          * The new amount for the market data.
          * 
-         * @return the new amount, may be null to indicate market
-         *         data is no longer available
+         * @return the new amount, may be null to indicate market data is no longer available
          */
-        public BigDecimal getNewAmount() {
-            return mNewAmount;
+        public BigDecimal getNewPrice()
+        {
+            return newPrice;
         }
-
-        private BigDecimal mNewAmount;
-
-        private static final long serialVersionUID = 1L;
+        /**
+         * new price value
+         */
+        private BigDecimal newPrice;
+        private static final long serialVersionUID = 5777912812671561191L;
     }
 }

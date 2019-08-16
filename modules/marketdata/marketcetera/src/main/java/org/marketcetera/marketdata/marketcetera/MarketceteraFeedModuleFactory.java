@@ -14,7 +14,7 @@ import org.marketcetera.module.ModuleURN;
  * <code>ModuleFactory</code> implementation for the <code>MarketceteraFeed</code> market data provider.
  * <p>
  * The factory has the following characteristics.
- * <table>
+ * <table summary="MarketceteraFeedModuleFactory characteristics">
  * <tr><th>Provider URN:</th><td><code>metc:mdata:marketcetera</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
  * <tr><th>Instance URN:</th><td><code>metc:mdata:marketcetera:single</code></td></tr>

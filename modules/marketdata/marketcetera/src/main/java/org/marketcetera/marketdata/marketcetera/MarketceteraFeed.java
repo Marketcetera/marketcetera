@@ -78,7 +78,7 @@ import com.google.common.collect.SetMultimap;
  *
  * <p>This feed will return random market data for every symbol queried.
  *
- * @author <a href="mailto:colin@marketcetera.com>Colin DuPlantis</a>
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 0.5.0
  */
 @ClassVersion("$Id$")

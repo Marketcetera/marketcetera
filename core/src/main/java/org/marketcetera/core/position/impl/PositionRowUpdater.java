@@ -42,13 +42,16 @@ public final class PositionRowUpdater {
     private static final ExecutorService sMarketDataUpdateExecutor = Executors
             .newSingleThreadExecutor(new NamedThreadFactory("PositionRowUpdater"));  //$NON-NLS-1$
     private final AtomicBoolean mTickPending = new AtomicBoolean();
+    private final AtomicBoolean mBidPending = new AtomicBoolean();
+    private final AtomicBoolean mAskPending = new AtomicBoolean();
     private final AtomicBoolean mClosingPricePending = new AtomicBoolean();
     private final AtomicBoolean mMultiplierPending = new AtomicBoolean();
     private volatile PositionMetricsCalculator mCalculator;
     private volatile BigDecimal mClosePrice;
     private volatile BigDecimal mMultiplier;
     private volatile BigDecimal mLastTradePrice;
-
+    private volatile BigDecimal mLastBidPrice;
+    private volatile BigDecimal mLastAskPrice;
     /**
      * Returns the PositionRow being managed by this class.
      * 
@@ -84,25 +87,37 @@ public final class PositionRowUpdater {
             }
         };
         mSymbolChangeListener = new InstrumentMarketDataListenerBase() {
-
+            /* (non-Javadoc)
+             * @see org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListenerBase#bidChanged(org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent)
+             */
+            @Override
+            public void bidChanged(InstrumentMarketDataEvent inEvent)
+            {
+                bid(inEvent.getNewPrice());
+            }
+            /* (non-Javadoc)
+             * @see org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListenerBase#askChanged(org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent)
+             */
+            @Override
+            public void askChanged(InstrumentMarketDataEvent inEvent)
+            {
+                ask(inEvent.getNewPrice());
+            }
             @Override
             public void symbolTraded(InstrumentMarketDataEvent event) {
-                tick(event.getNewAmount());
+                tick(event.getNewPrice());
             }
-
             @Override
             public void closePriceChanged(InstrumentMarketDataEvent event) {
-                PositionRowUpdater.this.closePriceChanged(event.getNewAmount());
+                PositionRowUpdater.this.closePriceChanged(event.getNewPrice());
             }
-
             @Override
             public void optionMultiplierChanged(InstrumentMarketDataEvent event) {
-                PositionRowUpdater.this.instrumentMultiplierChanged(event.getNewAmount());
+                PositionRowUpdater.this.instrumentMultiplierChanged(event.getNewPrice());
             }
-            
             @Override
             public void futureMultiplierChanged(InstrumentMarketDataEvent event) {
-                PositionRowUpdater.this.instrumentMultiplierChanged(event.getNewAmount());
+                PositionRowUpdater.this.instrumentMultiplierChanged(event.getNewPrice());
             }
         };
         mMarketDataSupport.addInstrumentMarketDataListener(
@@ -157,14 +172,62 @@ public final class PositionRowUpdater {
                 public void run() {
                     mTickPending.set(false);
                     if (mCalculator != null) {
-                        mPositionRow.setPositionMetrics(mCalculator
-                                .tick(mLastTradePrice));
+                        mPositionRow.setPositionMetrics(mCalculator.tick(mLastTradePrice));
                     }
                 }
             });
         }
     }
-
+    /**
+     * Update as necessary for a new bid price.
+     *
+     * @param inPrice a <code>BigDecimal</code> value
+     */
+    private void bid(BigDecimal inPrice)
+    {
+        mLastBidPrice = inPrice;
+        /*
+         * Since this modifies the position and will need a lock, the update
+         * happens in a separate thread. mBidPending is used to avoid queuing
+         * multiple updates since the runnable always uses the latest value.
+         */
+        if(mBidPending.compareAndSet(false,true)) {
+            sMarketDataUpdateExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mBidPending.set(false);
+                    if(mCalculator != null) {
+                        mPositionRow.setPositionMetrics(mCalculator.bid(mLastBidPrice));
+                    }
+                }
+            });
+        }
+    }
+    /**
+     * Update as necessary for a new ask price.
+     *
+     * @param inPrice a <code>BigDecimal</code> value
+     */
+    private void ask(BigDecimal inPrice)
+    {
+        mLastAskPrice = inPrice;
+        /*
+         * Since this modifies the position and will need a lock, the update
+         * happens in a separate thread. mAskPending is used to avoid queuing
+         * multiple updates since the runnable always uses the latest value.
+         */
+        if(mAskPending.compareAndSet(false,true)) {
+            sMarketDataUpdateExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mAskPending.set(false);
+                    if(mCalculator != null) {
+                        mPositionRow.setPositionMetrics(mCalculator.ask(mLastAskPrice));
+                    }
+                }
+            });
+        }
+    }
     private void closePriceChanged(BigDecimal newPrice) {
         BigDecimal oldPrice = mClosePrice;
         /*

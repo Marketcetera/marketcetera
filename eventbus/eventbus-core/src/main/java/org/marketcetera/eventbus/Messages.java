@@ -1,7 +1,7 @@
 package org.marketcetera.eventbus;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -28,5 +28,6 @@ public interface Messages
     /*
      * The messages.
      */
-    static final I18NMessage0P EVENTBUS_SERVICE_STARTING = new I18NMessage0P(LOGGER,"eventbus_service_starting"); //$NON-NLS-1$
+    static final I18NMessage1P SERVICE_STARTING = new I18NMessage1P(LOGGER,"service_starting"); //$NON-NLS-1$
+    static final I18NMessage1P SERVICE_STOPPING = new I18NMessage1P(LOGGER,"service_stopping"); //$NON-NLS-1$
 }

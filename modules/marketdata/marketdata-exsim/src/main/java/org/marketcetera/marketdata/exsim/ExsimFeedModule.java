@@ -225,7 +225,7 @@ public class ExsimFeedModule
                                    "Canceling data flow {} with market data request id {}", //$NON-NLS-1$
                                    inFlowId,
                                    requestData);
-            requestsByRequestId.remove(requestData);
+            requestsByRequestId.remove(requestData.requestId);
             try {
                 cancelMarketDataRequest(requestData);
             } catch (Exception e) {

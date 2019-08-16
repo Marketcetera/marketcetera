@@ -32,7 +32,20 @@ public interface PositionMetricsCalculator {
      * @return the updated metrics
      */
     PositionMetrics tick(BigDecimal tradePrice);
-
+    /**
+     * Compute the updated metrics given a new bid price.
+     *
+     * @param inBidPrice a <code>BigDecimal</code> value
+     * @return a <code>PositionMetrics</code> value
+     */
+    PositionMetrics bid(BigDecimal inBidPrice);
+    /**
+     * Compute the updated metrics given a new ask price.
+     *
+     * @param inAskPrice a <code>BigDecimal</code> value
+     * @return a <code>PositionMetrics</code> value
+     */
+    PositionMetrics ask(BigDecimal inAskPrice);
     /**
      * Compute the updated metrics given a new trade that has contributed to the
      * position. Trades provided through this method must be given in sequential

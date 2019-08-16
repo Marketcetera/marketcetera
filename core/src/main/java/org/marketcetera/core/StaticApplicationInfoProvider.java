@@ -16,6 +16,7 @@ import org.springframework.context.ApplicationContext;
  */
 @ClassVersion("$Id$")
 public class StaticApplicationInfoProvider
+        extends ApplicationBase
         implements ApplicationInfoProvider
 {
     /* (non-Javadoc)
@@ -24,7 +25,7 @@ public class StaticApplicationInfoProvider
     @Override
     public File getAppDir()
     {
-        return ApplicationContainer.getInstance().getAppDir();
+        return new File(APP_DIR);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.ApplicationInfoProvider#getConfDir()
@@ -32,7 +33,7 @@ public class StaticApplicationInfoProvider
     @Override
     public File getConfDir()
     {
-        return ApplicationContainer.getInstance().getConfDir();
+        return new File(CONF_DIR);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.ApplicationInfoProvider#getArguments()
@@ -40,6 +41,9 @@ public class StaticApplicationInfoProvider
     @Override
     public String[] getArguments()
     {
+        if(ApplicationContainer.getInstance() == null) {
+            return new String[0];
+        }
         return ApplicationContainer.getInstance().getArguments();
     }
     /* (non-Javadoc)
@@ -48,6 +52,6 @@ public class StaticApplicationInfoProvider
     @Override
     public ApplicationContext getContext()
     {
-        return ApplicationContainer.getInstance().getContext();
+        return ApplicationContextProvider.getInstance().getApplicationContext();
     }
 }

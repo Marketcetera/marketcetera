@@ -3,6 +3,7 @@ package org.marketcetera.quickfix;
 import quickfix.Log;
 import quickfix.LogFactory;
 import quickfix.SessionID;
+import quickfix.SessionSettings;
 
 /* $License$ */
 
@@ -32,4 +33,14 @@ public class NullLogFactory
     {
         return new NullLog();
     }
+    /**
+     * Create a new NullLogFactory instance.
+     *
+     * @param inSessionSettings a <code>SessionSettings</code> value
+     */
+    public NullLogFactory(SessionSettings inSessionSettings) {}
+    /**
+     * Create a new NullLogFactory instance.
+     */
+    public NullLogFactory() {}
 }

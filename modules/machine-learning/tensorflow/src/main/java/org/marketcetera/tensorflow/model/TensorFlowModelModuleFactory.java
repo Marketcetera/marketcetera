@@ -11,15 +11,15 @@ import org.marketcetera.tensorflow.Messages;
 /**
  * Provides a module that invokes an existing TensorFlow model.
  *
- * <p>The factory has the following characteristics.
- * <table>
+ * <p>The factory has the following characteristics.</p>
+ * <table summary="TensorFlowModelModuleFactory characteristics">
  * <tr><th>Provider URN:</th><td><code>metc:tensorflow:model</code></td></tr>
  * <tr><th>Cardinality:</th><td>Single Instance</td></tr>
  * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>
  * <tr><th>Auto-Started:</th><td>Yes</td></tr>
- * <tr><th>Instantiation Arguments:</th>n/a</tr>
+ * <tr><th>Instantiation Arguments: n/a</th></tr>
  * <tr><th>Module Type:</th><td>{@link TensorFlowModelModule}</td></tr>
- * </table></p>
+ * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
