@@ -1,0 +1,5 @@
+org.marketcetera.trade.EquitySummaryFields
+org.marketcetera.trade.OptionSummaryFields
+org.marketcetera.trade.FutureSummaryFields
+org.marketcetera.trade.CurrencySummaryFields
+org.marketcetera.trade.ConvertibleBondSummaryFields

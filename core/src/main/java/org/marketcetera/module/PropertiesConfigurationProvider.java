@@ -25,9 +25,9 @@ import java.io.IOException;
  * Within the property file, the attribute values are encoded as
  * <code>instance-name.attribute-name=attribute-value</code>.
  * Default attribute values, that apply to all instances can be specified as
- * <code>attribute-name=attribute-value</code>
+ * <code>.attribute-name=attribute-value</code.
  * <p>
- * For factory attributes, &quot;<code>instance-name.</code>&quot; is excluded from
+ * For factory attributes, "<code>instance-name.</code>" is excluded from
  * the property name, ie. the attribute value is specified as
  * <code>attribute-name=attribute-value</code>
  * 

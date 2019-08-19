@@ -1,0 +1,7 @@
+# Names of module factory implementations
+org.marketcetera.trade.modules.OrderConverterModuleFactory
+org.marketcetera.trade.modules.TradeMessageConverterModuleFactory
+org.marketcetera.trade.modules.TradeMessageBroadcastModuleFactory
+org.marketcetera.trade.modules.TradeMessagePersistenceModuleFactory
+org.marketcetera.trade.modules.OutgoingMessageCachingModuleFactory
+org.marketcetera.trade.modules.OutgoingMessagePersistenceModuleFactory

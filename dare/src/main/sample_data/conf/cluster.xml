@@ -4,7 +4,7 @@
   -
   - Author: colin@marketcetera.com
   - Since: 1.0.1
-  - Version: $Id: cluster.xml 85311 2016-05-24 14:49:00Z colin $
+  - Version: $Id$
   - $License$
   -->
 <beans xmlns="http://www.springframework.org/schema/beans"

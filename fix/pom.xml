@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>public-parent</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>fix-parent</artifactId>
   <packaging>pom</packaging>
@@ -15,6 +15,10 @@
     <module>fix-acceptor</module>
     <module>fix-api</module>
     <module>fix-core</module>
-    <module>fix-initiator</module>
+    <module>fix-modules</module>
+    <module>fix-rpc-client</module>
+    <module>fix-rpc-core</module>
+    <module>fix-rpc-server</module>
+    <module>fix-server</module>
   </modules>
 </project>

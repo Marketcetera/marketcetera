@@ -26,7 +26,7 @@ public interface SymbolResolver
      * Generate a symbol from the given instrument.
      *
      * @param inInstrument an <code>Instrument</code> value
-     * @return a <code>String</code> value
+     * @return a code>String</code> value
      */
     String generateSymbol(Instrument inInstrument);
 }

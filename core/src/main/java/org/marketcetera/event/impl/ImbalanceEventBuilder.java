@@ -55,7 +55,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class ImbalanceEventBuilder
-        implements EventBuilder<ImbalanceEvent>,OptionEventBuilder<ImbalanceEventBuilder>,FutureEventBuilder<ImbalanceEventBuilder>,CurrencyEventBuilder<ImbalanceEventBuilder>,ConvertibleBondEventBuilder<ImbalanceEventBuilder>,SpreadEventBuilder<ImbalanceEventBuilder>
+        implements EventBuilder<ImbalanceEvent>, OptionEventBuilder<ImbalanceEventBuilder>, FutureEventBuilder<ImbalanceEventBuilder>, CurrencyEventBuilder<ImbalanceEventBuilder>, ConvertibleBondEventBuilder<ImbalanceEventBuilder>, SpreadEventBuilder<ImbalanceEventBuilder>
 {
     /**
      * Returns a <code>ImbalanceEventBuilder</code> suitable for constructing a new <code>ImbalanceEvent</code> object.
@@ -76,12 +76,12 @@ public abstract class ImbalanceEventBuilder
             return optionImbalance().withInstrument(inInstrument);
         } else if(inInstrument instanceof Future) {
             return futureImbalance().withInstrument(inInstrument);
-        } else if(inInstrument instanceof Spread) {
-            return spreadImbalance().withInstrument(inInstrument);
         } else if(inInstrument instanceof Currency) {
             return currencyImbalance().withInstrument(inInstrument);
         } else if(inInstrument instanceof ConvertibleBond) {
             return convertibleBondImbalance().withInstrument(inInstrument);
+        } else if(inInstrument instanceof Spread) {
+            return spreadImbalance().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -174,28 +174,6 @@ public abstract class ImbalanceEventBuilder
     }
     /**
      * Returns an <code>ImbalanceEventBuilder</code> suitable for constructing a new <code>ImbalanceEvent</code> object
-     * of type <code>Spread</code>.
-     *
-     * @return an <code>ImbalanceEventBuilder</code> value
-     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Spread}
-     */
-    public static ImbalanceEventBuilder spreadImbalance()
-    {
-        return new ImbalanceEventBuilder()
-        {
-            @Override
-            public ImbalanceEvent create()
-            {
-                if(!(getImbalance().getInstrument() instanceof Spread)) {
-                    throw new IllegalArgumentException(VALIDATION_SPREAD_REQUIRED.getText());
-                }
-                return new SpreadImbalanceEvent(getImbalance(),
-                                                getSpread());
-            }
-        };
-    }
-    /**
-     * Returns an <code>ImbalanceEventBuilder</code> suitable for constructing a new <code>ImbalanceEvent</code> object
      * of type <code>ConvertibleBond</code>.
      *
      * @return an <code>ImbalanceEventBuilder</code> value
@@ -213,6 +191,28 @@ public abstract class ImbalanceEventBuilder
                 }
                 return new ConvertibleBondImbalanceEvent(getImbalance(),
                                                          getConvertibleBond());
+            }
+        };
+    }
+    /**
+     * Returns an <code>ImbalanceEventBuilder</code> suitable for constructing a new <code>ImbalanceEvent</code> object
+     * of type <code>Future</code>.
+     *
+     * @return an <code>ImbalanceEventBuilder</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Spread}
+     */
+    public static ImbalanceEventBuilder spreadImbalance()
+    {
+        return new ImbalanceEventBuilder()
+        {
+            @Override
+            public ImbalanceEvent create()
+            {
+                if(!(getImbalance().getInstrument() instanceof Spread)) {
+                    throw new IllegalArgumentException(VALIDATION_SPREAD_REQUIRED.getText());
+                }
+                return new SpreadImbalanceEvent(getImbalance(),
+                                                getSpread());
             }
         };
     }
@@ -394,9 +394,7 @@ public abstract class ImbalanceEventBuilder
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
-        } else if(inInstrument instanceof Spread) {
-            spread.setInstrument((Spread)inInstrument);
-        } else if(inInstrument instanceof Currency) {
+        }else if(inInstrument instanceof Currency) {
             currency.setInstrument((Currency)inInstrument);
         } else if(inInstrument instanceof ConvertibleBond) {
             convertibleBond.setInstrument((ConvertibleBond)inInstrument);
@@ -404,7 +402,6 @@ public abstract class ImbalanceEventBuilder
         if(inInstrument == null) {
             option.setInstrument(null);
             future.setInstrument(null);
-            spread.setInstrument(null);
             currency.setInstrument(null);
             convertibleBond.setInstrument(null);
         }
@@ -463,8 +460,6 @@ public abstract class ImbalanceEventBuilder
     public final ImbalanceEventBuilder withDeliveryType(DeliveryType inDeliveryType)
     {
         future.setDeliveryType(inDeliveryType);
-        spread.getLeg1Bean().setDeliveryType(inDeliveryType);
-        spread.getLeg2Bean().setDeliveryType(inDeliveryType);
         return this;
     }
     /**
@@ -476,8 +471,6 @@ public abstract class ImbalanceEventBuilder
     public final ImbalanceEventBuilder withStandardType(StandardType inStandardType)
     {
         future.setStandardType(inStandardType);
-        spread.getLeg1Bean().setStandardType(inStandardType);
-        spread.getLeg2Bean().setStandardType(inStandardType);
         return this;
     }
     /**
@@ -489,8 +482,6 @@ public abstract class ImbalanceEventBuilder
     public final ImbalanceEventBuilder withFutureType(FutureType inFutureType)
     {
         future.setType(inFutureType);
-        spread.getLeg1Bean().setType(inFutureType);
-        spread.getLeg2Bean().setType(inFutureType);
         return this;
     }
     /**
@@ -502,8 +493,6 @@ public abstract class ImbalanceEventBuilder
     public final ImbalanceEventBuilder withUnderlyingAssetType(FutureUnderlyingAssetType inUnderlyingAssetType)
     {
         future.setUnderlyingAssetType(inUnderlyingAssetType);
-        spread.getLeg1Bean().setUnderlyingAssetType(inUnderlyingAssetType);
-        spread.getLeg2Bean().setUnderlyingAssetType(inUnderlyingAssetType);
         return this;
     }
     /**
@@ -516,7 +505,6 @@ public abstract class ImbalanceEventBuilder
     {
         option.setProviderSymbol(inProviderSymbol);
         future.setProviderSymbol(inProviderSymbol);
-        spread.setProviderSymbol(inProviderSymbol);
         return this;
     }
     /**
@@ -528,8 +516,6 @@ public abstract class ImbalanceEventBuilder
     public final ImbalanceEventBuilder withContractSize(int inContractSize)
     {
         future.setContractSize(inContractSize);
-        spread.getLeg1Bean().setContractSize(inContractSize);
-        spread.getLeg2Bean().setContractSize(inContractSize);
         return this;
     }
     /**
@@ -792,13 +778,12 @@ public abstract class ImbalanceEventBuilder
     @Override
     public String toString()
     {
-        return String.format("ImbalanceEventBuilder [Imbalance=%s, option=%s, future=%s, currency=%s, convertibleBond=%s, spread=%s]", //$NON-NLS-1$
+        return String.format("ImbalanceEventBuilder [Imbalance=%s, option=%s, future=%s, currency=%s, convertibleBond=%s]", //$NON-NLS-1$
                              imbalance,
                              option,
                              future,
                              currency,
-                             convertibleBond,
-                             spread);
+                             convertibleBond);
     }
     /**
      * Get the Imbalance value.
@@ -828,15 +813,6 @@ public abstract class ImbalanceEventBuilder
         return future;
     }
     /**
-     * Gets the spread value.
-     *
-     * @return a <code>SpreadBean</code> value
-     */
-    protected final SpreadBean getSpread()
-    {
-        return spread;
-    }
-    /**
      * Gets the currency value.
      *
      * @return a <code>CurrencyBean</code> value
@@ -855,6 +831,15 @@ public abstract class ImbalanceEventBuilder
         return convertibleBond;
     }
     /**
+     * Gets the spread value.
+     *
+     * @return a <code>SpreadBean</code> value
+     */
+    protected final SpreadBean getSpread()
+    {
+        return spread;
+    }
+    /**
      * the Imbalance attributes 
      */
     private ImbalanceBean imbalance = new ImbalanceBean();
@@ -867,10 +852,6 @@ public abstract class ImbalanceEventBuilder
      */
     private final FutureBean future = new FutureBean();
     /**
-     * spread attributes
-     */
-    private final SpreadBean spread = new SpreadBean();
-    /**
      * the currency attributes
      */
     private final CurrencyBean currency = new CurrencyBean();
@@ -878,4 +859,8 @@ public abstract class ImbalanceEventBuilder
      * the convertible bond attributes
      */
     private final ConvertibleBondBean convertibleBond = new ConvertibleBondBean();
+    /**
+     * the spread attributes
+     */
+    private final SpreadBean spread = new SpreadBean();
 }

@@ -28,6 +28,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /* $License$ */
 
@@ -48,12 +49,7 @@ public class SimpleClusterService
     @PostConstruct
     public void start()
     {
-        thisClusterMember = new ClusterMember() {
-            @Override
-            public String getUuid()
-            {
-                return memberUUID;
-            }};
+        thisClusterMember = new SimpleClusterMember(memberUUID);
         clusterMembers = Collections.unmodifiableSet(Sets.newHashSet(thisClusterMember));
         super.start();
         active = true;
@@ -291,6 +287,46 @@ public class SimpleClusterService
         return locks.getUnchecked(inLockName);
     }
     /**
+     * Provides a basic {@link ClusterMember} implementation.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class SimpleClusterMember
+            implements ClusterMember
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.cluster.service.ClusterMember#getUuid()
+         */
+        @Override
+        public String getUuid()
+        {
+            return uuid;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return getUuid();
+        }
+        /**
+         * Create a new SimpleClusterMember instance.
+         *
+         * @param inUuid a <code>String</code> value
+         */
+        private SimpleClusterMember(String inUuid)
+        {
+            uuid = inUuid;
+        }
+        /**
+         * uuid value
+         */
+        private final String uuid;
+    }
+    /**
      * static host number
      */
     private final int hostNumber = 1;
@@ -327,8 +363,9 @@ public class SimpleClusterService
         public ExecutorService load(String inKey)
                 throws Exception
         {
-            return Executors.newCachedThreadPool();
-        }});
+            return Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("ClusterService%d").build());
+        }}
+    );
     /**
      * cluster queues
      */
@@ -338,7 +375,8 @@ public class SimpleClusterService
                 throws Exception
         {
             return Queues.newLinkedBlockingDeque();
-        }});
+        }}
+    );
     /**
      * cluster maps
      */
@@ -348,7 +386,8 @@ public class SimpleClusterService
                 throws Exception
         {
             return Maps.newConcurrentMap();
-        }});
+        }}
+    );
     /**
      * cluster locks
      */
@@ -358,5 +397,6 @@ public class SimpleClusterService
                 throws Exception
         {
             return new ReentrantLock();
-        }});
+        }}
+    );
 }

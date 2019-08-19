@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public interface ReportBase
-        extends Serializable,HasBrokerID
+        extends Serializable,HasBrokerID,HasReportID
 {
     /**
      * The client assigned orderID of the order that generated this report.
@@ -63,14 +63,6 @@ public interface ReportBase
      * @return the broker assigned order ID.
      */
     String getBrokerOrderID();
-
-    /**
-     * The unique ID for this report.
-     *
-     * @return the unique ID for this report
-     */
-    ReportID getReportID();
-
     /**
      * The originator of this message.
      *

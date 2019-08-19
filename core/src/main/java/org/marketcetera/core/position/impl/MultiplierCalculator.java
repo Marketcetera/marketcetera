@@ -9,10 +9,10 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * A calculator that wraps another calculator and multiplies all P&amp;L values by a
+ * A calculator that wraps another calculator and multiplies all P&L values by a
  * multiplier.
  * <p>
- * If the multiplier is unavailable, this class effectively nulls out all P&amp;L
+ * If the multiplier is unavailable, this class effectively nulls out all PNL
  * values.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
@@ -30,8 +30,10 @@ public class MultiplierCalculator
     /**
      * Constructor.
      * 
-     * @param delegate the calculator implementation
-     * @param multiplier the multiplier to apply to P&amp;L values, null if unavailable
+     * @param delegate
+     *            the calculator implementation
+     * @param multiplier
+     *            the multiplier to apply to P&L values, null if unavailable
      */
     public MultiplierCalculator(PositionMetricsCalculator delegate,
             BigDecimal multiplier) {

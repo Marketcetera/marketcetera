@@ -1,2 +1,3 @@
 #Names of module factory implementations
 org.marketcetera.module.SinkModuleFactory
+org.marketcetera.persist.TransactionModuleFactory

@@ -1,5 +1,6 @@
 package org.marketcetera.core;
 
+import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Arrays;
@@ -143,7 +144,7 @@ public abstract class PlatformServices
                                inTarget);
     }
     /**
-     * Create a new PlatformServices instance.
+     * Create a new EnterprisePlatformServices instance.
      */
     private PlatformServices()
     {
@@ -174,4 +175,8 @@ public abstract class PlatformServices
      * The precision used for storing all decimal values.
      */
     public static final int DECIMAL_PRECISION = 17;
+    /**
+     * constant representing one penny
+     */
+    public static final BigDecimal ONE_PENNY = new BigDecimal("0.01");
 }

@@ -7,7 +7,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * The factory for Sink Module.
  * <p>
  * The factory has the following characteristics.
- * <table summary="Indicates the behavior of the module">
+ * <table>
  * <tr><th>Provider URN:</th><td><code>metc:sink:system</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
  * <tr><th>InstanceURN:</th><td><code>metc:sink:system:single</code></td></tr>

@@ -51,8 +51,6 @@ public abstract class AbstractDataReemitterModule
                                inSupport);
         dataSupport.put(inSupport.getFlowID(),
                         inSupport);
-        onRequestData(inRequest,
-                      inSupport);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.DataFlowID, org.marketcetera.module.RequestID)
@@ -61,31 +59,7 @@ public abstract class AbstractDataReemitterModule
     public void cancel(DataFlowID inFlowID,
                        RequestID inRequestID)
     {
-        onCancel(inFlowID,
-                 inRequestID);
         dataSupport.invalidate(inFlowID);
-    }
-    /**
-     * Invoked when a data request is canceled.
-     *
-     * @param inFlowId a <code>DataFlowID</code> value
-     * @param inRequestId a <code>RequestID</code> value
-     */
-    protected void onCancel(DataFlowID inFlowId,
-                            RequestID inRequestId)
-    {
-    }
-    /**
-     * Invoked when a data request is made.
-     *
-     * @param inRequest a <code>DataRequest</code> value
-     * @param inSupport a <code>DataEmitterSupport</code> value
-     * @throws RequestDataException if an error occurs processing the request
-     */
-    protected void onRequestData(DataRequest inRequest,
-                                 DataEmitterSupport inSupport)
-            throws RequestDataException
-    {
     }
     /**
      * Invoked when data is received as part of a data flow.

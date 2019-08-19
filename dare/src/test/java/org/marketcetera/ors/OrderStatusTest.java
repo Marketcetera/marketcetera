@@ -52,7 +52,7 @@ public class OrderStatusTest
         SessionID sender1 = createInitiatorSession(sessionIndex);
         SessionID target1 = FIXMessageUtil.getReversedSessionId(sender1);
         FIXMessageFactory messageFactory = FIXVersion.getFIXVersion(sender1).getMessageFactory();
-        FixSession session1 = brokerService.findFixSessionBySessionId(sender1);
+        FixSession session1 = brokerService.getActiveFixSession(sender1).getFixSession();
         BrokerID brokerId1 = new BrokerID(session1.getBrokerId());
         String order1OrderId = generateId();
         OrderSingle order = Factory.getInstance().createOrderSingle();
@@ -64,7 +64,12 @@ public class OrderStatusTest
         order.setPrice(order1Price);
         order.setQuantity(order1Qty);
         order.setSide(Side.Buy);
-        client.sendOrder(order);
+        try {
+            client.sendOrder(order);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
         Message receivedOrder1 = waitForAndVerifySenderMessage(sender1,
                                                                quickfix.field.MsgType.ORDER_SINGLE);
         // send a pending new

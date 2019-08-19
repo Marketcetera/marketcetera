@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.persist.NDEntityBase;
 
-
 /* $License$ */
 
 /**

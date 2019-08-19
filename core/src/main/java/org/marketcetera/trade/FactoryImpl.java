@@ -52,7 +52,7 @@ class FactoryImpl
         assignOrderID(order);
         if (inLatestReport != null) {
             order.setAccount(inLatestReport.getAccount());
-            order.setBrokerID(inLatestReport.getBrokerID());
+            order.setBrokerID(inLatestReport.getBrokerId());
             order.setBrokerOrderID(inLatestReport.getBrokerOrderID());
             order.setQuantity(inLatestReport.getOrderQuantity());
             order.setSide(inLatestReport.getSide());
@@ -77,7 +77,7 @@ class FactoryImpl
         assignOrderID(order);
         if (inLatestReport != null) {
             order.setAccount(inLatestReport.getAccount());
-            order.setBrokerID(inLatestReport.getBrokerID());
+            order.setBrokerID(inLatestReport.getBrokerId());
             order.setBrokerOrderID(inLatestReport.getBrokerOrderID());
             order.setOrderType(inLatestReport.getOrderType());
             order.setPrice(inLatestReport.getPrice());

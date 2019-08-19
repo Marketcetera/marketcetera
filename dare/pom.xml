@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>public-parent</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.1-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>dare</artifactId>
@@ -20,11 +20,19 @@
     <!-- Compile. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>client</artifactId>
+      <artifactId>eventbus-api</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>cluster-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-server</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -55,6 +63,10 @@
       <artifactId>fix-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fix-server</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
     </dependency>
@@ -65,14 +77,6 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.googlecode.protobuf-rpc-pro</groupId>
-      <artifactId>protobuf-streamer-pro</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.googlecode.protobuf-rpc-pro</groupId>
-      <artifactId>protobuf-rpc-pro-duplex</artifactId>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
@@ -98,6 +102,14 @@
       <artifactId>cluster-simple</artifactId>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>admin-rpc-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>admin-rest-server</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
     </dependency>
@@ -108,10 +120,6 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-c3p0</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.mina</groupId>
@@ -134,12 +142,12 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>saclient</artifactId>
-      <scope>test</scope>
+      <artifactId>util-test</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>util-test</artifactId>
+      <artifactId>trade-modules</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pl.pragmatists</groupId>
@@ -172,10 +180,6 @@
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
     </dependency>
     <dependency>
@@ -196,6 +200,24 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>admin-rpc-client</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.vaadin.external.google</groupId>
+          <artifactId>android-json</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-to-slf4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <build>
@@ -496,16 +518,12 @@
                   <key>metc.instanceport.com.sun.management.jmxremote.port</key>
                   <value>9950</value>
                 </systemProperty>
-                <!-- systemProperty>
-                     <key>metc.system.agentpath:/tmp/libyjpagent.so</key>
-                     <value></value>
-                   </systemProperty-->
-                 </systemProperties>
-                 <classpathScope>test</classpathScope>
-               </configuration>
-             </plugin>
-           </plugins>
-         </build>
-       </profile>
-     </profiles>
-   </project>
+              </systemProperties>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

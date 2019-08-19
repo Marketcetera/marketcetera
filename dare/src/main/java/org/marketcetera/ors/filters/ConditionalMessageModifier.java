@@ -1,11 +1,10 @@
 package org.marketcetera.ors.filters;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.history.ReportHistoryServices;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
+import org.marketcetera.fix.ServerFixSession;
 import org.springframework.beans.factory.InitializingBean;
-
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -23,13 +22,11 @@ public class ConditionalMessageModifier
         implements MessageModifier, InitializingBean
 {
     /* (non-Javadoc)
-     * @see com.marketcetera.ors.filters.MessageModifier#modifyMessage(quickfix.Message, com.marketcetera.ors.history.ReportHistoryServices, org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor)
+     * @see org.marketcetera.brokers.MessageModifier#modify(org.marketcetera.fix.ServerFixSession, quickfix.Message)
      */
     @Override
-    public boolean modifyMessage(Message inMessage,
-                                 ReportHistoryServices inHistoryServices,
-                                 FIXMessageAugmentor inAugmentor)
-            throws CoreException
+    public boolean modify(ServerFixSession inServerFixSession,
+                          Message inMessage)
     {
         boolean modified = false;
         if(inMessage.isSetField(comparisonTag)) {

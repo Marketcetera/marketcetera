@@ -636,6 +636,8 @@ public abstract class AbstractClusterService
     }
     /**
      * Establishes the set of work unit specs for the cluster.
+     *
+     * @throws InterruptedException if the appropriate cluster lock cannot be established
      */
     protected void establishWorkUnitSpecs()
     {

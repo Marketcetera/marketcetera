@@ -1,6 +1,7 @@
 package org.marketcetera.cluster;
 
 import org.marketcetera.cluster.service.ClusterMember;
+import org.marketcetera.core.DomainObjectFactory;
 
 /* $License$ */
 
@@ -12,14 +13,8 @@ import org.marketcetera.cluster.service.ClusterMember;
  * @since $Release$
  */
 public interface ClusterMemberFactory
+        extends DomainObjectFactory<ClusterMember>
 {
-    /**
-     * Create a <code>ClusterMember</code> object.
-     *
-     * @param inClusterMember a <code>ClusterMember</code> value
-     * @return a <code>ClusterMember</code> value
-     */
-    public ClusterMember create(ClusterMember inClusterMember);
     /**
      * Create a <code>ClusterMember</code> object.
      *

@@ -68,4 +68,5 @@ public interface Messages {
             new I18NMessage0P(LOGGER,"entity_exists_generic_error");  //$NON-NLS-1$
     static final I18NMessage2P DATABASE_VERSION_MISMATCH = new I18NMessage2P(LOGGER,"database_version_mismatch");
     static final I18NMessage4P POOL_MONITOR_STATS = new I18NMessage4P(LOGGER,"pool_monitor_stats");
+    static final I18NMessage0P TRANSACTION_PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,"transaction_provider_description"); //$NON-NLS-1$
 }

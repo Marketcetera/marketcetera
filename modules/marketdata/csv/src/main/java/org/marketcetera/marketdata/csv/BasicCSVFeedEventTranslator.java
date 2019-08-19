@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.client.ClientManager;
+import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -48,12 +48,14 @@ import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.options.OptionUtils;
+import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -797,7 +799,18 @@ public class BasicCSVFeedEventTranslator
         if(symbol == null) {
             return null;
         }
-        Instrument instrument = ClientManager.getInstance().resolveSymbol(symbol);
+        if(symbolResolverService == null) {
+            try {
+                symbolResolverService = ApplicationContainer.getInstance().getContext().getBean(SymbolResolverService.class);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+            }
+        }
+        Instrument instrument = null;
+        if(symbolResolverService != null) {
+            instrument = symbolResolverService.resolveSymbol(symbol);
+        }
         if(instrument != null) {
             return instrument;
         }
@@ -1179,6 +1192,10 @@ public class BasicCSVFeedEventTranslator
                                                            dataChunk));
         }
     }
+    /**
+     * provides symbol resolution serviecs
+     */
+    private SymbolResolverService symbolResolverService;
     /**
      * used to uniquely identify events
      */

@@ -34,7 +34,7 @@
  * In cases when an instrument instance is not available and instrument
  * specific functionality needs to be invoked based on an arbitrary data,
  * a combination of {@link org.marketcetera.core.instruments.DynamicInstrumentFunctionSelector}
- * &amp; {@link org.marketcetera.core.instruments.DynamicInstrumentHandler} is
+ * & {@link org.marketcetera.core.instruments.DynamicInstrumentHandler} is
  * used. These classes help dynamically select the instrument specific
  * functionality in absence of the Instrument object. See
  * {@link org.marketcetera.core.instruments.InstrumentFromMessage}

@@ -5,13 +5,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.filters.MessageModifier;
-import org.marketcetera.ors.history.ReportHistoryServices;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
+import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
-
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -26,7 +23,6 @@ import quickfix.field.MsgType;
  * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id$")
 public class FieldRemoverMessageModifier
         implements MessageModifier
 {
@@ -61,13 +57,11 @@ public class FieldRemoverMessageModifier
         }
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.ors.filters.MessageModifier#modifyMessage(quickfix.Message, com.marketcetera.ors.history.ReportHistoryServices, org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor)
+     * @see org.marketcetera.brokers.MessageModifier#modify(org.marketcetera.fix.ServerFixSession, quickfix.Message)
      */
     @Override
-    public boolean modifyMessage(Message inMessage,
-                                 ReportHistoryServices inHistoryServices,
-                                 FIXMessageAugmentor inAugmentor)
-            throws CoreException
+    public boolean modify(ServerFixSession inServerFixSession,
+                          Message inMessage)
     {
         boolean isModified = false;
         if(msgType != null &&

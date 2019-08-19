@@ -5,9 +5,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.marketcetera.admin.User;
+import org.marketcetera.admin.MutableUser;
 import org.marketcetera.persist.NDEntityBase;
-
+import org.marketcetera.trade.UserID;
 
 /* $License$ */
 
@@ -22,7 +22,7 @@ import org.marketcetera.persist.NDEntityBase;
 @XmlAccessorType(XmlAccessType.NONE)
 public class SimpleUser
         extends NDEntityBase
-        implements User
+        implements MutableUser
 {
     /**
      * Create a new SimpleUser instance.
@@ -75,6 +75,33 @@ public class SimpleUser
     public void setIsActive(boolean inIsActive)
     {
         isActive = inIsActive;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.User#getUserID()
+     */
+    @Override
+    public UserID getUserID()
+    {
+        return new UserID(getId());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.MutableUser#setUserId(org.marketcetera.trade.UserID)
+     */
+    @Override
+    public void setUserId(UserID inUserId)
+    {
+        setId(inUserId.getValue());
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("SimpleUser [userId=").append(getUserID()).append(", name=").append(getName())
+                .append(", description=").append(getDescription()).append("]");
+        return builder.toString();
     }
     /**
      * Create a new SimpleUser instance.

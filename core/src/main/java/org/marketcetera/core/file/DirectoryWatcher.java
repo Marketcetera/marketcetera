@@ -1,9 +1,25 @@
 package org.marketcetera.core.file;
 
+import java.io.File;
+
 /* $License$ */
 
 /**
  * Watches the given directories for files to be added or modified.
+ * 
+ * <p>Instantiate a <code>DirectoryWatcher</code> implementer and {@link #setDirectoriesToWatch(File...) add} directories
+ * to watch. {@link DirectoryWatcher#addWatcher(DirectoryWatcherSubscriber) Subscribe} to notifications and {@link #start() start} the
+ * watcher.</p>
+ * 
+ * <p>The <code>DirectoryWatcher</code> contract directs that watchers will be notified in the order they subscribed for
+ * each file that:
+ * <ul>
+ *   <li>exists in the directory upon the call to {@link #start start}</li>
+ *   <li>is added to the directory after start</li>
+ * </ul>
+ * 
+ * <p>Watchers are notified for each file once and only once. Watcher notifications
+ * are guaranteed to occur no more frequently than the interval {@link #setPollingInterval(long) set}.</p>
  * 
  * <p>Implementers are guaranteed by contract to provide a thread-safe implementation.</p>
  *

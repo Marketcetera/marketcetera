@@ -10,7 +10,8 @@ import java.util.Collections;
 /**
  * Enumerates various states of a module.
  *
- * <p>Here's a state transition diagram for the different states the a Module goes through</p>
+ * Here's a state transition diagram
+ * for the different states the a Module goes through
  * <pre>
  *
  *                    o
@@ -23,11 +24,11 @@ import java.util.Collections;
  *                    | start()
  *                    |
  *                    v
- *         ,------&lt;{@link #STARTING}
+ *         ,------> {@link #STARTING}
  *        /           |\   ^
  *        |           | \   \ start()
  *        |           |  v   \                 delete()
- *        |           |  {@link #START_FAILED}---------&gt;.
+ *        |           |  {@link #START_FAILED}--------->.
  *        |           |                                 |
  *        |           v                                 |
  *        |         {@link #STARTED}                    |
@@ -40,24 +41,24 @@ import java.util.Collections;
  *        |           |\   ^                            |
  *        |           | \   \ stop()                    |
  *        |           |  v   \                delete()  |
- *        |           |  {@link #STOP_FAILED}----------&gt;|
+ *        |           |  {@link #STOP_FAILED}---------->|
  *        |           |                                 |
  *        \           v                                 |
  *         '------- {@link #STOPPED}                    |
  *                    |                                 |
  *                    | delete()                        |
- *                    |&lt;--------------------------------'
+ *                    |<--------------------------------'
  *                    v
  *                    O
  *
  * </pre>
- *
- * <p>The following table specifies the module states for which
+ * <p>
+ * The following table specifies the module states for which
  * various module framework operations can be invoked on a module. If
  * a module operation is invoked while it's not in one of the states for
- * that operation in the table below, the operation will fail.</p>
- *
- * <table border="1" cellspacing="0" summary="Indicates the module states">
+ * that operation in the table below, the operation will fail.
+ * <p>
+ * <table border="1" cellspacing="0">
  * <tr><th>Module Operation</th><th>Module State</th></tr>
  * <tr><td>delete</td><td>{@link #CREATED}, {@link #START_FAILED}, {@link #STOPPED}</td>
  * <tr><td>stop</td><td>{@link #STARTED}, {@link #STOP_FAILED}</td>
@@ -66,14 +67,14 @@ import java.util.Collections;
  * <tr><td>cancel data flow</td><td>{@link #STARTED}, {@link #STOPPING}, {@link #STOP_FAILED}</td>
  * <tr><td>participate data flow</td><td>{@link #STARTED}, {@link #STOP_FAILED}</td>
  * </table>
- *
+ * <p>
  * <b>Note:</b>
  * <ul>
  * <li><i>request / cancel data flow</i> operations apply only to modules
  * that implement {@link DataFlowRequester}.</li>
  * <li><i>participate data flow</i> operation relates to a create data flow request
  * operation that contains a reference to the module in question.</li>
- * </ul>
+ * </ul> 
  *
  * @author anshul@marketcetera.com
  * @version $Id$

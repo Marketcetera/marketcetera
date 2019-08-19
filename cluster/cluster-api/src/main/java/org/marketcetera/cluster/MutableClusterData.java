@@ -1,5 +1,6 @@
 package org.marketcetera.cluster;
 
+import org.marketcetera.core.MutableDomainObject;
 
 /* $License$ */
 
@@ -11,7 +12,7 @@ package org.marketcetera.cluster;
  * @since $Release$
  */
 public interface MutableClusterData
-        extends ClusterData
+        extends ClusterData,MutableDomainObject<ClusterData>
 {
     /**
      * Set the instanceNumber value.

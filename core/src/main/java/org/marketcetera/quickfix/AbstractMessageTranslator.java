@@ -83,10 +83,10 @@ public abstract class AbstractMessageTranslator<T>
      *
      * @param inMessage a <code>Message</code> value
      * @return a <code>List&lt;Group&gt;</code> value
-     * @throws CoreException if an error occurs getting the groups
+     * @throws CoreException 
      */
     public static List<Group> getGroups(Message inMessage) 
-            throws CoreException
+        throws CoreException
     {
         int totalSymbols = AbstractMessageTranslator.determineTotalSymbols(inMessage);
         List<Group> groups = new ArrayList<Group>();

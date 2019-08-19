@@ -1,10 +1,8 @@
 package org.marketcetera.ors.filters;
 
+import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.ors.history.ReportHistoryServices;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
-import org.marketcetera.util.misc.ClassVersion;
-
+import org.marketcetera.fix.ServerFixSession;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -37,8 +35,9 @@ import quickfix.StringField;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
-public class FieldDuplicatorMessageModifier implements MessageModifier {
+public class FieldDuplicatorMessageModifier
+        implements MessageModifier
+{
     private int destField;
     private int sourceField;
 
@@ -46,13 +45,12 @@ public class FieldDuplicatorMessageModifier implements MessageModifier {
         this.sourceField = sourceField;
         this.destField = destField;
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.MessageModifier#modify(org.marketcetera.fix.ServerFixSession, quickfix.Message)
+     */
     @Override
-    public boolean modifyMessage
-        (Message message,
-         ReportHistoryServices historyServices,
-         FIXMessageAugmentor augmentor)
-        throws CoreException
+    public boolean modify(ServerFixSession inServerFixSession,
+                          Message message)
     {
         try {
             if(message.isSetField(sourceField)) {

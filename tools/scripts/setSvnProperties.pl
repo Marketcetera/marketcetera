@@ -6,6 +6,9 @@
 # $License$
 
 
+use Cwd;
+use lib cwd;
+
 use strict;
 use File::Find;
 

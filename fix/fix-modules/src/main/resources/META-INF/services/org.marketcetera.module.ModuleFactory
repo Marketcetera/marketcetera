@@ -1,0 +1,4 @@
+# Names of module factory implementations
+org.marketcetera.modules.fix.FixInitiatorModuleFactory
+org.marketcetera.modules.fix.FixAcceptorModuleFactory
+org.marketcetera.modules.fix.FixMessageBroadcastModuleFactory

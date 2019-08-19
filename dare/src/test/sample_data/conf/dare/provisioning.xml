@@ -357,7 +357,7 @@
       </set>
     </property>
   </bean>
-  <bean id="sessionCustomizationAlgoTagsOnly" class="org.marketcetera.ors.brokers.SessionCustomization">
+  <bean id="sessionCustomizationAlgoTagsOnly" class="org.marketcetera.brokers.SessionCustomizationConfig">
     <property name="name" value="sessionCustomizationAlgoTagsOnly"/>
     <property name="brokerAlgos">
       <set>

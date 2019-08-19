@@ -166,8 +166,8 @@ public class TypesTestBase {
         if (checkForNull(inResponse1,inResponse2)) {
             return;
         }
-        assertEquals(inResponse1.getBrokerID(),
-                     inResponse2.getBrokerID());
+        assertEquals(inResponse1.getBrokerId(),
+                     inResponse2.getBrokerId());
         assertEquals(inResponse1.getOriginator(),
                      inResponse2.getOriginator());
         assertEquals(String.valueOf(inResponse1.getMessage()),
@@ -242,7 +242,7 @@ public class TypesTestBase {
 
     protected static void assertReportBaseEquals(ReportBase inReport1,
                                                ReportBase inReport2) {
-        assertEquals(inReport1.getBrokerID(), inReport2.getBrokerID());
+        assertEquals(inReport1.getBrokerId(), inReport2.getBrokerId());
         assertEquals(inReport1.getOrderID(), inReport2.getOrderID());
         assertEquals(inReport1.getOrderStatus(), inReport2.getOrderStatus());
         assertEquals(inReport1.getOriginalOrderID(), inReport2.getOriginalOrderID());
@@ -463,7 +463,7 @@ public class TypesTestBase {
          UserID inActorID,
          UserID inViewerID)
     {
-        assertEquals(inBrokerID,inResponse.getBrokerID());
+        assertEquals(inBrokerID,inResponse.getBrokerId());
         assertEquals(inOriginator,inResponse.getOriginator());
         assertEquals(String.valueOf(inMessage),
                      String.valueOf(inResponse.getMessage()));
@@ -482,7 +482,7 @@ public class TypesTestBase {
                                                  Originator inOriginator,
                                                  UserID inActorID,
                                                  UserID inViewerID) {
-        assertEquals(inBrokerID, inReport.getBrokerID());
+        assertEquals(inBrokerID, inReport.getBrokerId());
         assertEquals(inOrderID, inReport.getOrderID());
         assertEquals(inOrderStatus, inReport.getOrderStatus());
         assertEquals(inOrigOrderID,  inReport.getOriginalOrderID());

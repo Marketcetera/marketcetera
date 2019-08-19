@@ -29,24 +29,23 @@ public class OptionCFICode extends CFICode {
 
 	public static final char STANDARD_STANDARD= 'S';
 	public static final char STANDARD_NON_STANDARD= 'N';
-    /**
-     * Create a new OptionCFICode instance.
-     *
-     * @param sequence a <code>CharSequence</code> value
-     * @throws IllegalArgumentException if sequence does not begin with O (capital o)
-     */
-    public OptionCFICode(CharSequence sequence)
-    {
-        super(sequence);
-        if (CATEGORY_OPTION != sequence.charAt(0)){
-            throw new IllegalArgumentException("Char 0"); //$NON-NLS-1$
-        }
-        setType(sequence.charAt(TYPE_POSITION));
-        setExercise(sequence.charAt(EXERCISE_POSITION));
-        setUnderlying(sequence.charAt(UNDERLYING_POSITION));
-        setDelivery(sequence.charAt(DELIVERY_POSITION));
-        setStandard(sequence.charAt(STANDARD_POSITION));
-    }
+	
+	/**
+	 * 
+	 * @param sequence
+	 * @throws IllegalArgumentException if sequence does not begin with O (capital o)
+	 */
+	public OptionCFICode(CharSequence sequence){
+		super(sequence);
+		if (CATEGORY_OPTION != sequence.charAt(0)){
+			throw new IllegalArgumentException("Char 0"); //$NON-NLS-1$
+		}
+		setType(sequence.charAt(TYPE_POSITION));
+		setExercise(sequence.charAt(EXERCISE_POSITION));
+		setUnderlying(sequence.charAt(UNDERLYING_POSITION));
+		setDelivery(sequence.charAt(DELIVERY_POSITION));
+		setStandard(sequence.charAt(STANDARD_POSITION));
+	}
 	
 	public char getExercise() {
 		return charAt(EXERCISE_POSITION);

@@ -160,7 +160,7 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                                                                                       RoundingMode.HALF_UP)));
                             try {
                                 ReportHolder newReport = new ReportHolder(Factory.getInstance().createExecutionReport(averagePriceMessage,
-                                                                                                                      execReport.getBrokerID(),
+                                                                                                                      execReport.getBrokerId(),
                                                                                                                       Originator.Broker,
                                                                                                                       execReport.getActorID(),
                                                                                                                       execReport.getViewerID()),

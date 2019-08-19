@@ -16,7 +16,7 @@ public interface SessionNameProvider
     /**
      * Get the name of the given session.
      *
-     * <p>This method is intended to be light-weight to be called frequently with minimal trips to the database.
+     * <b>This method is intended to be light-weight to be called frequently with minimal trips to the database.
      * As such, it is possible that the value returned may, under certain circumstances, be inaccurate due to caching.
      * This is unlikely to happen, but is possible due to the emphasis on performance.
      * 

@@ -11,7 +11,6 @@ import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeType;
 import org.marketcetera.persist.EntityBase;
 
-
 /* $License$ */
 
 /**

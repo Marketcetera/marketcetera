@@ -1,0 +1,33 @@
+syntax = "proto3";
+option java_generic_services = true;
+option java_package = "org.marketcetera.cluster.rpc";
+option java_outer_classname = "ClusterRpc";
+import "rpc_base.proto";
+import "rpc_paging.proto";
+
+message ClusterData {
+    string hostId = 1;
+    uint32 hostNumber = 2;
+    uint32 instanceNumber = 3;
+    uint32 totalInstances = 4;
+    string uuid = 5;
+}
+
+message ClusterMember {
+    string uuid = 1;
+}
+
+message ReadClusterMembersRequest {
+    string sessionId = 1;
+}
+
+message ReadClusterMembersResponse {
+    repeated ClusterMember clusterMember = 1;
+}
+
+service ClusterRpcService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc readClusterMembers(ReadClusterMembersRequest) returns (ReadClusterMembersResponse);
+}

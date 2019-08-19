@@ -129,16 +129,4 @@ public interface MarketstatEvent
      * @return a <code>String</code> value
      */
     public String getCloseExchange();
-    /**
-     * Gets the type of the event.
-     *
-     * @return an <code>EventType</code> value
-     */
-    public EventType getEventType();
-    /**
-     * Sets the type of the event.
-     *
-     * @param inEventType an <code>EventType</code> value
-     */
-    public void setEventType(EventType inEventType);
 }

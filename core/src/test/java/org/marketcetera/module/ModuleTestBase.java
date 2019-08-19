@@ -22,12 +22,13 @@ import javax.management.openmbean.SimpleType;
 
 import org.marketcetera.core.Pair;
 import org.marketcetera.marketdata.MockMarketDataFeedModuleFactory;
+import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.test.CollectionAssert;
 
 /* $License$ */
 /**
- * A base class with colletion of all utility methods for testing modules
+ * A base class with collection of all utility methods for testing modules
  *
  * @author anshul@marketcetera.com
  */
@@ -41,7 +42,7 @@ public class ModuleTestBase {
      * @param inProviders the actual set of provider URNs found.
      */
     protected static void checkAllProviders(List<ModuleURN> inProviders) {
-        assertEquals(14, inProviders.size());
+        assertEquals(15, inProviders.size());
         CollectionAssert.assertArrayPermutation(new ModuleURN[]{
                 SinkModuleFactory.PROVIDER_URN,
                 SingleModuleFactory.PROVIDER_URN,
@@ -56,6 +57,7 @@ public class ModuleTestBase {
                 CopierModuleFactory.PROVIDER_URN,
                 ConcurrentTestFactory.PROVIDER_URN,
                 DynamicBeanModuleFactory.PROVIDER_URN,
+                TransactionModuleFactory.PROVIDER_URN,
                 MockMarketDataFeedModuleFactory.PROVIDER_URN
         }, inProviders.toArray(new ModuleURN[inProviders.size()]));
     }

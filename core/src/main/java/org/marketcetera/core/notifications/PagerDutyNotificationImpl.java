@@ -89,7 +89,7 @@ public class PagerDutyNotificationImpl
     /**
      * Sets the eventType value.
      *
-     * @param inEventType an <code>EventType</code> value
+     * @param an <code>EventType</code> value
      */
     public void setEventType(PagerDutyEventType inEventType)
     {
@@ -98,7 +98,7 @@ public class PagerDutyNotificationImpl
     /**
      * Sets the incidentKey value.
      *
-     * @param inIncidentKey a <code>String</code> value
+     * @param a <code>String</code> value
      */
     public void setIncidentKey(String inIncidentKey)
     {
