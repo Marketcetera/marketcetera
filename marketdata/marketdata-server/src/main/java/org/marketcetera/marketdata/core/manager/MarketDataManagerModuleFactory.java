@@ -9,7 +9,18 @@ import org.marketcetera.module.ModuleURN;
 /* $License$ */
 
 /**
+ * Provides a common module for market data flows.
  *
+ * <p>
+ * Module Features
+ * <table>
+ * <tr><th>Capabilities</th><td>Data Requester</td></tr>
+ * <tr><th>Stops data flows</th><td>Yes</td></tr>
+ * <tr><th>Start Operation</th><td>None</td></tr>
+ * <tr><th>Stop Operation</th><td>None</td></tr>
+ * <tr><th>Management Interface</th><td>&nbsp;</td></tr>
+ * <tr><th>MX Notification</th><td>&nbsp;</td></tr>
+ * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

@@ -825,6 +825,22 @@ public class EventTestBase
                 .withSource(EventTestBase.class)
                 .withTradeDate(generateQuoteDate()).create();
     }
+    /**                                                                                                                                                                                                     
+     * Generates a <code>TradeEvent</code> with the given value.                                                                                                                                            
+     *                                                                                                                                                                                                      
+     * @param inInstrument an <code>Instrument</code> value                                                                                                                                                 
+     * @param inExchange a <code>String</code> value                                                                                                                                                        
+     * @return a <code>TradeEvent</code> value                                                                                                                                                              
+     */
+    public static TradeEvent generateTradeEvent(Instrument inInstrument,
+                                                String inExchange)
+    {
+        return TradeEventBuilder.tradeEvent(inInstrument)
+                .withExchange(inExchange)
+                .withPrice(generateDecimalValue())
+                .withSize(generateDecimalValue())
+                .withTradeDate(generateQuoteDate()).create();
+    }
     /**
      * Generates an equity <code>TradeEvent</code> with the given value.
      *

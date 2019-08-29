@@ -188,7 +188,7 @@ public class MarketDataManagerModule
      * @return a <code>long</code> value
      */
     public long requestMarketData(MarketDataRequest inRequest,
-                           ISubscriber inSubscriber)
+                                  ISubscriber inSubscriber)
     {
         long requestId = counter.incrementAndGet();
         String provider = inRequest.getProvider();
@@ -236,8 +236,8 @@ public class MarketDataManagerModule
      * @return an <code>Event</code> value
      */
     public Event requestMarketDataSnapshot(Instrument inInstrument,
-                                    Content inContent,
-                                    String inProvider)
+                                           Content inContent,
+                                           String inProvider)
     {
         MarketDataCacheElement cachedData = cachedMarketdata.get(inInstrument);
         if(cachedData != null) {

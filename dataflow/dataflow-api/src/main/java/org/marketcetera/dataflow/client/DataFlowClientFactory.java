@@ -23,5 +23,5 @@ public interface DataFlowClientFactory<ParameterClazz extends ClientParameters>
      * @param inParameters a <code>ParameterClazz</code> value
      * @return an <code>DataFlowClient</code> value
      */
-    public DataFlowClient create(ParameterClazz inParameters);
+    DataFlowClient create(ParameterClazz inParameters);
 }

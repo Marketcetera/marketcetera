@@ -774,6 +774,36 @@ public class MarketceteraTestBase
                   inLastQty);
     }
     /**
+     * Verify that the given message has the given last price.
+     *
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @param inLastPrice a <code>BigDecimal</code> value
+     * @throws Exception if the last quantity cannot be verified
+     */
+    protected void assertLastPrice(quickfix.Message inMessage,
+                                   BigDecimal inLastPrice)
+            throws Exception
+    {
+        assertQty(inMessage,
+                  quickfix.field.LastPx.FIELD,
+                  inLastPrice);
+    }
+    /**
+     * Verify that the given message has the given price.
+     *
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @throws Exception if the last quantity cannot be verified
+     */
+    protected void assertPrice(quickfix.Message inMessage,
+                               BigDecimal inPrice)
+            throws Exception
+    {
+        assertQty(inMessage,
+                  quickfix.field.Price.FIELD,
+                  inPrice);
+    }
+    /**
      * Verify that the given message has a leaves qty field with the given expected value.
      *
      * @param inMessage a <code>quickfix.Message</code> value
@@ -834,6 +864,21 @@ public class MarketceteraTestBase
                   inMaxFloor);
     }
     /**
+     * Verify that the given message has a symbol field with the given expected value.
+     *
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @param inSymbol a <code>String</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void assertSymbol(quickfix.Message inMessage,
+                                String inSymbol)
+            throws Exception
+    {
+        assertString(inMessage,
+                     quickfix.field.Symbol.FIELD,
+                     inSymbol);
+    }
+    /**
      * Verify that the given message has the given expected quantity on the given tag.
      *
      * @param inMessage a <code>quickfix.Message</code> value
@@ -850,6 +895,23 @@ public class MarketceteraTestBase
         assertEquals("Expected: " + inExpectedQty + " actual: " + actualQty + " for " + inTag + " on " + inMessage,
                      0,
                      inExpectedQty.compareTo(actualQty));
+    }
+    /**
+     * Verify that the given message has the given expected quantity on the given tag.
+     *
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @param inTag an <code>int</code> value
+     * @param inExpectedValue a <code>String</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void assertString(quickfix.Message inMessage,
+                                int inTag,
+                                String inExpectedValue)
+            throws Exception
+    {
+        String actualValue = inMessage.getString(inTag);
+        assertEquals(inExpectedValue,
+                     actualValue);
     }
     /**
      * Verify that the given report represents a filled order.
