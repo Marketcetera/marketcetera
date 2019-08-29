@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -93,6 +94,7 @@ public class PersistentSupervisorPermission
     /**
      * subjects assigned to this supervisor
      */
+    @JoinTable(name="supervisor_permissions_users")
     @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentUser.class)
     private Set<User> subjects = new HashSet<>();
     /**

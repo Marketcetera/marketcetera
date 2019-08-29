@@ -47,9 +47,9 @@ import springfox.documentation.spring.web.plugins.Docket;
 @EnableAutoConfiguration
 @SpringBootConfiguration
 @EnableTransactionManagement
-@EntityScan(basePackages={"org.marketcetera"})
-@SpringBootApplication(scanBasePackages={"org.marketcetera"})
-@EnableJpaRepositories(basePackages={"org.marketcetera"})
+@EntityScan(basePackages={"org.marketcetera","com.marketcetera"})
+@SpringBootApplication(scanBasePackages={"org.marketcetera","com.marketcetera"})
+@EnableJpaRepositories(basePackages={"org.marketcetera","com.marketcetera"})
 public class ServerApplication
 {
     /**

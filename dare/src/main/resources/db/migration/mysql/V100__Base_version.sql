@@ -560,11 +560,11 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `supervisor_permissions_permissions` (
-  `SupervisorPermission_id` bigint(20) NOT NULL,
+  `supervisor_permission_id` bigint(20) NOT NULL,
   `permissions_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`SupervisorPermission_id`,`permissions_id`),
+  PRIMARY KEY (`supervisor_permission_id`,`permissions_id`),
   KEY `FKtkctb5n3ggmu727f5mwlmutk3` (`permissions_id`),
-  CONSTRAINT `FK6b5t61soynlxlyrmb8y59y6tf` FOREIGN KEY (`SupervisorPermission_id`) REFERENCES `supervisor_permissions` (`id`),
+  CONSTRAINT `FK6b5t61soynlxlyrmb8y59y6tf` FOREIGN KEY (`supervisor_permission_id`) REFERENCES `supervisor_permissions` (`id`),
   CONSTRAINT `FKtkctb5n3ggmu727f5mwlmutk3` FOREIGN KEY (`permissions_id`) REFERENCES `permissions` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -575,7 +575,7 @@ CREATE TABLE IF NOT EXISTS `supervisor_permissions_permissions` (
 
 LOCK TABLES `supervisor_permissions_permissions` WRITE;
 /*!40000 ALTER TABLE `supervisor_permissions_permissions` DISABLE KEYS */;
-INSERT INTO `supervisor_permissions_permissions` (`SupervisorPermission_id`, `permissions_id`) VALUES (44,30),(44,31),(44,32),(44,33),(44,35);
+INSERT INTO `supervisor_permissions_permissions` (`supervisor_permission_id`, `permissions_id`) VALUES (44,30),(44,31),(44,32),(44,33),(44,35);
 /*!40000 ALTER TABLE `supervisor_permissions_permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -586,11 +586,11 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `supervisor_permissions_users` (
-  `SupervisorPermission_id` bigint(20) NOT NULL,
+  `supervisor_permission_id` bigint(20) NOT NULL,
   `subjects_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`SupervisorPermission_id`,`subjects_id`),
+  PRIMARY KEY (`supervisor_permission_id`,`subjects_id`),
   KEY `FKl8hk9cj6mavq8oqvun76xl3ag` (`subjects_id`),
-  CONSTRAINT `FK16n73q253vu1unemupobm3ekj` FOREIGN KEY (`SupervisorPermission_id`) REFERENCES `supervisor_permissions` (`id`),
+  CONSTRAINT `FK16n73q253vu1unemupobm3ekj` FOREIGN KEY (`supervisor_permission_id`) REFERENCES `supervisor_permissions` (`id`),
   CONSTRAINT `FKl8hk9cj6mavq8oqvun76xl3ag` FOREIGN KEY (`subjects_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -601,7 +601,7 @@ CREATE TABLE IF NOT EXISTS `supervisor_permissions_users` (
 
 LOCK TABLES `supervisor_permissions_users` WRITE;
 /*!40000 ALTER TABLE `supervisor_permissions_users` DISABLE KEYS */;
-INSERT INTO `supervisor_permissions_users` (`SupervisorPermission_id`, `subjects_id`) VALUES (44,3);
+INSERT INTO `supervisor_permissions_users` (`supervisor_permission_id`, `subjects_id`) VALUES (44,3);
 /*!40000 ALTER TABLE `supervisor_permissions_users` ENABLE KEYS */;
 UNLOCK TABLES;
 

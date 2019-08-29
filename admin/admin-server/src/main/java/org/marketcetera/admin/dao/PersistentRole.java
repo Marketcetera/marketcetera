@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
@@ -66,6 +67,7 @@ public class PersistentRole
     /**
      * subjects assigned to this role
      */
+    @JoinTable(name="roles_users")
     @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentUser.class)
     private Set<User> subjects = new HashSet<>();
     /**

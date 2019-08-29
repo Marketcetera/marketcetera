@@ -28,6 +28,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
+@Ignore
 @ClassVersion("$Id$")
 public class DataFlowTest extends ModuleTestBase {
     @BeforeClass

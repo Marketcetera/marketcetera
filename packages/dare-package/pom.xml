@@ -127,15 +127,31 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>write-project-properties</goal>
+            </goals>
+            <configuration>
+              <outputFile>${project.build.directory}/local.properties</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <jvmArguments>
-            -Dspring.config.location=src/test/cmd_exec/conf/application.properties
             -Dspring.datasource.url=${metc.jdbc.url}
-            -Dspring.datasource.user=${metc.jdbc.user}
+            -Dspring.datasource.username=${metc.jdbc.user}
             -Dspring.datasource.password=${metc.jdbc.password}
             -Dspring.datasource.driver-class-name=${metc.jdbc.driver}
+            -Dspring.config.location=src/test/cmd_exec/conf/application.properties,target/local.properties
+            -Dspring.flyway.locations=classpath:db/migration/${metc.flyway.vendor}/
           </jvmArguments>
         </configuration>
       </plugin>
@@ -148,7 +164,7 @@
           <url>${metc.jdbc.url}</url>
           <driver>${metc.jdbc.driver}</driver>
           <locations>
-            <location>filesystem:src/main/resources/db/migration/${metc.flyway.vendor}</location>
+            <location>classpath:db/migration/${metc.flyway.vendor}</location>
           </locations>
         </configuration>
       </plugin>
