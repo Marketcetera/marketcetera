@@ -12,8 +12,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.core.fix.FixSettingsProvider;
-import org.marketcetera.core.fix.FixSettingsProviderFactory;
+import org.marketcetera.fix.FixSettingsProvider;
+import org.marketcetera.fix.FixSettingsProviderFactory;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Application;

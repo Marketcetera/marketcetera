@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import javax.management.JMX;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -23,6 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
+@Ignore
 @ClassVersion("$Id$")
 public class ConfigurationProviderTest extends ConfigurationProviderTestBase {
     /**

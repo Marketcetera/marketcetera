@@ -14,13 +14,6 @@
   <import resource="sessionAttributeDescriptors.xml"/>
   <!-- FIX session settings -->
   <bean id="hibernateMessageStoreConfiguration" class="org.marketcetera.fix.store.HibernateMessageStoreConfiguration"/>
-  <bean id="fixSettingsProviderFactory" class="org.marketcetera.core.fix.FixSettingsProviderFactoryImpl" depends-on="hibernateMessageStoreConfiguration">
-    <property name="messageStoreFactoryClass" value="org.marketcetera.fix.store.HibernateMessageStoreFactory"/>
-    <property name="logFactoryClass" value="org.marketcetera.quickfix.ObservableLogFactory"/>
-    <property name="messageFactory" ref="messageFactory"/>
-    <property name="acceptorHost" value="${metc.acceptor.qf.host}"/>
-    <property name="acceptorPort" value="${metc.acceptor.qf.port}"/>
-  </bean>
   <bean id="fixSessionProvider" class="org.marketcetera.fix.dao.PersistentFixSessionProvider"/>
   <bean id="dareQuickFixSender" class="org.marketcetera.quickfix.QuickFIXSenderImpl"/>
   <!-- unique id generator -->

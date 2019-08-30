@@ -23,7 +23,7 @@
   <!-- fix settings -->
   <bean id="messageFactory" class="quickfix.DefaultMessageFactory"/>
   <bean id="hibernateMessageStoreConfiguration" class="org.marketcetera.fix.store.HibernateMessageStoreConfiguration"/>
-  <bean id="fixSettingsProviderFactory" class="org.marketcetera.core.fix.FixSettingsProviderFactoryImpl" depends-on="hibernateMessageStoreConfiguration,recordingLogConfiguration">
+  <bean id="fixSettingsProviderFactory" class="org.marketcetera.fix.FixSettingsProviderFactoryImpl" depends-on="hibernateMessageStoreConfiguration,recordingLogConfiguration">
     <property name="messageStoreFactoryClass" value="org.marketcetera.fix.store.HibernateMessageStoreFactory"/>
     <property name="logFactoryClass" value="org.marketcetera.quickfix.RecordingLogFactory"/>
     <property name="messageFactory" ref="messageFactory"/>
