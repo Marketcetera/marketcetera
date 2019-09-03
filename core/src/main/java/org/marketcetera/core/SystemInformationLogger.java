@@ -84,7 +84,7 @@ public class SystemInformationLogger
                                           e);
                 }
             }
-        },60000,pollingInterval,TimeUnit.MILLISECONDS);
+        },pollingInterval,pollingInterval,TimeUnit.MILLISECONDS);
     }
     /**
      * Stop the object.
