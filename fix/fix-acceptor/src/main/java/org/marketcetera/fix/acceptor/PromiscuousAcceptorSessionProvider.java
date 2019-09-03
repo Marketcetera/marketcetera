@@ -123,9 +123,10 @@ public class PromiscuousAcceptorSessionProvider
                                   e);
         }
         SLF4JLoggerProxy.debug(this,
-                               "Returning new session {} for {}",
+                               "Returning new session {} for {}: {}",
                                fixSession,
-                               inSessionId);
+                               inSessionId,
+                               fixSessionSettings);
         return fixSession;
     }
     /**

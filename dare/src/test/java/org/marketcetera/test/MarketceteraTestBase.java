@@ -493,13 +493,13 @@ public class MarketceteraTestBase
         testSession.getSessionSettings().put(Session.SETTING_END_TIME,
                                              "00:00:00");
         testSession.getSessionSettings().put(Session.SETTING_RESET_ON_LOGON,
-                                             "Y");
+                                             "N");
         testSession.getSessionSettings().put(Session.SETTING_RESET_ON_LOGOUT,
-                                             "Y");
+                                             "N");
         testSession.getSessionSettings().put(Session.SETTING_RESET_ON_DISCONNECT,
-                                             "Y");
+                                             "N");
         testSession.getSessionSettings().put(Session.SETTING_RESET_ON_ERROR,
-                                             "Y");
+                                             "N");
         if(fixVersion.isFixT()) {
             testSession.getSessionSettings().put(Session.SETTING_DEFAULT_APPL_VER_ID,
                                                  fixVersion.getApplicationVersion());
