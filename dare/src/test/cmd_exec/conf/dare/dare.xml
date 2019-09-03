@@ -157,11 +157,15 @@
   <bean id="dbAuthenticator" class="org.marketcetera.ors.ws.DBAuthenticator"/>
   <bean id="authorizationService" class="org.marketcetera.admin.service.impl.AuthorizationServiceImpl"/>
   <!-- factories -->
-  <bean id="userFactory" class="org.marketcetera.ors.security.SimpleUserFactory"/>
+  <bean id="adminClientFactory" class="org.marketcetera.admin.AdminRpcClientFactory"/>
+  <bean id="userFactory" class="org.marketcetera.admin.impl.SimpleUserFactory"/>
   <bean id="fixSessionFactory" class="org.marketcetera.fix.dao.PersistentFixSessionFactory"/>
   <bean id="fixSessionAttributeDescriptorFactory" class="org.marketcetera.fix.dao.PersistentFixSessionAttributeDescriptorFactory"/>
-  <bean id="permissionFactory" class="org.marketcetera.admin.impl.PersistentPermissionFactory"/>
-  <bean id="roleFactory" class="org.marketcetera.admin.impl.PersistentRoleFactory"/>
-  <bean id="userAttributeFactory" class="org.marketcetera.admin.impl.PersistentUserAttributeFactory"/>
-  <bean id="supervisorPermissionFactory" class="org.marketcetera.admin.impl.PersistentSupervisorPermissionFactory"/>
+  <bean id="permissionFactory" class="org.marketcetera.admin.dao.PersistentPermissionFactory"/>
+  <bean id="roleFactory" class="org.marketcetera.admin.dao.PersistentRoleFactory"/>
+  <bean id="userAttributeFactory" class="org.marketcetera.admin.dao.PersistentUserAttributeFactory"/>
+  <bean id="supervisorPermissionFactory" class="org.marketcetera.admin.dao.PersistentSupervisorPermissionFactory"/>
+  <bean id="mutableActiveFixSessionFactory" class="org.marketcetera.fix.impl.SimpleActiveFixSessionFactory"/>
+  <bean id="serverFixSessionFactory" class="org.marketcetera.fix.impl.SimpleServerFixSessionFactory"/>
+  <bean id="directTradeClientFactory" class="org.marketcetera.trade.client.DirectTradeClientFactory"/>
 </beans>
