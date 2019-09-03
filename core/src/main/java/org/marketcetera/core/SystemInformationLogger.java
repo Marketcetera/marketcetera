@@ -22,7 +22,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /* $License$ */
 
@@ -70,7 +72,7 @@ public class SystemInformationLogger
     @PostConstruct
     public void start()
     {
-        pollingExecutor = Executors.newSingleThreadScheduledExecutor();
+        pollingExecutor = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("SystemInformationLogger-%d").build());
         pollingExecutor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run()
@@ -82,7 +84,7 @@ public class SystemInformationLogger
                                           e);
                 }
             }
-        },pollingInterval,pollingInterval,TimeUnit.MILLISECONDS);
+        },60000,pollingInterval,TimeUnit.MILLISECONDS);
     }
     /**
      * Stop the object.
@@ -105,7 +107,7 @@ public class SystemInformationLogger
         if(applicationContext == null) {
             return;
         }
-        Map<String,UsesPort> portUsersMap = applicationContext.getBeansOfType(UsesPort.class);
+        Map<String,UsesPort> portUsersMap = Maps.newHashMap(applicationContext.getBeansOfType(UsesPort.class));
         SortedSet<PortDescriptor> newPortUsers = Sets.newTreeSet();
         for(Map.Entry<String,UsesPort> entry : portUsersMap.entrySet()) {
             UsesPort portUser = entry.getValue();
