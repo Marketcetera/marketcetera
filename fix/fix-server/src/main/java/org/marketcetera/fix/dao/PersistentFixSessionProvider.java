@@ -597,11 +597,11 @@ public class PersistentFixSessionProvider
                 save(fixSession);
                 fixSessionsByName.put(fixSession.getName(),
                                       fixSession);
+                SLF4JLoggerProxy.info(this,
+                                      "Created: {}",
+                                      fixSession.getName());
             }
         }
-        SLF4JLoggerProxy.debug(this,
-                               "Created brokers: {}",
-                               fixSessionsByName);
     }
     /**
      * Get the FIX session property for the given sort.

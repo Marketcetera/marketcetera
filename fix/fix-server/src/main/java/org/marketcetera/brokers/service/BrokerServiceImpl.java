@@ -724,8 +724,8 @@ public class BrokerServiceImpl
     @Override
     public void memberAdded(ClusterMember inAddedMember)
     {
-        SLF4JLoggerProxy.debug(this,
-                               "{} added",
+        SLF4JLoggerProxy.warn(this,
+                               "Coco {} added",
                                inAddedMember);
         updateBrokerStatus();
     }
@@ -806,6 +806,7 @@ public class BrokerServiceImpl
             }
         }
         eventBusService.register(this);
+        updateBrokerStatus();
         SLF4JLoggerProxy.info(this,
                               "Broker service started");
     }

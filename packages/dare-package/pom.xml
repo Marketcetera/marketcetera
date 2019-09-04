@@ -17,6 +17,10 @@
     <!-- local compile -->
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>admin-api</artifactId>
     </dependency>
     <dependency>
@@ -51,11 +55,6 @@
       <artifactId>quickfixj-all</artifactId>
     </dependency>
     <!-- local runtime -->
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>core</artifactId>
-      <scope>runtime</scope>
-    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>dare</artifactId>
@@ -123,6 +122,11 @@
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -152,6 +156,7 @@
             -Dspring.datasource.driver-class-name=${metc.jdbc.driver}
             -Dspring.config.location=src/test/cmd_exec/conf/application.properties,target/local.properties
             -Dspring.flyway.locations=classpath:db/migration/${metc.flyway.vendor}/
+            -Dmetc.instance=1
           </jvmArguments>
         </configuration>
       </plugin>

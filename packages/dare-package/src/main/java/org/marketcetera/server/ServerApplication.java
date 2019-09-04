@@ -16,6 +16,8 @@ import org.marketcetera.fix.dao.PersistentFixSessionFactory;
 import org.marketcetera.fix.dao.PersistentFixSessionProvider;
 import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleServerFixSessionFactory;
+import org.marketcetera.quickfix.QuickFIXSender;
+import org.marketcetera.quickfix.QuickFIXSenderImpl;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
@@ -151,6 +153,16 @@ public class ServerApplication
     public MessageOwnerService getMessageOwnerService()
     {
         return new MessageOwnerServiceImpl();
+    }
+    /**
+     * Get the QFJ sender implementation for DARE.
+     *
+     * @return a <code>QuickFIXSender</code> value
+     */
+    @Bean
+    public QuickFIXSender getQuickFixSender()
+    {
+        return new QuickFIXSenderImpl();
     }
     /**
      * Create the Swagger API component.

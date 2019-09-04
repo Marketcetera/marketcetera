@@ -53,7 +53,7 @@ public class SimpleClusterService
         clusterMembers = Collections.unmodifiableSet(Sets.newHashSet(thisClusterMember));
         super.start();
         active = true;
-        memberAdded(thisClusterMember);
+        notifyMemberAdded(thisClusterMember);
     }
     /**
      * Stop the object.

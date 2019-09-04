@@ -933,7 +933,7 @@ public abstract class AbstractClusterService
                                             TimeUnit.MILLISECONDS)) {
                     try {
                         setAttribute(EVALUATE_WORK_UNITS_KEY,
-                                       String.valueOf(true));
+                                     String.valueOf(true));
                         evaluateWorkUnits();
                         reschedule = false;
                     } finally {
