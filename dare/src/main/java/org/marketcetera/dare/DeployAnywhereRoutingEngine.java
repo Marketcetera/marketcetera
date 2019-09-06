@@ -83,7 +83,6 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.codahale.metrics.Counter;
 import com.google.common.collect.Lists;
@@ -102,7 +101,6 @@ import com.hazelcast.core.OperationTimeoutException;
  * @version $Id$
  * @since $Release$
  */
-//@Service
 @ClusterWorkUnit(id="MATP.DARE",type=ClusterWorkUnitType.SINGLETON_RUNTIME)
 public class DeployAnywhereRoutingEngine
         implements quickfix.ApplicationExtended,DirectoryWatcherSubscriber
