@@ -102,7 +102,7 @@ import com.hazelcast.core.OperationTimeoutException;
  * @version $Id$
  * @since $Release$
  */
-@Service
+//@Service
 @ClusterWorkUnit(id="MATP.DARE",type=ClusterWorkUnitType.SINGLETON_RUNTIME)
 public class DeployAnywhereRoutingEngine
         implements quickfix.ApplicationExtended,DirectoryWatcherSubscriber
