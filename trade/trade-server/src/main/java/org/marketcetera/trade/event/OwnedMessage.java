@@ -1,4 +1,4 @@
-package org.marketcetera.trade.modules;
+package org.marketcetera.trade.event;
 
 import org.marketcetera.admin.HasUser;
 import org.marketcetera.admin.User;

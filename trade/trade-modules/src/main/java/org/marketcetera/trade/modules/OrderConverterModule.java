@@ -12,6 +12,7 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.event.OwnedMessage;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

@@ -20,15 +20,6 @@
   <bean id="idFactory" class="org.marketcetera.trade.dao.DatabaseIDFactory" init-method="init" depends-on="clusterService"/>
   <!-- DARE object -->
   <bean id="messageFactory" class="quickfix.DefaultMessageFactory"/>
-  <bean id="dare" class="org.marketcetera.dare.DeployAnywhereRoutingEngine">
-    <property name="allowDeliverToCompID" value="true"/>
-    <property name="dontForwardMessages" value="A,0,1,2,4,5"/>
-    <property name="forwardMessages" value=""/>
-    <property name="executionPoolDelay" value="${metc.executionPoolDelay}"/>
-    <property name="executionPoolTtl" value="${metc.executionPoolTtl}"/>
-    <property name="maxExecutionPools" value="${metc.maxExecutionPools}"/>
-    <!-- property name="fixInjectorDirectory" value="/tmp/injector-instance"/-->
-  </bean>
   <!-- Outgoing message factory -->
   <bean id="outgoingMessageFactory" class="org.marketcetera.trade.dao.PersistentOutgoingMessageFactory"/>
   <!-- DARE User Manager -->
@@ -87,4 +78,11 @@
   <bean id="mutableActiveFixSessionFactory" class="org.marketcetera.fix.impl.SimpleActiveFixSessionFactory"/>
   <bean id="serverFixSessionFactory" class="org.marketcetera.fix.impl.SimpleServerFixSessionFactory"/>
   <bean id="directTradeClientFactory" class="org.marketcetera.trade.client.DirectTradeClientFactory"/>
+  <!-- event flow connectors -->
+  <bean id="orderConverterConnector" class="org.marketcetera.trade.event.connector.OrderConverterConnector"/>
+  <bean id="outgoingMessageCachingConnector" class="org.marketcetera.trade.event.connector.OutgoingMessageCachingConnector"/>
+  <bean id="outgoingMessagePersistenceConnector" class="org.marketcetera.trade.event.connector.OutgoingMessagePersistenceConnector"/>
+  <bean id="incomingTradeMessageConverterConnector" class="org.marketcetera.trade.event.connector.IncomingTradeMessageConverterConnector"/>
+  <bean id="incomingTradeMessagePersistenceConnector" class="org.marketcetera.trade.event.connector.IncomingTradeMessagePersistenceConnector"/>
+  <bean id="incomingTradeMessageBroadcastConnector" class="org.marketcetera.trade.event.connector.IncomingTradeMessageBroadcastConnector"/>
 </beans>

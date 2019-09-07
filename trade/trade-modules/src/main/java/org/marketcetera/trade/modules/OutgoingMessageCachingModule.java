@@ -7,6 +7,7 @@ import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
+import org.marketcetera.trade.event.OwnedMessage;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.springframework.beans.factory.annotation.Autowired;

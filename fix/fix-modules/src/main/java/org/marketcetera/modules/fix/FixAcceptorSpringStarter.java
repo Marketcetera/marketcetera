@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
  * @since $Release$
  */
 @Component
-@ClusterWorkUnit(id="FIX.ACCEPTOR",type=ClusterWorkUnitType.SINGLETON_RUNTIME)
+//@ClusterWorkUnit(id="FIX.ACCEPTOR",type=ClusterWorkUnitType.SINGLETON_RUNTIME)
 public class FixAcceptorSpringStarter
 {
     /**

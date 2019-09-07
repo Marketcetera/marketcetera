@@ -57,10 +57,7 @@ import org.marketcetera.fix.MutableFixSession;
 import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.dao.IncomingMessageDao;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
-import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleManager;
-import org.marketcetera.modules.fix.FixInitiatorModuleFactory;
-import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
@@ -86,14 +83,9 @@ import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.DirectTradeClientFactory;
 import org.marketcetera.trade.client.DirectTradeClientParameters;
 import org.marketcetera.trade.client.TradeClient;
-import org.marketcetera.trade.config.StandardIncomingDataFlowProvider;
-import org.marketcetera.trade.config.StandardOutgoingDataFlowProvider;
 import org.marketcetera.trade.dao.ExecutionReportDao;
 import org.marketcetera.trade.dao.OrderSummaryDao;
 import org.marketcetera.trade.dao.PersistentReportDao;
-import org.marketcetera.trade.modules.OrderConverterModuleFactory;
-import org.marketcetera.trade.modules.OutgoingMessageCachingModuleFactory;
-import org.marketcetera.trade.modules.OutgoingMessagePersistenceModuleFactory;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.except.I18NException;
@@ -252,18 +244,6 @@ public class MarketceteraTestBase
             moduleManager = new ModuleManager();
             moduleManager.init();
         }
-        ModuleManager.startModulesIfNecessary(moduleManager,
-                                              TransactionModuleFactory.INSTANCE_URN,
-                                              OrderConverterModuleFactory.INSTANCE_URN,
-                                              OutgoingMessageCachingModuleFactory.INSTANCE_URN,
-                                              OutgoingMessagePersistenceModuleFactory.INSTANCE_URN,
-                                              FixInitiatorModuleFactory.INSTANCE_URN);
-        StandardOutgoingDataFlowProvider outgoingDataFlowProvider = new StandardOutgoingDataFlowProvider();
-        StandardIncomingDataFlowProvider incomingDataFlowProvider = new StandardIncomingDataFlowProvider();
-        DataRequest[] outgoingDataFlow = outgoingDataFlowProvider.getDataFlow(moduleManager);
-        DataRequest[] incomingDataFlow = incomingDataFlowProvider.getDataFlow(moduleManager);
-        moduleManager.createDataFlow(outgoingDataFlow);
-        moduleManager.createDataFlow(incomingDataFlow);
     }
     /**
      * Get the instruments for test parameters.

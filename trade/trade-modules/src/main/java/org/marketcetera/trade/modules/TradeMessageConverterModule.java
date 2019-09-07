@@ -11,6 +11,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.event.TradeMessagePackage;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

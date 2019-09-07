@@ -64,12 +64,7 @@ public class OrderStatusTest
         order.setPrice(order1Price);
         order.setQuantity(order1Qty);
         order.setSide(Side.Buy);
-        try {
-            client.sendOrder(order);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        client.sendOrder(order);
         Message receivedOrder1 = waitForAndVerifySenderMessage(sender1,
                                                                quickfix.field.MsgType.ORDER_SINGLE);
         // send a pending new

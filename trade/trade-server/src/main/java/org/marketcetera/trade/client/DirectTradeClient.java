@@ -15,6 +15,7 @@ import org.marketcetera.client.SubmitOrderWrapper;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.module.HasStatus;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
@@ -29,6 +30,7 @@ import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.SendOrderFailed;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradeMessagePublisher;
+import org.marketcetera.trade.event.SimpleOutgoingOrderEvent;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.trade.service.TradeService;
@@ -64,6 +66,7 @@ public class DirectTradeClient
         tradeMessagePublisher = applicationContext.getBean(TradeMessagePublisher.class);
         tradeService = applicationContext.getBean(TradeService.class);
         reportService = applicationContext.getBean(ReportService.class);
+        eventBusService = applicationContext.getBean(EventBusService.class);
         symbolResolverService = applicationContext.getBean(SymbolResolverService.class);
         SLF4JLoggerProxy.debug(this,
                                "Direct client {} owned by user {}",
@@ -150,6 +153,12 @@ public class DirectTradeClient
     @Override
     public SendOrderResponse sendOrder(Order inOrder)
     {
+        SLF4JLoggerProxy.info(this,
+                              "{} submitting outgoing order {}",
+                              user.getName(),
+                              inOrder);
+        eventBusService.post(new SimpleOutgoingOrderEvent(user,
+                                                          inOrder));
         Object result = tradeService.submitOrderToOutgoingDataFlow(new SubmitOrderWrapper(user,
                                                                                           inOrder));
         SLF4JLoggerProxy.debug(this,
@@ -323,6 +332,10 @@ public class DirectTradeClient
      * provides access to report services
      */
     private ReportService reportService;
+    /**
+     * provides access to event bus services
+     */
+    private EventBusService eventBusService;
     /**
      * provides access to order summary services
      */

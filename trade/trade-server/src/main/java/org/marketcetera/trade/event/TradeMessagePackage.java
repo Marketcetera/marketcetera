@@ -1,4 +1,4 @@
-package org.marketcetera.trade.modules;
+package org.marketcetera.trade.event;
 
 import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.trade.BrokerID;

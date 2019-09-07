@@ -35,4 +35,6 @@ public interface Messages {
     static final I18NMessage2P MODIFICATION_FAILED = new I18NMessage2P(LOGGER,"modification_failed"); //$NON-NLS-1$
     static final I18NMessage2P REPORT_FAILED = new I18NMessage2P(LOGGER,"report_failed"); //$NON-NLS-1$
     static final I18NMessage3P NO_OWNER = new I18NMessage3P(LOGGER,"no_owner"); //$NON-NLS-1$
+    static final I18NMessage1P NO_TRADE_MESSAGE_PUBLISHER = new I18NMessage1P(LOGGER,"no_trade_message_publisher"); //$NON-NLS-1$
+    static final I18NMessage1P PERSISTED_REPLY = new I18NMessage1P(LOGGER,"persisted_reply"); //$NON-NLS-1$
 }

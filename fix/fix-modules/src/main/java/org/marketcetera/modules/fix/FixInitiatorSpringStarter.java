@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
  * @since $Release$
  */
 @Component
-@ClusterWorkUnit(id="FIX.INITIATOR",type=ClusterWorkUnitType.SINGLETON_RUNTIME)
+//@ClusterWorkUnit(id="FIX.INITIATOR",type=ClusterWorkUnitType.SINGLETON_RUNTIME)
 public class FixInitiatorSpringStarter
 {
     /**

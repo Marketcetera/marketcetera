@@ -74,15 +74,18 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.RootOrderIdFactory;
 import org.marketcetera.trade.event.IncomingFixMessageEvent;
+import org.marketcetera.trade.event.OwnedMessage;
 import org.marketcetera.trade.event.SimpleIncomingFixAdminMessageEvent;
 import org.marketcetera.trade.event.SimpleIncomingFixAppMessageEvent;
 import org.marketcetera.trade.event.SimpleIncomingOrderInterceptedEvent;
+import org.marketcetera.trade.event.SimpleOutgoingOrderStatus;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.codahale.metrics.Counter;
 import com.google.common.collect.Lists;
@@ -91,6 +94,9 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
 import com.hazelcast.core.OperationTimeoutException;
+
+import quickfix.Session;
+import quickfix.SessionNotFound;
 
 /* $License$ */
 
@@ -101,6 +107,7 @@ import com.hazelcast.core.OperationTimeoutException;
  * @version $Id$
  * @since $Release$
  */
+@Service
 @ClusterWorkUnit(id="MATP.DARE",type=ClusterWorkUnitType.SINGLETON_RUNTIME)
 public class DeployAnywhereRoutingEngine
         implements quickfix.ApplicationExtended,DirectoryWatcherSubscriber
@@ -480,6 +487,27 @@ public class DeployAnywhereRoutingEngine
         }
     }
     /**
+     * Receive outgoing owned messages.
+     *
+     * @param inOwnedMessage an <code>OwnedMessage</code> value
+     */
+    @Subscribe
+    public void receive(OwnedMessage inOwnedMessage)
+    {
+        boolean failed = false;
+        String message = null;
+        try {
+            // TODO not completely sure about the behavior if the session is offline
+            failed = Session.sendToTarget(inOwnedMessage.getMessage(),
+                                          inOwnedMessage.getSessionId());
+        } catch (SessionNotFound e) {
+            message = ExceptionUtils.getRootCauseMessage(e);
+        }
+        eventBusService.post(new SimpleOutgoingOrderStatus(message,
+                                                           failed,
+                                                           inOwnedMessage.getMessage()));
+    }
+    /**
      * Indicates that the given FIX session has been disabled.
      *
      * @param inEvent a <code>FixSessionDisabledEvent</code> value
@@ -491,6 +519,12 @@ public class DeployAnywhereRoutingEngine
         if(fixSession == null) {
             SLF4JLoggerProxy.debug(this,
                                    "Ignoring disabled session {} because it no longer exists",
+                                   inEvent.getSessionId());
+            return;
+        }
+        if(!isActive()) {
+            SLF4JLoggerProxy.debug(this,
+                                   "Ignoring disabled session {} because DARE is not active",
                                    inEvent.getSessionId());
             return;
         }
@@ -536,6 +570,12 @@ public class DeployAnywhereRoutingEngine
         if(fixSession == null) {
             SLF4JLoggerProxy.debug(this,
                                    "Ignoring enabled session {} because it no longer exists",
+                                   inEvent.getSessionId());
+            return;
+        }
+        if(!isActive()) {
+            SLF4JLoggerProxy.debug(this,
+                                   "Ignoring enabled session {} because DARE is not active",
                                    inEvent.getSessionId());
             return;
         }
@@ -611,6 +651,12 @@ public class DeployAnywhereRoutingEngine
                                    inEvent.getSessionId());
             return;
         }
+        if(!isActive()) {
+            SLF4JLoggerProxy.debug(this,
+                                   "Ignoring stopped session {} because DARE is not active",
+                                   inEvent.getSessionId());
+            return;
+        }
         FixSession fixSession = serverFixSession.getActiveFixSession().getFixSession();
         if(fixSession.isAcceptor()) {
             SLF4JLoggerProxy.debug(this,
@@ -677,6 +723,12 @@ public class DeployAnywhereRoutingEngine
         if(serverFixSession == null) {
             SLF4JLoggerProxy.debug(this,
                                    "Ignoring started session {} because it no longer exists",
+                                   inEvent.getSessionId());
+            return;
+        }
+        if(!isActive()) {
+            SLF4JLoggerProxy.debug(this,
+                                   "Ignoring started session {} because DARE is not active",
                                    inEvent.getSessionId());
             return;
         }
