@@ -156,11 +156,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>trade-modules</artifactId>
-        <version>4.0.1-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>trade-server</artifactId>
         <version>4.0.1-SNAPSHOT</version>
       </dependency>

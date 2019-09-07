@@ -141,11 +141,6 @@
       <artifactId>util-test</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>trade-modules</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>pl.pragmatists</groupId>
       <artifactId>JUnitParams</artifactId>
     </dependency>
