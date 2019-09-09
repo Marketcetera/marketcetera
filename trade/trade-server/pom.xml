@@ -58,16 +58,6 @@
     <!-- local test -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>fix-modules</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>fix-modules</artifactId>
-      <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
       <type>test-jar</type>
     </dependency>
