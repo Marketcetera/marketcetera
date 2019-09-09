@@ -8,7 +8,7 @@ import org.marketcetera.fix.FixSession;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.test.MarketceteraTestBase;
+import org.marketcetera.test.DareTestBase;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionType;
@@ -20,11 +20,11 @@ import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
 import quickfix.Message;
 import quickfix.Session;
 import quickfix.SessionID;
-
 
 /* $License$ */
 
@@ -35,8 +35,9 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
+@EnableAutoConfiguration
 public class OrderStatusTest
-        extends MarketceteraTestBase
+        extends DareTestBase
 {
     /**
      * Test that the original order record gets updated on replace.

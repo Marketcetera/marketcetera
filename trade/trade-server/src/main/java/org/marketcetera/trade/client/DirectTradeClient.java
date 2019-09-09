@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.UserService;
-import org.marketcetera.client.SubmitOrderWrapper;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.HasFIXMessage;
@@ -33,7 +32,6 @@ import org.marketcetera.trade.TradeMessagePublisher;
 import org.marketcetera.trade.event.SimpleOutgoingOrderEvent;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
-import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ApplicationContext;
 
@@ -64,7 +62,6 @@ public class DirectTradeClient
         userService = applicationContext.getBean(UserService.class);
         orderSummaryService = applicationContext.getBean(OrderSummaryService.class);
         tradeMessagePublisher = applicationContext.getBean(TradeMessagePublisher.class);
-        tradeService = applicationContext.getBean(TradeService.class);
         reportService = applicationContext.getBean(ReportService.class);
         eventBusService = applicationContext.getBean(EventBusService.class);
         symbolResolverService = applicationContext.getBean(SymbolResolverService.class);
@@ -154,13 +151,15 @@ public class DirectTradeClient
     public SendOrderResponse sendOrder(Order inOrder)
     {
         SLF4JLoggerProxy.info(this,
-                              "{} submitting outgoing order {}",
+                              "{} submitting outgoing {}",
                               user.getName(),
                               inOrder);
         eventBusService.post(new SimpleOutgoingOrderEvent(user,
                                                           inOrder));
-        Object result = tradeService.submitOrderToOutgoingDataFlow(new SubmitOrderWrapper(user,
-                                                                                          inOrder));
+        // TODO
+        Object result = null;
+//        tradeService.submitOrderToOutgoingDataFlow(new SubmitOrderWrapper(user,
+//                                                                                          inOrder));
         SLF4JLoggerProxy.debug(this,
                                "Order submission returned {}",
                                result);
@@ -324,10 +323,6 @@ public class DirectTradeClient
      * provides access to trade messages
      */
     private TradeMessagePublisher tradeMessagePublisher;
-    /**
-     * provides access to trade services
-     */
-    private TradeService tradeService;
     /**
      * provides access to report services
      */

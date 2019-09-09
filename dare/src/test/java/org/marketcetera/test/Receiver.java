@@ -191,7 +191,7 @@ public class Receiver
         Message message = messages.poll(10000,
                                         TimeUnit.MILLISECONDS);
         Validate.notNull(message,
-                         "Message not received in 10s");
+                         "Message not received from " + inSessionId + " in 10s");
         return message;
     }
     /**

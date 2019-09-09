@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.joda.time.DateTime;
@@ -43,7 +42,6 @@ import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.brokers.service.FixSessionProvider;
-import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.PriceQtyTuple;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.time.TimeFactoryImpl;
@@ -57,7 +55,6 @@ import org.marketcetera.fix.MutableFixSession;
 import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.dao.IncomingMessageDao;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
-import org.marketcetera.module.ModuleManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
@@ -90,8 +87,12 @@ import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
@@ -118,8 +119,11 @@ import quickfix.field.MsgType;
  * @since $Release$
  */
 @RunWith(JUnitParamsRunner.class)
-@ContextConfiguration(locations={"file:src/test/sample_data/conf/test.xml"})
-public class MarketceteraTestBase
+@SpringBootTest(classes=DareTestConfiguration.class)
+@ComponentScan(basePackages={"org.marketcetera","com.marketcetera"})
+@EntityScan(basePackages={"org.marketcetera","com.marketcetera"})
+@EnableJpaRepositories(basePackages={"org.marketcetera","com.marketcetera"})
+public class DareTestBase
 {
     /**
      * Run before each test.
@@ -133,52 +137,24 @@ public class MarketceteraTestBase
         SLF4JLoggerProxy.info(this,
                               "{} beginning setup",
                               name.getMethodName());
-        applicationContext = ApplicationContainer.getInstance().getContext();
-        authorizationService = applicationContext.getBean(AuthorizationService.class);
-        brokerService = applicationContext.getBean(BrokerService.class);
-        fixSessionFactory = applicationContext.getBean(MutableFixSessionFactory.class);
-        messageFactory = applicationContext.getBean(quickfix.MessageFactory.class);
-        executionReportDao = applicationContext.getBean(ExecutionReportDao.class);
-        reportDao = applicationContext.getBean(PersistentReportDao.class);
-        orderSummaryService = applicationContext.getBean(OrderSummaryService.class);
-        orderStatusDao = applicationContext.getBean(OrderSummaryDao.class);
-        fixSessionProvider = applicationContext.getBean(FixSessionProvider.class);
-        userService = applicationContext.getBean(UserService.class);
-        permissionDao = applicationContext.getBean(PersistentPermissionDao.class);
-        initializeModuleManager();
-        fixSettingsProvider = applicationContext.getBean(FixSettingsProviderFactory.class).create();
-        try {
-            reportService = applicationContext.getBean(ReportService.class);
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  "Report service will not be available for this test: {}",
-                                  ExceptionUtils.getRootCause(e));
-        }
-        incomingMessageDao = applicationContext.getBean(IncomingMessageDao.class);
+        fixSettingsProvider = fixSettingsProviderFactory.create();
         User testUser = userService.findByName("trader");
-        try {
-            DirectTradeClientFactory tradeClientFactory = applicationContext.getBean(DirectTradeClientFactory.class);
-            DirectTradeClientParameters tradeClientParameters = new DirectTradeClientParameters();
-            tradeClientParameters.setUsername(testUser.getName());
-            client = tradeClientFactory.create(tradeClientParameters);
-            client.start();
-            reports.clear();
-            tradeMessageListener = new TradeMessageListener() {
-                @Override
-                public void receiveTradeMessage(TradeMessage inTradeMessage)
-                {
-                    reports.add(inTradeMessage);
-                    synchronized(reports) {
-                        reports.notifyAll();
-                    }
+        DirectTradeClientParameters tradeClientParameters = new DirectTradeClientParameters();
+        tradeClientParameters.setUsername(testUser.getName());
+        client = tradeClientFactory.create(tradeClientParameters);
+        client.start();
+        reports.clear();
+        tradeMessageListener = new TradeMessageListener() {
+            @Override
+            public void receiveTradeMessage(TradeMessage inTradeMessage)
+            {
+                reports.add(inTradeMessage);
+                synchronized(reports) {
+                    reports.notifyAll();
                 }
-            };
-            client.addTradeMessageListener(tradeMessageListener);
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  "Client will not be available for this test: {}",
-                                  ExceptionUtils.getRootCause(e));
-        }
+            }
+        };
+        client.addTradeMessageListener(tradeMessageListener);
         hostAcceptorPort = fixSettingsProvider.getAcceptorPort();
         remoteAcceptorPort = hostAcceptorPort + 1000;
         asyncExecutorService = Executors.newCachedThreadPool();
@@ -229,20 +205,6 @@ public class MarketceteraTestBase
             SLF4JLoggerProxy.info(this,
                                   "{} done",
                                   name.getMethodName());
-        }
-    }
-    /**
-     * Initialize and prepare the module manager and data flows, if necessary.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    protected void initializeModuleManager()
-            throws Exception
-    {
-        ModuleManager moduleManager = ModuleManager.getInstance();
-        if(moduleManager == null) {
-            moduleManager = new ModuleManager();
-            moduleManager.init();
         }
     }
     /**
@@ -1364,7 +1326,7 @@ public class MarketceteraTestBase
                      inReport.getOrderID());
     }
     /**
-     * Verify 
+     * Verify the given report matches the order id in the given FIX message.
      *
      * @param inOrder a <code>quickfix.Message</code> value
      * @param inReport a <code>quickfix.Message</code> value
@@ -1670,9 +1632,9 @@ public class MarketceteraTestBase
      * @throws Exception if an unexpected error occurs
      */
     protected static quickfix.Message buildMessage(String inHeaderFields,
-                                          String inFields,
-                                          String inMsgType,
-                                          FIXMessageFactory inFactory)
+                                                   String inFields,
+                                                   String inMsgType,
+                                                   FIXMessageFactory inFactory)
             throws Exception
     {
         Map<Integer,String> fields = new HashMap<>();
@@ -1712,17 +1674,10 @@ public class MarketceteraTestBase
      * @throws Exception if an unexpected error occurs
      */
     protected quickfix.Message waitForAndVerifySenderMessage(quickfix.SessionID inSessionId,
-                                                    String inMsgType)
+                                                             String inMsgType)
             throws Exception
     {
-        long start = System.currentTimeMillis();
-        quickfix.Message senderMessage = null;
-        while(senderMessage == null && System.currentTimeMillis()<(start+waitPeriod)) {
-            senderMessage = receiver.getNextApplicationMessage(inSessionId);
-            Thread.sleep(100);
-        }
-        assertNotNull("No application message received for " + inSessionId + " in " + waitPeriod + "ms",
-                      senderMessage);
+        quickfix.Message senderMessage = receiver.getNextApplicationMessage(inSessionId);
         assertEquals(inMsgType,
                      senderMessage.getHeader().getString(MsgType.FIELD));
         return senderMessage;
@@ -1736,7 +1691,7 @@ public class MarketceteraTestBase
      * @throws Exception if an unexpected error occurs
      */
     protected quickfix.Message waitForAndVerifyReceiverMessage(quickfix.SessionID inSessionId,
-                                                      String inMsgType)
+                                                               String inMsgType)
             throws Exception
     {
         long start = System.currentTimeMillis();
@@ -1764,7 +1719,7 @@ public class MarketceteraTestBase
      * @throws Exception if an unexpected error occurs
      */
     protected Future<quickfix.Message> waitForAndVerifyReceiverMessageAsync(final quickfix.SessionID inSessionId,
-                                                                   final String inMsgType)
+                                                                            final String inMsgType)
             throws Exception
     {
         return asyncExecutorService.submit(new Callable<quickfix.Message>() {
@@ -1803,11 +1758,11 @@ public class MarketceteraTestBase
      * @throws Exception if an unexpected error occurs
      */
     protected static quickfix.Message generateExecutionReport(quickfix.Message inOrder,
-                                                     OrderData inOrderData,
-                                                     String inOrderId,
-                                                     org.marketcetera.trade.OrderStatus inOrderStatus,
-                                                     ExecutionType inExecutionType,
-                                                     FIXMessageFactory inFactory)
+                                                              OrderData inOrderData,
+                                                              String inOrderId,
+                                                              org.marketcetera.trade.OrderStatus inOrderStatus,
+                                                              ExecutionType inExecutionType,
+                                                              FIXMessageFactory inFactory)
             throws Exception
     {
         return generateExecutionReport(inOrder,
@@ -1835,13 +1790,13 @@ public class MarketceteraTestBase
      * @throws Exception
      */
     protected static quickfix.Message generateExecutionReport(quickfix.Message inOrder,
-                                                     OrderData inPriceQtyInfo,
-                                                     String inOrderId,
-                                                     String inClOrdId,
-                                                     String inOrigClOrdId,
-                                                     org.marketcetera.trade.OrderStatus inOrderStatus,
-                                                     ExecutionType inExecutionType,
-                                                     FIXMessageFactory inFactory)
+                                                              OrderData inPriceQtyInfo,
+                                                              String inOrderId,
+                                                              String inClOrdId,
+                                                              String inOrigClOrdId,
+                                                              org.marketcetera.trade.OrderStatus inOrderStatus,
+                                                              ExecutionType inExecutionType,
+                                                              FIXMessageFactory inFactory)
             throws Exception
     {
         boolean commaNeeded = false;
@@ -2477,7 +2432,7 @@ public class MarketceteraTestBase
         public quickfix.Message waitForAndVerifyReceiverMessage(quickfix.Message inMessage)
                 throws Exception
         {
-            return MarketceteraTestBase.this.waitForAndVerifyReceiverMessage(acceptorSessionId,
+            return DareTestBase.this.waitForAndVerifyReceiverMessage(acceptorSessionId,
                                                                              inMessage.getHeader().getString(MsgType.FIELD));
         }
         /**
@@ -2490,7 +2445,7 @@ public class MarketceteraTestBase
         public quickfix.Message waitForReceiverMessage(String inMsgType)
                 throws Exception
         {
-            return MarketceteraTestBase.this.waitForAndVerifyReceiverMessage(acceptorSessionId,
+            return DareTestBase.this.waitForAndVerifyReceiverMessage(acceptorSessionId,
                                                                              inMsgType);
         }
         /**
@@ -2503,7 +2458,7 @@ public class MarketceteraTestBase
         public quickfix.Message waitForSenderMessage(String inMsgType)
                 throws Exception
         {
-            return MarketceteraTestBase.this.waitForAndVerifySenderMessage(initiatorSessionId,
+            return DareTestBase.this.waitForAndVerifySenderMessage(initiatorSessionId,
                                                                            inMsgType);
         }
         /**
@@ -2516,7 +2471,7 @@ public class MarketceteraTestBase
         public quickfix.Message waitForAndVerifySenderMessage(quickfix.Message inSenderMessage)
                 throws Exception
         {
-            return MarketceteraTestBase.this.waitForAndVerifySenderMessage(initiatorSessionId,
+            return DareTestBase.this.waitForAndVerifySenderMessage(initiatorSessionId,
                                                                            inSenderMessage.getHeader().getString(MsgType.FIELD));
         }
         private final int acceptorSessionIndex;
@@ -2543,6 +2498,11 @@ public class MarketceteraTestBase
      */
     protected FixSettingsProvider fixSettingsProvider;
     /**
+     * creates fix settings provider
+     */
+    @Autowired
+    protected FixSettingsProviderFactory fixSettingsProviderFactory;
+    /**
      * receives incoming FIX messages
      */
     private Receiver receiver;
@@ -2561,6 +2521,7 @@ public class MarketceteraTestBase
     /**
      * message factory value
      */
+    @Autowired
     protected MessageFactory messageFactory;
     /**
      * holds remote acceptor sessions
@@ -2569,55 +2530,73 @@ public class MarketceteraTestBase
     /**
      * creates fix sessions
      */
+    @Autowired
     protected MutableFixSessionFactory fixSessionFactory;
     /**
      * provides access to the exchange report data store
      */
+    @Autowired
     protected ExecutionReportDao executionReportDao;
     /**
      * provides access to the incoming message data store
      */
+    @Autowired
     protected IncomingMessageDao incomingMessageDao;
     /**
      * provides access to the report data store
      */
+    @Autowired
     protected PersistentReportDao reportDao;
     /**
      * provides access to the permission data store
      */
+    @Autowired
     protected PersistentPermissionDao permissionDao;
     /**
      * provides access to order summary services
      */
+    @Autowired
     protected OrderSummaryService orderSummaryService;
     /**
      * provides access to the order summary data store
      */
+    @Autowired
     protected OrderSummaryDao orderStatusDao;
     /**
      * provides access to broker services
      */
+    @Autowired
     protected BrokerService brokerService;
     /**
      * provides access to fix session services
      */
+    @Autowired
     protected FixSessionProvider fixSessionProvider;
     /**
      * provides access to authorization services
      */
+    @Autowired
     protected AuthorizationService authorizationService;
     /**
      * provides access to report services
      */
+    @Autowired
     protected ReportService reportService;
     /**
      * provides access to user services
      */
+    @Autowired
     protected UserService userService;
     /**
      * application context value
      */
+    @Autowired
     protected ApplicationContext applicationContext;
+    /**
+     * creates Direct Trade client objects
+     */
+    @Autowired
+    protected DirectTradeClientFactory tradeClientFactory;
     /**
      * default period of time to wait for a test condition to be true
      */
