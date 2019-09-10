@@ -12,6 +12,7 @@ import org.marketcetera.trade.BrokerID;
  * @since $Release$
  */
 public abstract class AbstractIncomingFixMessageEvent
+        extends AbstractFixMessageEvent
         implements IncomingFixMessageEvent
 {
     /* (non-Javadoc)
@@ -21,22 +22,6 @@ public abstract class AbstractIncomingFixMessageEvent
     public quickfix.SessionID getSessionId()
     {
         return sessionId;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.HasBrokerID#getBrokerID()
-     */
-    @Override
-    public BrokerID getBrokerId()
-    {
-        return brokerId;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.HasFIXMessage#getMessage()
-     */
-    @Override
-    public quickfix.Message getMessage()
-    {
-        return message;
     }
     /**
      * Create a new AbstractIncomingFixMessageEvent instance.
@@ -49,20 +34,12 @@ public abstract class AbstractIncomingFixMessageEvent
                                               BrokerID inBrokerId,
                                               quickfix.Message inMessage)
     {
+        super(inBrokerId,
+              inMessage);
         sessionId = inSessionId;
-        brokerId = inBrokerId;
-        message = inMessage;
     }
     /**
      * session id value
      */
     private final quickfix.SessionID sessionId;
-    /**
-     * broker id value
-     */
-    private final BrokerID brokerId;
-    /**
-     * message value
-     */
-    private final quickfix.Message message;
 }

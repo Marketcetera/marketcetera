@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.marketcetera.admin.User;
 import org.marketcetera.brokers.BrokerUnavailable;
 import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.brokers.Selector;
@@ -14,16 +15,13 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.ServerFixSession;
-import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXConverter;
-import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.Originator;
-import org.marketcetera.trade.TradeConstants;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageBroadcaster;
 import org.marketcetera.trade.TradeMessageListener;
@@ -231,18 +229,12 @@ public class TradeServiceImpl
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.service.TradeService#submitOrderToOutgoingDataFlow(org.marketcetera.trade.HasOrder)
+     * @see org.marketcetera.trade.service.TradeService#sendOrder(org.marketcetera.admin.User, org.marketcetera.trade.Order)
      */
     @Override
-    public Object submitOrderToOutgoingDataFlow(HasOrder inOrder)
+    public void sendOrder(User inUser,
+                          Order inOrder)
     {
-        HeadwaterModule outgoingDataFlowModule = HeadwaterModule.getInstance(TradeConstants.outgoingDataFlowName);
-        if(outgoingDataFlowModule == null) {
-            throw new IllegalStateException("Outgoing data flow not established");
-        }
-        outgoingDataFlowModule.emit(inOrder);
-        // note that this object won't have deterministic state if async flows are used
-        return inOrder;
     }
     /**
      * Validate and start the object.

@@ -19,7 +19,6 @@ import javax.persistence.PersistenceContext;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
-import org.marketcetera.admin.HasUser;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
@@ -30,6 +29,7 @@ import org.marketcetera.core.LongIDFactory;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionListener;
@@ -37,7 +37,6 @@ import org.marketcetera.fix.IncomingMessage;
 import org.marketcetera.fix.dao.IncomingMessageDao;
 import org.marketcetera.fix.dao.PersistentIncomingMessage;
 import org.marketcetera.fix.dao.QPersistentIncomingMessage;
-import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
@@ -62,7 +61,6 @@ import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.ReportType;
 import org.marketcetera.trade.RootOrderIdFactory;
 import org.marketcetera.trade.SecurityType;
-import org.marketcetera.trade.TradeConstants;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.trade.UserID;
@@ -74,6 +72,7 @@ import org.marketcetera.trade.dao.PersistentReportDao;
 import org.marketcetera.trade.dao.QPersistentExecutionReport;
 import org.marketcetera.trade.dao.QPersistentOrderSummary;
 import org.marketcetera.trade.dao.QPersistentReport;
+import org.marketcetera.trade.event.SimpleInjectedFixMessageEvent;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -97,7 +96,6 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import quickfix.Message;
 import quickfix.SessionID;
 
 /* $License$ */
@@ -152,15 +150,6 @@ public class ReportServiceImpl
                           UserID inUserId)
     {
         quickfix.Message fixMessage = inMessage.getMessage();
-        // inject the new report
-        HeadwaterModule reportInjectionEntryPoint = HeadwaterModule.getInstance(TradeConstants.reportInjectionDataFlowName);
-        if(reportInjectionEntryPoint == null) {
-            SLF4JLoggerProxy.warn(this,
-                                  "Unable to add {} because the report injection data flow [{}] does not exist. This data flow must be defined in the server configuration.",
-                                  inMessage,
-                                  TradeConstants.reportInjectionDataFlowName);
-            throw new UnsupportedOperationException("No report injection data flow");
-        }
         ActiveFixSession broker = brokerService.getActiveFixSession(inBrokerId);
         if(broker == null) {
             SLF4JLoggerProxy.warn(this,
@@ -182,19 +171,16 @@ public class ReportServiceImpl
                               "Injecting: {}",
                               fixMessage);
         // set owner of this message
-        Object dataToEmit;
         User owner = userService.findByUserId(inUserId);
         if(owner == null) {
-            dataToEmit = inMessage;
             SLF4JLoggerProxy.warn(this,
                                   "Unable to establish {} as the owner of {} because that user ID cannot be found. Normal methods will be used to establish the owner of this message.",
                                   inUserId,
                                   fixMessage);
-        } else {
-            dataToEmit = new AddReportWrapper(owner,
-                                              fixMessage);
         }
-        reportInjectionEntryPoint.emit(dataToEmit);
+        eventBusService.post(new SimpleInjectedFixMessageEvent(owner,
+                                                               inBrokerId,
+                                                               fixMessage));
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getReportFor(org.marketcetera.trade.ReportID)
@@ -1232,63 +1218,6 @@ public class ReportServiceImpl
                                 I inInstrument);
     }
     /**
-     * Wraps an added report with an owning user.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    private static class AddReportWrapper
-            implements HasFIXMessage,HasUser
-    {
-        /* (non-Javadoc)
-         * @see org.marketcetera.admin.HasUser#getUser()
-         */
-        @Override
-        public User getUser()
-        {
-            return user;
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.event.HasFIXMessage#getMessage()
-         */
-        @Override
-        public Message getMessage()
-        {
-            return message;
-        }
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
-        @Override
-        public String toString()
-        {
-            StringBuilder builder = new StringBuilder();
-            builder.append("AddReportWrapper [user=").append(user).append(", message=").append(message).append("]");
-            return builder.toString();
-        }
-        /**
-         * Create a new AddReportWrapper instance.
-         *
-         * @param inUser a <code>User</code> value
-         * @param inMessage a <code>Message</code> value
-         */
-        private AddReportWrapper(User inUser,
-                                 Message inMessage)
-        {
-            user = inUser;
-            message = inMessage;
-        }
-        /**
-         * user value
-         */
-        private final User user;
-        /**
-         * message value
-         */
-        private final Message message;
-    }
-    /**
      * caches session start for a session
      */
     private Cache<SessionID,Date> cachedSessionStart;
@@ -1340,6 +1269,11 @@ public class ReportServiceImpl
      */
     @Autowired
     private BrokerService brokerService;
+    /**
+     * provides access to event bus services
+     */
+    @Autowired
+    private EventBusService eventBusService;
     /**
      * provides access to authorization services
      */

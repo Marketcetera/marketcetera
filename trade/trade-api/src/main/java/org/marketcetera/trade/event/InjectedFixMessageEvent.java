@@ -1,7 +1,6 @@
 package org.marketcetera.trade.event;
 
-import org.marketcetera.fix.HasSessionId;
-import org.marketcetera.trade.HasBrokerID;
+import org.marketcetera.admin.HasUser;
 
 /* $License$ */
 
@@ -12,7 +11,7 @@ import org.marketcetera.trade.HasBrokerID;
  * @version $Id$
  * @since $Release$
  */
-public interface IncomingFixMessageEvent
-        extends FixMessageEvent,HasSessionId,HasBrokerID
+public interface InjectedFixMessageEvent
+        extends FixMessageEvent,HasUser
 {
 }

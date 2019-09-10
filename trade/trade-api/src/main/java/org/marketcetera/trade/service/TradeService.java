@@ -1,12 +1,11 @@
 package org.marketcetera.trade.service;
 
+import org.marketcetera.admin.User;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.OrderIntercepted;
 import org.marketcetera.fix.ServerFixSession;
-import org.marketcetera.trade.HasOrder;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
-import org.marketcetera.trade.SendOrderFailed;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessagePublisher;
 
@@ -55,11 +54,11 @@ public interface TradeService
     TradeMessage convertResponse(HasFIXMessage inMessage,
                                  ServerFixSession inServerFixSession);
     /**
-     * Submits the given order to the standard outgoing data flow.
+     * Send the given order owned by the given user.
      *
-     * @param inOrder a <code>HasOrder</code> value
-     * @return an <code>Object</code> value containing the result of the submission, if available
-     * @throws SendOrderFailed if the order could not be sent
+     * @param inUser a <code>User</code> value
+     * @param inOrder an <code>Order</code> value
      */
-    Object submitOrderToOutgoingDataFlow(HasOrder inOrder);
+    void sendOrder(User inUser,
+                   Order inOrder);
 }

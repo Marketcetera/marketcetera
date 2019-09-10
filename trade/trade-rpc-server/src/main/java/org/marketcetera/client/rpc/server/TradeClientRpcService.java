@@ -10,11 +10,8 @@ import javax.annotation.PostConstruct;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
-import org.marketcetera.client.SubmitOrderWrapper;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.module.HasStatus;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
@@ -32,6 +29,7 @@ import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.ReportID;
@@ -77,7 +75,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import io.grpc.stub.StreamObserver;
-import quickfix.FieldNotFound;
 
 /* $License$ */
 
@@ -211,28 +208,13 @@ public class TradeClientRpcService<SessionClazz>
                         TradeRpcUtil.setOrderId(matpOrder,
                                                orderResponseBuilder);
                         User user = userService.findByName(sessionHolder.getUser());
-                        Object result = tradeService.submitOrderToOutgoingDataFlow(new SubmitOrderWrapper(user,
-                                                                                                          matpOrder));
-                        SLF4JLoggerProxy.debug(TradeClientRpcService.this,
-                                               "Order submission returned {}",
-                                               result);
-                        if(result instanceof HasStatus) {
-                            HasStatus hasStatus = (HasStatus)result;
-                            if(hasStatus.getFailed()) {
-                                throw new RuntimeException(hasStatus.getErrorMessage());
-                            }
-                        }
+                        tradeService.sendOrder(user,
+                                               matpOrder);
                         String orderId = unknownOrderId;
-                        if(result instanceof HasFIXMessage) {
-                            HasFIXMessage hasFixMessage = (HasFIXMessage)result;
-                            quickfix.Message message = hasFixMessage.getMessage();
-                            if(message.isSetField(quickfix.field.ClOrdID.FIELD)) {
-                                try {
-                                    orderId = message.getString(quickfix.field.ClOrdID.FIELD);
-                                } catch (FieldNotFound e) {
-                                    SLF4JLoggerProxy.warn(this,
-                                                          e);
-                                }
+                        if(matpOrder instanceof OrderBase) {
+                            OrderID matpOrderId = ((OrderBase)matpOrder).getOrderID();
+                            if(matpOrderId != null) {
+                                orderId = matpOrderId.getValue();
                             }
                         }
                         orderResponseBuilder.setOrderid(orderId);
