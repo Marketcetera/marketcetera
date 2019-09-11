@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.marketcetera.admin.User;
@@ -14,8 +15,6 @@ import org.marketcetera.admin.service.UserService;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.eventbus.EventBusService;
-import org.marketcetera.module.HasStatus;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.symbol.SymbolResolverService;
@@ -23,19 +22,18 @@ import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.SendOrderFailed;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradeMessagePublisher;
-import org.marketcetera.trade.event.SimpleOutgoingOrderEvent;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
+import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ApplicationContext;
-
-import quickfix.FieldNotFound;
 
 /* $License$ */
 
@@ -63,7 +61,7 @@ public class DirectTradeClient
         orderSummaryService = applicationContext.getBean(OrderSummaryService.class);
         tradeMessagePublisher = applicationContext.getBean(TradeMessagePublisher.class);
         reportService = applicationContext.getBean(ReportService.class);
-        eventBusService = applicationContext.getBean(EventBusService.class);
+        tradeService = applicationContext.getBean(TradeService.class);
         symbolResolverService = applicationContext.getBean(SymbolResolverService.class);
         SLF4JLoggerProxy.debug(this,
                                "Direct client {} owned by user {}",
@@ -154,34 +152,18 @@ public class DirectTradeClient
                               "{} submitting outgoing {}",
                               user.getName(),
                               inOrder);
-        eventBusService.post(new SimpleOutgoingOrderEvent(user,
-                                                          inOrder));
-        // TODO
-        Object result = null;
-//        tradeService.submitOrderToOutgoingDataFlow(new SubmitOrderWrapper(user,
-//                                                                                          inOrder));
-        SLF4JLoggerProxy.debug(this,
-                               "Order submission returned {}",
-                               result);
         SendOrderResponse response = new SendOrderResponse();
-        if(result instanceof HasStatus) {
-            HasStatus hasStatus = (HasStatus)result;
-            if(hasStatus.getFailed()) {
-                throw new SendOrderFailed(hasStatus.getErrorMessage());
-            }
+        try {
+            tradeService.sendOrder(user,
+                                   inOrder);
+            response.setFailed(false);
+        } catch (Exception e) {
+            response.setFailed(true);
+            response.setMessage(ExceptionUtils.getRootCauseMessage(e));
         }
         OrderID orderId = unknownOrderId;
-        if(result instanceof HasFIXMessage) {
-            HasFIXMessage hasFixMessage = (HasFIXMessage)result;
-            quickfix.Message message = hasFixMessage.getMessage();
-            if(message.isSetField(quickfix.field.ClOrdID.FIELD)) {
-                try {
-                    orderId = new OrderID(message.getString(quickfix.field.ClOrdID.FIELD));
-                } catch (FieldNotFound e) {
-                    SLF4JLoggerProxy.warn(this,
-                                          e);
-                }
-            }
+        if(inOrder instanceof OrderBase) {
+            orderId = ((OrderBase)inOrder).getOrderID();
         }
         response.setOrderId(orderId);
         return response;
@@ -328,9 +310,9 @@ public class DirectTradeClient
      */
     private ReportService reportService;
     /**
-     * provides access to event bus services
+     * provides access to trade services
      */
-    private EventBusService eventBusService;
+    private TradeService tradeService;
     /**
      * provides access to order summary services
      */

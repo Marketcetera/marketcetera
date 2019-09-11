@@ -13,6 +13,7 @@ import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -26,6 +27,7 @@ import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageBroadcaster;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.event.SimpleOutgoingOrderEvent;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.Messages;
 import org.marketcetera.trade.service.TradeService;
@@ -235,6 +237,12 @@ public class TradeServiceImpl
     public void sendOrder(User inUser,
                           Order inOrder)
     {
+        SLF4JLoggerProxy.info(this,
+                              "{} sending {}",
+                              inUser,
+                              inOrder);
+        eventBusService.post(new SimpleOutgoingOrderEvent(inUser,
+                                                          inOrder));
     }
     /**
      * Validate and start the object.
@@ -321,6 +329,11 @@ public class TradeServiceImpl
      */
     @Autowired
     private BrokerService brokerService;
+    /**
+     * provides access to event bus services
+     */
+    @Autowired
+    private EventBusService eventBusService;
     /**
      * optional broker selector
      */
