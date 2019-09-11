@@ -216,11 +216,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>marketdata-marketcetera</artifactId>
-        <version>4.0.1-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-yahoo</artifactId>
         <version>4.0.1-SNAPSHOT</version>
       </dependency>

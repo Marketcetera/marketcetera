@@ -72,7 +72,7 @@ public class SystemInformationLogger
     @PostConstruct
     public void start()
     {
-        pollingExecutor = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("SystemInformationLogger-%d").build());
+        pollingExecutor = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat(SystemInformationLogger.class.getSimpleName()+"-%d").build());
         pollingExecutor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run()

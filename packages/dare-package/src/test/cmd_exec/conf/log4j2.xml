@@ -59,6 +59,7 @@
       <AppenderRef ref="FILE"/>
     </Root>
     <logger name="org.marketcetera" level="info"/>
+    <logger name="org.marketcetera.server.MultiInstanceApplicationContainer" level="trace"/>
     <logger name="metc.restore" level="info" additivity="false">
       <AppenderRef ref="RESTORE"/>
       <AppenderRef ref="FILE"/>

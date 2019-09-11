@@ -1,4 +1,4 @@
-package org.marketcetera.core;
+package org.marketcetera.server;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,8 +22,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.Validate;
+import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-
 
 /* $License$ */
 
@@ -407,7 +408,8 @@ public class MultiInstanceApplicationContainer
                               buildClusterMemberList(),
                               instancePropertiesFile);
         String[] arguments = buildProcessArgumentList(inInstanceNumber,
-                                                      instanceDir.getAbsolutePath());
+                                                      instanceDir.getAbsolutePath(),
+                                                      instancePropertiesFile);
         // TODO message
         SLF4JLoggerProxy.info(STARTUP_CATEGORY,
                               "Launching instance {} of {}",
@@ -522,11 +524,14 @@ public class MultiInstanceApplicationContainer
      * Builds the process argument list.
      *
      * @param inInstanceDir an <code>int</code> value
+     * @param inInstanceDirName a <code>String</code> value
+     * @param inInstancePropertiesFile a <code>File</code> value
      * @return a <code>String[]</code> value
      * @throws IOException if an error occurs building the process argument list
      */
     private static String[] buildProcessArgumentList(int inInstanceNumber,
-                                                     String inInstanceDirName)
+                                                     String inInstanceDirName,
+                                                     File inInstancePropertiesFile)
             throws IOException
     {
         List<String> arguments = new ArrayList<>();
@@ -590,12 +595,40 @@ public class MultiInstanceApplicationContainer
         arguments.add(DASH_D+ApplicationBase.APP_DIR_PROP+"="+inInstanceDirName);
         File parentLogFile = new File(getLog4jConfigFile());
         arguments.add(DASH_D+PARAM_LOG4J_CONFIGURATION_FILE+"=file://"+inInstanceDirName+File.separator+"conf"+File.separator+parentLogFile.getName());
+        String configFileList = buildConfigFileList(inInstancePropertiesFile);
+        arguments.add(DASH_D+PARAM_SPRING_CONFIG_LOCATION+"=" + configFileList);
         if(enableProfiling()) {
             arguments.add("-XX:+UnlockCommercialFeatures");
             arguments.add("-XX:+FlightRecorder");
         }
-        arguments.add(ApplicationContainer.class.getCanonicalName());
+        arguments.add(ServerApplication.class.getCanonicalName());
         return arguments.toArray(new String[arguments.size()]);
+    }
+    /**
+     * Build the complete list of config file locations.
+     *
+     * @param inInstancePropertiesFile a <code>File</code> value
+     * @return a <code>String</code> value
+     */
+    private static String buildConfigFileList(File inInstancePropertiesFile)
+    {
+        String paramConfigFiles = getSystemProperty(PARAM_SPRING_CONFIG_LOCATION);
+        StringBuilder configFiles = new StringBuilder();
+        boolean commaNeeded = false;
+        if(paramConfigFiles != null) {
+            for(String paramConfigFile : paramConfigFiles.split(",")) {
+                if(commaNeeded) {
+                    configFiles.append(",");
+                }
+                configFiles.append(paramConfigFile);
+                commaNeeded = true;
+            }
+        }
+        if(commaNeeded) {
+            configFiles.append(",");
+        }
+        configFiles.append(inInstancePropertiesFile.getAbsolutePath());
+        return configFiles.toString();
     }
     /**
      * Indicate if profiling should be enabled.
@@ -745,6 +778,10 @@ public class MultiInstanceApplicationContainer
      * log4j configuration file param name
      */
     public static final String PARAM_LOG4J_CONFIGURATION_FILE = "log4j.configurationFile";
+    /**
+     * spring configuration file param name
+     */
+    private static final String PARAM_SPRING_CONFIG_LOCATION = "spring.config.location";
     /**
      * metc-specific log dir name
      */

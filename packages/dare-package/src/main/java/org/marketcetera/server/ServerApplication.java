@@ -1,8 +1,17 @@
 package org.marketcetera.server;
 
 import java.util.Collections;
+import java.util.List;
 
+import javax.jms.ServerSession;
+
+import org.marketcetera.admin.UserAttributeFactory;
+import org.marketcetera.admin.auth.DBAuthenticator;
+import org.marketcetera.admin.dao.PersistentUserAttributeFactory;
+import org.marketcetera.admin.rpc.AdminRpcService;
+import org.marketcetera.admin.service.UserAttributeService;
 import org.marketcetera.admin.service.UserService;
+import org.marketcetera.admin.service.impl.UserAttributeServiceImpl;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.ClusterDataFactory;
@@ -18,8 +27,13 @@ import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleServerFixSessionFactory;
 import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.quickfix.QuickFIXSenderImpl;
+import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
+import org.marketcetera.util.ws.stateful.Authenticator;
+import org.marketcetera.util.ws.stateful.PortUserProxy;
+import org.marketcetera.util.ws.stateful.SessionManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
@@ -30,6 +44,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import io.grpc.BindableService;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -179,6 +194,101 @@ public class ServerApplication
                 .build()
                 .apiInfo(apiInfo());
     }
+    /**
+     * Get the port user proxy for the embedded web server.
+     *
+     * @return a <code>PortUserProxy</code> value
+     */
+    @Bean
+    public PortUserProxy getEmbeddedWebServerPortUserProxy()
+    {
+        PortUserProxy proxy = new PortUserProxy();
+        proxy.setPort(webServerPort);
+        proxy.setDescription("DARE Web Server");
+        return proxy;
+    }
+    /**
+     * Get the RPC server value.
+     *
+     * @param inServiceSpecs a <code>List&lt;BindableService&gt;</code> value
+     * @return an <code>RpcServer</code> value
+     * @throws Exception if the server cannot be created
+     */
+    @Bean
+    public RpcServer getRpcServer(@Autowired(required=false) List<BindableService> inServiceSpecs)
+            throws Exception
+    {
+        RpcServer rpcServer = new RpcServer();
+        rpcServer.setHostname(serverHostname);
+        rpcServer.setPort(rpcPort);
+        if(inServiceSpecs != null) {
+            for(BindableService service : inServiceSpecs) {
+                rpcServer.getServerServiceDefinitions().add(service);
+            }
+        }
+        return rpcServer;
+    }
+    /**
+     * Get the admin RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return an <code>AdminRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public AdminRpcService<ServerSession> getAdminRpcService(@Autowired Authenticator inAuthenticator,
+                                                             @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        AdminRpcService<ServerSession> adminRpcService = new AdminRpcService<>();
+        adminRpcService.setAuthenticator(inAuthenticator);
+        adminRpcService.setSessionManager(inSessionManager);
+        return adminRpcService;
+    }
+    /**
+     * Get the authenticator service.
+     *
+     * @return an <code>Authenticator</code> value
+     */
+    @Bean
+    public Authenticator getAuthenticator()
+    {
+        return new DBAuthenticator();
+    }
+    /**
+     * Get the session manager service.
+     *
+     * @return a <code>SessionManager&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public SessionManager<ServerSession> getSessionManager()
+    {
+        return new SessionManager<ServerSession>();
+    }
+    /**
+     * Get the user attribute factory value.
+     *
+     * @return a <code>UserAttribute</code> value
+     */
+    @Bean
+    public UserAttributeFactory getUserAttributeFactory()
+    {
+        return new PersistentUserAttributeFactory();
+    }
+    /**
+     * Get the user attribute service value.
+     *
+     * @return a <code>UserAttributeService</code> value
+     */
+    @Bean
+    public UserAttributeService getUserAttributeService()
+    {
+        return new UserAttributeServiceImpl();
+    }
+    /**
+     * Get the API info (REST Swagger) for DARE.
+     *
+     * @return an <code>ApiInfo</code> value
+     */
     private ApiInfo apiInfo()
     {
         return new ApiInfo(
@@ -196,6 +306,16 @@ public class ServerApplication
     /**
      * web services port
      */
-    @Value("${server.port:8999}")
+    @Value("${metc.ws.port}")
     private int webServerPort;
+    /**
+     * server hostname
+     */
+    @Value("${metc.ws.hostname:0.0.0.0}")
+    private String serverHostname;
+    /**
+     * RPC services port
+     */
+    @Value("${metc.rpc.port}")
+    private int rpcPort;
 }
