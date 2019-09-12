@@ -284,6 +284,24 @@ public class FixSessionsConfiguration
             settings = inSettings;
         }
         /**
+         * Get the enabled value.
+         *
+         * @return a <code>boolean</code> value
+         */
+        public boolean isEnabled()
+        {
+            return enabled;
+        }
+        /**
+         * Sets the enabled value.
+         *
+         * @param inEnabled a <code>boolean</code> value
+         */
+        public void setEnabled(boolean inEnabled)
+        {
+            enabled = inEnabled;
+        }
+        /**
          * name value
          */
         private String name;
@@ -311,6 +329,10 @@ public class FixSessionsConfiguration
          * affinity value
          */
         private int affinity = 1;
+        /**
+         * indicate if the session should be enabled after being created
+         */
+        private boolean enabled = false;
         /**
          * settings for this session
          */

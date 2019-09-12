@@ -597,6 +597,9 @@ public class PersistentFixSessionProvider
                 save(fixSession);
                 fixSessionsByName.put(fixSession.getName(),
                                       fixSession);
+                if(fixSessionDescriptor.isEnabled()) {
+                    enableSession(new SessionID(fixSession.getSessionId()));
+                }
                 SLF4JLoggerProxy.info(this,
                                       "Created: {}",
                                       fixSession.getName());

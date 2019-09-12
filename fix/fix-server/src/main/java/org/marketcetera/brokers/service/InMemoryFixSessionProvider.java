@@ -234,6 +234,9 @@ public class InMemoryFixSessionProvider
                 fixSession.setSessionId(sessionId.toString());
                 fixSession.getSessionSettings().putAll(sessionSettings);
                 save(fixSession);
+                if(fixSessionDescriptor.isEnabled()) {
+                    enableSession(new SessionID(fixSession.getSessionId()));
+                }
             }
         }
         SLF4JLoggerProxy.debug(this,
