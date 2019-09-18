@@ -40,6 +40,30 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>trade-server</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>admin-rpc-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-rpc-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fix-rpc-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>dataflow-rpc-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-rpc-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cluster-rpc-server</artifactId>
+    </dependency>
     <!-- other compile -->
     <dependency>
       <groupId>io.springfox</groupId>
@@ -62,7 +86,13 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>admin-rpc-server</artifactId>
+      <artifactId>dataflow-server</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-server</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <!-- spring runtime -->
     <dependency>
@@ -161,6 +191,8 @@
             -Dspring.config.location=src/test/cmd_exec/conf/application.properties,target/local.properties
             -Dspring.flyway.locations=classpath:db/migration/${metc.flyway.vendor}/
             -Dmetc.instance=1
+            -Dmetc.ws.port=9000
+            -Dmetc.rpc.port=9010
           </jvmArguments>
         </configuration>
       </plugin>

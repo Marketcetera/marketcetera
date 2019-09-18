@@ -571,6 +571,14 @@ public class PersistentFixSessionProvider
                 Map<String,String> sessionSettings = Maps.newHashMap();
                 sessionSettings.putAll(globalSettings);
                 sessionSettings.putAll(fixSessionDescriptor.getSettings());
+                String fixSessionName = fixSessionDescriptor.getName();
+                FixSession existingFixSession = findFixSessionByName(fixSessionName);
+                if(existingFixSession != null) {
+                    SLF4JLoggerProxy.info(this,
+                                          "Skipping existing FIX session: {}",
+                                          fixSessionName);
+                    continue;
+                }
                 MutableFixSession fixSession = fixSessionFactory.create();
                 fixSession.setAffinity(fixSessionDescriptor.getAffinity());
                 fixSession.setBrokerId(fixSessionDescriptor.getBrokerId());
@@ -580,7 +588,7 @@ public class PersistentFixSessionProvider
                 fixSession.setDescription(fixSessionDescriptor.getDescription());
                 String connectionType = sessionSettings.get(SessionFactory.SETTING_CONNECTION_TYPE);
                 fixSession.setIsAcceptor(SessionFactory.ACCEPTOR_CONNECTION_TYPE.equals(connectionType));
-                fixSession.setIsEnabled(true);
+                fixSession.setIsEnabled(fixSessionDescriptor.isEnabled());
                 if(fixSession.isAcceptor()) {
                     fixSession.setHost(fixSettingsProvider.getAcceptorHost());
                     fixSession.setPort(fixSettingsProvider.getAcceptorPort());
@@ -588,7 +596,7 @@ public class PersistentFixSessionProvider
                     fixSession.setHost(fixSessionDescriptor.getHost());
                     fixSession.setPort(fixSessionDescriptor.getPort());
                 }
-                fixSession.setName(fixSessionDescriptor.getName());
+                fixSession.setName(fixSessionName);
                 SessionID sessionId = new SessionID(sessionSettings.get(SessionSettings.BEGINSTRING),
                                                     sessionSettings.get(SessionSettings.SENDERCOMPID),
                                                     sessionSettings.get(SessionSettings.TARGETCOMPID));

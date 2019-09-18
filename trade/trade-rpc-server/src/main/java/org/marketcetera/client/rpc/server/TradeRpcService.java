@@ -79,13 +79,13 @@ import io.grpc.stub.StreamObserver;
 /* $License$ */
 
 /**
- * Provides trade client RPC server services.
+ * Provides trade RPC server services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class TradeClientRpcService<SessionClazz>
+public class TradeRpcService<SessionClazz>
         extends AbstractRpcService<SessionClazz,TradingRpcServiceGrpc.TradingRpcServiceImplBase>
 {
     /**
@@ -131,7 +131,7 @@ public class TradeClientRpcService<SessionClazz>
         public void login(LoginRequest inRequest,
                           StreamObserver<LoginResponse> inResponseObserver)
         {
-            TradeClientRpcService.this.doLogin(inRequest,
+            TradeRpcService.this.doLogin(inRequest,
                                                inResponseObserver);
         }
         /* (non-Javadoc)
@@ -141,7 +141,7 @@ public class TradeClientRpcService<SessionClazz>
         public void logout(LogoutRequest inRequest,
                            StreamObserver<LogoutResponse> inResponseObserver)
         {
-            TradeClientRpcService.this.doLogout(inRequest,
+            TradeRpcService.this.doLogout(inRequest,
                                                 inResponseObserver);
         }
         /* (non-Javadoc)
@@ -151,7 +151,7 @@ public class TradeClientRpcService<SessionClazz>
         public void heartbeat(HeartbeatRequest inRequest,
                               StreamObserver<HeartbeatResponse> inResponseObserver)
         {
-            TradeClientRpcService.this.doHeartbeat(inRequest,
+            TradeRpcService.this.doHeartbeat(inRequest,
                                                    inResponseObserver);
         }
         /* (non-Javadoc)
@@ -165,7 +165,7 @@ public class TradeClientRpcService<SessionClazz>
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.ViewOpenOrdersAction.name());
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received open order request {}",
                                        inRequest);
                 TradingRpc.OpenOrdersResponse.Builder responseBuilder = TradingRpc.OpenOrdersResponse.newBuilder();
@@ -175,7 +175,7 @@ public class TradeClientRpcService<SessionClazz>
                 responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
                                                                               orderSummaryPage));
                 TradingRpc.OpenOrdersResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Responding: {}",
                                        response);
                 inResponseObserver.onNext(response);
@@ -194,7 +194,7 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received send order request {} from {}",
                                        inRequest,
                                        sessionHolder);
@@ -219,7 +219,7 @@ public class TradeClientRpcService<SessionClazz>
                         }
                         orderResponseBuilder.setOrderid(orderId);
                     } catch (Exception e) {
-                        SLF4JLoggerProxy.warn(TradeClientRpcService.this,
+                        SLF4JLoggerProxy.warn(TradeRpcService.this,
                                               e,
                                               "Unable to submit order {}",
                                               rpcOrder);
@@ -246,7 +246,7 @@ public class TradeClientRpcService<SessionClazz>
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
                 TradingRpc.ResolveSymbolResponse.Builder responseBuilder = TradingRpc.ResolveSymbolResponse.newBuilder();
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received resolve symbol request {} from {}",
                                        inRequest,
                                        sessionHolder);
@@ -270,7 +270,7 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received add trade message listener request {}",
                                        inRequest);
                 String listenerId = inRequest.getListenerId();
@@ -296,7 +296,7 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 validateAndReturnSession(inRequest.getSessionId());
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received remove trade message listener request {}",
                                        inRequest);
                 String listenerId = inRequest.getListenerId();
@@ -308,7 +308,7 @@ public class TradeClientRpcService<SessionClazz>
                 }
                 TradingRpc.RemoveTradeMessageListenerResponse.Builder responseBuilder = TradingRpc.RemoveTradeMessageListenerResponse.newBuilder();
                 TradingRpc.RemoveTradeMessageListenerResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Returning {}",
                                        response);
                 inResponseObserver.onNext(response);
@@ -327,7 +327,7 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received find root order id request {} from {}",
                                        inRequest,
                                        sessionHolder);
@@ -357,7 +357,7 @@ public class TradeClientRpcService<SessionClazz>
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
                 TradingRpc.GetPositionAsOfResponse.Builder responseBuilder = TradingRpc.GetPositionAsOfResponse.newBuilder();
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received get position as of request {} from {}",
                                        inRequest,
                                        sessionHolder);
@@ -373,7 +373,7 @@ public class TradeClientRpcService<SessionClazz>
                 BigDecimal result = reportService.getPositionAsOf(user,
                                                                   timestamp,
                                                                   instrument);
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "{} position for {}: {} as of {}",
                                        user,
                                        instrument,
@@ -381,7 +381,7 @@ public class TradeClientRpcService<SessionClazz>
                                        timestamp);
                 BaseRpcUtil.getRpcQty(result).ifPresent(qty->responseBuilder.setPosition(qty));
                 TradingRpc.GetPositionAsOfResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Returning {}",
                                        response);
                 inResponseObserver.onNext(response);
@@ -400,7 +400,7 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received get all positions as of request {} from {}",
                                        inRequest,
                                        sessionHolder);
@@ -415,7 +415,7 @@ public class TradeClientRpcService<SessionClazz>
                 User user = userService.findByName(sessionHolder.getUser());
                 Map<PositionKey<? extends Instrument>,BigDecimal> result = reportService.getAllPositionsAsOf(user,
                                                                                                              timestamp);
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "{} all positions as of {}: {}",
                                        user,
                                        timestamp,
@@ -439,7 +439,7 @@ public class TradeClientRpcService<SessionClazz>
                                 traderName = trader.getName();
                             }
                         } catch (NumberFormatException e) {
-                            PlatformServices.handleException(TradeClientRpcService.this,
+                            PlatformServices.handleException(TradeRpcService.this,
                                                              "Cannot convert trader id " + key.getTraderId() + " to a numerical ID",
                                                              e);
                         }
@@ -452,7 +452,7 @@ public class TradeClientRpcService<SessionClazz>
                     positionBuilder.clear();
                 }
                 TradingRpc.GetAllPositionsAsOfResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Returning {}",
                                        response);
                 inResponseObserver.onNext(response);
@@ -471,7 +471,7 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received get all positions by root as of request {} from {}",
                                        inRequest,
                                        sessionHolder);
@@ -487,7 +487,7 @@ public class TradeClientRpcService<SessionClazz>
                 Map<PositionKey<Option>,BigDecimal> result = reportService.getOptionPositionsAsOf(user,
                                                                                                   timestamp,
                                                                                                   inRequest.getRootList().toArray(new String[0]));
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "{} all positions as of {}: {}",
                                        user,
                                        timestamp,
@@ -511,7 +511,7 @@ public class TradeClientRpcService<SessionClazz>
                                 traderName = trader.getName();
                             }
                         } catch (NumberFormatException e) {
-                            PlatformServices.handleException(TradeClientRpcService.this,
+                            PlatformServices.handleException(TradeRpcService.this,
                                                              "Cannot convert trader id " + key.getTraderId() + " to a numerical ID",
                                                              e);
                         }
@@ -524,7 +524,7 @@ public class TradeClientRpcService<SessionClazz>
                     positionBuilder.clear();
                 }
                 TradingRpc.GetAllPositionsByRootAsOfResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Returning {}",
                                        response);
                 inResponseObserver.onNext(response);
@@ -543,7 +543,7 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received add report request {} from {}",
                                        inRequest,
                                        sessionHolder);
@@ -562,13 +562,13 @@ public class TradeClientRpcService<SessionClazz>
                 reportService.addReport(report,
                                         brokerId,
                                         user.getUserID());
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "{} added for {}/{}",
                                        report,
                                        user,
                                        brokerId);
                 TradingRpc.AddReportResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Returning {}",
                                        response);
                 inResponseObserver.onNext(response);
@@ -587,7 +587,7 @@ public class TradeClientRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received delete report request {} from {}",
                                        inRequest,
                                        sessionHolder);
@@ -596,12 +596,12 @@ public class TradeClientRpcService<SessionClazz>
                 TradingRpc.DeleteReportResponse.Builder responseBuilder = TradingRpc.DeleteReportResponse.newBuilder();
                 ReportID reportId = new ReportID(Long.valueOf(inRequest.getReportId()));
                 reportService.delete(reportId);
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "{} deleted for {}",
                                        reportId,
                                        sessionHolder.getUser());
                 TradingRpc.DeleteReportResponse response = responseBuilder.build();
-                SLF4JLoggerProxy.trace(TradeClientRpcService.this,
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Returning {}",
                                        response);
                 inResponseObserver.onNext(response);
@@ -632,7 +632,7 @@ public class TradeClientRpcService<SessionClazz>
             TradeRpcUtil.setTradeMessage(inTradeMessage,
                                         responseBuilder);
             TradeMessageListenerResponse response = responseBuilder.build();
-            SLF4JLoggerProxy.trace(TradeClientRpcService.class,
+            SLF4JLoggerProxy.trace(TradeRpcService.class,
                                    "{} received trade message {}, sending {}",
                                    getId(),
                                    inTradeMessage,

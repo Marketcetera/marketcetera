@@ -190,6 +190,11 @@
         <version>4.0.1-SNAPSHOT</version>
       </dependency>
       <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>cluster-rpc-server</artifactId>
+        <version>4.0.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-csv</artifactId>
         <version>4.0.1-SNAPSHOT</version>

@@ -910,7 +910,7 @@ public class DeployAnywhereRoutingEngine
             synchronized(sessionLock) {
                 SLF4JLoggerProxy.info(this,
                                       "Activating {}",
-                                      this);
+                                      getClusterWorkUnitUid());
                 isPrimary = true;
                 int totalInstances = clusterData.getTotalInstances();
                 int instanceId = clusterData.getInstanceNumber();

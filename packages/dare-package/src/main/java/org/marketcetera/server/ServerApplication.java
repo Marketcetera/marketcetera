@@ -14,10 +14,13 @@ import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserAttributeServiceImpl;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.brokers.service.FixSessionProvider;
+import org.marketcetera.client.rpc.server.TradeRpcService;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterService;
+import org.marketcetera.cluster.rpc.ClusterRpcService;
 import org.marketcetera.cluster.service.ClusterService;
+import org.marketcetera.dataflow.server.rpc.DataFlowRpcService;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
 import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.ServerFixSessionFactory;
@@ -25,9 +28,15 @@ import org.marketcetera.fix.dao.PersistentFixSessionFactory;
 import org.marketcetera.fix.dao.PersistentFixSessionProvider;
 import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleServerFixSessionFactory;
+import org.marketcetera.fix.rpc.FixAdminRpcService;
+import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
+import org.marketcetera.module.ModuleManager;
 import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.quickfix.QuickFIXSenderImpl;
 import org.marketcetera.rpc.server.RpcServer;
+import org.marketcetera.symbol.IterativeSymbolResolver;
+import org.marketcetera.symbol.PatternSymbolResolver;
+import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
 import org.marketcetera.util.ws.stateful.Authenticator;
@@ -243,6 +252,113 @@ public class ServerApplication
         adminRpcService.setAuthenticator(inAuthenticator);
         adminRpcService.setSessionManager(inSessionManager);
         return adminRpcService;
+    }
+    /**
+     * Get the Trade RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return a <code>TradeRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public TradeRpcService<ServerSession> getTradeRpcService(@Autowired Authenticator inAuthenticator,
+                                                             @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        TradeRpcService<ServerSession> tradeRpcService = new TradeRpcService<>();
+        tradeRpcService.setAuthenticator(inAuthenticator);
+        tradeRpcService.setSessionManager(inSessionManager);
+        return tradeRpcService;
+    }
+    /**
+     * Get the Fix Admin RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return a <code>FixAdminRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public FixAdminRpcService<ServerSession> getFixAdminRpcService(@Autowired Authenticator inAuthenticator,
+                                                                   @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        FixAdminRpcService<ServerSession> fixAdminRpcService = new FixAdminRpcService<>();
+        fixAdminRpcService.setAuthenticator(inAuthenticator);
+        fixAdminRpcService.setSessionManager(inSessionManager);
+        return fixAdminRpcService;
+    }
+    /**
+     * Get the Data Flow RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return a <code>DataFlowRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public DataFlowRpcService<ServerSession> getDataFlowRpcService(@Autowired Authenticator inAuthenticator,
+                                                                   @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        DataFlowRpcService<ServerSession> dataFlowRpcService = new DataFlowRpcService<>();
+        dataFlowRpcService.setAuthenticator(inAuthenticator);
+        dataFlowRpcService.setSessionManager(inSessionManager);
+        return dataFlowRpcService;
+    }
+    /**
+     * Get the Market Data RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return a <code>MarketDataRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public MarketDataRpcService<ServerSession> getMarketDataRpcService(@Autowired Authenticator inAuthenticator,
+                                                                       @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        MarketDataRpcService<ServerSession> marketDataRpcService = new MarketDataRpcService<>();
+        marketDataRpcService.setAuthenticator(inAuthenticator);
+        marketDataRpcService.setSessionManager(inSessionManager);
+        return marketDataRpcService;
+    }
+    /**
+     * Get the Cluster RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return a <code>ClusterRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public ClusterRpcService<ServerSession> getClusterRpcService(@Autowired Authenticator inAuthenticator,
+                                                                 @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        ClusterRpcService<ServerSession> clusterRpcService = new ClusterRpcService<>();
+        clusterRpcService.setAuthenticator(inAuthenticator);
+        clusterRpcService.setSessionManager(inSessionManager);
+        return clusterRpcService;
+    }
+    /**
+     * Get the module manager value.
+     *
+     * @return a <code>ModuleManager</code> value
+     */
+    @Bean
+    public ModuleManager getModuleManager()
+    {
+        ModuleManager moduleManager = ModuleManager.getInstance();
+        if(moduleManager == null) {
+            moduleManager = new ModuleManager();
+            moduleManager.init();
+        }
+        return moduleManager;
+    }
+    /**
+     * Get the symbol resolver service value.
+     *
+     * @return a <code>SymbolResolverService</code> value
+     */
+    @Bean
+    public SymbolResolverService getSymbolResolverService()
+    {
+        IterativeSymbolResolver symbolResolverService = new IterativeSymbolResolver();
+        symbolResolverService.getSymbolResolvers().add(new PatternSymbolResolver());
+        return symbolResolverService;
     }
     /**
      * Get the authenticator service.

@@ -712,5 +712,5 @@ public class FixAdminRpcService<SessionClazz>
     /**
      * description of the service
      */
-    private static final String DESCRIPTION = "MATP FIX Admin RPC Service"; //$NON-NLS-1$
+    private static final String DESCRIPTION = "FIX Admin RPC Service"; //$NON-NLS-1$
 }
