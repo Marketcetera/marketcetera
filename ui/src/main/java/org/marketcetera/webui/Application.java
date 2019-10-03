@@ -1,4 +1,4 @@
-package org.marketcetera.spring;
+package org.marketcetera.webui;
 
 import org.marketcetera.admin.AdminClientFactory;
 import org.marketcetera.admin.AdminRpcClientFactory;
@@ -11,19 +11,23 @@ import org.marketcetera.admin.impl.SimplePermissionFactory;
 import org.marketcetera.admin.impl.SimpleRoleFactory;
 import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
+import org.marketcetera.admin.service.UserService;
+import org.marketcetera.webui.app.MainView;
+import org.marketcetera.webui.app.security.SecurityConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 
 /**
  * The entry point of the Spring Boot application.
  */
-@SpringBootApplication
 @EnableAutoConfiguration
 @SpringBootConfiguration
+@SpringBootApplication(scanBasePackageClasses = { SecurityConfiguration.class, MainView.class, Application.class,UserService.class }, exclude = ErrorMvcAutoConfiguration.class)
 public class Application
         extends SpringBootServletInitializer
 {
