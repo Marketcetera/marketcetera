@@ -5,7 +5,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-//@Tag("sa-login-view")
 @Route(value = LoginView.ROUTE)
 @PageTitle("Login")
 public class LoginView
