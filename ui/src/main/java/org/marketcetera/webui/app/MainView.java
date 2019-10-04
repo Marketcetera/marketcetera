@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.webui.app.security.SecurityUtils;
 import org.marketcetera.webui.ui.views.HasConfirmation;
 import org.marketcetera.webui.ui.views.dashboard.DashboardView;
 
@@ -77,10 +79,9 @@ public class MainView
     protected void afterNavigation() {
         super.afterNavigation();
         confirmDialog.setOpened(false);
-        if (getContent() instanceof HasConfirmation) {
+        if(getContent() instanceof HasConfirmation) {
             ((HasConfirmation) getContent()).setConfirmDialog(confirmDialog);
         }
-
         String target = RouteConfiguration.forSessionScope().getUrl(this.getContent().getClass());
         Optional<Component> tabToSelect = menu.getChildren().filter(tab -> {
             Component child = tab.getChildren().findFirst().get();

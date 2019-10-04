@@ -1,21 +1,26 @@
 package org.marketcetera.webui.app.security;
 
+import java.util.Set;
+
+import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.admin.AdminClient;
 import org.marketcetera.admin.AdminClientFactory;
 import org.marketcetera.admin.AdminRpcClientParameters;
+import org.marketcetera.admin.Permission;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 /* $License$ */
 
 /**
- *
+ * Uses the {@link AdminClient} to authenticate web ui logins.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -36,29 +41,22 @@ public class AdminRpcAuthenticationProvider
         params.setPassword(String.valueOf(inAuthentication.getCredentials()));
         params.setPort(rpcPort);
         params.setUsername(inAuthentication.getName());
-        SLF4JLoggerProxy.warn(this,
-                              "Coco, validating {}/{}",
-                              inAuthentication.getName(),
-                              inAuthentication.getCredentials());
         AdminClient adminClient = adminClientFactory.create(params);
         try {
             adminClient.start();
         } catch (Exception e) {
-            e.printStackTrace();
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "Unable to log {} in",
+                                  inAuthentication.getCredentials());
             throw new BadCredentialsException(ExceptionUtils.getRootCauseMessage(e));
         }
-        if(adminClient.isRunning()) {
-            inAuthentication.setAuthenticated(true);
-        }
-        for(String permission : adminClient.getPermissionsForCurrentUser()) {
-//            inAuthentication.getAuthorities().add(new GrantedAuthority() {
-//                @Override
-//                public String getAuthority()
-//                {
-//                    return permission;
-//                }}
-//            );
-        }
+        Validate.isTrue(adminClient.isRunning());
+        Set<Permission> permissions = adminClient.getPermissionsForCurrentUser();
+        inAuthentication = new UsernamePasswordAuthenticationToken(inAuthentication.getPrincipal(),
+                                                                   inAuthentication.getCredentials(),
+                                                                   permissions);
+        // TODO need to stash AdminClient somewhere so we don't lose track of it
         return inAuthentication;
     }
     /* (non-Javadoc)
@@ -67,14 +65,13 @@ public class AdminRpcAuthenticationProvider
     @Override
     public boolean supports(Class<?> inAuthentication)
     {
-        SLF4JLoggerProxy.warn(this,
-                              "Coco, does our authentication provider support {}",
-                              inAuthentication.getClass().getCanonicalName());
         return true;
     }
+    /**
+     * creates {@link AdminClient} values
+     */
     @Autowired
     private AdminClientFactory<AdminRpcClientParameters> adminClientFactory;
-    
     /**
      * server hostname
      */

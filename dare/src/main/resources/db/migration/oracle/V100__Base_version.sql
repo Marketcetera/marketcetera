@@ -577,9 +577,9 @@ Insert into SUPERVISOR_PERMISSIONS_PERMISSIONS (supervisor_permission_id,PERMISS
 Insert into SUPERVISOR_PERMISSIONS_PERMISSIONS (supervisor_permission_id,PERMISSIONS_ID) values (43,32);
 Insert into SUPERVISOR_PERMISSIONS_PERMISSIONS (supervisor_permission_id,PERMISSIONS_ID) values (43,34);
 Insert into SUPERVISOR_PERMISSIONS_USERS (supervisor_permission_id,SUBJECTS_ID) values (43,1);
-Insert into USERS (ID,LAST_UPDATED,UPDATE_COUNT,DESCRIPTION,NAME,IS_ACTIVE,PASSWORD,IS_SUPERUSER) values (1,to_timestamp('26-JUN-19 08.41.27.497000000 AM','DD-MON-RR HH.MI.SSXFF AM'),0,'Trader user','trader',1,'2zg91043ou3eki4ysbejwwgkci37e6j',0);
-Insert into USERS (ID,LAST_UPDATED,UPDATE_COUNT,DESCRIPTION,NAME,IS_ACTIVE,PASSWORD,IS_SUPERUSER) values (2,to_timestamp('26-JUN-19 08.41.27.564000000 AM','DD-MON-RR HH.MI.SSXFF AM'),0,'Trader Admin user','traderAdmin',1,'210ui1dyyf6voajrad4gmpt3vgvvm9o',0);
-Insert into USERS (ID,LAST_UPDATED,UPDATE_COUNT,DESCRIPTION,NAME,IS_ACTIVE,PASSWORD,IS_SUPERUSER) values (3,to_timestamp('26-JUN-19 08.41.27.573000000 AM','DD-MON-RR HH.MI.SSXFF AM'),0,'Admin user','admin',1,'6anqbgybi82pveayzrkt3egjkwfwdg5',1);
+Insert into USERS (ID,LAST_UPDATED,UPDATE_COUNT,DESCRIPTION,NAME,IS_ACTIVE,PASSWORD,IS_SUPERUSER) values (1,to_timestamp('26-JUN-19 08.41.27.497000000 AM','DD-MON-RR HH.MI.SSXFF AM'),0,'Trader user','trader',1,'$2a$10$ISknot6OPe/PI1dQdKmTluxSrRyJwOVI5ex31XdqGPHlWl6vuTseW',0);
+Insert into USERS (ID,LAST_UPDATED,UPDATE_COUNT,DESCRIPTION,NAME,IS_ACTIVE,PASSWORD,IS_SUPERUSER) values (2,to_timestamp('26-JUN-19 08.41.27.564000000 AM','DD-MON-RR HH.MI.SSXFF AM'),0,'Trader Admin user','traderAdmin',1,'$2a$10$N6ADcu9ZdD3tFik0lkMRJO7PO0XFbxAjNMhujBjp6F0n3iJyVoGgG',0);
+Insert into USERS (ID,LAST_UPDATED,UPDATE_COUNT,DESCRIPTION,NAME,IS_ACTIVE,PASSWORD,IS_SUPERUSER) values (3,to_timestamp('26-JUN-19 08.41.27.573000000 AM','DD-MON-RR HH.MI.SSXFF AM'),0,'Admin user','admin',1,'$2a$10$kfVP4tGnFJrZf1pcjo5pVe7cbyVUguMYoz4tgP12gubXlbNwRJuP.',1);
 --------------------------------------------------------
 --  DDL for Index UK_IMDQ099U0QA8OB9TT5LJM6F7U
 --------------------------------------------------------

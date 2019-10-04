@@ -46,7 +46,7 @@ public class LoginView
         SLF4JLoggerProxy.warn(this,
                               "Coco: entering LoginView.beforeEnter: {}",
                               event);
-        if (SecurityUtils.isUserLoggedIn()) {
+        if(SecurityUtils.isUserLoggedIn()) {
             event.forwardTo(DashboardView.class);
         } else {
             setOpened(true);

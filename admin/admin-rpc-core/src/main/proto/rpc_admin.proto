@@ -11,7 +11,7 @@ message PermissionsForUsernameRequest {
 
 message PermissionsForUsernameResponse {
     string username = 1;
-    repeated string permissions = 2;
+    repeated Permission permissions = 2;
 }
 
 message User {

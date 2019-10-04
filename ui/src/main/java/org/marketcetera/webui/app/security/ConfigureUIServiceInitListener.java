@@ -20,29 +20,29 @@ public class ConfigureUIServiceInitListener
         implements VaadinServiceInitListener
 {
     @Override
-	public void serviceInit(ServiceInitEvent event) {
-		event.getSource().addUIInitListener(uiEvent -> {
-			final UI ui = uiEvent.getUI();
-			ui.add(new OfflineBanner());
-			ui.addBeforeEnterListener(this::beforeEnter);
-		});
-	}
-
-	/**
-	 * Reroutes the user if she is not authorized to access the view. 
-	 *
-	 * @param event
-	 *            before navigation event with event details
-	 */
-	private void beforeEnter(BeforeEnterEvent event) {
-		final boolean accessGranted = SecurityUtils.isAccessGranted(event.getNavigationTarget());
-		if (!accessGranted) {
-			if (SecurityUtils.isUserLoggedIn()) {
-				event.rerouteToError(AccessDeniedException.class);
-			} else {
-				event.rerouteTo(LoginView.class);
-			}
-		}
-	}
+    public void serviceInit(ServiceInitEvent event)
+    {
+        event.getSource().addUIInitListener(uiEvent -> {
+            final UI ui = uiEvent.getUI();
+            ui.add(new OfflineBanner());
+            ui.addBeforeEnterListener(this::beforeEnter);
+        });
+    }
+    /**
+     * Reroutes the user if she is not authorized to access the view. 
+     *
+     * @param event before navigation event with event details
+     */
+    private void beforeEnter(BeforeEnterEvent event)
+    {
+        final boolean accessGranted = SecurityUtils.isAccessGranted(event.getNavigationTarget());
+        if(!accessGranted) {
+            if(SecurityUtils.isUserLoggedIn()) {
+                event.rerouteToError(AccessDeniedException.class);
+            } else {
+                event.rerouteTo(LoginView.class);
+            }
+        }
+    }
     private static final long serialVersionUID = -4933606162229090877L;
 }

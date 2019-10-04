@@ -46,11 +46,11 @@ public class AdminRpcClient
      * @see com.marketcetera.admin.AdminRpcClient#getPermissionsForUsername()
      */
     @Override
-    public Set<String> getPermissionsForCurrentUser()
+    public Set<Permission> getPermissionsForCurrentUser()
     {
-        return executeCall(new Callable<Set<String>>() {
+        return executeCall(new Callable<Set<Permission>>() {
             @Override
-            public Set<String> call()
+            public Set<Permission> call()
                     throws Exception
             {
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
@@ -68,7 +68,11 @@ public class AdminRpcClient
                                        "{} received {}",
                                        getSessionId(),
                                        response);
-                Set<String> results = Sets.newHashSet(response.getPermissionsList());
+                Set<Permission> results = Sets.newHashSet();
+                for(AdminRpc.Permission rpcPermission : response.getPermissionsList()) {
+                    AdminRpcUtil.getPermission(rpcPermission,
+                                               permissionFactory).ifPresent(permission -> results.add(permission));
+                }
                 SLF4JLoggerProxy.trace(AdminRpcClient.this,
                                        "{} returning {}",
                                        getSessionId(),

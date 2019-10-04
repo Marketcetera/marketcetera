@@ -15,6 +15,7 @@ import org.marketcetera.admin.dao.UserDao;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.admin.user.QPersistentUser;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.persist.SortDirection;
@@ -24,6 +25,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -243,6 +245,14 @@ public class UserServiceImpl
         response.setElements(users);
         return response;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.service.UserService#getPasswordEncoder()
+     */
+    @Override
+    public PasswordEncoder getPasswordEncoder()
+    {
+        return passwordEncoder;
+    }
     /**
      * Get the userDao value.
      *
@@ -287,6 +297,9 @@ public class UserServiceImpl
     @PostConstruct
     public void start()
     {
+        if(passwordEncoder != null) {
+            PlatformServices.setPasswordEncoder(passwordEncoder);
+        }
         if(userAliases == null) {
             userAliases = Maps.newHashMap();
             userAliases.put("name",
@@ -335,4 +348,9 @@ public class UserServiceImpl
      * specifies column aliases to use when sorting or filtering the user table
      */
     private Map<String,String> userAliases;
+    /**
+     * password encoder to use (optional, otherwise, use the default one)
+     */
+    @Autowired(required=false)
+    private PasswordEncoder passwordEncoder;
 }

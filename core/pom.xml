@@ -135,6 +135,10 @@
       <groupId>com.sun.mail</groupId>
       <artifactId>javax.mail</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-core</artifactId>
+    </dependency>
     <!-- runtime -->
     <dependency>
       <groupId>com.lmax</groupId>

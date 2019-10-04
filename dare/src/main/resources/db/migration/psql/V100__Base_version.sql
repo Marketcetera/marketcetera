@@ -636,9 +636,9 @@ INSERT INTO supervisor_permissions_users (supervisor_permission_id, subjects_id)
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO users (id, last_updated, update_count, description, name, is_active, password, is_superuser, user_data) VALUES (1, '2018-11-13 08:00:12.67', 0, NULL, 'admin', true, '6anqbgybi82pveayzrkt3egjkwfwdg5', true, NULL);
-INSERT INTO users (id, last_updated, update_count, description, name, is_active, password, is_superuser, user_data) VALUES (3, '2018-11-13 08:00:20.469', 0, 'Trader user', 'trader', true, '2zg91043ou3eki4ysbejwwgkci37e6j', false, NULL);
-INSERT INTO users (id, last_updated, update_count, description, name, is_active, password, is_superuser, user_data) VALUES (4, '2018-11-13 08:00:20.515', 0, 'Trader Admin user', 'traderAdmin', true, '210ui1dyyf6voajrad4gmpt3vgvvm9o', false, NULL);
+INSERT INTO users (id, last_updated, update_count, description, name, is_active, password, is_superuser, user_data) VALUES (1, '2018-11-13 08:00:12.67', 0, NULL, 'admin', true, '$2a$10$kfVP4tGnFJrZf1pcjo5pVe7cbyVUguMYoz4tgP12gubXlbNwRJuP.', true, NULL);
+INSERT INTO users (id, last_updated, update_count, description, name, is_active, password, is_superuser, user_data) VALUES (3, '2018-11-13 08:00:20.469', 0, 'Trader user', 'trader', true, '$2a$10$ISknot6OPe/PI1dQdKmTluxSrRyJwOVI5ex31XdqGPHlWl6vuTseW', false, NULL);
+INSERT INTO users (id, last_updated, update_count, description, name, is_active, password, is_superuser, user_data) VALUES (4, '2018-11-13 08:00:20.515', 0, 'Trader Admin user', 'traderAdmin', true, '$2a$10$N6ADcu9ZdD3tFik0lkMRJO7PO0XFbxAjNMhujBjp6F0n3iJyVoGgG', false, NULL);
 
 
 --

@@ -5,13 +5,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 /**
  * Configures spring security, doing the following:
@@ -32,7 +30,7 @@ public class SecurityConfiguration
     @Bean
     public PasswordEncoder passwordEncoder()
     {
-        // TODO we probably need to replace this with our own
+        // this has to match the password encoder in use on the server
         return new BCryptPasswordEncoder();
     }
     // TODO I don't know what this does
@@ -60,31 +58,32 @@ public class SecurityConfiguration
     {
         return new AdminRpcAuthenticationProvider();
     }
-    /* (non-Javadoc)
-     * @see org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.web.builders.HttpSecurity)
-     */
-    @Override
-    protected void configure(HttpSecurity http)
-            throws Exception
-    {
-        // Not using Spring CSRF here to be able to use plain HTML for the login page
-        http.csrf().disable()
-        // Register our CustomRequestCache, that saves unauthorized access attempts, so the user is redirected after login.
-        .requestCache().requestCache(new CustomRequestCache())
-        // Restrict access to our application.
-        .and().authorizeRequests()
-        // Allow all flow internal requests.
-        .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
-        // Allow all requests by logged in users.
-//        .anyRequest().hasAnyAuthority(Role.getAllRoles())
-        // Configure the login page.
-        .and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_PROCESSING_URL)
-        .failureUrl(LOGIN_FAILURE_URL)
-        // Register the success handler that redirects users to the page they last tried to access
-        .successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
-        // Configure logout
-        .and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL);
-    }
+    // TODO for some reason, enabling this method at all causes routing failures
+//    /* (non-Javadoc)
+//     * @see org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.web.builders.HttpSecurity)
+//     */
+//    @Override
+//    protected void configure(HttpSecurity http)
+//            throws Exception
+//    {
+//        // Not using Spring CSRF here to be able to use plain HTML for the login page
+////        http.csrf().disable()
+////        // Register our CustomRequestCache, that saves unauthorized access attempts, so the user is redirected after login.
+////        .requestCache().requestCache(new CustomRequestCache())
+////        // Restrict access to our application.
+////        .and().authorizeRequests()
+////        // Allow all flow internal requests.
+////        .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
+////        // Allow all requests by logged in users.
+//////        .anyRequest().hasAnyAuthority(Role.getAllRoles())
+////        // Configure the login page.
+////        .and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_PROCESSING_URL)
+////        .failureUrl(LOGIN_FAILURE_URL)
+////        // Register the success handler that redirects users to the page they last tried to access
+////        .successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
+////        // Configure logout
+////        .and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL);
+//    }
     /**
      * Allows access to static resources, bypassing Spring security.
      */

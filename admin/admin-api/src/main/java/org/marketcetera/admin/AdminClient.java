@@ -22,9 +22,9 @@ public interface AdminClient
     /**
      * Get permissions for the current user.
      *
-     * @return a <code>Set&lt;String&gt;</code> value
+     * @return a <code>Set&lt;Permission&gt;</code> value
      */
-    Set<String> getPermissionsForCurrentUser();
+    Set<Permission> getPermissionsForCurrentUser();
     /**
      * Get the list of users.
      *

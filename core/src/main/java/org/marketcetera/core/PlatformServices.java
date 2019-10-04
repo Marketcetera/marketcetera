@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.UUID;
 
+import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -13,6 +14,8 @@ import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
 
@@ -144,6 +147,25 @@ public abstract class PlatformServices
                                inTarget);
     }
     /**
+     * Set the password encoder to use.
+     *
+     * @param inPasswordEncoder a <code>PasswordEncoder</code> value
+     */
+    public static void setPasswordEncoder(PasswordEncoder inPasswordEncoder)
+    {
+        Validate.notNull(inPasswordEncoder);
+        passwordEncoder = inPasswordEncoder;
+    }
+    /**
+     * Get the password encoder to use.
+     *
+     * @return a <code>PasswordEncoder</code> value
+     */
+    public static PasswordEncoder getPasswordEncoder()
+    {
+        return passwordEncoder;
+    }
+    /**
      * Create a new EnterprisePlatformServices instance.
      */
     private PlatformServices()
@@ -179,4 +201,8 @@ public abstract class PlatformServices
      * constant representing one penny
      */
     public static final BigDecimal ONE_PENNY = new BigDecimal("0.01");
+    /**
+     * password encoder to use for the platform
+     */
+    private static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 }

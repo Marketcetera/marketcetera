@@ -6,11 +6,6 @@ import static org.marketcetera.admin.Messages.INVALID_PASSWORD;
 import static org.marketcetera.admin.Messages.SIMPLE_USER_NAME;
 import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,6 +20,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.admin.MutableUser;
 import org.marketcetera.admin.User;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.persist.ValidationException;
 import org.marketcetera.trade.UserID;
@@ -236,8 +232,8 @@ public class PersistentUser
             return;
         }
         validatePasswordValue(password);
-        if(!getHashedPassword().equals(hash(getName().toCharArray(),
-                                            password))) {
+        if(!PlatformServices.getPasswordEncoder().matches(new String(password),
+                                                          getHashedPassword())) {
             throw new ValidationException(INVALID_PASSWORD);
         }
     }
@@ -273,8 +269,7 @@ public class PersistentUser
             throws ValidationException
     {
         validatePasswordValue(password);
-        setHashedPassword(hash(getName().toCharArray(),
-                               password));
+        setHashedPassword(hash(password));
     }
     public String getHashedPassword() {
         return hashedPassword;
@@ -346,31 +341,10 @@ public class PersistentUser
      *
      * @throws IllegalArgumentException If there's a bug in the code.
      */
-    private static String hash(char[] ...value)
+    private static String hash(char[] value)
     {
-        try {
-            MessageDigest dig = digest.get();
-            for(char[] c:value) {
-                dig.update(new String(c).getBytes("UTF-16")); //$NON-NLS-1$
-            }
-            return new BigInteger(dig.digest()).toString(Character.MAX_RADIX);
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException(e);
-        }
+        return PlatformServices.getPasswordEncoder().encode(new String(value));
     }
-    /**
-     * The digest used to hash the password.
-     */
-    private static ThreadLocal<MessageDigest> digest = new ThreadLocal<MessageDigest>() {
-        protected MessageDigest initialValue()
-        {
-            try {
-                return MessageDigest.getInstance("SHA1"); //$NON-NLS-1$
-            } catch (NoSuchAlgorithmException e) {
-                throw new IllegalArgumentException(e);
-            }
-        }
-    };
     /**
      * indicates if this user is a super user
      */

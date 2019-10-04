@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Bean;
  */
 @EnableAutoConfiguration
 @SpringBootConfiguration
-@SpringBootApplication(scanBasePackageClasses = { SecurityConfiguration.class, MainView.class, Application.class,UserService.class }, exclude = ErrorMvcAutoConfiguration.class)
+@SpringBootApplication//(scanBasePackageClasses = { SecurityConfiguration.class, MainView.class, Application.class,UserService.class }, exclude = ErrorMvcAutoConfiguration.class)
 public class Application
         extends SpringBootServletInitializer
 {

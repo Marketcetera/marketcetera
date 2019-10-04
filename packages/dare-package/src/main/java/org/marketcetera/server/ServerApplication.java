@@ -422,7 +422,7 @@ public class ServerApplication
     /**
      * web services port
      */
-    @Value("${metc.ws.port}")
+    @Value("${server.port}")
     private int webServerPort;
     /**
      * server hostname

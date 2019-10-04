@@ -660,7 +660,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` (`id`, `last_updated`, `update_count`, `description`, `name`, `is_active`, `password`, `is_superuser`, `user_data`) VALUES (1,'2018-11-13 14:33:01.844',0,NULL,'admin',_binary '','6anqbgybi82pveayzrkt3egjkwfwdg5',_binary '',NULL),(3,'2018-11-13 14:33:09.437',0,'Trader user','trader',_binary '','2zg91043ou3eki4ysbejwwgkci37e6j',_binary '\0',NULL),(4,'2018-11-13 14:33:09.487',0,'Trader Admin user','traderAdmin',_binary '','210ui1dyyf6voajrad4gmpt3vgvvm9o',_binary '\0',NULL);
+INSERT INTO `users` (`id`, `last_updated`, `update_count`, `description`, `name`, `is_active`, `password`, `is_superuser`, `user_data`) VALUES (1,'2018-11-13 14:33:01.844',0,NULL,'admin',_binary '','$2a$10$kfVP4tGnFJrZf1pcjo5pVe7cbyVUguMYoz4tgP12gubXlbNwRJuP.',_binary '',NULL),(3,'2018-11-13 14:33:09.437',0,'Trader user','trader',_binary '','$2a$10$ISknot6OPe/PI1dQdKmTluxSrRyJwOVI5ex31XdqGPHlWl6vuTseW',_binary '\0',NULL),(4,'2018-11-13 14:33:09.487',0,'Trader Admin user','traderAdmin',_binary '','$2a$10$N6ADcu9ZdD3tFik0lkMRJO7PO0XFbxAjNMhujBjp6F0n3iJyVoGgG',_binary '\0',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

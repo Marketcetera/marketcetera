@@ -175,7 +175,8 @@ public class AdminRpcService<SessionClazz>
                 if(internalPermissions != null) {
                     for(Permission internalPermission : internalPermissions) {
                         try {
-                            responseBuilder.addPermissions(internalPermission.getName());
+                            AdminRpcUtil.getRpcPermission(permissionFactory.create(internalPermission.getName(),
+                                                                                   internalPermission.getDescription())).ifPresent(permission -> responseBuilder.addPermissions(permission));
                         } catch (IllegalArgumentException e) {
                             SLF4JLoggerProxy.warn(this,
                                                   "{} is not a valid permission name, skipping",
