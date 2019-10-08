@@ -26,6 +26,12 @@ public interface AdminClient
      */
     Set<Permission> getPermissionsForCurrentUser();
     /**
+     * Get the current user.
+     *
+     * @return a <code>User</code> value
+     */
+    User getCurrentUser();
+    /**
      * Get the list of users.
      *
      * @return a <code>List&lt;User&gt;</code> value

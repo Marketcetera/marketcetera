@@ -82,6 +82,42 @@ public class AdminRpcClient
         });
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.admin.AdminClient#getCurrentUser()
+     */
+    @Override
+    public User getCurrentUser()
+    {
+        return executeCall(new Callable<User>() {
+            @Override
+            public User call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} getting self",
+                                       getSessionId());
+                AdminRpc.GetCurrentUserRequest.Builder requestBuilder = AdminRpc.GetCurrentUserRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                AdminRpc.GetCurrentUserRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.GetCurrentUserResponse response = getBlockingStub().getCurrentUser(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                User result = AdminRpcUtil.getUser(response.getUser(),
+                                                    userFactory).orElse(null);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result;
+            }
+        });
+    }
+    /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminRpcClient#changeUserPassword(java.lang.String, java.lang.String, java.lang.String)
      */
     @Override

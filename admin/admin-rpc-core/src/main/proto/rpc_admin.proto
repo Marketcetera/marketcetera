@@ -14,6 +14,14 @@ message PermissionsForUsernameResponse {
     repeated Permission permissions = 2;
 }
 
+message GetCurrentUserRequest {
+    string sessionId = 1;
+}
+
+message GetCurrentUserResponse {
+    User user = 1;
+}
+
 message User {
     string name = 1;
     string description = 2;
@@ -203,6 +211,7 @@ service AdminRpcService {
     rpc logout(LogoutRequest) returns (LogoutResponse);
     rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
     rpc getPermissionsForUsername(PermissionsForUsernameRequest) returns (PermissionsForUsernameResponse);
+    rpc getCurrentUser(GetCurrentUserRequest) returns (GetCurrentUserResponse);
     rpc createUser(CreateUserRequest) returns (CreateUserResponse);
     rpc readUsers(ReadUsersRequest) returns (ReadUsersResponse);
     rpc updateUser(UpdateUserRequest) returns (UpdateUserResponse);

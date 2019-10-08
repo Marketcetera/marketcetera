@@ -25,6 +25,8 @@ import org.marketcetera.admin.AdminRpc.DeleteRoleRequest;
 import org.marketcetera.admin.AdminRpc.DeleteRoleResponse;
 import org.marketcetera.admin.AdminRpc.DeleteUserRequest;
 import org.marketcetera.admin.AdminRpc.DeleteUserResponse;
+import org.marketcetera.admin.AdminRpc.GetCurrentUserRequest;
+import org.marketcetera.admin.AdminRpc.GetCurrentUserResponse;
 import org.marketcetera.admin.AdminRpc.PermissionsForUsernameRequest;
 import org.marketcetera.admin.AdminRpc.PermissionsForUsernameResponse;
 import org.marketcetera.admin.AdminRpc.ReadPermissionsRequest;
@@ -156,6 +158,36 @@ public class AdminRpcService<SessionClazz>
         {
             AdminRpcService.this.doHeartbeat(inRequest,
                                              inResponseObserver);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceImplBase#getCurrentUser(org.marketcetera.admin.AdminRpc.GetCurrentUserRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getCurrentUser(GetCurrentUserRequest inRequest,
+                                   StreamObserver<GetCurrentUserResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(AdminRpcService.this,
+                                       "Received get current user request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                AdminRpc.GetCurrentUserResponse.Builder responseBuilder = AdminRpc.GetCurrentUserResponse.newBuilder();
+                User currentUser = userService.findByName(sessionHolder.getUser());
+                if(currentUser != null) {
+                    AdminRpcUtil.getRpcUser(currentUser).ifPresent(rpcUser -> responseBuilder.setUser(rpcUser));
+                }
+                AdminRpc.GetCurrentUserResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
+            }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceImplBase#getPermissionsForUsername(org.marketcetera.admin.AdminRpc.PermissionsForUsernameRequest, io.grpc.stub.StreamObserver)

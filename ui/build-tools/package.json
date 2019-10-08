@@ -1,0 +1,21 @@
+{
+  "name": "bakery-app-starter-flow-spring",
+  "description": "Frontend dependencies for the Bakery App Starter for Flow and Spring",
+  "version": "1.0.0",
+  "author": "Vaadin Ltd",
+  "license": "SEE LICENSE IN http://vaadin.com/license/cvtl-1",
+  "devDependencies": {
+    "eslint": "^5.0.0",
+    "eslint-config-vaadin": "^0.2.7",
+    "eslint-plugin-html": "^4.0.0",
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^5.0.0",
+    "gulp-html-extract": "^0.3.0",
+    "gulp-stylelint": "^7.0.0",
+    "stylelint": "^9.0.0",
+    "stylelint-config-vaadin": "^0.1.4"
+  },
+  "scripts": {
+    "lint": "gulp lint"
+  }
+}

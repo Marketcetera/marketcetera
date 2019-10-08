@@ -1,0 +1,106 @@
+Commercial Vaadin Template License version 1
+NOTICE TO USER: PLEASE READ THIS LICENSE AGREEMENT CAREFULLY.
+
+BY USING ALL OR ANY PART OF THE LICENSED TEMPLATE YOU ACCEPT ALL THE TERMS AND CONDITIONS OF THIS AGREEMENT, INCLUDING, IN PARTICULAR THE RESTRICTIONS ON: USE AND TRANSFERABILITY CONTAINED IN CLAUSE 2; WARRANTY IN CLAUSE 6; LIABILITY IN CLAUSE 7. YOU ACCEPT THAT THIS AGREEMENT IS ENFORCEABLE LIKE ANY WRITTEN NEGOTIATED AGREEMENT DULY SIGNED BY YOU. IF YOU DO NOT AGREE ON ALL THE TERMS AND CONDITIONS OF THIS AGREEMENT, STOP THE USE OF THE LICENSED TEMPLATE IMMEDIATELY.
+
+1. Definitions
+In this Agreement, unless the context requires otherwise, the following words and phrases shall have the following meanings:
+
+"Developer" shall mean a software developer, tester, designer or other person who Use Licensed Template in Project.
+
+"Licensed Template" shall mean a software application example source code, images, configurations and other included resources that can be used by Developer as a basis for building Project Result. Licensed Template may require use of libraries, components and tools by Vaadin, including but not limited to Vaadin Framework, Vaadin Elements, Vaadin TestBench and Vaadin Charts, as well as by 3rd parties. These libraries, components and tools are not considered to be part of Licensed Template and need to be licensed separately.
+
+"Use Licensed Template" shall mean copying the Licensed Template or parts of it to Project Result.
+
+"Agreement" shall mean this Commercial Vaadin Template License version 1 agreement.
+
+"License" shall mean the right to Use Licensed Template according to Agreement by one Developer.
+
+"Intellectual Property Rights" shall mean any and all patent, copyright, trademark, design right, petty patent, service mark, domain name or any other right or trade secret whether registered or not.
+
+"Licensee" shall mean the entity that has subscribed to a subscription that includes the right to Use Licensed Template.
+
+"Licensor" shall mean Vaadin Ltd.
+
+"Parties/Party" shall mean Licensee and Licensor, or either of them.
+
+"Project" shall mean Licensee's software development project during which the participating	Developers Use Licensed Template and which aims to produce Project Result.
+
+"Project Result" shall mean a software application that is the outcome of the Project.
+
+"Subscription" shall mean a subscription offered by Vaadin Ltd. in which Licensor grants rights to Use Licensed Template according to the terms of the subscription.
+
+2. Grant of License
+2.1 Licensor grants to Licensee, against full payment of respected Subscription fee, a worldwide, royalty-free, irrevocable, non-exclusive, perpetual and limited License to Use Licensed Template in Project(s) by a Developer.
+
+2.2 Licensee shall not, unless expressly provided in Agreement or in the applicable legislation,
+
+2.2.1 rent, lease or loan Licensed Template or any copy of it;
+
+2.2.2 grant sub-licenses to Licensed Template or assign	its rights or obligations under this Agreement to a third party;
+
+2.2.3 distribute the Licensed Template as-is or	any	derivatives or parts of it for the purpose of them being used as source code examples or basis for other software applications.
+
+2.3 Licensee may license, for free or against a payment, Project Result including Licensed Template or parts	of it whether regarded as derivative works or not.
+
+2.4 The right to Use Licensed Template as basis for starting new Projects expires when Subscription ends, but Licensee is allowed to continue further development of their Project Results in Projects started during the Subscription except when the Subscription has been provided without a fee solely for evaluation purposes.
+
+3. Intellectual Property Rights
+3.1 All Intellectual Property Rights in and to Licensed Template are and shall at all times remain the sole and exclusive property of Licensor and its third party licensors, if any.
+
+3.2 Licensee will not at any time do or cause to be done any such act or thing which in any way impairs, or intends to impair, any right, title, interest or any Intellectual Property Right of Licensor or its third party licensors. Licensee shall not in any manner represent that it has any ownership of any kind in any of the above mentioned Intellectual Property Rights.
+
+4. License fee
+4.1 In consideration for the license granted herein, Licensor shall charge Licensee a Subscription fee. Licensee must have a valid License for all Developers who Use Licensed Template in Project. License may be used in many Projects simultaneously without additional payments. Project Result may be copied an unlimited number of times and deployed to an unlimited number of computers without additional payments.
+
+5. Term and termination
+5.1 This Agreement and the Licenses granted herein become effective as of the payment of the applicable license fee.
+
+5.2 In the event Licensee fails to comply with the terms set in this Agreement, the License granted herein shall not	be valid and Licensee must cease the use of Licensed Template and any of its rights under Clause 2, and	delete all copies of Licensed Template.
+
+5.3 Licensor has the right, in addition and without prejudice to any other rights or remedies, to terminate this	Agreement immediately as follows:
+
+5.3.1 for any material breach of Agreement, that is not cured within seven (7) days of receipt by Licensee in default of a written notice specifying the breach and requiring its cure;
+
+5.3.2 upon receiving a written notice, if (a) all or a substantial portion of the assets of Licensee are transferred	to an assignee for the benefit of creditors, or to a receiver or a trustee in bankruptcy, (b) a proceeding is commenced by or against Licensee for relief under bankruptcy or similar laws and such proceeding is not dismissed	within sixty (60) days, or (c) Licensee is adjudged bankrupt.
+
+5.4 If and when this Agreement is terminated due to any reason or cause whatsoever, the Licensee shall cease to Use Licensed Template and any of its rights under Clause 2, and delete all copies of Licensed Template.
+
+5.5 Provisions 3, 6, 7 and 9 of the Agreement shall survive its termination or expiration.
+
+6. Warranties
+THE LICENSED TEMPLATE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND EXPRESS OR IMPLIED, AND TO THE MAXIMUM EXTENT	PERMITTED BY THE APPLICABLE LAW. EXCEPT AS EXPRESSLY PROVIDED IN THIS CLAUSE, NO WARRANTY, CONDITION, UNDERTAKING, LIABILITY OR TERM, EXPRESS OR IMPLIED, STATUTORY OR OTHERWISE, AS TO CONDITION, QUALITY, PERFORMANCE, FUNCTIONALITY, INFRINGEMENT, MERCHANTABILITY, DURABILITY OR FITNESS FOR PURPOSE, IS GIVEN OR ASSUMED BY VAADIN LTD., LICENSOR OR ITS LICENSORS AND ALL SUCH WARRANTIES, CONDITIONS, UNDERTAKINGS AND TERMS ARE HEREBY EXCLUDED.
+
+7. Limitation of Liability
+LICENSOR WILL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, PUNITIVE OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF	ANY KIND WHATSOEVER AND HOWSOEVER CAUSED (INCLUDING BUSINESS INTERRUPTION, OR ANY LOSS OF BUSINESS, ANTICIPATED SAVINGS, REVENUE, GOODWILL, MANAGEMENT TIME, LOSS OF PROFITS OR OF CONTRACTS, LOSS OF OPERATION TIME, LOSS OF REPUTATION OR OF DATA) INCLUDING NEGLIGENCE, WHETHER IN CONTRACT OR TORT, EVEN IF THEY HAVE BEEN ADVISED OF THE POSSIBILITY. DEVELOPER WILL USE REASONABLE EFFORTS TO MITIGATE THEIR LOSS SUFFERED. VAADIN LTD'S AND/OR LICENSOR'S AGGREGATE LIABILITY AND THAT OF ITS AFFILIATES AND SUPPLIERS UNDER OR IN CONNECTION WITH THIS LICENSE AGREEMENT WILL BE LIMITED TO THE AMOUNT PAID FOR THE LICENSED TEMPLATE.
+
+8. Support
+Licensee is not entitled to receive support for the Licensed Template, but Licensor may, in its sole discretion,	provide support either for free or for a fee.
+
+9. Miscellaneous
+9.1 No Waiver
+
+The failure of Licensor to exercise any of its rights under this Agreement or to require the performance of any term	or provision of this Agreement, or the waiver by either Party of such breach of this Agreement, shall not prevent a	subsequent exercise or enforcement of such right or be deemed a waiver of any subsequent breach of the same	or any other term or provision of this Agreement. Any waiver of the performance of any of the terms or conditions of this Agreement shall be effective only if in writing and signed by the Party against which such waiver is to be enforced.
+
+9.2 Headings
+
+The headings in this Agreement are for the convenience of the Parties only and are not intended to define or limit the scope or interpretation of the Agreement or any provision hereof.
+
+9.3 Severability
+
+If any term of this Agreement is invalid or unenforceable, such terms or provisions shall not invalidate the rest of the Agreement which shall remain in full force and effect as if such invalidated or unenforceable terms or conditions had not been made a part of this Agreement. In the event this section (Severability) becomes operative, Parties agree to attempt to negotiate settlement that carries out the economic intent of the terms or provisions found invalid or unenforceable.
+
+9.4 Export Control
+
+The Licensed Template may be subject to import and export controls in other countries. Licensee agrees to strictly comply with all applicable import and export regulations and acknowledge that Licensee has the responsibility to obtain licenses to export, re-export, transfer or import Licensed Template.
+
+9.5 Entire Agreement and Assignment
+
+Agreement sets forth the entire agreement between the Parties with respect to the subject matter hereof and supersedes any prior proposals and representations, whether written or oral. Neither Party shall have the right to assign this Agreement to a third party without the prior written consent of the other party. However, Licensor shall have the right to assign this Agreement and all of the rights and obligations contained therein to a company belonging to the same group of companies as Licensor, and to a third party to which the business of Licensor is transferred. As an exception, the Licensee shall have the right to transfer License as described in 2.4.
+
+9.6 Governing Law
+
+This Agreement and its terms and conditions shall be governed by and construed in accordance with the substantive laws in force in: (a) the State of California, if Licensee's domicile is in the United States; or (b) Finland, if Licensee's domicile is outside the United States. This Agreement shall be construed and enforced without regard to the United Nations Convention on the International Sale of Goods. The official text of the Agreement or any notices given or accounts or statements required hereby shall be in English.
+
+Any dispute or controversy or claim arising out of or relating to this Agreement involving the Parties, shall be resolved by final and binding arbitration in accordance with: (a) the International Chamber of Commerce Rules of Arbitration if Licensee's domicile is in the United States; or (b) the Arbitration Rules of the Finnish Central Chamber of Commerce if Licensee's domicile is outside the United States; by one (1) arbitrator appointed according to the aforementioned rules. The arbitration shall be conducted in the English language in: (a) San Francisco, California, United States if Licensee's domicile is in the United States; or (b) Turku, Finland if Licensee's domicile is outside the United States.
+
