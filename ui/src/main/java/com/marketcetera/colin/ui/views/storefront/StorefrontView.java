@@ -35,7 +35,7 @@ import com.marketcetera.colin.ui.views.orderedit.OrderEditor;
 @JsModule("./src/views/storefront/storefront-view.js")
 @Route(value = WebUiConst.PAGE_STOREFRONT, layout = MainView.class)
 @RouteAlias(value = WebUiConst.PAGE_STOREFRONT_EDIT, layout = MainView.class)
-@RouteAlias(value = WebUiConst.PAGE_ROOT, layout = MainView.class)
+//@RouteAlias(value = WebUiConst.PAGE_ROOT, layout = MainView.class)
 @PageTitle(WebUiConst.TITLE_STOREFRONT)
 public class StorefrontView extends PolymerTemplate<TemplateModel>
 		implements HasLogger, HasUrlParameter<Long>, EntityView<Order> {

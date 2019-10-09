@@ -3,7 +3,6 @@ package com.marketcetera.colin.app.security;
 import java.util.Optional;
 
 import org.marketcetera.admin.AdminClient;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +41,7 @@ public class SecurityConfiguration
     public CurrentUser currentUser(UserRepository userRepository,
                                    ClientService inClientService)
     {
+        // TODO need to switch this over to using real users
         Optional<AdminClient> adminClient = Optional.empty();
         if(inClientService != null) {
             adminClient = inClientService.getService(AdminClient.class);
@@ -51,6 +51,22 @@ public class SecurityConfiguration
         User user = username != null ? userRepository.findByEmailIgnoreCase(username) : null;
 //        return () -> adminClient.get().getCurrentUser();
         return () -> user;
+    }
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public CurrentMetcUser currentMetcUser()
+    {
+//        // TODO need to switch this over to using real users
+//        Optional<AdminClient> adminClient = Optional.empty();
+//        if(inClientService != null) {
+//            adminClient = inClientService.getService(AdminClient.class);
+//        }
+//        // prototype scope means that a different bean is returned every time this method is invoked
+//        final String username = SecurityUtils.getUsername();
+//        User user = username != null ? userRepository.findByEmailIgnoreCase(username) : null;
+////        return () -> adminClient.get().getCurrentUser();
+//        return () -> user;
+        return null;
     }
     /**
      * Get the password encoder.

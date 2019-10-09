@@ -38,7 +38,7 @@ public final class SecurityUtils
         SecurityContext context = SecurityContextHolder.getContext();
         Object principal = context.getAuthentication().getPrincipal();
         if(principal instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) context.getAuthentication().getPrincipal();
+            UserDetails userDetails = (UserDetails)context.getAuthentication().getPrincipal();
             return userDetails.getUsername();
         }
         // Anonymous or no authentication.

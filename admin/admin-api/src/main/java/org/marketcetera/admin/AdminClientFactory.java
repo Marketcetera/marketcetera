@@ -15,7 +15,7 @@ public interface AdminClientFactory<ParameterClazz>
      * Create a new {@link AdminClient} instance.
      *
      * @param inParameterClazz a <code>ParameterClazz</code> value
-     * @return a <code>AdminClient</code> value
+     * @return an <code>AdminClient</code> value
      */
     AdminClient create(ParameterClazz inParameterClazz);
 }
