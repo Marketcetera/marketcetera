@@ -1,8 +1,7 @@
 package com.marketcetera.colin.app.security;
 
-import java.util.Optional;
-
 import org.marketcetera.admin.AdminClient;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
-import com.marketcetera.colin.app.service.ClientService;
+import com.marketcetera.colin.backend.client.AdminClientService;
 import com.marketcetera.colin.backend.data.Role;
 import com.marketcetera.colin.backend.data.entity.User;
 import com.marketcetera.colin.backend.repositories.UserRepository;
@@ -38,35 +37,30 @@ public class SecurityConfiguration
 {
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public CurrentUser currentUser(UserRepository userRepository,
-                                   ClientService inClientService)
+    public CurrentUser currentUser(UserRepository userRepository)
+            throws Exception
     {
-        // TODO need to switch this over to using real users
-        Optional<AdminClient> adminClient = Optional.empty();
-        if(inClientService != null) {
-            adminClient = inClientService.getService(AdminClient.class);
-        }
         // prototype scope means that a different bean is returned every time this method is invoked
         final String username = SecurityUtils.getUsername();
         User user = username != null ? userRepository.findByEmailIgnoreCase(username) : null;
-//        return () -> adminClient.get().getCurrentUser();
         return () -> user;
     }
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public CurrentMetcUser currentMetcUser()
+    public CurrentMetcUser currentMetcUser(AdminClientService inAdminClientService)
+            throws Exception
     {
-//        // TODO need to switch this over to using real users
-//        Optional<AdminClient> adminClient = Optional.empty();
-//        if(inClientService != null) {
-//            adminClient = inClientService.getService(AdminClient.class);
-//        }
-//        // prototype scope means that a different bean is returned every time this method is invoked
-//        final String username = SecurityUtils.getUsername();
-//        User user = username != null ? userRepository.findByEmailIgnoreCase(username) : null;
-////        return () -> adminClient.get().getCurrentUser();
-//        return () -> user;
-        return null;
+        // prototype scope means that a different bean is returned every time this method is invoked
+        AdminClient adminClient = inAdminClientService.getClient();
+        org.marketcetera.admin.User user = adminClient.getCurrentUser();
+        SLF4JLoggerProxy.debug(this,
+                               "Returning current user: {}",
+                               user);
+        if(user == null) {
+            return null;
+        } else {
+            return () -> user;
+        }
     }
     /**
      * Get the password encoder.

@@ -1,18 +1,10 @@
 package com.marketcetera.colin.backend.client;
 
-import java.util.Map;
-
 import org.marketcetera.fix.FixAdminClient;
 import org.marketcetera.fix.FixAdminClientFactory;
 import org.marketcetera.fix.FixAdminRpcClientParameters;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -25,53 +17,36 @@ import com.google.common.collect.Maps;
  */
 @Service
 public class FixAdminClientService
+        extends AbstractClientService<FixAdminClient,FixAdminRpcClientParameters>
 {
+    /* (non-Javadoc)
+     * @see com.marketcetera.colin.backend.client.AbstractClientService#createClient(org.marketcetera.core.BaseClientParameters)
+     */
+    @Override
+    protected FixAdminClient createClient(FixAdminRpcClientParameters inParams)
+    {
+        return fixAdminClientFactory.create(inParams);
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.colin.backend.client.AbstractClientService#getParameters()
+     */
+    @Override
+    protected FixAdminRpcClientParameters getParameters()
+    {
+        return new FixAdminRpcClientParameters();
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.colin.backend.client.AbstractClientService#getClient()
+     */
+    @Override
     public FixAdminClient getClient()
             throws Exception
     {
-        SecurityContext context = SecurityContextHolder.getContext();
-        if(context.getAuthentication() == null) {
-            throw new IllegalArgumentException("Not logged in");
-        }
-        String username = String.valueOf(context.getAuthentication().getPrincipal());
-        FixAdminClient client = clientsByUsername.get(username);
-        if(client == null) {
-            FixAdminRpcClientParameters params = new FixAdminRpcClientParameters();
-            params.setHostname(rpcServerHostname);
-            params.setPassword(String.valueOf(context.getAuthentication().getCredentials()));
-            params.setPort(rpcPort);
-            params.setUsername(String.valueOf(context.getAuthentication().getPrincipal()));
-            client = fixAdminClientFactory.create(params);
-            client.start();
-            clientsByUsername.put(username,
-                                  client);
-        }
-        if(!client.isRunning()) {
-            try {
-                client.stop();
-                client.start();
-            } catch (Exception e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e);
-            }
-        }
-        if(!client.isRunning()) {
-            clientsByUsername.remove(username);
-            throw new IllegalArgumentException("Cannot connect client");
-        }
-        return client;
+        return super.getClient(FixAdminClient.class);
     }
-    private final Map<String,FixAdminClient> clientsByUsername = Maps.newHashMap();
+    /**
+     * creates new {@link FixAdminClient} objects
+     */
     @Autowired
     private FixAdminClientFactory<FixAdminRpcClientParameters> fixAdminClientFactory;
-    /**
-     * server hostname
-     */
-    @Value("${metc.rpc.hostname:localhost}")
-    private String rpcServerHostname;
-    /**
-     * RPC services port
-     */
-    @Value("${metc.rpc.port:9010}")
-    private int rpcPort;
 }

@@ -18,7 +18,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
-import com.marketcetera.colin.app.service.ClientService;
 import com.marketcetera.colin.backend.data.Role;
 
 /* $License$ */
@@ -74,10 +73,10 @@ public class AdminRpcAuthenticationProvider
                               "{} logged in with the following permissions: {}",
                               inAuthentication.getCredentials(),
                               permissions);
-        // stash AdminClient somewhere so we don't lose track of it
-        // TODO is this per-user or not? needs to be
-        clientService.setService(AdminClient.class,
-                                 adminClient);
+        try {
+            // discard this admin client, which we used just to log in
+            adminClient.stop();
+        } catch (Exception ignored) {}
         return inAuthentication;
     }
     /* (non-Javadoc)
@@ -88,11 +87,6 @@ public class AdminRpcAuthenticationProvider
     {
         return true;
     }
-    /**
-     * provides access to client services
-     */
-    @Autowired
-    private ClientService clientService;
     /**
      * creates {@link AdminClient} values
      */
