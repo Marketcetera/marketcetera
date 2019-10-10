@@ -11,6 +11,17 @@ import org.marketcetera.admin.impl.SimplePermissionFactory;
 import org.marketcetera.admin.impl.SimpleRoleFactory;
 import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
+import org.marketcetera.cluster.ClusterDataFactory;
+import org.marketcetera.cluster.SimpleClusterDataFactory;
+import org.marketcetera.fix.FixAdminClientFactory;
+import org.marketcetera.fix.FixAdminRpcClientFactory;
+import org.marketcetera.fix.FixAdminRpcClientParameters;
+import org.marketcetera.fix.FixSessionAttributeDescriptorFactory;
+import org.marketcetera.fix.MutableActiveFixSessionFactory;
+import org.marketcetera.fix.MutableFixSessionFactory;
+import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
+import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptorFactory;
+import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -53,6 +64,56 @@ public class Application
     public AdminClientFactory<AdminRpcClientParameters> getAdminClientFactory()
     {
         return new AdminRpcClientFactory();
+    }
+    /**
+     * Get the fix admin client factory value.
+     *
+     * @return a <code>FixAdminClientFactory&lt;FixAdminRpcClientParameters&gt;</code> value
+     */
+    @Bean
+    public FixAdminClientFactory<FixAdminRpcClientParameters> getFixAdminClientFactory()
+    {
+        return new FixAdminRpcClientFactory();
+    }
+    /**
+     * Get the fix session attribute descriptor factory value.
+     *
+     * @return a <code>FixSessionAttributeDescriptorFactory</code> value
+     */
+    @Bean
+    public FixSessionAttributeDescriptorFactory getFixSessionAttributeDescriptorFactory()
+    {
+        return new SimpleFixSessionAttributeDescriptorFactory();
+    }
+    /**
+     * Get the active fix session factory value.
+     *
+     * @return a <code>MutableActiveFixSessionFactory</code> value
+     */
+    @Bean
+    public MutableActiveFixSessionFactory getMutableActiveFixSessionFactory()
+    {
+        return new SimpleActiveFixSessionFactory();
+    }
+    /**
+     * Get the fix session factory value.
+     *
+     * @return a <code>MutableFixSessionFactory</code> value
+     */
+    @Bean
+    public MutableFixSessionFactory getMutableFixSessionFactory()
+    {
+        return new SimpleFixSessionFactory();
+    }
+    /**
+     * Get the cluster data factory value.
+     *
+     * @return a <code>ClusterDataFactory</code> value
+     */
+    @Bean
+    public ClusterDataFactory getClusterDataFactory()
+    {
+        return new SimpleClusterDataFactory();
     }
     /**
      * Get the user attribute factory value.

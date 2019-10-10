@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.google.common.collect.Maps;
+import com.marketcetera.colin.app.security.UIUser;
 
 /* $License$ */
 
@@ -47,7 +48,13 @@ public abstract class AbstractClientService<ClientClazz extends BaseClient,Param
         if(context.getAuthentication() == null) {
             throw new IllegalArgumentException("Not logged in");
         }
-        String username = String.valueOf(context.getAuthentication().getPrincipal());
+        UIUser currentUser;
+        if(context.getAuthentication().getPrincipal() instanceof UIUser) {
+            currentUser = (UIUser)context.getAuthentication().getPrincipal();
+        } else {
+            throw new IllegalArgumentException("Unexpected principal: " + context.getAuthentication().getPrincipal());
+        }
+        String username = currentUser.getName();
         SLF4JLoggerProxy.debug(this,
                                "{} requesting {} client",
                                username,
@@ -68,7 +75,7 @@ public abstract class AbstractClientService<ClientClazz extends BaseClient,Param
             params.setHostname(rpcServerHostname);
             params.setPassword(String.valueOf(context.getAuthentication().getCredentials()));
             params.setPort(rpcPort);
-            params.setUsername(String.valueOf(context.getAuthentication().getPrincipal()));
+            params.setUsername(username);
             client = createClient(params);
             client.start();
             SLF4JLoggerProxy.debug(this,

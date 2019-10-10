@@ -210,6 +210,8 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
      */
     private void startService()
     {
+        // TODO this really needs to be fixed, but, it does create a huge dependency problem that needs to be worked out.
+        //  see here: https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty
         ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder.forAddress(parameters.getHostname(),
                                                                                    parameters.getPort()).usePlaintext(true);
         channel = channelBuilder.build();

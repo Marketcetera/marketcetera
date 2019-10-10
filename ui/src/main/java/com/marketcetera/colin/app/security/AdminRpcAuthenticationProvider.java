@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
@@ -51,7 +50,7 @@ public class AdminRpcAuthenticationProvider
             SLF4JLoggerProxy.warn(this,
                                   e,
                                   "Unable to log {} in",
-                                  inAuthentication.getCredentials());
+                                  inAuthentication.getPrincipal());
             throw new BadCredentialsException(ExceptionUtils.getRootCauseMessage(e));
         }
         Validate.isTrue(adminClient.isRunning());
@@ -65,13 +64,13 @@ public class AdminRpcAuthenticationProvider
         permissions.add(new SimplePermission(Role.BARISTA,
                                              Role.BARISTA));
         // TODO temp for this prototype: end
-        inAuthentication = new UsernamePasswordAuthenticationToken(new UIUser(metcUser,
-                                                                              permissions),
-                                                                   inAuthentication.getCredentials(),
-                                                                   permissions);
+        inAuthentication = new MetcAuthenticationToken(new UIUser(metcUser,
+                                                                  permissions),
+                                                       inAuthentication.getCredentials(),
+                                                       permissions);
         SLF4JLoggerProxy.info(this,
                               "{} logged in with the following permissions: {}",
-                              inAuthentication.getCredentials(),
+                              metcUser.getName(),
                               permissions);
         try {
             // discard this admin client, which we used just to log in

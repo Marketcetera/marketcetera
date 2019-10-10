@@ -1,5 +1,6 @@
 package org.marketcetera.fix;
 
+import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.rpc.client.RpcClientFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since $Release$
  */
 public class FixAdminRpcClientFactory
-        implements RpcClientFactory<FixAdminRpcClientParameters,FixAdminRpcClient>
+        implements RpcClientFactory<FixAdminRpcClientParameters,FixAdminRpcClient>,FixAdminClientFactory<FixAdminRpcClientParameters>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.rpc.client.RpcClientFactory#create(org.marketcetera.rpc.client.RpcClientParameters)

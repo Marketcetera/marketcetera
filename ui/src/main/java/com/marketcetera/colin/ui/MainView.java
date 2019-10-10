@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.marketcetera.colin.app.security.CurrentMetcUser;
 import com.marketcetera.colin.app.security.SecurityUtils;
 import com.marketcetera.colin.ui.utils.WebUiConst;
 import com.marketcetera.colin.ui.views.HasConfirmation;
@@ -24,6 +27,7 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.page.Viewport;
@@ -47,19 +51,24 @@ public class MainView
     private final ConfirmDialog confirmDialog = new ConfirmDialog();
     private final Tabs menu;
 
-    public MainView() {
+    @Autowired
+    public MainView(CurrentMetcUser inCurrentUser)
+    {
         confirmDialog.setCancelable(true);
         confirmDialog.setConfirmButtonTheme("raised tertiary error");
         confirmDialog.setCancelButtonTheme("raised tertiary");
 
         this.setDrawerOpened(false);
-        Span appName = new Span("my-starter-project");
+        Span appName = new Span("Marketcetera Automated Trading Platform");
         appName.addClassName("hide-on-mobile");
 
         menu = createMenuTabs();
 
         this.addToNavbar(appName);
         this.addToNavbar(true, menu);
+        Label currentUser = new Label();
+        currentUser.setText(inCurrentUser.getUser().getName());
+        addToNavbar(currentUser);
         this.getElement().appendChild(confirmDialog.getElement());
 
         getElement().addEventListener("search-focus", e -> {
