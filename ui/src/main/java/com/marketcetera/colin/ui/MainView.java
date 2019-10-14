@@ -105,16 +105,16 @@ public class MainView
 
     private static Tab[] getAvailableTabs() {
         final List<Tab> tabs = new ArrayList<>(4);
-        tabs.add(createTab(VaadinIcon.EDIT, TITLE_STOREFRONT,
-                           StorefrontView.class));
-        tabs.add(createTab(VaadinIcon.CLOCK,TITLE_DASHBOARD, DashboardView.class));
-        tabs.add(createTab(VaadinIcon.DESKTOP,WebUiConst.TITLE_DESKTOP,DesktopView.class));
-        if (SecurityUtils.isAccessGranted(UsersView.class)) {
-            tabs.add(createTab(VaadinIcon.USER,TITLE_USERS, UsersView.class));
-        }
-        if (SecurityUtils.isAccessGranted(ProductsView.class)) {
-            tabs.add(createTab(VaadinIcon.CALENDAR, TITLE_PRODUCTS, ProductsView.class));
-        }
+//        tabs.add(createTab(VaadinIcon.EDIT, TITLE_STOREFRONT,
+//                           StorefrontView.class));
+//        tabs.add(createTab(VaadinIcon.CLOCK,TITLE_DASHBOARD, DashboardView.class));
+//        tabs.add(createTab(VaadinIcon.DESKTOP,WebUiConst.TITLE_DESKTOP,DesktopView.class));
+//        if (SecurityUtils.isAccessGranted(UsersView.class)) {
+//            tabs.add(createTab(VaadinIcon.USER,TITLE_USERS, UsersView.class));
+//        }
+//        if (SecurityUtils.isAccessGranted(ProductsView.class)) {
+//            tabs.add(createTab(VaadinIcon.CALENDAR, TITLE_PRODUCTS, ProductsView.class));
+//        }
         final String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
         final Tab logoutTab = createTab(createLogoutLink(contextPath));
         tabs.add(logoutTab);

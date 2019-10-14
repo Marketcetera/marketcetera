@@ -131,22 +131,8 @@ public class BrokerServiceImpl
     @Override
     public Collection<ActiveFixSession> getActiveFixSessions()
     {
-        List<FixSession> fixSessions = fixSessionProvider.findFixSessions();
-        Collection<ActiveFixSession> activeFixSessions = Lists.newArrayList();
-        for(FixSession fixSession : fixSessions) {
-            BrokerID brokerId = new BrokerID(fixSession.getBrokerId());
-            SessionID sessionId = new SessionID(fixSession.getSessionId());
-            ClusterData clusterData = getClusterData(sessionId);
-            if(clusterData == null) {
-                return null;
-            }
-            FixSessionStatus sessionStatus = getFixSessionStatus(brokerId);
-            activeFixSessions.add(activeFixSessionFactory.create(fixSession,
-                                                                 clusterData,
-                                                                 sessionStatus,
-                                                                 getSessionCustomization(fixSession)));
-        }
-        return activeFixSessions;
+        return getActiveFixSessions(new PageRequest(0,
+                                                    Integer.MAX_VALUE)).getElements();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getActiveFixSessions(org.marketcetera.persist.PageRequest)
@@ -154,6 +140,9 @@ public class BrokerServiceImpl
     @Override
     public CollectionPageResponse<ActiveFixSession> getActiveFixSessions(PageRequest inPageRequest)
     {
+        SLF4JLoggerProxy.trace(this,
+                               "getActiveFixSessions: {}",
+                               inPageRequest);
         CollectionPageResponse<ActiveFixSession> result = new CollectionPageResponse<>();
         CollectionPageResponse<FixSession> intermediateResult = fixSessionProvider.findFixSessions(inPageRequest);
         for(FixSession fixSession : intermediateResult.getElements()) {
@@ -161,13 +150,17 @@ public class BrokerServiceImpl
             SessionID sessionId = new SessionID(fixSession.getSessionId());
             ClusterData clusterData = getClusterData(sessionId);
             if(clusterData == null) {
-                return null;
+                continue;
             }
             FixSessionStatus sessionStatus = getFixSessionStatus(brokerId);
-            result.getElements().add(activeFixSessionFactory.create(fixSession,
-                                                                    clusterData,
-                                                                    sessionStatus,
-                                                                    getSessionCustomization(fixSession)));
+            ActiveFixSession activeFixSession = activeFixSessionFactory.create(fixSession,
+                                                                               clusterData,
+                                                                               sessionStatus,
+                                                                               getSessionCustomization(fixSession));
+            SLF4JLoggerProxy.trace(this,
+                                   "Adding: {}",
+                                   activeFixSession);
+            result.getElements().add(activeFixSession);
         }
         result.setHasContent(intermediateResult.hasContent());
         result.setPageMaxSize(intermediateResult.getPageMaxSize());
@@ -176,6 +169,9 @@ public class BrokerServiceImpl
         result.setSortOrder(intermediateResult.getSortOrder());
         result.setTotalPages(intermediateResult.getTotalPages());
         result.setTotalSize(intermediateResult.getTotalSize());
+        SLF4JLoggerProxy.trace(this,
+                               "Returning: {}",
+                               result);
         return result;
     }
     /* (non-Javadoc)
@@ -1022,8 +1018,15 @@ public class BrokerServiceImpl
         public ClusterData call()
                 throws Exception
         {
-            if(Session.doesSessionExist(sessionId)) {
-                return getClusterService().getInstanceData();
+            boolean result = Session.doesSessionExist(sessionId);
+            ClusterData clusterData = getClusterService().getInstanceData();
+            SLF4JLoggerProxy.trace(BrokerServiceImpl.class,
+                                   "Searching for {} on {}: {}",
+                                   sessionId,
+                                   clusterData,
+                                   result);
+            if(result) {
+                return clusterData;
             }
             return null;
         }
