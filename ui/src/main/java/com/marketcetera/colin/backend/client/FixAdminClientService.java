@@ -36,13 +36,22 @@ public class FixAdminClientService
         return new FixAdminRpcClientParameters();
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.colin.backend.client.AbstractClientService#getClient()
+     * @see com.marketcetera.colin.backend.client.AbstractClientService#getClient(boolean)
      */
     @Override
-    public FixAdminClient getClient()
+    public FixAdminClient getClient(boolean inCreate)
             throws Exception
     {
-        return super.getClient(FixAdminClient.class);
+        return super.getClient(FixAdminClient.class,
+                               inCreate);
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.colin.backend.client.AbstractClientService#getClientType()
+     */
+    @Override
+    public Class<? extends AbstractClientService<FixAdminClient,FixAdminRpcClientParameters>> getClientType()
+    {
+        return FixAdminClientService.class;
     }
     /**
      * creates new {@link FixAdminClient} objects

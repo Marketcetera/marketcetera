@@ -13,7 +13,9 @@ import java.util.Queue;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -43,6 +45,7 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionDay;
 import org.marketcetera.fix.FixSessionListener;
+import org.marketcetera.fix.FixSessionSequenceNumbers;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
@@ -65,6 +68,7 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -73,6 +77,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import quickfix.ConfigError;
 import quickfix.FieldConvertError;
@@ -147,16 +152,21 @@ public class BrokerServiceImpl
         CollectionPageResponse<FixSession> intermediateResult = fixSessionProvider.findFixSessions(inPageRequest);
         for(FixSession fixSession : intermediateResult.getElements()) {
             BrokerID brokerId = new BrokerID(fixSession.getBrokerId());
-            SessionID sessionId = new SessionID(fixSession.getSessionId());
+            quickfix.SessionID sessionId = new SessionID(fixSession.getSessionId());
             ClusterData clusterData = getClusterData(sessionId);
             if(clusterData == null) {
                 continue;
             }
             FixSessionStatus sessionStatus = getFixSessionStatus(brokerId);
-            ActiveFixSession activeFixSession = activeFixSessionFactory.create(fixSession,
-                                                                               clusterData,
-                                                                               sessionStatus,
-                                                                               getSessionCustomization(fixSession));
+            MutableActiveFixSession activeFixSession = activeFixSessionFactory.create(fixSession,
+                                                                                      clusterData,
+                                                                                      sessionStatus,
+                                                                                      getSessionCustomization(fixSession));
+            FixSessionSequenceNumbers sequenceNumbers = getSessionSequenceNumbers(sessionId);
+            if(sequenceNumbers != null) {
+                activeFixSession.setSenderSequenceNumber(sequenceNumbers.getNextSenderSeqNum());
+                activeFixSession.setTargetSequenceNumber(sequenceNumbers.getNextTargetSeqNum());
+            }
             SLF4JLoggerProxy.trace(this,
                                    "Adding: {}",
                                    activeFixSession);
@@ -403,67 +413,26 @@ public class BrokerServiceImpl
                                                                              inStatusToReport);
         clusterService.execute(reportStatusTask);
     }
-//    /* (non-Javadoc)
-//     * @see org.marketcetera.brokers.service.BrokerService#findActiveFixSessions(org.marketcetera.persist.PageRequest)
-//     */
-//    @Override
-//    public CollectionPageResponse<ActiveFixSession> findActiveFixSessions(PageRequest inPageRequest)
-//    {
-//        CollectionPageResponse<FixSession> fixSessionResponse = fixSessionProvider.findFixSessions(inPageRequest);
-//        CollectionPageResponse<ActiveFixSession> response = new CollectionPageResponse<>();
-//        response.setPageMaxSize(fixSessionResponse.getPageMaxSize());
-//        response.setPageNumber(fixSessionResponse.getPageNumber());
-//        response.setPageSize(fixSessionResponse.getPageSize());
-//        response.setTotalPages(fixSessionResponse.getTotalPages());
-//        response.setTotalSize(fixSessionResponse.getTotalSize());
-//        for(FixSession session : fixSessionResponse.getElements()) {
-//            response.getElements().add(getActiveFixSession(session));
-//        }
-//        response.setSortOrder(inPageRequest.getSortOrder());
-//        return response;
-//    }
-//  /* (non-Javadoc)
-//  * @see org.marketcetera.brokers.service.BrokerService#getActiveFixSession(org.marketcetera.fix.FixSession)
-//  */
-// @Override
-// public ActiveFixSession getActiveFixSession(FixSession inFixSession)
-// {
-//     ClusteredBrokerStatus brokerStatus = (ClusteredBrokerStatus)getBrokerStatus(new BrokerID(inFixSession.getBrokerId()));
-//     MutableActiveFixSession activeFixSession = activeFixSessionFactory.create();
-//     activeFixSession.setAffinity(inFixSession.getAffinity());
-//     activeFixSession.setBrokerId(inFixSession.getBrokerId());
-//     activeFixSession.setDescription(inFixSession.getDescription());
-//     activeFixSession.setHost(inFixSession.getHost());
-//     activeFixSession.setInstance(brokerStatus.getClusterData().getHostId());
-//     activeFixSession.setIsAcceptor(inFixSession.isAcceptor());
-//     activeFixSession.setIsEnabled(inFixSession.isEnabled());
-//     activeFixSession.setMappedBrokerId(inFixSession.getMappedBrokerId());
-//     activeFixSession.setName(inFixSession.getName());
-//     activeFixSession.setPort(inFixSession.getPort());
-////     activeFixSession.setSenderSequenceNumber(brokerStatus.);
-//     
-//     return activeFixSession;
-// }
-//    /**
-//     * creates {@link MutableActiveFixSession} objects
-//     */
-//    @Autowired
-//    private MutableActiveFixSessionFactory activeFixSessionFactory;
     /**
-     * 
+     * Generate an active FIX session value from the given values.
      *
-     *
-     * @param inFixSession
-     * @param inStatus
-     * @return
+     * @param inFixSession a <code>FixSession</code> value
+     * @param inStatus a <code>FixSessionStatus</code> value
+     * @return an <code>ActiveFixSession</code> value
      */
     private ActiveFixSession generateBrokerStatus(FixSession inFixSession,
                                                   FixSessionStatus inStatus)
     {
-        return activeFixSessionFactory.create(inFixSession,
-                                              instanceData,
-                                              inStatus,
-                                              getSessionCustomization(inFixSession));
+        MutableActiveFixSession activeFixSession = activeFixSessionFactory.create(inFixSession,
+                                                                                  instanceData,
+                                                                                  inStatus,
+                                                                                  getSessionCustomization(inFixSession));
+        FixSessionSequenceNumbers sequenceNumbers = getSessionSequenceNumbers(new quickfix.SessionID(inFixSession.getSessionId()));
+        if(sequenceNumbers != null) {
+            activeFixSession.setSenderSequenceNumber(sequenceNumbers.getNextSenderSeqNum());
+            activeFixSession.setTargetSequenceNumber(sequenceNumbers.getNextTargetSeqNum());
+        }
+        return activeFixSession;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#generateBroker(org.marketcetera.fix.FixSession)
@@ -471,10 +440,16 @@ public class BrokerServiceImpl
     @Override
     public ActiveFixSession generateBroker(FixSession inFixSession)
     {
-        return activeFixSessionFactory.create(inFixSession,
-                                              instanceData,
-                                              getFixSessionStatus(new BrokerID(inFixSession.getBrokerId())),
-                                              getSessionCustomization(inFixSession));
+        MutableActiveFixSession activeFixSession = activeFixSessionFactory.create(inFixSession,
+                                                                                  instanceData,
+                                                                                  getFixSessionStatus(new BrokerID(inFixSession.getBrokerId())),
+                                                                                  getSessionCustomization(inFixSession));
+        FixSessionSequenceNumbers sequenceNumbers = getSessionSequenceNumbers(new quickfix.SessionID(inFixSession.getSessionId()));
+        if(sequenceNumbers != null) {
+            activeFixSession.setSenderSequenceNumber(sequenceNumbers.getNextSenderSeqNum());
+            activeFixSession.setTargetSequenceNumber(sequenceNumbers.getNextTargetSeqNum());
+        }
+        return activeFixSession;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#addFixSessionListener(org.marketcetera.fix.FixSessionListener)
@@ -803,6 +778,7 @@ public class BrokerServiceImpl
         }
         eventBusService.register(this);
         updateBrokerStatus();
+        scheduleBrokerStatusUpdater();
         SLF4JLoggerProxy.info(this,
                               "Broker service started");
     }
@@ -975,12 +951,40 @@ public class BrokerServiceImpl
         lastBrokerLog = thisBrokerLog;
     }
     /**
+     * 
+     *
+     *
+     * @param inSessionId
+     * @return
+     */
+    private FixSessionSequenceNumbers getSessionSequenceNumbers(quickfix.SessionID inSessionId)
+    {
+        try {
+            Map<Object,Future<FixSessionSequenceNumbers>> results = clusterService.execute(new GetSessionSequenceNumbersTask(inSessionId));
+            FixSessionSequenceNumbers sequenceNumbers = null;
+            for(Map.Entry<Object,Future<FixSessionSequenceNumbers>> entry : results.entrySet()) {
+                FixSessionSequenceNumbers returnedValue = entry.getValue().get();
+                if(returnedValue != null) {
+                    sequenceNumbers = returnedValue;
+                    break;
+                }
+            }
+            return sequenceNumbers;
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "Unable to determine session sequence numbers for {}",
+                                  inSessionId);
+            return null;
+        }
+    }
+    /**
      * Get the cluster data for the given session.
      *
-     * @param inSessionId a <code>SessionID</code> value
+     * @param inSessionId a <code>quickfix.SessionID</code> value
      * @return a <code>ClusterData</code> value or <code>null</code>
      */
-    private ClusterData getClusterData(SessionID inSessionId)
+    private ClusterData getClusterData(quickfix.SessionID inSessionId)
     {
         try {
             Map<Object,Future<ClusterData>> results = clusterService.execute(new FindClusterDataTask(inSessionId));
@@ -999,6 +1003,51 @@ public class BrokerServiceImpl
                                   "Unable to determine cluster data for {}",
                                   inSessionId);
             return null;
+        }
+    }
+    /**
+     * Schedule the broker status updater.
+     *
+     * <p>If the broker status updater is already scheduled, this method will replace it with a new schedule.
+     */
+    private void scheduleBrokerStatusUpdater()
+    {
+        synchronized(brokerScheduledService) {
+            if(brokerStatusUpdater != null) {
+                try {
+                    brokerStatusUpdater.cancel(true);
+                } catch (Exception ignored) {
+                } finally {
+                    brokerStatusUpdater = null;
+                }
+            }
+            if(brokerStatusUpdaterInterval > 0) {
+                brokerStatusUpdater = brokerScheduledService.scheduleAtFixedRate(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        try {
+                            for(FixSession fixSession : fixSessionProvider.findFixSessions(false,
+                                                                                           1,
+                                                                                           1)) {
+                                BrokerID brokerId = new BrokerID(fixSession.getBrokerId());
+                                FixSessionStatus fixSessionStatus = getFixSessionStatus(brokerId);
+                                SLF4JLoggerProxy.trace(BrokerServiceImpl.this,
+                                                       "Broker status updater reporting {} for {}",
+                                                       fixSessionStatus,
+                                                       brokerId);
+                                // TODO report the broker status only if the status, sender seq, or target seq has changed
+                                reportBrokerStatus(brokerId,
+                                                   fixSessionStatus);
+                            }
+                        } catch (Exception e) {
+                            SLF4JLoggerProxy.warn(BrokerServiceImpl.this,
+                                                  e);
+                        }
+                    }},brokerStatusUpdaterInterval,
+                       brokerStatusUpdaterInterval,
+                       TimeUnit.MILLISECONDS);
+            }
         }
     }
     /**
@@ -1049,6 +1098,19 @@ public class BrokerServiceImpl
      * cluster data for this instance
      */
     private ClusterData instanceData;
+    /**
+     * holds the broker status updater token created in {@link #scheduleBrokerStatusUpdater()}
+     */
+    private Future<?> brokerStatusUpdater;
+    /**
+     * interval at which the broker status update job is run {@link #scheduleBrokerStatusUpdater()}
+     */
+    @Value("${metc.broker.status.updater.interval:5000}")
+    private long brokerStatusUpdaterInterval;
+    /**
+     * broker service scheduler to be used for any async jobs needed
+     */
+    private final ScheduledExecutorService brokerScheduledService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("BrokerServiceScheduler%d").build());
     /**
      * provides fix sessions
      */

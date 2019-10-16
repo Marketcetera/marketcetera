@@ -23,6 +23,15 @@ import com.marketcetera.colin.app.security.UIUser;
  */
 public abstract class AbstractClientService<ClientClazz extends BaseClient,ParamClazz extends BaseClientParameters>
 {
+    public abstract ClientClazz getClient(boolean inCreate)
+            throws Exception;
+    /**
+     * 
+     *
+     * @param inCreate
+     * @return
+     */
+    public abstract Class<? extends AbstractClientService<ClientClazz,ParamClazz>> getClientType();
     /**
      * 
      *
@@ -30,29 +39,42 @@ public abstract class AbstractClientService<ClientClazz extends BaseClient,Param
      * @return
      * @throws Exception
      */
-    public abstract ClientClazz getClient()
-            throws Exception;
+    public ClientClazz getClient()
+            throws Exception
+    {
+        return getClient(true);
+    }
     /**
      * 
      *
      *
      * @param inType
+     * @param inCreate
      * @return
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    protected ClientClazz getClient(Class<ClientClazz> inType)
+    protected ClientClazz getClient(Class<ClientClazz> inType,
+                                    boolean inCreate)
             throws Exception
     {
         SecurityContext context = SecurityContextHolder.getContext();
         if(context.getAuthentication() == null) {
-            throw new IllegalArgumentException("Not logged in");
+            if(inCreate) {
+                throw new IllegalArgumentException("Not logged in");
+            } else {
+                return null;
+            }
         }
         UIUser currentUser;
         if(context.getAuthentication().getPrincipal() instanceof UIUser) {
             currentUser = (UIUser)context.getAuthentication().getPrincipal();
         } else {
-            throw new IllegalArgumentException("Unexpected principal: " + context.getAuthentication().getPrincipal());
+            if(inCreate) {
+                throw new IllegalArgumentException("Unexpected principal: " + context.getAuthentication().getPrincipal());
+            } else {
+                return null;
+            }
         }
         String username = currentUser.getName();
         SLF4JLoggerProxy.debug(this,
@@ -61,12 +83,18 @@ public abstract class AbstractClientService<ClientClazz extends BaseClient,Param
                                inType.getSimpleName());
         Map<Class<? extends BaseClient>,BaseClient> clientsForThisUser = clients.get(username);
         if(clientsForThisUser == null) {
+            if(!inCreate) {
+                return null;
+            }
             clientsForThisUser = Maps.newHashMap();
             clients.put(username,
                         clientsForThisUser);
         }
         BaseClient client = clientsForThisUser.get(inType);
         if(client == null) {
+            if(!inCreate) {
+                return null;
+            }
             SLF4JLoggerProxy.debug(this,
                                    "{} has no {} client yet",
                                    username,
@@ -86,6 +114,14 @@ public abstract class AbstractClientService<ClientClazz extends BaseClient,Param
                                    rpcPort);
             clientsForThisUser.put(inType,
                                    client);
+        }
+        if(!inCreate) {
+            try {
+                client.stop();
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+            return null;
         }
         if(!client.isRunning()) {
             SLF4JLoggerProxy.debug(this,

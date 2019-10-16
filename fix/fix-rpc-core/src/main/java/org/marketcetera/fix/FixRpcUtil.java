@@ -24,10 +24,10 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 public class FixRpcUtil
 {
     /**
+     * Get instance data from the given RPC value.
      *
-     *
-     * @param inInstanceData
-     * @return
+     * @param inInstanceData an <code>FixAdminRpc.InstanceData</code> value
+     * @return an <code>Optional&lt;FixSessionInstanceData&gt;</code> value
      */
     public static Optional<FixSessionInstanceData> getInstanceData(FixAdminRpc.InstanceData inInstanceData)
     {

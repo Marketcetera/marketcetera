@@ -36,13 +36,22 @@ public class AdminClientService
         return new AdminRpcClientParameters();
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.colin.backend.client.AbstractClientService#getClient()
+     * @see com.marketcetera.colin.backend.client.AbstractClientService#getClient(boolean)
      */
     @Override
-    public AdminClient getClient()
+    public AdminClient getClient(boolean inCreate)
             throws Exception
     {
-        return super.getClient(AdminClient.class);
+        return super.getClient(AdminClient.class,
+                               inCreate);
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.colin.backend.client.AbstractClientService#getClientType()
+     */
+    @Override
+    public Class<? extends AbstractClientService<AdminClient,AdminRpcClientParameters>> getClientType()
+    {
+        return AdminClientService.class;
     }
     /**
      * creates new {@link AdminClient} objects

@@ -89,12 +89,30 @@ public class FixAdminRpcClient
         });
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#stop()
+     */
+    @Override
+    public void stop()
+            throws Exception
+    {
+        for(Object listener : listenerProxies.asMap().keySet()) {
+            try {
+                removeBrokerStatusListener((BrokerStatusListener)listener);
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        }
+
+        super.stop();
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.fix.FixAdminClient#readFixSessions()
      */
     @Override
     public List<ActiveFixSession> readFixSessions()
     {
-        return Lists.newArrayList(readFixSessions(new PageRequest(0,Integer.MAX_VALUE)).getElements());
+        return Lists.newArrayList(readFixSessions(new PageRequest(0,
+                                                                  Integer.MAX_VALUE)).getElements());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.fix.FixAdminClient#readFixSessions(org.marketcetera.persist.PageRequest)
@@ -125,7 +143,10 @@ public class FixAdminRpcClient
                                        response);
                 CollectionPageResponse<ActiveFixSession> results = new CollectionPageResponse<>();
                 for(FixAdminRpc.ActiveFixSession rpcFixSession : response.getFixSessionList()) {
-                    FixRpcUtil.getActiveFixSession(rpcFixSession,activeFixSessionFactory,fixSessionFactory,clusterDataFactory).ifPresent(activeFixSession->results.getElements().add(activeFixSession));
+                    FixRpcUtil.getActiveFixSession(rpcFixSession,
+                                                   activeFixSessionFactory,
+                                                   fixSessionFactory,
+                                                   clusterDataFactory).ifPresent(activeFixSession->results.getElements().add(activeFixSession));
                 }
                 PagingRpcUtil.setPageResponse(inPageRequest,
                                               response.getPage(),
@@ -561,36 +582,33 @@ public class FixAdminRpcClient
     @Override
     public void removeBrokerStatusListener(BrokerStatusListener inBrokerStatusListener)
     {
-        final AbstractClientListenerProxy<?,?,?> proxy = listenerProxies.getIfPresent(inBrokerStatusListener);
-        listenerProxies.invalidate(inBrokerStatusListener);
-        if(proxy == null) {
-            return;
-        }
-        listenerProxiesById.invalidate(proxy.getId());
-        executeCall(new Callable<Void>() {
-            @Override
-            public Void call()
-                    throws Exception
-            {
-                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
-                                       "{} removing broker status listener",
-                                       getSessionId());
-                FixAdminRpc.RemoveBrokerStatusListenerRequest.Builder requestBuilder = FixAdminRpc.RemoveBrokerStatusListenerRequest.newBuilder();
-                requestBuilder.setSessionId(getSessionId().getValue());
-                requestBuilder.setListenerId(proxy.getId());
-                FixAdminRpc.RemoveBrokerStatusListenerRequest removeBrokerStatusListenerRequest = requestBuilder.build();
-                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
-                                       "{} sending {}",
-                                       getSessionId(),
-                                       removeBrokerStatusListenerRequest);
-                FixAdminRpc.RemoveBrokerStatusListenerResponse response = getBlockingStub().removeBrokerStatusListener(removeBrokerStatusListenerRequest);
-                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
-                                       "{} received {}",
-                                       getSessionId(),
-                                       response);
-                return null;
-            }
-        });
+        
+        listenerProxies.invalidateAll();
+        listenerProxiesById.invalidateAll();
+//        executeCall(new Callable<Void>() {
+//            @Override
+//            public Void call()
+//                    throws Exception
+//            {
+//                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
+//                                       "{} removing broker status listener",
+//                                       getSessionId());
+//                FixAdminRpc.RemoveBrokerStatusListenerRequest.Builder requestBuilder = FixAdminRpc.RemoveBrokerStatusListenerRequest.newBuilder();
+//                requestBuilder.setSessionId(getSessionId().getValue());
+//                requestBuilder.setListenerId(proxy.getId());
+//                FixAdminRpc.RemoveBrokerStatusListenerRequest removeBrokerStatusListenerRequest = requestBuilder.build();
+//                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
+//                                       "{} sending {}",
+//                                       getSessionId(),
+//                                       removeBrokerStatusListenerRequest);
+//                FixAdminRpc.RemoveBrokerStatusListenerResponse response = getBlockingStub().removeBrokerStatusListener(removeBrokerStatusListenerRequest);
+//                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
+//                                       "{} received {}",
+//                                       getSessionId(),
+//                                       response);
+//                return null;
+//            }
+//        });
     }
     /**
      * Get the activeFixSessionFactory value.

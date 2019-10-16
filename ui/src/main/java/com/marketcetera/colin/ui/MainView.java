@@ -1,10 +1,6 @@
 package com.marketcetera.colin.ui;
 
-import static com.marketcetera.colin.ui.utils.WebUiConst.TITLE_DASHBOARD;
 import static com.marketcetera.colin.ui.utils.WebUiConst.TITLE_LOGOUT;
-import static com.marketcetera.colin.ui.utils.WebUiConst.TITLE_PRODUCTS;
-import static com.marketcetera.colin.ui.utils.WebUiConst.TITLE_STOREFRONT;
-import static com.marketcetera.colin.ui.utils.WebUiConst.TITLE_USERS;
 import static com.marketcetera.colin.ui.utils.WebUiConst.VIEWPORT;
 
 import java.util.ArrayList;
@@ -12,16 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import com.marketcetera.colin.app.security.CurrentMetcUser;
-import com.marketcetera.colin.app.security.SecurityUtils;
-import com.marketcetera.colin.ui.utils.WebUiConst;
+import com.marketcetera.colin.ui.views.ApplicationMenu;
 import com.marketcetera.colin.ui.views.HasConfirmation;
-import com.marketcetera.colin.ui.views.admin.products.ProductsView;
-import com.marketcetera.colin.ui.views.admin.users.UsersView;
-import com.marketcetera.colin.ui.views.dashboard.DashboardView;
-import com.marketcetera.colin.ui.views.desktop.DesktopView;
-import com.marketcetera.colin.ui.views.storefront.StorefrontView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -52,7 +43,8 @@ public class MainView
     private final Tabs menu;
 
     @Autowired
-    public MainView(CurrentMetcUser inCurrentUser)
+    public MainView(CurrentMetcUser inCurrentUser,
+                    ApplicationContext applicationContext)
     {
         confirmDialog.setCancelable(true);
         confirmDialog.setConfirmButtonTheme("raised tertiary error");
@@ -63,9 +55,11 @@ public class MainView
         appName.addClassName("hide-on-mobile");
 
         menu = createMenuTabs();
+        ApplicationMenu applicationMenu = new ApplicationMenu(applicationContext);
 
         this.addToNavbar(appName);
-        this.addToNavbar(true, menu);
+//        this.addToNavbar(true, menu);
+        addToNavbar(applicationMenu.getMenu());
         Label currentUser = new Label();
         currentUser.setText(inCurrentUser.getUser().getName());
         addToNavbar(currentUser);

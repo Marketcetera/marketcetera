@@ -590,6 +590,8 @@ public class FixAdminRpcService<SessionClazz>
                     brokerService.addBrokerStatusListener((BrokerStatusListener)brokerStatusListenerProxy);
                 }
             } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
                 handleError(e,
                             inResponseObserver);
             }
@@ -647,17 +649,22 @@ public class FixAdminRpcService<SessionClazz>
         @Override
         public void receiveBrokerStatus(ActiveFixSession inStatus)
         {
-            FixRpcUtil.setActiveFixSession(inStatus,
-                                           responseBuilder);
-            BrokerStatusListenerResponse response = responseBuilder.build();
-            SLF4JLoggerProxy.trace(FixAdminRpcService.class,
-                                   "{} received broker status {}, sending {}",
-                                   getId(),
-                                   inStatus,
-                                   response);
-            // TODO does the user have permissions to view this broker?
-            getObserver().onNext(response);
-            responseBuilder.clear();
+            try {
+                FixRpcUtil.setActiveFixSession(inStatus,
+                                               responseBuilder);
+                BrokerStatusListenerResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(FixAdminRpcService.class,
+                                       "{} received broker status {}, sending {}",
+                                       getId(),
+                                       inStatus,
+                                       response);
+                // TODO does the user have permissions to view this broker?
+                getObserver().onNext(response);
+                responseBuilder.clear();
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(FixAdminRpcService.class,
+                                      e);
+            }
         }
         /**
          * Create a new BrokerStatusListenerProxy instance.

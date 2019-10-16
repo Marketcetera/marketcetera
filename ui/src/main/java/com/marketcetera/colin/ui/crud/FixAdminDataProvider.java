@@ -2,6 +2,7 @@ package com.marketcetera.colin.ui.crud;
 
 import java.util.List;
 
+import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixAdminClient;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -26,10 +27,44 @@ import com.vaadin.flow.data.provider.QuerySortOrder;
  */
 public class FixAdminDataProvider
         extends FilterablePageableDataProvider<ActiveFixSession,String>
+        implements BrokerStatusListener
 {
+    /**
+     * Create a new FixAdminDataProvider instance.
+     *
+     * @param inClientService a <code>FixAdminClientService</code> value
+     */
     public FixAdminDataProvider(FixAdminClientService inClientService)
     {
         clientService = inClientService;
+        getClient().addBrokerStatusListener(this);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.fix.ActiveFixSession)
+     */
+    @Override
+    public void receiveBrokerStatus(ActiveFixSession inActiveFixSession)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Received {}",
+                               inActiveFixSession);
+        // TODO somehow, we need to refresh the data, might be nice to do it w/o calling to the backend, though
+//        try {
+//            VaadinSession.getCurrent().access(() -> {
+//                refreshAll();
+//            });
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        Object sessionCandidate = super.getId(inActiveFixSession);
+//        if(sessionCandidate == null) {
+//            
+//        } else {
+//            MutableActiveFixSession updatedSession = (MutableActiveFixSession)sessionCandidate;
+//            updatedSession.setSenderSequenceNumber(inActiveFixSession.getSenderSequenceNumber());
+//            updatedSession.setTargetSequenceNumber(inActiveFixSession.getTargetSequenceNumber());
+//            updatedSession.setStatus(inActiveFixSession.getStatus());
+//        }
     }
     /* (non-Javadoc)
      * @see org.vaadin.artur.spring.dataprovider.PageableDataProvider#fetchFromBackEnd(com.vaadin.flow.data.provider.Query, org.springframework.data.domain.Pageable)

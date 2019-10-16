@@ -49,7 +49,7 @@ public class GetSessionAttributesTask
         return attributes;
     }
     /**
-     * Create a new StopSessionTask instance.
+     * Create a new GetSessionAttributesTask instance.
      *
      * @param inAffinity a <code>FixSession</code> value
      */

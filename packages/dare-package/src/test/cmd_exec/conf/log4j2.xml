@@ -61,6 +61,8 @@
     <logger name="org.marketcetera" level="info"/>
     <logger name="org.marketcetera.fix.rpc.FixAdminRpcService" level="trace"/>
     <logger name="org.marketcetera.brokers.service.BrokerServiceImpl" level="trace"/>
+    <logger name="org.marketcetera.fix.rpc.FixAdminRpcService" level="trace"/>
+    <logger name="org.marketcetera.eventbus.guava" level="trace"/>
     <logger name="metc.restore" level="info" additivity="false">
       <AppenderRef ref="RESTORE"/>
       <AppenderRef ref="FILE"/>
