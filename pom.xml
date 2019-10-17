@@ -195,6 +195,11 @@
         <version>4.0.1-SNAPSHOT</version>
       </dependency>
       <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>cluster-rpc-client</artifactId>
+        <version>4.0.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-csv</artifactId>
         <version>4.0.1-SNAPSHOT</version>
@@ -334,6 +339,27 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>metrics-persist</artifactId>
+        <version>4.0.1-SNAPSHOT</version>
+      </dependency>
+      <!-- compile: web ui -->
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>webui-admin</artifactId>
+        <version>4.0.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>webui-dataflow</artifactId>
+        <version>4.0.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>webui-marketdata</artifactId>
+        <version>4.0.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>webui-cluster</artifactId>
         <version>4.0.1-SNAPSHOT</version>
       </dependency>
       <!-- Compile: QuickFIX/J -->
