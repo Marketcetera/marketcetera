@@ -170,7 +170,8 @@ public class FixAdminRpcService<SessionClazz>
                                        AdminPermissions.AddSessionAction.name());
                 FixAdminRpc.CreateFixSessionResponse.Builder responseBuilder = FixAdminRpc.CreateFixSessionResponse.newBuilder();
                 if(inRequest.hasFixSession()) {
-                    FixSession fixSession = FixRpcUtil.getFixSession(inRequest.getFixSession(),fixSessionFactory).orElse(null);
+                    FixSession fixSession = FixRpcUtil.getFixSession(inRequest.getFixSession(),
+                                                                     fixSessionFactory).orElse(null);
                     Validate.notNull(fixSession);
                     Validate.isTrue(null == fixSessionProvider.findFixSessionByName(fixSession.getName()),
                                     "FIX Session " + fixSession.getName() + " already exists");
@@ -210,7 +211,8 @@ public class FixAdminRpcService<SessionClazz>
                 if(inRequest.hasPage()) {
                     pageRequest = PagingRpcUtil.getPageRequest(inRequest.getPage());
                 } else {
-                    pageRequest = new PageRequest(0,Integer.MAX_VALUE);
+                    pageRequest = new PageRequest(0,
+                                                  Integer.MAX_VALUE);
                 }
                 CollectionPageResponse<ActiveFixSession> pagedResponse = brokerService.getActiveFixSessions(pageRequest);
                 if(pagedResponse != null) {

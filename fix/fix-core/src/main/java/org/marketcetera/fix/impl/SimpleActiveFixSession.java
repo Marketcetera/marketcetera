@@ -52,7 +52,10 @@ public class SimpleActiveFixSession
     /**
      * Create a new SimpleActiveFixSession instance.
      */
-    public SimpleActiveFixSession() {}
+    public SimpleActiveFixSession()
+    {
+        fixSession = new SimpleFixSession();
+    }
     /**
      * Create a new SimpleActiveFixSession instance.
      *

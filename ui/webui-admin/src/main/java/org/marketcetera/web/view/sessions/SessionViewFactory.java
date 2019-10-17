@@ -2,6 +2,7 @@ package org.marketcetera.web.view.sessions;
 
 import java.util.Properties;
 
+import org.marketcetera.fix.MutableActiveFixSessionFactory;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.ContentViewFactory;
@@ -35,6 +36,7 @@ public class SessionViewFactory
     public SessionView create(Properties inViewProperties)
     {
         SessionView sessionView = new SessionView(inViewProperties);
+        sessionView.setActiveFixSessionFactory(fixSessionFactory);
         sessionView.setWebMessageService(webMessageService);
         return sessionView;
     }
@@ -101,4 +103,9 @@ public class SessionViewFactory
      */
     @Autowired
     private WebMessageService webMessageService;
+    /**
+     * creates new Fix Session values
+     */
+    @Autowired
+    private MutableActiveFixSessionFactory fixSessionFactory;
 }

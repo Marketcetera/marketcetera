@@ -45,7 +45,7 @@ public abstract class AbstractGridView<Clazz>
     public void enter(ViewChangeEvent inEvent)
     {
         SLF4JLoggerProxy.debug(this,
-                               "{} columns are {}",
+                               "{} enter: columns are {}",
                                getViewName(),
                                grid.getContainerDataSource().getContainerPropertyIds());
         setGridColumns();
@@ -81,6 +81,12 @@ public abstract class AbstractGridView<Clazz>
         grid.setContainerDataSource(dataContainer);
         grid.setColumnReorderingAllowed(true);
         grid.setColumnResizeMode(ColumnResizeMode.ANIMATED);
+        setGridColumns();
+        SLF4JLoggerProxy.debug(this,
+                               "{} attach: columns are {}",
+                               getViewName(),
+                               grid.getColumns(),
+                               grid.getContainerDataSource().getContainerPropertyIds());
         actionSelect = new ComboBox("Actions");
         actionSelect.setTextInputAllowed(false);
         actionSelect.setNewItemsAllowed(false);

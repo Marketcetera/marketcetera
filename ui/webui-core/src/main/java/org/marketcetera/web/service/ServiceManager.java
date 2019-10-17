@@ -64,7 +64,8 @@ public class ServiceManager
             // TODO
 //            menuLayout.setVisible(false);
             UI.getCurrent().getNavigator().navigateTo(LoginView.NAME);
-            // do I need to return something here? or thrown something?
+            // do I need to return something here? or throw something?
+            return null;
         }
         Cache<String,ConnectableService> serviceCache = servicesByUser.getUnchecked(sessionUser);
         ConnectableService service = serviceCache.getIfPresent(inServiceClass.getSimpleName());

@@ -15,7 +15,8 @@ import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionDay;
 import org.marketcetera.fix.FixSessionInstanceData;
-import org.marketcetera.fix.impl.SimpleActiveFixSession;
+import org.marketcetera.fix.MutableActiveFixSession;
+import org.marketcetera.fix.MutableActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptor;
 import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.quickfix.FIXVersion;
@@ -149,8 +150,8 @@ public class SessionView
     @Override
     protected void setGridColumns()
     {
-        getGrid().setColumns("name",
-                             "sessionId",
+        getGrid().setColumns("fixSession.name",
+                             "fixSession.sessionId",
                              "instance",
                              "status",
                              "senderSequenceNumber",
@@ -224,7 +225,7 @@ public class SessionView
     protected void onCreateNew(ClickEvent inEvent)
     {
         // create a new FIX session object
-        SimpleActiveFixSession newFixSession = new SimpleActiveFixSession();
+        MutableActiveFixSession newFixSession = fixSessionFactory.create();
         // set defaults for the new session
         newFixSession.getFixSession().getMutableView().setAffinity(1);
         newFixSession.getFixSession().getMutableView().setIsAcceptor(false);
@@ -403,8 +404,11 @@ public class SessionView
                     @Override
                     public void buttonClick(ClickEvent inEvent)
                     {
-                        try(Socket s = new Socket(inFixSession.getFixSession().getHost(),
-                                                  inFixSession.getFixSession().getPort())) {
+                        testConnectionLabel.setValue("");
+                        testConnectionLabel.setStyleName(ValoTheme.LABEL_SUCCESS);
+                        testConnectionLabel.setVisible(false);
+                        try(Socket s = new Socket(StringUtils.trimToNull(hostnameTextField.getValue()),
+                                                  Integer.parseInt(StringUtils.trim(portTextField.getValue())))) {
                             testConnectionLabel.setValue("Test connection success");
                             testConnectionLabel.setStyleName(ValoTheme.LABEL_SUCCESS);
                         } catch (Exception e) {
@@ -1328,6 +1332,28 @@ public class SessionView
     {
         webMessageService = inWebMessageService;
     }
+    /**
+     * Get the fixSessionFactory value.
+     *
+     * @return a <code>MutableFixSessionFactory</code> value
+     */
+    public MutableActiveFixSessionFactory getActiveFixSessionFactory()
+    {
+        return fixSessionFactory;
+    }
+    /**
+     * Sets the fixSessionFactory value.
+     *
+     * @param inFixSessionFactory a <code>MutableActiveFixSessionFactory</code> value
+     */
+    public void setActiveFixSessionFactory(MutableActiveFixSessionFactory inFixSessionFactory)
+    {
+        fixSessionFactory = inFixSessionFactory;
+    }
+    /**
+     * creates new Fix Session values
+     */
+    private MutableActiveFixSessionFactory fixSessionFactory;
     /**
      * provides access to web message services
      */

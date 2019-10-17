@@ -318,11 +318,21 @@ public class FixRpcUtil
             return Optional.empty();
         }
         FixAdminRpc.FixSessionAttributeDescriptor.Builder builder = FixAdminRpc.FixSessionAttributeDescriptor.newBuilder();
-        builder.setAdvice(inDescriptor.getAdvice());
-        builder.setDefaultValue(inDescriptor.getDefaultValue());
-        builder.setDescription(inDescriptor.getDescription());
-        builder.setName(inDescriptor.getName());
-        builder.setPattern(inDescriptor.getPattern());
+        if(inDescriptor.getAdvice() != null) {
+            builder.setAdvice(inDescriptor.getAdvice());
+        }
+        if(inDescriptor.getDefaultValue() != null) {
+            builder.setDefaultValue(inDescriptor.getDefaultValue());
+        }
+        if(inDescriptor.getDescription() != null) {
+            builder.setDescription(inDescriptor.getDescription());
+        }
+        if(inDescriptor.getName() != null) {
+            builder.setName(inDescriptor.getName());
+        }
+        if(inDescriptor.getPattern() != null) {
+            builder.setPattern(inDescriptor.getPattern());
+        }
         builder.setRequired(inDescriptor.isRequired());
         return Optional.of(builder.build());
     }

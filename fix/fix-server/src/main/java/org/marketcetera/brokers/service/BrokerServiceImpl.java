@@ -935,6 +935,10 @@ public class BrokerServiceImpl
                             table.addCell("stopped",
                                           cellStyle);
                             break;
+                        case UNKNOWN:
+                            table.addCell("unknown",
+                                          cellStyle);
+                            break;
                         default:
                             throw new UnsupportedOperationException("Cannot display status " + activeFixSession.getStatus());
                     }
