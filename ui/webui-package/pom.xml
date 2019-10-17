@@ -14,6 +14,12 @@
     <version>4.0.1-SNAPSHOT</version>
   </parent>
   <dependencies>
+    <!-- keep this dependency first in the list -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>webui-core</artifactId>
@@ -98,9 +104,9 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
       <plugin>
-	<groupId>com.vaadin</groupId>
-	<artifactId>vaadin-maven-plugin</artifactId>
-	<configuration>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-maven-plugin</artifactId>
+        <configuration>
           <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
           <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
           <hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets</hostedWebapp>
@@ -110,8 +116,8 @@
           <compileReport>true</compileReport>
           <runTarget>http://localhost:8080/</runTarget>
           <widgetsetMode>local</widgetsetMode>
-	</configuration>
-	<executions>
+        </configuration>
+        <executions>
           <execution>
             <goals>
               <goal>compile-theme</goal>
@@ -119,7 +125,7 @@
               <goal>compile</goal>
             </goals>
           </execution>
-	</executions>
+        </executions>
       </plugin>
     </plugins>
   </build>
