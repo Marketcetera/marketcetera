@@ -247,8 +247,12 @@
               </execution>
             </executions>
             <configuration>
-              <mainClass>org.marketcetera.server.MultiInstanceApplicationContainer</mainClass>
+              <mainClass>org.marketcetera.core.MultiInstanceApplicationContainer</mainClass>
               <systemProperties>
+                <systemProperty>
+                  <key>org.marketcetera.app</key>
+                  <value>org.marketcetera.server.ServerApplication</value>
+                </systemProperty>
                 <systemProperty>
                   <key>org.marketcetera.appDir</key>
                   <value>src/test/cmd_exec</value>

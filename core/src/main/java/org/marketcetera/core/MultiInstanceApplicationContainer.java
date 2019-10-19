@@ -1,4 +1,4 @@
-package org.marketcetera.server;
+package org.marketcetera.core;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,8 +23,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.Validate;
-import org.marketcetera.core.ApplicationBase;
-import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -432,50 +431,64 @@ public class MultiInstanceApplicationContainer
                                     "dare.pid");
             // add "go to instance dir" to start script
             FileUtils.write(startScript,
-                            "cd " + instanceDir.getAbsolutePath()+System.lineSeparator());
+                            "cd " + instanceDir.getAbsolutePath()+System.lineSeparator(),
+                            Charset.defaultCharset());
             int lineCount = arguments.length;
             int lineNumber = 1;
             for(String entry : arguments) {
                 if(lineNumber++ == lineCount) {
                     FileUtils.write(startScript,
                                     entry+" &"+System.lineSeparator(),
+                                    Charset.defaultCharset(),
                                     true);
                 } else {
                     FileUtils.write(startScript,
                                     entry+" \\"+System.lineSeparator(),
+                                    Charset.defaultCharset(),
                                     true);
                 }
             }
             FileUtils.write(startScript,
                             "retval=$?"+System.lineSeparator(),
+                            Charset.defaultCharset(),
                             true);
             FileUtils.write(startScript,
                             "pid=$!"+System.lineSeparator(),
+                            Charset.defaultCharset(),
                             true);
             FileUtils.write(startScript,
                             "[ ${retval} -eq 0 ] && [ ${pid} -eq ${pid} ] && echo ${pid} > " + instanceDir.getAbsolutePath()+File.separator+"bin"+File.separator+"dare.pid"+System.lineSeparator(),
+                            Charset.defaultCharset(),
                             true);
             FileUtils.write(darePid,
-                            pid + System.lineSeparator());
+                            pid + System.lineSeparator(),
+                            Charset.defaultCharset());
             FileUtils.write(stopScript,
-                            "cd " + instanceDir.getAbsolutePath()+File.separator+"bin"+System.lineSeparator());
+                            "cd " + instanceDir.getAbsolutePath()+File.separator+"bin"+System.lineSeparator(),
+                            Charset.defaultCharset());
             FileUtils.write(stopScript,
                             "if [ -f dare.pid ]" + System.lineSeparator(),
+                            Charset.defaultCharset(),
                             true);
             FileUtils.write(stopScript,
                             "then" + System.lineSeparator(),
+                            Charset.defaultCharset(),
                             true);
             FileUtils.write(stopScript,
                             "    kill `cat dare.pid`" + System.lineSeparator(),
+                            Charset.defaultCharset(),
                             true);
             FileUtils.write(stopScript,
                             "else" + System.lineSeparator(),
+                            Charset.defaultCharset(),
                             true);
             FileUtils.write(stopScript,
                             "    kill `ps -ef | grep metc.instance="+ inInstanceNumber +" | grep java | awk '{print $2}'`"+System.lineSeparator(),
+                            Charset.defaultCharset(),
                             true);
             FileUtils.write(stopScript,
                             "fi" + System.lineSeparator(),
+                            Charset.defaultCharset(),
                             true);
         }
         // sleep to generate separation between the instances to help clearly identify the order of instances on the host
@@ -601,7 +614,7 @@ public class MultiInstanceApplicationContainer
             arguments.add("-XX:+UnlockCommercialFeatures");
             arguments.add("-XX:+FlightRecorder");
         }
-        arguments.add(ServerApplication.class.getCanonicalName());
+        arguments.add(getSystemProperty("org.marketcetera.app"));
         return arguments.toArray(new String[arguments.size()]);
     }
     /**

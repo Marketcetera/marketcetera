@@ -65,7 +65,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 /* $License$ */
 
 /**
- * Application entry point for the web UI.
+ * Application entry point for the community DARE application.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
