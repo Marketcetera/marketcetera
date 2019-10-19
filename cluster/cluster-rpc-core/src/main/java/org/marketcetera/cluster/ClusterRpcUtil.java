@@ -28,10 +28,14 @@ public class ClusterRpcUtil
             return Optional.empty();
         }
         ClusterRpc.ClusterData.Builder builder = ClusterRpc.ClusterData.newBuilder();
-        builder.setHostId(inClusterData.getHostId());
+        if(inClusterData.getHostId() != null) {
+            builder.setHostId(inClusterData.getHostId());
+        }
         builder.setInstanceNumber(inClusterData.getInstanceNumber());
         builder.setTotalInstances(inClusterData.getTotalInstances());
-        builder.setUuid(inClusterData.getUuid());
+        if(inClusterData.getUuid() != null) {
+            builder.setUuid(inClusterData.getUuid());
+        }
         return Optional.of(builder.build());
     }
     /**

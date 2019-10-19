@@ -5,7 +5,7 @@ import java.io.Serializable;
 /* $License$ */
 
 /**
- *
+ * Holds the sequence numbers for a FIX session.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -90,6 +90,10 @@ public class FixSessionSequenceNumbers
         nextTargetSeqNum = inSession.getExpectedTargetNum();
         sessionId = inSession.getSessionID();
     }
+    /**
+     * Create a new FixSessionSequenceNumbers instance.
+     */
+    public FixSessionSequenceNumbers() {}
     /**
      * next sender seq num
      */

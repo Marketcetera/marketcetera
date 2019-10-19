@@ -29,6 +29,7 @@ import org.marketcetera.fix.dao.PersistentFixSessionProvider;
 import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleServerFixSessionFactory;
 import org.marketcetera.fix.rpc.FixAdminRpcService;
+import org.marketcetera.fix.store.HibernateMessageStoreConfiguration;
 import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.quickfix.QuickFIXSender;
@@ -87,6 +88,16 @@ public class ServerApplication
     {
         SpringApplication.run(ServerApplication.class,
                               inArgs);
+    }
+    /**
+     * Get the message store configuration value.
+     *
+     * @return a <code>HibernateMessageStoreConfiguration</code> value
+     */
+    @Bean
+    public HibernateMessageStoreConfiguration getMessageStoreConfiguration()
+    {
+        return new HibernateMessageStoreConfiguration();
     }
     /**
      * Get the user service bean.

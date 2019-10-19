@@ -47,10 +47,10 @@ public class HibernateMessageStore
     /**
      * Create a new HibernateMessageStore instance.
      * 
-     * @param inSessionId a <code>SessionID</code> value
+     * @param inSessionId a <code>quickfix.SessionID</code> value
      * @throws IOException if an error occurs creating the message store
      */
-    public HibernateMessageStore(SessionID inSessionId)
+    public HibernateMessageStore(quickfix.SessionID inSessionId)
             throws IOException
     {
         sessionId = inSessionId;

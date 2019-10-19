@@ -215,6 +215,9 @@ public class FixAdminRpcService<SessionClazz>
                                                   Integer.MAX_VALUE);
                 }
                 CollectionPageResponse<ActiveFixSession> pagedResponse = brokerService.getActiveFixSessions(pageRequest);
+                SLF4JLoggerProxy.trace(FixAdminRpcService.this,
+                                       "Query returned {}",
+                                       pagedResponse);
                 if(pagedResponse != null) {
                     responseBuilder.setPage(PagingRpcUtil.getPageResponse(pageRequest,
                                                                           pagedResponse));

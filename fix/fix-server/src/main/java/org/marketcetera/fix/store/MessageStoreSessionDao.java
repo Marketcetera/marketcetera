@@ -26,6 +26,11 @@ public interface MessageStoreSessionDao
      * @return a <code>MessageStoreSession</code> value or <code>null</code>
      */
     MessageStoreSession findBySessionId(String inSessionId);
+    /**
+     * Get all session ids.
+     *
+     * @return a <code>Set&lt;String&gt;</code> value
+     */
     @Query("select distinct a.sessionId from MessageStoreSession a")
     Set<String> findSessionId();
     /**

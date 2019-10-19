@@ -6,30 +6,28 @@ import org.marketcetera.trade.BrokerID;
 /* $License$ */
 
 /**
- * Indicates that a FIX session has become available.
+ * Indicates that a FIX session has been stopped.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class SimpleFixSessionAvailableEvent
+public class SimpleFixSessionStoppedEvent
         extends AbstractFixSessionStatusEvent
-        implements FixSessionAvailableEvent
+        implements FixSessionStoppedEvent
 {
     /**
-     * Create a new SimpleFixSessionAvailableEvent instance.
+     * Create a new SimpleFixSessionStoppedEvent instance.
      *
      * @param inSessionId a <code>quickfix.SessionID</code> value
      * @param inBrokerId a <code>BrokerID</code> value
-     * @param inStatus a <code>FixSessionStatus</code> value
      */
-    public SimpleFixSessionAvailableEvent(quickfix.SessionID inSessionId,
-                                          BrokerID inBrokerId,
-                                          FixSessionStatus inStatus)
+    public SimpleFixSessionStoppedEvent(quickfix.SessionID inSessionId,
+                                        BrokerID inBrokerId)
     {
         super(inSessionId,
               inBrokerId,
-              inStatus);
+              FixSessionStatus.STOPPED);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -38,7 +36,7 @@ public class SimpleFixSessionAvailableEvent
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("FixSessionAvailableEvent [getSessionId()=").append(getSessionId())
+        builder.append("FixSessionStoppedEvent [getSessionId()=").append(getSessionId())
                 .append(", getBrokerId()=").append(getBrokerId()).append(", getFixSessionStatus()=")
                 .append(getFixSessionStatus()).append("]");
         return builder.toString();

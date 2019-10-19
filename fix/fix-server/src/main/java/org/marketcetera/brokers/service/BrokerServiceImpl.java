@@ -58,6 +58,8 @@ import org.marketcetera.fix.SessionSchedule;
 import org.marketcetera.fix.SessionSettingsGenerator;
 import org.marketcetera.fix.event.FixSessionStatusEvent;
 import org.marketcetera.fix.impl.SimpleActiveFixSession;
+import org.marketcetera.fix.store.MessageStoreSession;
+import org.marketcetera.fix.store.MessageStoreSessionDao;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
@@ -108,7 +110,7 @@ public class BrokerServiceImpl
         if(underlyingFixSession == null) {
             return null;
         }
-        ClusterData clusterData = getClusterData(new SessionID(underlyingFixSession.getSessionId()));
+        ClusterData clusterData = getClusterData(underlyingFixSession);
         if(clusterData == null) {
             return null;
         }
@@ -153,7 +155,7 @@ public class BrokerServiceImpl
         for(FixSession fixSession : intermediateResult.getElements()) {
             BrokerID brokerId = new BrokerID(fixSession.getBrokerId());
             quickfix.SessionID sessionId = new SessionID(fixSession.getSessionId());
-            ClusterData clusterData = getClusterData(sessionId);
+            ClusterData clusterData = getClusterData(fixSession);
             if(clusterData == null) {
                 continue;
             }
@@ -955,11 +957,10 @@ public class BrokerServiceImpl
         lastBrokerLog = thisBrokerLog;
     }
     /**
-     * 
+     * Get the session sequence numbers for the session with the given session id.
      *
-     *
-     * @param inSessionId
-     * @return
+     * @param inSessionId a <code>quickfix.SessionID</code> value
+     * @return a <code>FixSessionSequenceNumbers</code> value
      */
     private FixSessionSequenceNumbers getSessionSequenceNumbers(quickfix.SessionID inSessionId)
     {
@@ -971,6 +972,17 @@ public class BrokerServiceImpl
                 if(returnedValue != null) {
                     sequenceNumbers = returnedValue;
                     break;
+                }
+            }
+            if(sequenceNumbers == null) {
+                // no sequence numbers from an active session, look up the session in the db. since the session is not currently active, this will be accurate
+                // keep in mind that we might not find the session if they're not using this message store in the config. if that's the case, well, there's not much to be done?
+                MessageStoreSession fixSession = sessionDao.findBySessionId(String.valueOf(inSessionId));
+                if(fixSession != null) {
+                    sequenceNumbers = new FixSessionSequenceNumbers();
+                    sequenceNumbers.setNextSenderSeqNum(fixSession.getSenderSeqNum());
+                    sequenceNumbers.setNextTargetSeqNum(fixSession.getTargetSeqNum());
+                    sequenceNumbers.setSessionId(inSessionId);
                 }
             }
             return sequenceNumbers;
@@ -985,13 +997,13 @@ public class BrokerServiceImpl
     /**
      * Get the cluster data for the given session.
      *
-     * @param inSessionId a <code>quickfix.SessionID</code> value
+     * @param inFixSession a <code>FixSession</code> value
      * @return a <code>ClusterData</code> value or <code>null</code>
      */
-    private ClusterData getClusterData(quickfix.SessionID inSessionId)
+    private ClusterData getClusterData(FixSession inFixSession)
     {
         try {
-            Map<Object,Future<ClusterData>> results = clusterService.execute(new FindClusterDataTask(inSessionId));
+            Map<Object,Future<ClusterData>> results = clusterService.execute(new FindClusterDataTask(inFixSession));
             ClusterData clusterData = null;
             for(Map.Entry<Object,Future<ClusterData>> entry : results.entrySet()) {
                 ClusterData returnedValue = entry.getValue().get();
@@ -1005,7 +1017,7 @@ public class BrokerServiceImpl
             SLF4JLoggerProxy.warn(this,
                                   e,
                                   "Unable to determine cluster data for {}",
-                                  inSessionId);
+                                  inFixSession.getSessionId());
             return null;
         }
     }
@@ -1071,11 +1083,13 @@ public class BrokerServiceImpl
         public ClusterData call()
                 throws Exception
         {
-            boolean result = Session.doesSessionExist(sessionId);
             ClusterData clusterData = getClusterService().getInstanceData();
+            int affinity = fixSession.getAffinity();
+            boolean result = brokerService.isAffinityMatch(clusterData,
+                                                           affinity);
             SLF4JLoggerProxy.trace(BrokerServiceImpl.class,
                                    "Searching for {} on {}: {}",
-                                   sessionId,
+                                   fixSession.getSessionId(),
                                    clusterData,
                                    result);
             if(result) {
@@ -1088,15 +1102,20 @@ public class BrokerServiceImpl
          *
          * @param inSessionId a <code>SessionID</code> value
          */
-        private FindClusterDataTask(SessionID inSessionId)
+        private FindClusterDataTask(FixSession inFixSession)
         {
-            sessionId = inSessionId;
+            fixSession = inFixSession;
         }
         /**
-         * session id value
+         * provides access to broker services
          */
-        private final SessionID sessionId;
-        private static final long serialVersionUID = -8786699688513719193L;
+        @Autowired
+        private transient BrokerService brokerService;
+        /**
+         * fix session value
+         */
+        private final FixSession fixSession;
+        private static final long serialVersionUID = -1972285446749006297L;
     }
     /**
      * cluster data for this instance
@@ -1155,6 +1174,11 @@ public class BrokerServiceImpl
      */
     @Autowired
     private EventBusService eventBusService;
+    /**
+     * provides data store access to {@link MessageStoreSession} objects
+     */
+    @Autowired
+    private MessageStoreSessionDao sessionDao;
     /**
      * publishes broker status changes
      */

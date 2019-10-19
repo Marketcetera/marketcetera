@@ -2,10 +2,10 @@ package org.marketcetera.web.view.sessions;
 
 import java.util.Collection;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
+import org.marketcetera.web.entity.DisplayFixSession;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.marketcetera.web.view.PagedViewProvider;
@@ -13,65 +13,63 @@ import org.marketcetera.web.view.PagedViewProvider;
 /* $License$ */
 
 /**
- * Provides a <code>PagedDataContainer</code> implementation for <code>ActiveFixSession</code> values.
+ * Provides a <code>PagedDataContainer</code> implementation for <code>DisplayFixSession</code> values.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public class SessionPagedDataContainer
-        extends PagedDataContainer<ActiveFixSession>
+        extends PagedDataContainer<DisplayFixSession>
 {
     /**
      * Create a new SessionPagedDataContainer instance.
      *
-     * @param inType a <code>Class&lt; super ActiveFixSession&gt;</code> value
-     * @param inCollection a <code>Collection&lt;? extends ActiveFixSession&gt;</code> value
+     * @param inType a <code>Class&lt; ? extends DisplayFixSession&gt;</code> value
+     * @param inCollection a <code>Collection&lt;? extends DisplayFixSession&gt;</code> value
      * @param inPagedViewProvider a <code>PagedViewProvider</code> value
      * @throws IllegalArgumentException if the container cannot be constructed
      */
-    public SessionPagedDataContainer(Collection<? extends ActiveFixSession> inCollection,
+    public SessionPagedDataContainer(Collection<? extends DisplayFixSession> inCollection,
                                      PagedViewProvider inPagedViewProvider)
             throws IllegalArgumentException
     {
-        super(ActiveFixSession.class,
+        super(DisplayFixSession.class,
               inCollection,
               inPagedViewProvider);
     }
     /**
      * Create a new SessionPagedDataContainer instance.
      *
-     * @param inType a <code>Class&lt; super ActiveFixSession&gt;</code> value
+     * @param inType a <code>Class&lt; super DisplayFixSession&gt;</code> value
      * @param inPagedViewProvider a <code>PagedViewProvider</code> value
      * @throws IllegalArgumentException if the container cannot be constructed
      */
     public SessionPagedDataContainer(PagedViewProvider inPagedViewProvider)
             throws IllegalArgumentException
     {
-        super(ActiveFixSession.class,
+        super(DisplayFixSession.class,
               inPagedViewProvider);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.PagedDataContainer#getDataContainerContents(org.marketcetera.core.PageRequest)
      */
     @Override
-    protected CollectionPageResponse<ActiveFixSession> getDataContainerContents(PageRequest inPageRequest)
+    protected CollectionPageResponse<DisplayFixSession> getDataContainerContents(PageRequest inPageRequest)
     {
-        return AdminClientService.getInstance().getFixSessions(inPageRequest);
+        CollectionPageResponse<ActiveFixSession> activeFixSessions = AdminClientService.getInstance().getFixSessions(inPageRequest);
+        CollectionPageResponse<DisplayFixSession> displayFixSessions = new CollectionPageResponse<>(activeFixSessions);
+        activeFixSessions.getElements().forEach(activeFixSession -> displayFixSessions.getElements().add(new DisplayFixSession(activeFixSession)));
+        return displayFixSessions;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.PagedDataContainer#isDeepEquals(java.lang.Object, java.lang.Object)
      */
     @Override
-    protected boolean isDeepEquals(ActiveFixSession inO1,
-                                   ActiveFixSession inO2)
+    protected boolean isDeepEquals(DisplayFixSession inO1,
+                                   DisplayFixSession inO2)
     {
-        return new EqualsBuilder().append(inO1.getFixSession().getName(),inO2.getFixSession().getName())
-                .append(inO1.getFixSession().getSessionId(),inO2.getFixSession().getSessionId())
-                .append(inO1.getClusterData().getInstanceNumber(),inO2.getClusterData().getInstanceNumber())
-                .append(inO1.getStatus(),inO2.getStatus())
-                .append(inO1.getSenderSequenceNumber(),inO2.getSenderSequenceNumber())
-                .append(inO1.getTargetSequenceNumber(),inO2.getTargetSequenceNumber()).isEquals();
+        return inO1.equals(inO2);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.PagedDataContainer#getDescription()

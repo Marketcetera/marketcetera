@@ -216,40 +216,57 @@ public class PersistentFixSessionProvider
      * @see org.marketcetera.brokers.service.FixSessionProvider#save(org.marketcetera.fix.FixSession)
      */
     @Override
-    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public FixSession save(FixSession inFixSession)
     {
-        SLF4JLoggerProxy.debug(this,
-                               "Saving {}",
-                               inFixSession);
-        BooleanBuilder where = new BooleanBuilder();
-        where = where.and(QPersistentFixSession.persistentFixSession.isDeleted.isFalse());
-        where = where.and(QPersistentFixSession.persistentFixSession.sessionId.eq(inFixSession.getSessionId()));
-        Optional<PersistentFixSession> existingSessionOption = fixSessionDao.findOne(where);
+        // need a manual transaction to allow the session to be flushed to the db before reporting status
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setName("saveSessionTransaction");
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        def.setReadOnly(false);
+        TransactionStatus status = txManager.getTransaction(def);
         PersistentFixSession existingSession;
-        if(!existingSessionOption.isPresent()) {
-            // these checks need to be done manually instead of relying on database integrity because of the "deleted" feature for sessions
-            // check for duplicate name
-            Validate.isTrue(findFixSessionByName(inFixSession.getName()) == null,
-                            "Session with name \"" + inFixSession.getName() + "\" already exists");
-            // check for duplicate session id
-            Validate.isTrue(findFixSessionBySessionId(new SessionID(inFixSession.getSessionId())) == null,
-                            "Session with session ID \"" + inFixSession.getSessionId() + "\" already exists");
-            // check for duplicate broker id
-            Validate.isTrue(findFixSessionByBrokerId(new BrokerID(inFixSession.getBrokerId())) == null,
-                            "Session with broker ID \"" + inFixSession.getBrokerId() + "\" already exists");
-            existingSession = (PersistentFixSession)fixSessionFactory.create(inFixSession);
-        } else {
-            existingSession = existingSessionOption.get();
-            // in order to change the session, it must be disabled
-            Validate.isTrue(!existingSession.isEnabled(),
-                            "Session " + existingSession.getSessionId() + " must be disabled before it can be modified");
-            existingSession.update(inFixSession);
+        try {
+            SLF4JLoggerProxy.debug(this,
+                                   "Saving {}",
+                                   inFixSession);
+            BooleanBuilder where = new BooleanBuilder();
+            where = where.and(QPersistentFixSession.persistentFixSession.isDeleted.isFalse());
+            where = where.and(QPersistentFixSession.persistentFixSession.sessionId.eq(inFixSession.getSessionId()));
+            Optional<PersistentFixSession> existingSessionOption = fixSessionDao.findOne(where);
+            if(!existingSessionOption.isPresent()) {
+                // these checks need to be done manually instead of relying on database integrity because of the "deleted" feature for sessions
+                // check for duplicate name
+                Validate.isTrue(findFixSessionByName(inFixSession.getName()) == null,
+                                "Session with name \"" + inFixSession.getName() + "\" already exists");
+                // check for duplicate session id
+                Validate.isTrue(findFixSessionBySessionId(new SessionID(inFixSession.getSessionId())) == null,
+                                "Session with session ID \"" + inFixSession.getSessionId() + "\" already exists");
+                // check for duplicate broker id
+                Validate.isTrue(findFixSessionByBrokerId(new BrokerID(inFixSession.getBrokerId())) == null,
+                                "Session with broker ID \"" + inFixSession.getBrokerId() + "\" already exists");
+                existingSession = (PersistentFixSession)fixSessionFactory.create(inFixSession);
+            } else {
+                existingSession = existingSessionOption.get();
+                // in order to change the session, it must be disabled
+                Validate.isTrue(!existingSession.isEnabled(),
+                                "Session " + existingSession.getSessionId() + " must be disabled before it can be modified");
+                existingSession.update(inFixSession);
+            }
+            existingSession.validateSession();
+            // do not allow the session to enabled via the backdoor
+            existingSession.setIsEnabled(false);
+            existingSession = fixSessionDao.save(existingSession);
+            txManager.commit(status);
+        } catch (Exception e) {
+            // unable to commit the initial change, rollback
+            if(status != null) {
+                txManager.rollback(status);
+            }
+            if(e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            }
+            throw new RuntimeException(e);
         }
-        existingSession.validateSession();
-        // do not allow the session to enabled via the backdoor
-        existingSession.setIsEnabled(false);
-        existingSession = fixSessionDao.save(existingSession);
         // have each cluster member report disabled status for this session
         ReportBrokerStatusTask reportStatusTask = new ReportBrokerStatusTask(existingSession,
                                                                              FixSessionStatus.DISABLED);
@@ -627,6 +644,8 @@ public class PersistentFixSessionProvider
             return QPersistentFixSession.persistentFixSession.name.getMetadata().getName();
         } else if(QPersistentFixSession.persistentFixSession.sessionId.getMetadata().getName().toLowerCase().equals(lcaseProperty)) {
             return QPersistentFixSession.persistentFixSession.sessionId.getMetadata().getName();
+        } else if(QPersistentFixSession.persistentFixSession.brokerId.getMetadata().getName().toLowerCase().equals(lcaseProperty)) {
+            return QPersistentFixSession.persistentFixSession.brokerId.getMetadata().getName();
         } else {
             throw new UnsupportedOperationException("Unsupported sort property for FIX Sessions: " + inSort.getProperty());
         }

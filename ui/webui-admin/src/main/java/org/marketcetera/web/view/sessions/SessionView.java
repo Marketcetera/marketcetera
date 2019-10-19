@@ -22,6 +22,7 @@ import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.entity.DisplayFixSession;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.AbstractGridView;
@@ -80,7 +81,7 @@ import quickfix.SessionID;
  * @since $Release$
  */
 public class SessionView
-        extends AbstractGridView<ActiveFixSession>
+        extends AbstractGridView<DisplayFixSession>
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
@@ -92,7 +93,7 @@ public class SessionView
         getActionSelect().setNullSelectionAllowed(false);
         getActionSelect().setReadOnly(true);
         getGrid().addSelectionListener(inEvent -> {
-            ActiveFixSession selectedObject = getSelectedItem();
+            DisplayFixSession selectedObject = getSelectedItem();
             getActionSelect().removeAllItems();
             if(selectedObject == null) {
                 getActionSelect().setReadOnly(true);
@@ -150,12 +151,13 @@ public class SessionView
     @Override
     protected void setGridColumns()
     {
-        getGrid().setColumns("fixSession.name",
-                             "fixSession.sessionId",
-                             "instance",
+        getGrid().setColumns("name",
+                             "brokerId",
+                             "sessionId",
+                             "hostId",
                              "status",
-                             "senderSequenceNumber",
-                             "targetSequenceNumber");
+                             "senderSeqNum",
+                             "targetSeqNum");
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#onActionSelect(com.vaadin.data.Property.ValueChangeEvent)
@@ -163,7 +165,7 @@ public class SessionView
     @Override
     protected void onActionSelect(ValueChangeEvent inEvent)
     {
-        ActiveFixSession selectedItem = getSelectedItem();
+        DisplayFixSession selectedItem = getSelectedItem();
         if(selectedItem == null || inEvent.getProperty().getValue() == null) {
             return;
         }
@@ -173,29 +175,29 @@ public class SessionView
                               String.valueOf(VaadinSession.getCurrent().getAttribute(SessionUser.class)),
                               getViewName(),
                               action,
-                              selectedItem.getFixSession().getName());
+                              selectedItem.getName());
         AdminClientService adminClientService = AdminClientService.getInstance();
         switch(action) {
             case ACTION_START:
-                adminClientService.startSession(selectedItem.getFixSession().getName());
+                adminClientService.startSession(selectedItem.getName());
                 break;
             case ACTION_STOP:
-                adminClientService.stopSession(selectedItem.getFixSession().getName());
+                adminClientService.stopSession(selectedItem.getName());
                 break;
             case ACTION_ENABLE:
-                adminClientService.enableSession(selectedItem.getFixSession().getName());
+                adminClientService.enableSession(selectedItem.getName());
                 break;
             case ACTION_DISABLE:
-                adminClientService.disableSession(selectedItem.getFixSession().getName());
+                adminClientService.disableSession(selectedItem.getName());
                 break;
             case ACTION_DELETE:
-                adminClientService.deleteSession(selectedItem.getFixSession().getName());
+                adminClientService.deleteSession(selectedItem.getName());
                 break;
             case ACTION_SEQUENCE:
-                doUpdateSequenceNumbers(selectedItem);
+                doUpdateSequenceNumbers(selectedItem.getSource());
                 break;
             case ACTION_EDIT:
-                createOrEdit(selectedItem,
+                createOrEdit(selectedItem.getSource(),
                              false);
                 break;
             default:
@@ -206,7 +208,7 @@ public class SessionView
      * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
      */
     @Override
-    protected PagedDataContainer<ActiveFixSession> createDataContainer()
+    protected PagedDataContainer<DisplayFixSession> createDataContainer()
     {
         return new SessionPagedDataContainer(this);
     }

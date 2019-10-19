@@ -45,6 +45,23 @@ public class CollectionPageResponse<Clazz>
         setSortOrder(sortOrder);
     }
     /**
+     * 
+     * Create a new CollectionPageResponse instance.
+     *
+     * @param inSample
+     */
+    public CollectionPageResponse(CollectionPageResponse<?> inSample)
+    {
+        setHasContent(inSample.hasContent());
+        setPageMaxSize(inSample.getPageMaxSize());
+        setPageNumber(inSample.getPageNumber());
+        setPageSize(inSample.getPageSize());
+        setTotalPages(inSample.getTotalPages());
+        setTotalSize(inSample.getTotalSize());
+        List<Sort> sortOrder = Lists.newArrayList(inSample.getSortOrder());
+        setSortOrder(sortOrder);
+    }
+    /**
      * Get the elements value.
      *
      * @return a <code>Collection&lt;Clazz&gt;</code> value

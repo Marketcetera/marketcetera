@@ -3,6 +3,7 @@ package org.marketcetera.dare;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -153,7 +154,9 @@ public class DeployAnywhereRoutingEngine
                                       sessionName);
             } else {
                 updateStatus(fixSession.getActiveFixSession().getFixSession(),
-                             false);
+                             generateSessionStatus(fixSession.getActiveFixSession().getFixSession(),
+                                                   false,
+                                                   false));
             }
         }
     }
@@ -178,7 +181,9 @@ public class DeployAnywhereRoutingEngine
             return;
         }
         updateStatus(fixSession.getActiveFixSession().getFixSession(),
-                     true);
+                     generateSessionStatus(fixSession.getActiveFixSession().getFixSession(),
+                                           true,
+                                           false));
         SessionCustomization sessionCustomization = brokerService.getSessionCustomization(fixSession.getActiveFixSession().getFixSession());
         if(sessionCustomization != null && sessionCustomization.getLogonActions() != null) {
             for(LogonAction action : sessionCustomization.getLogonActions()) {
@@ -236,7 +241,9 @@ public class DeployAnywhereRoutingEngine
                 return;
             }
             updateStatus(fixSession.getActiveFixSession().getFixSession(),
-                         false);
+                         generateSessionStatus(fixSession.getActiveFixSession().getFixSession(),
+                                               false,
+                                               false));
             SessionCustomization sessionCustomization = brokerService.getSessionCustomization(fixSession.getActiveFixSession().getFixSession());
             if(sessionCustomization != null && sessionCustomization.getLogoutActions() != null) {
                 for(LogoutAction action : sessionCustomization.getLogoutActions()) {
@@ -356,7 +363,9 @@ public class DeployAnywhereRoutingEngine
                     throw new quickfix.RejectLogon(inSessionId + " is not a known session");
                 }
                 updateStatus(session.getActiveFixSession().getFixSession(),
-                             false);
+                             generateSessionStatus(session.getActiveFixSession().getFixSession(),
+                                                   false,
+                                                   false));
                 throw new quickfix.RejectLogon(inSessionId + " logon is not allowed outside of session time");
             }
         }
@@ -447,7 +456,8 @@ public class DeployAnywhereRoutingEngine
                               "Received FIX injector file: {}",
                               inOriginalFileName);
         try {
-            for(String line : FileUtils.readLines(inFile)) {
+            for(String line : FileUtils.readLines(inFile,
+                                                  Charset.defaultCharset())) {
                 try {
                     quickfix.Message message = getMessageFromLine(line);
                     if(message == null) {
@@ -550,7 +560,9 @@ public class DeployAnywhereRoutingEngine
                     }
                 }
                 updateStatus(fixSession,
-                             false);
+                             generateSessionStatus(fixSession,
+                                                   false,
+                                                   false));
             }
         } else {
             SLF4JLoggerProxy.debug(this,
@@ -631,7 +643,9 @@ public class DeployAnywhereRoutingEngine
                                            fixSession);
                     // send status update
                     updateStatus(fixSession,
-                                 false);
+                                 generateSessionStatus(fixSession,
+                                                       false,
+                                                       false));
                 }
             }
         }
@@ -702,7 +716,9 @@ public class DeployAnywhereRoutingEngine
                 } else {
                     initiator.stop();
                     updateStatus(fixSession,
-                                 false);
+                                 generateSessionStatus(fixSession,
+                                                       false,
+                                                       true));
                     SLF4JLoggerProxy.debug(this,
                                            "{} {} initiator stopped",
                                            this,
@@ -1387,47 +1403,58 @@ public class DeployAnywhereRoutingEngine
             }
         }
     }
+    private FixSessionStatus generateSessionStatus(FixSession inFixSession,
+                                                   boolean inConnected,
+                                                   boolean inStopped)
+    {
+        FixSessionStatus status;
+        if(inStopped) {
+            status = FixSessionStatus.STOPPED;
+        } else {
+            if(inConnected) {
+                status = FixSessionStatus.CONNECTED;
+            } else {
+                quickfix.Session session = quickfix.Session.lookupSession(new quickfix.SessionID(inFixSession.getSessionId()));
+                if(session == null) {
+                    if(inFixSession.isEnabled()) {
+                        if(brokerService.isAffinityMatch(inFixSession,
+                                                         clusterData)) {
+                            status = FixSessionStatus.BACKUP;
+                        } else {
+                            status = FixSessionStatus.AFFINITY_MISMATCH;
+                        }
+                    } else {
+                        status = FixSessionStatus.DISABLED;
+                    }
+                } else {
+                    if(brokerService.isSessionTime(new quickfix.SessionID(inFixSession.getSessionId()))) {
+                        status = FixSessionStatus.NOT_CONNECTED;
+                    } else {
+                        status = FixSessionStatus.DISCONNECTED;
+                    }
+                }
+            }
+        }
+        return status;
+    }
     /**
      * Updates broker status.
      *
      * @param inBroker a <code>Broker</code> value
-     * @param inStatus a <code>boolean</code> value
+     * @param inStatus a <code>FixSessionStatus</code> value
      */
     private void updateStatus(FixSession inFixSession,
-                              boolean inStatus)
+                              FixSessionStatus status)
     {
-      FixSessionStatus status;
-      BrokerID brokerId = new BrokerID(inFixSession.getBrokerId());
-        if(inStatus) {
-            status = FixSessionStatus.CONNECTED;
-        } else {
-            quickfix.Session session = quickfix.Session.lookupSession(new quickfix.SessionID(inFixSession.getSessionId()));
-            if(session == null) {
-                if(inFixSession.isEnabled()) {
-                    if(brokerService.isAffinityMatch(inFixSession,
-                                                     clusterData)) {
-                        status = FixSessionStatus.BACKUP;
-                    } else {
-                        status = FixSessionStatus.AFFINITY_MISMATCH;
-                    }
-                } else {
-                    status = FixSessionStatus.DISABLED;
-                }
-            } else {
-                if(brokerService.isSessionTime(new quickfix.SessionID(inFixSession.getSessionId()))) {
-                    status = FixSessionStatus.NOT_CONNECTED;
-                } else {
-                    status = FixSessionStatus.DISCONNECTED;
-                }
-            }
-        }
+        BrokerID brokerId = new BrokerID(inFixSession.getBrokerId());
+        quickfix.SessionID sessionId = new quickfix.SessionID(inFixSession.getSessionId());
         final FixSessionStatusEvent fixSessionStatusEvent;
         if(status.isLoggedOn()) {
-            fixSessionStatusEvent = new SimpleFixSessionAvailableEvent(new quickfix.SessionID(inFixSession.getSessionId()),
+            fixSessionStatusEvent = new SimpleFixSessionAvailableEvent(sessionId,
                                                                        brokerId,
                                                                        status);
         } else {
-            fixSessionStatusEvent = new SimpleFixSessionUnavailableEvent(new quickfix.SessionID(inFixSession.getSessionId()),
+            fixSessionStatusEvent = new SimpleFixSessionUnavailableEvent(sessionId,
                                                                          brokerId,
                                                                          status);
         }

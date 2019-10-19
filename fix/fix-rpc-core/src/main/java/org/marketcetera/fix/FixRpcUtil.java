@@ -2,6 +2,7 @@ package org.marketcetera.fix;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTag;
@@ -294,15 +295,30 @@ public class FixRpcUtil
         FixAdminRpc.FixSession.Builder builder = FixAdminRpc.FixSession.newBuilder();
         builder.setAcceptor(inFixSession.isAcceptor());
         builder.setAffinity(inFixSession.getAffinity());
-        builder.setBrokerId(inFixSession.getBrokerId());
-        builder.setDescription(inFixSession.getDescription());
-        builder.setHost(inFixSession.getHost());
+        String rawValue = StringUtils.trimToNull(inFixSession.getBrokerId());
+        if(rawValue != null) {
+            builder.setBrokerId(rawValue);
+        }
+        rawValue = StringUtils.trimToNull(inFixSession.getDescription());
+        if(rawValue != null) {
+            builder.setDescription(rawValue);
+        }
+        rawValue = StringUtils.trimToNull(inFixSession.getHost());
+        if(rawValue != null) {
+            builder.setHost(rawValue);
+        }
         if(inFixSession.getMappedBrokerId() != null) { 
             builder.setMappedBrokerId(inFixSession.getMappedBrokerId());
         }
-        builder.setName(inFixSession.getName());
+        rawValue = StringUtils.trimToNull(inFixSession.getName());
+        if(rawValue != null) { 
+            builder.setName(rawValue);
+        }
         builder.setPort(inFixSession.getPort());
-        builder.setSessionId(inFixSession.getSessionId());
+        rawValue = StringUtils.trimToNull(inFixSession.getSessionId());
+        if(rawValue != null) { 
+            builder.setSessionId(rawValue);
+        }
         builder.setSessionSettings(BaseRpcUtil.getRpcMap(inFixSession.getSessionSettings()));
         return Optional.of(builder.build());
     }

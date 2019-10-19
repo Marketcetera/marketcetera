@@ -1,9 +1,11 @@
 package org.marketcetera.brokers.service;
 
-import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.cluster.AbstractCallableClusterTask;
+import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionListener;
+import org.marketcetera.fix.event.FixSessionStoppedEvent;
+import org.marketcetera.fix.event.SimpleFixSessionStoppedEvent;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,9 +30,9 @@ public class StopSessionTask
                                "Calling stop for {} on {}",
                                session,
                                getClusterService().getInstanceData());
-        for(FixSessionListener fixSessionListener : brokerService.getFixSessionListeners()) {
-            fixSessionListener.sessionStopped(session);
-        }
+        FixSessionStoppedEvent sessionStoppedEvent = new SimpleFixSessionStoppedEvent(new quickfix.SessionID(session.getSessionId()),
+                                                                                      new BrokerID(session.getBrokerId()));
+        eventBusService.post(sessionStoppedEvent);
         return true;
     }
     /**
@@ -44,10 +46,10 @@ public class StopSessionTask
         session = inSession;
     }
     /**
-     * cluster-local broker service value
+     * provides access to event bus services
      */
     @Autowired
-    private transient BrokerService brokerService;
+    private transient EventBusService eventBusService;
     /**
      * fix session to be disabled
      */

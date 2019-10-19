@@ -111,7 +111,7 @@ import quickfix.SessionID;
 @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
 @ClassVersion("$Id$")
 public class ReportServiceImpl
-        implements ReportService, FixSessionListener
+        implements ReportService,FixSessionListener
 {
     /**
      * Validate and start the object.

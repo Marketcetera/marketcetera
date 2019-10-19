@@ -1,37 +1,31 @@
 package org.marketcetera.fix.store;
 
-import quickfix.MessageStore;
-import quickfix.MessageStoreFactory;
-import quickfix.NoopStore;
-import quickfix.SessionID;
-import quickfix.SessionSettings;
-
 /* $License$ */
 
 /**
- * Creates {@link NoopStore} Quickfix/J message stores
+ * Creates {@link quickfix.NoopStore} Quickfix/J message stores
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public class NoopStoreFactory
-        implements MessageStoreFactory
+        implements quickfix.MessageStoreFactory
 {
     /* (non-Javadoc)
      * @see quickfix.MessageStoreFactory#create(quickfix.SessionID)
      */
     @Override
-    public MessageStore create(SessionID inSessionID)
+    public quickfix.MessageStore create(quickfix.SessionID inSessionID)
     {
-        return new NoopStore();
+        return new quickfix.NoopStore();
     }
     /**
      * Create a new NoopStoreFactory instance.
      *
-     * @param inSettings a <code>SessionSettings</code> value
+     * @param inSettings a <code>quickfix.SessionSettings</code> value
      */
-    public NoopStoreFactory(SessionSettings inSettings)
+    public NoopStoreFactory(quickfix.SessionSettings inSettings)
     {
     }
 }

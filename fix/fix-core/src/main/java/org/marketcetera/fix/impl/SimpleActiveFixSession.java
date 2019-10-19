@@ -19,6 +19,7 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.MutableActiveFixSession;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Sets;
 
@@ -43,6 +44,9 @@ public class SimpleActiveFixSession
      */
     public SimpleActiveFixSession(ActiveFixSession inActiveFixSession)
     {
+        SLF4JLoggerProxy.warn(this,
+                              "COCO: setting host number to {}",
+                              inActiveFixSession.getClusterData().getHostNumber());
         setClusterData(inActiveFixSession.getClusterData());
         setSenderSequenceNumber(inActiveFixSession.getSenderSequenceNumber());
         setStatus(inActiveFixSession.getStatus());
@@ -54,6 +58,8 @@ public class SimpleActiveFixSession
      */
     public SimpleActiveFixSession()
     {
+        SLF4JLoggerProxy.warn(this,
+                              "COCO: setting host number to 0 in default constructor");
         fixSession = new SimpleFixSession();
     }
     /**
@@ -181,10 +187,17 @@ public class SimpleActiveFixSession
     @Override
     public void setClusterData(ClusterData inClusterData)
     {
+        if(inClusterData == null) {
+            clusterData = new SimpleClusterData();
+            return;
+        }
         if(inClusterData instanceof SimpleClusterData) {
             clusterData = (SimpleClusterData)inClusterData;
         }
         clusterData = new SimpleClusterData(inClusterData);
+        SLF4JLoggerProxy.warn(this,
+                              "COCO: setting host number to {}",
+                              inClusterData.getHostNumber());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.fix.ActiveFixSession#getBrokerAlgos()
