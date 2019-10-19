@@ -10,7 +10,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -46,9 +45,6 @@ public class SimpleClusterData
         hostId = inHostId;
         totalInstances = inTotalInstances;
         uuid = inUuid;
-        SLF4JLoggerProxy.warn(this,
-                              "COCO: setting host number to {}",
-                              inHostNumber);
     }
     /**
      * Create a new ClusterData instance.
@@ -66,9 +62,6 @@ public class SimpleClusterData
         setInstanceNumber(inClusterData.getInstanceNumber());
         setTotalInstances(inClusterData.getTotalInstances());
         setUuid(inClusterData.getUuid());
-        SLF4JLoggerProxy.warn(this,
-                              "COCO: setting host number to {}",
-                              inClusterData.getHostNumber());
     }
     /**
      * Get the instanceNumber value.

@@ -31,6 +31,7 @@ public class ClusterRpcUtil
         if(inClusterData.getHostId() != null) {
             builder.setHostId(inClusterData.getHostId());
         }
+        builder.setHostNumber(inClusterData.getHostNumber());
         builder.setInstanceNumber(inClusterData.getInstanceNumber());
         builder.setTotalInstances(inClusterData.getTotalInstances());
         if(inClusterData.getUuid() != null) {

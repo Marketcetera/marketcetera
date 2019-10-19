@@ -113,7 +113,8 @@ public class FixRpcUtil
         MutableActiveFixSession activeFixSession = inActiveFixSessionFactory.create();
         inRpcFixSession.getBrokerAlgoSpecsList().stream().forEach(rpcBrokerAlgoSpec->getBrokerAlgoSpec(rpcBrokerAlgoSpec).ifPresent(brokerAlgoSpec->activeFixSession.getBrokerAlgos().add(brokerAlgoSpec)));
         if(inRpcFixSession.hasClusterData()) {
-            ClusterRpcUtil.getClusterData(inRpcFixSession.getClusterData(),inClusterDataFactory).ifPresent(clusterData->activeFixSession.setClusterData(clusterData));
+            ClusterRpcUtil.getClusterData(inRpcFixSession.getClusterData(),
+                                          inClusterDataFactory).ifPresent(clusterData->activeFixSession.setClusterData(clusterData));
         }
         if(inRpcFixSession.hasFixSession()) {
             getFixSession(inRpcFixSession.getFixSession(),inFixSessionFactory).ifPresent(fixSession->activeFixSession.setFixSession(fixSession));
