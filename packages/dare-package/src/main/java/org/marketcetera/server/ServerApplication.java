@@ -3,6 +3,7 @@ package org.marketcetera.server;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.jms.ServerSession;
 
 import org.marketcetera.admin.UserAttributeFactory;
@@ -40,6 +41,7 @@ import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.PortUserProxy;
 import org.marketcetera.util.ws.stateful.SessionManager;
@@ -88,6 +90,20 @@ public class ServerApplication
     {
         SpringApplication.run(ServerApplication.class,
                               inArgs);
+    }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        SLF4JLoggerProxy.info(this,
+                              "Core version {} revision {} timestamp {} repository {} path {}",
+                              org.marketcetera.core.Version.pomversion,
+                              org.marketcetera.core.Version.build_number,
+                              org.marketcetera.core.Version.build_time,
+                              org.marketcetera.core.Version.build_repository,
+                              org.marketcetera.core.Version.build_path);
     }
     /**
      * Get the message store configuration value.

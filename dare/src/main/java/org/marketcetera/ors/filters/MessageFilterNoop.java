@@ -1,6 +1,7 @@
 package org.marketcetera.ors.filters;
 
 import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.Message;
 
 /**

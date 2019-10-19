@@ -1,7 +1,9 @@
 package org.marketcetera.ors.filters;
 
 import java.util.Set;
+
 import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.MsgType;

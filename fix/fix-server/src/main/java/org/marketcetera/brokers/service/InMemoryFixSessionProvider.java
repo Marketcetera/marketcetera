@@ -110,6 +110,27 @@ public class InMemoryFixSessionProvider
         return allFixSessions;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.FixSessionProvider#findFixSessions(int, int)
+     */
+    @Override
+    public List<FixSession> findFixSessions(int inInstance,
+                                            int inTotalInstances)
+    {
+        List<FixSession> allFixSessions = Lists.newArrayList(findFixSessions());
+        Iterator<FixSession> allFixSessionIterator = allFixSessions.iterator();
+        while(allFixSessionIterator.hasNext()) {
+            FixSession session = allFixSessionIterator.next();
+            int brokerInstanceAffinity = session.getAffinity();
+            while(brokerInstanceAffinity > inTotalInstances) {
+                brokerInstanceAffinity -= inTotalInstances;
+            }
+            if(brokerInstanceAffinity != inInstance) {
+                allFixSessionIterator.remove();
+            }
+        }
+        return allFixSessions;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.FixSessionProvider#findFixSessions(org.marketcetera.persist.PageRequest)
      */
     @Override

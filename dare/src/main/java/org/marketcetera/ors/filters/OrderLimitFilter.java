@@ -1,11 +1,13 @@
 package org.marketcetera.ors.filters;
 
 import java.math.BigDecimal;
+
 import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.OrdType;

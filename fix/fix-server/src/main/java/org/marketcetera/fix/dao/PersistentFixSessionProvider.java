@@ -213,6 +213,43 @@ public class PersistentFixSessionProvider
         return sessionsToReturn;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.FixSessionProvider#findFixSessions(int, int)
+     */
+    @Override
+    @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
+    public List<FixSession> findFixSessions(int inInstance,
+                                            int inTotalInstances)
+    {
+        List<FixSession> sessionsToReturn = new ArrayList<>();
+        List<PersistentFixSession> allSessionsByConnectionType = fixSessionDao.findByIsDeletedFalseOrderByAffinityAsc();
+        SLF4JLoggerProxy.debug(this,
+                               "Determining sessions for instance {} of {}",
+                               inInstance,
+                               inTotalInstances);
+        for(FixSession session : allSessionsByConnectionType) {
+            // need to sort out which sessions should be returned based on affinity
+            int brokerInstanceAffinity = session.getAffinity();
+            while(brokerInstanceAffinity > inTotalInstances) {
+                brokerInstanceAffinity -= inTotalInstances;
+            }
+            if(brokerInstanceAffinity == inInstance) {
+                // we'll keep this broker
+                SLF4JLoggerProxy.debug(this,
+                                       "Retaining {}",
+                                       session);
+                sessionsToReturn.add(session);
+            } else {
+                SLF4JLoggerProxy.debug(this,
+                                       "Discarding {}",
+                                       session);
+            }
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "Returning {}",
+                               sessionsToReturn);
+        return sessionsToReturn;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.FixSessionProvider#save(org.marketcetera.fix.FixSession)
      */
     @Override

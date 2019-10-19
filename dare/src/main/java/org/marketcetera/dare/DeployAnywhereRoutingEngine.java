@@ -3,12 +3,16 @@ package org.marketcetera.dare;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -19,6 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.management.JMException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -53,8 +58,11 @@ import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
 import org.marketcetera.fix.OrderIntercepted;
 import org.marketcetera.fix.ServerFixSession;
+import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.fix.SessionRestorePayload;
 import org.marketcetera.fix.SessionRestorePayloadHandler;
+import org.marketcetera.fix.SessionService;
+import org.marketcetera.fix.acceptor.DynamicAcceptorSessionProvider;
 import org.marketcetera.fix.event.FixSessionDisabledEvent;
 import org.marketcetera.fix.event.FixSessionEnabledEvent;
 import org.marketcetera.fix.event.FixSessionStartedEvent;
@@ -96,8 +104,16 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
 import com.hazelcast.core.OperationTimeoutException;
 
+import quickfix.ConfigError;
+import quickfix.DefaultSessionFactory;
+import quickfix.DynamicSessionThreadedSocketAcceptor;
 import quickfix.Session;
+import quickfix.SessionFactory;
+import quickfix.SessionID;
 import quickfix.SessionNotFound;
+import quickfix.SessionSettings;
+import quickfix.ThreadedSocketAcceptor;
+import quickfix.mina.acceptor.AcceptorSessionProvider;
 
 /* $License$ */
 
@@ -122,7 +138,7 @@ public class DeployAnywhereRoutingEngine
         activeSessions.add(inSessionId);
         String sessionName = brokerService.getSessionName(inSessionId);
         SLF4JLoggerProxy.debug(this,
-                               "OnCreate {}", //$NON-NLS-1$
+                               "{} created", //$NON-NLS-1$
                                sessionName);
         try {
             if(fixSessionRestoreExecutor == null) {
@@ -171,7 +187,7 @@ public class DeployAnywhereRoutingEngine
         }
         String sessionName = brokerService.getSessionName(inSessionId);
         SLF4JLoggerProxy.info(FIXMessageUtil.FIX_RESTORE_LOGGER_NAME,
-                              "Initiator {} logged on",
+                              "{} logged on",
                               sessionName);
         ServerFixSession fixSession = brokerService.getServerFixSession(inSessionId);
         if(fixSession == null) {
@@ -526,48 +542,49 @@ public class DeployAnywhereRoutingEngine
     public void sessionDisabled(FixSessionDisabledEvent inEvent)
     {
         FixSession fixSession = fixSessionProvider.findFixSessionBySessionId(inEvent.getSessionId());
+        quickfix.SessionID sessionId = inEvent.getSessionId();
+        String sessionName = brokerService.getSessionName(sessionId);
         if(fixSession == null) {
             SLF4JLoggerProxy.debug(this,
                                    "Ignoring disabled session {} because it no longer exists",
-                                   inEvent.getSessionId());
+                                   sessionName);
             return;
         }
         if(!isActive()) {
             SLF4JLoggerProxy.debug(this,
                                    "Ignoring disabled session {} because DARE is not active",
-                                   inEvent.getSessionId());
+                                   sessionName);
             return;
         }
-        if(!fixSession.isAcceptor()) {
-            synchronized(sessionLock) {
-                quickfix.SessionID sessionId = new quickfix.SessionID(fixSession.getSessionId());
-                quickfix.Session activeSession = quickfix.Session.lookupSession(sessionId);
-                if(activeSession == null) {
-                    SLF4JLoggerProxy.debug(this,
-                                           "No existing session on this instance for {}, nothing to do",
-                                           fixSession);
-                } else {
-                    SLF4JLoggerProxy.debug(this,
-                                           "Disabling {} {}",
-                                           fixSession,
-                                           activeSession);
-                    synchronized(initiators) {
-                        quickfix.ThreadedSocketInitiator initiator = initiators.remove(sessionId);
-                        if(initiator != null) {
-                            initiator.stop(true);
-                            initiator.removeDynamicSession(sessionId);
-                        }
+        SLF4JLoggerProxy.debug(this,
+                               "Beginning disable for {}",
+                               sessionName);
+        quickfix.Session activeSession = quickfix.Session.lookupSession(sessionId);
+        if(activeSession == null) {
+            SLF4JLoggerProxy.debug(this,
+                                   "No existing session on this instance for {}, nothing to do",
+                                   fixSession);
+            return;
+        }
+        synchronized(sessionLock) {
+            SLF4JLoggerProxy.debug(this,
+                                   "Disabling {}",
+                                   sessionName);
+            if(fixSession.isAcceptor()) {
+                socketAcceptor.removeDynamicSession(sessionId);
+            } else {
+                synchronized(initiators) {
+                    quickfix.ThreadedSocketInitiator initiator = initiators.remove(sessionId);
+                    if(initiator != null) {
+                        initiator.stop(true);
+                        initiator.removeDynamicSession(sessionId);
                     }
                 }
-                updateStatus(fixSession,
-                             generateSessionStatus(fixSession,
-                                                   false,
-                                                   false));
             }
-        } else {
-            SLF4JLoggerProxy.debug(this,
-                                   "Ignoring disabled session {} because it is not an acceptor",
-                                   fixSession);
+            updateStatus(fixSession,
+                         generateSessionStatus(fixSession,
+                                               false,
+                                               false));
         }
     }
     /**
@@ -579,31 +596,91 @@ public class DeployAnywhereRoutingEngine
     public void sessionEnabled(FixSessionEnabledEvent inEvent)
     {
         FixSession fixSession = fixSessionProvider.findFixSessionBySessionId(inEvent.getSessionId());
+        quickfix.SessionID newSessionId = inEvent.getSessionId();
+        String sessionName = brokerService.getSessionName(newSessionId);
         if(fixSession == null) {
             SLF4JLoggerProxy.debug(this,
                                    "Ignoring enabled session {} because it no longer exists",
-                                   inEvent.getSessionId());
+                                   sessionName);
             return;
         }
         if(!isActive()) {
             SLF4JLoggerProxy.debug(this,
                                    "Ignoring enabled session {} because DARE is not active",
-                                   inEvent.getSessionId());
+                                   sessionName);
             return;
         }
-        if(fixSession.isAcceptor()) {
+        SLF4JLoggerProxy.debug(this,
+                               "Beginning enable for {}",
+                               sessionName);
+        quickfix.Session activeSession = quickfix.Session.lookupSession(newSessionId);
+        if(activeSession == null) {
             SLF4JLoggerProxy.debug(this,
-                                   "Ignoring enabled acceptor session {}",
+                                   "No existing session on this instance for {}, nothing to do",
                                    fixSession);
-        } else {
-            synchronized(sessionLock) {
-                if(brokerService.isAffinityMatch(fixSession,
-                                                 clusterData)) {
-                    SLF4JLoggerProxy.debug(this,
-                                           "Enabling {}",
-                                           fixSession);
+            return;
+        }
+        synchronized(sessionLock) {
+            if(brokerService.isAffinityMatch(fixSession,
+                                             clusterData)) {
+                SLF4JLoggerProxy.debug(this,
+                                       "Enabling {}",
+                                       sessionName);
+                if(fixSession.isAcceptor()) {
+                    stoppedAcceptorSessions.remove(newSessionId);
+                    // nothing to do - session will be added automatically when the dynamic provider receives the open request
+                    sendInterimStatus(fixSession);
+                    if(isPrimary) {
+                        try {
+                            initializeAcceptor();
+                        } catch (Exception e) {
+                            SLF4JLoggerProxy.warn(this,
+                                                  e,
+                                                  "Could not initialize acceptor");
+                            if(e instanceof RuntimeException) {
+                                throw (RuntimeException)e;
+                            }
+                            throw new RuntimeException(e);
+                        }
+                        // session doesn't exist yet, check to see if there's a session that matches in the DB
+                        if(fixSession.isEnabled()) {
+                            quickfix.Session session = Session.lookupSession(newSessionId);
+                            if(session == null) {
+                                // session exists in the DB, generate FIX settings for it
+                                quickfix.SessionSettings newSettings = brokerService.generateSessionSettings(Lists.newArrayList(fixSession));
+                                quickfix.SessionSettings existingSettings = socketAcceptor.getSettings();
+                                FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
+                                try {
+                                    Properties newSessionProperties = newSettings.getSessionProperties(newSessionId);
+                                    for(Map.Entry<Object,Object> entry : newSessionProperties.entrySet()) {
+                                        String key = String.valueOf(entry.getKey());
+                                        String value = String.valueOf(entry.getValue());
+                                        existingSettings.setString(newSessionId,
+                                                                   key,
+                                                                   value);
+                                    }
+                                    SessionFactory factory = new DefaultSessionFactory(this,
+                                                                                       fixSettingsProvider.getMessageStoreFactory(existingSettings),
+                                                                                       fixSettingsProvider.getLogFactory(existingSettings),
+                                                                                       fixSettingsProvider.getMessageFactory());
+                                    // this will force the session to exist, which puts it back in the mix
+                                    session = factory.create(newSessionId,
+                                                             newSettings);
+                                    socketAcceptor.addDynamicSession(session);
+                                } catch (ConfigError e) {
+                                    SLF4JLoggerProxy.warn(this,
+                                                          e);
+                                }
+                            }
+                        }
+                    } else {
+                        SLF4JLoggerProxy.debug(this,
+                                               "{} enabling {}, but this node is not the primary node",
+                                               this,
+                                               sessionName);
+                    }
+                } else {
                     try {
-                        quickfix.SessionID newSessionId = new quickfix.SessionID(fixSession.getSessionId());
                         FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
                         quickfix.SessionSettings sessionSettings = brokerService.generateSessionSettings(Lists.newArrayList(fixSession));
                         quickfix.SessionFactory sessionFactory = new quickfix.DefaultSessionFactory(this,
@@ -637,16 +714,16 @@ public class DeployAnywhereRoutingEngine
                         }
                         throw new RuntimeException(e);
                     }
-                } else {
-                    SLF4JLoggerProxy.debug(this,
-                                           "Ignoring enabled initiator session {} because of affinity mismatch",
-                                           fixSession);
-                    // send status update
-                    updateStatus(fixSession,
-                                 generateSessionStatus(fixSession,
-                                                       false,
-                                                       false));
                 }
+            } else {
+                SLF4JLoggerProxy.debug(this,
+                                       "Ignoring enabled session {} because of affinity mismatch",
+                                       sessionName);
+                // send status update
+                updateStatus(fixSession,
+                             generateSessionStatus(fixSession,
+                                                   false,
+                                                   false));
             }
         }
     }
@@ -658,7 +735,9 @@ public class DeployAnywhereRoutingEngine
     @Subscribe
     public void sessionStopped(FixSessionStoppedEvent inEvent)
     {
-        ServerFixSession serverFixSession = brokerService.getServerFixSession(inEvent.getSessionId());
+        quickfix.SessionID sessionId = inEvent.getSessionId();
+        String sessionName = brokerService.getSessionName(sessionId);
+        ServerFixSession serverFixSession = brokerService.getServerFixSession(sessionId);
         if(serverFixSession == null) {
             SLF4JLoggerProxy.debug(this,
                                    "Ignoring stopped session {} because it no longer exists",
@@ -672,58 +751,51 @@ public class DeployAnywhereRoutingEngine
             return;
         }
         FixSession fixSession = serverFixSession.getActiveFixSession().getFixSession();
-        if(fixSession.isAcceptor()) {
+        quickfix.Session activeSession = quickfix.Session.lookupSession(sessionId);
+        if(activeSession == null) {
             SLF4JLoggerProxy.debug(this,
-                                   "{} not stopping {} because the session is not an initiator session",
+                                   "{} not stopping {} because it is not currently active",
                                    this,
                                    fixSession);
         } else {
+            SLF4JLoggerProxy.debug(this,
+                                   "{} stopping {}",
+                                   this,
+                                   sessionName);
             synchronized(sessionLock) {
-                quickfix.SessionID sessionId = new quickfix.SessionID(fixSession.getSessionId());
-                quickfix.Session activeSession = quickfix.Session.lookupSession(sessionId);
-                if(activeSession == null) {
-                    SLF4JLoggerProxy.debug(this,
-                                           "{} not stopping {} because it is not currently active",
-                                           this,
-                                           fixSession);
-                } else {
-                    SLF4JLoggerProxy.debug(this,
-                                           "{} stopping {}:{}",
-                                           this,
-                                           fixSession,
-                                           activeSession);
-                    try {
-                        activeSession.disconnect("Stop invoked at " + new DateTime(),
-                                                 false);
+                if(fixSession.isAcceptor()) {
+                    stoppedAcceptorSessions.add(sessionId);
+                }
+                try {
+                    activeSession.disconnect("Stop invoked at " + new DateTime(),
+                                             false);
+                } catch (IOException e) {
+                    SLF4JLoggerProxy.warn(this,
+                                          e,
+                                          "{} unable to stop {}",
+                                          this,
+                                          sessionName);
+                    return;
+                }
+                if(!fixSession.isAcceptor()) {
+                    quickfix.ThreadedSocketInitiator initiator = initiators.get(sessionId);
+                    if(initiator == null) {
                         SLF4JLoggerProxy.debug(this,
-                                               "{} {} stopped",
+                                               "{} found no intiator to stop for {}, nothing to do",
                                                this,
                                                fixSession);
-                    } catch (IOException e) {
-                        SLF4JLoggerProxy.warn(this,
-                                              e,
-                                              "{} unable to stop {}",
-                                              this,
-                                              fixSession);
+                    } else {
+                        initiator.stop();
                     }
                 }
-                quickfix.ThreadedSocketInitiator initiator = initiators.get(sessionId);
-                if(initiator == null) {
-                    SLF4JLoggerProxy.debug(this,
-                                           "{} found no intiator to stop for {}, nothing to do",
-                                           this,
-                                           fixSession);
-                } else {
-                    initiator.stop();
-                    updateStatus(fixSession,
-                                 generateSessionStatus(fixSession,
-                                                       false,
-                                                       true));
-                    SLF4JLoggerProxy.debug(this,
-                                           "{} {} initiator stopped",
-                                           this,
-                                           fixSession);
-                }
+                updateStatus(fixSession,
+                             generateSessionStatus(fixSession,
+                                                   false,
+                                                   true));
+                SLF4JLoggerProxy.debug(this,
+                                       "{} {} stopped",
+                                       this,
+                                       sessionName);
             }
         }
     }
@@ -735,11 +807,13 @@ public class DeployAnywhereRoutingEngine
     @Subscribe
     public void sessionStarted(FixSessionStartedEvent inEvent)
     {
+        quickfix.SessionID sessionId = inEvent.getSessionId();
+        String sessionName = brokerService.getSessionName(sessionId);
         ServerFixSession serverFixSession = brokerService.getServerFixSession(inEvent.getSessionId());
         if(serverFixSession == null) {
             SLF4JLoggerProxy.debug(this,
                                    "Ignoring started session {} because it no longer exists",
-                                   inEvent.getSessionId());
+                                   sessionName);
             return;
         }
         if(!isActive()) {
@@ -749,14 +823,18 @@ public class DeployAnywhereRoutingEngine
             return;
         }
         FixSession fixSession = serverFixSession.getActiveFixSession().getFixSession();
-        if(fixSession.isAcceptor()) {
-            SLF4JLoggerProxy.debug(this,
-                                   "{} not starting {} because the session is not an initiator session",
-                                   this,
-                                   fixSession);
-        } else {
-            synchronized(sessionLock) {
-                quickfix.SessionID sessionId = new quickfix.SessionID(fixSession.getSessionId());
+        synchronized(sessionLock) {
+            if(fixSession.isAcceptor()) {
+                SLF4JLoggerProxy.debug(this,
+                                       "{} starting {}",
+                                       this,
+                                       sessionName);
+                stoppedAcceptorSessions.remove(sessionId);
+                if(brokerService.isAffinityMatch(fixSession,
+                                                 clusterData)) {
+                    sendInterimStatus(fixSession);
+                }
+            } else {
                 quickfix.ThreadedSocketInitiator initiator = initiators.get(sessionId);
                 if(initiator == null) {
                     SLF4JLoggerProxy.debug(this,
@@ -789,6 +867,8 @@ public class DeployAnywhereRoutingEngine
         Validate.notNull(clusterService);
         Validate.notNull(reportService);
         Validate.notNull(brokerService);
+        createdSessions.clear();
+        loggedOnSessions.clear();
         clusterData = clusterService.getInstanceData();
         int instanceId = clusterData.getInstanceNumber();
         clusterWorkUnitUid = getClass().getSimpleName() + "-" + instanceId;
@@ -904,6 +984,23 @@ public class DeployAnywhereRoutingEngine
                 }
                 initiators.clear();
             }
+            if(socketAcceptor != null) {
+                for(Session session : socketAcceptor.getManagedSessions()) {
+                    try {
+                        session.disconnect("System shutdown",
+                                           false);
+                    } catch (Exception ignored) {}
+                }
+                try {
+                    socketAcceptor.stop(true);
+                } catch (Exception ignored) {}
+                socketAcceptor = null;
+            }
+//            for(SessionProcessingQueue sessionQueue : queuesBySessionId.values()) {
+//                try {
+//                    sessionQueue.stop();
+//                } catch (Exception ignored) {}
+//            }
         } finally {
 //            if(notificationExecutor != null) {
 //                notificationExecutor.notify(Notification.low("DARE Stopped",
@@ -969,6 +1066,7 @@ public class DeployAnywhereRoutingEngine
                                        initiator);
                     }
                 }
+                initializeAcceptor();
 //                // Initiate JMX (for application MBeans).
 //                MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 //                mbeanServer.registerMBean(new ORSAdmin(quickFixSender,
@@ -1190,47 +1288,110 @@ public class DeployAnywhereRoutingEngine
         sender = inSender;
     }
     /**
+     * Initializes the acceptor if necessary.
+     *
+     * @throws ConfigError if an error occurs initializing the session
+     * @throws JMException if an error occurs creating the JMX exporter
+     */
+    private void initializeAcceptor()
+            throws ConfigError, JMException
+    {
+        if(socketAcceptor == null) {
+            SLF4JLoggerProxy.debug(this,
+                                   "Initializing acceptor");
+            int totalInstances = clusterData.getTotalInstances();
+            int instanceId = clusterData.getInstanceNumber();
+            List<FixSession> sessions = fixSessionProvider.findFixSessions(true,
+                                                                           instanceId,
+                                                                           totalInstances);
+            Iterator<FixSession> sessionIterator = sessions.iterator();
+            while(sessionIterator.hasNext()) {
+                FixSession session = sessionIterator.next();
+                if(!session.isEnabled()) {
+                    SLF4JLoggerProxy.debug(this,
+                                           "Discarding disabled session {}",
+                                           session);
+                    brokerService.reportBrokerStatusFromAll(session,
+                                                            FixSessionStatus.DISABLED);
+                    sessionIterator.remove();
+                }
+            }
+            if(sessions.isEmpty()) {
+                SLF4JLoggerProxy.debug(this,
+                                       "No sessions to initialize at this time");
+                return;
+            }
+            SessionSettings fixSessionSettings = brokerService.generateSessionSettings(sessions);
+            FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
+            if(SLF4JLoggerProxy.isInfoEnabled(this)) {
+                Set<String> sessionsForDisplay = new TreeSet<>();
+                Iterator<SessionID> sectionIterator = fixSessionSettings.sectionIterator();
+                while(sectionIterator.hasNext()) {
+                    sessionsForDisplay.add(sectionIterator.next().toString());
+                }
+                SLF4JLoggerProxy.info(this,
+                                      "{} has the following sessions: {}",
+                                      this,
+                                      sessionsForDisplay);
+            }
+            socketAcceptor = new DynamicSessionThreadedSocketAcceptor(this,
+                                                                      fixSettingsProvider.getMessageStoreFactory(fixSessionSettings),
+                                                                      fixSessionSettings,
+                                                                      fixSettingsProvider.getLogFactory(fixSessionSettings),
+                                                                      fixSettingsProvider.getMessageFactory(),
+                                                                      sessionService);
+            provider = new DynamicAcceptorSessionProvider(this,
+                                                          brokerService,
+                                                          fixSessionProvider,
+                                                          sessionNameProvider,
+                                                          fixSettingsProviderFactory,
+                                                          clusterData);
+            socketAcceptor.setSessionProvider(new InetSocketAddress(fixSettingsProvider.getAcceptorHost(),
+                                                                    fixSettingsProvider.getAcceptorPort()),
+                                              provider);
+//            jmxExporter = new JmxExporter();
+//            jmxExporter.setRegistrationBehavior(JmxExporter.REGISTRATION_REPLACE_EXISTING);
+//            exportedAcceptorName = jmxExporter.register(socketAcceptor);
+            socketAcceptor.start();
+        }
+    }
+    /**
      * Reports backup status, if necessary, for the sessions for which this instance is serving as backup.
      */
     private void reportBackupStatus()
     {
         // deliberately select all sessions because we need to register as disabled if appropriate, even if the instance isn't an affinity match
-        for(FixSession fixSession : fixSessionProvider.findFixSessions(false,
-                                                                       1,
+        for(FixSession fixSession : fixSessionProvider.findFixSessions(1,
                                                                        1)) {
-            if(fixSession.isAcceptor()) {
-                // ignore acceptor sessions (shouldn't get any, anyway)
-            } else {
-                if(fixSession.isEnabled()) {
-                    if(brokerService.isAffinityMatch(fixSession,
-                                                     clusterData)) {
-                        if(isPrimary) {
-                            // report nothing, status will be reported elsewhere
-                        } else {
-                            // this is an enabled session which is an affinity match for this instance, but we not the primary in the cluster, report backup
-                            SLF4JLoggerProxy.debug(this,
-                                                   "{} reporting backup status for {}",
-                                                   this,
-                                                   fixSession);
-                            FixSessionStatusEvent fixSessionStatusEvent = new SimpleFixSessionUnavailableEvent(new quickfix.SessionID(fixSession.getSessionId()),
-                                                                                                               new BrokerID(fixSession.getBrokerId()),
-                                                                                                               FixSessionStatus.BACKUP);
-                            eventBusService.post(fixSessionStatusEvent);
-                        }
+            if(fixSession.isEnabled()) {
+                if(brokerService.isAffinityMatch(fixSession,
+                                                 clusterData)) {
+                    if(isPrimary) {
+                        // report nothing, status will be reported elsewhere
                     } else {
-                        // this session is enabled, but not an affinity match for this instance, nothing to do
+                        // this is an enabled session which is an affinity match for this instance, but we not the primary in the cluster, report backup
+                        SLF4JLoggerProxy.debug(this,
+                                               "{} reporting backup status for {}",
+                                               this,
+                                               fixSession);
+                        FixSessionStatusEvent fixSessionStatusEvent = new SimpleFixSessionUnavailableEvent(new quickfix.SessionID(fixSession.getSessionId()),
+                                                                                                           new BrokerID(fixSession.getBrokerId()),
+                                                                                                           FixSessionStatus.BACKUP);
+                        eventBusService.post(fixSessionStatusEvent);
                     }
                 } else {
-                    // report disabled status
-                    SLF4JLoggerProxy.debug(this,
-                                           "{} reporting disabled status for {}",
-                                           this,
-                                           fixSession);
-                    FixSessionStatusEvent fixSessionStatusEvent = new SimpleFixSessionUnavailableEvent(new quickfix.SessionID(fixSession.getSessionId()),
-                                                                                                       new BrokerID(fixSession.getBrokerId()),
-                                                                                                       FixSessionStatus.DISABLED);
-                    eventBusService.post(fixSessionStatusEvent);
+                    // this session is enabled, but not an affinity match for this instance, nothing to do
                 }
+            } else {
+                // report disabled status
+                SLF4JLoggerProxy.debug(this,
+                                       "{} reporting disabled status for {}",
+                                       this,
+                                       fixSession);
+                FixSessionStatusEvent fixSessionStatusEvent = new SimpleFixSessionUnavailableEvent(new quickfix.SessionID(fixSession.getSessionId()),
+                                                                                                   new BrokerID(fixSession.getBrokerId()),
+                                                                                                   FixSessionStatus.DISABLED);
+                eventBusService.post(fixSessionStatusEvent);
             }
         }
     }
@@ -1473,6 +1634,45 @@ public class DeployAnywhereRoutingEngine
 //        for(BrokerStatusListener listener : brokerStatusListeners) {
 //            listener.receiveBrokerStatus(brokerStatus.getActiveFixSession());
 //        }
+    }
+    /**
+     * Send provisional status until a session can be updated with more accurate status.
+     *
+     * @param inSession a <code>FixSession</code> value
+     */
+    private void sendInterimStatus(FixSession inSession)
+    {
+        BrokerID brokerId = new BrokerID(inSession.getBrokerId());
+        quickfix.SessionID sessionId = new quickfix.SessionID(inSession.getSessionId());
+        Session liveSession = Session.lookupSession(new SessionID(inSession.getSessionId()));
+        FixSessionStatus currentStatus;
+        if(liveSession == null) {
+            if(isPrimary) {
+                currentStatus = FixSessionStatus.DISCONNECTED;
+            } else {
+                currentStatus = FixSessionStatus.BACKUP;
+            }
+        } else {
+            if(liveSession.isSessionTime()) {
+                currentStatus = FixSessionStatus.NOT_CONNECTED;
+            } else {
+                currentStatus = FixSessionStatus.DISCONNECTED;
+            }
+        }
+        final FixSessionStatusEvent fixSessionStatusEvent;
+        if(currentStatus.isLoggedOn()) {
+            fixSessionStatusEvent = new SimpleFixSessionAvailableEvent(sessionId,
+                                                                       brokerId,
+                                                                       currentStatus);
+        } else {
+            fixSessionStatusEvent = new SimpleFixSessionUnavailableEvent(sessionId,
+                                                                         brokerId,
+                                                                         currentStatus);
+        }
+        eventBusService.post(fixSessionStatusEvent);
+        Messages.QF_SENDING_STATUS.info(this,
+                                        currentStatus,
+                                        brokerId);
     }
     /**
      * Sends the given message to the subscribed clients.
@@ -2169,6 +2369,22 @@ public class DeployAnywhereRoutingEngine
      */
     private final Map<quickfix.SessionID,quickfix.ThreadedSocketInitiator> initiators = new HashMap<>();
     /**
+     * accepts incoming FIX messages
+     */
+    private ThreadedSocketAcceptor socketAcceptor;
+    /**
+     * holds session ids that have been manually stopped
+     */
+    private final Set<SessionID> stoppedAcceptorSessions = new HashSet<>();
+    /**
+     * stores sessions that have been created, may or may not be currently logged on
+     */
+    private final Set<SessionID> createdSessions = new HashSet<>();
+    /**
+     * stores sessions that are currently active
+     */
+    private final Set<SessionID> loggedOnSessions = new HashSet<>();
+    /**
      * indicates if the object is actively running as opposed to starting, shutting down, or stopped
      */
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
@@ -2239,6 +2455,11 @@ public class DeployAnywhereRoutingEngine
     @Autowired
     private BrokerService brokerService;
     /**
+     * provides access to session name services
+     */
+    @Autowired
+    private SessionNameProvider sessionNameProvider;
+    /**
      * provides access to report services 
      */
     @Autowired
@@ -2273,4 +2494,13 @@ public class DeployAnywhereRoutingEngine
      */
     @Autowired
     private FixSessionProvider fixSessionProvider;
+    /**
+     * provides access to session services
+     */
+    @Autowired
+    private SessionService sessionService;
+    /**
+     * provides dynamic sessions
+     */
+    private AcceptorSessionProvider provider;
 }

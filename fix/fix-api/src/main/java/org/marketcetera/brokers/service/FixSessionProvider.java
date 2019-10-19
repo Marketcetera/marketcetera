@@ -80,6 +80,21 @@ public interface FixSessionProvider
                                      int inInstance,
                                      int inTotalInstances);
     /**
+     * Finds the fix sessions that match the given criteria.
+     * 
+     * <p>This method will select the appropriate set of fix sessions for the given instance number,
+     * considering the total number of instances available. For example, if
+     * the total number of instances is 1, all sessions with the given connection type will be returned
+     * because all session affinities would match. If the total number of instances is 2, and the instance
+     * number is 1, sessions with odd affinities would be returned (1,3,5,etc.).
+     *
+     * @param inInstance an <code>int</code> value
+     * @param inTotalInstances an <code>int</code> value
+     * @return a <code>List&lt;FixSession&gt;</code> value
+     */
+    List<FixSession> findFixSessions(int inInstance,
+                                     int inTotalInstances);
+    /**
      * Saves the given fix session.
      *
      * @param inFixSession a <code>FixSession</code> value

@@ -32,6 +32,12 @@ public interface FixSessionDao
      */
     List<PersistentFixSession> findByIsAcceptorAndIsDeletedFalseOrderByAffinityAsc(boolean inIsAcceptor);
     /**
+     * Finds FIX sessions.
+     *
+     * @return a <code>List&lt;PersistentFixSession&gt;</code> value
+     */
+    List<PersistentFixSession> findByIsDeletedFalseOrderByAffinityAsc();
+    /**
      * Finds the FIX session with the given session id.
      *
      * @param inString a <code>String</code> value
