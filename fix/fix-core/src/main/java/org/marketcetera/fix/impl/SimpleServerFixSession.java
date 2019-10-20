@@ -55,8 +55,17 @@ public class SimpleServerFixSession
                                   SessionCustomization inSessionCustomization)
     {
         activeFixSession = inActiveFixSession;
-        // TODO will this work for FIXT.T?
-        fixVersion = FIXVersion.getFIXVersion(new SessionID(inActiveFixSession.getFixSession().getSessionId()));
+        quickfix.SessionID sessionId = new SessionID(inActiveFixSession.getFixSession().getSessionId());
+        if(sessionId.isFIXT()) {
+            String defaultApplVerIdValue = inActiveFixSession.getFixSession().getSessionSettings().get(quickfix.Session.SETTING_DEFAULT_APPL_VER_ID);
+            if(defaultApplVerIdValue == null) {
+                fixVersion = FIXVersion.FIX50SP2;
+            } else {
+                fixVersion = FIXVersion.getFIXVersion(new quickfix.field.ApplVerID(defaultApplVerIdValue));
+            }
+        } else {
+            fixVersion = FIXVersion.getFIXVersion(sessionId);
+        }
         if(inSessionCustomization != null) {
             orderModifiers.addAll(inSessionCustomization.getOrderModifiers());
             responseModifiers.addAll(inSessionCustomization.getResponseModifiers());

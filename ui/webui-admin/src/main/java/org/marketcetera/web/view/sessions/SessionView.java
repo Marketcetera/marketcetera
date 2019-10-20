@@ -158,6 +158,8 @@ public class SessionView
                              "status",
                              "senderSeqNum",
                              "targetSeqNum");
+        getGrid().getColumn("senderSeqNum").setSortable(false);
+        getGrid().getColumn("targetSeqNum").setSortable(false);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#onActionSelect(com.vaadin.data.Property.ValueChangeEvent)

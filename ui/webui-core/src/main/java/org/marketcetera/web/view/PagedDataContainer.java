@@ -8,6 +8,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -83,11 +84,17 @@ public abstract class PagedDataContainer<Clazz>
                         @Override
                         public void run()
                         {
-                            update();
+                            try {
+                                update();
+                            } catch (Exception e) {
+                                SLF4JLoggerProxy.warn(PagedDataContainer.this,
+                                                      ExceptionUtils.getRootCauseMessage(e));
+                            }
                         }
                     });
                 } catch (Exception e) {
-                    
+                    SLF4JLoggerProxy.warn(PagedDataContainer.this,
+                                          ExceptionUtils.getRootCauseMessage(e));
                 }
             }
         },1000,1000,TimeUnit.MILLISECONDS); // TODO config

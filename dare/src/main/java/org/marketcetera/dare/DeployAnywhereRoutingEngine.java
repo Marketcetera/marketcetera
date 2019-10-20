@@ -564,28 +564,28 @@ public class DeployAnywhereRoutingEngine
             SLF4JLoggerProxy.debug(this,
                                    "No existing session on this instance for {}, nothing to do",
                                    fixSession);
-            return;
-        }
-        synchronized(sessionLock) {
-            SLF4JLoggerProxy.debug(this,
-                                   "Disabling {}",
-                                   sessionName);
-            if(fixSession.isAcceptor()) {
-                socketAcceptor.removeDynamicSession(sessionId);
-            } else {
-                synchronized(initiators) {
-                    quickfix.ThreadedSocketInitiator initiator = initiators.remove(sessionId);
-                    if(initiator != null) {
-                        initiator.stop(true);
-                        initiator.removeDynamicSession(sessionId);
+        } else {
+            synchronized(sessionLock) {
+                SLF4JLoggerProxy.debug(this,
+                                       "Disabling {}",
+                                       sessionName);
+                if(fixSession.isAcceptor()) {
+                    socketAcceptor.removeDynamicSession(sessionId);
+                } else {
+                    synchronized(initiators) {
+                        quickfix.ThreadedSocketInitiator initiator = initiators.remove(sessionId);
+                        if(initiator != null) {
+                            initiator.stop(true);
+                            initiator.removeDynamicSession(sessionId);
+                        }
                     }
                 }
             }
-            updateStatus(fixSession,
-                         generateSessionStatus(fixSession,
-                                               false,
-                                               false));
         }
+        updateStatus(fixSession,
+                     generateSessionStatus(fixSession,
+                                           false,
+                                           false));
     }
     /**
      * Indicates that the given FIX session has been enabled.
@@ -608,16 +608,6 @@ public class DeployAnywhereRoutingEngine
             SLF4JLoggerProxy.debug(this,
                                    "Ignoring enabled session {} because DARE is not active",
                                    sessionName);
-            return;
-        }
-        SLF4JLoggerProxy.debug(this,
-                               "Beginning enable for {}",
-                               sessionName);
-        quickfix.Session activeSession = quickfix.Session.lookupSession(newSessionId);
-        if(activeSession == null) {
-            SLF4JLoggerProxy.debug(this,
-                                   "No existing session on this instance for {}, nothing to do",
-                                   fixSession);
             return;
         }
         synchronized(sessionLock) {
@@ -695,7 +685,7 @@ public class DeployAnywhereRoutingEngine
                                                                                                              fixSettingsProvider.getLogFactory(sessionSettings),
                                                                                                              fixSettingsProvider.getMessageFactory());
                         synchronized(initiators) {
-//                            jmxExporter.register(newInitiator);
+                            //                                jmxExporter.register(newInitiator);
                             newInitiator.start();
                             initiators.put(newSessionId,
                                            newInitiator);
@@ -1564,6 +1554,14 @@ public class DeployAnywhereRoutingEngine
             }
         }
     }
+    /**
+     * Generate a session status value for the given attributes.
+     *
+     * @param inFixSession a <code>FixSession</code> value
+     * @param inConnected a <code>boolean</code> value
+     * @param inStopped a <code>boolean</code> value
+     * @return a <code>FixSessionStatus</code> value
+     */
     private FixSessionStatus generateSessionStatus(FixSession inFixSession,
                                                    boolean inConnected,
                                                    boolean inStopped)
