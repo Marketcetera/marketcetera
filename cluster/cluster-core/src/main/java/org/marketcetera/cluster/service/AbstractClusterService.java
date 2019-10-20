@@ -67,7 +67,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * @since $Release$
  */
 public abstract class AbstractClusterService
-        implements ClusterService, ClusterListener, ApplicationContextAware
+        implements ClusterService,ClusterListener,ApplicationContextAware
 {
     /* (non-Javadoc)
      * @see com.marketcetera.matp.service.ClusterListener#memberAdded(com.marketcetera.matp.service.ClusterMember)
@@ -214,6 +214,18 @@ public abstract class AbstractClusterService
     public ClusterData getInstanceData()
     {
         return clusterData;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.cluster.service.ClusterService#getAllClusterData()
+     */
+    @Override
+    public Set<ClusterData> getAllClusterData()
+    {
+        Set<ClusterData> allClusterData = Sets.newHashSet();
+        synchronized(clusterMetaData) {
+            clusterMetaData.values().stream().forEach(clusterMetaDataItem -> allClusterData.add(clusterMetaDataItem.getClusterData()));
+        }
+        return allClusterData;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.matp.service.ClusterService#addClusterListener(com.marketcetera.matp.service.ClusterListener)

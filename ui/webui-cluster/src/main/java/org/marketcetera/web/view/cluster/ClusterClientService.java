@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.cluster.ClusterClient;
+import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.ClusterRpcClientFactory;
 import org.marketcetera.cluster.ClusterRpcClientParameters;
 import org.marketcetera.cluster.service.ClusterMember;
@@ -98,6 +99,15 @@ public class ClusterClientService
     public Collection<ClusterMember> getClusterMembers()
     {
         return clusterClient.getClusterMembers();
+    }
+    /**
+     * Get the cluster data.
+     *
+     * @return a <code>Collection&lt;ClusterData&gt;</code> value
+     */
+    public Collection<ClusterData> getClusterData()
+    {
+        return clusterClient.getClusterData();
     }
     /**
      * Get the instance value.

@@ -167,4 +167,10 @@ public interface ClusterService
      * @return a <code>Set&lt;ClusterMember&gt;</code> value
      */
     Set<ClusterMember> getClusterMembers();
+    /**
+     * Get data of all the members of the cluster.
+     *
+     * @return a <code>Set&lt;ClusterDat&gt;</code> value
+     */
+    Set<ClusterData> getAllClusterData();
 }

@@ -23,4 +23,10 @@ public interface ClusterClient
      * @return a <code>Collection&lt;ClusterMember&gt;</code> value
      */
     Collection<ClusterMember> getClusterMembers();
+    /**
+     * Get the cluster data for all members;
+     *
+     * @return a <code>Collection&lt;ClusterData&gt;</code> value
+     */
+    Collection<ClusterData> getClusterData();
 }

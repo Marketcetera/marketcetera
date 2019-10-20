@@ -6,6 +6,8 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.cluster.ClusterRpcUtil;
+import org.marketcetera.cluster.rpc.ClusterRpc.ReadClusterDataRequest;
+import org.marketcetera.cluster.rpc.ClusterRpc.ReadClusterDataResponse;
 import org.marketcetera.cluster.rpc.ClusterRpc.ReadClusterMembersRequest;
 import org.marketcetera.cluster.rpc.ClusterRpc.ReadClusterMembersResponse;
 import org.marketcetera.cluster.rpc.ClusterRpcServiceGrpc.ClusterRpcServiceImplBase;
@@ -113,14 +115,46 @@ public class ClusterRpcService<SessionClazz>
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
                 SLF4JLoggerProxy.trace(ClusterRpcService.this,
-                                       "Received read FIX sessions request {} from {}",
+                                       "Received read cluster members request {} from {}",
                                        inRequest,
                                        sessionHolder);
+                // TODO need different permissions here
                 authzService.authorize(sessionHolder.getUser(),
                                        AdminPermissions.ViewSessionAction.name());
                 ClusterRpc.ReadClusterMembersResponse.Builder responseBuilder = ClusterRpc.ReadClusterMembersResponse.newBuilder();
                 clusterService.getClusterMembers().stream().forEach(clusterMember->ClusterRpcUtil.getRpcClusterMember(clusterMember).ifPresent(rpcClusterMember->responseBuilder.addClusterMember(rpcClusterMember)));
                 ClusterRpc.ReadClusterMembersResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(ClusterRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.cluster.rpc.ClusterRpcServiceGrpc.ClusterRpcServiceImplBase#readClusterData(org.marketcetera.cluster.rpc.ClusterRpc.ReadClusterDataRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void readClusterData(ReadClusterDataRequest inRequest,
+                                    StreamObserver<ReadClusterDataResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(ClusterRpcService.this,
+                                       "Received read cluster data request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                // TODO need different permissions here
+                authzService.authorize(sessionHolder.getUser(),
+                                       AdminPermissions.ViewSessionAction.name());
+                ClusterRpc.ReadClusterDataResponse.Builder responseBuilder = ClusterRpc.ReadClusterDataResponse.newBuilder();
+                clusterService.getAllClusterData().stream().forEach(clusterData->ClusterRpcUtil.getRpcClusterData(clusterData).ifPresent(rpcClusterData->responseBuilder.addClusterData(rpcClusterData)));
+                ClusterRpc.ReadClusterDataResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(ClusterRpcService.this,
                                        "Returning {}",
                                        response);

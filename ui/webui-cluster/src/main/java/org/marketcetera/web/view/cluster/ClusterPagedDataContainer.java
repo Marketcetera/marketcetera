@@ -3,7 +3,7 @@ package org.marketcetera.web.view.cluster;
 import java.util.Collection;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.marketcetera.cluster.service.ClusterMember;
+import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.web.view.PagedDataContainer;
@@ -19,20 +19,20 @@ import org.marketcetera.web.view.PagedViewProvider;
  * @since $Release$
  */
 public class ClusterPagedDataContainer
-        extends PagedDataContainer<ClusterMember>
+        extends PagedDataContainer<ClusterData>
 {
     /**
      * Create a new ClusterPagedDataContainer instance.
      *
-     * @param inCollection a <code>Collection&lt;? extends ClusterMember&gt;</code> value
+     * @param inCollection a <code>Collection&lt;? extends ClusterData&gt;</code> value
      * @param inPagedViewProvider a <code>PagedViewProvider</code> value
      * @throws IllegalArgumentException if the container cannot be constructed
      */
-    public ClusterPagedDataContainer(Collection<? extends ClusterMember> inCollection,
+    public ClusterPagedDataContainer(Collection<? extends ClusterData> inCollection,
                                      PagedViewProvider inPagedViewProvider)
             throws IllegalArgumentException
     {
-        super(ClusterMember.class,
+        super(ClusterData.class,
               inCollection,
               inPagedViewProvider);
     }
@@ -45,22 +45,22 @@ public class ClusterPagedDataContainer
     public ClusterPagedDataContainer(PagedViewProvider inPagedViewProvider)
             throws IllegalArgumentException
     {
-        super(ClusterMember.class,
+        super(ClusterData.class,
               inPagedViewProvider);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.PagedDataContainer#getDataContainerContents(org.marketcetera.core.PageRequest)
      */
     @Override
-    protected CollectionPageResponse<ClusterMember> getDataContainerContents(PageRequest inPageRequest)
+    protected CollectionPageResponse<ClusterData> getDataContainerContents(PageRequest inPageRequest)
     {
-        Collection<ClusterMember> clusterMembers = ClusterClientService.getInstance().getClusterMembers();
-        CollectionPageResponse<ClusterMember> response = new CollectionPageResponse<>();
-        response.getElements().addAll(clusterMembers);
-        response.setHasContent(!clusterMembers.isEmpty());
+        Collection<ClusterData> ClusterDatas = ClusterClientService.getInstance().getClusterData();
+        CollectionPageResponse<ClusterData> response = new CollectionPageResponse<>();
+        response.getElements().addAll(ClusterDatas);
+        response.setHasContent(!ClusterDatas.isEmpty());
         response.setPageMaxSize(inPageRequest.getPageSize());
         response.setPageNumber(inPageRequest.getPageNumber());
-        response.setPageSize(clusterMembers.size());
+        response.setPageSize(ClusterDatas.size());
         response.setSortOrder(inPageRequest.getSortOrder());
         response.setTotalPages(1);
         response.setTotalSize(response.getPageSize());
@@ -70,8 +70,8 @@ public class ClusterPagedDataContainer
      * @see com.marketcetera.web.view.PagedDataContainer#isDeepEquals(java.lang.Object, java.lang.Object)
      */
     @Override
-    protected boolean isDeepEquals(ClusterMember inO1,
-                                   ClusterMember inO2)
+    protected boolean isDeepEquals(ClusterData inO1,
+                                   ClusterData inO2)
     {
         return new EqualsBuilder().append(inO1.getUuid(),inO2.getUuid()).isEquals();
     }

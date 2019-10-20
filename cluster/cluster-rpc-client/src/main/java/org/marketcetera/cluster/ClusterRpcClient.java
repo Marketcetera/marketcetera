@@ -72,6 +72,43 @@ public class ClusterRpcClient
             }
         });
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.cluster.ClusterClient#getClusterData()
+     */
+    @Override
+    public Collection<ClusterData> getClusterData()
+    {
+        return executeCall(new Callable<Collection<ClusterData>>() {
+            @Override
+            public Collection<ClusterData> call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(ClusterRpcClient.this,
+                                       "{} get cluster data",
+                                       getSessionId());
+                ClusterRpc.ReadClusterDataRequest.Builder requestBuilder = ClusterRpc.ReadClusterDataRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                ClusterRpc.ReadClusterDataRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(ClusterRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                ClusterRpc.ReadClusterDataResponse response = getBlockingStub().readClusterData(request);
+                SLF4JLoggerProxy.trace(ClusterRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Collection<ClusterData> result = Lists.newArrayList();
+                response.getClusterDataList().stream().forEach(rpcClusterData->ClusterRpcUtil.getClusterData(rpcClusterData,
+                                                                                                             clusterDataFactory).ifPresent(clusterData->result.add(clusterData)));
+                SLF4JLoggerProxy.trace(ClusterRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result;
+            }
+        });
+    }
     /**
      * Create a new ClusterRpcClient instance.
      *

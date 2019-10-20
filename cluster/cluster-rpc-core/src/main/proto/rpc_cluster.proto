@@ -25,9 +25,18 @@ message ReadClusterMembersResponse {
     repeated ClusterMember clusterMember = 1;
 }
 
+message ReadClusterDataRequest {
+    string sessionId = 1;
+}
+
+message ReadClusterDataResponse {
+    repeated ClusterData clusterData = 1;
+}
+
 service ClusterRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
     rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
     rpc readClusterMembers(ReadClusterMembersRequest) returns (ReadClusterMembersResponse);
+    rpc readClusterData(ReadClusterDataRequest) returns (ReadClusterDataResponse);
 }
