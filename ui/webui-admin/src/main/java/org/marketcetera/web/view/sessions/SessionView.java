@@ -144,7 +144,6 @@ public class SessionView
      */
     SessionView(Properties inViewProperties)
     {
-        viewProperties = inViewProperties;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#setGridColumns()
@@ -1395,9 +1394,5 @@ public class SessionView
      * edit sequence numbers label
      */
     private final String ACTION_SEQUENCE = "Update Sequence Numbers";
-    /**
-     * holds properties for all views - to be updated with any meaningful state changes like column sorting, order, etc
-     */
-    private final Properties viewProperties;
     private static final long serialVersionUID = 1901286026590258969L;
 }
