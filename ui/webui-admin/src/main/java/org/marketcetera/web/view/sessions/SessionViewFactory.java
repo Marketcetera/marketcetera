@@ -19,7 +19,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 /* $License$ */
 
 /**
- *
+ * Creates {@link SessionView} content objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

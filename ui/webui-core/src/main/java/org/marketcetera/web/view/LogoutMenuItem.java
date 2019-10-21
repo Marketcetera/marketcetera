@@ -1,7 +1,11 @@
 package org.marketcetera.web.view;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.events.LogoutEvent;
+import org.marketcetera.web.service.WebMessageService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
@@ -70,6 +74,13 @@ public class LogoutMenuItem
                 SLF4JLoggerProxy.info(LogoutMenuItem.this,
                                       "{} logging out",
                                       SessionUser.getCurrentUser());
+                try {
+                    webMessageService.post(new LogoutEvent());
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(LogoutMenuItem.this,
+                                          "Problem occurred while logging out: {}",
+                                          ExceptionUtils.getRootCauseMessage(e));
+                }
                 VaadinSession.getCurrent().setAttribute(SessionUser.class,
                                                         null);
                 UI.getCurrent().getNavigator().navigateTo(MainView.NAME);
@@ -77,4 +88,9 @@ public class LogoutMenuItem
             private static final long serialVersionUID = -4840986259382011275L;
         };
     }
+    /**
+     * provides access to web message services
+     */
+    @Autowired
+    private WebMessageService webMessageService;
 }

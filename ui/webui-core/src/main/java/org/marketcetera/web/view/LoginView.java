@@ -6,7 +6,6 @@ import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.web.SessionUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -76,7 +75,6 @@ public class LoginView
      * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
      */
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void buttonClick(ClickEvent inEvent)
     {
         fields.setCaption("Please login to access the application");
@@ -189,11 +187,6 @@ public class LoginView
      */
     @Autowired
     private Authenticator webAuthenticator;
-    /**
-     * application context value
-     */
-    @Autowired
-    private ApplicationContext applicationContext;
     /**
      * user UI widget
      */
