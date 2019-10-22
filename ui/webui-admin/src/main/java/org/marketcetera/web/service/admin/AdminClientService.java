@@ -10,6 +10,8 @@ import org.marketcetera.admin.AdminRpcClientParameters;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.Role;
 import org.marketcetera.admin.User;
+import org.marketcetera.admin.UserAttribute;
+import org.marketcetera.admin.UserAttributeType;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixAdminClient;
 import org.marketcetera.fix.FixAdminRpcClientFactory;
@@ -158,6 +160,34 @@ public class AdminClientService
     public Collection<User> getUsers()
     {
         return adminClient.readUsers();
+    }
+    /**
+     * Get the user attribute described with the given attributes.
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inAttributeType a <code>UserAttributeType</code> value
+     * @return a <code>UserAttribute</code> value
+     */
+    public UserAttribute getUserAttribute(String inUsername,
+                                          UserAttributeType inAttributeType)
+    {
+        return adminClient.getUserAttribute(inUsername,
+                                            inAttributeType);
+    }
+    /**
+     * Set the user attribute described with the given attributes.
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inAttributeType a <code>UserAttributeType</code> value
+     * @param inAttribute a <code>String</code>value
+     */
+    public void setUserAttribute(String inUsername,
+                                 UserAttributeType inAttributeType,
+                                 String inAttribute)
+    {
+        adminClient.setUserAttribute(inUsername,
+                                     inAttributeType,
+                                     inAttribute);
     }
     /**
      * Get a page of users.

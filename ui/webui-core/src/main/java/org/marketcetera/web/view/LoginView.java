@@ -4,6 +4,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.events.LoginEvent;
+import org.marketcetera.web.service.WebMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -95,6 +97,7 @@ public class LoginView
                                           username);
                     // Navigate to main view
                     getUI().getNavigator().navigateTo(MainView.NAME);
+                    webMessageService.post(new LoginEvent(sessionUser));
                 } else {
                     throw new IllegalArgumentException("Failed to log in");
                 }
@@ -187,6 +190,11 @@ public class LoginView
      */
     @Autowired
     private Authenticator webAuthenticator;
+    /**
+     * web message service value
+     */
+    @Autowired
+    private WebMessageService webMessageService;
     /**
      * user UI widget
      */
