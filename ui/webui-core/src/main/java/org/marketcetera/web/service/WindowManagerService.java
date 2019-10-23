@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.marketcetera.core.Pair;
 import org.marketcetera.core.Util;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
+import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.UI;
@@ -88,6 +90,7 @@ public class WindowManagerService
         SLF4JLoggerProxy.debug(this,
                                "Received new window event: {}",
                                inNewWindowEvent.getWindowTitle());
+//        standardizeNewWindowSize(inNewWindowEvent.getWindowSize());
         // create the UI window element
         Window newWindow = new Window(inNewWindowEvent.getWindowTitle());
         // set properties of the new window based on the received event
@@ -112,6 +115,21 @@ public class WindowManagerService
         updateDisplayLayout(windowRegistry);
         UI.getCurrent().addWindow(newWindow);
         newWindow.focus();
+    }
+    /**
+     *
+     *
+     * @param inWindowSize
+     */
+    private Pair<String,String> standardizeNewWindowSize(Pair<String,String> inWindowSize)
+    {
+        // need to translate percents to pixels, allow pixels only
+        if(inWindowSize.getFirstMember().contains(Unit.PIXELS.getSymbol()) || inWindowSize.getFirstMember().contains(Unit.PERCENTAGE.getSymbol())) {
+            
+        }
+        String left = inWindowSize.getFirstMember();
+        throw new UnsupportedOperationException(); // TODO
+        
     }
     /**
      * Receive logout events.
@@ -154,6 +172,38 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
                                   e,
                                   ExceptionUtils.getRootCauseMessage(e));
         }
+    }
+    private boolean isWindowOutside(Window inWindow)
+    {
+        int browserHeight = Page.getCurrent().getBrowserWindowHeight();
+        int browserWidth = Page.getCurrent().getBrowserWindowWidth();
+        inWindow.getWidthUnits();
+        float windowLeftEdge = inWindow.getPositionX();
+        float windowRightEdge = inWindow.getPositionX() + inWindow.getWidth();
+        float windowTopEdge = inWindow.getPositionY();
+        float windowBottomEdge = inWindow.getPositionY() + inWindow.getHeight();
+        SLF4JLoggerProxy.trace(this,
+                               "Window: {} browser: {},{} x1,y1: {},{} x2,y2: {},{}",
+                               inWindow.getCaption(),
+                               browserWidth,
+                               browserHeight,
+                               windowLeftEdge,
+                               windowTopEdge,
+                               windowRightEdge,
+                               windowBottomEdge);
+        if(windowBottomEdge > browserHeight) {
+            return true;
+        }
+        if(windowLeftEdge < 0) {
+            return true;
+        }
+        if(windowTopEdge < 0) {
+            return true;
+        }
+        if(windowRightEdge > browserWidth) {
+            return true;
+        }
+        return false;
     }
     /**
      * Get the window registry for the current user.
@@ -419,18 +469,34 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
         {
             Window newWindow = inWindowWrapper.getWindow();
             newWindow.addClickListener(inEvent -> {
+                SLF4JLoggerProxy.trace(WindowManagerService.this,
+                                       "Click: {} {}",
+                                       inEvent,
+                                       isWindowOutside(newWindow));
                 inWindowWrapper.updateProperties();
                 updateDisplayLayout(inWindowRegistry);
             });
             newWindow.addWindowModeChangeListener(inEvent -> {
+                SLF4JLoggerProxy.trace(WindowManagerService.this,
+                                       "Mode change: {} {}",
+                                       inEvent,
+                                       isWindowOutside(newWindow));
                 inWindowWrapper.updateProperties();
                 updateDisplayLayout(inWindowRegistry);
             });
             newWindow.addResizeListener(inEvent -> {
+                SLF4JLoggerProxy.trace(WindowManagerService.this,
+                                       "Resize: {} {}",
+                                       inEvent,
+                                       isWindowOutside(newWindow));
                 inWindowWrapper.updateProperties();
                 updateDisplayLayout(inWindowRegistry);
             });
             newWindow.addCloseListener(inEvent -> {
+                SLF4JLoggerProxy.trace(WindowManagerService.this,
+                                       "Close: {} {}",
+                                       inEvent,
+                                       isWindowOutside(newWindow));
                 // this listener will be fired during log out, but, we don't want to update the display layout in that case
                 if(!inWindowRegistry.isLoggingOut()) {
                     inWindowRegistry.removeWindow(inWindowWrapper);
@@ -438,14 +504,26 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
                 }
             });
             newWindow.addBlurListener(inEvent -> {
+                SLF4JLoggerProxy.trace(WindowManagerService.this,
+                                       "Blur: {} {}",
+                                       inEvent,
+                                       isWindowOutside(newWindow));
                 inWindowWrapper.updateProperties();
                 updateDisplayLayout(inWindowRegistry);
             });
             newWindow.addFocusListener(inEvent -> {
+                SLF4JLoggerProxy.trace(WindowManagerService.this,
+                                       "Focus: {} {}",
+                                       inEvent,
+                                       isWindowOutside(newWindow));
                 inWindowWrapper.updateProperties();
                 updateDisplayLayout(inWindowRegistry);
             });
             newWindow.addContextClickListener(inEvent -> {
+                SLF4JLoggerProxy.trace(WindowManagerService.this,
+                                       "Context click: {} {}",
+                                       inEvent,
+                                       isWindowOutside(newWindow));
                 inWindowWrapper.updateProperties();
                 updateDisplayLayout(inWindowRegistry);
             });
