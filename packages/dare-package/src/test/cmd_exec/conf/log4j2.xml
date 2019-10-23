@@ -88,8 +88,7 @@
     <logger name="metc.events" level="INFO" additivity="false">
       <AppenderRef ref="EVENTS"/>
     </logger>
-    <logger name="org.marketcetera.ors.brokers.Broker.HEARTBEATS" level="error"/>
-    <logger name="org.marketcetera.ors.QuickFIXApplication.HEARTBEATS" level="error"/>
+    <logger name="org.marketcetera.dare.DeployAnywhereRoutingEngine.HEARTBEATS" level="error"/>
     <logger name="org.marketcetera.ors.info" level="error"/>
     <!-- Active MQ -->
     <logger name="org.marketcetera.ors.info" level="error"/>

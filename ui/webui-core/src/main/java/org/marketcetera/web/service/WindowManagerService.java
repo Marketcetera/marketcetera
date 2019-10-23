@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
@@ -106,37 +107,8 @@ public class WindowManagerService
         ContentView contentView = viewFactory.create(newWindowWrapper.getProperties());
         // set the content of the new window
         newWindow.setContent(contentView);
-        newWindow.addClickListener(inEvent -> {
-            newWindowWrapper.updateProperties();
-            updateDisplayLayout(windowRegistry);
-        });
-        newWindow.addWindowModeChangeListener(inEvent -> {
-            newWindowWrapper.updateProperties();
-            updateDisplayLayout(windowRegistry);
-        });
-        newWindow.addResizeListener(inEvent -> {
-            newWindowWrapper.updateProperties();
-            updateDisplayLayout(windowRegistry);
-        });
-        newWindow.addCloseListener(inEvent -> {
-            // this listener will be fired during log out, but, we don't want to update the display layout in that case
-            if(!windowRegistry.isLoggingOut) {
-                windowRegistry.removeWindow(newWindowWrapper);
-                updateDisplayLayout(windowRegistry);
-            }
-        });
-        newWindow.addBlurListener(inEvent -> {
-            newWindowWrapper.updateProperties();
-            updateDisplayLayout(windowRegistry);
-        });
-        newWindow.addFocusListener(inEvent -> {
-            newWindowWrapper.updateProperties();
-            updateDisplayLayout(windowRegistry);
-        });
-        newWindow.addContextClickListener(inEvent -> {
-            newWindowWrapper.updateProperties();
-            updateDisplayLayout(windowRegistry);
-        });
+        windowRegistry.addWindowListeners(newWindowWrapper,
+                                          windowRegistry);
         updateDisplayLayout(windowRegistry);
         UI.getCurrent().addWindow(newWindow);
         newWindow.focus();
@@ -246,14 +218,14 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
             // TODO need to do a permissions re-check, perhaps
             window = inWindow;
             properties = inProperties;
-            // update window from properties, effectively restoring it to its previous state
-            updateWindow();
             try {
                 ContentViewFactory contentViewFactory = (ContentViewFactory)Class.forName(inProperties.getProperty(windowContentViewFactoryProp)).newInstance();
                 window.setContent(contentViewFactory.create(properties));
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
+            // update window from properties, effectively restoring it to its previous state
+            updateWindow();
         }
         /**
          * Get the storable value for this window.
@@ -295,6 +267,10 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
                                    String.valueOf(window.getHeight()));
             properties.setProperty(windowWidthProp,
                                    String.valueOf(window.getWidth()));
+            properties.setProperty(windowHeightUnitProp,
+                                   String.valueOf(window.getHeightUnits()));
+            properties.setProperty(windowWidthUnitProp,
+                                   String.valueOf(window.getWidthUnits()));
             properties.setProperty(windowModeProp,
                                    String.valueOf(window.getWindowMode()));
             properties.setProperty(windowTitleProp,
@@ -315,17 +291,29 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
          */
         private void updateWindow()
         {
-            window.setPositionX(Integer.parseInt(properties.getProperty(windowPosXProp)));
-            window.setPositionY(Integer.parseInt(properties.getProperty(windowPosYProp)));
+            Unit widthUnit = Unit.getUnitFromSymbol(properties.getProperty(windowWidthUnitProp));
+            Unit heightUnit = Unit.getUnitFromSymbol(properties.getProperty(windowHeightUnitProp));
+            window.setWidth(Float.parseFloat(properties.getProperty(windowWidthProp)),
+                            widthUnit);
+            window.setHeight(Float.parseFloat(properties.getProperty(windowHeightProp)),
+                             heightUnit);
+            window.setModal(Boolean.parseBoolean(properties.getProperty(windowModalProp)));
+            // window mode must be set before posX/posY
+            window.setWindowMode(WindowMode.valueOf(properties.getProperty(windowModeProp)));
             window.setScrollLeft(Integer.parseInt(properties.getProperty(windowScrollLeftProp)));
             window.setScrollTop(Integer.parseInt(properties.getProperty(windowScrollTopProp)));
-            window.setWidth(properties.getProperty(windowWidthProp));
-            window.setHeight(properties.getProperty(windowHeightProp));
-            window.setWindowMode(WindowMode.valueOf(properties.getProperty(windowModeProp)));
-            window.setModal(Boolean.parseBoolean(properties.getProperty(windowModalProp)));
             window.setDraggable(Boolean.parseBoolean(properties.getProperty(windowDraggableProp)));
             window.setResizable(Boolean.parseBoolean(properties.getProperty(windowResizableProp)));
+            window.setCaption(properties.getProperty(windowTitleProp));
+            window.setPositionX(Integer.parseInt(properties.getProperty(windowPosXProp)));
+            window.setPositionY(Integer.parseInt(properties.getProperty(windowPosYProp)));
         }
+        /**
+         * Set the immutable properties of this window to the underlying properties storage.
+         *
+         * @param inContentViewFactory a <code>ContentViewFactory</code> value
+         * @param inUid a <code>String</code>value
+         */
         private void setWindowStaticProperties(ContentViewFactory inContentViewFactory,
                                                String inUid)
         {
@@ -335,12 +323,10 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
                                    inUid);
         }
         /**
-         *
-         *
+         * Close this window and remove it from active use.
          */
         private void close()
         {
-            // TODO probably need to mark this window as closed to keep from doing anything else to it
             getWindow().close();
         }
         /**
@@ -373,6 +359,8 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
         private static final String windowTitleProp = propId + "_title";
         private static final String windowPosXProp = propId + "__posX";
         private static final String windowPosYProp = propId + "_posY";
+        private static final String windowHeightUnitProp = propId + "__unitX";
+        private static final String windowWidthUnitProp = propId + "_unitY";
         private static final String windowHeightProp = propId + "_height";
         private static final String windowWidthProp = propId + "_width";
         private static final String windowModeProp = propId + "_mode";
@@ -389,7 +377,7 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
      * @version $Id$
      * @since $Release$
      */
-    private static class WindowRegistry
+    private class WindowRegistry
     {
         /**
          * Add the given window to this registry.
@@ -419,9 +407,48 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
                                            windowProperties);
                     WindowMetaData newWindowMetaData = new WindowMetaData(windowProperties,
                                                                           new Window());
+                    addWindow(newWindowMetaData);
+                    addWindowListeners(newWindowMetaData,
+                                       this);
                     UI.getCurrent().addWindow(newWindowMetaData.getWindow());
                 }
             }
+        }
+        private void addWindowListeners(WindowMetaData inWindowWrapper,
+                                        WindowRegistry inWindowRegistry)
+        {
+            Window newWindow = inWindowWrapper.getWindow();
+            newWindow.addClickListener(inEvent -> {
+                inWindowWrapper.updateProperties();
+                updateDisplayLayout(inWindowRegistry);
+            });
+            newWindow.addWindowModeChangeListener(inEvent -> {
+                inWindowWrapper.updateProperties();
+                updateDisplayLayout(inWindowRegistry);
+            });
+            newWindow.addResizeListener(inEvent -> {
+                inWindowWrapper.updateProperties();
+                updateDisplayLayout(inWindowRegistry);
+            });
+            newWindow.addCloseListener(inEvent -> {
+                // this listener will be fired during log out, but, we don't want to update the display layout in that case
+                if(!inWindowRegistry.isLoggingOut()) {
+                    inWindowRegistry.removeWindow(inWindowWrapper);
+                    updateDisplayLayout(inWindowRegistry);
+                }
+            });
+            newWindow.addBlurListener(inEvent -> {
+                inWindowWrapper.updateProperties();
+                updateDisplayLayout(inWindowRegistry);
+            });
+            newWindow.addFocusListener(inEvent -> {
+                inWindowWrapper.updateProperties();
+                updateDisplayLayout(inWindowRegistry);
+            });
+            newWindow.addContextClickListener(inEvent -> {
+                inWindowWrapper.updateProperties();
+                updateDisplayLayout(inWindowRegistry);
+            });
         }
         /**
          * Remove the given window from this registry.

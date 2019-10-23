@@ -357,7 +357,9 @@ public class DeployAnywhereRoutingEngine
                                   brokerService.getSessionName(inSessionId));
             return;
         }
-        Messages.QF_TO_ADMIN.info(getCategory(inMessage),inMessage,serverFixSession);
+        Messages.QF_TO_ADMIN.info(getCategory(inMessage),
+                                  inMessage,
+                                  serverFixSession);
         logMessage(inMessage,
                    serverFixSession);
     }
@@ -1457,7 +1459,7 @@ public class DeployAnywhereRoutingEngine
     private void logMessage(quickfix.Message inMessage,
                             ServerFixSession inBroker)
     {
-        Object category = (FIXMessageUtil.isHeartbeat(inMessage)?HEARTBEAT_CATEGORY:this);
+        Object category = getCategory(inMessage);
         if(SLF4JLoggerProxy.isDebugEnabled(category)) {
             Messages.ANALYZED_MESSAGE.debug(category,
                                             new AnalyzedMessage(inBroker.getDataDictionary(),
