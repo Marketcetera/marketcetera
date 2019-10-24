@@ -5,12 +5,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.marketcetera.core.Pair;
 import org.marketcetera.core.Util;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
@@ -21,12 +24,15 @@ import org.marketcetera.web.events.TileWindowsEvent;
 import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
@@ -69,8 +75,13 @@ public class WindowManagerService
      * @param inEvent a <code>LoginEvent</code> value
      */
     @Subscribe
-    public void receiveLoginEvent(LoginEvent inEvent)
+    public void onLogin(LoginEvent inEvent)
     {
+        DesktopParameters desktopParameters = new DesktopParameters();
+        desktopParameters.recalculate();
+        VaadinSession.getCurrent().setAttribute(DesktopParameters.class,
+                                                desktopParameters);
+        Page.getCurrent().addBrowserWindowResizeListener(desktopParameters);
         Properties displayLayout = displayLayoutService.getDisplayLayout();
         SLF4JLoggerProxy.debug(this,
                                "Received {}, retrieved display layout: {}",
@@ -80,17 +91,16 @@ public class WindowManagerService
         windowRegistry.restoreLayout(displayLayout);
     }
     /**
-     * Receive menu events.
+     * Receive new window events.
      *
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      */
     @Subscribe
-    public void receiveMenuEvent(NewWindowEvent inNewWindowEvent)
+    public void onNewWindow(NewWindowEvent inNewWindowEvent)
     {
         SLF4JLoggerProxy.debug(this,
-                               "Received new window event: {}",
+                               "onWindow: {}",
                                inNewWindowEvent.getWindowTitle());
-//        standardizeNewWindowSize(inNewWindowEvent.getWindowSize());
         // create the UI window element
         Window newWindow = new Window(inNewWindowEvent.getWindowTitle());
         // set properties of the new window based on the received event
@@ -110,26 +120,10 @@ public class WindowManagerService
         ContentView contentView = viewFactory.create(newWindowWrapper.getProperties());
         // set the content of the new window
         newWindow.setContent(contentView);
-        windowRegistry.addWindowListeners(newWindowWrapper,
-                                          windowRegistry);
-        updateDisplayLayout(windowRegistry);
+        windowRegistry.addWindowListeners(newWindowWrapper);
+        windowRegistry.updateDisplayLayout();
         UI.getCurrent().addWindow(newWindow);
         newWindow.focus();
-    }
-    /**
-     *
-     *
-     * @param inWindowSize
-     */
-    private Pair<String,String> standardizeNewWindowSize(Pair<String,String> inWindowSize)
-    {
-        // need to translate percents to pixels, allow pixels only
-        if(inWindowSize.getFirstMember().contains(Unit.PIXELS.getSymbol()) || inWindowSize.getFirstMember().contains(Unit.PERCENTAGE.getSymbol())) {
-            
-        }
-        String left = inWindowSize.getFirstMember();
-        throw new UnsupportedOperationException(); // TODO
-        
     }
     /**
      * Receive logout events.
@@ -137,8 +131,11 @@ public class WindowManagerService
      * @param inEvent a <code>LogoutEvent</code> value
      */
     @Subscribe
-    public void receiveLogoutEvent(LogoutEvent inEvent)
+    public void onLogout(LogoutEvent inEvent)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "onLogout: {}",
+                               inEvent);
         getCurrentUserRegistry().logout();
     }
     /**
@@ -147,8 +144,12 @@ public class WindowManagerService
      * @param inEvent a <code>TimeWindowsEvent</code> value
      */
     @Subscribe
-    public void receiveTileEvent(TileWindowsEvent inEvent)
+    public void onTile(TileWindowsEvent inEvent)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "onTile: {}",
+                               inEvent);
+        getCurrentUserRegistry().logout();
         /*
 If you can relax the requirement that all windows have a given "aspect ratio" then the problem becomes very simple. Suppose you have N "tiles" to arrange on a single screen, 
 then these can be arranged in columns where the number of columns, NumCols is the square root of N rounded up when N is not a perfect square. All columns of tiles are of equal width. 
@@ -158,52 +159,111 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
 */
         
     }
-    private void updateDisplayLayout(WindowRegistry inRegistry)
+    /**
+     * Determine if the given window is outside the viewable desktop area or not.
+     *
+     * @param inWindow a <code>Window</code> value
+     * @return a <code>boolean</code> value
+     */
+    private boolean isWindowOutsideDesktop(Window inWindow)
     {
-        try {
-            Properties displayLayout = inRegistry.getDisplayLayout();
-            SLF4JLoggerProxy.debug(this,
-                                   "Updating display layout for {}: {}",
-                                   SessionUser.getCurrentUser(),
-                                   displayLayout);
-            displayLayoutService.setDisplayLayout(displayLayout);
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e,
-                                  ExceptionUtils.getRootCauseMessage(e));
-        }
+        DesktopParameters params = VaadinSession.getCurrent().getAttribute(DesktopParameters.class);
+        return (getWindowBottom(inWindow) > params.getBottom()) || (getWindowLeft(inWindow) < params.getLeft()) || (getWindowTop(inWindow) < params.getTop()) || (getWindowRight(inWindow) > params.getRight());
     }
-    private boolean isWindowOutside(Window inWindow)
+    /**
+     * Get the window top edge coordinate in pixels.
+     *
+     * @param inWindow a <code>Window</code> value
+     * @return a <code>float</code> value
+     */
+    private float getWindowTop(Window inWindow)
     {
-        int browserHeight = Page.getCurrent().getBrowserWindowHeight();
-        int browserWidth = Page.getCurrent().getBrowserWindowWidth();
-        inWindow.getWidthUnits();
-        float windowLeftEdge = inWindow.getPositionX();
-        float windowRightEdge = inWindow.getPositionX() + inWindow.getWidth();
-        float windowTopEdge = inWindow.getPositionY();
-        float windowBottomEdge = inWindow.getPositionY() + inWindow.getHeight();
-        SLF4JLoggerProxy.trace(this,
-                               "Window: {} browser: {},{} x1,y1: {},{} x2,y2: {},{}",
-                               inWindow.getCaption(),
-                               browserWidth,
-                               browserHeight,
-                               windowLeftEdge,
-                               windowTopEdge,
-                               windowRightEdge,
-                               windowBottomEdge);
-        if(windowBottomEdge > browserHeight) {
-            return true;
+        return inWindow.getPositionY();
+    }
+    /**
+     * Get the window left edge coordinate in pixels.
+     *
+     * @param inWindow a <code>Window</code> value
+     * @return a <code>float</code> value
+     */
+    private float getWindowLeft(Window inWindow)
+    {
+        return inWindow.getPositionX();
+    }
+    /**
+     * Get the window bottom edge coordinate in pixels.
+     *
+     * @param inWindow a <code>Window</code> value
+     * @return a <code>float</code> value
+     */
+    private float getWindowBottom(Window inWindow)
+    {
+        return getWindowTop(inWindow) + getWindowHeight(inWindow);
+    }
+    /**
+     * Get the window right edge coordinate in pixels.
+     *
+     * @param inWindow a <code>Window</code> value
+     * @return a <code>float</code> value
+     */
+    private float getWindowRight(Window inWindow)
+    {
+        return getWindowLeft(inWindow) + getWindowWidth(inWindow);
+    }
+    /**
+     * Get the window height in pixels.
+     *
+     * @param inWindow a <code>Window</code> value
+     * @return a <code>float</code> value
+     */
+    private float getWindowHeight(Window inWindow)
+    {
+        return getWindowDimension(inWindow.getHeight(),
+                                  Page.getCurrent().getBrowserWindowHeight(),
+                                  inWindow.getHeightUnits());
+    }
+    /**
+     * Get the window width in pixels.
+     *
+     * @param inWindow a <code>Window</code> value
+     * @return a <code>float</code> value
+     */
+    private float getWindowWidth(Window inWindow)
+    {
+        return getWindowDimension(inWindow.getWidth(),
+                                  Page.getCurrent().getBrowserWindowWidth(),
+                                  inWindow.getWidthUnits());
+    }
+    /**
+     * Get the window dimension implied by the given attributes.
+     *
+     * @param inValue a <code>float</code> value
+     * @param inBrowserDimension an <code>int</code> value
+     * @param inUnit a <code>Unit</code> value
+     * @return a <code>float</code> value
+     */
+    private float getWindowDimension(float inValue,
+                                     int inBrowserDimension,
+                                     Unit inUnit)
+    {
+        switch(inUnit) {
+            case PERCENTAGE:
+                return inBrowserDimension * inValue / 100;
+            default:
+            case PIXELS:
+                return inValue;
+            case PICAS:
+                return inValue / 16;
+            case POINTS:
+                return (float)(inValue * 1.3);
+            case CM:
+            case EM:
+            case EX:
+            case INCH:
+            case MM:
+            case REM:
+                throw new UnsupportedOperationException("Cannot translate unit: " + inUnit);
         }
-        if(windowLeftEdge < 0) {
-            return true;
-        }
-        if(windowTopEdge < 0) {
-            return true;
-        }
-        if(windowRightEdge > browserWidth) {
-            return true;
-        }
-        return false;
     }
     /**
      * Get the window registry for the current user.
@@ -217,6 +277,7 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
             registry = new WindowRegistry();
             UI.getCurrent().getSession().setAttribute(WindowRegistry.class,
                                                       registry);
+            registry.scheduleWindowPositionMonitor();
         }
         return registry;
     }
@@ -227,7 +288,7 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
      * @version $Id$
      * @since $Release$
      */
-    private static class WindowMetaData
+    private class WindowMetaData
     {
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
@@ -403,22 +464,6 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
          * underlying UI element
          */
         private final Window window;
-        private static final String propId = WindowMetaData.class.getSimpleName();
-        private static final String windowUidProp = propId + "_uid";
-        private static final String windowContentViewFactoryProp = propId + "_contentViewFactory";
-        private static final String windowTitleProp = propId + "_title";
-        private static final String windowPosXProp = propId + "__posX";
-        private static final String windowPosYProp = propId + "_posY";
-        private static final String windowHeightUnitProp = propId + "__unitX";
-        private static final String windowWidthUnitProp = propId + "_unitY";
-        private static final String windowHeightProp = propId + "_height";
-        private static final String windowWidthProp = propId + "_width";
-        private static final String windowModeProp = propId + "_mode";
-        private static final String windowModalProp = propId + "_modal";
-        private static final String windowDraggableProp = propId + "_draggable";
-        private static final String windowResizableProp = propId + "_resizable";
-        private static final String windowScrollLeftProp = propId + "_scrollLeft";
-        private static final String windowScrollTopProp = propId + "_scrollTop";
     }
     /**
      * Provides a registry of all windows.
@@ -458,75 +503,168 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
                     WindowMetaData newWindowMetaData = new WindowMetaData(windowProperties,
                                                                           new Window());
                     addWindow(newWindowMetaData);
-                    addWindowListeners(newWindowMetaData,
-                                       this);
+                    addWindowListeners(newWindowMetaData);
                     UI.getCurrent().addWindow(newWindowMetaData.getWindow());
                 }
             }
         }
-        private void addWindowListeners(WindowMetaData inWindowWrapper,
-                                        WindowRegistry inWindowRegistry)
+        /**
+         * Update the display layout for the windows in the given window registry.
+         */
+        private void updateDisplayLayout()
         {
+            try {
+                Properties displayLayout = getDisplayLayout();
+                SLF4JLoggerProxy.debug(this,
+                                       "Updating display layout for {}: {}",
+                                       SessionUser.getCurrentUser(),
+                                       displayLayout);
+                displayLayoutService.setDisplayLayout(displayLayout);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      ExceptionUtils.getRootCauseMessage(e));
+            }
+        }
+        /**
+         * Add the necessary window listeners to the given window meta data.
+         *
+         * @param inWindowWrapper a <code>WindowMetaData</code> value
+         */
+        private void addWindowListeners(WindowMetaData inWindowWrapper)
+        {
+            WindowRegistry windowRegistry = this;
             Window newWindow = inWindowWrapper.getWindow();
             newWindow.addClickListener(inEvent -> {
                 SLF4JLoggerProxy.trace(WindowManagerService.this,
-                                       "Click: {} {}",
-                                       inEvent,
-                                       isWindowOutside(newWindow));
+                                       "Click: {}",
+                                       inEvent);
+                verifyWindowLocation(newWindow);
                 inWindowWrapper.updateProperties();
-                updateDisplayLayout(inWindowRegistry);
+                updateDisplayLayout();
             });
             newWindow.addWindowModeChangeListener(inEvent -> {
                 SLF4JLoggerProxy.trace(WindowManagerService.this,
-                                       "Mode change: {} {}",
-                                       inEvent,
-                                       isWindowOutside(newWindow));
+                                       "Mode change: {}",
+                                       inEvent);
+                // TODO might want to do this, might not. a maximized window currently tromps all over the menu bar
+//                verifyWindowLocation(newWindow);
                 inWindowWrapper.updateProperties();
-                updateDisplayLayout(inWindowRegistry);
+                updateDisplayLayout();
             });
             newWindow.addResizeListener(inEvent -> {
                 SLF4JLoggerProxy.trace(WindowManagerService.this,
-                                       "Resize: {} {}",
-                                       inEvent,
-                                       isWindowOutside(newWindow));
+                                       "Resize: {}",
+                                       inEvent);
+                verifyWindowLocation(newWindow);
                 inWindowWrapper.updateProperties();
-                updateDisplayLayout(inWindowRegistry);
+                updateDisplayLayout();
             });
             newWindow.addCloseListener(inEvent -> {
                 SLF4JLoggerProxy.trace(WindowManagerService.this,
-                                       "Close: {} {}",
-                                       inEvent,
-                                       isWindowOutside(newWindow));
+                                       "Close: {}",
+                                       inEvent);
                 // this listener will be fired during log out, but, we don't want to update the display layout in that case
-                if(!inWindowRegistry.isLoggingOut()) {
-                    inWindowRegistry.removeWindow(inWindowWrapper);
-                    updateDisplayLayout(inWindowRegistry);
+                if(!windowRegistry.isLoggingOut()) {
+                    windowRegistry.removeWindow(inWindowWrapper);
+                    updateDisplayLayout();
                 }
             });
             newWindow.addBlurListener(inEvent -> {
                 SLF4JLoggerProxy.trace(WindowManagerService.this,
-                                       "Blur: {} {}",
-                                       inEvent,
-                                       isWindowOutside(newWindow));
+                                       "Blur: {}",
+                                       inEvent);
+                verifyWindowLocation(newWindow);
                 inWindowWrapper.updateProperties();
-                updateDisplayLayout(inWindowRegistry);
+                updateDisplayLayout();
             });
             newWindow.addFocusListener(inEvent -> {
                 SLF4JLoggerProxy.trace(WindowManagerService.this,
-                                       "Focus: {} {}",
-                                       inEvent,
-                                       isWindowOutside(newWindow));
+                                       "Focus: {}",
+                                       inEvent);
+                verifyWindowLocation(newWindow);
                 inWindowWrapper.updateProperties();
-                updateDisplayLayout(inWindowRegistry);
+                updateDisplayLayout();
             });
             newWindow.addContextClickListener(inEvent -> {
                 SLF4JLoggerProxy.trace(WindowManagerService.this,
-                                       "Context click: {} {}",
-                                       inEvent,
-                                       isWindowOutside(newWindow));
+                                       "Context click: {}",
+                                       inEvent);
+                verifyWindowLocation(newWindow);
                 inWindowWrapper.updateProperties();
-                updateDisplayLayout(inWindowRegistry);
+                updateDisplayLayout();
             });
+        }
+        /**
+         * Verify that the given window is within the acceptable bounds of the desktop viewable area.
+         *
+         * @param inWindow a <code>Window</code> value
+         */
+        private void verifyWindowLocation(Window inWindow)
+        {
+            synchronized(activeWindows) {
+                if(isWindowOutsideDesktop(inWindow)) {
+                    SLF4JLoggerProxy.trace(WindowManagerService.this,
+                                           "{} is outside the desktop",
+                                           inWindow.getCaption());
+                    returnWindowToDesktop(inWindow);
+                } else {
+                    SLF4JLoggerProxy.trace(WindowManagerService.this,
+                                           "{} is not outside the desktop",
+                                           inWindow.getCaption());
+                }
+            }
+        }
+        /**
+         * Reposition the given window until it is within the acceptable bounds of the desktop viewable area.
+         *
+         * <p>If the window is already within the acceptable bounds of the desktop viewable area, it will not be repositioned.
+         * 
+         * @param inWindow a <code>Window</code> value
+         */
+        private void returnWindowToDesktop(Window inWindow)
+        {
+            int pad = desktopViewableAreaPad;
+            DesktopParameters params = VaadinSession.getCurrent().getAttribute(DesktopParameters.class);
+            // the order here is important: first, resize the window, if necessary
+            int maxWidth = params.getRight()-params.getLeft();
+            float windowWidth = getWindowWidth(inWindow);
+            if(windowWidth > maxWidth) {
+                inWindow.setWidth(maxWidth - (pad*2),
+                                  Unit.PIXELS);
+            }
+            int maxHeight = params.getBottom() - params.getTop();
+            float windowHeight = getWindowHeight(inWindow);
+            if(windowHeight > maxHeight) {
+                inWindow.setHeight(maxHeight - (pad*2),
+                                  Unit.PIXELS);
+            }
+            // window is now no larger than desktop
+            // check bottom
+            float windowBottom = getWindowBottom(inWindow);
+            if(windowBottom > params.getBottom()) {
+                float newWindowTop = params.getBottom() - getWindowHeight(inWindow) - pad;
+                inWindow.setPositionY((int)newWindowTop);
+            }
+            // check top
+            float windowTop = getWindowTop(inWindow);
+            if(windowTop < params.getTop()) {
+                float newWindowTop = params.getTop() + pad;
+                inWindow.setPositionY((int)newWindowTop);
+            }
+            // window is now within the desktop Y range
+            // check left
+            float windowLeft = getWindowLeft(inWindow);
+            if(windowLeft < params.getLeft()) {
+                float newWindowLeft = params.getLeft() + pad;
+                inWindow.setPositionX((int)newWindowLeft);
+            }
+            // check right
+            float windowRight = getWindowRight(inWindow);
+            if(windowRight > params.getRight()) {
+                float newWindowLeft = params.getRight() - getWindowWidth(inWindow) - pad;
+                inWindow.setPositionX((int)newWindowLeft);
+            }
         }
         /**
          * Remove the given window from this registry.
@@ -545,18 +683,83 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
         private void logout()
         {
             isLoggingOut = true;
-            closeAllWindows();
+            terminateRegistry();
         }
         /**
-         * Close all windows in this registry.
+         * Terminate this registry.
+         * 
+         * <p>A terminated registry may not be reused.
          */
-        private void closeAllWindows()
+        private void terminateRegistry()
         {
+            synchronized(windowPositionExaminerThreadPool) {
+                cancelWindowPositionMonitor();
+                windowPositionExaminerThreadPool.shutdownNow();
+            }
             synchronized(activeWindows) {
                 Set<WindowMetaData> tempActiveWindows = new HashSet<>(activeWindows);
                 for(WindowMetaData window : tempActiveWindows) {
                     window.close();
                 }
+            }
+        }
+        /**
+         * Verify the position of all windows in this registry.
+         */
+        private void verifyAllWindowPositions()
+        {
+            synchronized(activeWindows) {
+                UI.getCurrent().access(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        for(WindowMetaData windowMetaData : activeWindows) {
+                            try {
+                                returnWindowToDesktop(windowMetaData.getWindow());
+                            } catch (Exception e) {
+                                SLF4JLoggerProxy.warn(WindowManagerService.this,
+                                                      ExceptionUtils.getRootCauseMessage(e));
+                            }
+                        }
+                    }}
+                );
+            }
+        }
+        /**
+         * Cancel the current window position monitor job, if necessary.
+         */
+        private void cancelWindowPositionMonitor()
+        {
+            synchronized(windowPositionExaminerThreadPool) {
+                if(windowPositionMonitorToken != null) {
+                    try {
+                        windowPositionMonitorToken.cancel(true);
+                    } catch (Exception ignored) {}
+                    windowPositionMonitorToken = null;
+                }
+            }
+        }
+        /**
+         * Schedule the window position monitor job.
+         */
+        private void scheduleWindowPositionMonitor()
+        {
+            synchronized(windowPositionExaminerThreadPool) {
+                cancelWindowPositionMonitor();
+                windowPositionMonitorToken = windowPositionExaminerThreadPool.scheduleAtFixedRate(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        try {
+                            verifyAllWindowPositions();
+                        } catch (Exception e) {
+                            SLF4JLoggerProxy.warn(WindowManagerService.this,
+                                                  ExceptionUtils.getRootCauseMessage(e));
+                        }
+                    }},
+                                                                                                  desktopWindowPositionMonitorInterval,
+                                                                                                  desktopWindowPositionMonitorInterval,
+                                                                                                  TimeUnit.MILLISECONDS);
             }
         }
         /**
@@ -594,7 +797,79 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
          * holds all active windows
          */
         private final Set<WindowMetaData> activeWindows = Sets.newHashSet();
+        /**
+         * holds the token for the window position monitor job, if any
+         */
+        private Future<?> windowPositionMonitorToken;
+        /**
+         * checks window position on a periodic basis
+         */
+        private final ScheduledExecutorService windowPositionExaminerThreadPool = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat(SessionUser.getCurrentUser().getUsername() + "-WindowPositionExaminer").build());
     }
+    /**
+     * base key for {@see UserAttributeType} display layout properties
+     */
+    private static final String propId = WindowMetaData.class.getSimpleName();
+    /**
+     * window uid key name
+     */
+    private static final String windowUidProp = propId + "_uid";
+    /**
+     * window content view factory key name
+     */
+    private static final String windowContentViewFactoryProp = propId + "_contentViewFactory";
+    /**
+     * window title key name
+     */
+    private static final String windowTitleProp = propId + "_title";
+    /**
+     * window X position key name
+     */
+    private static final String windowPosXProp = propId + "__posX";
+    /**
+     * window Y position key name
+     */
+    private static final String windowPosYProp = propId + "_posY";
+    /**
+     * window height unit key name
+     */
+    private static final String windowHeightUnitProp = propId + "__unitX";
+    /**
+     * window width unit key name
+     */
+    private static final String windowWidthUnitProp = propId + "_unitY";
+    /**
+     * window height key name
+     */
+    private static final String windowHeightProp = propId + "_height";
+    /**
+     * window width key name
+     */
+    private static final String windowWidthProp = propId + "_width";
+    /**
+     * window mode key name
+     */
+    private static final String windowModeProp = propId + "_mode";
+    /**
+     * window is modal key name
+     */
+    private static final String windowModalProp = propId + "_modal";
+    /**
+     * window is draggable key name
+     */
+    private static final String windowDraggableProp = propId + "_draggable";
+    /**
+     * window is resizable key name
+     */
+    private static final String windowResizableProp = propId + "_resizable";
+    /**
+     * window scroll left key name
+     */
+    private static final String windowScrollLeftProp = propId + "_scrollLeft";
+    /**
+     * window scroll top key name
+     */
+    private static final String windowScrollTopProp = propId + "_scrollTop";
     /**
      * web message service value
      */
@@ -605,4 +880,14 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
      */
     @Autowired
     private DisplayLayoutService displayLayoutService;
+    /**
+     * desktop viewable area pad value
+     */
+    @Value("${metc.desktop.viewable.area.pad:10}")
+    private int desktopViewableAreaPad;
+    /**
+     * interval in ms at which to monitor and correct window positions
+     */
+    @Value("${metc.desktop.window.position.monitor.interval:250}")
+    private long desktopWindowPositionMonitorInterval;
 }
