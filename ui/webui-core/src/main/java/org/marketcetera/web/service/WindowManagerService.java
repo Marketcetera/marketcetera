@@ -17,6 +17,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.Util;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.events.CascadeWindowsEvent;
 import org.marketcetera.web.events.LoginEvent;
 import org.marketcetera.web.events.LogoutEvent;
 import org.marketcetera.web.events.NewWindowEvent;
@@ -137,6 +138,20 @@ public class WindowManagerService
                                "onLogout: {}",
                                inEvent);
         getCurrentUserRegistry().logout();
+        VaadinSession.getCurrent().setAttribute(WindowRegistry.class,
+                                                null);
+    }
+    /**
+     * Receive window cascade events.
+     *
+     * @param inEvent a <code>CascadeWindowEvent</code> inEvent
+     */
+    @Subscribe
+    public void onCascade(CascadeWindowsEvent inEvent)
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "onCascade: {}",
+                               inEvent);
     }
     /**
      * Receive window tile events.
@@ -146,18 +161,11 @@ public class WindowManagerService
     @Subscribe
     public void onTile(TileWindowsEvent inEvent)
     {
-        SLF4JLoggerProxy.debug(this,
+        SLF4JLoggerProxy.trace(this,
                                "onTile: {}",
                                inEvent);
-        getCurrentUserRegistry().logout();
-        /*
-If you can relax the requirement that all windows have a given "aspect ratio" then the problem becomes very simple. Suppose you have N "tiles" to arrange on a single screen, 
-then these can be arranged in columns where the number of columns, NumCols is the square root of N rounded up when N is not a perfect square. All columns of tiles are of equal width. 
-The number of tiles in each column is then N/NumCols rounded either up or down as necessary to make the total number of columns be N. This is what Microsoft Excel does under View > Arrange All > Tiled. 
-Excel chooses to put the columns with one fewer tiles on the left of the screen.
-https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-like-tile
-*/
-        
+        WindowRegistry windowRegistry = getCurrentUserRegistry();
+        windowRegistry.tileWindows();
     }
     /**
      * Determine if the given window is outside the viewable desktop area or not.
@@ -484,6 +492,29 @@ https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-
             synchronized(activeWindows) {
                 activeWindows.add(inWindowMetaData);
             }
+        }
+        /**
+         * Rearrange the windows in the registry.
+         */
+        private void tileWindows()
+        {
+            synchronized(windowPositionExaminerThreadPool) {
+                cancelWindowPositionMonitor();
+            }
+            try {
+                synchronized(activeWindows) {
+                    
+                }
+            } finally {
+                scheduleWindowPositionMonitor();
+            }
+            /*
+            If you can relax the requirement that all windows have a given "aspect ratio" then the problem becomes very simple. Suppose you have N "tiles" to arrange on a single screen, 
+            then these can be arranged in columns where the number of columns, NumCols is the square root of N rounded up when N is not a perfect square. All columns of tiles are of equal width. 
+            The number of tiles in each column is then N/NumCols rounded either up or down as necessary to make the total number of columns be N. This is what Microsoft Excel does under View > Arrange All > Tiled. 
+            Excel chooses to put the columns with one fewer tiles on the left of the screen.
+            https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-like-tile
+            */
         }
         /**
          * Restore the display layout with the given values.
