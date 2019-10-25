@@ -18,7 +18,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 /* $License$ */
 
 /**
- *
+ * Creates {@link DataFlowView} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -52,7 +52,7 @@ public class DataFlowViewFactory
     @Override
     public int getWeight()
     {
-        return 400;
+        return 500;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCategory()

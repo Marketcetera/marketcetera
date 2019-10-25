@@ -27,6 +27,7 @@ import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptorFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
+import org.marketcetera.trading.rpc.TradeRpcClientFactory;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.util.ws.stateful.Authenticator;
@@ -97,6 +98,16 @@ public class AppConfiguration
     public static FixAdminRpcClientFactory getFixAdminClientFactory()
     {
         return new FixAdminRpcClientFactory();
+    }
+    /**
+     * Get the trade client factory value.
+     *
+     * @return a <code>TradeRpcClientFactory</code> value
+     */
+    @Bean
+    public static TradeRpcClientFactory getTradeClientFactory()
+    {
+        return new TradeRpcClientFactory();
     }
     /**
      * Get the cluster client factory value.

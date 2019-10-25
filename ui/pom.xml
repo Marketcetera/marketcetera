@@ -54,6 +54,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>webui-trade</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-spring-boot-starter</artifactId>
         <version>1.2.0</version>

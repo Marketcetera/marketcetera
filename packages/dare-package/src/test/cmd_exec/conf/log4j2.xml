@@ -89,6 +89,7 @@
       <AppenderRef ref="EVENTS"/>
     </logger>
     <logger name="org.marketcetera.dare.DeployAnywhereRoutingEngine.HEARTBEATS" level="error"/>
+    <logger name="org.marketcetera.dare.DeployAnywhereRoutingEngine.TEST_REQUESTS" level="error"/>
     <logger name="org.marketcetera.ors.info" level="error"/>
     <!-- Active MQ -->
     <logger name="org.marketcetera.ors.info" level="error"/>

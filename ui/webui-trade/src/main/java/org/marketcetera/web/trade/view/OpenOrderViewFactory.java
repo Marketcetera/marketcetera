@@ -1,4 +1,4 @@
-package org.marketcetera.web.view.admin;
+package org.marketcetera.web.trade.view;
 
 import java.util.Properties;
 
@@ -11,15 +11,15 @@ import com.vaadin.spring.annotation.SpringComponent;
 /* $License$ */
 
 /**
- * Creates {@link UserView} objects.
+ * Creates {@link OpenOrderView} content objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @SpringComponent
-public class UserViewFactory
-        extends AbstractAdminViewFactory
+public class OpenOrderViewFactory
+        extends AbstractTradeViewFactory
 {
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.ContentViewFactory#create(java.util.Properties)
@@ -27,7 +27,7 @@ public class UserViewFactory
     @Override
     public ContentView create(Properties inViewProperties)
     {
-        UserView userView = new UserView(inViewProperties);
+        OpenOrderView userView = new OpenOrderView(inViewProperties);
         userView.setWebMessageService(webMessageService);
         return userView;
     }
@@ -37,7 +37,7 @@ public class UserViewFactory
     @Override
     public String getMenuCaption()
     {
-        return "Users";
+        return "Open Orders";
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getWeight()
@@ -53,7 +53,7 @@ public class UserViewFactory
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.USERS;
+        return FontAwesome.MONEY;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.admin.AbstractAdminViewFactory#getViewName()
@@ -61,6 +61,6 @@ public class UserViewFactory
     @Override
     protected String getViewName()
     {
-        return "Users";
+        return "Open Orders";
     }
 }

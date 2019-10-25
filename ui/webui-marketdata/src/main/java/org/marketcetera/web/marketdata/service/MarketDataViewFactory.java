@@ -18,7 +18,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 /* $License$ */
 
 /**
- *
+ * Creates {@link MarketDataView} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -78,7 +78,7 @@ public class MarketDataViewFactory
     @Override
     public int getWeight()
     {
-        return 500;
+        return 600;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCategory()

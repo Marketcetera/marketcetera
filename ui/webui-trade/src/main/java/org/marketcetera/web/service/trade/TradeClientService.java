@@ -3,6 +3,9 @@ package org.marketcetera.web.service.trade;
 import java.io.IOException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
+import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trading.rpc.TradeRpcClientFactory;
 import org.marketcetera.trading.rpc.TradeRpcClientParametersImpl;
@@ -35,6 +38,17 @@ public class TradeClientService
      * Create a new TradeClientService instance.
      */
     public TradeClientService() {}
+    /**
+     *
+     *
+     * @param inPageRequest
+     * @return
+     */
+    public CollectionPageResponse<OrderSummary> getOpenOrders(PageRequest inPageRequest)
+    {
+        throw new UnsupportedOperationException(); // TODO
+
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.web.service.ConnectableService#isRunning()
      */

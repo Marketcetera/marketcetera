@@ -769,6 +769,17 @@ public class FIXMessageUtil {
     public static boolean isHeartbeat(Message message) {
 		return msgTypeHelper(message, MsgType.HEARTBEAT);
 	}
+    /**
+     * Indicate if this message is a test request message.
+     *
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @return a <code>boolean</code> value
+     */
+    public static boolean isTestRequest(quickfix.Message inMessage)
+    {
+        return msgTypeHelper(inMessage,
+                             MsgType.TEST_REQUEST);
+    }
     public static boolean isSecurityListRequest(Message inMessage)
     {
         return msgTypeHelper(inMessage,

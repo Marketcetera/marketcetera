@@ -1811,6 +1811,8 @@ public class DeployAnywhereRoutingEngine
     {
         if(FIXMessageUtil.isHeartbeat(inMessage)) {
             return HEARTBEAT_CATEGORY;
+        } else if(FIXMessageUtil.isTestRequest(inMessage)) {
+            return TEST_REQUEST_CATEGORY;
         }
         return this;
     }
@@ -2352,6 +2354,10 @@ public class DeployAnywhereRoutingEngine
      * logger category used for heartbeats
      */
     private static final String HEARTBEAT_CATEGORY = DeployAnywhereRoutingEngine.class.getName()+".HEARTBEATS"; //$NON-NLS-1$
+    /**
+     * logger category used for test requests
+     */
+    private static final String TEST_REQUEST_CATEGORY = DeployAnywhereRoutingEngine.class.getName()+".TEST_REQUESTS"; //$NON-NLS-1$
     /**
      * sessions that have been created
      */
