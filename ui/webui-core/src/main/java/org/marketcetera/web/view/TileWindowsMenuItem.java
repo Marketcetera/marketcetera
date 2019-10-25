@@ -54,7 +54,7 @@ public class TileWindowsMenuItem
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.TH;
+        return FontAwesome.PLUS_SQUARE;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getCommand()

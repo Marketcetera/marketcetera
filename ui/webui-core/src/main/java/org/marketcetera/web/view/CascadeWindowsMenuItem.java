@@ -54,7 +54,7 @@ public class CascadeWindowsMenuItem
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.WINDOW_RESTORE;
+        return FontAwesome.CLONE;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getCommand()

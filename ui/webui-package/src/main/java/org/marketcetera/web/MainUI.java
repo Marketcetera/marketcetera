@@ -7,6 +7,7 @@ import org.marketcetera.web.view.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
@@ -34,6 +35,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @Push
 @SpringUI
 @Theme("mytheme")
+@PreserveOnRefresh
 @Title("Marketcetera Automated Trading Platform")
 public class MainUI
         extends UI

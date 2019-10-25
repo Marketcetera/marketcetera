@@ -152,6 +152,7 @@ public class WindowManagerService
         SLF4JLoggerProxy.trace(this,
                                "onCascade: {}",
                                inEvent);
+        getCurrentUserRegistry().cascadeWindows();
     }
     /**
      * Receive window tile events.
@@ -164,8 +165,7 @@ public class WindowManagerService
         SLF4JLoggerProxy.trace(this,
                                "onTile: {}",
                                inEvent);
-        WindowRegistry windowRegistry = getCurrentUserRegistry();
-        windowRegistry.tileWindows();
+        getCurrentUserRegistry().tileWindows();
     }
     /**
      * Determine if the given window is outside the viewable desktop area or not.
@@ -404,6 +404,8 @@ public class WindowManagerService
                                    String.valueOf(window.getScrollLeft()));
             properties.setProperty(windowScrollTopProp,
                                    String.valueOf(window.getScrollTop()));
+            properties.setProperty(windowFocusProp,
+                                   String.valueOf(hasFocus()));
         }
         /**
          * Update the window object with the stored telemetry.
@@ -426,6 +428,7 @@ public class WindowManagerService
             window.setCaption(properties.getProperty(windowTitleProp));
             window.setPositionX(Integer.parseInt(properties.getProperty(windowPosXProp)));
             window.setPositionY(Integer.parseInt(properties.getProperty(windowPosYProp)));
+            setHasFocus(Boolean.parseBoolean(properties.getProperty(windowFocusProp)));
         }
         /**
          * Set the immutable properties of this window to the underlying properties storage.
@@ -461,6 +464,28 @@ public class WindowManagerService
             return uid;
         }
         /**
+         * Get the hasFocus value.
+         *
+         * @return a <code>boolean</code> value
+         */
+        private boolean hasFocus()
+        {
+            return hasFocus;
+        }
+        /**
+         * Sets the hasFocus value.
+         *
+         * @param inHasFocus a <code>boolean</code> value
+         */
+        private void setHasFocus(boolean inHasFocus)
+        {
+            hasFocus = inHasFocus;
+        }
+        /**
+         * indicates if this window has focus or not
+         */
+        private transient boolean hasFocus;
+        /**
          * cached uid value
          */
         private transient String uid;
@@ -494,7 +519,46 @@ public class WindowManagerService
             }
         }
         /**
-         * Rearrange the windows in the registry.
+         * Rearrange the windows in this registry to a cascaded pattern.
+         */
+        private void cascadeWindows()
+        {
+            synchronized(windowPositionExaminerThreadPool) {
+                cancelWindowPositionMonitor();
+            }
+            try {
+                synchronized(activeWindows) {
+                    int xPos = desktopCascadeWindowOffset;
+                    int yPos = desktopCascadeWindowOffset;
+                    DesktopParameters params = VaadinSession.getCurrent().getAttribute(DesktopParameters.class);
+                    int maxX = params.getRight();
+                    int maxY = params.getBottom();
+                    for(WindowMetaData activeWindow : activeWindows) {
+                        float windowWidth = getWindowWidth(activeWindow.getWindow());
+                        float windowHeight = getWindowHeight(activeWindow.getWindow());
+                        float proposedX = xPos;
+                        if(proposedX + windowWidth > maxX) {
+                            proposedX = desktopCascadeWindowOffset;
+                        }
+                        float proposedY = yPos;
+                        if(proposedY + windowHeight > maxY) {
+                            proposedY = desktopCascadeWindowOffset;
+                        }
+                        activeWindow.getWindow().setPosition((int)proposedX,
+                                                             (int)proposedY);
+                        activeWindow.getWindow().focus();
+                        xPos += desktopCascadeWindowOffset;
+                        yPos += desktopCascadeWindowOffset;
+                        activeWindow.updateProperties();
+                    }
+                }
+                updateDisplayLayout();
+            } finally {
+                scheduleWindowPositionMonitor();
+            }
+        }
+        /**
+         * Rearrange the windows in this registry to a tiled pattern.
          */
         private void tileWindows()
         {
@@ -503,8 +567,42 @@ public class WindowManagerService
             }
             try {
                 synchronized(activeWindows) {
-                    
+                    DesktopParameters params = VaadinSession.getCurrent().getAttribute(DesktopParameters.class);
+                    int numWindows = activeWindows.size();
+                    if(numWindows == 0) {
+                        return;
+                    }
+                    int numCols = (int)Math.floor(Math.sqrt(numWindows));
+                    int numRows = (int)Math.floor(numWindows / numCols);
+                    if(!isPerfectSquare(numWindows)) {
+                        numCols += 1;
+                    }
+                    int windowWidth = Math.floorDiv(params.getRight(),
+                                                    numCols);
+                    int windowHeight = Math.floorDiv((params.getBottom()-params.getTop()),
+                                                     numRows);
+                    int colNum = 0;
+                    int rowNum = 0;
+                    int posX = params.getLeft();
+                    int posY = params.getTop();
+                    for(WindowMetaData activeWindow : activeWindows) {
+                        int suggestedX = posX + (colNum * windowWidth);
+                        int suggestedY = posY + (rowNum * windowHeight);
+                        activeWindow.getWindow().setWidth(windowWidth,
+                                                          Unit.PIXELS);
+                        activeWindow.getWindow().setHeight(windowHeight,
+                                                           Unit.PIXELS);
+                        activeWindow.getWindow().setPosition(suggestedX,
+                                                             suggestedY);
+                        colNum += 1;
+                        if(colNum == numCols) {
+                            colNum = 0;
+                            rowNum += 1;
+                        }
+                        activeWindow.updateProperties();
+                    }
                 }
+                updateDisplayLayout();
             } finally {
                 scheduleWindowPositionMonitor();
             }
@@ -515,6 +613,17 @@ public class WindowManagerService
             Excel chooses to put the columns with one fewer tiles on the left of the screen.
             https://stackoverflow.com/questions/4456827/algorithm-to-fit-windows-on-desktop-like-tile
             */
+        }
+        /**
+         * Determine if the given value is a perfect square or not.
+         *
+         * @param inValue a <code>double</code> value
+         * @return a <code>boolean</code> value
+         */
+        private boolean isPerfectSquare(double inValue)
+        {
+            double squareOfValue = Math.sqrt(inValue); 
+            return ((squareOfValue - Math.floor(squareOfValue)) == 0);
         }
         /**
          * Restore the display layout with the given values.
@@ -606,6 +715,7 @@ public class WindowManagerService
                                        "Blur: {}",
                                        inEvent);
                 verifyWindowLocation(newWindow);
+                inWindowWrapper.setHasFocus(false);
                 inWindowWrapper.updateProperties();
                 updateDisplayLayout();
             });
@@ -614,6 +724,7 @@ public class WindowManagerService
                                        "Focus: {}",
                                        inEvent);
                 verifyWindowLocation(newWindow);
+                inWindowWrapper.setHasFocus(true);
                 inWindowWrapper.updateProperties();
                 updateDisplayLayout();
             });
@@ -751,6 +862,9 @@ public class WindowManagerService
                                 SLF4JLoggerProxy.warn(WindowManagerService.this,
                                                       ExceptionUtils.getRootCauseMessage(e));
                             }
+//                            if(windowMetaData.hasFocus()) { // && windowMetaData.getWindow().isAttached()) {
+//                                windowMetaData.getWindow().focus();
+//                            }
                         }
                     }}
                 );
@@ -886,6 +1000,10 @@ public class WindowManagerService
      */
     private static final String windowModalProp = propId + "_modal";
     /**
+     * window is focused key name
+     */
+    private static final String windowFocusProp = propId + "_focus";
+    /**
      * window is draggable key name
      */
     private static final String windowDraggableProp = propId + "_draggable";
@@ -916,6 +1034,11 @@ public class WindowManagerService
      */
     @Value("${metc.desktop.viewable.area.pad:10}")
     private int desktopViewableAreaPad;
+    /**
+     * desktop cascade window offset value
+     */
+    @Value("${metc.desktop.cascade.window.offset:100}")
+    private int desktopCascadeWindowOffset;
     /**
      * interval in ms at which to monitor and correct window positions
      */
