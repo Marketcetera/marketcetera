@@ -35,16 +35,16 @@ public interface TradeClient
     /**
      * Get open orders.
      *
-     * @return a <code>Collection&lt;? extends OrderSummary&gt;</code> value
+     * @return a <code>Collection&lt;OrderSummary&gt;</code> value
      */
-    Collection<? extends OrderSummary> getOpenOrders();
+    Collection<OrderSummary> getOpenOrders();
     /**
      * Get open orders.
      *
      * @param inPageRequest a <code>PageRequest</code> value
-     * @return a <code>CollectionPageResponset&lt;? extends OrderSummary&gt;</code> value
+     * @return a <code>CollectionPageResponset&lt;OrderSummary&gt;</code> value
      */
-    CollectionPageResponse<? extends OrderSummary> getOpenOrders(PageRequest inPageRequest);
+    CollectionPageResponse<OrderSummary> getOpenOrders(PageRequest inPageRequest);
     /**
      * Submit the given orders.
      *

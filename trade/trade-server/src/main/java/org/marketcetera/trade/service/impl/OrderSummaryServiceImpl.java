@@ -179,7 +179,7 @@ public class OrderSummaryServiceImpl
      * @see org.marketcetera.trade.service.OrderSummaryService#findOpenOrders(org.marketcetera.persist.PageRequest)
      */
     @Override
-    public CollectionPageResponse<? extends OrderSummary> findOpenOrders(org.marketcetera.persist.PageRequest inPageRequest)
+    public CollectionPageResponse<OrderSummary> findOpenOrders(org.marketcetera.persist.PageRequest inPageRequest)
     {
         // TODO use the sort from the page request or this one if no sort specified
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC,
@@ -187,8 +187,8 @@ public class OrderSummaryServiceImpl
         Pageable pageRequest = PageRequest.of(inPageRequest.getPageNumber(),
                                               inPageRequest.getPageSize(),
                                               sort);
-        Page<PersistentOrderSummary> pageResponse = orderStatusDao.findOpenOrders(OrderStatus.openOrderStatuses,
-                                                                                  pageRequest);
+        Page<OrderSummary> pageResponse = orderStatusDao.findOpenOrders(OrderStatus.openOrderStatuses,
+                                                                        pageRequest);
         return new CollectionPageResponse<>(pageRequest,
                                             pageResponse);
     }

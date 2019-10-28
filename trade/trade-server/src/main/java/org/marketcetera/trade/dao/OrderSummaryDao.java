@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.OrderSummary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -58,9 +59,9 @@ public interface OrderSummaryDao
      *
      * @param inOpenOrderStatuses a <code>Set&lt;OrderStatus&gt;</code> value
      * @param inPageRequest a <code>Pageable</code> value
-     * @return a <code>Page&lt;PersistentOrderStatus&gt;</code> value
+     * @return a <code>Page&lt;OrderSummary&gt;</code> value
      */
     @Query("select o1 from OrderStatus o1 where o1.orderStatus in ?1 and o1.id = (select max(o2.id) from OrderStatus o2 where o1.rootOrderId=o2.rootOrderId)")
-    Page<PersistentOrderSummary> findOpenOrders(Set<OrderStatus> inOpenOrderStatuses,
-                                                Pageable inPageRequest);
+    Page<OrderSummary> findOpenOrders(Set<OrderStatus> inOpenOrderStatuses,
+                                      Pageable inPageRequest);
 }

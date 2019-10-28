@@ -360,11 +360,11 @@ public class TradeRpcClient
      * @see org.marketcetera.trade.client.TradeClient#getOpenOrders(org.marketcetera.persist.PageRequest)
      */
     @Override
-    public CollectionPageResponse<? extends OrderSummary> getOpenOrders(PageRequest inPageRequest)
+    public CollectionPageResponse<OrderSummary> getOpenOrders(PageRequest inPageRequest)
     {
-        return executeCall(new Callable<CollectionPageResponse<? extends OrderSummary>>() {
+        return executeCall(new Callable<CollectionPageResponse<OrderSummary>>() {
             @Override
-            public CollectionPageResponse<? extends OrderSummary> call()
+            public CollectionPageResponse<OrderSummary> call()
                     throws Exception
             {
                 SLF4JLoggerProxy.trace(TradeRpcClient.this,
@@ -396,7 +396,7 @@ public class TradeRpcClient
      * @see org.marketcetera.trade.client.TradingClient#getOpenOrders()
      */
     @Override
-    public Collection<? extends OrderSummary> getOpenOrders()
+    public Collection<OrderSummary> getOpenOrders()
     {
         return getOpenOrders(PageRequest.ALL).getElements();
     }

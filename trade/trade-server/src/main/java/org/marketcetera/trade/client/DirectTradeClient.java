@@ -113,7 +113,7 @@ public class DirectTradeClient
      * @see org.marketcetera.trade.client.TradeClient#getOpenOrders()
      */
     @Override
-    public Collection<? extends OrderSummary> getOpenOrders()
+    public Collection<OrderSummary> getOpenOrders()
     {
         return getOpenOrders(PageRequest.ALL).getElements();
     }
@@ -121,7 +121,7 @@ public class DirectTradeClient
      * @see org.marketcetera.trade.client.TradeClient#getOpenOrders(org.marketcetera.persist.PageRequest)
      */
     @Override
-    public CollectionPageResponse<? extends OrderSummary> getOpenOrders(PageRequest inPageRequest)
+    public CollectionPageResponse<OrderSummary> getOpenOrders(PageRequest inPageRequest)
     {
         return orderSummaryService.findOpenOrders(inPageRequest);
     }

@@ -45,10 +45,6 @@
       <artifactId>vaadin-client-compiled</artifactId>
     </dependency-->
     <dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>vaadin-client-compiler</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.googlecode.gwt-charts</groupId>
       <artifactId>gwt-charts</artifactId>
       <version>0.9.10</version>

@@ -98,7 +98,7 @@ public interface OrderSummaryService
      * @param inPageRequest a <code>PageRequest</code> value
      * @return a <code>CollectionPageResponse&lt;OrderSummary&gt;</code> value
      */
-    CollectionPageResponse<? extends OrderSummary> findOpenOrders(PageRequest inPageRequest);
+    CollectionPageResponse<OrderSummary> findOpenOrders(PageRequest inPageRequest);
     /**
      * Update the order status value with the given reports.
      *

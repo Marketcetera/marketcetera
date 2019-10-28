@@ -46,8 +46,7 @@ public class TradeClientService
      */
     public CollectionPageResponse<OrderSummary> getOpenOrders(PageRequest inPageRequest)
     {
-        throw new UnsupportedOperationException(); // TODO
-
+        return tradeClient.getOpenOrders(inPageRequest);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.service.ConnectableService#isRunning()

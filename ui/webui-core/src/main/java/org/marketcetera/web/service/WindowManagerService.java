@@ -18,6 +18,7 @@ import org.marketcetera.core.Util;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.events.CascadeWindowsEvent;
+import org.marketcetera.web.events.CloseWindowsEvent;
 import org.marketcetera.web.events.LoginEvent;
 import org.marketcetera.web.events.LogoutEvent;
 import org.marketcetera.web.events.NewWindowEvent;
@@ -157,7 +158,7 @@ public class WindowManagerService
     /**
      * Receive window tile events.
      *
-     * @param inEvent a <code>TimeWindowsEvent</code> value
+     * @param inEvent a <code>TileWindowsEvent</code> value
      */
     @Subscribe
     public void onTile(TileWindowsEvent inEvent)
@@ -166,6 +167,19 @@ public class WindowManagerService
                                "onTile: {}",
                                inEvent);
         getCurrentUserRegistry().tileWindows();
+    }
+    /**
+     * Receive close all windows events.
+     *
+     * @param inEvent a <code>CloseWindowsEvent</code> value
+     */
+    @Subscribe
+    public void onCloseAllWindows(CloseWindowsEvent inEvent)
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "onCloseWindows: {}",
+                               inEvent);
+        getCurrentUserRegistry().closeAllWindows(true);
     }
     /**
      * Determine if the given window is outside the viewable desktop area or not.
@@ -519,6 +533,23 @@ public class WindowManagerService
             }
         }
         /**
+         * Closes all windows.
+         *
+         * @param inUpdateDisplay a <code>boolean</code> value
+         */
+        private void closeAllWindows(boolean inUpdateDisplay)
+        {
+            synchronized(activeWindows) {
+                Set<WindowMetaData> tempActiveWindows = new HashSet<>(activeWindows);
+                for(WindowMetaData window : tempActiveWindows) {
+                    window.close();
+                }
+                if(inUpdateDisplay) {
+                    updateDisplayLayout();
+                }
+            }
+        }
+        /**
          * Rearrange the windows in this registry to a cascaded pattern.
          */
         private void cascadeWindows()
@@ -838,12 +869,7 @@ public class WindowManagerService
                 cancelWindowPositionMonitor();
                 windowPositionExaminerThreadPool.shutdownNow();
             }
-            synchronized(activeWindows) {
-                Set<WindowMetaData> tempActiveWindows = new HashSet<>(activeWindows);
-                for(WindowMetaData window : tempActiveWindows) {
-                    window.close();
-                }
-            }
+            closeAllWindows(false);
         }
         /**
          * Verify the position of all windows in this registry.
