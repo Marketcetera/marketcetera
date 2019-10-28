@@ -96,11 +96,14 @@ public class MainUI
                 if(isLoggedIn) {
                     try(CloseableLock menuLock = CloseableLock.create(VaadinSession.getCurrent().getLockInstance())) {
                         menuLock.lock();
+                        ApplicationMenu applicationMenu = VaadinSession.getCurrent().getAttribute(ApplicationMenu.class);
                         if(applicationMenu == null) {
                             SLF4JLoggerProxy.debug(this,
                                                    "Session is now logged in, building application menu");
                             applicationMenu = new ApplicationMenu(applicationContext);
                             menuLayout.addComponent(applicationMenu.getMenu());
+                            VaadinSession.getCurrent().setAttribute(ApplicationMenu.class,
+                                                                    applicationMenu);
                         }
                     }
                     menuLayout.setVisible(true);
@@ -109,10 +112,6 @@ public class MainUI
             private static final long serialVersionUID = 7868495691502830440L;
         });
     }
-    /**
-     * top-level application menu, may be <code>null</code> until the user logs in and tries to access a view
-     */
-    private ApplicationMenu applicationMenu;
     /**
      * provides access to the application configuration
      */

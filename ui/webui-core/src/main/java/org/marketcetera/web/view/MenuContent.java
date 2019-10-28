@@ -1,6 +1,10 @@
 package org.marketcetera.web.view;
 
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
 
 import com.vaadin.server.Resource;
 import com.vaadin.ui.MenuBar;
@@ -34,6 +38,17 @@ public interface MenuContent
      * @return a <code>MenuContent</code> value
      */
     MenuContent getCategory();
+    /**
+     * Get the necessary permissions to display this menu item.
+     *
+     * <p>The current user must have ALL OF the given permissions to display the menu item. An empty set indicates that no permissions are required.
+     * 
+     * @return a <code>Set&lt;GrantedAuthority&gt;</code> value
+     */
+    default Set<GrantedAuthority> getAllPermissions()
+    {
+        return Collections.emptySet();
+    }
     /**
      * Get the menu icon value.
      *

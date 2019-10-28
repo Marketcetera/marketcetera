@@ -1,9 +1,6 @@
 package org.marketcetera.web;
 
-import java.util.Collection;
-
 import org.marketcetera.admin.AdminRpcClientFactory;
-import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.RoleFactory;
 import org.marketcetera.admin.UserAttributeFactory;
@@ -72,8 +69,7 @@ public class AppConfiguration
                     throws I18NException
             {
                 AdminClientService adminClientService = inServiceManager.getService(AdminClientService.class);
-                Collection<Permission> permissions = adminClientService.getPermissions();
-                SessionUser.getCurrentUser().getPermissions().addAll(permissions);
+                SessionUser.getCurrentUser().getPermissions().addAll(adminClientService.getPermissionsForUser());
                 return true;
             }
         };

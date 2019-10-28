@@ -3,7 +3,7 @@ package org.marketcetera.web;
 import java.util.Date;
 import java.util.Set;
 
-import org.marketcetera.admin.Permission;
+import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.collect.Sets;
 import com.vaadin.server.VaadinSession;
@@ -78,16 +78,16 @@ public class SessionUser
     /**
      * Get the permissions value.
      *
-     * @return a <code>Set&lt;Permissions&gt;</code> value
+     * @return a <code>Set&lt;GrantedAuthority&gt;</code> value
      */
-    public Set<Permission> getPermissions()
+    public Set<GrantedAuthority> getPermissions()
     {
         return permissions;
     }
     /**
      * holds permissions for this user
      */
-    private final Set<Permission> permissions = Sets.newHashSet();
+    private final Set<GrantedAuthority> permissions = Sets.newHashSet();
     /**
      * username value
      */

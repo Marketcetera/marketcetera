@@ -91,7 +91,9 @@ public class LoginView
             VaadinSession.getCurrent().setAttribute(SessionUser.class,
                                                     sessionUser);
             try {
-                if(webAuthenticator.shouldAllow(null,username,password.toCharArray())) {
+                if(webAuthenticator.shouldAllow(null,
+                                                username,
+                                                password.toCharArray())) {
                     SLF4JLoggerProxy.info(this,
                                           "{} logged in",
                                           username);

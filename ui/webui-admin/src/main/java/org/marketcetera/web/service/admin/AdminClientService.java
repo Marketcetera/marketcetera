@@ -2,6 +2,7 @@ package org.marketcetera.web.service.admin;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Set;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.admin.AdminClient;
@@ -266,6 +267,15 @@ public class AdminClientService
     public CollectionPageResponse<Permission> getPermissions(PageRequest inPageRequest)
     {
         return adminClient.readPermissions(inPageRequest);
+    }
+    /**
+     * Get the permissions assigned to the current user.
+     *
+     * @return a <code>Set&lt;Permission&gt;</code> value
+     */
+    public Set<Permission> getPermissionsForUser()
+    {
+        return adminClient.getPermissionsForCurrentUser();
     }
     /**
      * Delete the permission with the given name.

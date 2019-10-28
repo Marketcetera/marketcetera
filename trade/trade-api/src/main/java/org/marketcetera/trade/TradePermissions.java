@@ -1,5 +1,7 @@
 package org.marketcetera.trade;
 
+import org.springframework.security.core.GrantedAuthority;
+
 /* $License$ */
 
 /**
@@ -10,6 +12,7 @@ package org.marketcetera.trade;
  * @since $Release$
  */
 public enum TradePermissions
+        implements GrantedAuthority
 {
     SendOrderAction,
     ViewBrokerStatusAction,
@@ -20,4 +23,12 @@ public enum TradePermissions
     WriteUserDataAction,
     AddReportAction,
     DeleteReportAction;
+    /* (non-Javadoc)
+     * @see org.springframework.security.core.GrantedAuthority#getAuthority()
+     */
+    @Override
+    public String getAuthority()
+    {
+        return name();
+    }
 }
