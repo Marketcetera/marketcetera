@@ -9,10 +9,13 @@ import java.util.TreeSet;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.service.AuthorizationHelperService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
 
+import com.vaadin.server.Resource;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -35,7 +38,33 @@ public class ApplicationMenu
     public ApplicationMenu(ApplicationContext inApplicationContext)
     {
         applicationContext = inApplicationContext;
+        authzHelperService = applicationContext.getBean(AuthorizationHelperService.class);
         initMenu();
+    }
+    public void refreshMenu()
+    {
+        SessionUser currentUser = SessionUser.getCurrentUser();
+        if(currentUser == null) {
+            menu.setVisible(false);
+            return;
+        }
+        menu.setVisible(true);
+        for(MenuItemMetaData topLevelContentItem : topLevelContent) {
+            // check permissions for topLevelMenuItem
+            evaluatePermissions(topLevelContentItem.getAllPermissions(),
+                                SessionUser.getCurrentUser().getPermissions(),
+                                topLevelContentItem.getMenuItem());
+            boolean atLeastOneChildVisible = false;
+            for(MenuItemMetaData childContentItem : topLevelContentItem.getChildItems()) {
+                evaluatePermissions(childContentItem.getAllPermissions(),
+                                    SessionUser.getCurrentUser().getPermissions(),
+                                    childContentItem.getMenuItem());
+                atLeastOneChildVisible |= childContentItem.getMenuItem().isVisible();
+            }
+            if(!topLevelContentItem.getChildItems().isEmpty() && topLevelContentItem.getMenuItem().isVisible()) {
+                topLevelContentItem.getMenuItem().setVisible(atLeastOneChildVisible);
+            }
+        }
     }
     /**
      * Get the menu value.
@@ -49,18 +78,17 @@ public class ApplicationMenu
     /**
      * Initialize the menu bar with application content buttons.
      */
-    private final void initMenu()
+    private void initMenu()
     {
         // TODO need recursion - this method handles two levels of menus only
         // collect all the contents and organize them by category, if any category is present
-        SortedSet<MenuContent> topLevelContent = new TreeSet<>(MenuContent.comparator);
         SortedMap<MenuContent,SortedSet<MenuContent>> categoryContent = new TreeMap<>(MenuContent.comparator);
         for(Map.Entry<String,MenuContent> entry : applicationContext.getBeansOfType(MenuContent.class).entrySet()) {
             MenuContent contentItem = entry.getValue();
             MenuContent contentCategory = contentItem.getCategory();
             if(contentCategory == null) {
                 // add this item to the top-level menu set - this will show in the main menu
-                topLevelContent.add(contentItem);
+                topLevelContent.add(new MenuItemMetaData(contentItem));
             } else {
                 // this item belongs to a category, make sure there's a set for that category and add the item to it
                 SortedSet<MenuContent> contentForCategory = categoryContent.get(contentCategory);
@@ -71,30 +99,34 @@ public class ApplicationMenu
                 }
                 contentForCategory.add(contentItem);
                 // now add the category itself to the top-level menu (might already be there, doesn't matter because it's a set)
-                topLevelContent.add(contentCategory);
+                topLevelContent.add(new MenuItemMetaData(contentCategory));
             }
         }
         // all menu items have now been categorized and sorted, go back through and create the menu bar
         menu = new MenuBar();
         menu.setStyleName(ValoTheme.MENUBAR_BORDERLESS);
         // the top-level menu is in topLevelContent, some of the items may be categories
-        for(MenuContent topLevelContentItem : topLevelContent) {
+        for(MenuItemMetaData topLevelContentItem : topLevelContent) {
             // this item may be a parent or a leaf
             MenuItem parent = menu.addItem(topLevelContentItem.getMenuCaption(),
                                            topLevelContentItem.getMenuIcon(),
                                            topLevelContentItem.getCommand());
-            evaluatePermissions(topLevelContentItem.getAllPermissions(),
-                                SessionUser.getCurrentUser().getPermissions(),
-                                parent);
+            topLevelContentItem.setMenuItem(parent);
+//            evaluatePermissions(topLevelContentItem.getAllPermissions(),
+//                                SessionUser.getCurrentUser().getPermissions(),
+//                                parent);
             SortedSet<MenuContent> childItems = categoryContent.get(topLevelContentItem);
             if(childItems != null) {
                 for(MenuContent childItem : childItems) {
-                    parent.addItem(childItem.getMenuCaption(),
-                                   childItem.getMenuIcon(),
-                                   childItem.getCommand());
-                    evaluatePermissions(childItem.getAllPermissions(),
-                                        SessionUser.getCurrentUser().getPermissions(),
-                                        parent);
+                    MenuItem newChildIem = parent.addItem(childItem.getMenuCaption(),
+                                                          childItem.getMenuIcon(),
+                                                          childItem.getCommand());
+                    MenuItemMetaData newChildItemMetaData = new MenuItemMetaData(childItem);
+                    newChildItemMetaData.setMenuItem(newChildIem);
+                    topLevelContentItem.getChildItems().add(newChildItemMetaData);
+//                    evaluatePermissions(childItem.getAllPermissions(),
+//                                        SessionUser.getCurrentUser().getPermissions(),
+//                                        parent);
                 }
             }
         }
@@ -194,10 +226,10 @@ public class ApplicationMenu
                                      Set<GrantedAuthority> inActualPermissions,
                                      MenuItem inMenuItem)
     {
+        inMenuItem.setVisible(true);
         if(inRequiredPermissions != null) {
-            inMenuItem.setVisible(true);
             for(GrantedAuthority requiredPermission : inRequiredPermissions) {
-                if(!inActualPermissions.contains(requiredPermission)) {
+                if(!authzHelperService.hasPermission(requiredPermission)) {
                     SLF4JLoggerProxy.trace(this,
                                            "Cannot display {}, {} not in {}",
                                            inMenuItem.getDescription(),
@@ -209,6 +241,143 @@ public class ApplicationMenu
             }
         }
     }
+    /**
+     * Holds meta data for a menu item.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private class MenuItemMetaData
+            implements Comparable<MenuItemMetaData>,MenuContent
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.view.MenuContent#getAllPermissions()
+         */
+        @Override
+        public Set<GrantedAuthority> getAllPermissions()
+        {
+            return menuContent.getAllPermissions();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.view.MenuContent#getMenuCaption()
+         */
+        @Override
+        public String getMenuCaption()
+        {
+            return menuContent.getMenuCaption();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.view.MenuContent#getWeight()
+         */
+        @Override
+        public int getWeight()
+        {
+            return menuContent.getWeight();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.view.MenuContent#getCategory()
+         */
+        @Override
+        public MenuContent getCategory()
+        {
+            return menuContent.getCategory();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
+         */
+        @Override
+        public Resource getMenuIcon()
+        {
+            return menuContent.getMenuIcon();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.view.MenuContent#getCommand()
+         */
+        @Override
+        public Command getCommand()
+        {
+            return menuContent.getCommand();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        @Override
+        public int compareTo(MenuItemMetaData inO)
+        {
+            return new Integer(getMenuContent().getWeight()).compareTo(inO.getMenuContent().getWeight());
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return new StringBuilder().append(menuContent.getMenuCaption()).append(" children: ").append(childItems).toString();
+        }
+        /**
+         * Get the menuContent value.
+         *
+         * @return a <code>MenuContent</code> value
+         */
+        private MenuContent getMenuContent()
+        {
+            return menuContent;
+        }
+        /**
+         * Get the childItems value.
+         *
+         * @return a <code>SortedSet&lt;MenuContent&gt;</code> value
+         */
+        private SortedSet<MenuItemMetaData> getChildItems()
+        {
+            return childItems;
+        }
+        /**
+         * Get the menu item value.
+         *
+         * @return a <code>MenuItem</code> value
+         */
+        private MenuItem getMenuItem()
+        {
+            return menuItem;
+        }
+        /**
+         * Create a new MenuItemMetaData instance.
+         *
+         * @param inMenuContent a <code>MenuContent</code> value
+         */
+        private MenuItemMetaData(MenuContent inMenuContent)
+        {
+            menuContent = inMenuContent;
+        }
+        /**
+         *
+         *
+         * @param inMenuItem
+         */
+        private void setMenuItem(MenuItem inMenuItem)
+        {
+            menuItem = inMenuItem;
+        }
+        /**
+         * 
+         */
+        private MenuItem menuItem;
+        /**
+         * 
+         */
+        private final MenuContent menuContent;
+        /**
+         * 
+         */
+        private final SortedSet<MenuItemMetaData> childItems = new TreeSet<>();
+    }
+    private SortedSet<MenuItemMetaData> topLevelContent = new TreeSet<>();
+    /**
+     * provides help resolving permissions
+     */
+    private AuthorizationHelperService authzHelperService;
     /**
      * provides the application context
      */

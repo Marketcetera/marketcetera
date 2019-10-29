@@ -93,6 +93,7 @@ public class MainUI
             public void afterViewChange(ViewChangeEvent inEvent)
             {
                 boolean isLoggedIn = SessionUser.getCurrentUser() != null;
+                System.out.println("COCO: afterViewChange: " + inEvent + " logged in: " + isLoggedIn);
                 if(isLoggedIn) {
                     try(CloseableLock menuLock = CloseableLock.create(VaadinSession.getCurrent().getLockInstance())) {
                         menuLock.lock();
@@ -105,6 +106,8 @@ public class MainUI
                             VaadinSession.getCurrent().setAttribute(ApplicationMenu.class,
                                                                     applicationMenu);
                         }
+                        System.out.println("COCO: using menu " + applicationMenu.hashCode());
+                        applicationMenu.refreshMenu();
                     }
                     menuLayout.setVisible(true);
                 }

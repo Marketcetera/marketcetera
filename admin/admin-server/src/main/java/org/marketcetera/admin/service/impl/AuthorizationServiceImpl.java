@@ -513,7 +513,8 @@ public class AuthorizationServiceImpl
                         return permissions != null && permissions.contains(permission);
                     }});
                 return permissionsByPermissionName;
-            }});
+            }}
+        );
         supervisorsBySupervisorKey = CacheBuilder.newBuilder().expireAfterAccess(userPermissionCacheTtl, TimeUnit.MILLISECONDS).build(new CacheLoader<GetSupervisorKey,Set<User>>() {
             @Override
             public Set<User> load(GetSupervisorKey inKey)
