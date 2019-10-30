@@ -17,7 +17,6 @@ import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
 
-import quickfix.SessionID;
 import quickfix.SessionSettings;
 
 /* $License$ */
@@ -35,10 +34,10 @@ public interface BrokerService
     /**
      * Get the active FIX session for the given session id.
      *
-     * @param inSessionId a <code>SessionID</code> value
+     * @param inSessionId a <code>quickfix.SessionID</code> value
      * @return an <code>ActiveFixSession</code> value or <code>null</code>
      */
-    ActiveFixSession getActiveFixSession(SessionID inSessionId);
+    ActiveFixSession getActiveFixSession(quickfix.SessionID inSessionId);
     /**
      * Get an <code>ActiveFixSession</code> value for the given <code>BrokerID</code> value.
      *
@@ -56,10 +55,10 @@ public interface BrokerService
     /**
      * Get the server FIX session for the given session id.
      *
-     * @param inSessionId a <code>SessionID</code> value
+     * @param inSessionId a <code>quickfix.SessionID</code> value
      * @return a <code>ServerFixSession</code> value or <code>null</code>
      */
-    ServerFixSession getServerFixSession(SessionID inSessionId);
+    ServerFixSession getServerFixSession(quickfix.SessionID inSessionId);
     /**
      * Get the server FIX session for the given broker id.
      *
@@ -79,6 +78,12 @@ public interface BrokerService
      * @return a <code>Collection&lt;ActiveFixSession&gt;</code> value
      */
     Collection<ActiveFixSession> getActiveFixSessions();
+    /**
+     * Get the available FIX initiator sessions.
+     *
+     * @return a <code>Collection&lt;ActiveFixSession&gt;</code> value
+     */
+    Collection<ActiveFixSession> getAvailableFixInitiatorSessions();
     /**
      * Reports the status of the given broker.
      *
@@ -137,24 +142,24 @@ public interface BrokerService
     /**
      * Get the most recent scheduled start of the given session.
      *
-     * @param inSessionId a <code>SessionID</code> value
+     * @param inSessionId a <code>quickfix.SessionID</code> value
      * @return a <code>Date</code> value or <code>null</code>
      */
-    Date getSessionStart(SessionID inSessionId);
+    Date getSessionStart(quickfix.SessionID inSessionId);
     /**
      * Get the next scheduled start of the given session.
      *
-     * @param inSessionId a <code>SessionID</code> value
+     * @param inSessionId a <code>quickfix.SessionID</code> value
      * @return a <code>Date</code> value or <code>null</code>
      */
-    Date getNextSessionStart(SessionID inSessionId);
+    Date getNextSessionStart(quickfix.SessionID inSessionId);
     /**
      * Get the most recent actual start of the given session.
      *
-     * @param inSessionId a <code>SessionID</code> value
+     * @param inSessionId a <code>quickfix.SessionID</code> value
      * @return a <code>Date</code> value or <code>null</code>
      */
-    Date getActualSessionStart(SessionID inSessionId);
+    Date getActualSessionStart(quickfix.SessionID inSessionId);
     /**
      * Get the FIX settings provider for the given affinity.
      *
@@ -202,7 +207,7 @@ public interface BrokerService
      * @param inSessionId a <code>SessionID</code> value
      * @return a <code>boolean</code> value
      */
-    boolean isSessionTime(SessionID inSessionId);
+    boolean isSessionTime(quickfix.SessionID inSessionId);
     /**
      * Get the session customization for the given session.
      *
@@ -211,10 +216,10 @@ public interface BrokerService
      */
     SessionCustomization getSessionCustomization(FixSession inFixSession);
     /**
+     * Get the human-readable name of the session with the given id.
      *
-     *
-     * @param inSessionId
-     * @return
+     * @param inSessionId a <code>quickfix.SessionID</code> value
+     * @return a <code>String</code> value
      */
-    String getSessionName(SessionID inSessionId);
+    String getSessionName(quickfix.SessionID inSessionId);
 }

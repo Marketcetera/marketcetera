@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Util;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
@@ -27,6 +28,7 @@ import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
@@ -58,7 +60,8 @@ public class WindowManagerService
     public void start()
     {
         SLF4JLoggerProxy.info(this,
-                              "Starting window manager service");
+                              "Starting {}",
+                              PlatformServices.getServiceName(getClass()));
         webMessageService.register(this);
     }
     /**
@@ -68,7 +71,8 @@ public class WindowManagerService
     public void stop()
     {
         SLF4JLoggerProxy.info(this,
-                              "Stopping window manager service");
+                              "Stopping {}",
+                              PlatformServices.getServiceName(getClass()));
         webMessageService.unregister(this);
     }
     /**
@@ -352,9 +356,9 @@ public class WindowManagerService
             window = inWindow;
             properties = inProperties;
             try {
-                ContentViewFactory contentViewFactory = (ContentViewFactory)Class.forName(inProperties.getProperty(windowContentViewFactoryProp)).newInstance();
+                ContentViewFactory contentViewFactory = (ContentViewFactory)applicationContext.getBean(Class.forName(inProperties.getProperty(windowContentViewFactoryProp)));
                 window.setContent(contentViewFactory.create(properties));
-            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
             // update window from properties, effectively restoring it to its previous state
@@ -1055,6 +1059,11 @@ public class WindowManagerService
      */
     @Autowired
     private DisplayLayoutService displayLayoutService;
+    /**
+     * provides access to the application context
+     */
+    @Autowired
+    private ApplicationContext applicationContext;
     /**
      * desktop viewable area pad value
      */

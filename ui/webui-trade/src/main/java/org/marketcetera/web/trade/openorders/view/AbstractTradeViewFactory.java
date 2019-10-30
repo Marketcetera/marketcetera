@@ -1,7 +1,8 @@
-package org.marketcetera.web.trade.view;
+package org.marketcetera.web.trade.openorders.view;
 
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
+import org.marketcetera.web.trade.openorders.view.TradeContentCategory;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.MenuContent;
 import org.springframework.beans.factory.annotation.Autowired;

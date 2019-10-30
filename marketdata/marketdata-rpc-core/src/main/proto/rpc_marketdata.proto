@@ -1,7 +1,7 @@
 syntax = "proto3";
 import "rpc_base.proto";
 import "rpc_paging.proto";
-import "rpc_trading_types.proto";
+import "rpc_trade_types.proto";
 import "rpc_marketdata_types.proto";
 option java_generic_services = true;
 option java_package = "org.marketcetera.marketdata.core.rpc";

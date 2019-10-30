@@ -4,7 +4,8 @@ option java_package = "org.marketcetera.trading.rpc";
 option java_outer_classname = "TradingRpc";
 import "rpc_base.proto";
 import "rpc_paging.proto";
-import "rpc_trading_types.proto";
+import "rpc_trade_types.proto";
+import "rpc_fix_admin.proto";
 import "google/protobuf/timestamp.proto";
 
 message OpenOrdersRequest {
@@ -112,6 +113,14 @@ message DeleteReportRequest {
 message DeleteReportResponse {
 }
 
+message ReadAvailableFixInitiatorSessionsRequest {
+    string sessionId = 1;
+}
+
+message ReadAvailableFixInitiatorSessionsResponse {
+    repeated ActiveFixSession fixSession = 1;
+}
+
 service TradingRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
@@ -127,4 +136,5 @@ service TradingRpcService {
     rpc getAllPositionsByRootAsOf(GetAllPositionsByRootAsOfRequest) returns (GetAllPositionsByRootAsOfResponse);
     rpc addReport(AddReportRequest) returns (AddReportResponse);
     rpc deleteReport(DeleteReportRequest) returns (DeleteReportResponse);
+    rpc readAvailableFixInitiatorSessions(ReadAvailableFixInitiatorSessionsRequest) returns (ReadAvailableFixInitiatorSessionsResponse);
 }

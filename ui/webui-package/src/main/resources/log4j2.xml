@@ -12,6 +12,8 @@
     <logger name="com.marketcetera" level="info"/>
     <logger name="org.marketcetera" level="info"/>
     <logger name="org.marketcetera.web" level="debug"/>
-    <logger name="org.marketcetera.web.view.ApplicationMenu" level="trace"/>
+    <logger name="org.marketcetera.web.trade.orderticket.view.OrderTicketView" level="trace"/>
+    <logger name="org.marketcetera.trading.rpc" level="trace"/>
+    <logger name="org.marketcetera.rpc.base.BaseRpcUtil" level="trace"/>
   </Loggers>
 </Configuration>

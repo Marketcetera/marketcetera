@@ -12,9 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.UserService;
+import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.symbol.SymbolResolverService;
@@ -62,6 +64,7 @@ public class DirectTradeClient
         tradeMessagePublisher = applicationContext.getBean(TradeMessagePublisher.class);
         reportService = applicationContext.getBean(ReportService.class);
         tradeService = applicationContext.getBean(TradeService.class);
+        brokerService = applicationContext.getBean(BrokerService.class);
         symbolResolverService = applicationContext.getBean(SymbolResolverService.class);
         SLF4JLoggerProxy.debug(this,
                                "Direct client {} owned by user {}",
@@ -235,6 +238,14 @@ public class DirectTradeClient
         return reportService.getRootOrderIdFor(inOrderID);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#readAvailableFixInitiatorSessions()
+     */
+    @Override
+    public List<ActiveFixSession> readAvailableFixInitiatorSessions()
+    {
+        return Lists.newArrayList(brokerService.getAvailableFixInitiatorSessions());
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradeClient#getOptionRoots(java.lang.String)
      */
     @Override
@@ -301,6 +312,10 @@ public class DirectTradeClient
      * provides access to user services
      */
     private UserService userService;
+    /**
+     * provides access to broker services
+     */
+    private BrokerService brokerService;
     /**
      * provides access to trade messages
      */

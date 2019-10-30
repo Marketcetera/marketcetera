@@ -11,12 +11,20 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.Version;
 import org.marketcetera.core.VersionInfo;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.fix.FixAdminRpc;
+import org.marketcetera.fix.FixRpcUtil;
+import org.marketcetera.fix.FixSession;
+import org.marketcetera.fix.MutableActiveFixSessionFactory;
+import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc;
@@ -603,6 +611,47 @@ public class TradeRpcClient
         );
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#readAvailableFixInitiatorSessions()
+     */
+    @Override
+    public List<ActiveFixSession> readAvailableFixInitiatorSessions()
+    {
+        return executeCall(new Callable<List<ActiveFixSession>>() {
+            @Override
+            public List<ActiveFixSession> call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} read available FIX initiator sessions",
+                                       getSessionId());
+                TradingRpc.ReadAvailableFixInitiatorSessionsRequest.Builder requestBuilder = TradingRpc.ReadAvailableFixInitiatorSessionsRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                TradingRpc.ReadAvailableFixInitiatorSessionsRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                TradingRpc.ReadAvailableFixInitiatorSessionsResponse response = getBlockingStub().readAvailableFixInitiatorSessions(request);
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                List<ActiveFixSession> results = Lists.newArrayList();
+                for(FixAdminRpc.ActiveFixSession rpcFixSession : response.getFixSessionList()) {
+                    FixRpcUtil.getActiveFixSession(rpcFixSession,
+                                                   activeFixSessionFactory,
+                                                   fixSessionFactory,
+                                                   clusterDataFactory).ifPresent(activeFixSession->results.add(activeFixSession));
+                }
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       results);
+                return results;
+            }
+        });
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradeClient#getOptionRoots(java.lang.String)
      */
     @Override
@@ -617,6 +666,60 @@ public class TradeRpcClient
     public String getUnderlying(String inOptionRoot)
     {
         throw new UnsupportedOperationException(); // TODO
+    }
+    /**
+     * Get the clusterDataFactory value.
+     *
+     * @return a <code>ClusterDataFactory</code> value
+     */
+    public ClusterDataFactory getClusterDataFactory()
+    {
+        return clusterDataFactory;
+    }
+    /**
+     * Sets the clusterDataFactory value.
+     *
+     * @param inClusterDataFactory a <code>ClusterDataFactory</code> value
+     */
+    public void setClusterDataFactory(ClusterDataFactory inClusterDataFactory)
+    {
+        clusterDataFactory = inClusterDataFactory;
+    }
+    /**
+     * Get the activeFixSessionFactory value.
+     *
+     * @return a <code>MutableActiveFixSessionFactory</code> value
+     */
+    public MutableActiveFixSessionFactory getActiveFixSessionFactory()
+    {
+        return activeFixSessionFactory;
+    }
+    /**
+     * Sets the activeFixSessionFactory value.
+     *
+     * @param inActiveFixSessionFactory a <code>MutableActiveFixSessionFactory</code> value
+     */
+    public void setActiveFixSessionFactory(MutableActiveFixSessionFactory inActiveFixSessionFactory)
+    {
+        activeFixSessionFactory = inActiveFixSessionFactory;
+    }
+    /**
+     * Get the fixSessionFactory value.
+     *
+     * @return a <code>MutableFixSessionFactory</code> value
+     */
+    public MutableFixSessionFactory getFixSessionFactory()
+    {
+        return fixSessionFactory;
+    }
+    /**
+     * Sets the fixSessionFactory value.
+     *
+     * @param inFixSessionFactory a <code>MutableFixSessionFactory</code> value
+     */
+    public void setFixSessionFactory(MutableFixSessionFactory inFixSessionFactory)
+    {
+        fixSessionFactory = inFixSessionFactory;
     }
     /**
      * Create a new TradingRpcClient instance.
@@ -734,6 +837,18 @@ public class TradeRpcClient
             super(inTradeMessageListener);
         }
     }
+    /**
+     * creates {@link ClusterData} objects
+     */
+    private ClusterDataFactory clusterDataFactory;
+    /**
+     * creates {@link ActiveFixSession} objects
+     */
+    private MutableActiveFixSessionFactory activeFixSessionFactory;
+    /**
+     * creates {@link FixSession} objects
+     */
+    private MutableFixSessionFactory fixSessionFactory;
     /**
      * The client's application ID: the application name.
      */

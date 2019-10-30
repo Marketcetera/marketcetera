@@ -1,8 +1,10 @@
 package org.marketcetera.web.service.trade;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.OrderSummary;
@@ -39,14 +41,23 @@ public class TradeClientService
      */
     public TradeClientService() {}
     /**
+     * Get open orders.
      *
-     *
-     * @param inPageRequest
-     * @return
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;OrderSummary&gt;</code> value
      */
     public CollectionPageResponse<OrderSummary> getOpenOrders(PageRequest inPageRequest)
     {
         return tradeClient.getOpenOrders(inPageRequest);
+    }
+    /**
+     * Get the available fix initiator sessions visible to the current user.
+     *
+     * @return a <code>List&lt;ActiveFixSession&gt;</code> value
+     */
+    public List<ActiveFixSession> getAvailableFixInitiatorSessions()
+    {
+        return tradeClient.readAvailableFixInitiatorSessions();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.service.ConnectableService#isRunning()

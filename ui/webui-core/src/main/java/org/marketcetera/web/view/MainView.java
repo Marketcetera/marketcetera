@@ -2,8 +2,6 @@ package org.marketcetera.web.view;
 
 import javax.annotation.PostConstruct;
 
-import org.marketcetera.web.SessionUser;
-
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -48,7 +46,6 @@ public class MainView
     @Override
     public void enter(ViewChangeEvent inEvent)
     {
-        System.out.println("Entering main view: " + hashCode() + " for " + SessionUser.getCurrentUser().getUsername());
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getWeight()

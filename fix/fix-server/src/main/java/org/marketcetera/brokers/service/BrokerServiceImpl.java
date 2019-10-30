@@ -142,6 +142,48 @@ public class BrokerServiceImpl
                                                     Integer.MAX_VALUE)).getElements();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.BrokerService#getAvailableFixInitiatorSessions()
+     */
+    @Override
+    public Collection<ActiveFixSession> getAvailableFixInitiatorSessions()
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "getAvailableFixInitiatorSessions");
+        Collection<ActiveFixSession> result = Lists.newArrayList();
+        List<FixSession> intermediateResult = fixSessionProvider.findFixSessions(false,
+                                                                                 1,
+                                                                                 1);
+        for(FixSession fixSession : intermediateResult) {
+            BrokerID brokerId = new BrokerID(fixSession.getBrokerId());
+            quickfix.SessionID sessionId = new SessionID(fixSession.getSessionId());
+            ClusterData clusterData = getClusterData(fixSession);
+            if(clusterData == null) {
+                continue;
+            }
+            FixSessionStatus sessionStatus = getFixSessionStatus(brokerId);
+            if(!sessionStatus.isLoggedOn()) {
+                continue;
+            }
+            MutableActiveFixSession activeFixSession = activeFixSessionFactory.create(fixSession,
+                                                                                      clusterData,
+                                                                                      sessionStatus,
+                                                                                      getSessionCustomization(fixSession));
+            FixSessionSequenceNumbers sequenceNumbers = getSessionSequenceNumbers(sessionId);
+            if(sequenceNumbers != null) {
+                activeFixSession.setSenderSequenceNumber(sequenceNumbers.getNextSenderSeqNum());
+                activeFixSession.setTargetSequenceNumber(sequenceNumbers.getNextTargetSeqNum());
+            }
+            SLF4JLoggerProxy.trace(this,
+                                   "Adding: {}",
+                                   activeFixSession);
+            result.add(activeFixSession);
+        }
+        SLF4JLoggerProxy.trace(this,
+                               "Returning: {}",
+                               result);
+        return result;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getActiveFixSessions(org.marketcetera.persist.PageRequest)
      */
     @Override

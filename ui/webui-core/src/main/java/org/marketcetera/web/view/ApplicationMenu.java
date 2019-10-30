@@ -7,13 +7,19 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.annotation.PostConstruct;
+
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.service.AuthorizationHelperService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.vaadin.server.Resource;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -28,41 +34,52 @@ import com.vaadin.ui.themes.ValoTheme;
  * @version $Id$
  * @since $Release$
  */
+@SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ApplicationMenu
 {
     /**
-     * Create a new ApplicationMenu instance.
-     *
-     * @param inApplicationContext an <code>ApplicationContext</code> value
+     * Validate and start the object.
      */
-    public ApplicationMenu(ApplicationContext inApplicationContext)
+    @PostConstruct
+    public void start()
     {
-        applicationContext = inApplicationContext;
-        authzHelperService = applicationContext.getBean(AuthorizationHelperService.class);
         initMenu();
     }
-    public void refreshMenu()
+    /**
+     * Refresh the menu permissions.
+     */
+    public void refreshMenuPermissions()
     {
         SessionUser currentUser = SessionUser.getCurrentUser();
         if(currentUser == null) {
             menu.setVisible(false);
             return;
         }
+        // there is a current user, already logged in, the menu should now be visible
         menu.setVisible(true);
+        // examine over the top level content items
         for(MenuItemMetaData topLevelContentItem : topLevelContent) {
-            // check permissions for topLevelMenuItem
+            // it's possible to define permissions for top-level menu items independently from the child items
             evaluatePermissions(topLevelContentItem.getAllPermissions(),
                                 SessionUser.getCurrentUser().getPermissions(),
                                 topLevelContentItem.getMenuItem());
-            boolean atLeastOneChildVisible = false;
-            for(MenuItemMetaData childContentItem : topLevelContentItem.getChildItems()) {
-                evaluatePermissions(childContentItem.getAllPermissions(),
-                                    SessionUser.getCurrentUser().getPermissions(),
-                                    childContentItem.getMenuItem());
-                atLeastOneChildVisible |= childContentItem.getMenuItem().isVisible();
-            }
-            if(!topLevelContentItem.getChildItems().isEmpty() && topLevelContentItem.getMenuItem().isVisible()) {
-                topLevelContentItem.getMenuItem().setVisible(atLeastOneChildVisible);
+            // if the user has permissions to view the top level contents, examine the children, if nay
+            if(topLevelContentItem.getMenuItem().isVisible()) {
+                // if no children are visible, we're going to hide the top-level menu, too
+                boolean atLeastOneChildVisible = false;
+                // examine the children (may be empty)
+                for(MenuItemMetaData childContentItem : topLevelContentItem.getChildItems()) {
+                    evaluatePermissions(childContentItem.getAllPermissions(),
+                                        SessionUser.getCurrentUser().getPermissions(),
+                                        childContentItem.getMenuItem());
+                    // track whether at least one child item is visible
+                    atLeastOneChildVisible |= childContentItem.getMenuItem().isVisible();
+                }
+                // if there is at least one child item, then, at least one child item must be visible or we're going to hide the top-level item
+                if(!topLevelContentItem.getChildItems().isEmpty()) {
+                    topLevelContentItem.getMenuItem().setVisible(atLeastOneChildVisible);
+                }
             }
         }
     }
@@ -112,9 +129,6 @@ public class ApplicationMenu
                                            topLevelContentItem.getMenuIcon(),
                                            topLevelContentItem.getCommand());
             topLevelContentItem.setMenuItem(parent);
-//            evaluatePermissions(topLevelContentItem.getAllPermissions(),
-//                                SessionUser.getCurrentUser().getPermissions(),
-//                                parent);
             SortedSet<MenuContent> childItems = categoryContent.get(topLevelContentItem);
             if(childItems != null) {
                 for(MenuContent childItem : childItems) {
@@ -124,13 +138,9 @@ public class ApplicationMenu
                     MenuItemMetaData newChildItemMetaData = new MenuItemMetaData(childItem);
                     newChildItemMetaData.setMenuItem(newChildIem);
                     topLevelContentItem.getChildItems().add(newChildItemMetaData);
-//                    evaluatePermissions(childItem.getAllPermissions(),
-//                                        SessionUser.getCurrentUser().getPermissions(),
-//                                        parent);
                 }
             }
         }
-        // TODO might be nice that if a parent menu item has no allowed child items, that parent item is removed
 //        SortedSet<MenuContent> noCategoryContent = new TreeSet<>(categoryComparator);
 //        SortedMap<MenuContent,SortedSet<MenuContent>> sortedContent = new TreeMap<>(categoryComparator);
 //        for(Map.Entry<String,MenuContent> entry : applicationContext.getBeansOfType(MenuContent.class).entrySet()) {
@@ -222,6 +232,13 @@ public class ApplicationMenu
 //            private static final long serialVersionUID = -4840986259382011275L;
 //        });
     }
+    /**
+     * Evaluate the permissions for the given menu item and set the menu item to be visible accordingly.
+     *
+     * @param inRequiredPermissions a <code>Set&lt;GrantedAuthority&gt;</code> value
+     * @param inActualPermissions a <code>Set&lt;GrantedAuthority&gt;</code> value
+     * @param inMenuItem a <code>MenuItem</code> value
+     */
     private void evaluatePermissions(Set<GrantedAuthority> inRequiredPermissions,
                                      Set<GrantedAuthority> inActualPermissions,
                                      MenuItem inMenuItem)
@@ -352,35 +369,40 @@ public class ApplicationMenu
             menuContent = inMenuContent;
         }
         /**
+         * Set the menu item value.
          *
-         *
-         * @param inMenuItem
+         * @param inMenuItem a <code>MenuItem</code> value
          */
         private void setMenuItem(MenuItem inMenuItem)
         {
             menuItem = inMenuItem;
         }
         /**
-         * 
+         * menu item value
          */
         private MenuItem menuItem;
         /**
-         * 
+         * menu content value
          */
         private final MenuContent menuContent;
         /**
-         * 
+         * child menu items, may be empty but will never be <code>null</code>
          */
         private final SortedSet<MenuItemMetaData> childItems = new TreeSet<>();
     }
+    /**
+     * top level content, sorted by menu item precedence
+     */
     private SortedSet<MenuItemMetaData> topLevelContent = new TreeSet<>();
     /**
      * provides help resolving permissions
      */
+    @Autowired
     private AuthorizationHelperService authzHelperService;
     /**
      * provides the application context
      */
+    @Autowired
     private ApplicationContext applicationContext;
     /**
      * menu display widget that contains all the menu items

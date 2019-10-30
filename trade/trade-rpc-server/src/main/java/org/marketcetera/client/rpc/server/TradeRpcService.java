@@ -2,16 +2,21 @@ package org.marketcetera.client.rpc.server;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
+import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.fix.FixRpcUtil;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest;
@@ -57,6 +62,8 @@ import org.marketcetera.trading.rpc.TradingRpc.GetPositionAsOfRequest;
 import org.marketcetera.trading.rpc.TradingRpc.GetPositionAsOfResponse;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersRequest;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersResponse;
+import org.marketcetera.trading.rpc.TradingRpc.ReadAvailableFixInitiatorSessionsRequest;
+import org.marketcetera.trading.rpc.TradingRpc.ReadAvailableFixInitiatorSessionsResponse;
 import org.marketcetera.trading.rpc.TradingRpc.RemoveTradeMessageListenerRequest;
 import org.marketcetera.trading.rpc.TradingRpc.RemoveTradeMessageListenerResponse;
 import org.marketcetera.trading.rpc.TradingRpc.ResolveSymbolRequest;
@@ -74,6 +81,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 /* $License$ */
@@ -611,6 +620,44 @@ public class TradeRpcService<SessionClazz>
                             inResponseObserver);
             }
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#readAvailableFixInitiatorSessions(org.marketcetera.trading.rpc.TradingRpc.ReadAvailableFixInitiatorSessionsRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void readAvailableFixInitiatorSessions(ReadAvailableFixInitiatorSessionsRequest inRequest,
+                                                      StreamObserver<ReadAvailableFixInitiatorSessionsResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Received read available FIX initiator sessions request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradePermissions.ViewBrokerStatusAction.name());
+                TradingRpc.ReadAvailableFixInitiatorSessionsResponse.Builder responseBuilder = TradingRpc.ReadAvailableFixInitiatorSessionsResponse.newBuilder();
+                Collection<ActiveFixSession> pagedResponse = brokerService.getAvailableFixInitiatorSessions();
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Query returned {}",
+                                       pagedResponse);
+                if(pagedResponse != null) {
+                    for(ActiveFixSession activeFixSession : pagedResponse) {
+                        FixRpcUtil.getRpcActiveFixSession(activeFixSession).ifPresent(rpcFixSession->responseBuilder.addFixSession(rpcFixSession));
+                    }
+                }
+                TradingRpc.ReadAvailableFixInitiatorSessionsResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                if(e instanceof StatusRuntimeException) {
+                    throw (StatusRuntimeException)e;
+                }
+                throw new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+            }
+        }
     }
     /**
      * Wraps a {@link TradeMessageListener} with the RPC call from the client.
@@ -688,6 +735,11 @@ public class TradeRpcService<SessionClazz>
      */
     @Autowired
     private OrderSummaryService orderSummaryService;
+    /**
+     * provides access to core broker services
+     */
+    @Autowired
+    private BrokerService brokerService;
     /**
      * provides the RPC service
      */

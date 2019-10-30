@@ -9,6 +9,7 @@ import java.util.Map;
 import org.marketcetera.core.BaseClient;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
@@ -32,6 +33,12 @@ import org.marketcetera.trade.TradeMessagePublisher;
 public interface TradeClient
         extends BaseClient,TradeMessagePublisher
 {
+    /**
+     * Get the currently available FIX initiator sessions.
+     *
+     * @return a <code>List&lt;ActiveFixSession&gt;</code> value
+     */
+    List<ActiveFixSession> readAvailableFixInitiatorSessions();
     /**
      * Get open orders.
      *

@@ -13,6 +13,7 @@ import org.marketcetera.admin.Role;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeType;
+import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixAdminClient;
 import org.marketcetera.fix.FixAdminRpcClientFactory;
@@ -480,6 +481,24 @@ public class AdminClientService
     public FixSessionInstanceData getFixSessionInstanceData(int inAffinity)
     {
         return fixAdminClient.getFixSessionInstanceData(inAffinity);
+    }
+    /**
+     * Add the given broker status listener.
+     *
+     * @param inBrokerStatusListener a <code>BrokerStatusListener</code> value
+     */
+    public void addBrokerStatusListener(BrokerStatusListener inBrokerStatusListener)
+    {
+        fixAdminClient.addBrokerStatusListener(inBrokerStatusListener);
+    }
+    /**
+     * Remove the given broker status listener.
+     *
+     * @param inBrokerStatusListener a <code>BrokerStatusListener</code> value
+     */
+    public void removeBrokerStatusListener(BrokerStatusListener inBrokerStatusListener)
+    {
+        fixAdminClient.removeBrokerStatusListener(inBrokerStatusListener);
     }
     /**
      * Sets the adminClientFactory value.

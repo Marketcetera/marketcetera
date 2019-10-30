@@ -93,7 +93,6 @@ public class MainUI
             public void afterViewChange(ViewChangeEvent inEvent)
             {
                 boolean isLoggedIn = SessionUser.getCurrentUser() != null;
-                System.out.println("COCO: afterViewChange: " + inEvent + " logged in: " + isLoggedIn);
                 if(isLoggedIn) {
                     try(CloseableLock menuLock = CloseableLock.create(VaadinSession.getCurrent().getLockInstance())) {
                         menuLock.lock();
@@ -101,13 +100,12 @@ public class MainUI
                         if(applicationMenu == null) {
                             SLF4JLoggerProxy.debug(this,
                                                    "Session is now logged in, building application menu");
-                            applicationMenu = new ApplicationMenu(applicationContext);
+                            applicationMenu = applicationContext.getBean(ApplicationMenu.class);
                             menuLayout.addComponent(applicationMenu.getMenu());
                             VaadinSession.getCurrent().setAttribute(ApplicationMenu.class,
                                                                     applicationMenu);
                         }
-                        System.out.println("COCO: using menu " + applicationMenu.hashCode());
-                        applicationMenu.refreshMenu();
+                        applicationMenu.refreshMenuPermissions();
                     }
                     menuLayout.setVisible(true);
                 }
@@ -126,35 +124,4 @@ public class MainUI
     @Autowired
     private SpringViewProvider viewProvider;
     private static final long serialVersionUID = -56010080786096996L;
-    /*
-     * todo list
-     * 
-     * - implement subjects in roles
-     * - implement permissions in roles
-     * - implement pagination UI in grid
-     * - refactor paginated grid class from admin views
-     * - implement pagination in admin calls
-     * - implement order ticket view
-     * - implement open orders view
-     * - implement FIX messages view
-     * - implement FIX message details view
-     * - implement positions view
-     * - implement strategy engines view
-     * - implement data flow visualizations
-     * - implement permission checking in menu
-     * - test server disconnect, check web client service connection/reconnection
-     * - trade composite view?
-     * - implement market data views
-     * -- top
-     * -- stats
-     * -- depth
-     * -- chart
-     * - implement dashboard mini-views
-     * - implement broker client
-     * - implement broker status view
-     * - implement broker add/modify/view subview
-     * - implement user add/modify/view subview
-     * - implement role add/modify/view subview
-     * - implement permission add/modify/view subview
-     */
 }
