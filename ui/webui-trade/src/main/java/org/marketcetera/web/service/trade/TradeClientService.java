@@ -7,6 +7,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trading.rpc.TradeRpcClientFactory;
@@ -58,6 +59,16 @@ public class TradeClientService
     public List<ActiveFixSession> getAvailableFixInitiatorSessions()
     {
         return tradeClient.readAvailableFixInitiatorSessions();
+    }
+    /**
+     * Resolves the given symbol to an <code>Instrument</code>.
+     *
+     * @param inSymbol a <code>String</code> value
+     * @return an <code>Instrument</code> value
+     */
+    public Instrument resolveSymbol(String inSymbol)
+    {
+        return tradeClient.resolveSymbol(inSymbol);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.service.ConnectableService#isRunning()

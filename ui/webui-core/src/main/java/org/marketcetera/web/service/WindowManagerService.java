@@ -99,24 +99,24 @@ public class WindowManagerService
     /**
      * Receive new window events.
      *
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      */
     @Subscribe
-    public void onNewWindow(NewWindowEvent inNewWindowEvent)
+    public void onNewWindow(NewWindowEvent inEvent)
     {
         SLF4JLoggerProxy.debug(this,
                                "onWindow: {}",
-                               inNewWindowEvent.getWindowTitle());
+                               inEvent.getWindowTitle());
         // create the UI window element
-        Window newWindow = new Window(inNewWindowEvent.getWindowTitle());
+        Window newWindow = new Window(inEvent.getWindowTitle());
         // set properties of the new window based on the received event
-        newWindow.setModal(inNewWindowEvent.isModal());
-        newWindow.setDraggable(inNewWindowEvent.isDraggable());
-        newWindow.setResizable(inNewWindowEvent.isResizable());
-        newWindow.setWidth(inNewWindowEvent.getWindowSize().getFirstMember());
-        newWindow.setHeight(inNewWindowEvent.getWindowSize().getSecondMember());
+        newWindow.setModal(inEvent.isModal());
+        newWindow.setDraggable(inEvent.isDraggable());
+        newWindow.setResizable(inEvent.isResizable());
+        newWindow.setWidth(inEvent.getWindowSize().getFirstMember());
+        newWindow.setHeight(inEvent.getWindowSize().getSecondMember());
         // the content view factory will be used to create the new window content
-        ContentViewFactory viewFactory = inNewWindowEvent.getViewFactory();
+        ContentViewFactory viewFactory = inEvent.getViewFactory();
         // create the window meta data object, which will track data about the window
         WindowRegistry windowRegistry = getCurrentUserRegistry();
         WindowMetaData newWindowWrapper = new WindowMetaData(newWindow,
@@ -124,10 +124,13 @@ public class WindowManagerService
         windowRegistry.addWindow(newWindowWrapper);
         // create the new window content - initially, the properties will be mostly or completely empty, one would expect
         ContentView contentView = viewFactory.create(newWindowWrapper.getProperties());
+        styleService.addStyle(contentView);
         // set the content of the new window
         newWindow.setContent(contentView);
         windowRegistry.addWindowListeners(newWindowWrapper);
         windowRegistry.updateDisplayLayout();
+        newWindow.setId(inEvent.getWindowStyleId());
+        styleService.addStyle(newWindow);
         UI.getCurrent().addWindow(newWindow);
         newWindow.focus();
     }
@@ -357,7 +360,9 @@ public class WindowManagerService
             properties = inProperties;
             try {
                 ContentViewFactory contentViewFactory = (ContentViewFactory)applicationContext.getBean(Class.forName(inProperties.getProperty(windowContentViewFactoryProp)));
-                window.setContent(contentViewFactory.create(properties));
+                ContentView contentView = contentViewFactory.create(properties);
+                styleService.addStyle(contentView);
+                window.setContent(contentView);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -424,6 +429,12 @@ public class WindowManagerService
                                    String.valueOf(window.getScrollTop()));
             properties.setProperty(windowFocusProp,
                                    String.valueOf(hasFocus()));
+            if(window.getId() == null) {
+                properties.remove(windowStyleId);
+            } else {
+                properties.setProperty(windowStyleId,
+                                       window.getId());
+            }
         }
         /**
          * Update the window object with the stored telemetry.
@@ -446,6 +457,7 @@ public class WindowManagerService
             window.setCaption(properties.getProperty(windowTitleProp));
             window.setPositionX(Integer.parseInt(properties.getProperty(windowPosXProp)));
             window.setPositionY(Integer.parseInt(properties.getProperty(windowPosYProp)));
+            window.setId(properties.getProperty(windowStyleId));
             setHasFocus(Boolean.parseBoolean(properties.getProperty(windowFocusProp)));
         }
         /**
@@ -679,6 +691,7 @@ public class WindowManagerService
                                                                           new Window());
                     addWindow(newWindowMetaData);
                     addWindowListeners(newWindowMetaData);
+                    styleService.addStyle(newWindowMetaData.getWindow());
                     UI.getCurrent().addWindow(newWindowMetaData.getWindow());
                 }
             }
@@ -1049,6 +1062,15 @@ public class WindowManagerService
      * window scroll top key name
      */
     private static final String windowScrollTopProp = propId + "_scrollTop";
+    /**
+     * window style id key name
+     */
+    private static final String windowStyleId = propId + "_windowStyleId";
+    /**
+     * provides access to style services
+     */
+    @Autowired
+    private StyleService styleService;
     /**
      * web message service value
      */

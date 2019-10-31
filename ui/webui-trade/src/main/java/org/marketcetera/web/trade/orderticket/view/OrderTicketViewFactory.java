@@ -112,12 +112,20 @@ public class OrderTicketViewFactory
             implements NewWindowEvent
     {
         /* (non-Javadoc)
+         * @see org.marketcetera.web.events.NewWindowEvent#getWindowStyleId()
+         */
+        @Override
+        public String getWindowStyleId()
+        {
+            return OrderTicketView.class.getCanonicalName() + ".window";
+        }
+        /* (non-Javadoc)
          * @see org.marketcetera.web.events.MenuEvent#getWindowTitle()
          */
         @Override
         public String getWindowTitle()
         {
-            return getMenuCaption();
+            return "New Order";
         }
         /* (non-Javadoc)
          * @see org.marketcetera.web.events.NewWindowEvent#getViewFactory()

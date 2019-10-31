@@ -1,14 +1,19 @@
 package org.marketcetera.web.view.sessions;
 
+import java.util.Collections;
 import java.util.Properties;
+import java.util.Set;
 
+import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.MenuContent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 
+import com.google.common.collect.Sets;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -98,6 +103,18 @@ public class SessionViewFactory
             private static final long serialVersionUID = 49365592058433460L;
         };
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.MenuContent#getAllPermissions()
+     */
+    @Override
+    public Set<GrantedAuthority> getAllPermissions()
+    {
+        return requiredPermissions;
+    }
+    /**
+     * permission(s) required to execute open order view
+     */
+    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(AdminPermissions.ViewSessionAction));
     /**
      * provides access to web message services
      */

@@ -21,6 +21,15 @@ public interface NewWindowEvent
      */
     String getWindowTitle();
     /**
+     * Get the window style id to use for this window.
+     *
+     * @return a <code>String</code> value
+     */
+    default String getWindowStyleId()
+    {
+        return "window";
+    }
+    /**
      * Get the content view factory for this window.
      *
      * @return a <code>ContentViewFactory</code> value

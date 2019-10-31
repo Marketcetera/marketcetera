@@ -1,5 +1,7 @@
 package org.marketcetera.admin;
 
+import org.springframework.security.core.GrantedAuthority;
+
 /* $License$ */
 
 /**
@@ -10,6 +12,7 @@ package org.marketcetera.admin;
  * @since $Release$
  */
 public enum AdminPermissions
+        implements GrantedAuthority
 {
     AddSessionAction,
     DeleteSessionAction,
@@ -38,4 +41,12 @@ public enum AdminPermissions
     ReadFixSessionAttributeDescriptorsAction,
     ReadUserAttributeAction,
     WriteUserAttributeAction;
+    /* (non-Javadoc)
+     * @see org.springframework.security.core.GrantedAuthority#getAuthority()
+     */
+    @Override
+    public String getAuthority()
+    {
+        return name();
+    }
 }
