@@ -30,11 +30,13 @@ import com.google.common.collect.Sets;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 
 /* $License$ */
 
@@ -62,7 +64,7 @@ public class OrderTicketView
                                PlatformServices.getServiceName(getClass()),
                                hashCode());
         super.attach();
-        // broker status layout
+        // prepare the first row
         // broker combo
         brokerComboBox = new ComboBox();
         brokerComboBox.setCaption("Broker");
@@ -82,10 +84,11 @@ public class OrderTicketView
         sideComboBox.addItems(EnumSet.complementOf(EnumSet.of(Side.Unknown)));
         sideComboBox.setValue(Side.Buy);
         sideComboBox.setNullSelectionAllowed(false);
+        sideComboBox.setDescription("FIX field " + quickfix.field.Side.FIELD);
         styleService.addStyle(sideComboBox);
         // quantity text
         quantityTextField = new TextField();
-        quantityTextField.setCaption("Quantity");
+        quantityTextField.setCaption("Order Quantity");
         quantityTextField.setId(getClass().getCanonicalName() + ".quantityTextField");
         quantityTextField.setNullSettingAllowed(true);
         quantityTextField.addValidator(inValue -> {
@@ -99,6 +102,7 @@ public class OrderTicketView
                 throw new InvalidValueException(ExceptionUtils.getRootCauseMessage(e));
             }
         });
+        quantityTextField.setDescription("FIX field " + quickfix.field.OrderQty.FIELD);
         styleService.addStyle(quantityTextField);
         // symbol text
         symbolTextField = new TextField();
@@ -136,9 +140,12 @@ public class OrderTicketView
             }
             if(isMarket) {
                 priceTextField.setValue("");
+                pegToMidpointCheckBox.setValue(false);
             }
             priceTextField.setReadOnly(isMarket);
+            pegToMidpointCheckBox.setReadOnly(isMarket);
         });
+        orderTypeComboBox.setDescription("FIX Field " + quickfix.field.OrdType.FIELD);
         styleService.addStyle(orderTypeComboBox);
         // price text
         priceTextField = new TextField();
@@ -156,6 +163,7 @@ public class OrderTicketView
                 throw new InvalidValueException(ExceptionUtils.getRootCauseMessage(e));
             }
         });
+        priceTextField.setDescription("FIX Field " + quickfix.field.Price.FIELD);
         styleService.addStyle(priceTextField);
         // time in force combo
         timeInForceComboBox = new ComboBox();
@@ -165,29 +173,110 @@ public class OrderTicketView
         timeInForceComboBox.addItems(EnumSet.complementOf(EnumSet.of(TimeInForce.Unknown)));
         timeInForceComboBox.setNullSelectionAllowed(true);
         timeInForceComboBox.setValue(null);
+        timeInForceComboBox.setDescription("FIX Field " + quickfix.field.TimeInForce.FIELD);
         styleService.addStyle(timeInForceComboBox);
-        brokerStatusLayout = new HorizontalLayout();
-        brokerStatusLayout.setId(getClass().getCanonicalName() + ".brokerStatusLayout");
-        brokerStatusLayout.addComponents(brokerComboBox,
-                                         sideComboBox,
-                                         quantityTextField,
-                                         symbolTextField,
-                                         orderTypeComboBox,
-                                         priceTextField,
-                                         timeInForceComboBox);
-        styleService.addStyle(brokerStatusLayout);
-        addComponents(brokerStatusLayout);
+        // create the first row layout
+        firstRowLayout = new HorizontalLayout();
+        firstRowLayout.setId(getClass().getCanonicalName() + ".firstRowLayout");
+        firstRowLayout.addComponents(brokerComboBox,
+                                     sideComboBox,
+                                     quantityTextField,
+                                     symbolTextField,
+                                     orderTypeComboBox,
+                                     priceTextField,
+                                     timeInForceComboBox);
+        styleService.addStyle(firstRowLayout);
+        // prepare the second row
+        otherLayout = new VerticalLayout();
+        styleService.addStyle(otherLayout);
+        // account
+        accountTextField = new TextField();
+        accountTextField.setCaption("Account");
+        accountTextField.setId(getClass().getCanonicalName() + ".accountTextField");
+        accountTextField.setDescription("FIX field " + quickfix.field.Account.FIELD);
+        styleService.addStyle(accountTextField);
+        // Ex Destination
+        exDestinationTextField = new TextField();
+        exDestinationTextField.setCaption("External Destination");
+        exDestinationTextField.setId(getClass().getCanonicalName() + ".exDestinationTextField");
+        exDestinationTextField.setDescription("FIX field " + quickfix.field.ExDestination.FIELD);
+        styleService.addStyle(exDestinationTextField);
+        // Max Floor
+        maxFloorTextField = new TextField();
+        maxFloorTextField.setCaption("Max Floor");
+        maxFloorTextField.setId(getClass().getCanonicalName() + ".maxFloorTextField");
+        maxFloorTextField.setDescription("FIX field " + quickfix.field.MaxFloor.FIELD);
+        styleService.addStyle(maxFloorTextField);
+        // peg-to-midpoint
+        // peg-to-midpoint selector
+        pegToMidpointCheckBox = new CheckBox();
+        pegToMidpointCheckBox.setCaption("Peg to Midpoint");
+        pegToMidpointCheckBox.setId(getClass().getCanonicalName() + ".pegToMidpointCheckBox");
+        pegToMidpointCheckBox.addValueChangeListener(valueEvent -> {
+            boolean value = (boolean)(valueEvent.getProperty().getValue());
+            pegToMidpointLockedCheckBox.setEnabled(value);
+            // enable/disable price if the peg-to-midpoint is selected
+            priceTextField.setEnabled(!value);
+            if(!value) {
+                pegToMidpointLockedCheckBox.setValue(false);
+            }
+        });
+        styleService.addStyle(pegToMidpointCheckBox);
+        // peg-to-midpoint locked
+        pegToMidpointLockedCheckBox = new CheckBox();
+        pegToMidpointLockedCheckBox.setCaption("Locked");
+        pegToMidpointLockedCheckBox.setId(getClass().getCanonicalName() + ".pegToMidpointLockedCheckBox");
+        pegToMidpointLockedCheckBox.setEnabled(false);
+        styleService.addStyle(pegToMidpointLockedCheckBox);
+        // peg-to-midpoint layout
+        pegToMidpointLayout = new HorizontalLayout();
+        pegToMidpointLayout.setId(getClass().getCanonicalName() + ".pegToMidpointLayout");
+        styleService.addStyle(pegToMidpointLayout);
+        pegToMidpointLayout.addComponents(pegToMidpointCheckBox,
+                                          pegToMidpointLockedCheckBox);
+        // layout for the first group of fields in the second row
+        otherLayout = new VerticalLayout();
+        otherLayout.setId(getClass().getCanonicalName() + ".otherLayout");
+        otherLayout.addComponents(accountTextField,
+                                  exDestinationTextField,
+                                  maxFloorTextField,
+                                  pegToMidpointLayout);
+        // layout for the second group of fields in the second row
+        brokerAlgoLayout = new VerticalLayout();
+        brokerAlgoLayout.setId(getClass().getCanonicalName() + ".brokerAlgoLayout");
+//        brokerAlgoLayout.addComponents(accountTextField,
+//                                       exDestinationTextField,
+//                                       maxFloorTextField,
+//                                       pegToMidpointLayout);
+        // create the second row layout
+        secondRowLayout = new HorizontalLayout();
+        secondRowLayout.setId(getClass().getCanonicalName() + ".secondRowLayout");
+        secondRowLayout.addComponents(otherLayout,
+                                      brokerAlgoLayout);
+        styleService.addStyle(secondRowLayout);
+        // add the layouts
+        addComponents(firstRowLayout,
+                      secondRowLayout);
         // finish main layout
         setId(getClass().getCanonicalName() + ".contentLayout");
         styleService.addStyle(this);
     }
     private ComboBox sideComboBox;
-    private HorizontalLayout brokerStatusLayout;
+    private HorizontalLayout firstRowLayout;
+    private HorizontalLayout secondRowLayout;
+    private VerticalLayout otherLayout;
     private TextField quantityTextField;
     private TextField symbolTextField;
     private ComboBox orderTypeComboBox;
     private TextField priceTextField;
     private ComboBox timeInForceComboBox;
+    private TextField accountTextField;
+    private TextField exDestinationTextField;
+    private TextField maxFloorTextField;
+    private HorizontalLayout pegToMidpointLayout;
+    private CheckBox pegToMidpointCheckBox;
+    private CheckBox pegToMidpointLockedCheckBox;
+    private VerticalLayout brokerAlgoLayout;
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractComponent#detach()
      */
