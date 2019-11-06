@@ -8,7 +8,9 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderSummary;
+import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trading.rpc.TradeRpcClientFactory;
 import org.marketcetera.trading.rpc.TradeRpcClientParametersImpl;
@@ -69,6 +71,16 @@ public class TradeClientService
     public Instrument resolveSymbol(String inSymbol)
     {
         return tradeClient.resolveSymbol(inSymbol);
+    }
+    /**
+     * Send the given order.
+     *
+     * @param inOrder an <code>Order</code> value
+     * @return a <code>SendOrderResponse</code> value
+     */
+    public SendOrderResponse send(Order inOrder)
+    {
+        return tradeClient.sendOrder(inOrder);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.service.ConnectableService#isRunning()

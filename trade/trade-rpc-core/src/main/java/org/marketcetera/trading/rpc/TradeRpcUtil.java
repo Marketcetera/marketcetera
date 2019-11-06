@@ -21,8 +21,6 @@ import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.FixAdminRpc;
 import org.marketcetera.fix.FixRpcUtil;
-import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.FixSessionFactory;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.options.OptionUtils;
 import org.marketcetera.rpc.base.BaseRpc;
@@ -42,7 +40,6 @@ import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.MutableOrderSummary;
 import org.marketcetera.trade.MutableOrderSummaryFactory;
-import org.marketcetera.trade.MutableReport;
 import org.marketcetera.trade.MutableReportFactory;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.Order;
@@ -2489,15 +2486,22 @@ public abstract class TradeRpcUtil
      * Get an order summary value from the given RPC order summary.
      *
      * @param inRpcOrderSummary a <code>TradingTypesRpc.OrderSummary</code> value
+     * @param inOrderSummaryFactory a <code>MutableOrderSummaryFactory</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
+     * @param inReportFactory a <code>MutableReportFactory</code> value
      * @return an <code>Optional&lt;OrderSummary&gt;</code> value
      */
-    public static Optional<OrderSummary> getOrderSummary(TradingTypesRpc.OrderSummary inRpcOrderSummary)
+    public static Optional<OrderSummary> getOrderSummary(TradingTypesRpc.OrderSummary inRpcOrderSummary,
+                                                         MutableOrderSummaryFactory inOrderSummaryFactory,
+                                                         UserFactory inUserFactory,
+                                                         MutableReportFactory inReportFactory)
     {
-        MutableOrderSummary orderSummary = orderSummaryFactory.create();
+        MutableOrderSummary orderSummary = inOrderSummaryFactory.create();
         orderSummary.setAccount(inRpcOrderSummary.getAccount());;
         if(inRpcOrderSummary.hasUser()) {
             setUser(inRpcOrderSummary.getUser(),
-                    orderSummary);
+                    orderSummary,
+                    inUserFactory);
         }
         BaseRpcUtil.getScaledQuantity(inRpcOrderSummary.getAveragePrice()).ifPresent(value->orderSummary.setAveragePrice(value));
         orderSummary.setBrokerId(getBrokerId(inRpcOrderSummary).orElse(null));
@@ -2516,7 +2520,7 @@ public abstract class TradeRpcUtil
                        orderSummary);
         if(inRpcOrderSummary.hasReport()) {
             TradeMessage tradeMessage = getTradeMessage(inRpcOrderSummary.getReport());
-            orderSummary.setReport(reportFactory.create(tradeMessage,
+            orderSummary.setReport(inReportFactory.create(tradeMessage,
                                                         orderSummary.getActor()));
         }
         setRootOrderId(inRpcOrderSummary,
@@ -2599,14 +2603,16 @@ public abstract class TradeRpcUtil
      *
      * @param inRpcUser a <code>AdminRpc.User</code> value
      * @param inOrderSummary a <code>MutableOrderSummary</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
      */
     public static void setUser(AdminRpc.User inRpcUser,
-                               MutableOrderSummary inOrderSummary)
+                               MutableOrderSummary inOrderSummary,
+                               UserFactory inUserFactory)
     {
-        User user = userFactory.create(inRpcUser.getName(),
-                                       "*******",
-                                       inRpcUser.getDescription(),
-                                       inRpcUser.getActive());
+        User user = inUserFactory.create(inRpcUser.getName(),
+                                         "*******",
+                                         inRpcUser.getDescription(),
+                                         inRpcUser.getActive());
         inOrderSummary.setActor(user);
         inOrderSummary.setViewer(user);
     }
@@ -2641,78 +2647,6 @@ public abstract class TradeRpcUtil
         return PositionKeyFactory.createKey(getInstrument(inRpcPositionKey.getInstrument()).orElse(null),
                                             StringUtils.trimToNull(inRpcPositionKey.getAccount()),
                                             StringUtils.trimToNull(inRpcPositionKey.getTraderId()));
-    }
-    /**
-     * Get the fixSessionFactory value.
-     *
-     * @return a <code>FixSessionFactory</code> value
-     */
-    public static FixSessionFactory getFixSessionFactory()
-    {
-        return fixSessionFactory;
-    }
-    /**
-     * Sets the fixSessionFactory value.
-     *
-     * @param inFixSessionFactory a <code>FixSessionFactory</code> value
-     */
-    public static void setFixSessionFactory(FixSessionFactory inFixSessionFactory)
-    {
-        fixSessionFactory = inFixSessionFactory;
-    }
-    /**
-     * Get the orderSummaryFactory value.
-     *
-     * @return a <code>MutableOrderSummaryFactory</code> value
-     */
-    public static MutableOrderSummaryFactory getOrderSummaryFactory()
-    {
-        return orderSummaryFactory;
-    }
-    /**
-     * Sets the orderSummaryFactory value.
-     *
-     * @param inOrderSummaryFactory a <code>MutableOrderSummaryFactory</code> value
-     */
-    public static void setOrderSummaryFactory(MutableOrderSummaryFactory inOrderSummaryFactory)
-    {
-        orderSummaryFactory = inOrderSummaryFactory;
-    }
-    /**
-     * Get the userFactory value.
-     *
-     * @return a <code>UserFactory</code> value
-     */
-    public static UserFactory getUserFactory()
-    {
-        return userFactory;
-    }
-    /**
-     * Sets the userFactory value.
-     *
-     * @param inUserFactory a <code>UserFactory</code> value
-     */
-    public static void setUserFactory(UserFactory inUserFactory)
-    {
-        userFactory = inUserFactory;
-    }
-    /**
-     * Get the reportFactory value.
-     *
-     * @return a <code>MutableReportFactory</code> value
-     */
-    public static MutableReportFactory getReportFactory()
-    {
-        return reportFactory;
-    }
-    /**
-     * Sets the reportFactory value.
-     *
-     * @param inReportFactory a <code>MutableReportFactory</code> value
-     */
-    public static void setReportFactory(MutableReportFactory inReportFactory)
-    {
-        reportFactory = inReportFactory;
     }
     /**
      * Set the values on the given FIX field map from the given RPC map.
@@ -2771,20 +2705,4 @@ public abstract class TradeRpcUtil
                          String.valueOf(field.getObject()));
         }
     }
-    /**
-     * creates {@link FixSession} objects
-     */
-    private static FixSessionFactory fixSessionFactory;
-    /**
-     * creates {@link MutableOrderSummary} objects
-     */
-    private static MutableOrderSummaryFactory orderSummaryFactory;
-    /**
-     * creates {@link User} objects
-     */
-    private static UserFactory userFactory;
-    /**
-     * creates {@link MutableReport} objects
-     */
-    private static MutableReportFactory reportFactory;
 }

@@ -181,13 +181,14 @@ public final class Validations {
      */
     public static void validateInstrument(Instrument inInstrument)
             throws OrderValidationException {
-        validate(inInstrument == null, Messages.VALIDATION_ORDER_INSTRUMENT);
+        validate(inInstrument == null,
+                Messages.VALIDATION_ORDER_INSTRUMENT);
         try {
-            InstrumentValidationHandler.SELECTOR.forInstrument(inInstrument).
-                validate(inInstrument);
+            InstrumentValidationHandler.SELECTOR.forInstrument(inInstrument).validate(inInstrument);
         } catch (IllegalArgumentException e) {
-            throw new OrderValidationException(e, new I18NBoundMessage1P(
-                    Messages.VALIDATION_UNKNOWN_INSTRUMENT, inInstrument));
+            throw new OrderValidationException(e,
+                                               new I18NBoundMessage1P(Messages.VALIDATION_UNKNOWN_INSTRUMENT,
+                                                                      inInstrument));
         }
     }
     private static void validate(boolean inValidationFailed,

@@ -24,6 +24,10 @@ import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptorFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
+import org.marketcetera.trade.MutableOrderSummaryFactory;
+import org.marketcetera.trade.MutableReportFactory;
+import org.marketcetera.trade.SimpleOrderSummaryFactory;
+import org.marketcetera.trade.SimpleReportFactory;
 import org.marketcetera.trading.rpc.TradeRpcClientFactory;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.ws.ContextClassProvider;
@@ -246,12 +250,32 @@ public class AppConfiguration
         return new SimpleFixSessionAttributeDescriptorFactory();
     }
     /**
+     * Get the order summary factory value.
+     *
+     * @return a <code>MutableOrderSummayFactory</code> value
+     */
+    @Bean
+    public MutableOrderSummaryFactory getOrderSummaryFactory()
+    {
+        return new SimpleOrderSummaryFactory();
+    }
+    /**
+     * Get the report factory value.
+     *
+     * @return a <code>SimpleReportFactory</code> value
+     */
+    @Bean
+    public MutableReportFactory getReportFactory()
+    {
+        return new SimpleReportFactory();
+    }
+    /**
      * Get the XML context provider for strategy engines.
      *
      * @return a <code>ContextClassProvider</code> value
      */
     @Bean
-    public static ContextClassProvider getStrategyEngineContextProvider()
+    public ContextClassProvider getStrategyEngineContextProvider()
     {
         ContextClassAggregator saContextProvider = new ContextClassAggregator();
 //        saContextProvider.setContextClassProviders(Lists.newArrayList(new SAClientContextClassProvider()));

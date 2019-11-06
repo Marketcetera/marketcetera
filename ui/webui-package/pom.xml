@@ -20,6 +20,7 @@
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!-- local dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>webui-core</artifactId>
@@ -47,6 +48,10 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>trade-rpc-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-core</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

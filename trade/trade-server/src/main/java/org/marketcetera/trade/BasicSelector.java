@@ -8,7 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.concurrent.GuardedBy;
 
 import org.apache.commons.lang3.Validate;
-import org.marketcetera.brokers.Selector;
+import org.marketcetera.brokers.BrokerSelector;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.ClusterData;
@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since $Release$
  */
 public class BasicSelector
-        implements Selector
+        implements BrokerSelector
 {
     /* (non-Javadoc)
      * @see com.marketcetera.ors.brokers.Selector#chooseBroker(org.marketcetera.trade.Order)

@@ -14,6 +14,7 @@ import org.marketcetera.admin.service.UserAttributeService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserAttributeServiceImpl;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
+import org.marketcetera.brokers.BrokerSelector;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.client.rpc.server.TradeRpcService;
 import org.marketcetera.cluster.ClusterDataFactory;
@@ -39,6 +40,13 @@ import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.trade.BasicSelector;
+import org.marketcetera.trade.event.connector.IncomingTradeMessageBroadcastConnector;
+import org.marketcetera.trade.event.connector.IncomingTradeMessageConverterConnector;
+import org.marketcetera.trade.event.connector.IncomingTradeMessagePersistenceConnector;
+import org.marketcetera.trade.event.connector.OrderConverterConnector;
+import org.marketcetera.trade.event.connector.OutgoingMessageCachingConnector;
+import org.marketcetera.trade.event.connector.OutgoingMessagePersistenceConnector;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -426,6 +434,77 @@ public class ServerApplication
     public UserAttributeService getUserAttributeService()
     {
         return new UserAttributeServiceImpl();
+    }
+    /**
+     * Get the default broker selector to use.
+     *
+     * @return a <code>Selector</code> value
+     */
+    @Bean
+    public BrokerSelector getBrokerSelector()
+    {
+        return new BasicSelector();
+    }
+    // begin event connectors
+    /**
+     * Get the order converter connector value.
+     *
+     * @return an <code>OrderConverterConnector</code> value
+     */
+    @Bean
+    public OrderConverterConnector getOrderConverterConnector()
+    {
+        return new OrderConverterConnector();
+    }
+    /**
+     * Get the outgoing message caching connector value.
+     *
+     * @return an <code>OutgoingMessageCachingConnector</code> value
+     */
+    @Bean
+    public OutgoingMessageCachingConnector getOutgoingMessageCachingConnector()
+    {
+        return new OutgoingMessageCachingConnector();
+    }
+    /**
+     * Get the outgoing message persistence connector value.
+     *
+     * @return an <code>OutgoingMessagePersistenceConnector</code> value
+     */
+    @Bean
+    public OutgoingMessagePersistenceConnector getOutgoingMessagePersistenceConnector()
+    {
+        return new OutgoingMessagePersistenceConnector();
+    }
+    /**
+     * Get the incoming trade message converter connector value.
+     *
+     * @return an <code>IncomingTradeMessageConverterConnector</code> value
+     */
+    @Bean
+    public IncomingTradeMessageConverterConnector getIncomingTradeMessageConverterConnector()
+    {
+        return new IncomingTradeMessageConverterConnector();
+    }
+    /**
+     * Get the incoming trade message persistence connector value.
+     *
+     * @return an <code>IncomingTradeMessagePersistenceConnector</code> value
+     */
+    @Bean
+    public IncomingTradeMessagePersistenceConnector getIncomingTradeMessagePersistenceConnector()
+    {
+        return new IncomingTradeMessagePersistenceConnector();
+    }
+    /**
+     * Get the IncomingTradeMessageBroadcastConnector value.
+     *
+     * @return an <code>IncomingTradeMessageBroadcastConnector</code> value
+     */
+    @Bean
+    public IncomingTradeMessageBroadcastConnector getIncomingTradeMessageBroadcastConnector()
+    {
+        return new IncomingTradeMessageBroadcastConnector();
     }
     /**
      * Get the API info (REST Swagger) for DARE.

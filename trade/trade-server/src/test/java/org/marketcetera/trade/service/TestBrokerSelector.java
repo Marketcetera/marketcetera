@@ -1,20 +1,20 @@
 package org.marketcetera.trade.service;
 
-import org.marketcetera.brokers.Selector;
+import org.marketcetera.brokers.BrokerSelector;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Order;
 
 /* $License$ */
 
 /**
- * Provides a test {@link Selector} implementation.
+ * Provides a test {@link BrokerSelector} implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public class TestBrokerSelector
-        implements Selector
+        implements BrokerSelector
 {
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.Selector#chooseBroker(org.marketcetera.trade.Order)

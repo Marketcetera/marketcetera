@@ -2,6 +2,7 @@ package org.marketcetera.web.trade.openorders.view;
 
 import java.util.Collection;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.OrderSummary;
@@ -65,7 +66,20 @@ public class OrderSummaryPagedDataContainer
     protected boolean isDeepEquals(OrderSummary inO1,
                                    OrderSummary inO2)
     {
-        return inO1.equals(inO2);
+        // include values here that are likely to change over the course on an order
+        return new EqualsBuilder().append(inO1.getAccount(),inO2.getAccount())
+                .append(inO1.getAveragePrice(),inO2.getAveragePrice())
+                .append(inO1.getCumulativeQuantity(),inO2.getCumulativeQuantity())
+                .append(inO1.getLastPrice(),inO2.getLastPrice())
+                .append(inO1.getLastQuantity(),inO2.getLastQuantity())
+                .append(inO1.getLeavesQuantity(),inO2.getLeavesQuantity())
+                .append(inO1.getOrderId(),inO2.getOrderId())
+                .append(inO1.getOrderPrice(),inO2.getOrderPrice())
+                .append(inO1.getOrderQuantity(),inO2.getOrderQuantity())
+                .append(inO1.getOrderStatus(),inO2.getOrderStatus())
+                .append(inO1.getSendingTime(),inO2.getSendingTime())
+                .append(inO1.getSide(),inO2.getSide())
+                .append(inO1.getTransactTime(),inO2.getTransactTime()).isEquals();
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.PagedDataContainer#getDescription()

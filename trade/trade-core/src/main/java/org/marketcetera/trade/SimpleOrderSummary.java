@@ -8,7 +8,7 @@ import org.marketcetera.admin.User;
 /* $License$ */
 
 /**
- *
+ * Provides a POJO {@link MutableOrderSummary} implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

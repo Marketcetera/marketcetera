@@ -1433,12 +1433,13 @@ public class DeployAnywhereRoutingEngine
                            int inPriority)
             throws quickfix.UnsupportedMessageType
     {
-        ServerFixSession ServerFixSession = brokerService.getServerFixSession(inSessionId);
+        ServerFixSession fixSession = brokerService.getServerFixSession(inSessionId);
         Messages.QF_FROM_APP.info(getCategory(inMessage),
                                   inMessage,
-                                  ServerFixSession);
+                                  fixSession);
+        FIXMessageUtil.logMessage(inMessage);
         logMessage(inMessage,
-                   ServerFixSession);
+                   fixSession);
         // accept only certain message types
         if(getSupportedMessages() != null && !getSupportedMessages().isAccepted(inMessage)) {
             Messages.QF_DISALLOWED_MESSAGE.info(getCategory(inMessage));

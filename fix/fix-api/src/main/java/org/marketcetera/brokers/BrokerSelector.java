@@ -12,7 +12,7 @@ import org.marketcetera.trade.Order;
  * @version $Id$
  * @since $Release$
  */
-public interface Selector
+public interface BrokerSelector
 {
     /**
      * Returns the ID of the broker the receiver selects for the given order.

@@ -644,7 +644,7 @@ public class FixAdminRpcService<SessionClazz>
      * @version $Id$
      * @since $Release$
      */
-    private static class BrokerStatusListenerProxy
+    private class BrokerStatusListenerProxy
             extends BaseRpcUtil.AbstractServerListenerProxy<BrokerStatusListenerResponse>
             implements BrokerStatusListener
     {
@@ -666,9 +666,16 @@ public class FixAdminRpcService<SessionClazz>
                 // TODO does the user have permissions to view this broker?
                 getObserver().onNext(response);
                 responseBuilder.clear();
+            } catch (StatusRuntimeException e) {
+                SLF4JLoggerProxy.info(FixAdminRpcService.class,
+                                      "Client disconnected, canceling broker status listener: {}",
+                                      ExceptionUtils.getRootCauseMessage(e));
+                brokerService.removeBrokerStatusListener(this);
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(FixAdminRpcService.class,
-                                      e);
+                                      e,
+                                      "Unable to transmit broker status to listener, closing client");
+                brokerService.removeBrokerStatusListener(this);
             }
         }
         /**

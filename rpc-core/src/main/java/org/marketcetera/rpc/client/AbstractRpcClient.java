@@ -13,6 +13,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.VersionInfo;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -436,9 +437,9 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
                     return;
                 }
                 SLF4JLoggerProxy.warn(AbstractRpcClient.this,
-                                      e,
-                                      "{} received heartbeat error",
-                                      getAppId());
+                                      "{} received heartbeat error: {}",
+                                      getAppId(),
+                                      PlatformServices.getMessage(e));
                 reconnect();
             }
         }

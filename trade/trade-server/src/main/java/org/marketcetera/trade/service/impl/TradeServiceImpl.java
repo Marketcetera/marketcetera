@@ -6,9 +6,9 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.marketcetera.admin.User;
+import org.marketcetera.brokers.BrokerSelector;
 import org.marketcetera.brokers.BrokerUnavailable;
 import org.marketcetera.brokers.MessageModifier;
-import org.marketcetera.brokers.Selector;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.PlatformServices;
@@ -41,7 +41,6 @@ import com.google.common.collect.Sets;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.SessionID;
 
 /* $License$ */
 
@@ -180,7 +179,7 @@ public class TradeServiceImpl
         try {
             BrokerID brokerId = new BrokerID(inServerFixSession.getActiveFixSession().getFixSession().getBrokerId());
             UserID actor = orderOwnerService.getMessageOwner(inMessage,
-                                                             new SessionID(inServerFixSession.getActiveFixSession().getFixSession().getSessionId()),
+                                                             new quickfix.SessionID(inServerFixSession.getActiveFixSession().getFixSession().getSessionId()),
                                                              brokerId);
             // TODO determine hierarchy - this might need the original order to resolve
             reply = FIXConverter.fromQMessage(fixMessage,
@@ -338,7 +337,7 @@ public class TradeServiceImpl
      * optional broker selector
      */
     @Autowired(required=false)
-    private Selector brokerSelector;
+    private BrokerSelector brokerSelector;
     /**
      * holds trade message listener subscribers
      */

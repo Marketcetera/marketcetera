@@ -11,6 +11,8 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import org.marketcetera.admin.User;
+import org.marketcetera.admin.UserFactory;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.core.PlatformServices;
@@ -38,6 +40,10 @@ import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.MutableOrderSummary;
+import org.marketcetera.trade.MutableOrderSummaryFactory;
+import org.marketcetera.trade.MutableReport;
+import org.marketcetera.trade.MutableReportFactory;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
@@ -384,7 +390,10 @@ public class TradeRpcClient
                 TradingRpc.OpenOrdersResponse response = getBlockingStub().getOpenOrders(requestBuilder.build());
                 CollectionPageResponse<OrderSummary> results = new CollectionPageResponse<>();
                 for(TradingTypesRpc.OrderSummary rpcOrderSummary : response.getOrdersList()) {
-                    Optional<OrderSummary> value = TradeRpcUtil.getOrderSummary(rpcOrderSummary);
+                    Optional<OrderSummary> value = TradeRpcUtil.getOrderSummary(rpcOrderSummary,
+                                                                                orderSummaryFactory,
+                                                                                userFactory,
+                                                                                reportFactory);
                     if(value.isPresent()) {
                         results.getElements().add(value.get());
                     }
@@ -722,6 +731,60 @@ public class TradeRpcClient
         fixSessionFactory = inFixSessionFactory;
     }
     /**
+     * Get the orderSummaryFactory value.
+     *
+     * @return a <code>MutableOrderSummaryFactory</code> value
+     */
+    public MutableOrderSummaryFactory getOrderSummaryFactory()
+    {
+        return orderSummaryFactory;
+    }
+    /**
+     * Sets the orderSummaryFactory value.
+     *
+     * @param inOrderSummaryFactory a <code>MutableOrderSummaryFactory</code> value
+     */
+    public void setOrderSummaryFactory(MutableOrderSummaryFactory inOrderSummaryFactory)
+    {
+        orderSummaryFactory = inOrderSummaryFactory;
+    }
+    /**
+     * Get the userFactory value.
+     *
+     * @return a <code>UserFactory</code> value
+     */
+    public UserFactory getUserFactory()
+    {
+        return userFactory;
+    }
+    /**
+     * Sets the userFactory value.
+     *
+     * @param inUserFactory a <code>UserFactory</code> value
+     */
+    public void setUserFactory(UserFactory inUserFactory)
+    {
+        userFactory = inUserFactory;
+    }
+    /**
+     * Get the reportFactory value.
+     *
+     * @return a <code>MutableReportFactory</code> value
+     */
+    public MutableReportFactory getReportFactory()
+    {
+        return reportFactory;
+    }
+    /**
+     * Sets the reportFactory value.
+     *
+     * @param inReportFactory a <code>MutableReportFactory</code> value
+     */
+    public void setReportFactory(MutableReportFactory inReportFactory)
+    {
+        reportFactory = inReportFactory;
+    }
+    /**
      * Create a new TradingRpcClient instance.
      *
      * @param inParameters a <code>TradingRpcClientParameters</code> value
@@ -837,6 +900,18 @@ public class TradeRpcClient
             super(inTradeMessageListener);
         }
     }
+    /**
+     * creates {@link MutableOrderSummary} objects
+     */
+    private MutableOrderSummaryFactory orderSummaryFactory;
+    /**
+     * creates {@link User} objects
+     */
+    private UserFactory userFactory;
+    /**
+     * creates {@link MutableReport} objects
+     */
+    private MutableReportFactory reportFactory;
     /**
      * creates {@link ClusterData} objects
      */

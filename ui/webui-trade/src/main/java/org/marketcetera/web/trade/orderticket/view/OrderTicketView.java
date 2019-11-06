@@ -3,20 +3,28 @@ package org.marketcetera.web.trade.orderticket.view;
 import java.math.BigDecimal;
 import java.util.EnumSet;
 import java.util.Properties;
-import java.util.SortedSet;
+import java.util.SortedMap;
 
 import javax.annotation.concurrent.GuardedBy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.client.Validations;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
+import org.marketcetera.trade.client.OrderValidationException;
+import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.StyleService;
 import org.marketcetera.web.service.admin.AdminClientService;
@@ -26,14 +34,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -50,7 +61,7 @@ import com.vaadin.ui.VerticalLayout;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OrderTicketView
-        extends CssLayout
+        extends VerticalLayout
         implements ContentView,BrokerStatusListener
 {
     /* (non-Javadoc)
@@ -73,9 +84,25 @@ public class OrderTicketView
         brokerComboBox.addItem(AUTO_SELECT_BROKER);
         brokerComboBox.setValue(AUTO_SELECT_BROKER);
         brokerComboBox.setNullSelectionAllowed(false);
+        brokerComboBox.addValueChangeListener(newValue -> {
+            Object selectedBroker = newValue.getProperty().getValue();
+            brokerAlgoComboBox.setValue(null);
+            brokerAlgoComboBox.clear();
+            // TODO clear brokerAlgoTagGrid
+            if(selectedBroker == null || AUTO_SELECT_BROKER.equals(selectedBroker)) {
+                brokerAlgoComboBox.setEnabled(false);
+                brokerAlgoTagGrid.setEnabled(false);
+            } else {
+                ActiveFixSession underlyingFixSession = availableBrokers.get(selectedBroker);
+                if(underlyingFixSession != null && !underlyingFixSession.getBrokerAlgos().isEmpty()) {
+                    brokerAlgoComboBox.setEnabled(true);
+                    brokerAlgoComboBox.addItems(underlyingFixSession.getBrokerAlgos());
+                }
+            }
+            adjustSendButton();
+        });
         styleService.addStyle(brokerComboBox);
-        AdminClientService adminClientService = serviceManager.getService(AdminClientService.class);
-        adminClientService.addBrokerStatusListener(this);
+        serviceManager.getService(AdminClientService.class).addBrokerStatusListener(this);
         // side combo
         sideComboBox = new ComboBox();
         sideComboBox.setCaption("Side");
@@ -85,6 +112,9 @@ public class OrderTicketView
         sideComboBox.setValue(Side.Buy);
         sideComboBox.setNullSelectionAllowed(false);
         sideComboBox.setDescription("FIX field " + quickfix.field.Side.FIELD);
+        sideComboBox.addValueChangeListener(newValueEvent -> {
+            adjustSendButton();
+        });
         styleService.addStyle(sideComboBox);
         // quantity text
         quantityTextField = new TextField();
@@ -102,6 +132,9 @@ public class OrderTicketView
                 throw new InvalidValueException(ExceptionUtils.getRootCauseMessage(e));
             }
         });
+        quantityTextField.addValueChangeListener(newValueEvent -> {
+            adjustSendButton();
+        });
         quantityTextField.setDescription("FIX field " + quickfix.field.OrderQty.FIELD);
         styleService.addStyle(quantityTextField);
         // symbol text
@@ -113,11 +146,15 @@ public class OrderTicketView
             if(symbol == null) {
                 return;
             }
-            Instrument instrument = serviceManager.getService(TradeClientService.class).resolveSymbol(symbol);
-            if(instrument == null) {
+            resolvedInstrument = serviceManager.getService(TradeClientService.class).resolveSymbol(symbol);
+            if(resolvedInstrument == null) {
                 throw new InvalidValueException("Cannot resolve symbol");
             }
-            symbolTextField.setDescription(instrument.toString());
+            symbolTextField.setDescription(resolvedInstrument.toString());
+            // TODO if peg-to-midpoint is checked, we need to change the market data subscription
+        });
+        symbolTextField.addValueChangeListener(newValueEvent -> {
+            adjustSendButton();
         });
         symbolTextField.setNullSettingAllowed(true);
         styleService.addStyle(symbolTextField);
@@ -144,6 +181,7 @@ public class OrderTicketView
             }
             priceTextField.setReadOnly(isMarket);
             pegToMidpointCheckBox.setReadOnly(isMarket);
+            adjustSendButton();
         });
         orderTypeComboBox.setDescription("FIX Field " + quickfix.field.OrdType.FIELD);
         styleService.addStyle(orderTypeComboBox);
@@ -163,6 +201,9 @@ public class OrderTicketView
                 throw new InvalidValueException(ExceptionUtils.getRootCauseMessage(e));
             }
         });
+        priceTextField.addValueChangeListener(newValueEvent -> {
+            adjustSendButton();
+        });
         priceTextField.setDescription("FIX Field " + quickfix.field.Price.FIELD);
         styleService.addStyle(priceTextField);
         // time in force combo
@@ -174,6 +215,9 @@ public class OrderTicketView
         timeInForceComboBox.setNullSelectionAllowed(true);
         timeInForceComboBox.setValue(null);
         timeInForceComboBox.setDescription("FIX Field " + quickfix.field.TimeInForce.FIELD);
+        timeInForceComboBox.addValueChangeListener(newValueEvent -> {
+            adjustSendButton();
+        });
         styleService.addStyle(timeInForceComboBox);
         // create the first row layout
         firstRowLayout = new HorizontalLayout();
@@ -220,6 +264,7 @@ public class OrderTicketView
             if(!value) {
                 pegToMidpointLockedCheckBox.setValue(false);
             }
+            // TODO need to subscribe to market data (if we have a symbol)
         });
         styleService.addStyle(pegToMidpointCheckBox);
         // peg-to-midpoint locked
@@ -241,26 +286,203 @@ public class OrderTicketView
                                   exDestinationTextField,
                                   maxFloorTextField,
                                   pegToMidpointLayout);
+        // second group of fields in the second row
+        // broker algo select
+        brokerAlgoComboBox = new ComboBox();
+        brokerAlgoComboBox.setCaption("Broker Algo");
+        brokerAlgoComboBox.setNullSelectionAllowed(true);
+        brokerAlgoComboBox.addValueChangeListener(newValue -> {
+            // TODO populate/enable brokerAlgoTagGrid
+        });
+        brokerAlgoComboBox.setId(getClass().getCanonicalName() + ".brokerAlgoComboBox");
+        styleService.addStyle(brokerAlgoComboBox);
+        // broker algo tags
+        brokerAlgoTagGrid = new Grid();
+        brokerAlgoTagGrid.setCaption("Broker Algo Tags");
+        brokerAlgoTagGrid.setColumns("Tag","Value","Description");
+        brokerAlgoTagGrid.setId(getClass().getCanonicalName() + ".brokerAlgoTagGrid");
+        styleService.addStyle(brokerAlgoTagGrid);
         // layout for the second group of fields in the second row
         brokerAlgoLayout = new VerticalLayout();
         brokerAlgoLayout.setId(getClass().getCanonicalName() + ".brokerAlgoLayout");
-//        brokerAlgoLayout.addComponents(accountTextField,
-//                                       exDestinationTextField,
-//                                       maxFloorTextField,
-//                                       pegToMidpointLayout);
+        brokerAlgoLayout.addComponents(brokerAlgoComboBox,
+                                       brokerAlgoTagGrid);
+        styleService.addStyle(brokerAlgoLayout);
+        // custom fields group
+        customFieldsGrid = new Grid();
+        customFieldsGrid.setCaption("Custom Fields");
+        customFieldsGrid.setColumns("","Key","Value");
+        customFieldsGrid.setReadOnly(false);
+        customFieldsGrid.setId(getClass().getCanonicalName() + ".customFieldsGrid");
+        styleService.addStyle(customFieldsGrid);
+        customFieldsLayout = new VerticalLayout();
+        customFieldsLayout.setId(getClass().getCanonicalName() + ".customFieldsLayout");
+        customFieldsLayout.addComponents(customFieldsGrid);
+        styleService.addStyle(customFieldsLayout);
         // create the second row layout
         secondRowLayout = new HorizontalLayout();
         secondRowLayout.setId(getClass().getCanonicalName() + ".secondRowLayout");
         secondRowLayout.addComponents(otherLayout,
-                                      brokerAlgoLayout);
+                                      brokerAlgoLayout,
+                                      customFieldsLayout);
         styleService.addStyle(secondRowLayout);
+        // prepare button row
+        // send button
+        sendButton = new Button();
+        sendButton.setCaption("Send");
+        sendButton.addClickListener(event -> {
+            OrderSingle newOrder = Factory.getInstance().createOrderSingle();
+            newOrder.setAccount(StringUtils.trimToNull(accountTextField.getValue()));
+            if(brokerAlgoComboBox.getValue() != null) {
+                BrokerAlgoSpec brokerAlgoSpec = (BrokerAlgoSpec)brokerAlgoComboBox.getValue();
+                // TODO
+            }
+            if(brokerComboBox.getValue() != null) {
+                String selectedBroker = String.valueOf(brokerComboBox.getValue());
+                if(!AUTO_SELECT_BROKER.equals(selectedBroker)) {
+                    ActiveFixSession selectedActiveFixSession = availableBrokers.get(selectedBroker);
+                    newOrder.setBrokerID(new BrokerID(selectedActiveFixSession.getFixSession().getBrokerId()));
+                }
+            }
+            // TODO custom fields
+//            newOrder.setCustomFields(inCustomFields);
+            String maxFloorQtyRaw = StringUtils.trimToNull(maxFloorTextField.getValue());
+            if(maxFloorQtyRaw != null) {
+                newOrder.setDisplayQuantity(new BigDecimal(maxFloorQtyRaw));
+            }
+            newOrder.setExecutionDestination(StringUtils.trimToNull(exDestinationTextField.getValue()));
+            newOrder.setInstrument(resolvedInstrument);
+//            newOrder.setOrderCapacity(inOrderCapacity);
+            if(orderTypeComboBox.getValue() != null) {
+                newOrder.setOrderType((OrderType)orderTypeComboBox.getValue());
+            }
+            if(pegToMidpointCheckBox.getValue()) {
+                if(!pegToMidpointLockedCheckBox.getValue()) {
+                    newOrder.setPegToMidpoint(true);
+                }
+            }
+//            newOrder.setPositionEffect(inPositionEffect);
+            String rawPrice = StringUtils.trimToNull(priceTextField.getValue());
+            if(rawPrice != null) {
+                newOrder.setPrice(new BigDecimal(rawPrice));
+            }
+            String rawQuantity = StringUtils.trimToNull(quantityTextField.getValue());
+            if(rawQuantity != null) {
+                newOrder.setQuantity(new BigDecimal(rawQuantity));
+            }
+            if(sideComboBox.getValue() != null) {
+                newOrder.setSide((Side)sideComboBox.getValue());
+            }
+//            newOrder.setText(inText);
+            if(timeInForceComboBox.getValue() != null) {
+                newOrder.setTimeInForce((TimeInForce)timeInForceComboBox.getValue());
+            }
+            SLF4JLoggerProxy.debug(OrderTicketView.this,
+                                   "Validating {}",
+                                   newOrder);
+            try {
+                Validations.validate(newOrder);
+            } catch (OrderValidationException e) {
+                String errorMessage = PlatformServices.getMessage(e);
+                SLF4JLoggerProxy.warn(OrderTicketView.this,
+                                      "{} failed validation: {}",
+                                      newOrder,
+                                      errorMessage);
+                Notification.show("Unable to submit order: " + errorMessage,
+                                  Type.ERROR_MESSAGE);
+                sendButton.focus();
+                return;
+            }
+            SLF4JLoggerProxy.info(OrderTicketView.this,
+                                  "{} submitting {}",
+                                  SessionUser.getCurrentUser(),
+                                  newOrder);
+            SendOrderResponse response = serviceManager.getService(TradeClientService.class).send(newOrder);
+            if(response.getFailed()) {
+                Notification.show("Unable to submit order: " + response.getOrderId() + " " + response.getMessage(),
+                                  Type.ERROR_MESSAGE);
+                sendButton.focus();
+                return;
+            } else {
+                Notification.show(response.getOrderId() + " submitted",
+                                  Type.TRAY_NOTIFICATION);
+                // partially clear ticket
+                resetTicket(false);
+            }
+        });
+        sendButton.setEnabled(false);
+        sendButton.setId(getClass().getCanonicalName() + ".sendButton");
+        styleService.addStyle(sendButton);
+        // clear button
+        clearButton = new Button();
+        clearButton.setCaption("Clear");
+        clearButton.setId(getClass().getCanonicalName() + ".clearButton");
+        clearButton.addClickListener(event -> {
+            resetTicket(true);
+        });
+        styleService.addStyle(clearButton);
+        sendClearLayout = new HorizontalLayout();
+        sendClearLayout.setId(getClass().getCanonicalName() + ".sendClearLayout");
+        sendClearLayout.addComponents(sendButton,
+                                      clearButton);
+        styleService.addStyle(sendClearLayout);
         // add the layouts
         addComponents(firstRowLayout,
-                      secondRowLayout);
+                      secondRowLayout,
+                      sendClearLayout);
         // finish main layout
         setId(getClass().getCanonicalName() + ".contentLayout");
         styleService.addStyle(this);
     }
+    private void adjustSendButton()
+    {
+        boolean enabled = true;
+        enabled &= sideComboBox.getValue() != null;
+        enabled &= StringUtils.trimToNull(quantityTextField.getValue()) != null;
+        enabled &= StringUtils.trimToNull(symbolTextField.getValue()) != null;
+        enabled &= orderTypeComboBox.getValue() != null;
+        if(enabled) {
+            OrderType orderType = (OrderType)orderTypeComboBox.getValue();
+            if(!orderType.isMarketOrder()) {
+                enabled &= StringUtils.trimToNull(priceTextField.getValue()) != null;
+            }
+        }
+        // time in force is optional
+        // account is optional
+        // ex destination is optional
+        // max floor is optional
+        // peg-to-midpoint is optional
+        // broker algo is optional
+        // custom fields are optional
+        sendButton.setEnabled(enabled);
+    }
+    private void resetTicket(boolean inCompletelyReset)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Clearing order ticket");
+        // this one is always cleared (to prevent accidentally submitting the same order twice)
+        quantityTextField.clear();
+        if(inCompletelyReset) {
+            brokerComboBox.setValue(AUTO_SELECT_BROKER);
+            sideComboBox.clear();
+            symbolTextField.clear();
+            orderTypeComboBox.clear();
+            priceTextField.clear();
+            timeInForceComboBox.clear();
+            accountTextField.clear();
+            exDestinationTextField.clear();
+            maxFloorTextField.clear();
+            pegToMidpointCheckBox.clear();
+            pegToMidpointLockedCheckBox.clear();
+            brokerAlgoComboBox.clear();
+//            brokerAlgoTagGrid.clear();
+//            customFieldsGrid.clear();
+            brokerComboBox.focus();
+        } else {
+            quantityTextField.focus();
+        }
+    }
+    private ComboBox brokerComboBox;
     private ComboBox sideComboBox;
     private HorizontalLayout firstRowLayout;
     private HorizontalLayout secondRowLayout;
@@ -277,6 +499,14 @@ public class OrderTicketView
     private CheckBox pegToMidpointCheckBox;
     private CheckBox pegToMidpointLockedCheckBox;
     private VerticalLayout brokerAlgoLayout;
+    private ComboBox brokerAlgoComboBox;
+    private Grid brokerAlgoTagGrid;
+    private VerticalLayout customFieldsLayout;
+    private Grid customFieldsGrid;
+    private Button sendButton;
+    private Button clearButton;
+    private HorizontalLayout sendClearLayout;
+    private Instrument resolvedInstrument;
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractComponent#detach()
      */
@@ -300,7 +530,6 @@ public class OrderTicketView
                                PlatformServices.getServiceName(getClass()),
                                inEvent);
     }
-    private ComboBox brokerComboBox;
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.ContentView#getViewName()
      */
@@ -320,11 +549,13 @@ public class OrderTicketView
                                PlatformServices.getServiceName(getClass()),
                                inActiveFixSession);
         boolean brokersStatusChanged = false;
+        String activeFixSessionKey = inActiveFixSession.getFixSession().getName();
         synchronized(availableBrokers) {
             if(inActiveFixSession.getStatus().isLoggedOn()) {
-                brokersStatusChanged = availableBrokers.add(inActiveFixSession.getFixSession().getName());
+                brokersStatusChanged = (availableBrokers.put(activeFixSessionKey,
+                                                             inActiveFixSession) == null);
             } else {
-                brokersStatusChanged = availableBrokers.remove(inActiveFixSession.getFixSession().getName());
+                brokersStatusChanged = (availableBrokers.remove(activeFixSessionKey) != null);
             }
             if(brokersStatusChanged) {
                 availableBrokers.notifyAll();
@@ -338,11 +569,11 @@ public class OrderTicketView
                     Object currentSelectedBroker = brokerComboBox.getValue();
                     brokerComboBox.clear();
                     brokerComboBox.addItem(AUTO_SELECT_BROKER);
-                    brokerComboBox.addItems(availableBrokers);
+                    brokerComboBox.addItems(availableBrokers.keySet());
                     if(AUTO_SELECT_BROKER.equals(currentSelectedBroker)) {
                         brokerComboBox.setValue(AUTO_SELECT_BROKER);
                     } else {
-                        if(availableBrokers.contains(currentSelectedBroker)) {
+                        if(availableBrokers.containsKey(currentSelectedBroker)) {
                             brokerComboBox.setValue(currentSelectedBroker);
                         } else {
                             brokerComboBox.setValue(AUTO_SELECT_BROKER);
@@ -369,7 +600,7 @@ public class OrderTicketView
      * contains currently available brokers
      */
     @GuardedBy("availableBrokers")
-    private final SortedSet<String> availableBrokers = Sets.newTreeSet();
+    private final SortedMap<String,ActiveFixSession> availableBrokers = Maps.newTreeMap();
     /**
      * properties that initialize this view
      */
