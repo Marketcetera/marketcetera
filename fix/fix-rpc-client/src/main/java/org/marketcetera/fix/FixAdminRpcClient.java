@@ -2,6 +2,7 @@ package org.marketcetera.fix;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +33,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import io.grpc.Channel;
 
@@ -582,33 +584,32 @@ public class FixAdminRpcClient
     @Override
     public void removeBrokerStatusListener(BrokerStatusListener inBrokerStatusListener)
     {
-        
-        listenerProxies.invalidateAll();
-        listenerProxiesById.invalidateAll();
-//        executeCall(new Callable<Void>() {
-//            @Override
-//            public Void call()
-//                    throws Exception
-//            {
-//                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
-//                                       "{} removing broker status listener",
-//                                       getSessionId());
-//                FixAdminRpc.RemoveBrokerStatusListenerRequest.Builder requestBuilder = FixAdminRpc.RemoveBrokerStatusListenerRequest.newBuilder();
-//                requestBuilder.setSessionId(getSessionId().getValue());
-//                requestBuilder.setListenerId(proxy.getId());
-//                FixAdminRpc.RemoveBrokerStatusListenerRequest removeBrokerStatusListenerRequest = requestBuilder.build();
-//                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
-//                                       "{} sending {}",
-//                                       getSessionId(),
-//                                       removeBrokerStatusListenerRequest);
-//                FixAdminRpc.RemoveBrokerStatusListenerResponse response = getBlockingStub().removeBrokerStatusListener(removeBrokerStatusListenerRequest);
-//                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
-//                                       "{} received {}",
-//                                       getSessionId(),
-//                                       response);
-//                return null;
-//            }
-//        });
+        if(!listenerProxies.asMap().containsKey(inBrokerStatusListener)) {
+            return;
+        }
+        AbstractClientListenerProxy<?,?,?> listenerProxy = listenerProxies.getUnchecked(inBrokerStatusListener);
+        listenerProxies.invalidate(inBrokerStatusListener);
+        listenerProxiesById.invalidate(listenerProxy.getId());
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
+                                       "{} removing broker status listener",
+                                       getSessionId());
+                FixAdminRpc.RemoveBrokerStatusListenerRequest.Builder requestBuilder = FixAdminRpc.RemoveBrokerStatusListenerRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(listenerProxy.getId());
+                FixAdminRpc.RemoveBrokerStatusListenerRequest addBrokerStatusListenerRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(FixAdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       addBrokerStatusListenerRequest);
+                getBlockingStub().removeBrokerStatusListener(addBrokerStatusListenerRequest);
+                return null;
+            }
+        });
     }
     /**
      * Get the activeFixSessionFactory value.
@@ -746,6 +747,18 @@ public class FixAdminRpcClient
     protected BaseRpc.HeartbeatResponse executeHeartbeat(HeartbeatRequest inRequest)
     {
         return getBlockingStub().heartbeat(inRequest);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.AbstractRpcClient#onStatusChange(boolean)
+     */
+    @Override
+    protected void onStatusChange(boolean inIsConnected)
+    {
+        if(inIsConnected) {
+            Map<Object,AbstractClientListenerProxy<?,?,?>> existingProxies = Maps.newHashMap(listenerProxies.asMap());
+            existingProxies.entrySet().forEach(listenerProxyEntry -> removeBrokerStatusListener((BrokerStatusListener)listenerProxyEntry.getKey()));
+            existingProxies.entrySet().forEach(listenerProxyEntry -> addBrokerStatusListener((BrokerStatusListener)listenerProxyEntry.getKey()));
+        }
     }
     /**
      * Creates the appropriate proxy for the given listener.

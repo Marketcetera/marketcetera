@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Scope;
 
 import com.google.common.collect.Maps;
 import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button;
@@ -330,6 +331,7 @@ public class OrderTicketView
         // send button
         sendButton = new Button();
         sendButton.setCaption("Send");
+        sendButton.setClickShortcut(KeyCode.ENTER);
         sendButton.addClickListener(event -> {
             OrderSingle newOrder = Factory.getInstance().createOrderSingle();
             newOrder.setAccount(StringUtils.trimToNull(accountTextField.getValue()));
@@ -434,79 +436,6 @@ public class OrderTicketView
         setId(getClass().getCanonicalName() + ".contentLayout");
         styleService.addStyle(this);
     }
-    private void adjustSendButton()
-    {
-        boolean enabled = true;
-        enabled &= sideComboBox.getValue() != null;
-        enabled &= StringUtils.trimToNull(quantityTextField.getValue()) != null;
-        enabled &= StringUtils.trimToNull(symbolTextField.getValue()) != null;
-        enabled &= orderTypeComboBox.getValue() != null;
-        if(enabled) {
-            OrderType orderType = (OrderType)orderTypeComboBox.getValue();
-            if(!orderType.isMarketOrder()) {
-                enabled &= StringUtils.trimToNull(priceTextField.getValue()) != null;
-            }
-        }
-        // time in force is optional
-        // account is optional
-        // ex destination is optional
-        // max floor is optional
-        // peg-to-midpoint is optional
-        // broker algo is optional
-        // custom fields are optional
-        sendButton.setEnabled(enabled);
-    }
-    private void resetTicket(boolean inCompletelyReset)
-    {
-        SLF4JLoggerProxy.debug(this,
-                               "Clearing order ticket");
-        // this one is always cleared (to prevent accidentally submitting the same order twice)
-        quantityTextField.clear();
-        if(inCompletelyReset) {
-            brokerComboBox.setValue(AUTO_SELECT_BROKER);
-            sideComboBox.clear();
-            symbolTextField.clear();
-            orderTypeComboBox.clear();
-            priceTextField.clear();
-            timeInForceComboBox.clear();
-            accountTextField.clear();
-            exDestinationTextField.clear();
-            maxFloorTextField.clear();
-            pegToMidpointCheckBox.clear();
-            pegToMidpointLockedCheckBox.clear();
-            brokerAlgoComboBox.clear();
-//            brokerAlgoTagGrid.clear();
-//            customFieldsGrid.clear();
-            brokerComboBox.focus();
-        } else {
-            quantityTextField.focus();
-        }
-    }
-    private ComboBox brokerComboBox;
-    private ComboBox sideComboBox;
-    private HorizontalLayout firstRowLayout;
-    private HorizontalLayout secondRowLayout;
-    private VerticalLayout otherLayout;
-    private TextField quantityTextField;
-    private TextField symbolTextField;
-    private ComboBox orderTypeComboBox;
-    private TextField priceTextField;
-    private ComboBox timeInForceComboBox;
-    private TextField accountTextField;
-    private TextField exDestinationTextField;
-    private TextField maxFloorTextField;
-    private HorizontalLayout pegToMidpointLayout;
-    private CheckBox pegToMidpointCheckBox;
-    private CheckBox pegToMidpointLockedCheckBox;
-    private VerticalLayout brokerAlgoLayout;
-    private ComboBox brokerAlgoComboBox;
-    private Grid brokerAlgoTagGrid;
-    private VerticalLayout customFieldsLayout;
-    private Grid customFieldsGrid;
-    private Button sendButton;
-    private Button clearButton;
-    private HorizontalLayout sendClearLayout;
-    private Instrument resolvedInstrument;
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractComponent#detach()
      */
@@ -592,6 +521,89 @@ public class OrderTicketView
     {
         viewProperties = inProperties;
     }
+    /**
+     * Adjust the send button based on the other fields.
+     * 
+     * <p>Sets the enabled state of the send button based on the state of the rest of the order ticket.
+     */
+    private void adjustSendButton()
+    {
+        boolean enabled = true;
+        enabled &= sideComboBox.getValue() != null;
+        enabled &= StringUtils.trimToNull(quantityTextField.getValue()) != null;
+        enabled &= StringUtils.trimToNull(symbolTextField.getValue()) != null;
+        enabled &= orderTypeComboBox.getValue() != null;
+        if(enabled) {
+            OrderType orderType = (OrderType)orderTypeComboBox.getValue();
+            if(!orderType.isMarketOrder()) {
+                enabled &= StringUtils.trimToNull(priceTextField.getValue()) != null;
+            }
+        }
+        // time in force is optional
+        // account is optional
+        // ex destination is optional
+        // max floor is optional
+        // peg-to-midpoint is optional
+        // broker algo is optional
+        // custom fields are optional
+        sendButton.setEnabled(enabled);
+    }
+    /**
+     * Reset the ticket, either completely or partially.
+     *
+     * @param inCompletelyReset a <code>boolean</code> value
+     */
+    private void resetTicket(boolean inCompletelyReset)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Clearing order ticket");
+        // this one is always cleared (to prevent accidentally submitting the same order twice)
+        quantityTextField.clear();
+        if(inCompletelyReset) {
+            brokerComboBox.setValue(AUTO_SELECT_BROKER);
+            sideComboBox.clear();
+            symbolTextField.clear();
+            orderTypeComboBox.clear();
+            priceTextField.clear();
+            timeInForceComboBox.clear();
+            accountTextField.clear();
+            exDestinationTextField.clear();
+            maxFloorTextField.clear();
+            pegToMidpointCheckBox.clear();
+            pegToMidpointLockedCheckBox.clear();
+            brokerAlgoComboBox.clear();
+//            brokerAlgoTagGrid.clear();
+//            customFieldsGrid.clear();
+            brokerComboBox.focus();
+        } else {
+            quantityTextField.focus();
+        }
+    }
+    private ComboBox brokerComboBox;
+    private ComboBox sideComboBox;
+    private HorizontalLayout firstRowLayout;
+    private HorizontalLayout secondRowLayout;
+    private VerticalLayout otherLayout;
+    private TextField quantityTextField;
+    private TextField symbolTextField;
+    private ComboBox orderTypeComboBox;
+    private TextField priceTextField;
+    private ComboBox timeInForceComboBox;
+    private TextField accountTextField;
+    private TextField exDestinationTextField;
+    private TextField maxFloorTextField;
+    private HorizontalLayout pegToMidpointLayout;
+    private CheckBox pegToMidpointCheckBox;
+    private CheckBox pegToMidpointLockedCheckBox;
+    private VerticalLayout brokerAlgoLayout;
+    private ComboBox brokerAlgoComboBox;
+    private Grid brokerAlgoTagGrid;
+    private VerticalLayout customFieldsLayout;
+    private Grid customFieldsGrid;
+    private Button sendButton;
+    private Button clearButton;
+    private HorizontalLayout sendClearLayout;
+    private Instrument resolvedInstrument;
     /**
      * token to indicate that the broker should be auto-selected
      */

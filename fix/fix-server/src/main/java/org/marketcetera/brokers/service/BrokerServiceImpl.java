@@ -13,9 +13,7 @@ import java.util.Queue;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -39,6 +37,7 @@ import org.marketcetera.cluster.service.ClusterListener;
 import org.marketcetera.cluster.service.ClusterMember;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.ApplicationContextProvider;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.fix.AcceptorSessionAttributes;
 import org.marketcetera.fix.ActiveFixSession;
@@ -70,7 +69,6 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -79,7 +77,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import quickfix.ConfigError;
 import quickfix.FieldConvertError;
@@ -302,6 +299,9 @@ public class BrokerServiceImpl
     public void addBrokerStatusListener(BrokerStatusListener inListener)
     {
         brokerStatusEventBus.register(inListener);
+        synchronized(clusterBrokerStatus) {
+            clusterBrokerStatus.forEach(activeFixSession -> inListener.receiveBrokerStatus(activeFixSession));
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.BrokerStatusPublisher#removeBrokerStatusListener(org.marketcetera.brokers.BrokerStatusListener)
@@ -819,9 +819,9 @@ public class BrokerServiceImpl
         }
         eventBusService.register(this);
         updateBrokerStatus();
-        scheduleBrokerStatusUpdater();
         SLF4JLoggerProxy.info(this,
-                              "Broker service started");
+                              "{} started",
+                              PlatformServices.getServiceName(getClass()));
     }
     /**
      * Stop the service.
@@ -836,7 +836,8 @@ public class BrokerServiceImpl
                                   e);
         } finally {
             SLF4JLoggerProxy.info(this,
-                                  "Broker service stopped");
+                                  "{} stopped",
+                                  PlatformServices.getServiceName(getClass()));
         }
     }
     /**
@@ -1061,51 +1062,6 @@ public class BrokerServiceImpl
         }
     }
     /**
-     * Schedule the broker status updater.
-     *
-     * <p>If the broker status updater is already scheduled, this method will replace it with a new schedule.
-     */
-    private void scheduleBrokerStatusUpdater()
-    {
-        synchronized(brokerScheduledService) {
-            if(brokerStatusUpdater != null) {
-                try {
-                    brokerStatusUpdater.cancel(true);
-                } catch (Exception ignored) {
-                } finally {
-                    brokerStatusUpdater = null;
-                }
-            }
-            if(brokerStatusUpdaterInterval > 0) {
-                brokerStatusUpdater = brokerScheduledService.scheduleAtFixedRate(new Runnable() {
-                    @Override
-                    public void run()
-                    {
-                        try {
-                            for(FixSession fixSession : fixSessionProvider.findFixSessions(false,
-                                                                                           1,
-                                                                                           1)) {
-                                BrokerID brokerId = new BrokerID(fixSession.getBrokerId());
-                                FixSessionStatus fixSessionStatus = getFixSessionStatus(brokerId);
-                                SLF4JLoggerProxy.trace(BrokerServiceImpl.this,
-                                                       "Broker status updater reporting {} for {}",
-                                                       fixSessionStatus,
-                                                       brokerId);
-                                // TODO report the broker status only if the status, sender seq, or target seq has changed
-                                reportBrokerStatus(brokerId,
-                                                   fixSessionStatus);
-                            }
-                        } catch (Exception e) {
-                            SLF4JLoggerProxy.warn(BrokerServiceImpl.this,
-                                                  e);
-                        }
-                    }},brokerStatusUpdaterInterval,
-                       brokerStatusUpdaterInterval,
-                       TimeUnit.MILLISECONDS);
-            }
-        }
-    }
-    /**
      * Finds the cluster data for a given session.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -1160,19 +1116,6 @@ public class BrokerServiceImpl
      * cluster data for this instance
      */
     private ClusterData instanceData;
-    /**
-     * holds the broker status updater token created in {@link #scheduleBrokerStatusUpdater()}
-     */
-    private Future<?> brokerStatusUpdater;
-    /**
-     * interval at which the broker status update job is run {@link #scheduleBrokerStatusUpdater()}
-     */
-    @Value("${metc.broker.status.updater.interval:5000}")
-    private long brokerStatusUpdaterInterval;
-    /**
-     * broker service scheduler to be used for any async jobs needed
-     */
-    private final ScheduledExecutorService brokerScheduledService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("BrokerServiceScheduler%d").build());
     /**
      * provides fix sessions
      */

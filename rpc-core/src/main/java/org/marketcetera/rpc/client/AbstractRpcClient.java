@@ -401,6 +401,14 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
         SLF4JLoggerProxy.info(this,
                               "{} reconnected",
                               getAppId());
+        try {
+            onStatusChange(true);
+        } catch (Exception e) {
+            String message = PlatformServices.getMessage(e);
+            PlatformServices.handleException(this,
+                                             message,
+                                             e);
+        }
     }
     /**
      * Executes a heartbeat request and processes the response.
