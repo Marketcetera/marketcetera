@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.web.view.ContentView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.collect.Sets;
@@ -32,9 +34,8 @@ public class OpenOrderViewFactory
     @Override
     public ContentView create(Properties inViewProperties)
     {
-        OpenOrderView userView = new OpenOrderView(inViewProperties);
-        userView.setWebMessageService(webMessageService);
-        return userView;
+        return applicationContext.getBean(OpenOrderView.class,
+                                          inViewProperties);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuCaption()
@@ -66,7 +67,7 @@ public class OpenOrderViewFactory
     @Override
     protected String getViewName()
     {
-        return "Open Orders";
+        return getMenuCaption();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getAllPermissions()
@@ -76,6 +77,11 @@ public class OpenOrderViewFactory
     {
         return requiredPermissions;
     }
+    /**
+     * provides access to the application context
+     */
+    @Autowired
+    private ApplicationContext applicationContext;
     /**
      * permission(s) required to execute open order view
      */

@@ -68,9 +68,6 @@ import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
 import com.google.common.collect.Maps;
 import com.google.protobuf.Timestamp;
 
-import quickfix.FieldNotFound;
-import quickfix.Message;
-
 /* $License$ */
 
 /**
@@ -617,7 +614,7 @@ public abstract class TradeRpcUtil
         BaseRpc.KeyValuePair.Builder keyValuePairBuilder = BaseRpc.KeyValuePair.newBuilder();
         for(Map.Entry<String,String> entry : inOrder.getCustomFields().entrySet()) {
             keyValuePairBuilder.setKey(entry.getKey());
-            keyValuePairBuilder.setKey(entry.getValue());
+            keyValuePairBuilder.setValue(entry.getValue());
             mapBuilder.addKeyValuePairs(keyValuePairBuilder.build());
             keyValuePairBuilder.clear();
         }
@@ -981,7 +978,10 @@ public abstract class TradeRpcUtil
     public static void setAccount(OrderBase inOrder,
                                   TradingTypesRpc.OrderBase inRpcOrder)
     {
-        inOrder.setAccount(StringUtils.trimToNull(inRpcOrder.getAccount()));
+        String value = StringUtils.trimToNull(inRpcOrder.getAccount());
+        if(value != null) {
+            inOrder.setAccount(value);
+        }
     }
     /**
      * Set the text from the given RPC order.
@@ -992,7 +992,10 @@ public abstract class TradeRpcUtil
     public static void setText(OrderBase inOrder,
                                TradingTypesRpc.OrderBase inRpcOrder)
     {
-        inOrder.setText(StringUtils.trimToNull(inRpcOrder.getText()));
+        String value = StringUtils.trimToNull(inRpcOrder.getText());
+        if(value != null) {
+            inOrder.setText(value);
+        }
     }
     /**
      * Set the execution destination from the given RPC order.
@@ -1003,7 +1006,10 @@ public abstract class TradeRpcUtil
     public static void setExecutionDestination(NewOrReplaceOrder inOrder,
                                                TradingTypesRpc.OrderBase inRpcOrder)
     {
-        inOrder.setExecutionDestination(StringUtils.trimToNull(inRpcOrder.getExecutionDestination()));
+        String value = StringUtils.trimToNull(inRpcOrder.getExecutionDestination());
+        if(value != null) {
+            inOrder.setExecutionDestination(value);
+        }
     }
     /**
      * Set the execution destination from the given RPC order.
@@ -1370,7 +1376,7 @@ public abstract class TradeRpcUtil
     public static TradeMessage getTradeMessage(TradingTypesRpc.TradeMessage inRpcTradeMessage)
     {
         TradeMessage tradeMessage = null;
-        Message fixMessage = getFixMessage(inRpcTradeMessage.getMessage());
+        quickfix.Message fixMessage = getFixMessage(inRpcTradeMessage.getMessage());
         BrokerID brokerId = getBrokerId(inRpcTradeMessage).orElse(null);
         Originator originator = getOriginator(inRpcTradeMessage);
         UserID userId = getUserId(inRpcTradeMessage).orElse(null);
@@ -1528,7 +1534,7 @@ public abstract class TradeRpcUtil
     {
         TradingTypesRpc.FixMessage.Builder fixMessageBuilder = TradingTypesRpc.FixMessage.newBuilder();
         BaseRpc.Map.Builder mapBuilder = BaseRpc.Map.newBuilder();
-        Message fixMessage = inMessageHolder.getMessage();
+        quickfix.Message fixMessage = inMessageHolder.getMessage();
         setRpcFixMessageGroup(fixMessage.getHeader(),
                               mapBuilder);
         fixMessageBuilder.setHeader(mapBuilder.build());
@@ -2207,11 +2213,11 @@ public abstract class TradeRpcUtil
      * Get the FIX message from the given RPC FIX message.
      *
      * @param inRpcMessage a <code>TradingTypesRpc.FixMessage</code> value
-     * @return a <code>Message</code> value
+     * @return a <code>quickfix.Message</code> value
      */
-    public static Message getFixMessage(TradingTypesRpc.FixMessage inRpcMessage)
+    public static quickfix.Message getFixMessage(TradingTypesRpc.FixMessage inRpcMessage)
     {
-        Message fixMessage = new Message();
+        quickfix.Message fixMessage = new quickfix.Message();
         if(inRpcMessage.hasHeader()) {
             setFixMessageGroup(inRpcMessage.getHeader(),
                                fixMessage.getHeader());
@@ -2232,10 +2238,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the RPC FIX message from the given FIX message.
      *
-     * @param inMessage a <code>Message</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
      * @return a <code>TradingTypesRpc.FixMessage</code> value
      */
-    public static TradingTypesRpc.FixMessage getFixMessage(Message inMessage)
+    public static TradingTypesRpc.FixMessage getFixMessage(quickfix.Message inMessage)
     {
         TradingTypesRpc.FixMessage.Builder fixMessageBuilder = TradingTypesRpc.FixMessage.newBuilder();
         Map<String,String> fields = Maps.newHashMap();
@@ -2268,14 +2274,14 @@ public abstract class TradeRpcUtil
             }
         } else if(inOrder instanceof FIXOrder) {
             FIXOrder fixOrder = (FIXOrder)inOrder;
-            Message message = fixOrder.getMessage();
+            quickfix.Message message = fixOrder.getMessage();
             try {
                 if(message.isSetField(quickfix.field.ClOrdID.FIELD)) {
                     inBuilder.setOrderid(message.getString(quickfix.field.ClOrdID.FIELD));
                 } else if(message.isSetField(quickfix.field.OrderID.FIELD)) {
                     inBuilder.setOrderid(message.getString(quickfix.field.OrderID.FIELD));
                 }
-            } catch (FieldNotFound e) {
+            } catch (quickfix.FieldNotFound e) {
                 PlatformServices.handleException(TradeRpcUtil.class,
                                                  "Unable to set order id",
                                                  e);

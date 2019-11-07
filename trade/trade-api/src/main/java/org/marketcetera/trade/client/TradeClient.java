@@ -13,6 +13,7 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
@@ -144,4 +145,16 @@ public interface TradeClient
      * @return a <code>String</code> value
      */
     String getUnderlying(String inOptionRoot);
+    /**
+     * Get the most recent execution report for the order chain represented by the given order id.
+     * 
+     * <p>The given <code>OrderID</code> can be either from any order in the chain or the root order id for the chain.
+     * In either case, the most recent execution report for the entire chain will be returned, not the given order necessarily.
+     * 
+     * <p>If no execution report exists for any order in the given chain, the call will return null.
+     *
+     * @param inOrderId an <code>OrderID</code> value
+     * @return an <code>ExecutionReport</code> value or <code>null</code>
+     */
+    ExecutionReport getLatestExecutionReportForOrderChain(OrderID inOrderId);
 }

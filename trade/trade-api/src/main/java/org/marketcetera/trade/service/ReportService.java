@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.marketcetera.admin.User;
@@ -14,6 +15,7 @@ import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.HasMutableReportID;
@@ -64,6 +66,18 @@ public interface ReportService
      * @return an <code>OrderStatus</code> value
      */
     OrderStatus getOrderStatusForOrderChain(OrderID inOrderId);
+    /**
+     * Get the most recent execution report for the order chain represented by the given order id.
+     * 
+     * <p>The given <code>OrderID</code> can be either from any order in the chain or the root order id for the chain.
+     * In either case, the most recent execution report for the entire chain will be returned, not the given order necessarily.
+     * 
+     * <p>If no execution report exists for any order in the given chain, the call will return nothing.
+     *
+     * @param inOrderId an <code>OrderID</code> value
+     * @return an <code>Optional&lt;ExecutionReport&gt;</code> value
+     */
+    Optional<ExecutionReport> getLatestExecutionReportForOrderChain(OrderID inOrderId);
     /**
      * Purges reports before the given date.
      *

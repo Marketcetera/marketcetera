@@ -31,6 +31,15 @@ message OrderResponse {
     string orderid = 1;
 }
 
+message GetLatestExecutionReportForOrderChainRequest {
+    string sessionId = 1;
+    string orderId = 2;
+}
+
+message GetLatestExecutionReportForOrderChainResponse {
+    TradeMessage executionReport = 1;
+}
+
 message AddTradeMessageListenerRequest {
     string sessionId = 1;
     string listenerId = 2;
@@ -131,6 +140,7 @@ service TradingRpcService {
     rpc removeTradeMessageListener(RemoveTradeMessageListenerRequest) returns (RemoveTradeMessageListenerResponse);
     rpc resolveSymbol(ResolveSymbolRequest) returns (ResolveSymbolResponse);
     rpc findRootOrderId(FindRootOrderIdRequest) returns (FindRootOrderIdResponse);
+    rpc getLatestExecutionReportForOrderChain(GetLatestExecutionReportForOrderChainRequest) returns (GetLatestExecutionReportForOrderChainResponse);
     rpc getPositionAsOf(GetPositionAsOfRequest) returns (GetPositionAsOfResponse);
     rpc getAllPositionsAsOf(GetAllPositionsAsOfRequest) returns (GetAllPositionsAsOfResponse);
     rpc getAllPositionsByRootAsOf(GetAllPositionsByRootAsOfRequest) returns (GetAllPositionsByRootAsOfResponse);

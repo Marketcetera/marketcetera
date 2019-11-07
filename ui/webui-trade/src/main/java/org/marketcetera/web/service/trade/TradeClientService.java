@@ -7,8 +7,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradeClient;
@@ -43,6 +45,16 @@ public class TradeClientService
      * Create a new TradeClientService instance.
      */
     public TradeClientService() {}
+    /**
+     * Get the latest execution report from the order chain represented by the given order id from the chain or chain root order id.
+     *
+     * @param inOrderId an <code>OrderID</code> value
+     * @return an <code>ExecutionReport</code> or <code>null</code>
+     */
+    public ExecutionReport getLatestExecutionReportForOrderChain(OrderID inOrderId)
+    {
+        return tradeClient.getLatestExecutionReportForOrderChain(inOrderId);
+    }
     /**
      * Get open orders.
      *

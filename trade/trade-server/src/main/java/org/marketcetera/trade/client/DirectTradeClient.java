@@ -21,6 +21,7 @@ import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
@@ -260,6 +261,14 @@ public class DirectTradeClient
     public String getUnderlying(String inOptionRoot)
     {
         throw new UnsupportedOperationException(); // TODO
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#getLatestExecutionReportForOrderChain(org.marketcetera.trade.OrderID)
+     */
+    @Override
+    public ExecutionReport getLatestExecutionReportForOrderChain(OrderID inOrderId)
+    {
+        return reportService.getLatestExecutionReportForOrderChain(inOrderId).orElse(null);
     }
     /**
      * Get the applicationContext value.

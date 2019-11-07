@@ -2,16 +2,26 @@ package org.marketcetera.web.trade.openorders.view;
 
 import java.util.Properties;
 
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderSummary;
+import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.trade.TradeClientService;
 import org.marketcetera.web.view.AbstractGridView;
 import org.marketcetera.web.view.PagedDataContainer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 
 /* $License$ */
 
@@ -22,6 +32,8 @@ import com.vaadin.server.VaadinSession;
  * @version $Id$
  * @since $Release$
  */
+@SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OpenOrderView
         extends AbstractGridView<OrderSummary>
 {
@@ -34,42 +46,21 @@ public class OpenOrderView
         super.attach();
         getActionSelect().setNullSelectionAllowed(false);
         getActionSelect().setReadOnly(true);
-//        getGrid().addSelectionListener(inEvent -> {
-//            OrderSummary selectedObject = getSelectedItem();
-//            getActionSelect().removeAllItems();
-//            if(selectedObject == null) {
-//                getActionSelect().setReadOnly(true);
-//            } else {
-//                // TODO permission check before adding action to dropdown
-//                getActionSelect().setReadOnly(false);
-//                // adjust the available actions based on the status of the selected row
-//                switch(selectedObject.getStatus()) {
-//                    case CONNECTED:
-//                    case DISCONNECTED:
-//                    case NOT_CONNECTED:
-//                        getActionSelect().addItems(ACTION_STOP);
-//                        break;
-//                    case DISABLED:
-//                        getActionSelect().addItems(ACTION_ENABLE,
-//                                                   ACTION_SEQUENCE,
-//                                                   ACTION_EDIT,
-//                                                   ACTION_DELETE);
-//                        break;
-//                    case STOPPED:
-//                        getActionSelect().addItems(ACTION_START,
-//                                                   ACTION_DISABLE,
-//                                                   ACTION_SEQUENCE);
-//                        break;
-//                    case AFFINITY_MISMATCH:
-//                    case BACKUP:
-//                    case DELETED:
-//                    case UNKNOWN:
-//                    default:
-//                        // nothing available, these are essentially weird statuses for display
-//                        break;
-//                }
-//            }
-//        });
+        getGrid().addSelectionListener(inEvent -> {
+            OrderSummary selectedObject = getSelectedItem();
+            getActionSelect().removeAllItems();
+            if(selectedObject == null) {
+                getActionSelect().setReadOnly(true);
+            } else {
+                // TODO permission check before adding action to dropdown
+                getActionSelect().setReadOnly(false);
+                // adjust the available actions based on the status of the selected row
+                if(selectedObject.getOrderStatus().isCancellable()) {
+                    getActionSelect().addItems(ACTION_CANCEL,
+                                               ACTION_REPLACE);
+                }
+            }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.ContentView#getViewName()
@@ -116,37 +107,34 @@ public class OpenOrderView
         String action = String.valueOf(inEvent.getProperty().getValue());
         SLF4JLoggerProxy.info(this,
                               "{}: {} {} '{}'",
-                              String.valueOf(VaadinSession.getCurrent().getAttribute(SessionUser.class)),
+                              SessionUser.getCurrentUser().getUsername(),
                               getViewName(),
                               action,
                               selectedItem);
-        TradeClientService adminClientService = TradeClientService.getInstance();
-//        switch(action) {
-//            case ACTION_START:
-//                adminClientService.startSession(selectedItem.getName());
-//                break;
-//            case ACTION_STOP:
-//                adminClientService.stopSession(selectedItem.getName());
-//                break;
-//            case ACTION_ENABLE:
-//                adminClientService.enableSession(selectedItem.getName());
-//                break;
-//            case ACTION_DISABLE:
-//                adminClientService.disableSession(selectedItem.getName());
-//                break;
-//            case ACTION_DELETE:
-//                adminClientService.deleteSession(selectedItem.getName());
-//                break;
-//            case ACTION_SEQUENCE:
-//                doUpdateSequenceNumbers(selectedItem.getSource());
-//                break;
-//            case ACTION_EDIT:
-//                createOrEdit(selectedItem.getSource(),
-//                             false);
-//                break;
-//            default:
-//                throw new UnsupportedOperationException("Unsupported action: " + action);
-//        }
+        switch(action) {
+            case ACTION_CANCEL:
+                TradeClientService tradeClient = serviceManager.getService(TradeClientService.class);
+                ExecutionReport executionReport = tradeClient.getLatestExecutionReportForOrderChain(selectedItem.getRootOrderId());
+                OrderCancel orderCancel = Factory.getInstance().createOrderCancel(executionReport);
+                SLF4JLoggerProxy.info(this,
+                                      "{} sending {}",
+                                      SessionUser.getCurrentUser().getUsername(),
+                                      orderCancel);
+                SendOrderResponse response = tradeClient.send(orderCancel);
+                if(response.getFailed()) {
+                    Notification.show("Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
+                                      Type.ERROR_MESSAGE);
+                    return;
+                } else {
+                    Notification.show(response.getOrderId() + " submitted",
+                                      Type.TRAY_NOTIFICATION);
+                }
+                break;
+            case ACTION_REPLACE:
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported action: " + action);
+        }
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
@@ -165,39 +153,27 @@ public class OpenOrderView
         return "Open Orders";
     }
     /**
-     * Get the webMessageService value.
-     *
-     * @return a <code>WebMessageService</code> value
-     */
-    WebMessageService getWebMessageService()
-    {
-        return webMessageService;
-    }
-    /**
-     * Sets the webMessageService value.
-     *
-     * @param inWebMessageService a <code>WebMessageService</code> value
-     */
-    void setWebMessageService(WebMessageService inWebMessageService)
-    {
-        webMessageService = inWebMessageService;
-    }
-    /**
      * provides access to web message services
      */
+    @Autowired
     private WebMessageService webMessageService;
+    /**
+     * provides access to client services
+     */
+    @Autowired
+    private ServiceManager serviceManager;
     /**
      * global name of this view
      */
     private static final String NAME = "Open Orders View";
     /**
-     * edit action label
+     * cancel action label
      */
-    private final String ACTION_EDIT = "Edit";
+    private final String ACTION_CANCEL = "Cancel";
     /**
-     * start action label
+     * replace action label
      */
-    private final String ACTION_START = "Start";
+    private final String ACTION_REPLACE = "Replace";
     /**
      * stop action label
      */

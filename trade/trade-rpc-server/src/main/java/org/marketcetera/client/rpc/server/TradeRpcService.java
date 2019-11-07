@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -30,6 +31,7 @@ import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
@@ -58,6 +60,8 @@ import org.marketcetera.trading.rpc.TradingRpc.GetAllPositionsAsOfRequest;
 import org.marketcetera.trading.rpc.TradingRpc.GetAllPositionsAsOfResponse;
 import org.marketcetera.trading.rpc.TradingRpc.GetAllPositionsByRootAsOfRequest;
 import org.marketcetera.trading.rpc.TradingRpc.GetAllPositionsByRootAsOfResponse;
+import org.marketcetera.trading.rpc.TradingRpc.GetLatestExecutionReportForOrderChainRequest;
+import org.marketcetera.trading.rpc.TradingRpc.GetLatestExecutionReportForOrderChainResponse;
 import org.marketcetera.trading.rpc.TradingRpc.GetPositionAsOfRequest;
 import org.marketcetera.trading.rpc.TradingRpc.GetPositionAsOfResponse;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersRequest;
@@ -195,6 +199,34 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#getLatestExecutionReportForOrderChain(org.marketcetera.trading.rpc.TradingRpc.GetLatestExecutionReportForOrderChainRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getLatestExecutionReportForOrderChain(GetLatestExecutionReportForOrderChainRequest inRequest,
+                                                          StreamObserver<GetLatestExecutionReportForOrderChainResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradePermissions.ViewReportAction.name());
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Received {}",
+                                       inRequest);
+                TradingRpc.GetLatestExecutionReportForOrderChainResponse.Builder responseBuilder = TradingRpc.GetLatestExecutionReportForOrderChainResponse.newBuilder();
+                Optional<ExecutionReport> executionReportOption = reportService.getLatestExecutionReportForOrderChain(new OrderID(inRequest.getOrderId()));
+                executionReportOption.ifPresent(executionReport -> responseBuilder.setExecutionReport(TradeRpcUtil.getRpcTradeMessage(executionReport)));
+                TradingRpc.GetLatestExecutionReportForOrderChainResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Responding: {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,
+                            inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
          * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#sendOrders(org.marketcetera.trading.rpc.TradingRpc.SendOrderRequest, io.grpc.stub.StreamObserver)
          */
         @Override
@@ -215,7 +247,7 @@ public class TradeRpcService<SessionClazz>
                     try {
                         Order matpOrder = TradeRpcUtil.getOrder(rpcOrder);
                         TradeRpcUtil.setOrderId(matpOrder,
-                                               orderResponseBuilder);
+                                                orderResponseBuilder);
                         User user = userService.findByName(sessionHolder.getUser());
                         tradeService.sendOrder(user,
                                                matpOrder);

@@ -74,8 +74,10 @@ import org.marketcetera.fix.provisioning.FixSessionRestoreExecutor;
 import org.marketcetera.ors.Messages;
 import org.marketcetera.ors.PrioritizedMessageSessionRestorePayload;
 import org.marketcetera.ors.filters.MessageFilter;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Hierarchy;
@@ -859,6 +861,7 @@ public class DeployAnywhereRoutingEngine
         Validate.notNull(clusterService);
         Validate.notNull(reportService);
         Validate.notNull(brokerService);
+        CurrentFIXDataDictionary.setCurrentFIXDataDictionary(FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryName()));
         createdSessions.clear();
         loggedOnSessions.clear();
         clusterData = clusterService.getInstanceData();
