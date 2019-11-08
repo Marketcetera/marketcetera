@@ -359,6 +359,15 @@ public class DeployAnywhereRoutingEngine
                                   brokerService.getSessionName(inSessionId));
             return;
         }
+        // this is necessary due to a race condition on logon for QFJ where for FIXT only where the DefaultVerID isn't set
+        //  until after logon, but is necessary for logon
+        if(inSessionId.isFIXT() && FIXMessageUtil.isLogon(inMessage) && !inMessage.getHeader().isSetField(quickfix.field.ApplVerID.FIELD)) {
+            String defaultApplVerId = serverFixSession.getActiveFixSession().getFixSession().getSessionSettings().get("DefaultApplVerID");
+            if(defaultApplVerId == null) {
+                defaultApplVerId = quickfix.field.ApplVerID.FIX50SP2;
+            }
+            Session.lookupSession(inSessionId).setTargetDefaultApplicationVersionID(new quickfix.field.ApplVerID(defaultApplVerId));
+        }
         Messages.QF_TO_ADMIN.info(getCategory(inMessage),
                                   inMessage,
                                   serverFixSession);

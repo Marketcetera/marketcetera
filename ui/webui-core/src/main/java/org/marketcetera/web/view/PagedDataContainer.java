@@ -88,6 +88,7 @@ public abstract class PagedDataContainer<Clazz>
                                 update();
                             } catch (Exception e) {
                                 SLF4JLoggerProxy.warn(PagedDataContainer.this,
+                                                      e,
                                                       ExceptionUtils.getRootCauseMessage(e));
                             }
                         }

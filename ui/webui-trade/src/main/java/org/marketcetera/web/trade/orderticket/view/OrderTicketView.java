@@ -497,6 +497,7 @@ public class OrderTicketView
                 {
                     Object currentSelectedBroker = brokerComboBox.getValue();
                     brokerComboBox.clear();
+                    brokerComboBox.removeAllItems();
                     brokerComboBox.addItem(AUTO_SELECT_BROKER);
                     brokerComboBox.addItems(availableBrokers.keySet());
                     if(AUTO_SELECT_BROKER.equals(currentSelectedBroker)) {
