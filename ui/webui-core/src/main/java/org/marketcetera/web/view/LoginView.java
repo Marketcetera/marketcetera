@@ -111,50 +111,6 @@ public class LoginView
                 VaadinSession.getCurrent().setAttribute(SessionUser.class,
                                                         null);
             }
-//            boolean atLeastOneService = false;
-//            // connect services
-//            Map<String,ConnectableServiceFactory> services = applicationContext.getBeansOfType(ConnectableServiceFactory.class);
-//            for(Map.Entry<String,ConnectableServiceFactory> serviceEntry : services.entrySet()) {
-//                SLF4JLoggerProxy.debug(this,
-//                                       "Connecting {}",
-//                                       serviceEntry.getKey());
-//                try {
-//                    ConnectableServiceFactory<? extends ConnectableService> serviceFactory = serviceEntry.getValue();
-//                    ConnectableService service = serviceFactory.create();
-//                    boolean result = service.connect(username,
-//                                                     password,
-//                                                     hostname,
-//                                                     port);
-//                    if(!result) {
-//                        SLF4JLoggerProxy.warn(this,
-//                                              "{} failed to connect to {}",
-//                                              username,
-//                                              serviceEntry.getKey());
-//                    } else {
-//                        atLeastOneService = true;
-//                    }
-//                } catch (Exception e) {
-//                    String message = ExceptionUtils.getRootCauseMessage(e);
-//                    SLF4JLoggerProxy.warn(this,
-//                                          "{} failed to connect to {}: {}",
-//                                          username,
-//                                          serviceEntry.getKey(),
-//                                          message);
-//                }
-//            }
-//            if(atLeastOneService) {
-//                SLF4JLoggerProxy.info(this,
-//                                      "{} logged in",
-//                                       username);
-//                // Navigate to main view
-//                getUI().getNavigator().navigateTo(MainView.NAME);
-//            } else {
-//                SLF4JLoggerProxy.warn(this,
-//                                      "{} failed to log in",
-//                                       username);
-//                VaadinSession.getCurrent().setAttribute(SessionUser.class,
-//                                                        null);
-//            }
         } catch (Exception e) {
             String message = ExceptionUtils.getRootCauseMessage(e);
             SLF4JLoggerProxy.warn(this,
