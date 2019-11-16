@@ -33,6 +33,7 @@
 package org.marketcetera.core;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.NumberFormat;
 
 /**
@@ -46,7 +47,80 @@ public final class BigDecimalUtil {
 
     private BigDecimalUtil() {
     }
-
+    /**
+     * Render the given value as a human-readable string;
+     *
+     * @param inValue a <code>BigDecimal</code> value
+     * @return a <code>String</code> value
+     */
+    public static String render(BigDecimal inValue)
+    {
+        return renderDecimal(inValue,
+                             0,
+                             0);
+    }
+    /**
+     * Render the given value as a human-readable string;
+     *
+     * @param inValue a <code>BigDecimal</code> value
+     * @return a <code>String</code> value
+     */
+    public static String renderCurrency(BigDecimal inValue)
+    {
+        return renderDecimal(inValue,
+                             2,
+                             7);
+    }
+    /**
+     * Render the given value as a human-readable string with appropriate decimal places;
+     *
+     * @param inValue a <code>BigDecimal</code> value
+     * @return a <code>String</code> value
+     */
+    public static String renderDecimal(BigDecimal inValue,
+                                       int inPreferredScale,
+                                       int inMaxScale)
+    {
+        return toScaledBigDecimal(inValue,
+                                  inPreferredScale,
+                                  inMaxScale).toPlainString();
+    }
+    /**
+     * Scales and, if necessary, rounds the given value to min scale 2 and max scale 7.
+     *
+     * @param inValue a <code>BigDecimal</code> value
+     * @return a <code>BigDecimal</code> value
+     */
+    public static BigDecimal toCurrencyBigDecimal(BigDecimal inValue)
+    {
+        return toScaledBigDecimal(inValue,
+                                  2,
+                                  7);
+    }
+    /**
+     * Scales and, if necessary, rounds the given value according to the given scale parameters.
+     *
+     * @param inValue a <code>BigDecimal</code> value
+     * @param inPreferredScale an <code>int</code> value
+     * @param inMaxScale an <code>int</code> value
+     * @return a <code>BigDecimal</code> value
+     */
+    public static BigDecimal toScaledBigDecimal(BigDecimal inValue,
+                                                int inPreferredScale,
+                                                int inMaxScale)
+    {
+        if(inValue == null) {
+            inValue = BigDecimal.ZERO;
+        }
+        inValue = inValue.stripTrailingZeros();
+        if(inValue.scale() > inMaxScale) {
+            inValue = inValue.setScale(inMaxScale,
+                                       RoundingMode.HALF_UP);
+        } else if(inValue.scale() < inPreferredScale) {
+            inValue = inValue.setScale(inPreferredScale);
+        }
+        return inValue;
+    }
     /**
      * Convenience method to create a BigDecimal with a String, can be statically imported.
      * @param val a string representing the BigDecimal

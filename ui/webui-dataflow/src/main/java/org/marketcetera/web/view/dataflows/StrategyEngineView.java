@@ -13,7 +13,6 @@ import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.dataflow.DataFlowClientService;
 import org.marketcetera.web.service.dataflow.DataFlowClientServiceInstance;
 import org.marketcetera.web.view.AbstractGridView;
-import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.PagedDataContainer;
 
@@ -148,7 +147,8 @@ public class StrategyEngineView
                         {
                             return new ContentViewFactory() {
                                 @Override
-                                public ContentView create(Properties inViewProperties)
+                                public ModuleView create(Window inParent,
+                                                         Properties inViewProperties)
                                 {
                                     return moduleView;
                                 }

@@ -2,6 +2,8 @@ package org.marketcetera.web.view;
 
 import java.util.Properties;
 
+import com.vaadin.ui.Window;
+
 /* $License$ */
 
 /**
@@ -16,8 +18,10 @@ public interface ContentViewFactory
     /**
      * Create a new content view.
      *
+     * @param inParent a <code>Window</code> value
      * @param inViewProperties a <code>Properties</code> value
      * @return a <code>T</code> value
      */
-    ContentView create(Properties inViewProperties);
+    ContentView create(Window inParent,
+                       Properties inViewProperties);
 }

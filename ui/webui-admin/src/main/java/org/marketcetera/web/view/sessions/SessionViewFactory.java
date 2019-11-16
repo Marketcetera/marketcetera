@@ -20,6 +20,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -35,10 +36,11 @@ public class SessionViewFactory
         implements ContentViewFactory,MenuContent
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(java.util.Properties)
+     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
      */
     @Override
-    public SessionView create(Properties inViewProperties)
+    public SessionView create(Window inParent,
+                              Properties inViewProperties)
     {
         SessionView sessionView = new SessionView(inViewProperties);
         sessionView.setActiveFixSessionFactory(fixSessionFactory);

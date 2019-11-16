@@ -6,9 +6,12 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Properties;
 
-import org.apache.commons.lang3.text.WordUtils;
+import javax.xml.bind.JAXBException;
+
 import org.joda.time.DateTime;
 import org.marketcetera.admin.User;
+import org.marketcetera.core.PlatformServices;
+import org.marketcetera.core.XmlService;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
@@ -21,10 +24,12 @@ import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.trade.TradeClientService;
+import org.marketcetera.web.trade.event.ReplaceOrderEvent;
 import org.marketcetera.web.view.AbstractGridView;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -268,24 +273,50 @@ public class OpenOrderView
                               selectedItem);
         switch(action) {
             case ACTION_CANCEL:
+            case ACTION_REPLACE:
                 TradeClientService tradeClient = serviceManager.getService(TradeClientService.class);
                 ExecutionReport executionReport = tradeClient.getLatestExecutionReportForOrderChain(selectedItem.getRootOrderId());
-                OrderCancel orderCancel = Factory.getInstance().createOrderCancel(executionReport);
-                SLF4JLoggerProxy.info(this,
-                                      "{} sending {}",
-                                      SessionUser.getCurrentUser().getUsername(),
-                                      orderCancel);
-                SendOrderResponse response = tradeClient.send(orderCancel);
-                if(response.getFailed()) {
-                    Notification.show("Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
+                if(executionReport == null) {
+                    Notification.show("Unable to cancel or replace " + selectedItem.getOrderId() + ": no execution report",
                                       Type.ERROR_MESSAGE);
                     return;
-                } else {
-                    Notification.show(response.getOrderId() + " submitted",
-                                      Type.TRAY_NOTIFICATION);
                 }
-                break;
-            case ACTION_REPLACE:
+                if(action == ACTION_CANCEL) {
+                    OrderCancel orderCancel = Factory.getInstance().createOrderCancel(executionReport);
+                    SLF4JLoggerProxy.info(this,
+                                          "{} sending {}",
+                                          SessionUser.getCurrentUser().getUsername(),
+                                          orderCancel);
+                    SendOrderResponse response = tradeClient.send(orderCancel);
+                    if(response.getFailed()) {
+                        Notification.show("Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
+                                          Type.ERROR_MESSAGE);
+                        return;
+                    } else {
+                        Notification.show(response.getOrderId() + " submitted",
+                                          Type.TRAY_NOTIFICATION);
+                    }
+                } else if(action == ACTION_REPLACE) {
+                    String executionReportXml;
+                    try {
+                        executionReportXml = xmlService.marshall(executionReport);
+                    } catch (JAXBException e) {
+                        Notification.show("Unable to cancel or replace " + selectedItem.getOrderId() + ": " + PlatformServices.getMessage(e),
+                                          Type.ERROR_MESSAGE);
+                        return;
+                    }
+                    Properties replaceProperties = new Properties();
+                    replaceProperties.setProperty(ExecutionReport.class.getCanonicalName(),
+                                                  executionReportXml);
+                    System.out.println("COCO: " + replaceProperties);
+                    ReplaceOrderEvent replaceOrderEvent = applicationContext.getBean(ReplaceOrderEvent.class,
+                                                                                     executionReport,
+                                                                                     replaceProperties);
+                    webMessageService.post(replaceOrderEvent);
+                    return;
+                } else {
+                    throw new UnsupportedOperationException("Unsupported action: " + action);
+                }
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported action: " + action);
@@ -308,6 +339,16 @@ public class OpenOrderView
         return "Open Orders";
     }
     /**
+     * provides access to XML services
+     */
+    @Autowired
+    private XmlService xmlService;
+    /**
+     * provides access to the applicaton context
+     */
+    @Autowired
+    private ApplicationContext applicationContext;
+    /**
      * provides access to web message services
      */
     @Autowired
@@ -329,25 +370,5 @@ public class OpenOrderView
      * replace action label
      */
     private final String ACTION_REPLACE = "Replace";
-    /**
-     * stop action label
-     */
-    private final String ACTION_STOP = "Stop";
-    /**
-     * enable action label
-     */
-    private final String ACTION_ENABLE = "Enable";
-    /**
-     * disable action label
-     */
-    private final String ACTION_DISABLE = "Disable";
-    /**
-     * delete action label
-     */
-    private final String ACTION_DELETE = "Delete";
-    /**
-     * edit sequence numbers label
-     */
-    private final String ACTION_SEQUENCE = "Update Sequence Numbers";
     private static final long serialVersionUID = 1901286026590258969L;
 }

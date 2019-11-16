@@ -1,5 +1,7 @@
 package org.marketcetera.web;
 
+import java.util.Arrays;
+
 import org.marketcetera.admin.AdminRpcClientFactory;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.RoleFactory;
@@ -15,6 +17,7 @@ import org.marketcetera.cluster.ClusterRpcClientFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterMemberFactory;
 import org.marketcetera.core.ContextClassAggregator;
+import org.marketcetera.core.XmlService;
 import org.marketcetera.dataflow.client.rpc.DataFlowRpcClientFactory;
 import org.marketcetera.fix.FixAdminRpcClientFactory;
 import org.marketcetera.fix.FixSessionAttributeDescriptorFactory;
@@ -28,6 +31,7 @@ import org.marketcetera.trade.MutableOrderSummaryFactory;
 import org.marketcetera.trade.MutableReportFactory;
 import org.marketcetera.trade.SimpleOrderSummaryFactory;
 import org.marketcetera.trade.SimpleReportFactory;
+import org.marketcetera.trade.TradeContextClassProvider;
 import org.marketcetera.trading.rpc.TradeRpcClientFactory;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.ws.ContextClassProvider;
@@ -280,6 +284,19 @@ public class AppConfiguration
         ContextClassAggregator saContextProvider = new ContextClassAggregator();
 //        saContextProvider.setContextClassProviders(Lists.newArrayList(new SAClientContextClassProvider()));
         return saContextProvider;
+    }
+    /**
+     * Get the XML service value.
+     *
+     * @return an <code>XmlService</code> value
+     */
+    @Bean
+    @SuppressWarnings("unchecked")
+    public XmlService getXmlService()
+    {
+        XmlService xmlService = new XmlService();
+        xmlService.getContextPath().addAll(Arrays.asList(new TradeContextClassProvider().getContextClasses()));
+        return xmlService;
     }
     /* (non-Javadoc)
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)

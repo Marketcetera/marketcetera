@@ -1,5 +1,7 @@
 package org.marketcetera.web.events;
 
+import java.util.Properties;
+
 import org.marketcetera.core.Pair;
 import org.marketcetera.web.view.ContentViewFactory;
 
@@ -28,6 +30,15 @@ public interface NewWindowEvent
     default String getWindowStyleId()
     {
         return "window";
+    }
+    /**
+     * Get the properties with which to seed the new window.
+     *
+     * @return a <code>Properties</code> value
+     */
+    default Properties getProperties()
+    {
+        return new Properties();
     }
     /**
      * Get the content view factory for this window.

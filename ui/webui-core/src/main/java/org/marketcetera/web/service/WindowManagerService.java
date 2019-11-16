@@ -119,11 +119,13 @@ public class WindowManagerService
         ContentViewFactory viewFactory = inEvent.getViewFactory();
         // create the window meta data object, which will track data about the window
         WindowRegistry windowRegistry = getCurrentUserRegistry();
-        WindowMetaData newWindowWrapper = new WindowMetaData(newWindow,
+        WindowMetaData newWindowWrapper = new WindowMetaData(inEvent,
+                                                             newWindow,
                                                              viewFactory);
         windowRegistry.addWindow(newWindowWrapper);
         // create the new window content - initially, the properties will be mostly or completely empty, one would expect
-        ContentView contentView = viewFactory.create(newWindowWrapper.getProperties());
+        ContentView contentView = viewFactory.create(newWindow,
+                                                     newWindowWrapper.getProperties());
         styleService.addStyle(contentView);
         // set the content of the new window
         newWindow.setContent(contentView);
@@ -332,13 +334,15 @@ public class WindowManagerService
          *
          * <p>This constructor is invoked for a new window.
          * 
+         * @param inEvent a <code>NewWindowEvent</code> value
          * @param inWindow a <code>Window</code> value
          * @param inContentViewFactory a <code>ContentViewFactory</code> value
          */
-        private WindowMetaData(Window inWindow,
+        private WindowMetaData(NewWindowEvent inEvent,
+                               Window inWindow,
                                ContentViewFactory inContentViewFactory)
         {
-            properties = new Properties();
+            properties = inEvent.getProperties();
             window = inWindow;
             setWindowStaticProperties(inContentViewFactory,
                                       UUID.randomUUID().toString());
@@ -360,7 +364,8 @@ public class WindowManagerService
             properties = inProperties;
             try {
                 ContentViewFactory contentViewFactory = (ContentViewFactory)applicationContext.getBean(Class.forName(inProperties.getProperty(windowContentViewFactoryProp)));
-                ContentView contentView = contentViewFactory.create(properties);
+                ContentView contentView = contentViewFactory.create(window,
+                                                                    properties);
                 styleService.addStyle(contentView);
                 window.setContent(contentView);
             } catch (ClassNotFoundException e) {

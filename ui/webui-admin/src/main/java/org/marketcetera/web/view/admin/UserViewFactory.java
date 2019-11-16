@@ -2,11 +2,10 @@ package org.marketcetera.web.view.admin;
 
 import java.util.Properties;
 
-import org.marketcetera.web.view.ContentView;
-
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -22,10 +21,11 @@ public class UserViewFactory
         extends AbstractAdminViewFactory
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(java.util.Properties)
+     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
      */
     @Override
-    public ContentView create(Properties inViewProperties)
+    public UserView create(Window inParent,
+                           Properties inViewProperties)
     {
         UserView userView = new UserView(inViewProperties);
         userView.setWebMessageService(webMessageService);

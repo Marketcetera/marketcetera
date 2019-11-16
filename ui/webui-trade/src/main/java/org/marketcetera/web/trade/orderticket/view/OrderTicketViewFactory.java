@@ -7,7 +7,6 @@ import java.util.Set;
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.web.trade.openorders.view.AbstractTradeViewFactory;
 import org.marketcetera.web.trade.openorders.view.OpenOrderView;
-import org.marketcetera.web.view.ContentView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +15,7 @@ import com.google.common.collect.Sets;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -30,14 +30,6 @@ import com.vaadin.spring.annotation.SpringComponent;
 public class OrderTicketViewFactory
         extends AbstractTradeViewFactory
 {
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.trade.openorders.view.AbstractTradeViewFactory#getViewName()
-     */
-    @Override
-    protected String getViewName()
-    {
-        return getMenuCaption();
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuCaption()
      */
@@ -63,12 +55,14 @@ public class OrderTicketViewFactory
         return FontAwesome.BOOK;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(java.util.Properties)
+     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
      */
     @Override
-    public ContentView create(Properties inViewProperties)
+    public OrderTicketView create(Window inParent,
+                                  Properties inViewProperties)
     {
         return applicationContext.getBean(OrderTicketView.class,
+                                          inParent,
                                           inViewProperties);
     }
     /* (non-Javadoc)
@@ -78,6 +72,14 @@ public class OrderTicketViewFactory
     public Set<GrantedAuthority> getAllPermissions()
     {
         return requiredPermissions;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.trade.openorders.view.AbstractTradeViewFactory#getViewName()
+     */
+    @Override
+    protected String getViewName()
+    {
+        return getMenuCaption();
     }
     /**
      * provides access to the application context

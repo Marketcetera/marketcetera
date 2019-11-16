@@ -5,7 +5,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.marketcetera.trade.TradePermissions;
-import org.marketcetera.web.view.ContentView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +13,7 @@ import com.google.common.collect.Sets;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -29,10 +29,11 @@ public class OpenOrderViewFactory
         extends AbstractTradeViewFactory
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(java.util.Properties)
+     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
      */
     @Override
-    public ContentView create(Properties inViewProperties)
+    public OpenOrderView create(Window inParent,
+                                Properties inViewProperties)
     {
         return applicationContext.getBean(OpenOrderView.class,
                                           inViewProperties);

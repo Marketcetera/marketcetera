@@ -14,6 +14,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -29,10 +30,11 @@ public class MarketDataViewFactory
         implements ContentViewFactory,MenuContent
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(java.util.Properties)
+     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
      */
     @Override
-    public MarketDataView create(Properties inViewProperties)
+    public MarketDataView create(Window inParent,
+                                 Properties inViewProperties)
     {
         MarketDataView marketDataView = new MarketDataView(inViewProperties);
         marketDataView.setWebMessageService(webMessageService);

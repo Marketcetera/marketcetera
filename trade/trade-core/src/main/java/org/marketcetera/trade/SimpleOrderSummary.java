@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.marketcetera.admin.User;
+import org.marketcetera.core.BigDecimalUtil;
 
 /* $License$ */
 
@@ -329,12 +330,12 @@ public class SimpleOrderSummary
     {
         StringBuilder builder = new StringBuilder();
         builder.append("SimpleOrderSummary [orderId=").append(orderId).append(", orderStatus=").append(orderStatus)
-                .append(", rootOrderId=").append(rootOrderId).append(", cumulativeQuantity=").append(cumulativeQuantity)
+                .append(", rootOrderId=").append(rootOrderId).append(", cumulativeQuantity=").append(BigDecimalUtil.render(cumulativeQuantity))
                 .append(", account=").append(account).append(", brokerId=").append(brokerId).append(", side=")
-                .append(side).append(", instrument=").append(instrument).append(", averagePrice=").append(averagePrice)
-                .append(", lastQuantity=").append(lastQuantity).append(", leavesQuantity=").append(leavesQuantity)
-                .append(", orderQuantity=").append(orderQuantity).append(", lastPrice=").append(lastPrice)
-                .append(", orderPrice=").append(orderPrice).append(", sendingTime=").append(sendingTime)
+                .append(side).append(", instrument=").append(instrument).append(", averagePrice=").append(BigDecimalUtil.renderCurrency(averagePrice))
+                .append(", lastQuantity=").append(BigDecimalUtil.render(lastQuantity)).append(", leavesQuantity=").append(BigDecimalUtil.render(leavesQuantity))
+                .append(", orderQuantity=").append(BigDecimalUtil.render(orderQuantity)).append(", lastPrice=").append(BigDecimalUtil.renderCurrency(lastPrice))
+                .append(", orderPrice=").append(BigDecimalUtil.renderCurrency(orderPrice)).append(", sendingTime=").append(sendingTime)
                 .append(", transactTime=").append(transactTime).append(", actor=").append(actor).append(", viewer=")
                 .append(viewer).append(", report=").append(report).append("]");
         return builder.toString();

@@ -2,21 +2,29 @@ package org.marketcetera.web.trade.orderticket.view;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.SortedMap;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.concurrent.GuardedBy;
+import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.client.Validations;
+import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.core.XmlService;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.NewOrReplaceOrder;
+import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
@@ -49,6 +57,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -333,7 +342,13 @@ public class OrderTicketView
         sendButton.setCaption("Send");
         sendButton.setClickShortcut(KeyCode.ENTER);
         sendButton.addClickListener(event -> {
-            OrderSingle newOrder = Factory.getInstance().createOrderSingle();
+            NewOrReplaceOrder newOrder;
+            if(replaceExecutionReportOption.isPresent()) {
+                newOrder = Factory.getInstance().createOrderReplace(replaceExecutionReportOption.get());
+            } else {
+                newOrder = Factory.getInstance().createOrderSingle();
+            }
+//            OrderSingle newOrder = Factory.getInstance().createOrderSingle();
             newOrder.setAccount(StringUtils.trimToNull(accountTextField.getValue()));
             if(brokerAlgoComboBox.getValue() != null) {
                 BrokerAlgoSpec brokerAlgoSpec = (BrokerAlgoSpec)brokerAlgoComboBox.getValue();
@@ -383,14 +398,18 @@ public class OrderTicketView
                                    "Validating {}",
                                    newOrder);
             try {
-                Validations.validate(newOrder);
+                if(replaceExecutionReportOption.isPresent()) {
+                    Validations.validate((OrderReplace)newOrder);
+                } else {
+                    Validations.validate((OrderSingle)newOrder);
+                }
             } catch (OrderValidationException e) {
                 String errorMessage = PlatformServices.getMessage(e);
                 SLF4JLoggerProxy.warn(OrderTicketView.this,
                                       "{} failed validation: {}",
                                       newOrder,
                                       errorMessage);
-                Notification.show("Unable to submit order: " + errorMessage,
+                Notification.show("Unable to submit: " + errorMessage,
                                   Type.ERROR_MESSAGE);
                 sendButton.focus();
                 return;
@@ -401,15 +420,20 @@ public class OrderTicketView
                                   newOrder);
             SendOrderResponse response = serviceManager.getService(TradeClientService.class).send(newOrder);
             if(response.getFailed()) {
-                Notification.show("Unable to submit order: " + response.getOrderId() + " " + response.getMessage(),
+                Notification.show("Unable to submit: " + response.getOrderId() + " " + response.getMessage(),
                                   Type.ERROR_MESSAGE);
                 sendButton.focus();
                 return;
             } else {
                 Notification.show(response.getOrderId() + " submitted",
                                   Type.TRAY_NOTIFICATION);
-                // partially clear ticket
-                resetTicket(false);
+                if(replaceExecutionReportOption.isPresent()) {
+                    // close containing ticket
+                    parent.close();
+                } else {
+                    // partially clear ticket
+                    resetTicket(false);
+                }
             }
         });
         sendButton.setEnabled(false);
@@ -435,6 +459,24 @@ public class OrderTicketView
         // finish main layout
         setId(getClass().getCanonicalName() + ".contentLayout");
         styleService.addStyle(this);
+        if(replaceExecutionReportOption.isPresent()) {
+            ExecutionReport replaceExecutionReport = replaceExecutionReportOption.get();
+            accountTextField.setValue(replaceExecutionReport.getAccount()==null?"":replaceExecutionReport.getAccount());
+            // TODO what if this broker isn't available?
+            brokerAlgoComboBox.setValue(replaceExecutionReport.getBrokerId().getValue());
+            symbolTextField.setValue(replaceExecutionReport.getInstrument().getFullSymbol());
+            quantityTextField.setValue(BigDecimalUtil.render(replaceExecutionReport.getOrderQuantity()));
+            orderTypeComboBox.setValue(replaceExecutionReport.getOrderType());
+            priceTextField.setValue(BigDecimalUtil.renderCurrency(replaceExecutionReport.getPrice()));
+            sideComboBox.setValue(replaceExecutionReport.getSide());
+            timeInForceComboBox.setValue(replaceExecutionReport.getTimeInForce());
+            // TODO max floor
+            // TODO ex destination
+            symbolTextField.setReadOnly(true);
+            sideComboBox.setReadOnly(true);
+            brokerAlgoComboBox.setReadOnly(true);
+            clearButton.setVisible(false);
+        }
     }
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractComponent#detach()
@@ -514,12 +556,33 @@ public class OrderTicketView
         }
     }
     /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        String xmlData = StringUtils.trimToNull(viewProperties.getProperty(ExecutionReport.class.getCanonicalName()));
+        ExecutionReport replaceExecutionReport = null;
+        if(xmlData != null) {
+            try {
+                replaceExecutionReport = xmlService.unmarshall(xmlData);
+            } catch (JAXBException e) {
+                Notification.show("Unable to replace order: " + PlatformServices.getMessage(e),
+                                  Type.ERROR_MESSAGE);
+            }
+        }
+        replaceExecutionReportOption = Optional.ofNullable(replaceExecutionReport);
+    }
+    /**
      * Create a new OrderTicketView instance.
      *
+     * @param inParent a <code>Window</code> value
      * @param inProperties a <code>Properties</code> value
      */
-    public OrderTicketView(Properties inProperties)
+    public OrderTicketView(Window inParent,
+                           Properties inProperties)
     {
+        parent = inParent;
         viewProperties = inProperties;
     }
     /**
@@ -606,6 +669,14 @@ public class OrderTicketView
     private HorizontalLayout sendClearLayout;
     private Instrument resolvedInstrument;
     /**
+     * parent window opened for the content
+     */
+    private final Window parent;
+    /**
+     * optional replace execution report
+     */
+    private Optional<ExecutionReport> replaceExecutionReportOption;
+    /**
      * token to indicate that the broker should be auto-selected
      */
     private final static String AUTO_SELECT_BROKER = "Auto Select";
@@ -632,5 +703,10 @@ public class OrderTicketView
      */
     @Autowired
     private ServiceManager serviceManager;
+    /**
+     * provides access to XML services
+     */
+    @Autowired
+    private XmlService xmlService;
     private static final long serialVersionUID = 1779141772237455129L;
 }
