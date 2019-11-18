@@ -77,6 +77,7 @@ public class OpenOrderView
                 }
             }
         });
+        
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.ContentView#getViewName()

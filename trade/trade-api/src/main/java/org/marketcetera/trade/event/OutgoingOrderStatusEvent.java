@@ -2,6 +2,8 @@ package org.marketcetera.trade.event;
 
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.HasMutableStatus;
+import org.marketcetera.trade.HasOrder;
+import org.marketcetera.trade.HasOrderId;
 
 /* $License$ */
 
@@ -12,7 +14,7 @@ import org.marketcetera.module.HasMutableStatus;
  * @version $Id$
  * @since $Release$
  */
-public interface OutgoingOrderStatus
-        extends HasMutableStatus, HasFIXMessage
+public interface OutgoingOrderStatusEvent
+        extends HasMutableStatus,HasFIXMessage,HasOrder,HasOrderId
 {
 }

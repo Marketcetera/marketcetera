@@ -2,6 +2,7 @@ package org.marketcetera.trade.service.impl;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
@@ -22,22 +23,31 @@ import org.marketcetera.trade.FIXConverter;
 import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.OrderBase;
+import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.SendOrderFailed;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageBroadcaster;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.event.OutgoingOrderStatusEvent;
 import org.marketcetera.trade.event.SimpleOutgoingOrderEvent;
+import org.marketcetera.trade.event.SimpleOutgoingOrderStatusEvent;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.Messages;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -101,43 +111,76 @@ public class TradeServiceImpl
     public Message convertOrder(Order inOrder,
                                 ServerFixSession inServerFixSession)
     {
-        // verify the broker is available
-        FixSessionStatus sessionStatus = brokerService.getFixSessionStatus(new BrokerID(inServerFixSession.getActiveFixSession().getFixSession().getBrokerId()));
-        if(sessionStatus == null) {
-            throw new BrokerUnavailable(new I18NBoundMessage1P(Messages.UNKNOWN_BROKER_ID,
-                                                               inServerFixSession.getActiveFixSession().getFixSession().getBrokerId()));
-        }
-        if(!sessionStatus.isLoggedOn()) {
-            throw new BrokerUnavailable(Messages.UNAVAILABLE_BROKER);
-        }
-        // TODO broker algos
-        // TODO reprice
-        // construct the list of order modifiers to apply
-        Collection<MessageModifier> orderModifiers = getOrderMessageModifiers(inServerFixSession);
-        // choose the broker to use
-        ServerFixSession mappedServerFixSession = resolveVirtualServerFixSession(inServerFixSession);
-        // create the FIX message (we can use only one message factory, so if the broker is a virtual broker, we defer to the mapped broker, otherwise the virtual broker would have to duplicate
-        //  the entire mapped broker dictionary, etc)
-        Message message = FIXConverter.toQMessage(mappedServerFixSession.getFIXVersion().getMessageFactory(),
-                                                  FIXMessageUtil.getDataDictionary(mappedServerFixSession.getFIXVersion()),
-                                                  inOrder);
-        // apply modifiers
-        for(MessageModifier orderModifier : orderModifiers) {
-            try {
-                orderModifier.modify(mappedServerFixSession,
-                                     message);
-                SLF4JLoggerProxy.debug(this,
-                                       "Applied {} to {}",
-                                       orderModifier,
-                                       message);
-            } catch (Exception e) {
-                // unable to modify the order, but the show must go on!
-                PlatformServices.handleException(this,
-                                                 "Unable to modify order",
-                                                 e);
+        boolean failed = false;
+        String message = null;
+        quickfix.Message fixMessage = null;
+        try {
+            // verify the broker is available
+            FixSessionStatus sessionStatus = brokerService.getFixSessionStatus(new BrokerID(inServerFixSession.getActiveFixSession().getFixSession().getBrokerId()));
+            if(sessionStatus == null) {
+                failed = true;
+                RuntimeException e = new BrokerUnavailable(new I18NBoundMessage1P(Messages.UNKNOWN_BROKER_ID,
+                                                                                  inServerFixSession.getActiveFixSession().getFixSession().getBrokerId()));
+                message = PlatformServices.getMessage(e);
+                throw e;
             }
+            if(!sessionStatus.isLoggedOn()) {
+                throw new BrokerUnavailable(Messages.UNAVAILABLE_BROKER);
+            }
+            // TODO broker algos
+            // TODO reprice
+            // construct the list of order modifiers to apply
+            Collection<MessageModifier> orderModifiers = getOrderMessageModifiers(inServerFixSession);
+            // choose the broker to use
+            ServerFixSession mappedServerFixSession = resolveVirtualServerFixSession(inServerFixSession);
+            // create the FIX message (we can use only one message factory, so if the broker is a virtual broker, we defer to the mapped broker, otherwise the virtual broker would have to duplicate
+            //  the entire mapped broker dictionary, etc)
+            fixMessage = FIXConverter.toQMessage(mappedServerFixSession.getFIXVersion().getMessageFactory(),
+                                                 FIXMessageUtil.getDataDictionary(mappedServerFixSession.getFIXVersion()),
+                                                 inOrder);
+            // apply modifiers
+            for(MessageModifier orderModifier : orderModifiers) {
+                try {
+                    orderModifier.modify(mappedServerFixSession,
+                                         fixMessage);
+                    SLF4JLoggerProxy.debug(this,
+                                           "Applied {} to {}",
+                                           orderModifier,
+                                           fixMessage);
+                } catch (Exception e) {
+                    // unable to modify the order, but the show must go on!
+                    PlatformServices.handleException(this,
+                                                     "Unable to modify order",
+                                                     e);
+                }
+            }
+            return fixMessage;
+        } catch (Exception e) {
+            OrderID orderId = null;
+            failed = true;
+            message = PlatformServices.getMessage(e);
+            if(inOrder instanceof OrderBase) {
+                orderId = ((OrderBase)inOrder).getOrderID();
+            } else if(fixMessage != null && fixMessage.isSetField(quickfix.field.OrderID.FIELD)) {
+                try {
+                    orderId = new OrderID(fixMessage.getString(quickfix.field.OrderID.FIELD));
+                } catch (FieldNotFound ignored) {} // this exception cannot occur because we explicitly check for the existance of the field above
+            }
+            if(orderId == null) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Unable to send outgoing order status for {}/{} because it doesn't appear to have an order id",
+                                      inOrder,
+                                      fixMessage);
+            } else {
+                eventBusService.post(new SimpleOutgoingOrderStatusEvent(message,
+                                                                        failed,
+                                                                        inOrder,
+                                                                        orderId,
+                                                                        fixMessage));
+            }
+            throw e;
         }
-        return message;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.service.TradeService#convertResponse(org.marketcetera.event.HasFIXMessage, org.marketcetera.brokers.Broker)
@@ -229,6 +272,23 @@ public class TradeServiceImpl
             }
         }
     }
+    /**
+     * Receive order status from outgoing orders.
+     *
+     * @param inEvent an <code>OutgoingOrderStatusEvent</code> value
+     */
+    @Subscribe
+    public void onOutgoingOrderStatus(OutgoingOrderStatusEvent inEvent)
+    {
+        SLF4JLoggerProxy.info(this,
+                              "Received {}",
+                              inEvent);
+        orderStatusEventsByOrderId.put(inEvent.getOrderId(),
+                                       inEvent);
+        synchronized(orderStatusEventsByOrderId) {
+            orderStatusEventsByOrderId.notifyAll();
+        }
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.service.TradeService#sendOrder(org.marketcetera.admin.User, org.marketcetera.trade.Order)
      */
@@ -242,6 +302,26 @@ public class TradeServiceImpl
                               inOrder);
         eventBusService.post(new SimpleOutgoingOrderEvent(inUser,
                                                           inOrder));
+        // wait a reasonable amount of time in case of async operations? TODO
+        if(inOrder instanceof OrderBase) {
+            OrderID orderId = ((OrderBase)inOrder).getOrderID();
+            OutgoingOrderStatusEvent orderStatusEvent = orderStatusEventsByOrderId.getIfPresent(orderId);
+            SLF4JLoggerProxy.info(this,
+                                  "Order status for {}: {}",
+                                  orderId,
+                                  orderStatusEvent);
+            if(orderStatusEvent.getFailed()) {
+                SLF4JLoggerProxy.warn(this,
+                                      "Unable to submit {}: {}",
+                                      orderId,
+                                      orderStatusEvent.getErrorMessage());
+                throw new SendOrderFailed(orderStatusEvent.getErrorMessage());
+            }
+        } else {
+            SLF4JLoggerProxy.info(this,
+                                  "Cannot retrieve order status for {} because it has no order id",
+                                  inOrder);
+        }
     }
     /**
      * Validate and start the object.
@@ -251,6 +331,9 @@ public class TradeServiceImpl
     {
         SLF4JLoggerProxy.info(this,
                               "Trade service started");
+        orderStatusEventsByOrderId = CacheBuilder.newBuilder().expireAfterAccess(orderStatusTimeout,
+                                                                                 TimeUnit.SECONDS).build();
+        eventBusService.register(this);
     }
     /**
      * Resolve the given session into the appropriate virtual or physical session.
@@ -338,6 +421,15 @@ public class TradeServiceImpl
      */
     @Autowired(required=false)
     private BrokerSelector brokerSelector;
+    /**
+     * timeout in seconds for the order status to be retained
+     */
+    @Value("${metc.trade.order.status.timeout.interval.seconds:10}")
+    private long orderStatusTimeout;
+    /**
+     * caches most recent status update for outgoing orders
+     */
+    private Cache<OrderID,OutgoingOrderStatusEvent> orderStatusEventsByOrderId;
     /**
      * holds trade message listener subscribers
      */

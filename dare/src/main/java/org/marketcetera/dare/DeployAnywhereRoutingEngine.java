@@ -89,7 +89,7 @@ import org.marketcetera.trade.event.OwnedMessage;
 import org.marketcetera.trade.event.SimpleIncomingFixAdminMessageEvent;
 import org.marketcetera.trade.event.SimpleIncomingFixAppMessageEvent;
 import org.marketcetera.trade.event.SimpleIncomingOrderInterceptedEvent;
-import org.marketcetera.trade.event.SimpleOutgoingOrderStatus;
+import org.marketcetera.trade.event.SimpleOutgoingOrderStatusEvent;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -109,6 +109,7 @@ import com.hazelcast.core.OperationTimeoutException;
 import quickfix.ConfigError;
 import quickfix.DefaultSessionFactory;
 import quickfix.DynamicSessionThreadedSocketAcceptor;
+import quickfix.FieldNotFound;
 import quickfix.Session;
 import quickfix.SessionFactory;
 import quickfix.SessionID;
@@ -541,10 +542,21 @@ public class DeployAnywhereRoutingEngine
                                           inOwnedMessage.getSessionId());
         } catch (SessionNotFound e) {
             message = ExceptionUtils.getRootCauseMessage(e);
+            failed = true;
         }
-        eventBusService.post(new SimpleOutgoingOrderStatus(message,
-                                                           failed,
-                                                           inOwnedMessage.getMessage()));
+        if(inOwnedMessage.getMessage().isSetField(quickfix.field.OrderID.FIELD)) {
+            try {
+                eventBusService.post(new SimpleOutgoingOrderStatusEvent(message,
+                                                                        failed,
+                                                                        null,
+                                                                        new OrderID(inOwnedMessage.getMessage().getString(quickfix.field.OrderID.FIELD)),
+                                                                        inOwnedMessage.getMessage()));
+            } catch (FieldNotFound ignored) {} // this exception can't occur because we explicitly check for the existance of the field
+        } else {
+            SLF4JLoggerProxy.debug(this,
+                                   "Not posting outgoing order status for {} because it doesn't have an order id",
+                                   inOwnedMessage.getMessage());
+        }
     }
     /**
      * Indicates that the given FIX session has been disabled.
