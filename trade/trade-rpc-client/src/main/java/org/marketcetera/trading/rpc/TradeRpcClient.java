@@ -55,6 +55,7 @@ import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.RelatedOrder;
+import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
@@ -414,6 +415,40 @@ public class TradeRpcClient
         });
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#getReports(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public CollectionPageResponse<Report> getReports(PageRequest inPageRequest)
+    {
+        return executeCall(new Callable<CollectionPageResponse<Report>>(){
+            @Override
+            public CollectionPageResponse<Report> call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} requesting reports: {}",
+                                       getSessionId(),
+                                       inPageRequest);
+                TradingRpc.GetReportsRequest.Builder requestBuilder = TradingRpc.GetReportsRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setPageRequest(PagingRpcUtil.buildPageRequest(inPageRequest));
+                TradingRpc.GetReportsResponse response = getBlockingStub().getReports(requestBuilder.build());
+                CollectionPageResponse<Report> results = new CollectionPageResponse<>();
+                response.getReportsList().forEach(rpcReport->results.getElements().add(TradeRpcUtil.getReport(rpcReport,
+                                                                                                              reportFactory,
+                                                                                                              userFactory)));
+                PagingRpcUtil.setPageResponse(inPageRequest,
+                                              response.getPageResponse(),
+                                              results);
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       results);
+                return results;
+            }
+        });
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#getOpenOrders()
      */
     @Override
@@ -623,7 +658,7 @@ public class TradeRpcClient
                 TradingRpc.AddReportRequest.Builder requestBuilder = TradingRpc.AddReportRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setBrokerId(inBrokerID.getValue());
-                requestBuilder.setMessage(TradeRpcUtil.getFixMessage(inReport.getMessage()));
+                requestBuilder.setMessage(TradeRpcUtil.getRpcFixMessage(inReport.getMessage()));
                 TradingRpc.AddReportRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(TradeRpcClient.this,
                                        "{} sending {}",

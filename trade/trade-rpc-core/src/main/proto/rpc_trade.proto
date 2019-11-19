@@ -18,6 +18,16 @@ message OpenOrdersResponse {
     repeated OrderSummary orders = 2;
 }
 
+message GetReportsRequest {
+    string sessionId = 1;
+    PageRequest pageRequest = 2;
+}
+
+message GetReportsResponse {
+    PageResponse pageResponse = 1;
+    repeated Report reports = 2;
+}
+
 message SendOrderRequest {
     string sessionId = 1;
     repeated Order order = 2;
@@ -147,4 +157,5 @@ service TradingRpcService {
     rpc addReport(AddReportRequest) returns (AddReportResponse);
     rpc deleteReport(DeleteReportRequest) returns (DeleteReportResponse);
     rpc readAvailableFixInitiatorSessions(ReadAvailableFixInitiatorSessionsRequest) returns (ReadAvailableFixInitiatorSessionsResponse);
+    rpc getReports(GetReportsRequest) returns (GetReportsResponse);
 }

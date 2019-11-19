@@ -11,6 +11,8 @@ import org.marketcetera.admin.User;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.IncomingMessage;
+import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
@@ -66,6 +68,13 @@ public interface ReportService
      * @return an <code>OrderStatus</code> value
      */
     OrderStatus getOrderStatusForOrderChain(OrderID inOrderId);
+    /**
+     * Get reports with the given page request.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;Report&gt;</code> value
+     */
+    CollectionPageResponse<Report> getReports(PageRequest inPageRequest);
     /**
      * Get the most recent execution report for the order chain represented by the given order id.
      * 

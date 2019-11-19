@@ -1,18 +1,12 @@
 package org.marketcetera.web.trade.openorders.view;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBException;
 
-import org.joda.time.DateTime;
-import org.marketcetera.admin.User;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.XmlService;
-import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Instrument;
@@ -21,6 +15,9 @@ import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.converters.DateConverter;
+import org.marketcetera.web.converters.DecimalConverter;
+import org.marketcetera.web.converters.UserConverter;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.trade.TradeClientService;
@@ -35,7 +32,6 @@ import org.springframework.context.annotation.Scope;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -115,37 +111,7 @@ public class OpenOrderView
                              "lastQuantity",
                              "lastPrice",
                              "actor");
-        Grid.Column actorColumn = getGrid().getColumn("actor");
-        actorColumn.setHeaderCaption("User");
-        actorColumn.setConverter(new Converter<String,User>() {
-            @Override
-            public User convertToModel(String inValue,
-                                       Class<? extends User> inTargetType,
-                                       Locale inLocale)
-                    throws ConversionException
-            {
-                throw new UnsupportedOperationException(); // TODO
-            }
-            @Override
-            public String convertToPresentation(User inValue,
-                                                Class<? extends String> inTargetType,
-                                                Locale inLocale)
-                    throws ConversionException
-            {
-                return inValue.getName();
-            }
-            @Override
-            public Class<User> getModelType()
-            {
-                return User.class;
-            }
-            @Override
-            public Class<String> getPresentationType()
-            {
-                return String.class;
-            }
-            private static final long serialVersionUID = 264684202933203981L;
-        });
+        getGrid().getColumn("actor").setHeaderCaption("User").setConverter(UserConverter.instance);
         getGrid().getColumn("instrument").setConverter(new Converter<String,Instrument>() {
             @Override
             public Instrument convertToModel(String inValue,
@@ -175,83 +141,13 @@ public class OpenOrderView
             }
             private static final long serialVersionUID = 2362260803441310303L;
         });
-        Converter<String,BigDecimal> decimalColumnConverter = new Converter<String,BigDecimal>() {
-            @Override
-            public BigDecimal convertToModel(String inValue,
-                                             Class<? extends BigDecimal> inTargetType,
-                                             Locale inLocale)
-                    throws ConversionException
-            {
-                return new BigDecimal(inValue);
-            }
-            @Override
-            public String convertToPresentation(BigDecimal inValue,
-                                                Class<? extends String> inTargetType,
-                                                Locale inLocale)
-                    throws ConversionException
-            {
-                if(BigDecimal.ZERO.compareTo(inValue) == 0) {
-                    return "0.00";
-                } else {
-                    inValue = inValue.stripTrailingZeros();
-                    if(inValue.scale() > 7) {
-                        inValue = inValue.setScale(7,
-                                                   RoundingMode.HALF_UP);
-                    } else if(inValue.scale() < 2) {
-                        inValue = inValue.setScale(2,
-                                                   RoundingMode.HALF_UP);
-                    }
-                    return inValue.toPlainString();
-                }
-            }
-            @Override
-            public Class<BigDecimal> getModelType()
-            {
-                return BigDecimal.class;
-            }
-            @Override
-            public Class<String> getPresentationType()
-            {
-                return String.class;
-            }
-            private static final long serialVersionUID = -7114136278014387059L;
-        };
-        Converter<String,Date> dateColumnConverter = new Converter<String,Date>() {
-            @Override
-            public Date convertToModel(String inValue,
-                                       Class<? extends Date> inTargetType,
-                                       Locale inLocale)
-                    throws ConversionException
-            {
-                return new TimeFactoryImpl().create(inValue).toDate();
-            }
-            @Override
-            public String convertToPresentation(Date inValue,
-                                                Class<? extends String> inTargetType,
-                                                Locale inLocale)
-                    throws ConversionException
-            {
-                return TimeFactoryImpl.FULL_MILLISECONDS_LOCAL.print(new DateTime(inValue.getTime()));
-            }
-            @Override
-            public Class<Date> getModelType()
-            {
-                return Date.class;
-            }
-            @Override
-            public Class<String> getPresentationType()
-            {
-                return String.class;
-            }
-            private static final long serialVersionUID = -6232768154682956927L;
-        };
-        getGrid().getColumn("orderPrice").setConverter(decimalColumnConverter).setHeaderCaption("Ord Px");
-        getGrid().getColumn("averagePrice").setConverter(decimalColumnConverter).setHeaderCaption("Avg Px");
-        getGrid().getColumn("lastPrice").setConverter(decimalColumnConverter).setHeaderCaption("Last Px");
+        getGrid().getColumn("orderPrice").setConverter(DecimalConverter.instance).setHeaderCaption("Ord Px");
+        getGrid().getColumn("averagePrice").setConverter(DecimalConverter.instance).setHeaderCaption("Avg Px");
+        getGrid().getColumn("lastPrice").setConverter(DecimalConverter.instance).setHeaderCaption("Last Px");
         getGrid().getColumn("lastQuantity").setHeaderCaption("Last Qty");
         getGrid().getColumn("leavesQuantity").setHeaderCaption("Leaves Qty");
         getGrid().getColumn("orderQuantity").setHeaderCaption("Ord Qty");
-        getGrid().getColumn("transactTime").setConverter(dateColumnConverter);
+        getGrid().getColumn("transactTime").setConverter(DateConverter.instance);
         getGrid().getColumn("cumulativeQuantity").setHeaderCaption("Cum Qty");
         getGrid().getColumn("orderStatus").setHeaderCaption("Ord Status");
     }

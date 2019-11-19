@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.admin.AdminRpc;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserFactory;
+import org.marketcetera.admin.rpc.AdminRpcUtil;
 import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.algo.BrokerAlgoTagSpec;
@@ -40,6 +41,7 @@ import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.MutableOrderSummary;
 import org.marketcetera.trade.MutableOrderSummaryFactory;
+import org.marketcetera.trade.MutableReport;
 import org.marketcetera.trade.MutableReportFactory;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.Order;
@@ -58,6 +60,8 @@ import org.marketcetera.trade.PositionEffect;
 import org.marketcetera.trade.RelatedOrder;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.ReportType;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
@@ -742,6 +746,21 @@ public abstract class TradeRpcUtil
         inBuilder.setBrokerId(value);
     }
     /**
+     * Set the broker ID from the given report on the given RPC builder.
+     *
+     * @param inReport a <code>Report</code> value
+     * @param inBuilder a <code>TradingTypesRpc.Report.Builder</code> value
+     */
+    public static void setBrokerId(Report inReport,
+                                   TradingTypesRpc.Report.Builder inBuilder)
+    {
+        if(inReport.getBrokerID() == null) {
+            return;
+        }
+        String value = StringUtils.trimToNull(inReport.getBrokerID().getValue());
+        inBuilder.setBrokerId(value);
+    }
+    /**
      * Set the broker ID from the given order on the given RPC builder.
      *
      * @param inOrder a <code>FIXOrder</code> value
@@ -1263,11 +1282,13 @@ public abstract class TradeRpcUtil
             if(value != null) {
                 brokerId = new BrokerID(value);
             }
+        } else if(inObject instanceof TradingTypesRpc.Report) {
+            String value = StringUtils.trimToNull(((TradingTypesRpc.Report)inObject).getBrokerId());
+            if(value != null) {
+                brokerId = new BrokerID(value);
+            }
         }
-        if(brokerId == null) {
-            return Optional.empty();
-        }
-        return Optional.of(brokerId);
+        return Optional.ofNullable(brokerId);
     }
     /**
      * Get the MATP order value for the given RPC order.
@@ -1407,6 +1428,76 @@ public abstract class TradeRpcUtil
                 throw new UnsupportedOperationException();
         }
         return tradeMessage;
+    }
+    /**
+     * Get the RPC report from the given report.
+     *
+     * @param inReport a <code>Report</code> value
+     * @return a <code>TradingTypesRpc.Report</code> value
+     */
+    public static TradingTypesRpc.Report getRpcReport(Report inReport)
+    {
+        TradingTypesRpc.Report.Builder reportBuilder = TradingTypesRpc.Report.newBuilder();
+        AdminRpcUtil.getRpcUser(inReport.getActor()).ifPresent(rpcActor->reportBuilder.setActor(rpcActor));
+        if(inReport.getBrokerID() != null) {
+            reportBuilder.setBrokerId(inReport.getBrokerID().getValue());
+        }
+        reportBuilder.setHierarchy(getRpcHierarchy(inReport.getHierarchy()));
+        if(inReport.getFixMessage() != null) {
+            try {
+                reportBuilder.setMessage(getRpcFixMessage(new quickfix.Message(inReport.getFixMessage())));
+            } catch (quickfix.InvalidMessage e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
+        reportBuilder.setMsgSeqNum(inReport.getMsgSeqNum());
+        if(inReport.getOrderID() != null) {
+            reportBuilder.setOrderId(inReport.getOrderID().getValue());
+        }
+        reportBuilder.setOriginator(getRpcOriginator(inReport.getOriginator()));
+        if(inReport.getReportID() != null) {
+            reportBuilder.setReportId(inReport.getReportID().longValue());
+        }
+        reportBuilder.setReportType(getRpcReportType(inReport.getReportType()));
+        BaseRpcUtil.getTimestampValue(inReport.getSendingTime()).ifPresent(rpcTimestamp->reportBuilder.setSendingTime(rpcTimestamp));
+        if(inReport.getSessionId() != null) {
+            reportBuilder.setSessionId(inReport.getSessionId().toString());
+        }
+        AdminRpcUtil.getRpcUser(inReport.getViewer()).ifPresent(rpcViewer->reportBuilder.setViewer(rpcViewer));
+        return reportBuilder.build();
+    }
+    /**
+     * Get the report from the given RPC report.
+     *
+     * @param inRpcReport a <code>TradingTypesRpc.Report</code> value
+     * @param inReportFactory a <code>MutableReportFactory</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
+     * @return a <code>Report</code> value
+     */
+    public static Report getReport(TradingTypesRpc.Report inRpcReport,
+                                   MutableReportFactory inReportFactory,
+                                   UserFactory inUserFactory)
+    {
+        MutableReport report = inReportFactory.create();
+        if(inRpcReport.hasActor()) {
+            AdminRpcUtil.getUser(inRpcReport.getActor(),
+                                 inUserFactory).ifPresent(actor->report.setActor(actor));
+        }
+        getBrokerId(inRpcReport).ifPresent(brokerId->report.setBrokerID(brokerId));
+        report.setFixMessage(getFixMessage(inRpcReport.getMessage()).toString());
+        report.setHierarchy(getHierarchy(inRpcReport.getHierarchy()));
+        report.setMsgSeqNum(inRpcReport.getMsgSeqNum());
+        report.setOrderID(new OrderID(inRpcReport.getOrderId()));
+        report.setOriginator(getOriginator(inRpcReport.getOriginator()));
+        report.setReportID(new ReportID(inRpcReport.getReportId()));
+        report.setReportType(getReportType(inRpcReport.getReportType()));
+        BaseRpcUtil.getDateValue(inRpcReport.getSendingTime()).ifPresent(sendingTime->report.setSendingTime(sendingTime));
+        report.setSessionId(new quickfix.SessionID(inRpcReport.getSessionId()));
+        if(inRpcReport.hasViewer()) {
+            AdminRpcUtil.getUser(inRpcReport.getViewer(),
+                                 inUserFactory).ifPresent(viewer->report.setViewer(viewer));
+        }
+        return report;
     }
     /**
      * Get the RPC trade message from the given trade message.
@@ -2144,7 +2235,7 @@ public abstract class TradeRpcUtil
     /**
      * Get the originator value from the given RPC message.
      *
-     * @param inRpcTradeMessage a <code>TradingTypesRpc.OrderBase</code> value 
+     * @param inRpcTradeMessage a <code>TradingTypesRpc.TradeMessage</code> value 
      * @return an <code>Originator</code> value
      */
     private static Originator getOriginator(TradingTypesRpc.TradeMessage inRpcTradeMessage)
@@ -2157,6 +2248,59 @@ public abstract class TradeRpcUtil
             case UNRECOGNIZED:
             default:
                 throw new UnsupportedOperationException("Unsupported originator: " + inRpcTradeMessage.getOriginator());
+        }
+    }
+    /**
+     * Get the originator value from the given RPC message.
+     *
+     * @param inRpcOriginator a <code>TradingTypesRpc.Originator</code> value 
+     * @return an <code>Originator</code> value
+     */
+    private static Originator getOriginator(TradingTypesRpc.Originator inRpcOriginator)
+    {
+        switch(inRpcOriginator) {
+            case BrokerOriginator:
+                return Originator.Broker;
+            case ServerOriginator:
+                return Originator.Server;
+            case UNRECOGNIZED:
+            default:
+                throw new UnsupportedOperationException("Unsupported originator: " + inRpcOriginator);
+        }
+    }
+    /**
+     * Get the report type value from the given RPC report type.
+     *
+     * @param inRpcReportType a <code>TradingTypesRpc.ReportType</code> value 
+     * @return a <code>ReportType</code> value
+     */
+    private static ReportType getReportType(TradingTypesRpc.ReportType inRpcReportType)
+    {
+        switch(inRpcReportType) {
+            case CancelReject:
+                return ReportType.CancelReject;
+            case ExecutionReport:
+                return ReportType.ExecutionReport;
+            case UNRECOGNIZED:
+            default:
+                throw new UnsupportedOperationException("Unsupported report type: " + inRpcReportType);
+        }
+    }
+    /**
+     * Get the RPC report type value from the given report type.
+     *
+     * @param inReportType a <code>ReportType</code> value 
+     * @return a <code>TradingTypesRpc.ReportType</code> value
+     */
+    private static TradingTypesRpc.ReportType getRpcReportType(ReportType inReportType)
+    {
+        switch(inReportType) {
+            case CancelReject:
+                return TradingTypesRpc.ReportType.CancelReject;
+            case ExecutionReport:
+                return TradingTypesRpc.ReportType.ExecutionReport;
+            default:
+                throw new UnsupportedOperationException("Unsupported report type: " + inReportType);
         }
     }
     /**
@@ -2241,7 +2385,7 @@ public abstract class TradeRpcUtil
      * @param inMessage a <code>quickfix.Message</code> value
      * @return a <code>TradingTypesRpc.FixMessage</code> value
      */
-    public static TradingTypesRpc.FixMessage getFixMessage(quickfix.Message inMessage)
+    public static TradingTypesRpc.FixMessage getRpcFixMessage(quickfix.Message inMessage)
     {
         TradingTypesRpc.FixMessage.Builder fixMessageBuilder = TradingTypesRpc.FixMessage.newBuilder();
         Map<String,String> fields = Maps.newHashMap();

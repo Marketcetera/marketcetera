@@ -19,6 +19,7 @@ import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
+import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.TradeMessagePublisher;
 
@@ -157,4 +158,11 @@ public interface TradeClient
      * @return an <code>ExecutionReport</code> value or <code>null</code>
      */
     ExecutionReport getLatestExecutionReportForOrderChain(OrderID inOrderId);
+    /**
+     * Get reports with the given page request.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;Report&gt;</code> value
+     */
+    CollectionPageResponse<Report> getReports(PageRequest inPageRequest);
 }

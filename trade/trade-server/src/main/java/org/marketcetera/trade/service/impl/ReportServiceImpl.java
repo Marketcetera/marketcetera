@@ -38,6 +38,7 @@ import org.marketcetera.fix.IncomingMessage;
 import org.marketcetera.fix.dao.IncomingMessageDao;
 import org.marketcetera.fix.dao.PersistentIncomingMessage;
 import org.marketcetera.fix.dao.QPersistentIncomingMessage;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
@@ -184,6 +185,22 @@ public class ReportServiceImpl
         eventBusService.post(new SimpleInjectedFixMessageEvent(owner,
                                                                inBrokerId,
                                                                fixMessage));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.ReportService#getReports(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public CollectionPageResponse<Report> getReports(org.marketcetera.persist.PageRequest inPageRequest)
+    {
+        // TODO use the sort from the page request or this one if no sort specified
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC,
+                                           QPersistentReport.persistentReport.sendingTime.getMetadata().getName()));
+        Pageable pageRequest = PageRequest.of(inPageRequest.getPageNumber(),
+                                              inPageRequest.getPageSize(),
+                                              sort);
+        Page<Report> pageResponse = persistentReportDao.findAllReports(pageRequest);
+        return new CollectionPageResponse<>(pageRequest,
+                                            pageResponse);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getReportFor(org.marketcetera.trade.ReportID)

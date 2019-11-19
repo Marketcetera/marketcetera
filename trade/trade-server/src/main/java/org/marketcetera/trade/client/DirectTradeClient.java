@@ -28,6 +28,7 @@ import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
+import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.SendOrderFailed;
 import org.marketcetera.trade.TradeMessageListener;
@@ -128,6 +129,14 @@ public class DirectTradeClient
     public CollectionPageResponse<OrderSummary> getOpenOrders(PageRequest inPageRequest)
     {
         return orderSummaryService.findOpenOrders(inPageRequest);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#getReports(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public CollectionPageResponse<Report> getReports(PageRequest inPageRequest)
+    {
+        return reportService.getReports(inPageRequest);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradeClient#sendOrders(java.util.List)

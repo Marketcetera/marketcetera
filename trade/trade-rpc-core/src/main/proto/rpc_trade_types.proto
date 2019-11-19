@@ -71,6 +71,11 @@ enum SecurityType {
     Currency = 5;
 }
 
+enum ReportType {
+    ExecutionReport = 0;
+    CancelReject = 1;
+}
+
 enum OrderCapacity {
     UnknownOrderCapacity = 0;
     Agency = 1;
@@ -123,6 +128,21 @@ message OrderSummary {
     google.protobuf.Timestamp sendingTime = 16;
     google.protobuf.Timestamp transactTime = 17;
     User user = 18;
+}
+
+message Report {
+    string orderId = 1;
+    User actor = 2;
+    User viewer = 3;
+    FixMessage message = 4;
+    string sessionId = 5;
+    int32 msgSeqNum = 6;
+    google.protobuf.Timestamp sendingTime = 7;
+    ReportType reportType = 8;
+    string brokerId = 9;
+    uint64 reportId = 10;
+    Originator originator = 11;
+    Hierarchy hierarchy = 12;
 }
 
 message FixMessage {

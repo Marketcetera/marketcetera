@@ -12,6 +12,7 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
+import org.marketcetera.trade.Report;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trading.rpc.TradeRpcClientFactory;
@@ -54,6 +55,10 @@ public class TradeClientService
     public ExecutionReport getLatestExecutionReportForOrderChain(OrderID inOrderId)
     {
         return tradeClient.getLatestExecutionReportForOrderChain(inOrderId);
+    }
+    public CollectionPageResponse<Report> getReports(PageRequest inPageRequest)
+    {
+        return tradeClient.getReports(inPageRequest);
     }
     /**
      * Get open orders.

@@ -39,6 +39,7 @@ import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
+import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
@@ -64,6 +65,8 @@ import org.marketcetera.trading.rpc.TradingRpc.GetLatestExecutionReportForOrderC
 import org.marketcetera.trading.rpc.TradingRpc.GetLatestExecutionReportForOrderChainResponse;
 import org.marketcetera.trading.rpc.TradingRpc.GetPositionAsOfRequest;
 import org.marketcetera.trading.rpc.TradingRpc.GetPositionAsOfResponse;
+import org.marketcetera.trading.rpc.TradingRpc.GetReportsRequest;
+import org.marketcetera.trading.rpc.TradingRpc.GetReportsResponse;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersRequest;
 import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersResponse;
 import org.marketcetera.trading.rpc.TradingRpc.ReadAvailableFixInitiatorSessionsRequest;
@@ -166,6 +169,37 @@ public class TradeRpcService<SessionClazz>
         {
             TradeRpcService.this.doHeartbeat(inRequest,
                                                    inResponseObserver);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#getReports(org.marketcetera.trading.rpc.TradingRpc.GetReportsRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getReports(GetReportsRequest inRequest,
+                               StreamObserver<GetReportsResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradePermissions.ViewReportAction.name());
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Received {}",
+                                       inRequest);
+                TradingRpc.GetReportsResponse.Builder responseBuilder = TradingRpc.GetReportsResponse.newBuilder();
+                PageRequest pageRequest = inRequest.hasPageRequest()?PagingRpcUtil.getPageRequest(inRequest.getPageRequest()):PageRequest.ALL;
+                CollectionPageResponse<Report> reportPage = reportService.getReports(pageRequest);
+                reportPage.getElements().forEach(report->responseBuilder.addReports(TradeRpcUtil.getRpcReport(report)));
+                responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
+                                                                              reportPage));
+                TradingRpc.GetReportsResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Responding: {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,
+                            inResponseObserver);
+            }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#getOpenOrders(org.marketcetera.trading.rpc.TradingRpc.OpenOrdersRequest, io.grpc.stub.StreamObserver)

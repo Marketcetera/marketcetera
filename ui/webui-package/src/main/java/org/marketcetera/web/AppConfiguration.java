@@ -89,7 +89,7 @@ public class AppConfiguration
      * @return an <code>AdminClientFactory</code> value
      */
     @Bean
-    public static AdminRpcClientFactory getAdminClientFactory()
+    public AdminRpcClientFactory getAdminClientFactory()
     {
         return new AdminRpcClientFactory();
     }
@@ -99,7 +99,7 @@ public class AppConfiguration
      * @return a <code>FixAdminClientFactory</code> value
      */
     @Bean
-    public static FixAdminRpcClientFactory getFixAdminClientFactory()
+    public FixAdminRpcClientFactory getFixAdminClientFactory()
     {
         return new FixAdminRpcClientFactory();
     }
@@ -109,7 +109,7 @@ public class AppConfiguration
      * @return a <code>TradeRpcClientFactory</code> value
      */
     @Bean
-    public static TradeRpcClientFactory getTradeClientFactory()
+    public TradeRpcClientFactory getTradeClientFactory()
     {
         return new TradeRpcClientFactory();
     }
@@ -119,7 +119,7 @@ public class AppConfiguration
      * @return a <code>ClusterClientFactory</code> value
      */
     @Bean
-    public static ClusterRpcClientFactory getClusterClientFactory()
+    public ClusterRpcClientFactory getClusterClientFactory()
     {
         return new ClusterRpcClientFactory();
     }
@@ -129,7 +129,7 @@ public class AppConfiguration
      * @return a <code>DataFlowClientFactory</code> value
      */
     @Bean
-    public static DataFlowRpcClientFactory getDataFlowClientFactory()
+    public DataFlowRpcClientFactory getDataFlowClientFactory()
     {
         return new DataFlowRpcClientFactory();
     }
@@ -139,7 +139,7 @@ public class AppConfiguration
      * @return a <code>MarketDataClientFactory</code> value
      */
     @Bean
-    public static MarketDataRpcClientFactory getMarketDataClientFactory()
+    public MarketDataRpcClientFactory getMarketDataClientFactory()
     {
         return new MarketDataRpcClientFactory();
     }
@@ -169,7 +169,7 @@ public class AppConfiguration
 //     * @return an <code>SAClientFactory</code> value
 //     */
 //    @Bean
-//    public static SAClientFactory getSAClientFactory()
+//    public SAClientFactory getSAClientFactory()
 //    {
 //        return new RpcSAClientFactory();
 //    }
@@ -179,7 +179,7 @@ public class AppConfiguration
      * @return a <code>PermissionFactory</code> value
      */
     @Bean
-    public static PermissionFactory getPermissionFactory()
+    public PermissionFactory getPermissionFactory()
     {
         return new SimplePermissionFactory();
     }
@@ -189,7 +189,7 @@ public class AppConfiguration
      * @return a <code>UserFactory</code> value
      */
     @Bean
-    public static UserFactory getUserFactory()
+    public UserFactory getUserFactory()
     {
         return new SimpleUserFactory();
     }
@@ -199,7 +199,7 @@ public class AppConfiguration
      * @return a <code>RoleFactory</code> value
      */
     @Bean
-    public static RoleFactory getRoleFactory()
+    public RoleFactory getRoleFactory()
     {
         return new SimpleRoleFactory();
     }
@@ -209,7 +209,7 @@ public class AppConfiguration
      * @return an <code>EventBus</code> value
      */
     @Bean
-    public static EventBus getEventBus()
+    public EventBus getEventBus()
     {
         return new EventBus();
     }
@@ -219,7 +219,7 @@ public class AppConfiguration
      * @return a <code>UserAttributeFactory</code> value
      */
     @Bean
-    public static UserAttributeFactory getUserAttributeFactory()
+    public UserAttributeFactory getUserAttributeFactory()
     {
         return new SimpleUserAttributeFactory();
     }
@@ -291,7 +291,6 @@ public class AppConfiguration
      * @return an <code>XmlService</code> value
      */
     @Bean
-    @SuppressWarnings("unchecked")
     public XmlService getXmlService()
     {
         XmlService xmlService = new XmlService();
@@ -312,12 +311,12 @@ public class AppConfiguration
      *
      * @return a <code>ApplicationContext</code> value
      */
-    public static ApplicationContext getApplicationContext()
+    public ApplicationContext getApplicationContext()
     {
         return applicationContext;
     }
     /**
      * application context value
      */
-    private static ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 }
