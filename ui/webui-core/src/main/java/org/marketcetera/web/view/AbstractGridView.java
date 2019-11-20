@@ -75,7 +75,7 @@ public abstract class AbstractGridView<Clazz>
             dataContainer.update();
         });
         dataContainer = createDataContainer();
-        dataContainer.setItemsPerPage(25);
+        dataContainer.setItemsPerPage(25); // TODO config
         dataContainer.setCurrentPage(0);
         dataContainer.start();
         grid.setContainerDataSource(dataContainer);

@@ -348,7 +348,6 @@ public class OrderTicketView
             } else {
                 newOrder = Factory.getInstance().createOrderSingle();
             }
-//            OrderSingle newOrder = Factory.getInstance().createOrderSingle();
             newOrder.setAccount(StringUtils.trimToNull(accountTextField.getValue()));
             if(brokerAlgoComboBox.getValue() != null) {
                 BrokerAlgoSpec brokerAlgoSpec = (BrokerAlgoSpec)brokerAlgoComboBox.getValue();

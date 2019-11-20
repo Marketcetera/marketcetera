@@ -526,6 +526,14 @@ public class DeployAnywhereRoutingEngine
                                   ExceptionUtils.getRootCauseMessage(e));
         }
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return getClusterWorkUnitUid();
+    }
     /**
      * Receive outgoing owned messages.
      *

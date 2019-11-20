@@ -157,7 +157,7 @@ public class OrderSummaryServiceImpl
      */
     @Override
     public PersistentOrderSummary findByRootOrderIdAndOrderId(OrderID inRootID,
-                                                             OrderID inOrderID)
+                                                              OrderID inOrderID)
     {
         return orderStatusDao.findByRootOrderIdAndOrderId(inRootID,
                                                           inOrderID);

@@ -2,7 +2,6 @@ package org.marketcetera.web.converters;
 
 import java.util.Locale;
 
-import org.marketcetera.admin.User;
 import org.marketcetera.trade.ReportType;
 
 import com.google.common.collect.BiMap;
@@ -12,7 +11,7 @@ import com.vaadin.data.util.converter.Converter;
 /* $License$ */
 
 /**
- * Converts columns with a {@link User} object for display.
+ * Converts columns with a {@link ReportType} object for display.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

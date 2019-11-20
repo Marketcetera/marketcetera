@@ -12,6 +12,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.google.common.collect.Lists;
 import com.vaadin.data.sort.SortOrder;
@@ -344,7 +345,8 @@ public abstract class PagedDataContainer<Clazz>
     /**
      * number of items per page to display
      */
-    private int itemsPerPage = 25;
+    @Value("${metc.grid.items.per.page:25}")
+    private int itemsPerPage;
     /**
      * current page being displayed
      */

@@ -83,6 +83,9 @@ public class StyleService
                    inKey,
                    inComponent);
     }
+    /**
+     * map of styles specified in configuration
+     */
     @Value("#{${metc.styles}}")
     private Map<String,String> styleProperties = Maps.newHashMap();
 }

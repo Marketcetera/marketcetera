@@ -81,6 +81,7 @@ import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -192,9 +193,26 @@ public class ReportServiceImpl
     @Override
     public CollectionPageResponse<Report> getReports(org.marketcetera.persist.PageRequest inPageRequest)
     {
-        // TODO use the sort from the page request or this one if no sort specified
-        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC,
-                                           QPersistentReport.persistentReport.sendingTime.getMetadata().getName()));
+        Sort sort;
+        if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
+            sort = Sort.by(new Sort.Order(Sort.Direction.DESC,
+                                          QPersistentReport.persistentReport.sendingTime.getMetadata().getName()));
+        } else {
+            List<Sort.Order> specifiedSorts = Lists.newArrayList();
+            for(org.marketcetera.persist.Sort requestedSort : inPageRequest.getSortOrder()) {
+                String property = requestedSort.getProperty();
+                if(persistentReportAliases.containsKey(property.toLowerCase())) {
+                    property = persistentReportAliases.get(property.toLowerCase());
+                }
+                specifiedSorts.add(new Sort.Order(requestedSort.getDirection().getSpringSortDirection(),
+                                                  property));
+            }
+            sort = Sort.by(specifiedSorts);
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "getReports sort order is {} renders: {}",
+                               inPageRequest.getSortOrder(),
+                               sort);
         Pageable pageRequest = PageRequest.of(inPageRequest.getPageNumber(),
                                               inPageRequest.getPageSize(),
                                               sort);
@@ -1368,4 +1386,9 @@ public class ReportServiceImpl
      * provides scheduled services
      */
     private Timer timerService;
+    /**
+     * map of styles specified in configuration
+     */
+    @Value("#{${metc.persistent.report.aliases}}")
+    private Map<String,String> persistentReportAliases = Maps.newHashMap();
 }
