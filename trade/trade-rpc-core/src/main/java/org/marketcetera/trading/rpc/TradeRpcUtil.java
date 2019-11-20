@@ -67,7 +67,9 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
-import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
+import org.marketcetera.trade.rpc.TradeRpc;
+import org.marketcetera.trade.rpc.TradeRpc.TradeMessageListenerResponse;
+import org.marketcetera.trade.rpc.TradeTypesRpc;
 
 import com.google.common.collect.Maps;
 import com.google.protobuf.Timestamp;
@@ -87,17 +89,17 @@ public abstract class TradeRpcUtil
      * Get the RPC hierarchy value from the given value.
      *
      * @param inHierarchy a <code>Hierarchy</code> value
-     * @return a <code>TradingTypesRpc.Hierarchy</code> value
+     * @return a <code>TradeTypesRpc.Hierarchy</code> value
      */
-    public static TradingTypesRpc.Hierarchy getRpcHierarchy(Hierarchy inHierarchy)
+    public static TradeTypesRpc.Hierarchy getRpcHierarchy(Hierarchy inHierarchy)
     {
         switch(inHierarchy) {
             case Child:
-                return TradingTypesRpc.Hierarchy.ChildHierarchy;
+                return TradeTypesRpc.Hierarchy.ChildHierarchy;
             case Flat:
-                return TradingTypesRpc.Hierarchy.FlatHierarchy;
+                return TradeTypesRpc.Hierarchy.FlatHierarchy;
             case Parent:
-                return TradingTypesRpc.Hierarchy.ParentHierarchy;
+                return TradeTypesRpc.Hierarchy.ParentHierarchy;
             default:
                 throw new UnsupportedOperationException("Unsupported hierarchy: " + inHierarchy);
         }
@@ -105,10 +107,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the hierarchy value from the given RPC hierarchy.
      *
-     * @param inHierarchy a <code>TradingTypesRpc.Hierarchy</code> value
+     * @param inHierarchy a <code>TradeTypesRpc.Hierarchy</code> value
      * @return a <code>Hierarchy</code> value
      */
-    public static Hierarchy getHierarchy(TradingTypesRpc.Hierarchy inHierarchy)
+    public static Hierarchy getHierarchy(TradeTypesRpc.Hierarchy inHierarchy)
     {
         switch(inHierarchy) {
             case ChildHierarchy:
@@ -126,29 +128,29 @@ public abstract class TradeRpcUtil
      * Get the RPC time in force value for the given MATP time in force value.
      *
      * @param inTimeInForce a <code>TimeInForce</code> value
-     * @return a <code>TradingTypesRpc.TimeInForce</code> value
+     * @return a <code>TradeTypesRpc.TimeInForce</code> value
      */
-    public static TradingTypesRpc.TimeInForce getRpcTimeInForce(TimeInForce inTimeInForce)
+    public static TradeTypesRpc.TimeInForce getRpcTimeInForce(TimeInForce inTimeInForce)
     {
         switch(inTimeInForce) {
             case AtTheClose:
-                return TradingTypesRpc.TimeInForce.AtTheClose;
+                return TradeTypesRpc.TimeInForce.AtTheClose;
             case AtTheOpening:
-                return TradingTypesRpc.TimeInForce.AtTheOpening;
+                return TradeTypesRpc.TimeInForce.AtTheOpening;
             case Day:
-                return TradingTypesRpc.TimeInForce.Day;
+                return TradeTypesRpc.TimeInForce.Day;
             case FillOrKill:
-                return TradingTypesRpc.TimeInForce.FillOrKill;
+                return TradeTypesRpc.TimeInForce.FillOrKill;
             case GoodTillCancel:
-                return TradingTypesRpc.TimeInForce.GoodTillCancel;
+                return TradeTypesRpc.TimeInForce.GoodTillCancel;
             case GoodTillCrossing:
-                return TradingTypesRpc.TimeInForce.GoodTillCrossing;
+                return TradeTypesRpc.TimeInForce.GoodTillCrossing;
             case GoodTillDate:
-                return TradingTypesRpc.TimeInForce.GoodTillDate;
+                return TradeTypesRpc.TimeInForce.GoodTillDate;
             case ImmediateOrCancel:
-                return TradingTypesRpc.TimeInForce.ImmediateOrCancel;
+                return TradeTypesRpc.TimeInForce.ImmediateOrCancel;
             case Unknown:
-                return TradingTypesRpc.TimeInForce.UnknownTimeInForce;
+                return TradeTypesRpc.TimeInForce.UnknownTimeInForce;
             default:
                 throw new UnsupportedOperationException("Unsupported time in force: " + inTimeInForce);
         }
@@ -159,7 +161,7 @@ public abstract class TradeRpcUtil
      * @param inTimeInForce a <code>TradingTypeRpc.TimeInForce</code> value
      * @return a <code>TimeInForce</code> value
      */
-    public static TimeInForce getTimeInForce(TradingTypesRpc.TimeInForce inTimeInForce)
+    public static TimeInForce getTimeInForce(TradeTypesRpc.TimeInForce inTimeInForce)
     {
         switch(inTimeInForce) {
             case AtTheClose:
@@ -192,23 +194,23 @@ public abstract class TradeRpcUtil
      * @param inOrderCapacity
      * @return
      */
-    public static TradingTypesRpc.OrderCapacity getRpcOrderCapacity(OrderCapacity inOrderCapacity)
+    public static TradeTypesRpc.OrderCapacity getRpcOrderCapacity(OrderCapacity inOrderCapacity)
     {
         switch(inOrderCapacity) {
             case Agency:
-                return TradingTypesRpc.OrderCapacity.Agency;
+                return TradeTypesRpc.OrderCapacity.Agency;
             case AgentOtherMember:
-                return TradingTypesRpc.OrderCapacity.AgentOtherMember;
+                return TradeTypesRpc.OrderCapacity.AgentOtherMember;
             case Individual:
-                return TradingTypesRpc.OrderCapacity.Individual;
+                return TradeTypesRpc.OrderCapacity.Individual;
             case Principal:
-                return TradingTypesRpc.OrderCapacity.Principal;
+                return TradeTypesRpc.OrderCapacity.Principal;
             case Proprietary:
-                return TradingTypesRpc.OrderCapacity.Proprietary;
+                return TradeTypesRpc.OrderCapacity.Proprietary;
             case RisklessPrincipal:
-                return TradingTypesRpc.OrderCapacity.RisklessPrincipal;
+                return TradeTypesRpc.OrderCapacity.RisklessPrincipal;
             case Unknown:
-                return TradingTypesRpc.OrderCapacity.UnknownOrderCapacity;
+                return TradeTypesRpc.OrderCapacity.UnknownOrderCapacity;
             default:
                 throw new UnsupportedOperationException("Unsupported order capacity: " + inOrderCapacity);
         }
@@ -216,10 +218,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the order capacity value from the given RPC order capacity.
      *
-     * @param inOrderCapacity a <code>TradingTypesRpc.OrderCapacity</code> value
+     * @param inOrderCapacity a <code>TradeTypesRpc.OrderCapacity</code> value
      * @return an <code>OrderCapacity</code> value
      */
-    public static OrderCapacity getOrderCapacity(TradingTypesRpc.OrderCapacity inOrderCapacity)
+    public static OrderCapacity getOrderCapacity(TradeTypesRpc.OrderCapacity inOrderCapacity)
     {
         switch(inOrderCapacity) {
             case Agency:
@@ -245,17 +247,17 @@ public abstract class TradeRpcUtil
      * Get the RPC position effect from the given position effect value.
      *
      * @param inPositionEffect a <code>PositionEffect</code> value
-     * @return a <code>TradingTypesRpc.PositionEffect</code> value
+     * @return a <code>TradeTypesRpc.PositionEffect</code> value
      */
-    public static TradingTypesRpc.PositionEffect getRpcPositionEffect(PositionEffect inPositionEffect)
+    public static TradeTypesRpc.PositionEffect getRpcPositionEffect(PositionEffect inPositionEffect)
     {
         switch(inPositionEffect) {
             case Close:
-                return TradingTypesRpc.PositionEffect.Close;
+                return TradeTypesRpc.PositionEffect.Close;
             case Open:
-                return TradingTypesRpc.PositionEffect.Open;
+                return TradeTypesRpc.PositionEffect.Open;
             case Unknown:
-                return TradingTypesRpc.PositionEffect.UnknownPositionEffect;
+                return TradeTypesRpc.PositionEffect.UnknownPositionEffect;
             default:
                 throw new UnsupportedOperationException("Unsupported position effect: " + inPositionEffect);
         }
@@ -263,10 +265,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the position effect value from the given RPC position effect value.
      *
-     * @param inPositionEffect a <code>TradingTypesRpc.PositionEffect</code> value
+     * @param inPositionEffect a <code>TradeTypesRpc.PositionEffect</code> value
      * @return a <code>PositionEffect</code> value
      */
-    public static PositionEffect getPositionEffect(TradingTypesRpc.PositionEffect inPositionEffect)
+    public static PositionEffect getPositionEffect(TradeTypesRpc.PositionEffect inPositionEffect)
     {
         switch(inPositionEffect) {
             case Close:
@@ -283,10 +285,10 @@ public abstract class TradeRpcUtil
     /**
      * Get a MATP order type from an RPC order type.
      *
-     * @param inOrderType a <code>TradingTypesRpc.OrderType</code> value
+     * @param inOrderType a <code>TradeTypesRpc.OrderType</code> value
      * @return an <code>OrderType</code> value
      */
-    public static OrderType getOrderType(TradingTypesRpc.OrderType inOrderType)
+    public static OrderType getOrderType(TradeTypesRpc.OrderType inOrderType)
     {
         switch(inOrderType) {
             case ForexLimit:
@@ -337,51 +339,51 @@ public abstract class TradeRpcUtil
      * Get an order type value from an RPC order type value.
      *
      * @param inOrderType an <code>OrderType</code> value
-     * @return a <code>TradingTypesRpc.OrderType</code> value
+     * @return a <code>TradeTypesRpc.OrderType</code> value
      */
-    public static TradingTypesRpc.OrderType getRpcOrderType(OrderType inOrderType)
+    public static TradeTypesRpc.OrderType getRpcOrderType(OrderType inOrderType)
     {
         switch(inOrderType) {
             case ForexLimit:
-                return TradingTypesRpc.OrderType.ForexLimit;
+                return TradeTypesRpc.OrderType.ForexLimit;
             case ForexMarket:
-                return TradingTypesRpc.OrderType.ForexMarket;
+                return TradeTypesRpc.OrderType.ForexMarket;
             case ForexPreviouslyQuoted:
-                return TradingTypesRpc.OrderType.ForexPreviouslyQuoted;
+                return TradeTypesRpc.OrderType.ForexPreviouslyQuoted;
             case ForexSwap:
-                return TradingTypesRpc.OrderType.ForexSwap;
+                return TradeTypesRpc.OrderType.ForexSwap;
             case Funari:
-                return TradingTypesRpc.OrderType.Funari;
+                return TradeTypesRpc.OrderType.Funari;
             case Limit:
-                return TradingTypesRpc.OrderType.Limit;
+                return TradeTypesRpc.OrderType.Limit;
             case LimitOnClose:
-                return TradingTypesRpc.OrderType.LimitOnClose;
+                return TradeTypesRpc.OrderType.LimitOnClose;
             case LimitOrBetter:
-                return TradingTypesRpc.OrderType.LimitOrBetter;
+                return TradeTypesRpc.OrderType.LimitOrBetter;
             case LimitWithOrWithout:
-                return TradingTypesRpc.OrderType.LimitWithOrWithout;
+                return TradeTypesRpc.OrderType.LimitWithOrWithout;
             case Market:
-                return TradingTypesRpc.OrderType.Market;
+                return TradeTypesRpc.OrderType.Market;
             case MarketOnClose:
-                return TradingTypesRpc.OrderType.MarketOnClose;
+                return TradeTypesRpc.OrderType.MarketOnClose;
             case OnBasis:
-                return TradingTypesRpc.OrderType.OnBasis;
+                return TradeTypesRpc.OrderType.OnBasis;
             case OnClose:
-                return TradingTypesRpc.OrderType.OnClose;
+                return TradeTypesRpc.OrderType.OnClose;
             case Pegged:
-                return TradingTypesRpc.OrderType.Pegged;
+                return TradeTypesRpc.OrderType.Pegged;
             case PreviouslyIndicated:
-                return TradingTypesRpc.OrderType.PreviouslyIndicated;
+                return TradeTypesRpc.OrderType.PreviouslyIndicated;
             case PreviouslyQuoted:
-                return TradingTypesRpc.OrderType.PreviouslyQuoted;
+                return TradeTypesRpc.OrderType.PreviouslyQuoted;
             case Stop:
-                return TradingTypesRpc.OrderType.Stop;
+                return TradeTypesRpc.OrderType.Stop;
             case StopLimit:
-                return TradingTypesRpc.OrderType.StopLimit;
+                return TradeTypesRpc.OrderType.StopLimit;
             case Unknown:
-                return TradingTypesRpc.OrderType.UnknownOrderType;
+                return TradeTypesRpc.OrderType.UnknownOrderType;
             case WithOrWithout:
-                return TradingTypesRpc.OrderType.WithOrWithout;
+                return TradeTypesRpc.OrderType.WithOrWithout;
             default:
                 throw new UnsupportedOperationException("Unsupported order type: " + inOrderType);
         }
@@ -389,10 +391,10 @@ public abstract class TradeRpcUtil
     /**
      * Get a side value from an RPC side type.
      *
-     * @param inSideType a <code>TradingTypesRpc.Side</code> value
+     * @param inSideType a <code>TradeTypesRpc.Side</code> value
      * @return a <code>Side</code> value
      */
-    public static Side getSide(TradingTypesRpc.Side inSideType)
+    public static Side getSide(TradeTypesRpc.Side inSideType)
     {
         switch(inSideType) {
             case Buy:
@@ -424,31 +426,31 @@ public abstract class TradeRpcUtil
      * Get an RPC side type from a side type.
      *
      * @param inSide a <code>Side</code> value
-     * @return a <code>TradingTypesRpc.Side</code> value
+     * @return a <code>TradeTypesRpc.Side</code> value
      */
-    public static TradingTypesRpc.Side getRpcSide(Side inSide)
+    public static TradeTypesRpc.Side getRpcSide(Side inSide)
     {
         switch(inSide) {
             case Buy:
-                return TradingTypesRpc.Side.Buy;
+                return TradeTypesRpc.Side.Buy;
             case BuyMinus:
-                return TradingTypesRpc.Side.BuyMinus;
+                return TradeTypesRpc.Side.BuyMinus;
             case Cross:
-                return TradingTypesRpc.Side.Cross;
+                return TradeTypesRpc.Side.Cross;
             case CrossShort:
-                return TradingTypesRpc.Side.CrossShort;
+                return TradeTypesRpc.Side.CrossShort;
             case Sell:
-                return TradingTypesRpc.Side.Sell;
+                return TradeTypesRpc.Side.Sell;
             case SellPlus:
-                return TradingTypesRpc.Side.SellPlus;
+                return TradeTypesRpc.Side.SellPlus;
             case SellShort:
-                return TradingTypesRpc.Side.SellShort;
+                return TradeTypesRpc.Side.SellShort;
             case SellShortExempt:
-                return TradingTypesRpc.Side.SellShortExempt;
+                return TradeTypesRpc.Side.SellShortExempt;
             case Undisclosed:
-                return TradingTypesRpc.Side.Undisclosed;
+                return TradeTypesRpc.Side.Undisclosed;
             case Unknown:
-                return TradingTypesRpc.Side.UnknownSide;
+                return TradeTypesRpc.Side.UnknownSide;
             default:
                 throw new UnsupportedOperationException("Unsupported side: " + inSide);
         }
@@ -456,10 +458,10 @@ public abstract class TradeRpcUtil
     /**
      * Get a MATP security type from an RPC security type.
      *
-     * @param inSecurityType a <code>TradingTypesRpc.SecurityType</code> value
+     * @param inSecurityType a <code>TradeTypesRpc.SecurityType</code> value
      * @return an <code>SecurityType</code> value
      */
-    public static SecurityType getSecurityType(TradingTypesRpc.SecurityType inSecurityType)
+    public static SecurityType getSecurityType(TradeTypesRpc.SecurityType inSecurityType)
     {
         switch(inSecurityType) {
             case CommonStock:
@@ -483,23 +485,23 @@ public abstract class TradeRpcUtil
      * Get an order type value from an RPC order type value.
      *
      * @param inSecurityType an <code>SecurityType</code> value
-     * @return a <code>TradingTypesRpc.SecurityType</code> value
+     * @return a <code>TradeTypesRpc.SecurityType</code> value
      */
-    public static TradingTypesRpc.SecurityType getRpcSecurityType(SecurityType inSecurityType)
+    public static TradeTypesRpc.SecurityType getRpcSecurityType(SecurityType inSecurityType)
     {
         switch(inSecurityType) {
             case CommonStock:
-                return TradingTypesRpc.SecurityType.CommonStock;
+                return TradeTypesRpc.SecurityType.CommonStock;
             case ConvertibleBond:
-                return TradingTypesRpc.SecurityType.ConvertibleBond;
+                return TradeTypesRpc.SecurityType.ConvertibleBond;
             case Currency:
-                return TradingTypesRpc.SecurityType.Currency;
+                return TradeTypesRpc.SecurityType.Currency;
             case Future:
-                return TradingTypesRpc.SecurityType.Future;
+                return TradeTypesRpc.SecurityType.Future;
             case Option:
-                return TradingTypesRpc.SecurityType.Option;
+                return TradeTypesRpc.SecurityType.Option;
             case Unknown:
-                return TradingTypesRpc.SecurityType.UnknownSecurityType;
+                return TradeTypesRpc.SecurityType.UnknownSecurityType;
             default:
                 throw new UnsupportedOperationException("Unsupported security type: " + inSecurityType);
         }
@@ -508,10 +510,10 @@ public abstract class TradeRpcUtil
      * Set the instrument from the given order on the given builder.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setInstrument(OrderBase inOrder,
-                                     TradingTypesRpc.OrderBase.Builder inBuilder)
+                                     TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         if(inOrder.getInstrument() == null) {
             return;
@@ -522,10 +524,10 @@ public abstract class TradeRpcUtil
      * Set the instrument value on the given builder.
      *
      * @param inInstrument an <code>Instrument</code> value
-     * @param inBuilder a <code>TradingRpc.ResolveSymbolResponse.Builder</code> value
+     * @param inBuilder a <code>TradeRpc.ResolveSymbolResponse.Builder</code> value
      */
     public static void setInstrument(Instrument inInstrument,
-                                     TradingRpc.ResolveSymbolResponse.Builder inBuilder)
+                                     TradeRpc.ResolveSymbolResponse.Builder inBuilder)
     {
         if(inInstrument == null) {
             return;
@@ -536,14 +538,14 @@ public abstract class TradeRpcUtil
      * Get the RPC instrument from the given instrument.
      *
      * @param inInstrument an <code>Instrument</code> value
-     * @return an <code>Optional&lt;TradingTypesRpc.Instrument&gt;</code>value
+     * @return an <code>Optional&lt;TradeTypesRpc.Instrument&gt;</code>value
      */
-    public static Optional<TradingTypesRpc.Instrument> getRpcInstrument(Instrument inInstrument)
+    public static Optional<TradeTypesRpc.Instrument> getRpcInstrument(Instrument inInstrument)
     {
         if(inInstrument == null) {
             return Optional.empty();
         }
-        TradingTypesRpc.Instrument.Builder instrumentBuilder = TradingTypesRpc.Instrument.newBuilder();
+        TradeTypesRpc.Instrument.Builder instrumentBuilder = TradeTypesRpc.Instrument.newBuilder();
         instrumentBuilder.setSymbol(inInstrument.getFullSymbol());
         instrumentBuilder.setSecurityType(getRpcSecurityType(inInstrument.getSecurityType()));
         return Optional.of(instrumentBuilder.build());
@@ -554,7 +556,7 @@ public abstract class TradeRpcUtil
      * @param inRpcOrder a <code>TradingTypeRpc.OrderBase</code> value
      * @return an <code>Optional&lt;Instrument&gt;</code> value
      */
-    private static Optional<Instrument> getInstrument(TradingTypesRpc.OrderBase inRpcOrder)
+    private static Optional<Instrument> getInstrument(TradeTypesRpc.OrderBase inRpcOrder)
     {
         if(!inRpcOrder.hasInstrument() || inRpcOrder.getInstrument().getSymbol() == null) {
             return Optional.empty();
@@ -564,10 +566,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the instrument value from the given RPC instrument object.
      *
-     * @param inRpcInstrument a <code>TradingTypesRpc.Instrument</code> value
+     * @param inRpcInstrument a <code>TradeTypesRpc.Instrument</code> value
      * @return an <code>Optional&lt;Instrument&gt;</code> value
      */
-    public static Optional<Instrument> getInstrument(TradingTypesRpc.Instrument inRpcInstrument)
+    public static Optional<Instrument> getInstrument(TradeTypesRpc.Instrument inRpcInstrument)
     {
         if(inRpcInstrument == null) {
             return Optional.empty();
@@ -595,7 +597,7 @@ public abstract class TradeRpcUtil
      * @param inRpcOrderSummary a <code>TradingTypeRpc.OrderSummary</code> value
      * @return an <code>Optional&lt;Instrument&gt;</code> value
      */
-    private static Optional<Instrument> getInstrument(TradingTypesRpc.OrderSummary inRpcOrderSummary)
+    private static Optional<Instrument> getInstrument(TradeTypesRpc.OrderSummary inRpcOrderSummary)
     {
         if(!inRpcOrderSummary.hasInstrument() || inRpcOrderSummary.getInstrument().getSymbol() == null) {
             return Optional.empty();
@@ -606,10 +608,10 @@ public abstract class TradeRpcUtil
      * Set the RPC custom fields from the given order.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setRpcCustomFields(OrderBase inOrder,
-                                          TradingTypesRpc.OrderBase.Builder inBuilder)
+                                          TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         if(inOrder.getCustomFields() == null || inOrder.getCustomFields().isEmpty()) {
             return;
@@ -627,10 +629,10 @@ public abstract class TradeRpcUtil
     /**
      * Set the custom fields from the given RPC order.
      *
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      * @param inOrder an <code>OrderBase</code> value
      */
-    public static void setCustomFields(TradingTypesRpc.OrderBase inRpcOrder,
+    public static void setCustomFields(TradeTypesRpc.OrderBase inRpcOrder,
                                        OrderBase inOrder)
     {
         if(!inRpcOrder.hasCustomFields()) {
@@ -651,10 +653,10 @@ public abstract class TradeRpcUtil
      * Set the account value.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setAccount(OrderBase inOrder,
-                                  TradingTypesRpc.OrderBase.Builder inBuilder)
+                                  TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         String value = StringUtils.trimToNull(inOrder.getAccount());
         if(value == null) {
@@ -666,10 +668,10 @@ public abstract class TradeRpcUtil
      * Set the account from value the given trade message on the given builder.
      *
      * @param inExecutionReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setAccount(ExecutionReport inExecutionReport,
-                                  TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                  TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         String value = StringUtils.trimToNull(inExecutionReport.getAccount());
         if(value == null) {
@@ -681,10 +683,10 @@ public abstract class TradeRpcUtil
      * Set the user ID from value the given trade message on the given builder.
      *
      * @param inReportBase a <code>ReportBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setUserId(ReportBase inReportBase,
-                                 TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                 TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReportBase.getActorID() == null) {
             return;
@@ -695,10 +697,10 @@ public abstract class TradeRpcUtil
      * Set the user ID from value the given trade message on the given builder.
      *
      * @param inReport a <code>FIXResponse</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setUserId(FIXResponse inReport,
-                                 TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                 TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getActorID() == null) {
             return;
@@ -709,10 +711,10 @@ public abstract class TradeRpcUtil
      * Set the text value on the given RPC builder from the given order.
      *
      * @param inOrder an <code>OrderBase</code>value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setText(OrderBase inOrder,
-                               TradingTypesRpc.OrderBase.Builder inBuilder)
+                               TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         String value = StringUtils.trimToNull(inOrder.getText());
         if(value == null) {
@@ -723,10 +725,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the text value from the given RPC order.
      *
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      * @return a <code>String</code> value
      */
-    public static String getText(TradingTypesRpc.OrderBase inRpcOrder)
+    public static String getText(TradeTypesRpc.OrderBase inRpcOrder)
     {
         return StringUtils.trimToNull(inRpcOrder.getText());
     }
@@ -734,10 +736,10 @@ public abstract class TradeRpcUtil
      * Set the broker ID from the given order on the given RPC builder.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setBrokerId(OrderBase inOrder,
-                                   TradingTypesRpc.OrderBase.Builder inBuilder)
+                                   TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         if(inOrder.getBrokerID() == null) {
             return;
@@ -749,10 +751,10 @@ public abstract class TradeRpcUtil
      * Set the broker ID from the given report on the given RPC builder.
      *
      * @param inReport a <code>Report</code> value
-     * @param inBuilder a <code>TradingTypesRpc.Report.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.Report.Builder</code> value
      */
     public static void setBrokerId(Report inReport,
-                                   TradingTypesRpc.Report.Builder inBuilder)
+                                   TradeTypesRpc.Report.Builder inBuilder)
     {
         if(inReport.getBrokerID() == null) {
             return;
@@ -764,10 +766,10 @@ public abstract class TradeRpcUtil
      * Set the broker ID from the given order on the given RPC builder.
      *
      * @param inOrder a <code>FIXOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.FIXOrder.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.FIXOrder.Builder</code> value
      */
     public static void setBrokerId(FIXOrder inOrder,
-                                   TradingTypesRpc.FIXOrder.Builder inBuilder)
+                                   TradeTypesRpc.FIXOrder.Builder inBuilder)
     {
         if(inOrder.getBrokerID() == null) {
             return;
@@ -779,10 +781,10 @@ public abstract class TradeRpcUtil
      * Set the order ID from the given order on the given RPC builder.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setOrderId(OrderBase inOrder,
-                                  TradingTypesRpc.OrderBase.Builder inBuilder)
+                                  TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         if(inOrder.getOrderID() == null) {
             return;
@@ -793,10 +795,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the order ID from the given RPC order.
      *
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      * @return an <code>OrderID</code> value
      */
-    public static OrderID getOrderId(TradingTypesRpc.OrderBase inRpcOrder)
+    public static OrderID getOrderId(TradeTypesRpc.OrderBase inRpcOrder)
     {
         return new OrderID(inRpcOrder.getOrderId());
     }
@@ -804,40 +806,40 @@ public abstract class TradeRpcUtil
      * Set the order quantity from the given order on the given RPC builder.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setQuantity(OrderBase inOrder,
-                                   TradingTypesRpc.OrderBase.Builder inBuilder)
+                                   TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         BaseRpcUtil.getRpcQty(inOrder.getQuantity()).ifPresent(qty->inBuilder.setQuantity(qty));
     }
     /**
      * Get the order quantity from the given RPC order.
      *
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      * @return an <code>Optional&lt;BigDecimal&gt;</code> value
      */
-    public static Optional<BigDecimal> getQuantity(TradingTypesRpc.OrderBase inRpcOrder)
+    public static Optional<BigDecimal> getQuantity(TradeTypesRpc.OrderBase inRpcOrder)
     {
         return BaseRpcUtil.getScaledQuantity(inRpcOrder.getQuantity());
     }
     /**
      * Get the order price from the given RPC order.
      *
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      * @return an <code>Optional&lt;BigDecimal&gt;</code> value
      */
-    public static Optional<BigDecimal> getPrice(TradingTypesRpc.OrderBase inRpcOrder)
+    public static Optional<BigDecimal> getPrice(TradeTypesRpc.OrderBase inRpcOrder)
     {
         return BaseRpcUtil.getScaledQuantity(inRpcOrder.getPrice());
     }
     /**
      * Get the display quantity of the given order.
      *
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      * @return an <code>Optional&lt;BigDecimal&gt;</code> value
      */
-    public static Optional<BigDecimal> getDisplayQuantity(TradingTypesRpc.OrderBase inRpcOrder)
+    public static Optional<BigDecimal> getDisplayQuantity(TradeTypesRpc.OrderBase inRpcOrder)
     {
         return BaseRpcUtil.getScaledQuantity(inRpcOrder.getDisplayQuantity());
     }
@@ -845,10 +847,10 @@ public abstract class TradeRpcUtil
      * Set the side from the given order on the given RPC builder.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setSide(OrderBase inOrder,
-                               TradingTypesRpc.OrderBase.Builder inBuilder)
+                               TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         if(inOrder.getSide() == null) {
             return;
@@ -858,10 +860,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the side from the given RPC order.
      *
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      * @return a <code>Side</code> value
      */
-    public static Side getSide(TradingTypesRpc.OrderBase inRpcOrder)
+    public static Side getSide(TradeTypesRpc.OrderBase inRpcOrder)
     {
         switch(inRpcOrder.getSide()) {
             case Buy:
@@ -894,10 +896,10 @@ public abstract class TradeRpcUtil
      * Set the display quantity from the given order on the given builder.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setDisplayQuantity(NewOrReplaceOrder inOrder,
-                                          TradingTypesRpc.OrderBase.Builder inBuilder)
+                                          TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         if(inOrder.getDisplayQuantity() == null || BigDecimal.ZERO.compareTo(inOrder.getDisplayQuantity()) == 0) {
             return;
@@ -908,10 +910,10 @@ public abstract class TradeRpcUtil
      * Set the display quantity from the given RPC order on the given order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      */
     public static void setDisplayQuantity(NewOrReplaceOrder inOrder,
-                                          TradingTypesRpc.OrderBase inRpcOrder)
+                                          TradeTypesRpc.OrderBase inRpcOrder)
     {
         BaseRpcUtil.getScaledQuantity(inRpcOrder.getDisplayQuantity()).ifPresent(value->inOrder.setDisplayQuantity(value));
     }
@@ -919,10 +921,10 @@ public abstract class TradeRpcUtil
      * Set the order ID from the given RPC order.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setOrderId(OrderBase inOrder,
-                                  TradingTypesRpc.OrderBase inRpcOrder)
+                                  TradeTypesRpc.OrderBase inRpcOrder)
     {
         String value = StringUtils.trimToNull(inRpcOrder.getOrderId());
         if(value == null) {
@@ -934,10 +936,10 @@ public abstract class TradeRpcUtil
      * Set the original order ID from the given RPC order.
      *
      * @param inOrder a <code>RelatedOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setOriginalOrderId(RelatedOrder inOrder,
-                                          TradingTypesRpc.OrderBase inRpcOrder)
+                                          TradeTypesRpc.OrderBase inRpcOrder)
     {
         String value = StringUtils.trimToNull(inRpcOrder.getOriginalOrderId());
         if(value == null) {
@@ -949,10 +951,10 @@ public abstract class TradeRpcUtil
      * Set the broker order ID from the given RPC order.
      *
      * @param inOrder a <code>RelatedOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setBrokerOrderId(RelatedOrder inOrder,
-                                        TradingTypesRpc.OrderBase inRpcOrder)
+                                        TradeTypesRpc.OrderBase inRpcOrder)
     {
         String value = StringUtils.trimToNull(inRpcOrder.getBrokerOrderId());
         if(value == null) {
@@ -964,10 +966,10 @@ public abstract class TradeRpcUtil
      * Set the broker ID from the given RPC order.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setBrokerId(OrderBase inOrder,
-                                   TradingTypesRpc.OrderBase inRpcOrder)
+                                   TradeTypesRpc.OrderBase inRpcOrder)
     {
         String value = StringUtils.trimToNull(inRpcOrder.getBrokerId());
         if(value == null) {
@@ -979,10 +981,10 @@ public abstract class TradeRpcUtil
      * Set the instrument from the given RPC order.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setInstrument(OrderBase inOrder,
-                                     TradingTypesRpc.OrderBase inRpcOrder)
+                                     TradeTypesRpc.OrderBase inRpcOrder)
     {
         if(inRpcOrder.hasInstrument()) {
             inOrder.setInstrument(getInstrument(inRpcOrder).orElse(null));
@@ -992,10 +994,10 @@ public abstract class TradeRpcUtil
      * Set the account from the given RPC order.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setAccount(OrderBase inOrder,
-                                  TradingTypesRpc.OrderBase inRpcOrder)
+                                  TradeTypesRpc.OrderBase inRpcOrder)
     {
         String value = StringUtils.trimToNull(inRpcOrder.getAccount());
         if(value != null) {
@@ -1006,10 +1008,10 @@ public abstract class TradeRpcUtil
      * Set the text from the given RPC order.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setText(OrderBase inOrder,
-                               TradingTypesRpc.OrderBase inRpcOrder)
+                               TradeTypesRpc.OrderBase inRpcOrder)
     {
         String value = StringUtils.trimToNull(inRpcOrder.getText());
         if(value != null) {
@@ -1020,10 +1022,10 @@ public abstract class TradeRpcUtil
      * Set the execution destination from the given RPC order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setExecutionDestination(NewOrReplaceOrder inOrder,
-                                               TradingTypesRpc.OrderBase inRpcOrder)
+                                               TradeTypesRpc.OrderBase inRpcOrder)
     {
         String value = StringUtils.trimToNull(inRpcOrder.getExecutionDestination());
         if(value != null) {
@@ -1034,10 +1036,10 @@ public abstract class TradeRpcUtil
      * Set the execution destination from the given RPC order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setExecutionDestination(NewOrReplaceOrder inOrder,
-                                               TradingTypesRpc.OrderBase.Builder inBuilder)
+                                               TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         String value = StringUtils.trimToNull(inOrder.getExecutionDestination());
         if(value == null) {
@@ -1049,10 +1051,10 @@ public abstract class TradeRpcUtil
      * Set the peg-to-midpoint value from the given RPC order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setPegToMidpoint(NewOrReplaceOrder inOrder,
-                                        TradingTypesRpc.OrderBase inRpcOrder)
+                                        TradeTypesRpc.OrderBase inRpcOrder)
     {
         inOrder.setPegToMidpoint(inRpcOrder.getPegToMidpoint());
     }
@@ -1060,10 +1062,10 @@ public abstract class TradeRpcUtil
      * Set the broker algo from the given RPC order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setBrokerAlgo(NewOrReplaceOrder inOrder,
-                                     TradingTypesRpc.OrderBase inRpcOrder)
+                                     TradeTypesRpc.OrderBase inRpcOrder)
     {
         if(inRpcOrder.hasBrokerAlgo()) {
             inOrder.setBrokerAlgo(getBrokerAlgo(inRpcOrder).orElse(null));
@@ -1073,10 +1075,10 @@ public abstract class TradeRpcUtil
      * Set the price from the given RPC order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      */
     public static void setPrice(NewOrReplaceOrder inOrder,
-                                TradingTypesRpc.OrderBase inRpcOrder)
+                                TradeTypesRpc.OrderBase inRpcOrder)
     {
         BaseRpcUtil.getScaledQuantity(inRpcOrder.getPrice()).ifPresent(value->inOrder.setPrice(value));
     }
@@ -1084,10 +1086,10 @@ public abstract class TradeRpcUtil
      * Set the quantity from the given RPC order.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      */
     public static void setQuantity(OrderBase inOrder,
-                                   TradingTypesRpc.OrderBase inRpcOrder)
+                                   TradeTypesRpc.OrderBase inRpcOrder)
     {
         BaseRpcUtil.getScaledQuantity(inRpcOrder.getQuantity()).ifPresent(value->inOrder.setQuantity(value));
     }
@@ -1095,10 +1097,10 @@ public abstract class TradeRpcUtil
      * Set the order capacity from the given order on the given builder.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setOrderCapacity(NewOrReplaceOrder inOrder,
-                                        TradingTypesRpc.OrderBase.Builder inBuilder)
+                                        TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         if(inOrder.getOrderCapacity() == null) {
             return;
@@ -1109,10 +1111,10 @@ public abstract class TradeRpcUtil
      * Set the order type value from the given order on the given RPC builder.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setOrderType(NewOrReplaceOrder inOrder,
-                                    TradingTypesRpc.OrderBase.Builder inBuilder)
+                                    TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         if(inOrder.getOrderType() == null) {
             return;
@@ -1123,10 +1125,10 @@ public abstract class TradeRpcUtil
      * Set the position effect from the given order on the given RPC builder.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setPositionEffect(NewOrReplaceOrder inOrder,
-                                         TradingTypesRpc.OrderBase.Builder inBuilder)
+                                         TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         if(inOrder.getPositionEffect() == null) {
             return;
@@ -1137,10 +1139,10 @@ public abstract class TradeRpcUtil
      * Set the order price from the given order on the given RPC builder.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setPrice(NewOrReplaceOrder inOrder,
-                                TradingTypesRpc.OrderBase.Builder inBuilder)
+                                TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         BaseRpcUtil.getRpcQty(inOrder.getPrice()).ifPresent(qty->inBuilder.setPrice(qty));
     }
@@ -1148,10 +1150,10 @@ public abstract class TradeRpcUtil
      * Set the time in force on the given RPC builder from the given order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setTimeInForce(NewOrReplaceOrder inOrder,
-                                      TradingTypesRpc.OrderBase.Builder inBuilder)
+                                      TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         if(inOrder.getTimeInForce() == null) {
             return;
@@ -1162,10 +1164,10 @@ public abstract class TradeRpcUtil
      * Set the time in force value on the given MATP order from the given RPC order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      */
     public static void setTimeInForce(NewOrReplaceOrder inOrder,
-                                      TradingTypesRpc.OrderBase inRpcOrder)
+                                      TradeTypesRpc.OrderBase inRpcOrder)
     {
         TimeInForce matpTif = getTimeInForce(inRpcOrder.getTimeInForce());
         if(matpTif == null || matpTif == TimeInForce.Unknown) {
@@ -1177,10 +1179,10 @@ public abstract class TradeRpcUtil
      * Set the position effect on the given MATP order from the given RPC order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      */
     public static void setPositionEffect(NewOrReplaceOrder inOrder,
-                                         TradingTypesRpc.OrderBase inRpcOrder)
+                                         TradeTypesRpc.OrderBase inRpcOrder)
     {
         PositionEffect matpPositionEffect = getPositionEffect(inRpcOrder.getPositionEffect());
         if(matpPositionEffect == null || matpPositionEffect == PositionEffect.Unknown) {
@@ -1192,10 +1194,10 @@ public abstract class TradeRpcUtil
      * Set the order type on the given MATP order from the given RPC order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      */
     public static void setOrderType(NewOrReplaceOrder inOrder,
-                                    TradingTypesRpc.OrderBase inRpcOrder)
+                                    TradeTypesRpc.OrderBase inRpcOrder)
     {
         OrderType matpOrderType = getOrderType(inRpcOrder.getOrderType());
         if(matpOrderType == null || matpOrderType == OrderType.Unknown) {
@@ -1207,10 +1209,10 @@ public abstract class TradeRpcUtil
      * Set the order type on the given MATP order from the given RPC order.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      */
     public static void setSide(OrderBase inOrder,
-                               TradingTypesRpc.OrderBase inRpcOrder)
+                               TradeTypesRpc.OrderBase inRpcOrder)
     {
         Side matpSide = getSide(inRpcOrder.getSide());
         if(matpSide == null || matpSide == Side.Unknown) {
@@ -1222,10 +1224,10 @@ public abstract class TradeRpcUtil
      * Set the order capacity on the given MATP order from the given RPC order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      */
     public static void setOrderCapacity(NewOrReplaceOrder inOrder,
-                                        TradingTypesRpc.OrderBase inRpcOrder)
+                                        TradeTypesRpc.OrderBase inRpcOrder)
     {
         OrderCapacity matpOrderCapacity = getOrderCapacity(inRpcOrder.getOrderCapacity());
         if(matpOrderCapacity == null || matpOrderCapacity == OrderCapacity.Unknown) {
@@ -1237,10 +1239,10 @@ public abstract class TradeRpcUtil
      * Set the original order ID from the given order on the given RPC builder.
      *
      * @param inOrder a <code>RelatedOrder</code> value
-     * @param inBuilder a <code>TradingTypesRpc.OrderBase.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setOriginalOrderId(RelatedOrder inOrder,
-                                          TradingTypesRpc.OrderBase.Builder inBuilder)
+                                          TradeTypesRpc.OrderBase.Builder inBuilder)
     {
         if(inOrder.getOriginalOrderID() == null) {
             return;
@@ -1257,33 +1259,33 @@ public abstract class TradeRpcUtil
     public static Optional<BrokerID> getBrokerId(Object inObject)
     {
         BrokerID brokerId = null;
-        if(inObject instanceof TradingTypesRpc.FIXOrder) {
-            String value = StringUtils.trimToNull(((TradingTypesRpc.FIXOrder)inObject).getBrokerId());
+        if(inObject instanceof TradeTypesRpc.FIXOrder) {
+            String value = StringUtils.trimToNull(((TradeTypesRpc.FIXOrder)inObject).getBrokerId());
             if(value != null) {
                 brokerId = new BrokerID(value);
             }
-        } else if(inObject instanceof TradingTypesRpc.OrderBase) {
-            String value = StringUtils.trimToNull(((TradingTypesRpc.OrderBase)inObject).getBrokerId());
+        } else if(inObject instanceof TradeTypesRpc.OrderBase) {
+            String value = StringUtils.trimToNull(((TradeTypesRpc.OrderBase)inObject).getBrokerId());
             if(value != null) {
                 brokerId = new BrokerID(value);
             }
-        } else if(inObject instanceof TradingTypesRpc.TradeMessage) {
-            String value = StringUtils.trimToNull(((TradingTypesRpc.TradeMessage)inObject).getBrokerId());
+        } else if(inObject instanceof TradeTypesRpc.TradeMessage) {
+            String value = StringUtils.trimToNull(((TradeTypesRpc.TradeMessage)inObject).getBrokerId());
             if(value != null) {
                 brokerId = new BrokerID(value);
             }
-        } else if(inObject instanceof TradingTypesRpc.OrderSummary) {
-            String value = StringUtils.trimToNull(((TradingTypesRpc.OrderSummary)inObject).getBrokerId());
+        } else if(inObject instanceof TradeTypesRpc.OrderSummary) {
+            String value = StringUtils.trimToNull(((TradeTypesRpc.OrderSummary)inObject).getBrokerId());
             if(value != null) {
                 brokerId = new BrokerID(value);
             }
-        } else if(inObject instanceof TradingRpc.AddReportRequest) {
-            String value = StringUtils.trimToNull(((TradingRpc.AddReportRequest)inObject).getBrokerId());
+        } else if(inObject instanceof TradeRpc.AddReportRequest) {
+            String value = StringUtils.trimToNull(((TradeRpc.AddReportRequest)inObject).getBrokerId());
             if(value != null) {
                 brokerId = new BrokerID(value);
             }
-        } else if(inObject instanceof TradingTypesRpc.Report) {
-            String value = StringUtils.trimToNull(((TradingTypesRpc.Report)inObject).getBrokerId());
+        } else if(inObject instanceof TradeTypesRpc.Report) {
+            String value = StringUtils.trimToNull(((TradeTypesRpc.Report)inObject).getBrokerId());
             if(value != null) {
                 brokerId = new BrokerID(value);
             }
@@ -1293,13 +1295,13 @@ public abstract class TradeRpcUtil
     /**
      * Get the MATP order value for the given RPC order.
      *
-     * @param inRpcOrder a <code>TradingTypesRpc.Order</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.Order</code> value
      * @return an <code>Order</code> value
      */
-    public static Order getOrder(TradingTypesRpc.Order inRpcOrder)
+    public static Order getOrder(TradeTypesRpc.Order inRpcOrder)
     {
         BrokerID brokerId = getBrokerId(inRpcOrder).orElse(null);
-        TradingTypesRpc.OrderBase rpcOrderBase = null;
+        TradeTypesRpc.OrderBase rpcOrderBase = null;
         if(inRpcOrder.hasOrderBase()) {
             rpcOrderBase = inRpcOrder.getOrderBase();
         }
@@ -1391,10 +1393,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the trade message value from the given RPC trade message.
      *
-     * @param inReport a <code>TradingTypesRpc.TradeMessage</code> value
+     * @param inReport a <code>TradeTypesRpc.TradeMessage</code> value
      * @return a <code>TradeMessage</code> value
      */
-    public static TradeMessage getTradeMessage(TradingTypesRpc.TradeMessage inRpcTradeMessage)
+    public static TradeMessage getTradeMessage(TradeTypesRpc.TradeMessage inRpcTradeMessage)
     {
         TradeMessage tradeMessage = null;
         quickfix.Message fixMessage = getFixMessage(inRpcTradeMessage.getMessage());
@@ -1433,11 +1435,11 @@ public abstract class TradeRpcUtil
      * Get the RPC report from the given report.
      *
      * @param inReport a <code>Report</code> value
-     * @return a <code>TradingTypesRpc.Report</code> value
+     * @return a <code>TradeTypesRpc.Report</code> value
      */
-    public static TradingTypesRpc.Report getRpcReport(Report inReport)
+    public static TradeTypesRpc.Report getRpcReport(Report inReport)
     {
-        TradingTypesRpc.Report.Builder reportBuilder = TradingTypesRpc.Report.newBuilder();
+        TradeTypesRpc.Report.Builder reportBuilder = TradeTypesRpc.Report.newBuilder();
         AdminRpcUtil.getRpcUser(inReport.getActor()).ifPresent(rpcActor->reportBuilder.setActor(rpcActor));
         if(inReport.getBrokerID() != null) {
             reportBuilder.setBrokerId(inReport.getBrokerID().getValue());
@@ -1469,12 +1471,12 @@ public abstract class TradeRpcUtil
     /**
      * Get the report from the given RPC report.
      *
-     * @param inRpcReport a <code>TradingTypesRpc.Report</code> value
+     * @param inRpcReport a <code>TradeTypesRpc.Report</code> value
      * @param inReportFactory a <code>MutableReportFactory</code> value
      * @param inUserFactory a <code>UserFactory</code> value
      * @return a <code>Report</code> value
      */
-    public static Report getReport(TradingTypesRpc.Report inRpcReport,
+    public static Report getReport(TradeTypesRpc.Report inRpcReport,
                                    MutableReportFactory inReportFactory,
                                    UserFactory inUserFactory)
     {
@@ -1503,11 +1505,11 @@ public abstract class TradeRpcUtil
      * Get the RPC trade message from the given trade message.
      *
      * @param inTradeMessage a <code>TradeMessage</code> value
-     * @return a <code>TradingTypesRpc.TradeMessage</code> value
+     * @return a <code>TradeTypesRpc.TradeMessage</code> value
      */
-    public static TradingTypesRpc.TradeMessage getRpcTradeMessage(TradeMessage inTradeMessage)
+    public static TradeTypesRpc.TradeMessage getRpcTradeMessage(TradeMessage inTradeMessage)
     {
-        TradingTypesRpc.TradeMessage.Builder tradeMessageBuilder = TradingTypesRpc.TradeMessage.newBuilder();
+        TradeTypesRpc.TradeMessage.Builder tradeMessageBuilder = TradeTypesRpc.TradeMessage.newBuilder();
         ReportBase reportBase = null;
         ExecutionReport executionReport = null;
         FIXResponse fixResponse = null;
@@ -1516,12 +1518,12 @@ public abstract class TradeRpcUtil
         }
         if(inTradeMessage instanceof ExecutionReport) {
             executionReport = (ExecutionReport)inTradeMessage;
-            tradeMessageBuilder.setTradeMessageType(TradingTypesRpc.TradeMessageType.TradeMessageExecutionReport);
+            tradeMessageBuilder.setTradeMessageType(TradeTypesRpc.TradeMessageType.TradeMessageExecutionReport);
         } else if(inTradeMessage instanceof OrderCancelReject) {
-            tradeMessageBuilder.setTradeMessageType(TradingTypesRpc.TradeMessageType.TradeMessageOrderCancelReject);
+            tradeMessageBuilder.setTradeMessageType(TradeTypesRpc.TradeMessageType.TradeMessageOrderCancelReject);
         } else if(inTradeMessage instanceof FIXResponse) {
             fixResponse = (FIXResponse)inTradeMessage;
-            tradeMessageBuilder.setTradeMessageType(TradingTypesRpc.TradeMessageType.TradeMessageFixResponse);
+            tradeMessageBuilder.setTradeMessageType(TradeTypesRpc.TradeMessageType.TradeMessageFixResponse);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -1607,10 +1609,10 @@ public abstract class TradeRpcUtil
      * Set the given trade message on the given builder.
      *
      * @param inTradeMessage a <code>TradeMessage</code> value
-     * @param inBuilder a <code>TradingRpc.TradeMessageListenerResponse.Builder</code>
+     * @param inBuilder a <code>TradeRpc.TradeMessageListenerResponse.Builder</code>
      */
     public static void setTradeMessage(TradeMessage inTradeMessage,
-                                       TradingRpc.TradeMessageListenerResponse.Builder inBuilder)
+                                       TradeRpc.TradeMessageListenerResponse.Builder inBuilder)
     {
         inBuilder.setTradeMessage(getRpcTradeMessage(inTradeMessage));
     }
@@ -1618,12 +1620,12 @@ public abstract class TradeRpcUtil
      * Set the FIX message from the given message holder on the given builder.
      *
      * @param inMessageHolder a <code>HasFIXMessage</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setFixMessage(HasFIXMessage inMessageHolder,
-                                     TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                     TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
-        TradingTypesRpc.FixMessage.Builder fixMessageBuilder = TradingTypesRpc.FixMessage.newBuilder();
+        TradeTypesRpc.FixMessage.Builder fixMessageBuilder = TradeTypesRpc.FixMessage.newBuilder();
         BaseRpc.Map.Builder mapBuilder = BaseRpc.Map.newBuilder();
         quickfix.Message fixMessage = inMessageHolder.getMessage();
         setRpcFixMessageGroup(fixMessage.getHeader(),
@@ -1643,10 +1645,10 @@ public abstract class TradeRpcUtil
      * Set the transact time from the given report on the given builder.
      *
      * @param inReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setTransactTime(ExecutionReport inReport,
-                                       TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                       TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getTransactTime() == null) {
             return;
@@ -1658,10 +1660,10 @@ public abstract class TradeRpcUtil
      * Set the time in force from the given report on the given builder.
      *
      * @param inReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setTimeInForce(ExecutionReport inReport,
-                                      TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                      TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getTimeInForce() == null) {
             return;
@@ -1672,10 +1674,10 @@ public abstract class TradeRpcUtil
      * Set the side from the given report on the given builder.
      *
      * @param inReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setSide(ExecutionReport inReport,
-                               TradingTypesRpc.TradeMessage.Builder inBuilder)
+                               TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getSide() == null) {
             return;
@@ -1686,10 +1688,10 @@ public abstract class TradeRpcUtil
      * Set the price value the given trade message on the given builder.
      *
      * @param inExecutionReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setPrice(ExecutionReport inExecutionReport,
-                                TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         BaseRpcUtil.getRpcQty(inExecutionReport.getPrice()).ifPresent(qty->inBuilder.setPrice(qty));
     }
@@ -1697,10 +1699,10 @@ public abstract class TradeRpcUtil
      * Set the position effect from the given report on the given builder.
      *
      * @param inReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setPositionEffect(ExecutionReport inReport,
-                                         TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                         TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getPositionEffect() == null) {
             return;
@@ -1711,10 +1713,10 @@ public abstract class TradeRpcUtil
      * Set the order type from the given report on the given builder.
      *
      * @param inReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setOrderType(ExecutionReport inReport,
-                                    TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                    TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getOrderType() == null) {
             return;
@@ -1725,10 +1727,10 @@ public abstract class TradeRpcUtil
      * Set the order quantity from value the given trade message on the given builder.
      *
      * @param inExecutionReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setOrderQuantity(ExecutionReport inExecutionReport,
-                                        TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                        TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         BaseRpcUtil.getRpcQty(inExecutionReport.getOrderQuantity()).ifPresent(qty->inBuilder.setOrderQuantity(qty));
     }
@@ -1736,10 +1738,10 @@ public abstract class TradeRpcUtil
      * Set the order display quantity from value the given trade message on the given builder.
      *
      * @param inExecutionReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setOrderDisplayQuantity(ExecutionReport inExecutionReport,
-                                               TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                               TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         BaseRpcUtil.getRpcQty(inExecutionReport.getOrderDisplayQuantity()).ifPresent(qty->inBuilder.setOrderDisplayQuantity(qty));
     }
@@ -1747,10 +1749,10 @@ public abstract class TradeRpcUtil
      * Set the order capacity from the given report on the given builder.
      *
      * @param inReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setOrderCapacity(ExecutionReport inReport,
-                                        TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                        TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getOrderCapacity() == null) {
             return;
@@ -1761,10 +1763,10 @@ public abstract class TradeRpcUtil
      * Set the leaves quantity from value the given trade message on the given builder.
      *
      * @param inExecutionReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setLeavesQuantity(ExecutionReport inExecutionReport,
-                                         TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                         TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         BaseRpcUtil.getRpcQty(inExecutionReport.getLeavesQuantity()).ifPresent(qty->inBuilder.setLeavesQuantity(qty));
     }
@@ -1772,10 +1774,10 @@ public abstract class TradeRpcUtil
      * Set the last quantity from value the given trade message on the given builder.
      *
      * @param inExecutionReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setLastQuantity(ExecutionReport inExecutionReport,
-                                       TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                       TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         BaseRpcUtil.getRpcQty(inExecutionReport.getLastQuantity()).ifPresent(qty->inBuilder.setLastQuantity(qty));
     }
@@ -1783,10 +1785,10 @@ public abstract class TradeRpcUtil
      * Set the last price from value the given trade message on the given builder.
      *
      * @param inExecutionReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setLastPrice(ExecutionReport inExecutionReport,
-                                    TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                    TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         BaseRpcUtil.getRpcQty(inExecutionReport.getLastPrice()).ifPresent(qty->inBuilder.setLastPrice(qty));
     }
@@ -1794,10 +1796,10 @@ public abstract class TradeRpcUtil
      * Set the last market from the given report on the given builder.
      *
      * @param inExecutionReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setLastMarket(ExecutionReport inExecutionReport,
-                                     TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                     TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         String value = StringUtils.trimToNull(inExecutionReport.getLastMarket());
         if(value == null) {
@@ -1809,10 +1811,10 @@ public abstract class TradeRpcUtil
      * Set the instrument from the given report on the given builder.
      *
      * @param inReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setInstrument(ExecutionReport inReport,
-                                     TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                     TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getInstrument() == null) {
             return;
@@ -1823,51 +1825,51 @@ public abstract class TradeRpcUtil
      * Get the RPC execution type value from the given value.
      *
      * @param inExecutionType an <code>ExecutionType</code> value
-     * @return a <code>TradingTypesRpc.ExecutionType</code> value
+     * @return a <code>TradeTypesRpc.ExecutionType</code> value
      */
-    public static TradingTypesRpc.ExecutionType getRpcExecutionType(ExecutionType inExecutionType)
+    public static TradeTypesRpc.ExecutionType getRpcExecutionType(ExecutionType inExecutionType)
     {
         switch(inExecutionType) {
             case Calculated:
-                return TradingTypesRpc.ExecutionType.CalculatedExecutionType;
+                return TradeTypesRpc.ExecutionType.CalculatedExecutionType;
             case Canceled:
-                return TradingTypesRpc.ExecutionType.CanceledExecutionType;
+                return TradeTypesRpc.ExecutionType.CanceledExecutionType;
             case DoneForDay:
-                return TradingTypesRpc.ExecutionType.DoneForDayExecutionType;
+                return TradeTypesRpc.ExecutionType.DoneForDayExecutionType;
             case Expired:
-                return TradingTypesRpc.ExecutionType.ExpiredExecutionType;
+                return TradeTypesRpc.ExecutionType.ExpiredExecutionType;
             case Fill:
-                return TradingTypesRpc.ExecutionType.FillExecutionType;
+                return TradeTypesRpc.ExecutionType.FillExecutionType;
             case New:
-                return TradingTypesRpc.ExecutionType.NewExecutionType;
+                return TradeTypesRpc.ExecutionType.NewExecutionType;
             case OrderStatus:
-                return TradingTypesRpc.ExecutionType.OrderStatusExecutionType;
+                return TradeTypesRpc.ExecutionType.OrderStatusExecutionType;
             case PartialFill:
-                return TradingTypesRpc.ExecutionType.PartialFillExecutionType;
+                return TradeTypesRpc.ExecutionType.PartialFillExecutionType;
             case PendingCancel:
-                return TradingTypesRpc.ExecutionType.PendingCancelExecutionType;
+                return TradeTypesRpc.ExecutionType.PendingCancelExecutionType;
             case PendingNew:
-                return TradingTypesRpc.ExecutionType.PendingNewExecutionType;
+                return TradeTypesRpc.ExecutionType.PendingNewExecutionType;
             case PendingReplace:
-                return TradingTypesRpc.ExecutionType.PendingReplaceExecutionType;
+                return TradeTypesRpc.ExecutionType.PendingReplaceExecutionType;
             case Rejected:
-                return TradingTypesRpc.ExecutionType.RejectedExecutionType;
+                return TradeTypesRpc.ExecutionType.RejectedExecutionType;
             case Replace:
-                return TradingTypesRpc.ExecutionType.ReplaceExecutionType;
+                return TradeTypesRpc.ExecutionType.ReplaceExecutionType;
             case Restated:
-                return TradingTypesRpc.ExecutionType.RestatedExecutionType;
+                return TradeTypesRpc.ExecutionType.RestatedExecutionType;
             case Stopped:
-                return TradingTypesRpc.ExecutionType.StoppedExecutionType;
+                return TradeTypesRpc.ExecutionType.StoppedExecutionType;
             case Suspended:
-                return TradingTypesRpc.ExecutionType.SuspendedExecutionType;
+                return TradeTypesRpc.ExecutionType.SuspendedExecutionType;
             case Trade:
-                return TradingTypesRpc.ExecutionType.TradeCancelExecutionType;
+                return TradeTypesRpc.ExecutionType.TradeCancelExecutionType;
             case TradeCancel:
-                return TradingTypesRpc.ExecutionType.TradeCancelExecutionType;
+                return TradeTypesRpc.ExecutionType.TradeCancelExecutionType;
             case TradeCorrect:
-                return TradingTypesRpc.ExecutionType.TradeCorrectExecutionType;
+                return TradeTypesRpc.ExecutionType.TradeCorrectExecutionType;
             case Unknown:
-                return TradingTypesRpc.ExecutionType.UnknownExecutionType;
+                return TradeTypesRpc.ExecutionType.UnknownExecutionType;
             default:
                 throw new UnsupportedOperationException("Unsupported execution type: " + inExecutionType);
         }
@@ -1876,10 +1878,10 @@ public abstract class TradeRpcUtil
      * Set the execution type from the given report on the given builder.
      *
      * @param inReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setExecutionType(ExecutionReport inReport,
-                                        TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                        TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getExecutionType() == null) {
             return;
@@ -1890,10 +1892,10 @@ public abstract class TradeRpcUtil
      * Set the execution ID from the given report on the given builder.
      *
      * @param inReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setExecutionId(ExecutionReport inReport,
-                                      TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                      TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         String value = StringUtils.trimToNull(inReport.getExecutionID());
         if(value == null) {
@@ -1905,10 +1907,10 @@ public abstract class TradeRpcUtil
      * Set the cumulative quantity from value the given trade message on the given builder.
      *
      * @param inExecutionReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setCumulativeQuantity(ExecutionReport inExecutionReport,
-                                             TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                             TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         BaseRpcUtil.getRpcQty(inExecutionReport.getCumulativeQuantity()).ifPresent(qty->inBuilder.setCumulativeQuantity(qty));
     }
@@ -1916,10 +1918,10 @@ public abstract class TradeRpcUtil
      * Set the average price from value the given trade message on the given builder.
      *
      * @param inExecutionReport an <code>ExecutionReport</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setAveragePrice(ExecutionReport inExecutionReport,
-                                       TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                       TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         BaseRpcUtil.getRpcQty(inExecutionReport.getAveragePrice()).ifPresent(qty->inBuilder.setAveragePrice(qty));
     }
@@ -1927,10 +1929,10 @@ public abstract class TradeRpcUtil
      * Set the broker ID from value the given trade message on the given builder.
      *
      * @param inReportBase a <code>ReportBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setBrokerId(ReportBase inReportBase,
-                                   TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                   TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReportBase.getBrokerId() == null) {
             return;
@@ -1941,10 +1943,10 @@ public abstract class TradeRpcUtil
      * Set the broker ID from value the given trade message on the given builder.
      *
      * @param inReport a <code>FIXResponse</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setBrokerId(FIXResponse inReport,
-                                   TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                   TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getBrokerId() == null) {
             return;
@@ -1955,10 +1957,10 @@ public abstract class TradeRpcUtil
      * Set the broker order ID from the given report on the given builder.
      *
      * @param inReport a <code>ReportBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setBrokerOrderId(ReportBase inReport,
-                                        TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                        TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getBrokerOrderID() == null) {
             return;
@@ -1969,10 +1971,10 @@ public abstract class TradeRpcUtil
      * Set the order ID from the given report on the given builder.
      *
      * @param inReport a <code>ReportBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setOrderId(ReportBase inReport,
-                                  TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                  TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getOrderID() == null) {
             return;
@@ -1983,10 +1985,10 @@ public abstract class TradeRpcUtil
      * Set the report ID from the given report on the given builder.
      *
      * @param inReport a <code>ReportBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setReportId(ReportBase inReport,
-                                  TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                  TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getReportID() == null) {
             return;
@@ -1997,10 +1999,10 @@ public abstract class TradeRpcUtil
      * Set the sending time from the given report on the given builder.
      *
      * @param inReport a <code>ReportBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setSendingTime(ReportBase inReport,
-                                      TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                      TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getSendingTime() == null) {
             return;
@@ -2012,10 +2014,10 @@ public abstract class TradeRpcUtil
      * Set the text from the given report on the given builder.
      *
      * @param inReport a <code>ReportBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setText(ReportBase inReport,
-                               TradingTypesRpc.TradeMessage.Builder inBuilder)
+                               TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         String value = StringUtils.trimToNull(inReport.getText());
         if(value == null) {
@@ -2027,10 +2029,10 @@ public abstract class TradeRpcUtil
      * Set the original order ID from the given report on the given builder.
      *
      * @param inReport a <code>ReportBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setOriginalOrderId(ReportBase inReport,
-                                          TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                          TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getOriginalOrderID() == null) {
             return;
@@ -2041,10 +2043,10 @@ public abstract class TradeRpcUtil
      * Set the hierarchy from the given report on the given builder.
      *
      * @param inReport a <code>ReportBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setHierarchy(ReportBase inReport,
-                                    TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                    TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getHierarchy() == null) {
             return;
@@ -2055,10 +2057,10 @@ public abstract class TradeRpcUtil
      * Set the order status from the given report on the given builder.
      *
      * @param inReport a <code>ReportBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setOrderStatus(ReportBase inReport,
-                                      TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                      TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getOrderStatus() == null) {
             return;
@@ -2068,10 +2070,10 @@ public abstract class TradeRpcUtil
     /**
      * Set the order status from the given RPC value on the given order summary.
      *
-     * @param inRpcOrderSummary a <code>TradingTypesRpc.OrderSummary</code> value
+     * @param inRpcOrderSummary a <code>TradeTypesRpc.OrderSummary</code> value
      * @param inOrderSummary a <code>MutableOrderSummary</code> value
      */
-    public static void setOrderStatus(TradingTypesRpc.OrderSummary inRpcOrderSummary,
+    public static void setOrderStatus(TradeTypesRpc.OrderSummary inRpcOrderSummary,
                                       MutableOrderSummary inOrderSummary)
     {
         inOrderSummary.setOrderStatus(getOrderStatus(inRpcOrderSummary.getOrderStatus()));
@@ -2080,10 +2082,10 @@ public abstract class TradeRpcUtil
      * Set the originator from the given report on the given builder.
      *
      * @param inReport a <code>ReportBase</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setOriginator(ReportBase inReport,
-                                     TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                     TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getOriginator() == null) {
             return;
@@ -2094,10 +2096,10 @@ public abstract class TradeRpcUtil
      * Set the originator from the given report on the given builder.
      *
      * @param inReport a <code>FIXResponse</code> value
-     * @param inBuilder a <code>TradingTypesRpc.TradeMessage.Builder</code> value
+     * @param inBuilder a <code>TradeTypesRpc.TradeMessage.Builder</code> value
      */
     public static void setOriginator(FIXResponse inReport,
-                                     TradingTypesRpc.TradeMessage.Builder inBuilder)
+                                     TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
         if(inReport.getOriginator() == null) {
             return;
@@ -2108,43 +2110,43 @@ public abstract class TradeRpcUtil
      * Get the RPC order status value from the given value.
      *
      * @param inOrderStatus an <code>OrderStatus</code> value
-     * @return a <code>TradingTypesRpc.OrderStatus</code> value
+     * @return a <code>TradeTypesRpc.OrderStatus</code> value
      */
-    public static TradingTypesRpc.OrderStatusType getRpcOrderStatus(OrderStatus inOrderStatus)
+    public static TradeTypesRpc.OrderStatusType getRpcOrderStatus(OrderStatus inOrderStatus)
     {
         switch(inOrderStatus) {
             case AcceptedForBidding:
-                return TradingTypesRpc.OrderStatusType.AcceptedForBidding;
+                return TradeTypesRpc.OrderStatusType.AcceptedForBidding;
             case Calculated:
-                return TradingTypesRpc.OrderStatusType.Calculated;
+                return TradeTypesRpc.OrderStatusType.Calculated;
             case Canceled:
-                return TradingTypesRpc.OrderStatusType.Canceled;
+                return TradeTypesRpc.OrderStatusType.Canceled;
             case DoneForDay:
-                return TradingTypesRpc.OrderStatusType.DoneForDay;
+                return TradeTypesRpc.OrderStatusType.DoneForDay;
             case Expired:
-                return TradingTypesRpc.OrderStatusType.Expired;
+                return TradeTypesRpc.OrderStatusType.Expired;
             case Filled:
-                return TradingTypesRpc.OrderStatusType.Filled;
+                return TradeTypesRpc.OrderStatusType.Filled;
             case New:
-                return TradingTypesRpc.OrderStatusType.New;
+                return TradeTypesRpc.OrderStatusType.New;
             case PartiallyFilled:
-                return TradingTypesRpc.OrderStatusType.PartiallyFilled;
+                return TradeTypesRpc.OrderStatusType.PartiallyFilled;
             case PendingCancel:
-                return TradingTypesRpc.OrderStatusType.PendingCancel;
+                return TradeTypesRpc.OrderStatusType.PendingCancel;
             case PendingNew:
-                return TradingTypesRpc.OrderStatusType.PendingNew;
+                return TradeTypesRpc.OrderStatusType.PendingNew;
             case PendingReplace:
-                return TradingTypesRpc.OrderStatusType.PendingReplace;
+                return TradeTypesRpc.OrderStatusType.PendingReplace;
             case Rejected:
-                return TradingTypesRpc.OrderStatusType.Rejected;
+                return TradeTypesRpc.OrderStatusType.Rejected;
             case Replaced:
-                return TradingTypesRpc.OrderStatusType.Replaced;
+                return TradeTypesRpc.OrderStatusType.Replaced;
             case Stopped:
-                return TradingTypesRpc.OrderStatusType.Stopped;
+                return TradeTypesRpc.OrderStatusType.Stopped;
             case Suspended:
-                return TradingTypesRpc.OrderStatusType.Suspended;
+                return TradeTypesRpc.OrderStatusType.Suspended;
             case Unknown:
-                return TradingTypesRpc.OrderStatusType.UnknownOrderStatus;
+                return TradeTypesRpc.OrderStatusType.UnknownOrderStatus;
             default:
                 throw new UnsupportedOperationException("Unsupported order status: " + inOrderStatus);
         }
@@ -2152,10 +2154,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the order status value from the given RPC value.
      *
-     * @param inRpcOrderStatus a <code>TradingTypesRpc.OrderStatusType</code> value
+     * @param inRpcOrderStatus a <code>TradeTypesRpc.OrderStatusType</code> value
      * @return an <code>OrderStatus</code> value
      */
-    public static OrderStatus getOrderStatus(TradingTypesRpc.OrderStatusType inRpcOrderStatus)
+    public static OrderStatus getOrderStatus(TradeTypesRpc.OrderStatusType inRpcOrderStatus)
     {
         switch(inRpcOrderStatus) {
             case AcceptedForBidding:
@@ -2199,15 +2201,15 @@ public abstract class TradeRpcUtil
      * Get the RPC originator value from the given value.
      *
      * @param inOriginator an <code>Originator</code> value
-     * @return a <code>TradingTypesRpc.Originator</code> value
+     * @return a <code>TradeTypesRpc.Originator</code> value
      */
-    public static TradingTypesRpc.Originator getRpcOriginator(Originator inOriginator)
+    public static TradeTypesRpc.Originator getRpcOriginator(Originator inOriginator)
     {
         switch(inOriginator) {
             case Broker:
-                return TradingTypesRpc.Originator.BrokerOriginator;
+                return TradeTypesRpc.Originator.BrokerOriginator;
             case Server:
-                return TradingTypesRpc.Originator.ServerOriginator;
+                return TradeTypesRpc.Originator.ServerOriginator;
             default:
                 throw new UnsupportedOperationException("Unsupported originator: " + inOriginator);
         }
@@ -2215,10 +2217,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the user ID value from the given RPC message.
      * 
-     * @param inRpcTradeMessage a <code>TradingTypesRpc.OrderBase</code> value 
+     * @param inRpcTradeMessage a <code>TradeTypesRpc.OrderBase</code> value 
      * @return an <code>Optional&lt;UserID&gt;</code> value
      */
-    private static Optional<UserID> getUserId(TradingTypesRpc.TradeMessage inRpcTradeMessage)
+    private static Optional<UserID> getUserId(TradeTypesRpc.TradeMessage inRpcTradeMessage)
     {
         String value = StringUtils.trimToNull(inRpcTradeMessage.getUser());
         if(value == null) {
@@ -2235,10 +2237,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the originator value from the given RPC message.
      *
-     * @param inRpcTradeMessage a <code>TradingTypesRpc.TradeMessage</code> value 
+     * @param inRpcTradeMessage a <code>TradeTypesRpc.TradeMessage</code> value 
      * @return an <code>Originator</code> value
      */
-    private static Originator getOriginator(TradingTypesRpc.TradeMessage inRpcTradeMessage)
+    private static Originator getOriginator(TradeTypesRpc.TradeMessage inRpcTradeMessage)
     {
         switch(inRpcTradeMessage.getOriginator()) {
             case BrokerOriginator:
@@ -2253,10 +2255,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the originator value from the given RPC message.
      *
-     * @param inRpcOriginator a <code>TradingTypesRpc.Originator</code> value 
+     * @param inRpcOriginator a <code>TradeTypesRpc.Originator</code> value 
      * @return an <code>Originator</code> value
      */
-    private static Originator getOriginator(TradingTypesRpc.Originator inRpcOriginator)
+    private static Originator getOriginator(TradeTypesRpc.Originator inRpcOriginator)
     {
         switch(inRpcOriginator) {
             case BrokerOriginator:
@@ -2271,10 +2273,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the report type value from the given RPC report type.
      *
-     * @param inRpcReportType a <code>TradingTypesRpc.ReportType</code> value 
+     * @param inRpcReportType a <code>TradeTypesRpc.ReportType</code> value 
      * @return a <code>ReportType</code> value
      */
-    private static ReportType getReportType(TradingTypesRpc.ReportType inRpcReportType)
+    private static ReportType getReportType(TradeTypesRpc.ReportType inRpcReportType)
     {
         switch(inRpcReportType) {
             case CancelReject:
@@ -2290,15 +2292,15 @@ public abstract class TradeRpcUtil
      * Get the RPC report type value from the given report type.
      *
      * @param inReportType a <code>ReportType</code> value 
-     * @return a <code>TradingTypesRpc.ReportType</code> value
+     * @return a <code>TradeTypesRpc.ReportType</code> value
      */
-    private static TradingTypesRpc.ReportType getRpcReportType(ReportType inReportType)
+    private static TradeTypesRpc.ReportType getRpcReportType(ReportType inReportType)
     {
         switch(inReportType) {
             case CancelReject:
-                return TradingTypesRpc.ReportType.CancelReject;
+                return TradeTypesRpc.ReportType.CancelReject;
             case ExecutionReport:
-                return TradingTypesRpc.ReportType.ExecutionReport;
+                return TradeTypesRpc.ReportType.ExecutionReport;
             default:
                 throw new UnsupportedOperationException("Unsupported report type: " + inReportType);
         }
@@ -2306,10 +2308,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the broker algo from the given RPC order.
      *
-     * @param inRpcOrder a <code>TradingTypesRpc.OrderBase</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase</code> value
      * @return an <code>Optional&lt;BrokerAlgo&gt;</code> value
      */
-    public static Optional<BrokerAlgo> getBrokerAlgo(TradingTypesRpc.OrderBase inRpcOrder)
+    public static Optional<BrokerAlgo> getBrokerAlgo(TradeTypesRpc.OrderBase inRpcOrder)
     {
         if(!inRpcOrder.hasBrokerAlgo()) {
             return Optional.empty();
@@ -2356,10 +2358,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the FIX message from the given RPC FIX message.
      *
-     * @param inRpcMessage a <code>TradingTypesRpc.FixMessage</code> value
+     * @param inRpcMessage a <code>TradeTypesRpc.FixMessage</code> value
      * @return a <code>quickfix.Message</code> value
      */
-    public static quickfix.Message getFixMessage(TradingTypesRpc.FixMessage inRpcMessage)
+    public static quickfix.Message getFixMessage(TradeTypesRpc.FixMessage inRpcMessage)
     {
         quickfix.Message fixMessage = new quickfix.Message();
         if(inRpcMessage.hasHeader()) {
@@ -2383,11 +2385,11 @@ public abstract class TradeRpcUtil
      * Get the RPC FIX message from the given FIX message.
      *
      * @param inMessage a <code>quickfix.Message</code> value
-     * @return a <code>TradingTypesRpc.FixMessage</code> value
+     * @return a <code>TradeTypesRpc.FixMessage</code> value
      */
-    public static TradingTypesRpc.FixMessage getRpcFixMessage(quickfix.Message inMessage)
+    public static TradeTypesRpc.FixMessage getRpcFixMessage(quickfix.Message inMessage)
     {
-        TradingTypesRpc.FixMessage.Builder fixMessageBuilder = TradingTypesRpc.FixMessage.newBuilder();
+        TradeTypesRpc.FixMessage.Builder fixMessageBuilder = TradeTypesRpc.FixMessage.newBuilder();
         Map<String,String> fields = Maps.newHashMap();
         setFieldMap(inMessage.getHeader(),
                     fields);
@@ -2406,10 +2408,10 @@ public abstract class TradeRpcUtil
      * Set the order ID from the given order on the given builder.
      *
      * @param inOrder an <code>Order</code> value
-     * @param inBuilder a <code>TradingRpc.OrderResponse.Builder</code> value
+     * @param inBuilder a <code>TradeRpc.OrderResponse.Builder</code> value
      */
     public static void setOrderId(Order inOrder,
-                                  TradingRpc.OrderResponse.Builder inBuilder)
+                                  TradeRpc.OrderResponse.Builder inBuilder)
     {
         if(inOrder instanceof OrderBase) {
             OrderBase order = (OrderBase)inOrder;
@@ -2435,10 +2437,10 @@ public abstract class TradeRpcUtil
     /**
      * Set the order id value.
      *
-     * @param inRpcOrderSummary a <code>TradingTypesRpc.OrderSummary</code> value
+     * @param inRpcOrderSummary a <code>TradeTypesRpc.OrderSummary</code> value
      * @param inOrderSummary a <code>MutableOrderSummary</code> value
      */
-    public static void setOrderId(TradingTypesRpc.OrderSummary inRpcOrderSummary,
+    public static void setOrderId(TradeTypesRpc.OrderSummary inRpcOrderSummary,
                                   MutableOrderSummary inOrderSummary)
     {
         String value = StringUtils.trimToNull(inRpcOrderSummary.getOrderId());
@@ -2451,10 +2453,10 @@ public abstract class TradeRpcUtil
     /**
      * Set the root order id value.
      *
-     * @param inRpcOrderSummary a <code>TradingTypesRpc.OrderSummary</code> value
+     * @param inRpcOrderSummary a <code>TradeTypesRpc.OrderSummary</code> value
      * @param inOrderSummary a <code>MutableOrderSummary</code> value
      */
-    public static void setRootOrderId(TradingTypesRpc.OrderSummary inRpcOrderSummary,
+    public static void setRootOrderId(TradeTypesRpc.OrderSummary inRpcOrderSummary,
                                       MutableOrderSummary inOrderSummary)
     {
         String value = StringUtils.trimToNull(inRpcOrderSummary.getRootOrderId());
@@ -2635,13 +2637,13 @@ public abstract class TradeRpcUtil
     /**
      * Get an order summary value from the given RPC order summary.
      *
-     * @param inRpcOrderSummary a <code>TradingTypesRpc.OrderSummary</code> value
+     * @param inRpcOrderSummary a <code>TradeTypesRpc.OrderSummary</code> value
      * @param inOrderSummaryFactory a <code>MutableOrderSummaryFactory</code> value
      * @param inUserFactory a <code>UserFactory</code> value
      * @param inReportFactory a <code>MutableReportFactory</code> value
      * @return an <code>Optional&lt;OrderSummary&gt;</code> value
      */
-    public static Optional<OrderSummary> getOrderSummary(TradingTypesRpc.OrderSummary inRpcOrderSummary,
+    public static Optional<OrderSummary> getOrderSummary(TradeTypesRpc.OrderSummary inRpcOrderSummary,
                                                          MutableOrderSummaryFactory inOrderSummaryFactory,
                                                          UserFactory inUserFactory,
                                                          MutableReportFactory inReportFactory)
@@ -2691,11 +2693,11 @@ public abstract class TradeRpcUtil
      * Get the RPC order summary value from the given order summary.
      *
      * @param inOrderSummary an <code>OrderSummary</code> value
-     * @return a <code>TradingTypesRpc.OrderSummary</code> value
+     * @return a <code>TradeTypesRpc.OrderSummary</code> value
      */
-    public static TradingTypesRpc.OrderSummary getRpcOrderSummary(OrderSummary inOrderSummary)
+    public static TradeTypesRpc.OrderSummary getRpcOrderSummary(OrderSummary inOrderSummary)
     {
-        TradingTypesRpc.OrderSummary.Builder orderSummaryBuilder = TradingTypesRpc.OrderSummary.newBuilder();
+        TradeTypesRpc.OrderSummary.Builder orderSummaryBuilder = TradeTypesRpc.OrderSummary.newBuilder();
         String value = StringUtils.trimToNull(inOrderSummary.getAccount());
         if(value != null) {
             orderSummaryBuilder.setAccount(value);
@@ -2789,10 +2791,10 @@ public abstract class TradeRpcUtil
     /**
      * Get the position key value from the given RPC position key.
      *
-     * @param inRpcPositionKey a <code>TradingTypesRpc.PositionKey</code> value
+     * @param inRpcPositionKey a <code>TradeTypesRpc.PositionKey</code> value
      * @return a <code>PositionKey&lt;? extends Instrument&gt;</code> value
      */
-    public static PositionKey<? extends Instrument> getPositionKey(TradingTypesRpc.PositionKey inRpcPositionKey)
+    public static PositionKey<? extends Instrument> getPositionKey(TradeTypesRpc.PositionKey inRpcPositionKey)
     {
         return PositionKeyFactory.createKey(getInstrument(inRpcPositionKey.getInstrument()).orElse(null),
                                             StringUtils.trimToNull(inRpcPositionKey.getAccount()),

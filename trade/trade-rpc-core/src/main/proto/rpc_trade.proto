@@ -1,7 +1,7 @@
 syntax = "proto3";
 option java_generic_services = true;
-option java_package = "org.marketcetera.trading.rpc";
-option java_outer_classname = "TradingRpc";
+option java_package = "org.marketcetera.trade.rpc";
+option java_outer_classname = "TradeRpc";
 import "rpc_base.proto";
 import "rpc_paging.proto";
 import "rpc_trade_types.proto";
@@ -140,7 +140,7 @@ message ReadAvailableFixInitiatorSessionsResponse {
     repeated ActiveFixSession fixSession = 1;
 }
 
-service TradingRpcService {
+service TradeRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
     rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}

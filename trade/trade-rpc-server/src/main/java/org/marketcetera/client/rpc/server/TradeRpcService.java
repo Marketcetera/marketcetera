@@ -49,38 +49,38 @@ import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.trading.rpc.TradeRpcUtil;
-import org.marketcetera.trading.rpc.TradingRpc;
-import org.marketcetera.trading.rpc.TradingRpc.AddReportRequest;
-import org.marketcetera.trading.rpc.TradingRpc.AddReportResponse;
-import org.marketcetera.trading.rpc.TradingRpc.AddTradeMessageListenerRequest;
-import org.marketcetera.trading.rpc.TradingRpc.DeleteReportRequest;
-import org.marketcetera.trading.rpc.TradingRpc.DeleteReportResponse;
-import org.marketcetera.trading.rpc.TradingRpc.FindRootOrderIdRequest;
-import org.marketcetera.trading.rpc.TradingRpc.FindRootOrderIdResponse;
-import org.marketcetera.trading.rpc.TradingRpc.GetAllPositionsAsOfRequest;
-import org.marketcetera.trading.rpc.TradingRpc.GetAllPositionsAsOfResponse;
-import org.marketcetera.trading.rpc.TradingRpc.GetAllPositionsByRootAsOfRequest;
-import org.marketcetera.trading.rpc.TradingRpc.GetAllPositionsByRootAsOfResponse;
-import org.marketcetera.trading.rpc.TradingRpc.GetLatestExecutionReportForOrderChainRequest;
-import org.marketcetera.trading.rpc.TradingRpc.GetLatestExecutionReportForOrderChainResponse;
-import org.marketcetera.trading.rpc.TradingRpc.GetPositionAsOfRequest;
-import org.marketcetera.trading.rpc.TradingRpc.GetPositionAsOfResponse;
-import org.marketcetera.trading.rpc.TradingRpc.GetReportsRequest;
-import org.marketcetera.trading.rpc.TradingRpc.GetReportsResponse;
-import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersRequest;
-import org.marketcetera.trading.rpc.TradingRpc.OpenOrdersResponse;
-import org.marketcetera.trading.rpc.TradingRpc.ReadAvailableFixInitiatorSessionsRequest;
-import org.marketcetera.trading.rpc.TradingRpc.ReadAvailableFixInitiatorSessionsResponse;
-import org.marketcetera.trading.rpc.TradingRpc.RemoveTradeMessageListenerRequest;
-import org.marketcetera.trading.rpc.TradingRpc.RemoveTradeMessageListenerResponse;
-import org.marketcetera.trading.rpc.TradingRpc.ResolveSymbolRequest;
-import org.marketcetera.trading.rpc.TradingRpc.ResolveSymbolResponse;
-import org.marketcetera.trading.rpc.TradingRpc.SendOrderRequest;
-import org.marketcetera.trading.rpc.TradingRpc.SendOrderResponse;
-import org.marketcetera.trading.rpc.TradingRpc.TradeMessageListenerResponse;
-import org.marketcetera.trading.rpc.TradingRpcServiceGrpc;
-import org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase;
-import org.marketcetera.trading.rpc.TradingTypesRpc;
+import org.marketcetera.trade.rpc.TradeRpc;
+import org.marketcetera.trade.rpc.TradeRpc.AddReportRequest;
+import org.marketcetera.trade.rpc.TradeRpc.AddReportResponse;
+import org.marketcetera.trade.rpc.TradeRpc.AddTradeMessageListenerRequest;
+import org.marketcetera.trade.rpc.TradeRpc.DeleteReportRequest;
+import org.marketcetera.trade.rpc.TradeRpc.DeleteReportResponse;
+import org.marketcetera.trade.rpc.TradeRpc.FindRootOrderIdRequest;
+import org.marketcetera.trade.rpc.TradeRpc.FindRootOrderIdResponse;
+import org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsAsOfRequest;
+import org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsAsOfResponse;
+import org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsByRootAsOfRequest;
+import org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsByRootAsOfResponse;
+import org.marketcetera.trade.rpc.TradeRpc.GetLatestExecutionReportForOrderChainRequest;
+import org.marketcetera.trade.rpc.TradeRpc.GetLatestExecutionReportForOrderChainResponse;
+import org.marketcetera.trade.rpc.TradeRpc.GetPositionAsOfRequest;
+import org.marketcetera.trade.rpc.TradeRpc.GetPositionAsOfResponse;
+import org.marketcetera.trade.rpc.TradeRpc.GetReportsRequest;
+import org.marketcetera.trade.rpc.TradeRpc.GetReportsResponse;
+import org.marketcetera.trade.rpc.TradeRpc.OpenOrdersRequest;
+import org.marketcetera.trade.rpc.TradeRpc.OpenOrdersResponse;
+import org.marketcetera.trade.rpc.TradeRpc.ReadAvailableFixInitiatorSessionsRequest;
+import org.marketcetera.trade.rpc.TradeRpc.ReadAvailableFixInitiatorSessionsResponse;
+import org.marketcetera.trade.rpc.TradeRpc.RemoveTradeMessageListenerRequest;
+import org.marketcetera.trade.rpc.TradeRpc.RemoveTradeMessageListenerResponse;
+import org.marketcetera.trade.rpc.TradeRpc.ResolveSymbolRequest;
+import org.marketcetera.trade.rpc.TradeRpc.ResolveSymbolResponse;
+import org.marketcetera.trade.rpc.TradeRpc.SendOrderRequest;
+import org.marketcetera.trade.rpc.TradeRpc.SendOrderResponse;
+import org.marketcetera.trade.rpc.TradeRpc.TradeMessageListenerResponse;
+import org.marketcetera.trade.rpc.TradeRpcServiceGrpc;
+import org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase;
+import org.marketcetera.trade.rpc.TradeTypesRpc;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,7 +102,7 @@ import io.grpc.stub.StreamObserver;
  * @since $Release$
  */
 public class TradeRpcService<SessionClazz>
-        extends AbstractRpcService<SessionClazz,TradingRpcServiceGrpc.TradingRpcServiceImplBase>
+        extends AbstractRpcService<SessionClazz,TradeRpcServiceGrpc.TradeRpcServiceImplBase>
 {
     /**
      * Validate and start the object.
@@ -126,7 +126,7 @@ public class TradeRpcService<SessionClazz>
      * @see org.marketcetera.rpc.server.AbstractRpcService#getService()
      */
     @Override
-    protected TradingRpcServiceImplBase getService()
+    protected TradeRpcServiceImplBase getService()
     {
         return service;
     }
@@ -138,10 +138,10 @@ public class TradeRpcService<SessionClazz>
      * @since $Release$
      */
     private class Service
-            extends TradingRpcServiceGrpc.TradingRpcServiceImplBase
+            extends TradeRpcServiceGrpc.TradeRpcServiceImplBase
     {
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#login(org.marketcetera.rpc.base.BaseRpc.LoginRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#login(org.marketcetera.rpc.base.BaseRpc.LoginRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void login(LoginRequest inRequest,
@@ -151,7 +151,7 @@ public class TradeRpcService<SessionClazz>
                                                inResponseObserver);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#logout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#logout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void logout(LogoutRequest inRequest,
@@ -161,7 +161,7 @@ public class TradeRpcService<SessionClazz>
                                                 inResponseObserver);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#heartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#heartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void heartbeat(HeartbeatRequest inRequest,
@@ -171,7 +171,7 @@ public class TradeRpcService<SessionClazz>
                                                    inResponseObserver);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#getReports(org.marketcetera.trading.rpc.TradingRpc.GetReportsRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#getReports(org.marketcetera.trade.rpc.TradeRpc.GetReportsRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void getReports(GetReportsRequest inRequest,
@@ -184,13 +184,13 @@ public class TradeRpcService<SessionClazz>
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received {}",
                                        inRequest);
-                TradingRpc.GetReportsResponse.Builder responseBuilder = TradingRpc.GetReportsResponse.newBuilder();
+                TradeRpc.GetReportsResponse.Builder responseBuilder = TradeRpc.GetReportsResponse.newBuilder();
                 PageRequest pageRequest = inRequest.hasPageRequest()?PagingRpcUtil.getPageRequest(inRequest.getPageRequest()):PageRequest.ALL;
                 CollectionPageResponse<Report> reportPage = reportService.getReports(pageRequest);
                 reportPage.getElements().forEach(report->responseBuilder.addReports(TradeRpcUtil.getRpcReport(report)));
                 responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
                                                                               reportPage));
-                TradingRpc.GetReportsResponse response = responseBuilder.build();
+                TradeRpc.GetReportsResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Responding: {}",
                                        response);
@@ -202,7 +202,7 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#getOpenOrders(org.marketcetera.trading.rpc.TradingRpc.OpenOrdersRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#getOpenOrders(org.marketcetera.trade.rpc.TradeRpc.OpenOrdersRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void getOpenOrders(OpenOrdersRequest inRequest,
@@ -215,13 +215,13 @@ public class TradeRpcService<SessionClazz>
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received open order request {}",
                                        inRequest);
-                TradingRpc.OpenOrdersResponse.Builder responseBuilder = TradingRpc.OpenOrdersResponse.newBuilder();
+                TradeRpc.OpenOrdersResponse.Builder responseBuilder = TradeRpc.OpenOrdersResponse.newBuilder();
                 PageRequest pageRequest = inRequest.hasPageRequest()?PagingRpcUtil.getPageRequest(inRequest.getPageRequest()):PageRequest.ALL;
                 CollectionPageResponse<? extends OrderSummary> orderSummaryPage = orderSummaryService.findOpenOrders(pageRequest);
                 orderSummaryPage.getElements().forEach(value->responseBuilder.addOrders(TradeRpcUtil.getRpcOrderSummary(value)));
                 responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
                                                                               orderSummaryPage));
-                TradingRpc.OpenOrdersResponse response = responseBuilder.build();
+                TradeRpc.OpenOrdersResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Responding: {}",
                                        response);
@@ -233,7 +233,7 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#getLatestExecutionReportForOrderChain(org.marketcetera.trading.rpc.TradingRpc.GetLatestExecutionReportForOrderChainRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#getLatestExecutionReportForOrderChain(org.marketcetera.trade.rpc.TradeRpc.GetLatestExecutionReportForOrderChainRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void getLatestExecutionReportForOrderChain(GetLatestExecutionReportForOrderChainRequest inRequest,
@@ -246,10 +246,10 @@ public class TradeRpcService<SessionClazz>
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received {}",
                                        inRequest);
-                TradingRpc.GetLatestExecutionReportForOrderChainResponse.Builder responseBuilder = TradingRpc.GetLatestExecutionReportForOrderChainResponse.newBuilder();
+                TradeRpc.GetLatestExecutionReportForOrderChainResponse.Builder responseBuilder = TradeRpc.GetLatestExecutionReportForOrderChainResponse.newBuilder();
                 Optional<ExecutionReport> executionReportOption = reportService.getLatestExecutionReportForOrderChain(new OrderID(inRequest.getOrderId()));
                 executionReportOption.ifPresent(executionReport -> responseBuilder.setExecutionReport(TradeRpcUtil.getRpcTradeMessage(executionReport)));
-                TradingRpc.GetLatestExecutionReportForOrderChainResponse response = responseBuilder.build();
+                TradeRpc.GetLatestExecutionReportForOrderChainResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Responding: {}",
                                        response);
@@ -261,7 +261,7 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#sendOrders(org.marketcetera.trading.rpc.TradingRpc.SendOrderRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#sendOrders(org.marketcetera.trade.rpc.TradeRpc.SendOrderRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void sendOrders(SendOrderRequest inRequest,
@@ -275,9 +275,9 @@ public class TradeRpcService<SessionClazz>
                                        sessionHolder);
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.SendOrderAction.name());
-                TradingRpc.SendOrderResponse.Builder responseBuilder = TradingRpc.SendOrderResponse.newBuilder();
-                TradingRpc.OrderResponse.Builder orderResponseBuilder = TradingRpc.OrderResponse.newBuilder();
-                for(TradingTypesRpc.Order rpcOrder : inRequest.getOrderList()) {
+                TradeRpc.SendOrderResponse.Builder responseBuilder = TradeRpc.SendOrderResponse.newBuilder();
+                TradeRpc.OrderResponse.Builder orderResponseBuilder = TradeRpc.OrderResponse.newBuilder();
+                for(TradeTypesRpc.Order rpcOrder : inRequest.getOrderList()) {
                     try {
                         Order matpOrder = TradeRpcUtil.getOrder(rpcOrder);
                         TradeRpcUtil.setOrderId(matpOrder,
@@ -298,12 +298,12 @@ public class TradeRpcService<SessionClazz>
                                               e,
                                               "Unable to submit order {}",
                                               rpcOrder);
-                        throw e;
+                        
                     }
                     responseBuilder.addOrderResponse(orderResponseBuilder.build());
                     orderResponseBuilder.clear();
                 }
-                TradingRpc.SendOrderResponse response = responseBuilder.build();
+                TradeRpc.SendOrderResponse response = responseBuilder.build();
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
@@ -312,7 +312,7 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#resolveSymbol(org.marketcetera.trading.rpc.TradingRpc.ResolveSymbolRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#resolveSymbol(org.marketcetera.trade.rpc.TradeRpc.ResolveSymbolRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void resolveSymbol(ResolveSymbolRequest inRequest,
@@ -320,7 +320,7 @@ public class TradeRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                TradingRpc.ResolveSymbolResponse.Builder responseBuilder = TradingRpc.ResolveSymbolResponse.newBuilder();
+                TradeRpc.ResolveSymbolResponse.Builder responseBuilder = TradeRpc.ResolveSymbolResponse.newBuilder();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received resolve symbol request {} from {}",
                                        inRequest,
@@ -328,7 +328,7 @@ public class TradeRpcService<SessionClazz>
                 Instrument instrument = symbolResolverService.resolveSymbol(inRequest.getSymbol());
                 TradeRpcUtil.setInstrument(instrument,
                                           responseBuilder);
-                TradingRpc.ResolveSymbolResponse response = responseBuilder.build();
+                TradeRpc.ResolveSymbolResponse response = responseBuilder.build();
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
@@ -337,7 +337,7 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#addTradeMessageListener(org.marketcetera.trading.rpc.TradingRpc.AddTradeMessageListenerRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#addTradeMessageListener(org.marketcetera.trade.rpc.TradeRpc.AddTradeMessageListenerRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void addTradeMessageListener(AddTradeMessageListenerRequest inRequest,
@@ -363,7 +363,7 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#removeTradeMessageListener(org.marketcetera.trading.rpc.TradingRpc.RemoveTradeMessageListenerRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#removeTradeMessageListener(org.marketcetera.trade.rpc.TradeRpc.RemoveTradeMessageListenerRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void removeTradeMessageListener(RemoveTradeMessageListenerRequest inRequest,
@@ -381,8 +381,8 @@ public class TradeRpcService<SessionClazz>
                     tradeService.removeTradeMessageListener((TradeMessageListener)tradeMessageListenerProxy);
                     tradeMessageListenerProxy.close();
                 }
-                TradingRpc.RemoveTradeMessageListenerResponse.Builder responseBuilder = TradingRpc.RemoveTradeMessageListenerResponse.newBuilder();
-                TradingRpc.RemoveTradeMessageListenerResponse response = responseBuilder.build();
+                TradeRpc.RemoveTradeMessageListenerResponse.Builder responseBuilder = TradeRpc.RemoveTradeMessageListenerResponse.newBuilder();
+                TradeRpc.RemoveTradeMessageListenerResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Returning {}",
                                        response);
@@ -394,7 +394,7 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#findRootOrderId(org.marketcetera.trading.rpc.TradingRpc.FindRootOrderIdRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#findRootOrderId(org.marketcetera.trade.rpc.TradeRpc.FindRootOrderIdRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void findRootOrderId(FindRootOrderIdRequest inRequest,
@@ -408,13 +408,13 @@ public class TradeRpcService<SessionClazz>
                                        sessionHolder);
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.ViewOpenOrdersAction.name());
-                TradingRpc.FindRootOrderIdResponse.Builder responseBuilder = TradingRpc.FindRootOrderIdResponse.newBuilder();
+                TradeRpc.FindRootOrderIdResponse.Builder responseBuilder = TradeRpc.FindRootOrderIdResponse.newBuilder();
                 OrderID orderId = new OrderID(inRequest.getOrderId());
                 OrderID rootOrderId = reportService.getRootOrderIdFor(orderId);
                 if(rootOrderId != null) {
                     responseBuilder.setRootOrderId(rootOrderId.getValue());
                 }
-                TradingRpc.FindRootOrderIdResponse response = responseBuilder.build();
+                TradeRpc.FindRootOrderIdResponse response = responseBuilder.build();
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
@@ -423,7 +423,7 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#getPositionAsOf(org.marketcetera.trading.rpc.TradingRpc.GetPositionAsOfRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#getPositionAsOf(org.marketcetera.trade.rpc.TradeRpc.GetPositionAsOfRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void getPositionAsOf(GetPositionAsOfRequest inRequest,
@@ -431,7 +431,7 @@ public class TradeRpcService<SessionClazz>
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
-                TradingRpc.GetPositionAsOfResponse.Builder responseBuilder = TradingRpc.GetPositionAsOfResponse.newBuilder();
+                TradeRpc.GetPositionAsOfResponse.Builder responseBuilder = TradeRpc.GetPositionAsOfResponse.newBuilder();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Received get position as of request {} from {}",
                                        inRequest,
@@ -455,7 +455,7 @@ public class TradeRpcService<SessionClazz>
                                        result,
                                        timestamp);
                 BaseRpcUtil.getRpcQty(result).ifPresent(qty->responseBuilder.setPosition(qty));
-                TradingRpc.GetPositionAsOfResponse response = responseBuilder.build();
+                TradeRpc.GetPositionAsOfResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Returning {}",
                                        response);
@@ -467,7 +467,7 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#getAllPositionsAsOf(org.marketcetera.trading.rpc.TradingRpc.GetAllPositionsAsOfRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#getAllPositionsAsOf(org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsAsOfRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void getAllPositionsAsOf(GetAllPositionsAsOfRequest inRequest,
@@ -481,7 +481,7 @@ public class TradeRpcService<SessionClazz>
                                        sessionHolder);
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.ViewPositionAction.name());
-                TradingRpc.GetAllPositionsAsOfResponse.Builder responseBuilder = TradingRpc.GetAllPositionsAsOfResponse.newBuilder();
+                TradeRpc.GetAllPositionsAsOfResponse.Builder responseBuilder = TradeRpc.GetAllPositionsAsOfResponse.newBuilder();
                 Date timestamp = null;
                 if(inRequest.hasTimestamp()) {
                     timestamp = Date.from(Instant.ofEpochSecond(inRequest.getTimestamp().getSeconds(),
@@ -495,8 +495,8 @@ public class TradeRpcService<SessionClazz>
                                        user,
                                        timestamp,
                                        result);
-                TradingTypesRpc.Position.Builder positionBuilder = TradingTypesRpc.Position.newBuilder();
-                TradingTypesRpc.PositionKey.Builder positionKeyBuilder = TradingTypesRpc.PositionKey.newBuilder();
+                TradeTypesRpc.Position.Builder positionBuilder = TradeTypesRpc.Position.newBuilder();
+                TradeTypesRpc.PositionKey.Builder positionKeyBuilder = TradeTypesRpc.PositionKey.newBuilder();
                 for(Map.Entry<PositionKey<? extends Instrument>,BigDecimal> entry : result.entrySet()) {
                     PositionKey<? extends Instrument> key = entry.getKey();
                     BigDecimal value = entry.getValue();
@@ -526,7 +526,7 @@ public class TradeRpcService<SessionClazz>
                     positionKeyBuilder.clear();
                     positionBuilder.clear();
                 }
-                TradingRpc.GetAllPositionsAsOfResponse response = responseBuilder.build();
+                TradeRpc.GetAllPositionsAsOfResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Returning {}",
                                        response);
@@ -538,7 +538,7 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#getAllPositionsByRootAsOf(org.marketcetera.trading.rpc.TradingRpc.GetAllPositionsByRootAsOfRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#getAllPositionsByRootAsOf(org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsByRootAsOfRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void getAllPositionsByRootAsOf(GetAllPositionsByRootAsOfRequest inRequest,
@@ -552,7 +552,7 @@ public class TradeRpcService<SessionClazz>
                                        sessionHolder);
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.ViewPositionAction.name());
-                TradingRpc.GetAllPositionsByRootAsOfResponse.Builder responseBuilder = TradingRpc.GetAllPositionsByRootAsOfResponse.newBuilder();
+                TradeRpc.GetAllPositionsByRootAsOfResponse.Builder responseBuilder = TradeRpc.GetAllPositionsByRootAsOfResponse.newBuilder();
                 Date timestamp = null;
                 if(inRequest.hasTimestamp()) {
                     timestamp = Date.from(Instant.ofEpochSecond(inRequest.getTimestamp().getSeconds(),
@@ -567,8 +567,8 @@ public class TradeRpcService<SessionClazz>
                                        user,
                                        timestamp,
                                        result);
-                TradingTypesRpc.Position.Builder positionBuilder = TradingTypesRpc.Position.newBuilder();
-                TradingTypesRpc.PositionKey.Builder positionKeyBuilder = TradingTypesRpc.PositionKey.newBuilder();
+                TradeTypesRpc.Position.Builder positionBuilder = TradeTypesRpc.Position.newBuilder();
+                TradeTypesRpc.PositionKey.Builder positionKeyBuilder = TradeTypesRpc.PositionKey.newBuilder();
                 for(Map.Entry<PositionKey<Option>,BigDecimal> entry : result.entrySet()) {
                     PositionKey<Option> key = entry.getKey();
                     BigDecimal value = entry.getValue();
@@ -598,7 +598,7 @@ public class TradeRpcService<SessionClazz>
                     positionKeyBuilder.clear();
                     positionBuilder.clear();
                 }
-                TradingRpc.GetAllPositionsByRootAsOfResponse response = responseBuilder.build();
+                TradeRpc.GetAllPositionsByRootAsOfResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Returning {}",
                                        response);
@@ -610,7 +610,7 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#addReport(org.marketcetera.trading.rpc.TradingRpc.AddReportRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#addReport(org.marketcetera.trade.rpc.TradeRpc.AddReportRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void addReport(AddReportRequest inRequest,
@@ -624,7 +624,7 @@ public class TradeRpcService<SessionClazz>
                                        sessionHolder);
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.AddReportAction.name());
-                TradingRpc.AddReportResponse.Builder responseBuilder = TradingRpc.AddReportResponse.newBuilder();
+                TradeRpc.AddReportResponse.Builder responseBuilder = TradeRpc.AddReportResponse.newBuilder();
                 FIXMessageWrapper report = null;
                 if(inRequest.hasMessage()) {
                     report = new FIXMessageWrapper(TradeRpcUtil.getFixMessage(inRequest.getMessage()));
@@ -642,7 +642,7 @@ public class TradeRpcService<SessionClazz>
                                        report,
                                        user,
                                        brokerId);
-                TradingRpc.AddReportResponse response = responseBuilder.build();
+                TradeRpc.AddReportResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Returning {}",
                                        response);
@@ -654,7 +654,7 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#deleteReport(org.marketcetera.trading.rpc.TradingRpc.DeleteReportRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#deleteReport(org.marketcetera.trade.rpc.TradeRpc.DeleteReportRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void deleteReport(DeleteReportRequest inRequest,
@@ -668,14 +668,14 @@ public class TradeRpcService<SessionClazz>
                                        sessionHolder);
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.DeleteReportAction.name());
-                TradingRpc.DeleteReportResponse.Builder responseBuilder = TradingRpc.DeleteReportResponse.newBuilder();
+                TradeRpc.DeleteReportResponse.Builder responseBuilder = TradeRpc.DeleteReportResponse.newBuilder();
                 ReportID reportId = new ReportID(Long.valueOf(inRequest.getReportId()));
                 reportService.delete(reportId);
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "{} deleted for {}",
                                        reportId,
                                        sessionHolder.getUser());
-                TradingRpc.DeleteReportResponse response = responseBuilder.build();
+                TradeRpc.DeleteReportResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Returning {}",
                                        response);
@@ -687,7 +687,7 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trading.rpc.TradingRpcServiceGrpc.TradingRpcServiceImplBase#readAvailableFixInitiatorSessions(org.marketcetera.trading.rpc.TradingRpc.ReadAvailableFixInitiatorSessionsRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#readAvailableFixInitiatorSessions(org.marketcetera.trade.rpc.TradeRpc.ReadAvailableFixInitiatorSessionsRequest, io.grpc.stub.StreamObserver)
          */
         @Override
         public void readAvailableFixInitiatorSessions(ReadAvailableFixInitiatorSessionsRequest inRequest,
@@ -701,7 +701,7 @@ public class TradeRpcService<SessionClazz>
                                        sessionHolder);
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.ViewBrokerStatusAction.name());
-                TradingRpc.ReadAvailableFixInitiatorSessionsResponse.Builder responseBuilder = TradingRpc.ReadAvailableFixInitiatorSessionsResponse.newBuilder();
+                TradeRpc.ReadAvailableFixInitiatorSessionsResponse.Builder responseBuilder = TradeRpc.ReadAvailableFixInitiatorSessionsResponse.newBuilder();
                 Collection<ActiveFixSession> pagedResponse = brokerService.getAvailableFixInitiatorSessions();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Query returned {}",
@@ -711,7 +711,7 @@ public class TradeRpcService<SessionClazz>
                         FixRpcUtil.getRpcActiveFixSession(activeFixSession).ifPresent(rpcFixSession->responseBuilder.addFixSession(rpcFixSession));
                     }
                 }
-                TradingRpc.ReadAvailableFixInitiatorSessionsResponse response = responseBuilder.build();
+                TradeRpc.ReadAvailableFixInitiatorSessionsResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Returning {}",
                                        response);
@@ -769,7 +769,7 @@ public class TradeRpcService<SessionClazz>
         /**
          * builder used to construct messages
          */
-        private final TradingRpc.TradeMessageListenerResponse.Builder responseBuilder = TradingRpc.TradeMessageListenerResponse.newBuilder();
+        private final TradeRpc.TradeMessageListenerResponse.Builder responseBuilder = TradeRpc.TradeMessageListenerResponse.newBuilder();
     }
     /**
      * provides authorization services

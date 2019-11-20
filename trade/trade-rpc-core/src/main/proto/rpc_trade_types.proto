@@ -1,7 +1,7 @@
 syntax = "proto3";
 option java_generic_services = true;
-option java_package = "org.marketcetera.trading.rpc";
-option java_outer_classname = "TradingTypesRpc";
+option java_package = "org.marketcetera.trade.rpc";
+option java_outer_classname = "TradeTypesRpc";
 import "rpc_base.proto";
 import "rpc_admin.proto";
 import "rpc_fix_admin.proto";

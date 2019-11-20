@@ -59,7 +59,7 @@
       <AppenderRef ref="FILE"/>
     </Root>
     <logger name="org.marketcetera" level="info"/>
-    <!-- logger name="org.marketcetera.dare.DeployAnywhereRoutingEngine" level="debug"/-->
+    <logger name="org.marketcetera.dare.DeployAnywhereRoutingEngine" level="debug"/>
     <!-- logger name="org.marketcetera.cluster.SimpleClusterService" level="debug"/-->
     <!-- logger name="org.marketcetera.fix.rpc.FixAdminRpcService" level="trace"/-->
     <!-- logger name="org.marketcetera.brokers.service.BrokerServiceImpl" level="trace"/-->

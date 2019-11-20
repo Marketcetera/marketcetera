@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
 
+import org.marketcetera.core.Pair;
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.web.trade.openorders.view.AbstractTradeViewFactory;
 import org.marketcetera.web.trade.openorders.view.OpenOrderView;
@@ -80,6 +81,15 @@ public class OrderTicketViewFactory
     protected String getViewName()
     {
         return getMenuCaption();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.trade.openorders.view.AbstractTradeViewFactory#getWindowSize()
+     */
+    @Override
+    protected Pair<String,String> getWindowSize()
+    {
+        return Pair.create("1350px", 
+                           "655px");
     }
     /**
      * provides access to the application context

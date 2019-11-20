@@ -1,5 +1,6 @@
 package org.marketcetera.web.trade.openorders.view;
 
+import org.marketcetera.core.Pair;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.trade.openorders.view.TradeContentCategory;
@@ -47,6 +48,16 @@ public abstract class AbstractTradeViewFactory
         };
     }
     /**
+     * Get the initial window size for new windows of this type.
+     *
+     * @return <code>Pair&lt;String,String&gt;</code> value
+     */
+    protected Pair<String,String> getWindowSize()
+    {
+        return Pair.create("50%",
+                           "50%");
+    }
+    /**
      * Get the Vaadin name of the view.
      *
      * @return a <code>String</code> value
@@ -77,6 +88,14 @@ public abstract class AbstractTradeViewFactory
         public ContentViewFactory getViewFactory()
         {
             return AbstractTradeViewFactory.this;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.events.NewWindowEvent#getWindowSize()
+         */
+        @Override
+        public Pair<String,String> getWindowSize()
+        {
+            return AbstractTradeViewFactory.this.getWindowSize();
         }
     }
     /**

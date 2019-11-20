@@ -544,14 +544,14 @@ public class DeployAnywhereRoutingEngine
             message = ExceptionUtils.getRootCauseMessage(e);
             failed = true;
         }
-        if(inOwnedMessage.getMessage().isSetField(quickfix.field.OrderID.FIELD)) {
+        if(inOwnedMessage.getMessage().isSetField(quickfix.field.ClOrdID.FIELD)) {
             try {
                 eventBusService.post(new SimpleOutgoingOrderStatusEvent(message,
                                                                         failed,
                                                                         null,
-                                                                        new OrderID(inOwnedMessage.getMessage().getString(quickfix.field.OrderID.FIELD)),
+                                                                        new OrderID(inOwnedMessage.getMessage().getString(quickfix.field.ClOrdID.FIELD)),
                                                                         inOwnedMessage.getMessage()));
-            } catch (FieldNotFound ignored) {} // this exception can't occur because we explicitly check for the existance of the field
+            } catch (FieldNotFound ignored) {} // this exception can't occur because we explicitly check for the existence of the field
         } else {
             SLF4JLoggerProxy.debug(this,
                                    "Not posting outgoing order status for {} because it doesn't have an order id",
