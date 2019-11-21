@@ -2,7 +2,7 @@ package org.marketcetera.web.converters;
 
 import java.util.Locale;
 
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.trade.OrderStatus;
 
