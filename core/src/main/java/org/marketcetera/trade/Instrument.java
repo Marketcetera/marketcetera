@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -27,28 +28,36 @@ import org.marketcetera.util.misc.ClassVersion;
 @XmlSeeAlso({ Equity.class,Option.class,Future.class,Currency.class,ConvertibleBond.class })
 @ClassVersion("$Id$")
 public abstract class Instrument
-        implements Serializable
+        implements Serializable,Comparable<Instrument>
 {
-	/**
-	 * Returns the symbol value.
-	 * 
-	 * @return the symbol value.
-	 */
-	public abstract String getSymbol();
-	/**
-	 * Returns the security type for this Instrument.
-	 * 
-	 * @return the security type.
-	 */
-	public abstract SecurityType getSecurityType();
-	/**
-	 * Returns a symbol that describes sufficient of the instrument attributes that it can be used to recreate the instrument.
-	 *
-	 * @return a <code>String</code>
-	 */
-	public String getFullSymbol()
-	{
-	    return getSymbol();
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(Instrument inO)
+    {
+        return new CompareToBuilder().append(inO.getSecurityType(),getSecurityType()).append(inO.getFullSymbol(),getFullSymbol()).toComparison();
+    }
+    /**
+     * Returns the symbol value.
+     * 
+     * @return the symbol value.
+     */
+    public abstract String getSymbol();
+    /**
+     * Returns the security type for this Instrument.
+     * 
+     * @return the security type.
+     */
+    public abstract SecurityType getSecurityType();
+    /**
+     * Returns a symbol that describes sufficient of the instrument attributes that it can be used to recreate the instrument.
+     *
+     * @return a <code>String</code>
+     */
+    public String getFullSymbol()
+    {
+        return getSymbol();
+    }
     private static final long serialVersionUID = 1L;
 }

@@ -51,7 +51,6 @@ public abstract class AbstractExecutionReportView
                 }
             }
         });
-        
     }
     /**
      * Create a new FillsView instance.

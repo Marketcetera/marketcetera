@@ -12,7 +12,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.marketcetera.util.misc.ClassVersion;
 
-
 /**
  * Class to represent a currency instrument.
  * 
@@ -27,15 +26,10 @@ import org.marketcetera.util.misc.ClassVersion;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$")
-public class Currency extends Instrument implements Comparable<Currency>{
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	
-	/**
+public class Currency
+        extends Instrument
+{
+    /**
 	 * validation/set of permissible tenors
 	 *  OUTRIGHTS:
 	 * 	   TOD = Tomorrow  (T+0)
@@ -422,34 +416,33 @@ public class Currency extends Instrument implements Comparable<Currency>{
 		}
 		return false;
 	}
-
-
-	@Override
-	public int compareTo(Currency o2) {
-		Currency o1 = this;
-		if(o2==null){
-			//throw new NullPointerException("compareTo invalid for null objects in Currency.compareTo");
-			return 1; // prefer to say this object is always greater than a null?
-		}
-		int symbolComp = o1.getSymbol().compareTo(o2.getSymbol());
-    	if(symbolComp==0){
-    		int nearTenorComp = o1.getNearTenor().compareTo(o2.getNearTenor());
-    		if(nearTenorComp==0){
-    			if(o1.isSwap() && o2.isSwap()){
-    				return o1.getFarTenor().compareTo(o2.getFarTenor());
-    			}else{
-    				return 0;
-    			}
-    		}else{
-    			return nearTenorComp;
-    		}
-    	}else{
-    		return symbolComp;
-    	}
-	}
-	
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.Instrument#compareTo(org.marketcetera.trade.Instrument)
+     */
+    @Override
+    public int compareTo(Instrument inO)
+    {
+        if(inO instanceof Currency) {
+            Currency o1 = this;
+            Currency o2 = (Currency)inO;
+            int symbolComp = o1.getSymbol().compareTo(o2.getSymbol());
+            if(symbolComp==0){
+                int nearTenorComp = o1.getNearTenor().compareTo(o2.getNearTenor());
+                if(nearTenorComp==0){
+                    if(o1.isSwap() && o2.isSwap()){
+                        return o1.getFarTenor().compareTo(o2.getFarTenor());
+                    }else{
+                        return 0;
+                    }
+                }else{
+                    return nearTenorComp;
+                }
+            }else{
+                return symbolComp;
+            }
+        } else {
+            return super.compareTo(inO);
+        }
+    }
+    private static final long serialVersionUID = 2419981798782862787L;
 }
-
-
-
-

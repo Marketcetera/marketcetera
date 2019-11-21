@@ -193,22 +193,10 @@ public class ReportServiceImpl
     @Override
     public CollectionPageResponse<Report> getReports(org.marketcetera.persist.PageRequest inPageRequest)
     {
-        Sort sort;
-        if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
-            sort = Sort.by(new Sort.Order(Sort.Direction.DESC,
-                                          QPersistentReport.persistentReport.sendingTime.getMetadata().getName()));
-        } else {
-            List<Sort.Order> specifiedSorts = Lists.newArrayList();
-            for(org.marketcetera.persist.Sort requestedSort : inPageRequest.getSortOrder()) {
-                String property = requestedSort.getProperty();
-                if(persistentReportAliases.containsKey(property.toLowerCase())) {
-                    property = persistentReportAliases.get(property.toLowerCase());
-                }
-                specifiedSorts.add(new Sort.Order(requestedSort.getDirection().getSpringSortDirection(),
-                                                  property));
-            }
-            sort = Sort.by(specifiedSorts);
-        }
+        Sort sort = buildSort(inPageRequest,
+                              persistentReportAliases,
+                              Sort.by(new Sort.Order(Sort.Direction.DESC,
+                                                     QPersistentReport.persistentReport.sendingTime.getMetadata().getName())));
         SLF4JLoggerProxy.debug(this,
                                "getReports sort order is {} renders: {}",
                                inPageRequest.getSortOrder(),
@@ -225,22 +213,10 @@ public class ReportServiceImpl
     @Override
     public CollectionPageResponse<ExecutionReport> getFills(org.marketcetera.persist.PageRequest inPageRequest)
     {
-        Sort sort;
-        if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
-            sort = Sort.by(new Sort.Order(Sort.Direction.DESC,
-                                          QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName()));
-        } else {
-            List<Sort.Order> specifiedSorts = Lists.newArrayList();
-            for(org.marketcetera.persist.Sort requestedSort : inPageRequest.getSortOrder()) {
-                String property = requestedSort.getProperty();
-                if(persistentExecutionReportAliases.containsKey(property.toLowerCase())) {
-                    property = persistentExecutionReportAliases.get(property.toLowerCase());
-                }
-                specifiedSorts.add(new Sort.Order(requestedSort.getDirection().getSpringSortDirection(),
-                                                  property));
-            }
-            sort = Sort.by(specifiedSorts);
-        }
+        Sort sort = buildSort(inPageRequest,
+                              persistentExecutionReportAliases,
+                              Sort.by(new Sort.Order(Sort.Direction.DESC,
+                                                     QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName())));
         SLF4JLoggerProxy.debug(this,
                                "getFills sort order is {} renders: {}",
                                inPageRequest.getSortOrder(),
@@ -1126,6 +1102,38 @@ public class ReportServiceImpl
     public void setCacheSize(int inCacheSize)
     {
         cacheSize = inCacheSize;
+    }
+    /**
+     * Build the sort statement for a query using the given attributes.
+     *
+     * @param inPageRequest an <code>org.marketcetera.persist.PageRequest</code> value
+     * @param inTableAliases a <code>Map&lt;String,String&gt;</code> value
+     * @param inDefaultSort a <code>Sort</code> value
+     * @return a <code>Sort</code> value
+     */
+    private Sort buildSort(org.marketcetera.persist.PageRequest inPageRequest,
+                           Map<String,String> inTableAliases,
+                           Sort inDefaultSort)
+    {
+        if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
+            return inDefaultSort;
+        } else {
+            List<Sort.Order> specifiedSorts = Lists.newArrayList();
+            for(org.marketcetera.persist.Sort requestedSort : inPageRequest.getSortOrder()) {
+                String property = requestedSort.getProperty();
+                String aliasDefinition = inTableAliases.get(property.toLowerCase());
+                if(aliasDefinition == null) {
+                    specifiedSorts.add(new Sort.Order(requestedSort.getDirection().getSpringSortDirection(),
+                                                      property));
+                } else {
+                    for(String alias : aliasDefinition.split(",")) {
+                        specifiedSorts.add(new Sort.Order(requestedSort.getDirection().getSpringSortDirection(),
+                                                          alias));
+                    }
+                }
+            }
+            return Sort.by(specifiedSorts);
+        }
     }
     /**
      * Generate and persist order summary for the given artifacts.

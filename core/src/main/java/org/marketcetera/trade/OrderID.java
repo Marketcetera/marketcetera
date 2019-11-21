@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlValue;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -23,7 +24,17 @@ import org.marketcetera.util.misc.ClassVersion;
 @Embeddable
 @XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$")
-public class OrderID implements Serializable {
+public class OrderID
+        implements Serializable,Comparable<OrderID>
+{
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(OrderID inO)
+    {
+        return new CompareToBuilder().append(inO.mValue,mValue).toComparison();
+    }
     /**
      * Creates an instance, given the text value of the OrderID.
      *
