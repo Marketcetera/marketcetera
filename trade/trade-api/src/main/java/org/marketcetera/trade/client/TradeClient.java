@@ -165,4 +165,11 @@ public interface TradeClient
      * @return a <code>CollectionPageResponse&lt;Report&gt;</code> value
      */
     CollectionPageResponse<Report> getReports(PageRequest inPageRequest);
+    /**
+     * Get fills with the given page request.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;ExecutionReport&gt;</code> value
+     */
+    CollectionPageResponse<ExecutionReport> getFills(PageRequest inPageRequest);
 }

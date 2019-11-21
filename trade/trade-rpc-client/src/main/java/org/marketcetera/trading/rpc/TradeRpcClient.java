@@ -452,6 +452,38 @@ public class TradeRpcClient
         });
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#getFills(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public CollectionPageResponse<ExecutionReport> getFills(PageRequest inPageRequest)
+    {
+        return executeCall(new Callable<CollectionPageResponse<ExecutionReport>>(){
+            @Override
+            public CollectionPageResponse<ExecutionReport> call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} requesting fills: {}",
+                                       getSessionId(),
+                                       inPageRequest);
+                TradeRpc.GetFillsRequest.Builder requestBuilder = TradeRpc.GetFillsRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setPageRequest(PagingRpcUtil.buildPageRequest(inPageRequest));
+                TradeRpc.GetFillsResponse response = getBlockingStub().getFills(requestBuilder.build());
+                CollectionPageResponse<ExecutionReport> results = new CollectionPageResponse<>();
+                response.getFillsList().forEach(rpcExecutionReport->results.getElements().add((ExecutionReport)TradeRpcUtil.getTradeMessage(rpcExecutionReport)));
+                PagingRpcUtil.setPageResponse(inPageRequest,
+                                              response.getPageResponse(),
+                                              results);
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       results);
+                return results;
+            }
+        });
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#getOpenOrders()
      */
     @Override

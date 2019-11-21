@@ -139,6 +139,14 @@ public class DirectTradeClient
         return reportService.getReports(inPageRequest);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#getFills(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public CollectionPageResponse<ExecutionReport> getFills(PageRequest inPageRequest)
+    {
+        return reportService.getFills(inPageRequest);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradeClient#sendOrders(java.util.List)
      */
     @Override

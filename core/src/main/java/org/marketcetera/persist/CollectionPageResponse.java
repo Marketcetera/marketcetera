@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import com.google.common.collect.Lists;
 
@@ -27,28 +26,17 @@ public class CollectionPageResponse<Clazz>
     /**
      * Create a new CollectionPageResponse instance.
      *
-     * @param inPageRequest a <code>Pageable</code> value
      * @param inPage a <code>Page&lt;Clazz&gt:</code> value
      */
-    public CollectionPageResponse(Pageable inPageRequest,
-                                  Page<Clazz> inPage)
+    public CollectionPageResponse(Page<Clazz> inPage)
     {
         setElements(inPage.getContent());
-        setHasContent(inPage.hasContent());
-        setPageMaxSize(inPage.getSize());
-        setPageNumber(inPage.getNumber());
-        setPageSize(inPage.getNumberOfElements());
-        setTotalPages(inPage.getTotalPages());
-        setTotalSize(inPage.getTotalElements());
-        List<Sort> sortOrder = Lists.newArrayList();
-        inPageRequest.getSort().forEach(order -> sortOrder.add(getSort(order)));
-        setSortOrder(sortOrder);
+        setPageAttributes(inPage);
     }
     /**
-     * 
      * Create a new CollectionPageResponse instance.
      *
-     * @param inSample
+     * @param inSample a <code>CollectionPageResponse&lt;?&gt;</code> value
      */
     public CollectionPageResponse(CollectionPageResponse<?> inSample)
     {
@@ -60,6 +48,23 @@ public class CollectionPageResponse<Clazz>
         setTotalSize(inSample.getTotalSize());
         List<Sort> sortOrder = Lists.newArrayList(inSample.getSortOrder());
         setSortOrder(sortOrder);
+    }
+    /**
+     * Set the attributes in common with a {@link Page} value.
+     * 
+     * <p>Use this method when the type of the page returned from a query is not the same as the
+     * type of the elements in the response. This method does not set the response elements.
+     *
+     * @param inPage a <code>Page&lt;?&gt;</code> value
+     */
+    public void setPageAttributes(Page<?> inPage)
+    {
+        setHasContent(inPage.hasContent());
+        setPageMaxSize(inPage.getSize());
+        setPageNumber(inPage.getNumber());
+        setPageSize(inPage.getNumberOfElements());
+        setTotalPages(inPage.getTotalPages());
+        setTotalSize(inPage.getTotalElements());
     }
     /**
      * Get the elements value.

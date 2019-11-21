@@ -217,8 +217,64 @@ public class ReportServiceImpl
                                               inPageRequest.getPageSize(),
                                               sort);
         Page<Report> pageResponse = persistentReportDao.findAllReports(pageRequest);
-        return new CollectionPageResponse<>(pageRequest,
-                                            pageResponse);
+        return new CollectionPageResponse<>(pageResponse);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.ReportService#getFills(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public CollectionPageResponse<ExecutionReport> getFills(org.marketcetera.persist.PageRequest inPageRequest)
+    {
+        Sort sort;
+        if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
+            sort = Sort.by(new Sort.Order(Sort.Direction.DESC,
+                                          QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName()));
+        } else {
+            List<Sort.Order> specifiedSorts = Lists.newArrayList();
+            for(org.marketcetera.persist.Sort requestedSort : inPageRequest.getSortOrder()) {
+                String property = requestedSort.getProperty();
+                if(persistentExecutionReportAliases.containsKey(property.toLowerCase())) {
+                    property = persistentExecutionReportAliases.get(property.toLowerCase());
+                }
+                specifiedSorts.add(new Sort.Order(requestedSort.getDirection().getSpringSortDirection(),
+                                                  property));
+            }
+            sort = Sort.by(specifiedSorts);
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "getFills sort order is {} renders: {}",
+                               inPageRequest.getSortOrder(),
+                               sort);
+        Pageable pageRequest = PageRequest.of(inPageRequest.getPageNumber(),
+                                              inPageRequest.getPageSize(),
+                                              sort);
+        Page<PersistentExecutionReport> executionReportPage = executionReportDao.findAllFills(pageRequest);
+        CollectionPageResponse<ExecutionReport> response = new CollectionPageResponse<>();
+        for(PersistentExecutionReport pExecutionReport : executionReportPage.getContent()) {
+            ExecutionReport executionReport = null;
+            if(pExecutionReport != null) {
+                quickfix.Message fixMessage;
+                try {
+                    fixMessage = new quickfix.Message(pExecutionReport.getReport().getFixMessage());
+                } catch (InvalidMessage e) {
+                    SLF4JLoggerProxy.warn(this,
+                                          "Cannot construct a FIX message from {}: {}",
+                                          pExecutionReport.getReport().getFixMessage(),
+                                          PlatformServices.getMessage(e));
+                    continue;
+                }
+                executionReport = Factory.getInstance().createExecutionReport(fixMessage,
+                                                                              pExecutionReport.getReport().getBrokerID(),
+                                                                              pExecutionReport.getReport().getOriginator(),
+                                                                              pExecutionReport.getActor()==null?null:pExecutionReport.getActor().getUserID(),
+                                                                              pExecutionReport.getViewerID());
+                response.getElements().add(executionReport);
+            }
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "getFills returning {}",
+                               response);
+        return response;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getReportFor(org.marketcetera.trade.ReportID)
@@ -1391,4 +1447,9 @@ public class ReportServiceImpl
      */
     @Value("#{${metc.persistent.report.aliases}}")
     private Map<String,String> persistentReportAliases = Maps.newHashMap();
+    /**
+     * map of styles specified in configuration
+     */
+    @Value("#{${metc.persistent.execution.report.aliases}}")
+    private Map<String,String> persistentExecutionReportAliases = Maps.newHashMap();
 }

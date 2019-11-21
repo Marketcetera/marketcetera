@@ -46,4 +46,12 @@ public interface ExecutionReportDao
     @Query("select E1 from PersistentExecutionReport E1 where E1.rootOrderId=?1 and E1.sendingTime=(select max(E2.sendingTime) from PersistentExecutionReport E2 where E2.rootOrderId=?1) order by E1.id desc")
     Page<PersistentExecutionReport> findMostRecentReportFor(OrderID inRootId,
                                                             Pageable inPage);
+    /**
+     * Find a page of fill execution reports.
+     *
+     * @param inPageRequest a <code>Pageable</code> value
+     * @return a <code>Page&lt;ExecutionReport&gt;</code> value
+     */
+    @Query("select e from PersistentExecutionReport e where e.execType in (2,3,16)")
+    Page<PersistentExecutionReport> findAllFills(Pageable inPageRequest);
 }

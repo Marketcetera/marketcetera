@@ -56,9 +56,25 @@ public class TradeClientService
     {
         return tradeClient.getLatestExecutionReportForOrderChain(inOrderId);
     }
+    /**
+     * Get report values.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;Report&gt;</code> value
+     */
     public CollectionPageResponse<Report> getReports(PageRequest inPageRequest)
     {
         return tradeClient.getReports(inPageRequest);
+    }
+    /**
+     * Get fill execution report values.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;ExecutionReport&gt;</code> value
+     */
+    public CollectionPageResponse<ExecutionReport> getFills(PageRequest inPageRequest)
+    {
+        return tradeClient.getFills(inPageRequest);
     }
     /**
      * Get open orders.

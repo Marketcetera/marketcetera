@@ -189,8 +189,7 @@ public class OrderSummaryServiceImpl
                                               sort);
         Page<OrderSummary> pageResponse = orderStatusDao.findOpenOrders(OrderStatus.openOrderStatuses,
                                                                         pageRequest);
-        return new CollectionPageResponse<>(pageRequest,
-                                            pageResponse);
+        return new CollectionPageResponse<>(pageResponse);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.service.OrderStatusService#update(org.marketcetera.trade.OrderSummary, org.marketcetera.trade.Report, org.marketcetera.trade.ReportBase)

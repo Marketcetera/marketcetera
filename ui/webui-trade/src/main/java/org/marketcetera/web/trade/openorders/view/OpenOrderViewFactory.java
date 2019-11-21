@@ -5,6 +5,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.marketcetera.trade.TradePermissions;
+import org.marketcetera.web.trade.view.AbstractTradeViewFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;

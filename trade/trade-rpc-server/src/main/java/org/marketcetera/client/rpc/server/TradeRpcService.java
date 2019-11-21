@@ -61,6 +61,8 @@ import org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsAsOfRequest;
 import org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsAsOfResponse;
 import org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsByRootAsOfRequest;
 import org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsByRootAsOfResponse;
+import org.marketcetera.trade.rpc.TradeRpc.GetFillsRequest;
+import org.marketcetera.trade.rpc.TradeRpc.GetFillsResponse;
 import org.marketcetera.trade.rpc.TradeRpc.GetLatestExecutionReportForOrderChainRequest;
 import org.marketcetera.trade.rpc.TradeRpc.GetLatestExecutionReportForOrderChainResponse;
 import org.marketcetera.trade.rpc.TradeRpc.GetPositionAsOfRequest;
@@ -191,6 +193,37 @@ public class TradeRpcService<SessionClazz>
                 responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
                                                                               reportPage));
                 TradeRpc.GetReportsResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Responding: {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,
+                            inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#getFills(org.marketcetera.trade.rpc.TradeRpc.GetFillsRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getFills(GetFillsRequest inRequest,
+                             StreamObserver<GetFillsResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradePermissions.ViewReportAction.name());
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Received {}",
+                                       inRequest);
+                TradeRpc.GetFillsResponse.Builder responseBuilder = TradeRpc.GetFillsResponse.newBuilder();
+                PageRequest pageRequest = inRequest.hasPageRequest()?PagingRpcUtil.getPageRequest(inRequest.getPageRequest()):PageRequest.ALL;
+                CollectionPageResponse<ExecutionReport> reportPage = reportService.getFills(pageRequest);
+                reportPage.getElements().forEach(fill->responseBuilder.addFills(TradeRpcUtil.getRpcTradeMessage(fill)));
+                responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
+                                                                              reportPage));
+                TradeRpc.GetFillsResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Responding: {}",
                                        response);

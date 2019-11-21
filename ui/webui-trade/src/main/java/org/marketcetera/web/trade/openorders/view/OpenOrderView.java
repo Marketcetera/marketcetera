@@ -84,7 +84,7 @@ public class OpenOrderView
         return NAME;
     }
     /**
-     * Create a new SessionView instance.
+     * Create a new OpenOrderView instance.
      *
      * @param inViewProperties a <code>Properties</code> value
      */
@@ -241,7 +241,7 @@ public class OpenOrderView
     @Autowired
     private XmlService xmlService;
     /**
-     * provides access to the applicaton context
+     * provides access to the application context
      */
     @Autowired
     private ApplicationContext applicationContext;

@@ -1,12 +1,10 @@
-package org.marketcetera.web.trade.orderticket.view;
+package org.marketcetera.web.trade.fills.view;
 
 import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
 
-import org.marketcetera.core.Pair;
 import org.marketcetera.trade.TradePermissions;
-import org.marketcetera.web.trade.openorders.view.OpenOrderView;
 import org.marketcetera.web.trade.view.AbstractTradeViewFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -28,16 +26,26 @@ import com.vaadin.ui.Window;
  * @since $Release$
  */
 @SpringComponent
-public class OrderTicketViewFactory
+public class FillsViewFactory
         extends AbstractTradeViewFactory
 {
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
+     */
+    @Override
+    public FillsView create(Window inParent,
+                            Properties inViewProperties)
+    {
+        return applicationContext.getBean(FillsView.class,
+                                          inViewProperties);
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuCaption()
      */
     @Override
     public String getMenuCaption()
     {
-        return "Order Ticket";
+        return "Fills";
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getWeight()
@@ -45,7 +53,7 @@ public class OrderTicketViewFactory
     @Override
     public int getWeight()
     {
-        return 300;
+        return 400;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
@@ -53,18 +61,15 @@ public class OrderTicketViewFactory
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.BOOK;
+        return FontAwesome.SHOPPING_BASKET;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
+     * @see org.marketcetera.web.view.admin.AbstractAdminViewFactory#getViewName()
      */
     @Override
-    public OrderTicketView create(Window inParent,
-                                  Properties inViewProperties)
+    protected String getViewName()
     {
-        return applicationContext.getBean(OrderTicketView.class,
-                                          inParent,
-                                          inViewProperties);
+        return getMenuCaption();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getAllPermissions()
@@ -74,23 +79,6 @@ public class OrderTicketViewFactory
     {
         return requiredPermissions;
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.trade.openorders.view.AbstractTradeViewFactory#getViewName()
-     */
-    @Override
-    protected String getViewName()
-    {
-        return getMenuCaption();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.trade.openorders.view.AbstractTradeViewFactory#getWindowSize()
-     */
-    @Override
-    protected Pair<String,String> getWindowSize()
-    {
-        return Pair.create("1350px", 
-                           "655px");
-    }
     /**
      * provides access to the application context
      */
@@ -99,5 +87,5 @@ public class OrderTicketViewFactory
     /**
      * permission(s) required to execute open order view
      */
-    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(TradePermissions.SendOrderAction,TradePermissions.ViewBrokerStatusAction));
+    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(TradePermissions.ViewReportAction));
 }

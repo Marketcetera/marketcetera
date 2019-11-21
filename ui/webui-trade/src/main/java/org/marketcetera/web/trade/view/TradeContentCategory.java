@@ -1,4 +1,4 @@
-package org.marketcetera.web.trade.openorders.view;
+package org.marketcetera.web.trade.view;
 
 import org.marketcetera.web.view.MenuContent;
 
