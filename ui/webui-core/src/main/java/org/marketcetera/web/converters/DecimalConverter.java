@@ -27,6 +27,9 @@ public class DecimalConverter
                                      Locale inLocale)
             throws ConversionException
     {
+        if(inValue == null) {
+            return BigDecimal.ZERO;
+        }
         return new BigDecimal(inValue);
     }
     /* (non-Javadoc)
@@ -38,7 +41,7 @@ public class DecimalConverter
                                         Locale inLocale)
             throws ConversionException
     {
-        if(BigDecimal.ZERO.compareTo(inValue) == 0) {
+        if(inValue == null || BigDecimal.ZERO.compareTo(inValue) == 0) {
             return "0.00";
         } else {
             inValue = inValue.stripTrailingZeros();

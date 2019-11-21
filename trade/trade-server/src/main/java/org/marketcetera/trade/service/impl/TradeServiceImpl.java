@@ -298,7 +298,7 @@ public class TradeServiceImpl
     {
         SLF4JLoggerProxy.info(this,
                               "{} sending {}",
-                              inUser,
+                              inUser.getName(),
                               inOrder);
         eventBusService.post(new SimpleOutgoingOrderEvent(inUser,
                                                           inOrder));

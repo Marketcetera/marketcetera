@@ -31,6 +31,19 @@ import com.hazelcast.core.HazelcastInstanceNotActiveException;
 public abstract class PlatformServices
 {
     /**
+     * Split the given value into its components where each component starts with a capital letter.
+     *
+     * @param inValue a <code>String</code> value
+     * @return a <code>String[]</code> value
+     */
+    public static String[] splitCamelCase(String inValue)
+    {
+        if(inValue == null) {
+            return new String[0];
+        }
+        return inValue.split("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
+    }
+    /**
      * Get a human-readable description of the given class.
      *
      * @param inClass a <code>Class&lt;?&gt;</code> value

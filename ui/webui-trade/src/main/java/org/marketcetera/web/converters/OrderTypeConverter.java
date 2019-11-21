@@ -4,7 +4,7 @@ import java.util.Locale;
 
 import org.codehaus.plexus.util.StringUtils;
 import org.marketcetera.core.PlatformServices;
-import org.marketcetera.trade.ReportType;
+import org.marketcetera.trade.OrderType;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -13,36 +13,36 @@ import com.vaadin.data.util.converter.Converter;
 /* $License$ */
 
 /**
- * Converts columns with a {@link ReportType} object for display.
+ * Converts columns with a {@link OrderType} object for display.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class ReportTypeConverter
-        implements Converter<String,ReportType>
+public class OrderTypeConverter
+        implements Converter<String,OrderType>
 {
     /* (non-Javadoc)
      * @see com.vaadin.data.util.converter.Converter#convertToModel(java.lang.Object, java.lang.Class, java.util.Locale)
      */
     @Override
-    public ReportType convertToModel(String inValue,
-                                     Class<? extends ReportType> inTargetType,
+    public OrderType convertToModel(String inValue,
+                                     Class<? extends OrderType> inTargetType,
                                      Locale inLocale)
             throws ConversionException
     {
-        return reportTypeTranslations.inverse().get(inValue);
+        return orderTypeTranslations.inverse().get(inValue);
     }
     /* (non-Javadoc)
      * @see com.vaadin.data.util.converter.Converter#convertToPresentation(java.lang.Object, java.lang.Class, java.util.Locale)
      */
     @Override
-    public String convertToPresentation(ReportType inValue,
+    public String convertToPresentation(OrderType inValue,
                                         Class<? extends String> inTargetType,
                                         Locale inLocale)
             throws ConversionException
     {
-        return reportTypeTranslations.get(inValue);
+        return orderTypeTranslations.get(inValue);
     }
     /* (non-Javadoc)
      * @see com.vaadin.data.util.converter.Converter#getPresentationType()
@@ -56,29 +56,29 @@ public class ReportTypeConverter
      * @see com.vaadin.data.util.converter.Converter#getModelType()
      */
     @Override
-    public Class<ReportType> getModelType()
+    public Class<OrderType> getModelType()
     {
-        return ReportType.class;
+        return OrderType.class;
     }
     /**
      * static instance for easy use
      */
-    public static final ReportTypeConverter instance = new ReportTypeConverter();
+    public static final OrderTypeConverter instance = new OrderTypeConverter();
     /**
      * human-readable translations to use
      */
-    private static final BiMap<ReportType,String> reportTypeTranslations = HashBiMap.create();
+    private static final BiMap<OrderType,String> orderTypeTranslations = HashBiMap.create();
     static {
-        for(ReportType reportType : ReportType.values()) {
-            String[] reportTypeWords = PlatformServices.splitCamelCase(reportType.name());
+        for(OrderType OrderType : OrderType.values()) {
+            String[] OrderTypeWords = PlatformServices.splitCamelCase(OrderType.name());
             StringBuilder builder = new StringBuilder();
-            for(String word : reportTypeWords) {
+            for(String word : OrderTypeWords) {
                 builder.append(word).append(' ');
             }
             String value = StringUtils.trim(builder.toString());
-            reportTypeTranslations.put(reportType,
-                                       value);
+            orderTypeTranslations.put(OrderType,
+                                      value);
         }
     }
-    private static final long serialVersionUID = -8063815694993601603L;
+    private static final long serialVersionUID = 6529438901639648189L;
 }

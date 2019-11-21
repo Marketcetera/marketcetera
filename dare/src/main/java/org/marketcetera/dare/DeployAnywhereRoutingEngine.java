@@ -546,8 +546,8 @@ public class DeployAnywhereRoutingEngine
         String message = null;
         try {
             // TODO not completely sure about the behavior if the session is offline
-            failed = Session.sendToTarget(inOwnedMessage.getMessage(),
-                                          inOwnedMessage.getSessionId());
+            failed = !Session.sendToTarget(inOwnedMessage.getMessage(),
+                                           inOwnedMessage.getSessionId());
         } catch (SessionNotFound e) {
             message = ExceptionUtils.getRootCauseMessage(e);
             failed = true;
