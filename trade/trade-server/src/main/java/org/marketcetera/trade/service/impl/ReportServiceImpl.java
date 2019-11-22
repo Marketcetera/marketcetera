@@ -211,7 +211,7 @@ public class ReportServiceImpl
      * @see org.marketcetera.trade.service.ReportService#getFills(org.marketcetera.persist.PageRequest)
      */
     @Override
-    public CollectionPageResponse<ExecutionReport> getFills(org.marketcetera.persist.PageRequest inPageRequest)
+    public CollectionPageResponse<ExecutionReportSummary> getFills(org.marketcetera.persist.PageRequest inPageRequest)
     {
         Sort sort = buildSort(inPageRequest,
                               persistentExecutionReportAliases,
@@ -224,29 +224,8 @@ public class ReportServiceImpl
         Pageable pageRequest = PageRequest.of(inPageRequest.getPageNumber(),
                                               inPageRequest.getPageSize(),
                                               sort);
-        Page<PersistentExecutionReport> executionReportPage = executionReportDao.findAllFills(pageRequest);
-        CollectionPageResponse<ExecutionReport> response = new CollectionPageResponse<>();
-        for(PersistentExecutionReport pExecutionReport : executionReportPage.getContent()) {
-            ExecutionReport executionReport = null;
-            if(pExecutionReport != null) {
-                quickfix.Message fixMessage;
-                try {
-                    fixMessage = new quickfix.Message(pExecutionReport.getReport().getFixMessage());
-                } catch (InvalidMessage e) {
-                    SLF4JLoggerProxy.warn(this,
-                                          "Cannot construct a FIX message from {}: {}",
-                                          pExecutionReport.getReport().getFixMessage(),
-                                          PlatformServices.getMessage(e));
-                    continue;
-                }
-                executionReport = Factory.getInstance().createExecutionReport(fixMessage,
-                                                                              pExecutionReport.getReport().getBrokerID(),
-                                                                              pExecutionReport.getReport().getOriginator(),
-                                                                              pExecutionReport.getActor()==null?null:pExecutionReport.getActor().getUserID(),
-                                                                              pExecutionReport.getViewerID());
-                response.getElements().add(executionReport);
-            }
-        }
+        Page<ExecutionReportSummary> executionReportPage = executionReportDao.findAllFills(pageRequest);
+        CollectionPageResponse<ExecutionReportSummary> response = new CollectionPageResponse<>(executionReportPage);
         SLF4JLoggerProxy.debug(this,
                                "getFills returning {}",
                                response);

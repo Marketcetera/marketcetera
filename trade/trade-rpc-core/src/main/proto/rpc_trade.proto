@@ -35,7 +35,7 @@ message GetFillsRequest {
 
 message GetFillsResponse {
     PageResponse pageResponse = 1;
-    repeated TradeMessage fills = 2;
+    repeated ExecutionReportSummary fills = 2;
 }
 
 message SendOrderRequest {

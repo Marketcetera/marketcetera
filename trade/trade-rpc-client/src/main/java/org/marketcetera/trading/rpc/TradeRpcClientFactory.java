@@ -8,6 +8,8 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
 import org.marketcetera.fix.MutableFixSessionFactory;
+import org.marketcetera.trade.MutableExecutionReportSummary;
+import org.marketcetera.trade.MutableExecutionReportSummaryFactory;
 import org.marketcetera.trade.MutableOrderSummary;
 import org.marketcetera.trade.MutableOrderSummaryFactory;
 import org.marketcetera.trade.MutableReport;
@@ -41,8 +43,14 @@ public class TradeRpcClientFactory
         tradeRpcClient.setOrderSummaryFactory(orderSummaryFactory);
         tradeRpcClient.setUserFactory(userFactory);
         tradeRpcClient.setReportFactory(reportFactory);
+        tradeRpcClient.setExecutionReportSummaryFactory(executionReportSummaryFactory);
         return tradeRpcClient;
     }
+    /**
+     * creates {@link MutableExecutionReportSummary} objects
+     */
+    @Autowired
+    private MutableExecutionReportSummaryFactory executionReportSummaryFactory;
     /**
      * creates {@link MutableOrderSummary} objects
      */

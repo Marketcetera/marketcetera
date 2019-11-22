@@ -1,5 +1,6 @@
 package org.marketcetera.trade.dao;
 
+import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.domain.Page;
@@ -52,6 +53,6 @@ public interface ExecutionReportDao
      * @param inPageRequest a <code>Pageable</code> value
      * @return a <code>Page&lt;ExecutionReport&gt;</code> value
      */
-    @Query("select e from PersistentExecutionReport e where e.execType in (2,3,16)")
-    Page<PersistentExecutionReport> findAllFills(Pageable inPageRequest);
+    @Query("select e from PersistentExecutionReport e where e.execType in ('PartialFill','Fill','Trade','TradeCorrect')")
+    Page<ExecutionReportSummary> findAllFills(Pageable inPageRequest);
 }

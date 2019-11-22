@@ -147,6 +147,28 @@ message Report {
     string text = 14;
 }
 
+message ExecutionReportSummary {
+    string orderId = 1;
+    string originalOrderId = 2;
+    Instrument instrument = 3;
+    string account = 4;
+    string rootOrderId = 5;
+    Side side = 6;
+    Qty cumulativeQuantity = 7;
+    Qty effectiveCumulativeQuantity = 8;
+    Qty averagePrice = 9;
+    Qty lastQuantity = 10;
+    Qty lastPrice = 11;
+    OrderStatusType orderStatus = 12;
+    ExecutionType executionType = 13;
+    google.protobuf.Timestamp sendingTime = 14;
+    User viewer = 15;
+    User actor = 16;
+    Report report = 17;
+    string brokerOrderId = 18;
+    string executionId = 19;
+}
+
 message FixMessage {
     Map header = 1;
     Map body = 2;

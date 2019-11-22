@@ -79,9 +79,9 @@ public interface ReportService
      * Get fills with the given page request.
      *
      * @param inPageRequest a <code>PageRequest</code> value
-     * @return a <code>CollectionPageResponse&lt;ExecutionReport&gt;</code> value
+     * @return a <code>CollectionPageResponse&lt;ExecutionReportSummary&gt;</code> value
      */
-    CollectionPageResponse<ExecutionReport> getFills(PageRequest inPageRequest);
+    CollectionPageResponse<ExecutionReportSummary> getFills(PageRequest inPageRequest);
     /**
      * Get the most recent execution report for the order chain represented by the given order id.
      * 

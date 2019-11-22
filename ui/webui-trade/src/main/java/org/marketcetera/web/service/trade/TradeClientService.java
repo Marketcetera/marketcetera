@@ -8,6 +8,7 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderID;
@@ -70,9 +71,9 @@ public class TradeClientService
      * Get fill execution report values.
      *
      * @param inPageRequest a <code>PageRequest</code> value
-     * @return a <code>CollectionPageResponse&lt;ExecutionReport&gt;</code> value
+     * @return a <code>CollectionPageResponse&lt;ExecutionReportSummary&gt;</code> value
      */
-    public CollectionPageResponse<ExecutionReport> getFills(PageRequest inPageRequest)
+    public CollectionPageResponse<ExecutionReportSummary> getFills(PageRequest inPageRequest)
     {
         return tradeClient.getFills(inPageRequest);
     }

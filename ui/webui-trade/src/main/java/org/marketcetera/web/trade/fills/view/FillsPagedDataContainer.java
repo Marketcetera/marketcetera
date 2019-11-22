@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
-import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.web.service.trade.TradeClientService;
 import org.marketcetera.web.trade.executionreport.AbstractExecutionReportPagedDataContainer;
 import org.marketcetera.web.view.PagedViewProvider;
@@ -24,11 +24,11 @@ public class FillsPagedDataContainer
     /**
      * Create a new FillsPagedDataContainer instance.
      *
-     * @param inCollection a <code>Collection&lt;? extends ExecutionReport&gt;</code> value
+     * @param inCollection a <code>Collection&lt;? extends ExecutionReportSummary&gt;</code> value
      * @param inPagedViewProvider a <code>PagedViewProvider</code> value
      * @throws IllegalArgumentException if the container cannot be constructed
      */
-    public FillsPagedDataContainer(Collection<? extends ExecutionReport> inCollection,
+    public FillsPagedDataContainer(Collection<? extends ExecutionReportSummary> inCollection,
                                    PagedViewProvider inPagedViewProvider)
             throws IllegalArgumentException
     {
@@ -50,7 +50,7 @@ public class FillsPagedDataContainer
      * @see com.marketcetera.web.view.PagedDataContainer#getDataContainerContents(org.marketcetera.core.PageRequest)
      */
     @Override
-    protected CollectionPageResponse<ExecutionReport> getDataContainerContents(PageRequest inPageRequest)
+    protected CollectionPageResponse<ExecutionReportSummary> getDataContainerContents(PageRequest inPageRequest)
     {
         return TradeClientService.getInstance().getFills(inPageRequest);
     }

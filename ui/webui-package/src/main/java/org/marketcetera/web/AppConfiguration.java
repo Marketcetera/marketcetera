@@ -27,8 +27,10 @@ import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptorFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
+import org.marketcetera.trade.MutableExecutionReportSummaryFactory;
 import org.marketcetera.trade.MutableOrderSummaryFactory;
 import org.marketcetera.trade.MutableReportFactory;
+import org.marketcetera.trade.SimpleExecutionReportSummaryFactory;
 import org.marketcetera.trade.SimpleOrderSummaryFactory;
 import org.marketcetera.trade.SimpleReportFactory;
 import org.marketcetera.trade.TradeContextClassProvider;
@@ -82,6 +84,16 @@ public class AppConfiguration
             }
         };
         return authenticator;
+    }
+    /**
+     * Get the execution report summary factory value.
+     *
+     * @return a <code>MutableExecutionReportSummaryFactory</code> value
+     */
+    @Bean
+    public MutableExecutionReportSummaryFactory getExecutionReportSummaryFactory()
+    {
+        return new SimpleExecutionReportSummaryFactory();
     }
     /**
      * Get the admin client factory value.

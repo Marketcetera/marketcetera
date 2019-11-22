@@ -27,7 +27,7 @@ public interface ExecutionReportSummary
      *
      * @return an <code>OrderID</code> value
      */
-    OrderID getOrigOrderID();
+    OrderID getOriginalOrderID();
     /**
      * Gets the security type value.
      *
@@ -81,19 +81,19 @@ public interface ExecutionReportSummary
      *
      * @return a <code>BigDecimal</code> value
      */
-    BigDecimal getCumQuantity();
+    BigDecimal getCumulativeQuantity();
     /**
      * Get the effectiveCumQuantity value.
      *
      * @return a <code>BigDecimal</code> value
      */
-    BigDecimal getEffectiveCumQuantity();
+    BigDecimal getEffectiveCumulativeQuantity();
     /**
      * Get the avgPrice value.
      *
      * @return a <code>BigDecimal</code> value
      */
-    BigDecimal getAvgPrice();
+    BigDecimal getAveragePrice();
     /**
      * Get the lastQuantity value.
      *
@@ -117,7 +117,7 @@ public interface ExecutionReportSummary
      *
      * @return an <code>ExecutionType</code> value
      */
-    ExecutionType getExecType();
+    ExecutionType getExecutionType();
     /**
      * Get the sendingTime value.
      *
@@ -154,4 +154,19 @@ public interface ExecutionReportSummary
      * @return an <code>OrderID</code> value
      */
     OrderID getBrokerOrderId();
+    /**
+     * Get the execution id value.
+     *
+     * @return a <code>String</code> value
+     */
+    String getExecutionId();
+    /**
+     * Get a mutable version of this object.
+     *
+     * @return a <code>MutableExecutionReportSummary</code> value
+     */
+    default MutableExecutionReportSummary getMutableVersion()
+    {
+        throw new UnsupportedOperationException();
+    }
 }

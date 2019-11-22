@@ -22,6 +22,7 @@ import org.marketcetera.persist.PageRequest;
 import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
@@ -142,7 +143,7 @@ public class DirectTradeClient
      * @see org.marketcetera.trade.client.TradeClient#getFills(org.marketcetera.persist.PageRequest)
      */
     @Override
-    public CollectionPageResponse<ExecutionReport> getFills(PageRequest inPageRequest)
+    public CollectionPageResponse<ExecutionReportSummary> getFills(PageRequest inPageRequest)
     {
         return reportService.getFills(inPageRequest);
     }

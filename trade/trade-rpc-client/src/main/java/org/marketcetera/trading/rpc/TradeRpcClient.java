@@ -39,8 +39,11 @@ import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.MutableExecutionReportSummary;
+import org.marketcetera.trade.MutableExecutionReportSummaryFactory;
 import org.marketcetera.trade.MutableOrderSummary;
 import org.marketcetera.trade.MutableOrderSummaryFactory;
 import org.marketcetera.trade.MutableReport;
@@ -455,11 +458,11 @@ public class TradeRpcClient
      * @see org.marketcetera.trade.client.TradeClient#getFills(org.marketcetera.persist.PageRequest)
      */
     @Override
-    public CollectionPageResponse<ExecutionReport> getFills(PageRequest inPageRequest)
+    public CollectionPageResponse<ExecutionReportSummary> getFills(PageRequest inPageRequest)
     {
-        return executeCall(new Callable<CollectionPageResponse<ExecutionReport>>(){
+        return executeCall(new Callable<CollectionPageResponse<ExecutionReportSummary>>(){
             @Override
-            public CollectionPageResponse<ExecutionReport> call()
+            public CollectionPageResponse<ExecutionReportSummary> call()
                     throws Exception
             {
                 SLF4JLoggerProxy.trace(TradeRpcClient.this,
@@ -470,8 +473,11 @@ public class TradeRpcClient
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setPageRequest(PagingRpcUtil.buildPageRequest(inPageRequest));
                 TradeRpc.GetFillsResponse response = getBlockingStub().getFills(requestBuilder.build());
-                CollectionPageResponse<ExecutionReport> results = new CollectionPageResponse<>();
-                response.getFillsList().forEach(rpcExecutionReport->results.getElements().add((ExecutionReport)TradeRpcUtil.getTradeMessage(rpcExecutionReport)));
+                CollectionPageResponse<ExecutionReportSummary> results = new CollectionPageResponse<>();
+                response.getFillsList().forEach(rpcExecutionReport->results.getElements().add(TradeRpcUtil.getExecutionReportSummary(rpcExecutionReport,
+                                                                                                                                     executionReportSummaryFactory,
+                                                                                                                                     reportFactory,
+                                                                                                                                     userFactory)));
                 PagingRpcUtil.setPageResponse(inPageRequest,
                                               response.getPageResponse(),
                                               results);
@@ -902,6 +908,24 @@ public class TradeRpcClient
         reportFactory = inReportFactory;
     }
     /**
+     * Get the executionReportSummaryFactory value.
+     *
+     * @return an <code>MutableExecutionReportSummaryFactory</code> value
+     */
+    public MutableExecutionReportSummaryFactory getExecutionReportSummaryFactory()
+    {
+        return executionReportSummaryFactory;
+    }
+    /**
+     * Sets the executionReportSummaryFactory value.
+     *
+     * @param inExecutionReportSummaryFactory an <code>MutableExecutionReportSummaryFactory</code> value
+     */
+    public void setExecutionReportSummaryFactory(MutableExecutionReportSummaryFactory inExecutionReportSummaryFactory)
+    {
+        executionReportSummaryFactory = inExecutionReportSummaryFactory;
+    }
+    /**
      * Create a new TradeRpcClient instance.
      *
      * @param inParameters a <code>TradeRpcClientParameters</code> value
@@ -1017,6 +1041,10 @@ public class TradeRpcClient
             super(inTradeMessageListener);
         }
     }
+    /**
+     * creates {@link MutableExecutionReportSummary} objects
+     */
+    private MutableExecutionReportSummaryFactory executionReportSummaryFactory;
     /**
      * creates {@link MutableOrderSummary} objects
      */

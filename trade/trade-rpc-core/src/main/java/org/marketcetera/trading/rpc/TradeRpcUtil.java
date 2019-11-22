@@ -31,6 +31,7 @@ import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.FIXResponse;
@@ -39,11 +40,15 @@ import org.marketcetera.trade.Future;
 import org.marketcetera.trade.HasTradeMessage;
 import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.MutableExecutionReportSummary;
+import org.marketcetera.trade.MutableExecutionReportSummaryFactory;
 import org.marketcetera.trade.MutableOrderSummary;
 import org.marketcetera.trade.MutableOrderSummaryFactory;
 import org.marketcetera.trade.MutableReport;
 import org.marketcetera.trade.MutableReportFactory;
 import org.marketcetera.trade.NewOrReplaceOrder;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderCancel;
@@ -551,6 +556,55 @@ public abstract class TradeRpcUtil
         return Optional.of(instrumentBuilder.build());
     }
     /**
+     * Get the RPC instrument from the given attributes.
+     *
+     * @param inSymbol a <code>String</code> value
+     * @param inSecurityType a <code>SecurityType</code> value
+     * @param inOptionType an <code>OptionType</code> value
+     * @param inExpiry a <code>String</code> value
+     * @param inStrikePrice a <code>BigDecimal</code> value
+     * @return an <code>Optional&lt;TradeTypesRpc.Instrument&gt;</code>value
+     */
+    public static Optional<TradeTypesRpc.Instrument> getRpcInstrument(String inSymbol,
+                                                                      SecurityType inSecurityType,
+                                                                      OptionType inOptionType,
+                                                                      String inExpiry,
+                                                                      BigDecimal inStrikePrice)
+    {
+        if(inSymbol == null || inSecurityType == null) {
+            return Optional.empty();
+        }
+        Instrument instrument;
+        switch(inSecurityType) {
+            case CommonStock:
+                instrument = new Equity(inSymbol);
+                break;
+            case ConvertibleBond:
+                instrument = new ConvertibleBond(inSymbol);
+                break;
+            case Currency:
+                instrument = new Currency(inSymbol);
+                break;
+            case Future:
+                instrument = Future.fromString(inSymbol);
+                break;
+            case Option:
+                instrument = new Option(inSymbol,
+                                        inExpiry,
+                                        inStrikePrice,
+                                        inOptionType);
+                break;
+            case Unknown:
+            default:
+                throw new UnsupportedOperationException("Unsupported security type: " + inSecurityType);
+            
+        }
+        TradeTypesRpc.Instrument.Builder builder = TradeTypesRpc.Instrument.newBuilder();
+        builder.setSymbol(instrument.getFullSymbol());
+        builder.setSecurityType(getRpcSecurityType(inSecurityType));
+        return Optional.of(builder.build());
+    }
+    /**
      * Get the instrument on the given RPC order base object.
      *
      * @param inRpcOrder a <code>TradingTypeRpc.OrderBase</code> value
@@ -791,6 +845,74 @@ public abstract class TradeRpcUtil
         }
         String value = StringUtils.trimToNull(inOrder.getOrderID().getValue());
         inBuilder.setOrderId(value);
+    }
+    /**
+     * Get the broker order id value from the given message, if possible.
+     *
+     * @param inRpcExecutionReportSummary a <code>TradeTypesRpc.ExecutionReportSummary</code> value
+     * @return an <code>Optional&lt;OrderID&gt;</code> value
+     */
+    public static Optional<OrderID> getBrokerOrderId(TradeTypesRpc.ExecutionReportSummary inRpcExecutionReportSummary)
+    {
+        return getOrderId(inRpcExecutionReportSummary.getBrokerOrderId());
+    }
+    /**
+     * Get the order id value from the given message, if possible.
+     *
+     * @param inRpcExecutionReportSummary a <code>TradeTypesRpc.ExecutionReportSummary</code> value
+     * @return an <code>Optional&lt;OrderID&gt;</code> value
+     */
+    public static Optional<OrderID> getOrderId(TradeTypesRpc.ExecutionReportSummary inRpcExecutionReportSummary)
+    {
+        return getOrderId(inRpcExecutionReportSummary.getOrderId());
+    }
+    /**
+     * Get the root order id value from the given message, if possible.
+     *
+     * @param inRpcExecutionReportSummary a <code>TradeTypesRpc.ExecutionReportSummary</code> value
+     * @return an <code>Optional&lt;OrderID&gt;</code> value
+     */
+    public static Optional<OrderID> getRootOrderId(TradeTypesRpc.ExecutionReportSummary inRpcExecutionReportSummary)
+    {
+        return getOrderId(inRpcExecutionReportSummary.getRootOrderId());
+    }
+    /**
+     * Get the original order id value from the given message, if possible.
+     *
+     * @param inRpcExecutionReportSummary a <code>TradeTypesRpc.ExecutionReportSummary</code> value
+     * @return an <code>Optional&lt;OrderID&gt;</code> value
+     */
+    public static Optional<OrderID> getOriginalOrderId(TradeTypesRpc.ExecutionReportSummary inRpcExecutionReportSummary)
+    {
+        return getOrderId(inRpcExecutionReportSummary.getOriginalOrderId());
+    }
+    /**
+     * Get the order id value from the given value, if possible.
+     *
+     * @param inValue a <code>String</code> value
+     * @return an <code>Optional&lt;OrderID&gt;</code> value
+     */
+    public static Optional<OrderID> getOrderId(String inValue)
+    {
+        OrderID orderId = null;
+        if(inValue != null) {
+            orderId = new OrderID(inValue);
+        }
+        return Optional.ofNullable(orderId);
+    }
+    /**
+     * Get the RPC order id value from the given value, if possible.
+     *
+     * @param inValue an <code>OrderID</code> value
+     * @return an <code>Optional&lt;OrderID&gt;</code> value
+     */
+    public static Optional<String> getRpcOrderId(OrderID inValue)
+    {
+        String orderId = null;
+        if(inValue != null) {
+            orderId = inValue.getValue();
+        }
+        return Optional.ofNullable(orderId);
     }
     /**
      * Get the order ID from the given RPC order.
@@ -1488,6 +1610,84 @@ public abstract class TradeRpcUtil
         return reportBuilder.build();
     }
     /**
+     * Get the execution report summary from the given RPC value.
+     *
+     * @param inRpcExecutionReport a <code>TradeTypesRpc.ExecutionReportSummary</code> value
+     * @param inExecutionReportSummaryFactory a <code>MutableExecutionReportSummaryFactory</code> value
+     * @param inReportFactory a <code>MutableReportFactory</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
+     * @return an <code>ExecutionReportSummary</code> value
+     */
+    public static ExecutionReportSummary getExecutionReportSummary(TradeTypesRpc.ExecutionReportSummary inRpcExecutionReport,
+                                                                   MutableExecutionReportSummaryFactory inExecutionReportSummaryFactory,
+                                                                   MutableReportFactory inReportFactory,
+                                                                   UserFactory inUserFactory)
+    {
+        MutableExecutionReportSummary executionReportSummary = inExecutionReportSummaryFactory.create();
+        executionReportSummary.setAccount(inRpcExecutionReport.getAccount());
+        AdminRpcUtil.getUser(inRpcExecutionReport.getActor(),
+                             inUserFactory).ifPresent(actor->executionReportSummary.setActor(actor));
+        BaseRpcUtil.getScaledQuantity(inRpcExecutionReport.getAveragePrice()).ifPresent(qty->executionReportSummary.setAveragePrice(qty));
+        getBrokerOrderId(inRpcExecutionReport).ifPresent(brokerOrderId->executionReportSummary.setBrokerOrderId(brokerOrderId));
+        BaseRpcUtil.getScaledQuantity(inRpcExecutionReport.getCumulativeQuantity()).ifPresent(qty->executionReportSummary.setCumulativeQuantity(qty));
+        BaseRpcUtil.getScaledQuantity(inRpcExecutionReport.getEffectiveCumulativeQuantity()).ifPresent(qty->executionReportSummary.setEffectiveCumulativeQuantity(qty));
+        executionReportSummary.setExecutionId(inRpcExecutionReport.getExecutionId());
+        executionReportSummary.setExecutionType(getExecutionType(inRpcExecutionReport.getExecutionType()));
+        getInstrument(inRpcExecutionReport.getInstrument()).ifPresent(instrument->executionReportSummary.setInstrument(instrument));
+        BaseRpcUtil.getScaledQuantity(inRpcExecutionReport.getLastPrice()).ifPresent(qty->executionReportSummary.setLastPrice(qty));
+        BaseRpcUtil.getScaledQuantity(inRpcExecutionReport.getLastQuantity()).ifPresent(qty->executionReportSummary.setLastQuantity(qty));
+        getOrderId(inRpcExecutionReport).ifPresent(orderId->executionReportSummary.setOrderID(orderId));
+        executionReportSummary.setOrderStatus(getOrderStatus(inRpcExecutionReport.getOrderStatus()));
+        getOriginalOrderId(inRpcExecutionReport).ifPresent(orderId->executionReportSummary.setOriginalOrderID(orderId));
+        executionReportSummary.setReport(getReport(inRpcExecutionReport.getReport(),
+                                                   inReportFactory,
+                                                   inUserFactory));
+        getRootOrderId(inRpcExecutionReport).ifPresent(orderId->executionReportSummary.setRootOrderID(orderId));
+        BaseRpcUtil.getDateValue(inRpcExecutionReport.getSendingTime()).ifPresent(sendingTime->executionReportSummary.setSendingTime(sendingTime));
+        executionReportSummary.setSide(getSide(inRpcExecutionReport.getSide()));
+        AdminRpcUtil.getUser(inRpcExecutionReport.getViewer(),
+                             inUserFactory).ifPresent(viewer->executionReportSummary.setViewer(viewer));
+        return executionReportSummary;
+    }
+    /**
+     * Get the RPC execution report summary from the given value.
+     *
+     * @param inExecutionReportSummary an <code>ExecutionReportSummary</code> value
+     * @return a <code>TradeTypesRpc.ExecutionReportSummary</code> value
+     */
+    public static TradeTypesRpc.ExecutionReportSummary getRpcExecutionReportSummary(ExecutionReportSummary inExecutionReportSummary)
+    {
+        TradeTypesRpc.ExecutionReportSummary.Builder builder = TradeTypesRpc.ExecutionReportSummary.newBuilder();
+        if(inExecutionReportSummary.getAccount() != null) {
+            builder.setAccount(inExecutionReportSummary.getAccount());
+        }
+        AdminRpcUtil.getRpcUser(inExecutionReportSummary.getActor()).ifPresent(value->builder.setActor(value));
+        BaseRpcUtil.getRpcQty(inExecutionReportSummary.getAveragePrice()).ifPresent(value->builder.setAveragePrice(value));
+        getRpcOrderId(inExecutionReportSummary.getBrokerOrderId()).ifPresent(value->builder.setBrokerOrderId(value));
+        BaseRpcUtil.getRpcQty(inExecutionReportSummary.getCumulativeQuantity()).ifPresent(value->builder.setCumulativeQuantity(value));
+        BaseRpcUtil.getRpcQty(inExecutionReportSummary.getEffectiveCumulativeQuantity()).ifPresent(value->builder.setEffectiveCumulativeQuantity(value));
+        if(inExecutionReportSummary.getExecutionId() != null) {
+            builder.setExecutionId(inExecutionReportSummary.getExecutionId());
+        }
+        builder.setExecutionType(getRpcExecutionType(inExecutionReportSummary.getExecutionType()));
+        getRpcInstrument(inExecutionReportSummary.getSymbol(),
+                         inExecutionReportSummary.getSecurityType(),
+                         inExecutionReportSummary.getOptionType(),
+                         inExecutionReportSummary.getExpiry(),
+                         inExecutionReportSummary.getStrikePrice()).ifPresent(rpcInstrument->builder.setInstrument(rpcInstrument));
+        BaseRpcUtil.getRpcQty(inExecutionReportSummary.getLastPrice()).ifPresent(value->builder.setLastPrice(value));
+        BaseRpcUtil.getRpcQty(inExecutionReportSummary.getLastQuantity()).ifPresent(value->builder.setLastQuantity(value));
+        getRpcOrderId(inExecutionReportSummary.getOrderID()).ifPresent(value->builder.setOrderId(value));
+        builder.setOrderStatus(getRpcOrderStatus(inExecutionReportSummary.getOrderStatus()));
+        getRpcOrderId(inExecutionReportSummary.getOriginalOrderID()).ifPresent(value->builder.setOriginalOrderId(value));
+        builder.setReport(getRpcReport(inExecutionReportSummary.getReport()));
+        getRpcOrderId(inExecutionReportSummary.getRootOrderID()).ifPresent(value->builder.setRootOrderId(value));
+        BaseRpcUtil.getTimestampValue(inExecutionReportSummary.getSendingTime()).ifPresent(value->builder.setSendingTime(value));
+        builder.setSide(getRpcSide(inExecutionReportSummary.getSide()));
+        AdminRpcUtil.getRpcUser(inExecutionReportSummary.getViewer()).ifPresent(value->builder.setViewer(value));
+        return builder.build();
+    }
+    /**
      * Get the report from the given RPC report.
      *
      * @param inRpcReport a <code>TradeTypesRpc.Report</code> value
@@ -1884,13 +2084,67 @@ public abstract class TradeRpcUtil
             case Suspended:
                 return TradeTypesRpc.ExecutionType.SuspendedExecutionType;
             case Trade:
-                return TradeTypesRpc.ExecutionType.TradeCancelExecutionType;
+                return TradeTypesRpc.ExecutionType.TradeExecutionType;
             case TradeCancel:
                 return TradeTypesRpc.ExecutionType.TradeCancelExecutionType;
             case TradeCorrect:
                 return TradeTypesRpc.ExecutionType.TradeCorrectExecutionType;
             case Unknown:
                 return TradeTypesRpc.ExecutionType.UnknownExecutionType;
+            default:
+                throw new UnsupportedOperationException("Unsupported execution type: " + inExecutionType);
+        }
+    }
+    /**
+     * Get the RPC execution type value from the given value.
+     *
+     * @param inExecutionType a <code>TradeTypesRpc.ExecutionType</code> value
+     * @return an <code>ExecutionType</code> value
+     */
+    public static ExecutionType getExecutionType(TradeTypesRpc.ExecutionType inExecutionType)
+    {
+        switch(inExecutionType) {
+            case CalculatedExecutionType:
+                return ExecutionType.Calculated;
+            case CanceledExecutionType:
+                return ExecutionType.Canceled;
+            case DoneForDayExecutionType:
+                return ExecutionType.DoneForDay;
+            case ExpiredExecutionType:
+                return ExecutionType.Expired;
+            case FillExecutionType:
+                return ExecutionType.Fill;
+            case NewExecutionType:
+                return ExecutionType.New;
+            case OrderStatusExecutionType:
+                return ExecutionType.OrderStatus;
+            case PartialFillExecutionType:
+                return ExecutionType.PartialFill;
+            case PendingCancelExecutionType:
+                return ExecutionType.PendingCancel;
+            case PendingNewExecutionType:
+                return ExecutionType.PendingNew;
+            case PendingReplaceExecutionType:
+                return ExecutionType.PendingReplace;
+            case RejectedExecutionType:
+                return ExecutionType.Rejected;
+            case ReplaceExecutionType:
+                return ExecutionType.Replace;
+            case RestatedExecutionType:
+                return ExecutionType.Restated;
+            case StoppedExecutionType:
+                return ExecutionType.Stopped;
+            case SuspendedExecutionType:
+                return ExecutionType.Suspended;
+            case TradeCancelExecutionType:
+                return ExecutionType.TradeCancel;
+            case TradeCorrectExecutionType:
+                return ExecutionType.TradeCorrect;
+            case TradeExecutionType:
+                return ExecutionType.Trade;
+            case UNRECOGNIZED:
+            case UnknownExecutionType:
+                return ExecutionType.Unknown;
             default:
                 throw new UnsupportedOperationException("Unsupported execution type: " + inExecutionType);
         }

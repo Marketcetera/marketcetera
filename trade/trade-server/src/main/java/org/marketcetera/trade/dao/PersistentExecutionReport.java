@@ -11,23 +11,28 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.marketcetera.admin.User;
 import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.persist.EntityBase;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.InstrumentSummaryFields;
+import org.marketcetera.trade.MutableExecutionReportSummary;
+import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.Report;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
-import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -49,7 +54,7 @@ import quickfix.InvalidMessage;
 @ClassVersion("$Id$")
 public class PersistentExecutionReport
         extends EntityBase
-        implements ExecutionReportSummary
+        implements MutableExecutionReportSummary
 {
     /**
      * Creates an instance.
@@ -91,6 +96,7 @@ public class PersistentExecutionReport
         sendingTime = inReport.getSendingTime();
         viewer = inSavedReport.getViewer();
         actor = inSavedReport.getActor();
+        executionId = inReport.getExecutionID();
         try {
             if(inSavedReport.getFixMessage() != null) {
                 quickfix.Message fixMessage = new quickfix.Message(inSavedReport.getFixMessage());
@@ -102,6 +108,10 @@ public class PersistentExecutionReport
             throw new RuntimeException(e);
         }
     }
+    /**
+     * Create a new ExecutionReportSummary instance.
+     */
+    public PersistentExecutionReport() {}
     /* (non-Javadoc)
      * @see org.marketcetera.trade.dao.ExecutionReport#getOrderID()
      */
@@ -123,7 +133,7 @@ public class PersistentExecutionReport
      * @see org.marketcetera.trade.dao.ExecutionReport#getOrigOrderID()
      */
     @Override
-    public OrderID getOrigOrderID()
+    public OrderID getOriginalOrderID()
     {
         return origOrderID;
     }
@@ -132,7 +142,7 @@ public class PersistentExecutionReport
      *
      * @param inOrigOrderID an <code>OrderID</code> value
      */
-    public void setOrigOrderID(OrderID inOrigOrderID)
+    public void setOriginalOrderID(OrderID inOrigOrderID)
     {
         origOrderID = inOrigOrderID;
     }
@@ -144,11 +154,10 @@ public class PersistentExecutionReport
     {
         return securityType;
     }
-    /**
-     * Sets the security type value.
-     *
-     * @param inSecurityType a <code>SecurityType</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#SetecurityType(org.marketcetera.trade.SecurityType)
      */
+    @Override
     public void setSecurityType(SecurityType inSecurityType)
     {
         securityType = inSecurityType;
@@ -161,11 +170,10 @@ public class PersistentExecutionReport
     {
         return symbol;
     }
-    /**
-     * Sets the symbol value.
-     *
-     * @param inSymbol a <code>String</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#Setymbol(java.lang.String)
      */
+    @Override
     public void setSymbol(String inSymbol)
     {
         symbol = inSymbol;
@@ -195,11 +203,10 @@ public class PersistentExecutionReport
     {
         return strikePrice;
     }
-    /**
-     * Sets the strike price value.
-     *
-     * @param inStrikePrice a <code>BigDecimal</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#SettrikePrice(java.math.BigDecimal)
      */
+    @Override
     public void setStrikePrice(BigDecimal inStrikePrice)
     {
         strikePrice = inStrikePrice;
@@ -276,7 +283,7 @@ public class PersistentExecutionReport
      * @see org.marketcetera.trade.dao.ExecutionReport#getCumQuantity()
      */
     @Override
-    public BigDecimal getCumQuantity()
+    public BigDecimal getCumulativeQuantity()
     {
         return cumQuantity;
     }
@@ -285,7 +292,7 @@ public class PersistentExecutionReport
      *
      * @param inCumQuantity a <code>BigDecimal</code> value
      */
-    public void setCumQuantity(BigDecimal inCumQuantity)
+    public void setCumulativeQuantity(BigDecimal inCumQuantity)
     {
         cumQuantity = inCumQuantity;
     }
@@ -293,7 +300,7 @@ public class PersistentExecutionReport
      * @see org.marketcetera.trade.dao.ExecutionReport#getEffectiveCumQuantity()
      */
     @Override
-    public BigDecimal getEffectiveCumQuantity()
+    public BigDecimal getEffectiveCumulativeQuantity()
     {
         return effectiveCumQuantity;
     }
@@ -302,7 +309,7 @@ public class PersistentExecutionReport
      *
      * @param inEffectiveCumQuantity a <code>BigDecimal</code> value
      */
-    public void setEffectiveCumQuantity(BigDecimal inEffectiveCumQuantity)
+    public void setEffectiveCumulativeQuantity(BigDecimal inEffectiveCumQuantity)
     {
         effectiveCumQuantity = inEffectiveCumQuantity;
     }
@@ -310,7 +317,7 @@ public class PersistentExecutionReport
      * @see org.marketcetera.trade.dao.ExecutionReport#getAvgPrice()
      */
     @Override
-    public BigDecimal getAvgPrice()
+    public BigDecimal getAveragePrice()
     {
         return avgPrice;
     }
@@ -319,7 +326,7 @@ public class PersistentExecutionReport
      *
      * @param inAvgPrice a <code>BigDecimal</code> value
      */
-    public void setAvgPrice(BigDecimal inAvgPrice)
+    public void setAveragePrice(BigDecimal inAvgPrice)
     {
         avgPrice = inAvgPrice;
     }
@@ -378,7 +385,7 @@ public class PersistentExecutionReport
      * @see org.marketcetera.trade.dao.ExecutionReport#getExecType()
      */
     @Override
-    public ExecutionType getExecType()
+    public ExecutionType getExecutionType()
     {
         return execType;
     }
@@ -387,7 +394,7 @@ public class PersistentExecutionReport
      *
      * @param inExecType an <code>ExecutionType</code> value
      */
-    public void setExecType(ExecutionType inExecType)
+    public void setExecutionType(ExecutionType inExecType)
     {
         execType = inExecType;
     }
@@ -488,30 +495,111 @@ public class PersistentExecutionReport
         brokerOrderId = inBrokerOrderId;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getExecutionId()
+     */
+    @Override
+    public String getExecutionId()
+    {
+        return executionId;
+    }
+    /**
+     * Sets the executionId value.
+     *
+     * @param inExecutionId a <code>String</code> value
+     */
+    public void setExecutionId(String inExecutionId)
+    {
+        executionId = inExecutionId;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setViewer(org.marketcetera.admin.User)
+     */
+    @Override
+    public void setViewer(User inViewer)
+    {
+        if(inViewer instanceof PersistentUser) {
+            viewer = (PersistentUser)inViewer;
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setActor(org.marketcetera.admin.User)
+     */
+    @Override
+    public void setActor(User inActor)
+    {
+        if(inActor instanceof PersistentUser) {
+            actor = (PersistentUser)inActor;
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setReport(org.marketcetera.trade.Report)
+     */
+    @Override
+    public void setReport(Report inReport)
+    {
+        if(inReport instanceof PersistentReport) {
+            report = (PersistentReport)inReport;
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setInstrument(org.marketcetera.trade.Instrument)
+     */
+    @Override
+    public void setInstrument(Instrument inInstrument)
+    {
+        symbol = inInstrument.getFullSymbol();
+        setSecurityType(inInstrument.getSecurityType());
+        switch(inInstrument.getSecurityType()) {
+            case CommonStock:
+            case ConvertibleBond:
+            case Currency:
+            case Future:
+                break;
+            case Option:
+                Option option = (Option)inInstrument;
+                symbol = option.getSymbol();
+                expiry = option.getExpiry();
+                strikePrice = option.getStrikePrice();
+                optionType = option.getType();
+                break;
+            case Unknown:
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getMutableVersion()
+     */
+    @Override
+    public MutableExecutionReportSummary getMutableVersion()
+    {
+        return this;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("ExecutionReportSummary [rootOrderId=").append(rootOrderId).append(", orderId=").append(orderId)
-                .append(", origOrderID=").append(origOrderID).append(", symbol=").append(symbol)
+        builder.append("PersistentExecutionReport [rootOrderId=").append(rootOrderId).append(", orderId=")
+                .append(orderId).append(", origOrderID=").append(origOrderID).append(", symbol=").append(symbol)
                 .append(", strikePrice=").append(strikePrice).append(", side=").append(side).append(", cumQuantity=")
                 .append(cumQuantity).append(", effectiveCumQuantity=").append(effectiveCumQuantity)
                 .append(", avgPrice=").append(avgPrice).append(", lastQuantity=").append(lastQuantity)
                 .append(", lastPrice=").append(lastPrice).append(", orderStatus=").append(orderStatus)
-                .append(", execType=").append(execType).append(", sendingTime=").append(sendingTime)
-                .append(", viewer=").append(viewer).append(", actor=").append(actor)
-                .append(", securityType=").append(securityType).append(", expiry=").append(expiry)
-                .append(", optionType=").append(optionType).append(", account=").append(account).append(", report=")
-                .append(report).append("]");
+                .append(", execType=").append(execType).append(", sendingTime=").append(sendingTime).append(", viewer=")
+                .append(viewer).append(", actor=").append(actor).append(", securityType=").append(securityType)
+                .append(", expiry=").append(expiry).append(", optionType=").append(optionType).append(", account=")
+                .append(account).append(", executionId=").append(executionId).append(", brokerOrderId=")
+                .append(brokerOrderId).append(", report=").append(report).append("]");
         return builder.toString();
-    }
-    /**
-     * Create a new ExecutionReportSummary instance.
-     */
-    public PersistentExecutionReport()
-    {
     }
     /**
      * root order ID value
@@ -544,6 +632,7 @@ public class PersistentExecutionReport
     /**
      * side value
      */
+    @Enumerated(EnumType.STRING)
     @Column(name="side",nullable=false)
     private Side side;
     /**
@@ -574,11 +663,13 @@ public class PersistentExecutionReport
     /**
      * order status value
      */
+    @Enumerated(EnumType.STRING)
     @Column(name="ord_status",nullable=false)
     private OrderStatus orderStatus;
     /**
      * execution type value
      */
+    @Enumerated(EnumType.STRING)
     @Column(name="exec_type",nullable=false)
     private ExecutionType execType;
     /**
@@ -601,6 +692,7 @@ public class PersistentExecutionReport
     /**
      * security type value
      */
+    @Enumerated(EnumType.STRING)
     @Column(name="security_type",nullable=false)
     private SecurityType securityType;
     /**
@@ -619,6 +711,11 @@ public class PersistentExecutionReport
     @Column(name="account",nullable=true)
     private String account;
     /**
+     * execution id value
+     */
+    @Column(name="exec_id",nullable=false)
+    private String executionId;
+    /**
      * broker order id value
      */
     @Embedded
@@ -630,5 +727,5 @@ public class PersistentExecutionReport
     @OneToOne(optional=false)
     @JoinColumn(name="report_id")
     private PersistentReport report;
-    private static final long serialVersionUID = -6469753405730539554L;
+    private static final long serialVersionUID = -6684285496557983426L;
 }

@@ -2,7 +2,7 @@ package org.marketcetera.web.trade.fills.view;
 
 import java.util.Properties;
 
-import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.web.trade.executionreport.AbstractExecutionReportView;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -45,7 +45,7 @@ public class FillsView
      * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
      */
     @Override
-    protected PagedDataContainer<ExecutionReport> createDataContainer()
+    protected PagedDataContainer<ExecutionReportSummary> createDataContainer()
     {
         return new FillsPagedDataContainer(this);
     }

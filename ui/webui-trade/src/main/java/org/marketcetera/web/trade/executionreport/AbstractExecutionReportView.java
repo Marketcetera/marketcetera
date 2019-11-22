@@ -2,15 +2,16 @@ package org.marketcetera.web.trade.executionreport;
 
 import java.util.Properties;
 
-import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.converters.DateConverter;
 import org.marketcetera.web.converters.DecimalConverter;
-import org.marketcetera.web.converters.InstrumentConverter;
-import org.marketcetera.web.converters.OrderIdConverter;
+import org.marketcetera.web.converters.ExecutionTypeConverter;
 import org.marketcetera.web.converters.OrderStatusConverter;
-import org.marketcetera.web.converters.OrderTypeConverter;
+import org.marketcetera.web.converters.SecurityTypeConverter;
+import org.marketcetera.web.converters.SideConverter;
+import org.marketcetera.web.converters.UserConverter;
 import org.marketcetera.web.view.AbstractGridView;
 
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -18,14 +19,14 @@ import com.vaadin.data.Property.ValueChangeEvent;
 /* $License$ */
 
 /**
- * Provides common behavior for views that display {@link ExecutionReport} values in a grid.
+ * Provides common behavior for views that display {@link ExecutionReportSummary} values in a grid.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public abstract class AbstractExecutionReportView
-        extends AbstractGridView<ExecutionReport>
+        extends AbstractGridView<ExecutionReportSummary>
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
@@ -37,7 +38,7 @@ public abstract class AbstractExecutionReportView
         getActionSelect().setNullSelectionAllowed(false);
         getActionSelect().setReadOnly(true);
         getGrid().addSelectionListener(inEvent -> {
-            ExecutionReport selectedObject = getSelectedItem();
+            ExecutionReportSummary selectedObject = getSelectedItem();
             getActionSelect().removeAllItems();
             if(selectedObject == null) {
                 getActionSelect().setReadOnly(true);
@@ -66,44 +67,48 @@ public abstract class AbstractExecutionReportView
     @Override
     protected void setGridColumns()
     {
-        getGrid().setColumns("transactTime",
-                             "sendingTime",
+        getGrid().setColumns("sendingTime",
                              "orderID",
-                             "originalOrderID",
                              "orderStatus",
+                             "executionType",
                              "side",
-                             "instrument",
-                             "orderQuantity",
+                             "securityType",
+                             "symbol",
+//                             "symbolSfx", TODO
+                             "expiry",
+                             "optionType",
+                             "strikePrice",
+                           //"transactTime", TODO
+//                             "orderQuantity", TODO
                              "cumulativeQuantity",
-                             "leavesQuantity",
-                             "orderType",
-                             "price",
+//                             "leavesQuantity", TODO
+//                             "price", TODO
                              "averagePrice",
                              "account",
                              "lastQuantity",
                              "lastPrice",
-                             "executionID",
-                             "brokerOrderID",
-                             "brokerId",
-                             "actorID");
-        getGrid().getColumn("transactTime").setConverter(DateConverter.instance).setSortable(false); // TODO not sortable because transact time is derived
-        getGrid().getColumn("sendingTime").setConverter(DateConverter.instance);
-        getGrid().getColumn("orderID").setConverter(OrderIdConverter.instance);
-        getGrid().getColumn("originalOrderID").setConverter(OrderIdConverter.instance).setHeaderCaption("Orig\nOrder ID");
-        getGrid().getColumn("orderStatus").setConverter(OrderStatusConverter.instance).setHeaderCaption("Ord Status");
-        getGrid().getColumn("instrument").setConverter(InstrumentConverter.instance);
-        getGrid().getColumn("orderQuantity").setHeaderCaption("Ord Qty").setSortable(false); // TODO not sortable because this column is derived
-        getGrid().getColumn("cumulativeQuantity").setHeaderCaption("Cum Qty");
-        getGrid().getColumn("leavesQuantity").setHeaderCaption("Leaves Qty").setSortable(false); // TODO not sortable because this column is derived
-        getGrid().getColumn("orderType").setHeaderCaption("Ord Type").setConverter(OrderTypeConverter.instance).setSortable(false); // TODO not sortable because this column is derived
-        getGrid().getColumn("price").setConverter(DecimalConverter.instance).setHeaderCaption("Ord Px").setSortable(false); // TODO not sortable because this column is derived
+//                             "brokerId", TODO
+                             "executionId",
+                             "brokerOrderId",
+                             "actor");
+        getGrid().getColumn("actor").setHeaderCaption("Trader").setConverter(UserConverter.instance);
         getGrid().getColumn("averagePrice").setConverter(DecimalConverter.instance).setHeaderCaption("Avg Px");
-        getGrid().getColumn("lastQuantity").setHeaderCaption("Last Qty");
+        getGrid().getColumn("brokerOrderId").setHeaderCaption("Broker Order ID");
+        getGrid().getColumn("cumulativeQuantity").setHeaderCaption("Cum Qty");
+        getGrid().getColumn("executionId").setHeaderCaption("Exec ID");
+        getGrid().getColumn("executionType").setConverter(ExecutionTypeConverter.instance).setHeaderCaption("Exec Type");
         getGrid().getColumn("lastPrice").setConverter(DecimalConverter.instance).setHeaderCaption("Last Px");
-        getGrid().getColumn("executionID").setHeaderCaption("Exec ID").setSortable(false); // TODO not sortable because this column is derived
-        getGrid().getColumn("brokerOrderID").setSortable(false); // TODO not sortable because this column is derived
-        getGrid().getColumn("brokerId").setHeaderCaption("Broker ID");
-        getGrid().getColumn("actorID").setHeaderCaption("Trader ID");
+        getGrid().getColumn("lastQuantity").setHeaderCaption("Last Qty");
+        getGrid().getColumn("orderStatus").setConverter(OrderStatusConverter.instance);
+        getGrid().getColumn("securityType").setConverter(SecurityTypeConverter.instance);
+        getGrid().getColumn("sendingTime").setConverter(DateConverter.instance);
+        getGrid().getColumn("side").setConverter(SideConverter.instance);
+//        getGrid().getColumn("transactTime").setConverter(DateConverter.instance).setSortable(false); // TODO not sortable because transact time is derived
+//        getGrid().getColumn("instrument").setConverter(InstrumentConverter.instance);
+//        getGrid().getColumn("orderQuantity").setHeaderCaption("Ord Qty").setSortable(false); // TODO not sortable because this column is derived
+//        getGrid().getColumn("leavesQuantity").setHeaderCaption("Leaves Qty").setSortable(false); // TODO not sortable because this column is derived
+//        getGrid().getColumn("orderType").setHeaderCaption("Ord Type").setConverter(OrderTypeConverter.instance).setSortable(false); // TODO not sortable because this column is derived
+//        getGrid().getColumn("price").setConverter(DecimalConverter.instance).setHeaderCaption("Ord Px").setSortable(false); // TODO not sortable because this column is derived
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#onActionSelect(com.vaadin.data.Property.ValueChangeEvent)
@@ -111,7 +116,7 @@ public abstract class AbstractExecutionReportView
     @Override
     protected void onActionSelect(ValueChangeEvent inEvent)
     {
-        ExecutionReport selectedItem = getSelectedItem();
+        ExecutionReportSummary selectedItem = getSelectedItem();
         if(selectedItem == null || inEvent.getProperty().getValue() == null) {
             return;
         }

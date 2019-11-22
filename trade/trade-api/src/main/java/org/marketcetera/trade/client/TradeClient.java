@@ -14,6 +14,7 @@ import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
@@ -169,7 +170,7 @@ public interface TradeClient
      * Get fills with the given page request.
      *
      * @param inPageRequest a <code>PageRequest</code> value
-     * @return a <code>CollectionPageResponse&lt;ExecutionReport&gt;</code> value
+     * @return a <code>CollectionPageResponse&lt;ExecutionReportSummary&gt;</code> value
      */
-    CollectionPageResponse<ExecutionReport> getFills(PageRequest inPageRequest);
+    CollectionPageResponse<ExecutionReportSummary> getFills(PageRequest inPageRequest);
 }
