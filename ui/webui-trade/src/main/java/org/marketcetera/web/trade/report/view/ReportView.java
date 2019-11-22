@@ -3,11 +3,11 @@ package org.marketcetera.web.trade.report.view;
 import java.util.Properties;
 
 import org.marketcetera.core.XmlService;
+import org.marketcetera.trade.Report;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.WebMessageService;
-import org.marketcetera.web.trade.report.model.DisplayReport;
 import org.marketcetera.web.view.AbstractGridView;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ReportView
-        extends AbstractGridView<DisplayReport>
+        extends AbstractGridView<Report>
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
@@ -42,7 +42,7 @@ public class ReportView
         getActionSelect().setNullSelectionAllowed(false);
         getActionSelect().setReadOnly(true);
         getGrid().addSelectionListener(inEvent -> {
-            DisplayReport selectedObject = getSelectedItem();
+            Report selectedObject = getSelectedItem();
             getActionSelect().removeAllItems();
             if(selectedObject == null) {
                 getActionSelect().setReadOnly(true);
@@ -102,7 +102,7 @@ public class ReportView
     @Override
     protected void onActionSelect(ValueChangeEvent inEvent)
     {
-        DisplayReport selectedItem = getSelectedItem();
+        Report selectedItem = getSelectedItem();
         if(selectedItem == null || inEvent.getProperty().getValue() == null) {
             return;
         }
@@ -168,7 +168,7 @@ public class ReportView
      * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
      */
     @Override
-    protected PagedDataContainer<DisplayReport> createDataContainer()
+    protected PagedDataContainer<Report> createDataContainer()
     {
         return new ReportPagedDataContainer(this);
     }
