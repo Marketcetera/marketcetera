@@ -7,80 +7,81 @@ import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.Report;
 import org.marketcetera.web.service.trade.TradeClientService;
+import org.marketcetera.web.trade.report.model.DisplayReport;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.marketcetera.web.view.PagedViewProvider;
 
 /* $License$ */
 
 /**
- * Provides a <code>PagedDataContainer</code> implementation for <code>Report</code> values.
+ * Provides a <code>PagedDataContainer</code> implementation for <code>DisplayReport</code> values.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class ReportPagedDataContainer
-        extends PagedDataContainer<Report>
+public class DisplayReportPagedDataContainer
+        extends PagedDataContainer<DisplayReport>
 {
     /**
      * Create a new ReportPagedDataContainer instance.
      *
-     * @param inReports a <code>Collection&lt;? extends Report&gt;</code> value
+     * @param inReports a <code>Collection&lt;? extends DisplayReport&gt;</code> value
      * @param inPagedViewProvider a <code>PagedViewProvider</code> value
      * @throws IllegalArgumentException if the container cannot be constructed
      */
-    public ReportPagedDataContainer(Collection<? extends Report> inReports,
-                                    PagedViewProvider inPagedViewProvider)
+    public DisplayReportPagedDataContainer(Collection<? extends DisplayReport> inDisplayReports,
+                                           PagedViewProvider inPagedViewProvider)
             throws IllegalArgumentException
     {
-        super(Report.class,
-              inReports,
+        super(DisplayReport.class,
+              inDisplayReports,
               inPagedViewProvider);
     }
     /**
-     * Create a new ReportPagedDataContainer instance.
+     * Create a new DisplayReportPagedDataContainer instance.
      *
      * @param inPagedViewProvider a <code>PagedViewProvider</code> value
      * @throws IllegalArgumentException if the container cannot be constructed
      */
-    public ReportPagedDataContainer(PagedViewProvider inPagedViewProvider)
+    public DisplayReportPagedDataContainer(PagedViewProvider inPagedViewProvider)
             throws IllegalArgumentException
     {
-        super(Report.class,
+        super(DisplayReport.class,
               inPagedViewProvider);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.PagedDataContainer#getDataContainerContents(org.marketcetera.core.PageRequest)
      */
     @Override
-    protected CollectionPageResponse<Report> getDataContainerContents(PageRequest inPageRequest)
+    protected CollectionPageResponse<DisplayReport> getDataContainerContents(PageRequest inPageRequest)
     {
-        return TradeClientService.getInstance().getReports(inPageRequest);
+        CollectionPageResponse<Report> reports = TradeClientService.getInstance().getReports(inPageRequest);
+        CollectionPageResponse<DisplayReport> results = new CollectionPageResponse<>(reports);
+        reports.getElements().forEach(report->results.getElements().add(new DisplayReport(report)));
+        return results;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.PagedDataContainer#isDeepEquals(java.lang.Object, java.lang.Object)
      */
     @Override
-    protected boolean isDeepEquals(Report inO1,
-                                   Report inO2)
+    protected boolean isDeepEquals(DisplayReport inO1,
+                                   DisplayReport inO2)
     {
         return new EqualsBuilder()
-                .append(inO1.getMsgSeqNum(),inO2.getMsgSeqNum())
-                .append(inO1.getActor(),inO2.getActor())
-                .append(inO1.getActorID(),inO2.getActorID())
                 .append(inO1.getBrokerID(),inO2.getBrokerID())
                 .append(inO1.getFixMessage(),inO2.getFixMessage())
                 .append(inO1.getHierarchy(),inO2.getHierarchy())
                 .append(inO1.getOrderID(),inO2.getOrderID())
                 .append(inO1.getOriginator(),inO2.getOriginator())
+                .append(inO1.getMsgSeqNum(),inO2.getMsgSeqNum())
+                .append(inO1.getMsgType(),inO2.getMsgType())
                 .append(inO1.getReportID(),inO2.getReportID())
-                .append(inO1.getReportType(),inO2.getReportType())
                 .append(inO1.getSendingTime(),inO2.getSendingTime())
-                .append(inO1.getSessionId(),inO2.getSessionId())
+                .append(inO1.getSessionID(),inO2.getSessionID())
                 .append(inO1.getText(),inO2.getText())
-                .append(inO1.getTransactTime(),inO2.getTransactTime())
-                .append(inO1.getViewer(),inO2.getViewer())
-                .append(inO1.getViewerID(),inO2.getViewerID()).isEquals();
+                .append(inO1.getTrader(),inO2.getTrader())
+                .append(inO1.getTransactTime(),inO2.getTransactTime()).isEquals();
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.PagedDataContainer#getDescription()
@@ -88,7 +89,7 @@ public class ReportPagedDataContainer
     @Override
     protected String getDescription()
     {
-        return "Reports";
+        return "FIX Messages";
     }
     private static final long serialVersionUID = -1291084598278519365L;
 }

@@ -17,6 +17,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.admin.MutableUser;
 import org.marketcetera.admin.User;
 import org.marketcetera.core.ClassVersion;
@@ -309,6 +310,14 @@ public class PersistentUser
         StringBuilder builder = new StringBuilder();
         builder.append("User ").append(getName()).append('[').append(getId()).append("] active=").append(active).append(" superuser=").append(superuser);
         return builder.toString();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(User inO)
+    {
+        return new CompareToBuilder().append(inO.getName(),getName()).toComparison();
     }
     /**
      * Validates if the supplied password value is valid

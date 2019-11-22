@@ -5,7 +5,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.admin.MutableUser;
+import org.marketcetera.admin.User;
 import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.trade.UserID;
 
@@ -102,6 +104,14 @@ public class SimpleUser
         builder.append("SimpleUser [userId=").append(getUserID()).append(", name=").append(getName())
                 .append(", description=").append(getDescription()).append("]");
         return builder.toString();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(User inO)
+    {
+        return new CompareToBuilder().append(inO.getName(),getName()).toComparison();
     }
     /**
      * Create a new SimpleUser instance.

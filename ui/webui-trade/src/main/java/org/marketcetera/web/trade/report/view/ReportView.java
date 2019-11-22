@@ -3,11 +3,16 @@ package org.marketcetera.web.trade.report.view;
 import java.util.Properties;
 
 import org.marketcetera.core.XmlService;
-import org.marketcetera.trade.Report;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.converters.DateConverter;
+import org.marketcetera.web.converters.ReportTypeConverter;
+import org.marketcetera.web.converters.SessionIdConverter;
+import org.marketcetera.web.converters.StringFixMessageConverter;
+import org.marketcetera.web.converters.UserConverter;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.WebMessageService;
+import org.marketcetera.web.trade.report.model.DisplayReport;
 import org.marketcetera.web.view.AbstractGridView;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +35,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ReportView
-        extends AbstractGridView<Report>
+        extends AbstractGridView<DisplayReport>
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
@@ -42,7 +47,7 @@ public class ReportView
         getActionSelect().setNullSelectionAllowed(false);
         getActionSelect().setReadOnly(true);
         getGrid().addSelectionListener(inEvent -> {
-            Report selectedObject = getSelectedItem();
+            DisplayReport selectedObject = getSelectedItem();
             getActionSelect().removeAllItems();
             if(selectedObject == null) {
                 getActionSelect().setReadOnly(true);
@@ -80,21 +85,23 @@ public class ReportView
     @Override
     protected void setGridColumns()
     {
-        getGrid().setColumns("sessionId",
-                             "msgSeqNum",
+        getGrid().setColumns("transactTime",
                              "sendingTime",
-                             "orderId",
-                             "reportId",
-                             "reportType",
-                             "originator",
-                             "hierarchy",
-                             "user",
+                             "brokerID",
+                             "sessionID",
+                             "msgSeqNum",
+                             "msgType",
+                             "orderID",
+                             "reportID",
+                             "text",
+                             "trader",
                              "fixMessage");
-//        getGrid().getColumn("actor").setHeaderCaption("User").setConverter(UserConverter.instance);
-//        getGrid().getColumn("sessionId").setHeaderCaption("Session ID").setConverter(SessionIdConverter.instance);
-//        getGrid().getColumn("sendingTime").setConverter(DateConverter.instance);
-//        getGrid().getColumn("reportType").setConverter(ReportTypeConverter.instance);
-//        getGrid().getColumn("fixMessage").setConverter(StringFixMessageConverter.instance);
+        // hierarchy
+        // originator
+        getGrid().getColumn("fixMessage").setConverter(StringFixMessageConverter.instance);
+        getGrid().getColumn("msgType").setConverter(ReportTypeConverter.instance);
+        getGrid().getColumn("sendingTime").setConverter(DateConverter.instance);
+        getGrid().getColumn("transactTime").setConverter(DateConverter.instance);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#onActionSelect(com.vaadin.data.Property.ValueChangeEvent)
@@ -102,7 +109,7 @@ public class ReportView
     @Override
     protected void onActionSelect(ValueChangeEvent inEvent)
     {
-        Report selectedItem = getSelectedItem();
+        DisplayReport selectedItem = getSelectedItem();
         if(selectedItem == null || inEvent.getProperty().getValue() == null) {
             return;
         }
@@ -168,9 +175,9 @@ public class ReportView
      * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
      */
     @Override
-    protected PagedDataContainer<Report> createDataContainer()
+    protected PagedDataContainer<DisplayReport> createDataContainer()
     {
-        return new ReportPagedDataContainer(this);
+        return new DisplayReportPagedDataContainer(this);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#getViewSubjectName()
@@ -178,7 +185,7 @@ public class ReportView
     @Override
     protected String getViewSubjectName()
     {
-        return "Open Orders";
+        return "FIX Messages";
     }
     /**
      * provides access to XML services
@@ -203,7 +210,7 @@ public class ReportView
     /**
      * global name of this view
      */
-    private static final String NAME = "Open Orders View";
+    private static final String NAME = "FIX Messages";
     /**
      * cancel action label
      */

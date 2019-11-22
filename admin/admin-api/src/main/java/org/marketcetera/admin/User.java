@@ -13,7 +13,7 @@ import org.marketcetera.trade.UserID;
  * @since $Release$
  */
 public interface User
-        extends SummaryNDEntityBase
+        extends SummaryNDEntityBase,Comparable<User>
 {
     /**
      * Indicates if the user is active or not.
