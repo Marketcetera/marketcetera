@@ -72,6 +72,12 @@ public interface Report
      */
     Date getSendingTime();
     /**
+     * Get the transactTime value.
+     *
+     * @return a <code>Date</code> value
+     */
+    Date getTransactTime();
+    /**
      * Get the reportType value.
      *
      * @return a <code>ReportType</code> value
@@ -101,4 +107,10 @@ public interface Report
      * @return a <code>Hierarchy</code> value
      */
     Hierarchy getHierarchy();
+    /**
+     * Get the text value.
+     *
+     * @return a <code>String</code> value
+     */
+    String getText();
 }

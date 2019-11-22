@@ -143,6 +143,8 @@ message Report {
     uint64 reportId = 10;
     Originator originator = 11;
     Hierarchy hierarchy = 12;
+    google.protobuf.Timestamp transactTime = 13;
+    string text = 14;
 }
 
 message FixMessage {

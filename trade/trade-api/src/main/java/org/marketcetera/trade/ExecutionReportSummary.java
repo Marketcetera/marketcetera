@@ -148,4 +148,10 @@ public interface ExecutionReportSummary
      * @return a <code>UserID</code> value or <code>null</code>
      */
     UserID getViewerID();
+    /**
+     * Get the broker order id value.
+     *
+     * @return an <code>OrderID</code> value
+     */
+    OrderID getBrokerOrderId();
 }

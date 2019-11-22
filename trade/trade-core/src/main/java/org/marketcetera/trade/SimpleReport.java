@@ -227,17 +227,50 @@ public class SimpleReport
         hierarchy = inHierarchy;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.Report#getTransactTime()
+     */
+    @Override
+    public Date getTransactTime()
+    {
+        return transactTime;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableReport#setTransactTime(java.util.Date)
+     */
+    @Override
+    public void setTransactTime(Date inTransactTime)
+    {
+        transactTime = inTransactTime;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.Report#getText()
+     */
+    @Override
+    public String getText()
+    {
+        return text;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableReport#setText(java.lang.String)
+     */
+    @Override
+    public void setText(String inText)
+    {
+        text = inText;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("SimpleReport [orderId=").append(orderId).append(", sessionId=").append(sessionId)
-                .append(", msgSeqNum=").append(msgSeqNum).append(", brokerId=").append(brokerId).append(", user=")
-                .append(user).append(", sendingTime=").append(sendingTime).append(", reportType=").append(reportType)
-                .append(", reportId=").append(reportId).append(", originator=").append(originator)
-                .append(", hierarchy=").append(hierarchy).append(", fixMessage=").append(fixMessage).append("]");
+        builder.append("SimpleReport [orderId=").append(orderId).append(", user=").append(user).append(", fixMessage=")
+                .append(fixMessage).append(", sessionId=").append(sessionId).append(", msgSeqNum=").append(msgSeqNum)
+                .append(", sendingTime=").append(sendingTime).append(", transactTime=").append(transactTime)
+                .append(", reportType=").append(reportType).append(", brokerId=").append(brokerId).append(", reportId=")
+                .append(reportId).append(", originator=").append(originator).append(", hierarchy=").append(hierarchy)
+                .append(", text=").append(text).append("]");
         return builder.toString();
     }
     /**
@@ -265,6 +298,10 @@ public class SimpleReport
      */
     private Date sendingTime;
     /**
+     * transact time value
+     */
+    private Date transactTime;
+    /**
      * report type value
      */
     private ReportType reportType;
@@ -284,4 +321,8 @@ public class SimpleReport
      * hierarchy value
      */
     private Hierarchy hierarchy;
+    /**
+     * text value
+     */
+    private String text;
 }

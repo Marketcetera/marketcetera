@@ -1,9 +1,9 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 
 /* $License$ */
@@ -39,7 +39,6 @@ public interface ExecutionReport extends TradeMessage, ReportBase {
      * @return status of this execution report.
      */
     public ExecutionType getExecutionType();
-
     /**
      * Unique identifier of execution as assigned by the
      * Broker.
@@ -96,71 +95,60 @@ public interface ExecutionReport extends TradeMessage, ReportBase {
      * @return number of shares ordered.
      */
     public BigDecimal getOrderDisplayQuantity();
-
     /**
      * The quantity open for further execution.
      *  
      * @return the quantity open for further execution.
      */
     public BigDecimal getLeavesQuantity();
-
     /**
      * Total number of shares filled.
      *
      * @return total number of shares filled.
      */
     public BigDecimal getCumulativeQuantity();
-
     /**
      * Calculated average price of all fills on this order.
      *
      * @return calculated average price of all fills in this order.
      */
     public BigDecimal getAveragePrice();
-
     /**
      * The account for this report.
      *
      * @return the account for this report.
      */
     public String getAccount();
-
     /**
      * The order type of the order.
      *
      * @return the order type.
      */
     public OrderType getOrderType();
-
     /**
      * The Time in Force value for the order.
      *
      * @return the time in force value for the order.
      */
     public TimeInForce getTimeInForce();
-
     /**
      * Gets the order capacity value for this order.
      *
      * @return the order capacity value.
      */
     public OrderCapacity getOrderCapacity();
-    
     /**
      * Gets the position effect for this order.
      *
      * @return the position effect value.
      */
     public PositionEffect getPositionEffect();
-    
     /**
      * Returns whether this message is cancelable.
      * 
      * @return whether the message is cancelable.
      */
     public boolean isCancelable();
-    
-    
     /**
      * The price, if specified in the order
      * 
@@ -168,5 +156,4 @@ public interface ExecutionReport extends TradeMessage, ReportBase {
      */
     
     public BigDecimal getPrice();
-    
 }

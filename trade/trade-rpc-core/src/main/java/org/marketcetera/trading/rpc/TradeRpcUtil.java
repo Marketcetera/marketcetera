@@ -1293,6 +1293,21 @@ public abstract class TradeRpcUtil
         return Optional.ofNullable(brokerId);
     }
     /**
+     * Get the broker order ID from the given RPC report.
+     *
+     * @param inObject a <code>TradeTypesRpc.Report</code> value
+     * @return an <code>Optional&lt;OrderID&gt;</code> value
+     */
+    public static Optional<OrderID> getBrokerOrderId(TradeTypesRpc.Report inReport)
+    {
+        OrderID brokerOrderId = null;
+        String value = StringUtils.trimToNull(((TradeTypesRpc.Report)inReport).getBrokerId());
+        if(value != null) {
+            brokerOrderId = new OrderID(value);
+        }
+        return Optional.ofNullable(brokerOrderId);
+    }
+    /**
      * Get the MATP order value for the given RPC order.
      *
      * @param inRpcOrder a <code>TradeTypesRpc.Order</code> value
@@ -1461,10 +1476,14 @@ public abstract class TradeRpcUtil
             reportBuilder.setReportId(inReport.getReportID().longValue());
         }
         reportBuilder.setReportType(getRpcReportType(inReport.getReportType()));
+        if(inReport.getText() != null) {
+            reportBuilder.setText(inReport.getText());
+        }
         BaseRpcUtil.getTimestampValue(inReport.getSendingTime()).ifPresent(rpcTimestamp->reportBuilder.setSendingTime(rpcTimestamp));
         if(inReport.getSessionId() != null) {
             reportBuilder.setSessionId(inReport.getSessionId().toString());
         }
+        BaseRpcUtil.getTimestampValue(inReport.getTransactTime()).ifPresent(rpcTimestamp->reportBuilder.setTransactTime(rpcTimestamp));
         AdminRpcUtil.getRpcUser(inReport.getViewer()).ifPresent(rpcViewer->reportBuilder.setViewer(rpcViewer));
         return reportBuilder.build();
     }
@@ -1495,6 +1514,8 @@ public abstract class TradeRpcUtil
         report.setReportType(getReportType(inRpcReport.getReportType()));
         BaseRpcUtil.getDateValue(inRpcReport.getSendingTime()).ifPresent(sendingTime->report.setSendingTime(sendingTime));
         report.setSessionId(new quickfix.SessionID(inRpcReport.getSessionId()));
+        report.setText(inRpcReport.getText());
+        BaseRpcUtil.getDateValue(inRpcReport.getTransactTime()).ifPresent(transactTime->report.setTransactTime(transactTime));
         if(inRpcReport.hasViewer()) {
             AdminRpcUtil.getUser(inRpcReport.getViewer(),
                                  inUserFactory).ifPresent(viewer->report.setViewer(viewer));

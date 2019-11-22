@@ -61,6 +61,12 @@ public interface MutableReport
      */
     void setSendingTime(Date inSendingTime);
     /**
+     * Get the transactTime value.
+     *
+     * @param inTransactTime a <code>Date</code> value
+     */
+    void setTransactTime(Date inTransactTime);
+    /**
      * Get the reportType value.
      *
      * @param inReportType a <code>ReportType</code> value
@@ -90,4 +96,10 @@ public interface MutableReport
      * @param inHierarchy a <code>Hierarchy</code> value
      */
     void setHierarchy(Hierarchy inHierarchy);
+    /**
+     * Set the text value.
+     *
+     * @param inText a <code>String</code> value
+     */
+    void setText(String inText);
 }

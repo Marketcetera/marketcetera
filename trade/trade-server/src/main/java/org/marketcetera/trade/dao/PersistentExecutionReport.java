@@ -31,6 +31,9 @@ import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 
+import quickfix.FieldNotFound;
+import quickfix.InvalidMessage;
+
 /* $License$ */
 
 /**
@@ -88,6 +91,16 @@ public class PersistentExecutionReport
         sendingTime = inReport.getSendingTime();
         viewer = inSavedReport.getViewer();
         actor = inSavedReport.getActor();
+        try {
+            if(inSavedReport.getFixMessage() != null) {
+                quickfix.Message fixMessage = new quickfix.Message(inSavedReport.getFixMessage());
+                if(fixMessage.isSetField(quickfix.field.OrderID.FIELD)) {
+                    setBrokerOrderId(new OrderID(fixMessage.getString(quickfix.field.OrderID.FIELD)));
+                }
+            }
+        } catch (InvalidMessage | FieldNotFound e) {
+            throw new RuntimeException(e);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.dao.ExecutionReport#getOrderID()
@@ -458,6 +471,23 @@ public class PersistentExecutionReport
         return getViewer().getUserID();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getBrokerOrderId()
+     */
+    @Override
+    public OrderID getBrokerOrderId()
+    {
+        return brokerOrderId;
+    }
+    /**
+     * Sets the brokerOrderId value.
+     *
+     * @param inBrokerOrderId an <code>OrderID</code> value
+     */
+    public void setBrokerOrderId(OrderID inBrokerOrderId)
+    {
+        brokerOrderId = inBrokerOrderId;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -589,10 +619,16 @@ public class PersistentExecutionReport
     @Column(name="account",nullable=true)
     private String account;
     /**
+     * broker order id value
+     */
+    @Embedded
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="broker_order_id",nullable=false))})
+    private OrderID brokerOrderId;
+    /**
      * linked report value
      */
     @OneToOne(optional=false)
     @JoinColumn(name="report_id")
     private PersistentReport report;
-    private static final long serialVersionUID = 6595682915429894475L;
+    private static final long serialVersionUID = -6469753405730539554L;
 }

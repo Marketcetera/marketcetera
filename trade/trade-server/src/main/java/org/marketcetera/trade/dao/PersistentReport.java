@@ -66,7 +66,7 @@ import quickfix.field.TargetCompID;
 @ClassVersion("$Id$")
 public class PersistentReport
         extends EntityBase
-        implements Report, HasTradeMessage
+        implements Report,HasTradeMessage
 {
     /**
      * Creates an instance, given a report.
@@ -83,8 +83,17 @@ public class PersistentReport
         setBrokerID(inReport.getBrokerId());
         setSendingTime(inReport.getSendingTime());
         if(inReport instanceof HasFIXMessage) {
-            setFixMessage(((HasFIXMessage) inReport).getMessage().toString());
+            quickfix.Message fixMessage = ((HasFIXMessage)inReport).getMessage();
+            setFixMessage(fixMessage.toString());
+            if(fixMessage.isSetField(quickfix.field.TransactTime.FIELD)) {
+                try {
+                    setTransactTime(fixMessage.getUtcTimeStamp(quickfix.field.TransactTime.FIELD));
+                } catch (quickfix.FieldNotFound ignored) {}
+            } else {
+                setTransactTime(inReport.getSendingTime());
+            }
         }
+        setText(inReport.getText());
         setOriginator(inReport.getOriginator());
         setHierarchy(inReport.getHierarchy());
         setOrderID(inReport.getOrderID());
@@ -309,6 +318,14 @@ public class PersistentReport
     {
         return sendingTime;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.Report#getTransactTime()
+     */
+    @Override
+    public Date getTransactTime()
+    {
+        return transactTime;
+    }
     /**
      * Sets the sendingTime value.
      *
@@ -385,15 +402,14 @@ public class PersistentReport
     {
         StringBuilder builder = new StringBuilder();
         builder.append("PersistentReport [orderID=").append(orderID).append(", mActor=").append(mActor)
-                .append(", viewer=").append(viewer).append(", sendingTime=").append(sendingTime)
+                .append(", viewer=").append(viewer).append(", mFixMessage=").append(mFixMessage)
+                .append(", sendingTime=").append(sendingTime).append(", transactTime=").append(transactTime)
                 .append(", mReportType=").append(mReportType).append(", brokerID=").append(brokerID)
                 .append(", reportID=").append(reportID).append(", mOriginator=").append(mOriginator)
                 .append(", hierarchy=").append(hierarchy).append(", sessionIdValue=").append(sessionIdValue)
-                .append(", msgSeqNum=").append(msgSeqNum).append(", mFixMessage=").append(mFixMessage).append("]");
+                .append(", msgSeqNum=").append(msgSeqNum).append(", text=").append(text).append("]");
         return builder.toString();
     }
-
-
     /**
      * Sets the originator value.
      *
@@ -410,6 +426,14 @@ public class PersistentReport
     public Hierarchy getHierarchy()
     {
         return hierarchy;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.Report#getText()
+     */
+    @Override
+    public String getText()
+    {
+        return text;
     }
     /**
      * Sets the hierarchy value.
@@ -437,6 +461,24 @@ public class PersistentReport
     public void setReportBase(ReportBase inReportBase)
     {
         mReportBase = inReportBase;
+    }
+    /**
+     * Set the transact time value.
+     *
+     * @param inTransactTime a <code>Date</code> value
+     */
+    public void setTransactTime(Date inTransactTime)
+    {
+        transactTime = inTransactTime;
+    }
+    /**
+     * Sets the text value.
+     *
+     * @param inText a <code>String</code> value
+     */
+    public void setText(String inText)
+    {
+        text = inText;
     }
     /**
      * Create a new PersistentReport instance.
@@ -474,6 +516,11 @@ public class PersistentReport
     @Column(name="send_time",nullable=false)
     private Date sendingTime;
     /**
+     * transact time value
+     */
+    @Column(name="transact_time",nullable=false)
+    private Date transactTime;
+    /**
      * report type value
      */
     @Column(name="report_type",nullable=false)
@@ -510,6 +557,11 @@ public class PersistentReport
      */
     @Column(name="msg_seq_num",nullable=false)
     private int msgSeqNum;
+    /**
+     * text value
+     */
+    @Column(name="text",nullable=true,length=255)
+    private String text;
     /**
      * root report base value
      */
