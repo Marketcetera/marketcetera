@@ -45,7 +45,7 @@ public class ReportViewFactory
     @Override
     public String getMenuCaption()
     {
-        return "Reports";
+        return "FIX Messages";
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getWeight()
