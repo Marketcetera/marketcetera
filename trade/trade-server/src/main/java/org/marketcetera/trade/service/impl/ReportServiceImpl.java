@@ -216,7 +216,9 @@ public class ReportServiceImpl
         Sort sort = buildSort(inPageRequest,
                               persistentExecutionReportAliases,
                               Sort.by(new Sort.Order(Sort.Direction.DESC,
-                                                     QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName())));
+                                                     QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName()),
+                                      new Sort.Order(Sort.Direction.DESC,
+                                                     "report.msgSeqNum")));
         SLF4JLoggerProxy.debug(this,
                                "getFills sort order is {} renders: {}",
                                inPageRequest.getSortOrder(),

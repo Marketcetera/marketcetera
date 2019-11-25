@@ -2,7 +2,6 @@ package org.marketcetera.web.trade.executionreport;
 
 import java.util.Properties;
 
-import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.converters.DateConverter;
@@ -12,6 +11,7 @@ import org.marketcetera.web.converters.OrderStatusConverter;
 import org.marketcetera.web.converters.SecurityTypeConverter;
 import org.marketcetera.web.converters.SideConverter;
 import org.marketcetera.web.converters.UserConverter;
+import org.marketcetera.web.trade.report.model.DisplayExecutionReportSummary;
 import org.marketcetera.web.view.AbstractGridView;
 
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -19,14 +19,14 @@ import com.vaadin.data.Property.ValueChangeEvent;
 /* $License$ */
 
 /**
- * Provides common behavior for views that display {@link ExecutionReportSummary} values in a grid.
+ * Provides common behavior for views that display {@link DisplayExecutionReportSummary} values in a grid.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public abstract class AbstractExecutionReportView
-        extends AbstractGridView<ExecutionReportSummary>
+        extends AbstractGridView<DisplayExecutionReportSummary>
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
@@ -38,7 +38,7 @@ public abstract class AbstractExecutionReportView
         getActionSelect().setNullSelectionAllowed(false);
         getActionSelect().setReadOnly(true);
         getGrid().addSelectionListener(inEvent -> {
-            ExecutionReportSummary selectedObject = getSelectedItem();
+            DisplayExecutionReportSummary selectedObject = getSelectedItem();
             getActionSelect().removeAllItems();
             if(selectedObject == null) {
                 getActionSelect().setReadOnly(true);
@@ -78,7 +78,7 @@ public abstract class AbstractExecutionReportView
                              "expiry",
                              "optionType",
                              "strikePrice",
-                           //"transactTime", TODO
+                             "transactTime",
 //                             "orderQuantity", TODO
                              "cumulativeQuantity",
 //                             "leavesQuantity", TODO
@@ -87,7 +87,7 @@ public abstract class AbstractExecutionReportView
                              "account",
                              "lastQuantity",
                              "lastPrice",
-//                             "brokerId", TODO
+                             "brokerID",
                              "executionId",
                              "brokerOrderId",
                              "actor");
@@ -103,7 +103,7 @@ public abstract class AbstractExecutionReportView
         getGrid().getColumn("securityType").setConverter(SecurityTypeConverter.instance);
         getGrid().getColumn("sendingTime").setConverter(DateConverter.instance);
         getGrid().getColumn("side").setConverter(SideConverter.instance);
-//        getGrid().getColumn("transactTime").setConverter(DateConverter.instance).setSortable(false); // TODO not sortable because transact time is derived
+        getGrid().getColumn("transactTime").setConverter(DateConverter.instance);
 //        getGrid().getColumn("instrument").setConverter(InstrumentConverter.instance);
 //        getGrid().getColumn("orderQuantity").setHeaderCaption("Ord Qty").setSortable(false); // TODO not sortable because this column is derived
 //        getGrid().getColumn("leavesQuantity").setHeaderCaption("Leaves Qty").setSortable(false); // TODO not sortable because this column is derived
@@ -116,7 +116,7 @@ public abstract class AbstractExecutionReportView
     @Override
     protected void onActionSelect(ValueChangeEvent inEvent)
     {
-        ExecutionReportSummary selectedItem = getSelectedItem();
+        DisplayExecutionReportSummary selectedItem = getSelectedItem();
         if(selectedItem == null || inEvent.getProperty().getValue() == null) {
             return;
         }

@@ -7,6 +7,7 @@ import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.web.service.trade.TradeClientService;
 import org.marketcetera.web.trade.executionreport.AbstractExecutionReportPagedDataContainer;
+import org.marketcetera.web.trade.report.model.DisplayExecutionReportSummary;
 import org.marketcetera.web.view.PagedViewProvider;
 
 /* $License$ */
@@ -24,11 +25,11 @@ public class FillsPagedDataContainer
     /**
      * Create a new FillsPagedDataContainer instance.
      *
-     * @param inCollection a <code>Collection&lt;? extends ExecutionReportSummary&gt;</code> value
+     * @param inCollection a <code>Collection&lt;? extends DisplayExecutionReportSummary&gt;</code> value
      * @param inPagedViewProvider a <code>PagedViewProvider</code> value
      * @throws IllegalArgumentException if the container cannot be constructed
      */
-    public FillsPagedDataContainer(Collection<? extends ExecutionReportSummary> inCollection,
+    public FillsPagedDataContainer(Collection<? extends DisplayExecutionReportSummary> inCollection,
                                    PagedViewProvider inPagedViewProvider)
             throws IllegalArgumentException
     {
@@ -50,9 +51,12 @@ public class FillsPagedDataContainer
      * @see com.marketcetera.web.view.PagedDataContainer#getDataContainerContents(org.marketcetera.core.PageRequest)
      */
     @Override
-    protected CollectionPageResponse<ExecutionReportSummary> getDataContainerContents(PageRequest inPageRequest)
+    protected CollectionPageResponse<DisplayExecutionReportSummary> getDataContainerContents(PageRequest inPageRequest)
     {
-        return TradeClientService.getInstance().getFills(inPageRequest);
+        CollectionPageResponse<ExecutionReportSummary> response = TradeClientService.getInstance().getFills(inPageRequest);
+        CollectionPageResponse<DisplayExecutionReportSummary> result = new CollectionPageResponse<>(response);
+        response.getElements().forEach(executionReportSummary -> result.getElements().add(new DisplayExecutionReportSummary(executionReportSummary)));
+        return result;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.PagedDataContainer#getDescription()
