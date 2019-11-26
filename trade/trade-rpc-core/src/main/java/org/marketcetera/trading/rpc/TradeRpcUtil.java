@@ -1636,8 +1636,11 @@ public abstract class TradeRpcUtil
         getInstrument(inRpcExecutionReport.getInstrument()).ifPresent(instrument->executionReportSummary.setInstrument(instrument));
         BaseRpcUtil.getScaledQuantity(inRpcExecutionReport.getLastPrice()).ifPresent(qty->executionReportSummary.setLastPrice(qty));
         BaseRpcUtil.getScaledQuantity(inRpcExecutionReport.getLastQuantity()).ifPresent(qty->executionReportSummary.setLastQuantity(qty));
+        BaseRpcUtil.getScaledQuantity(inRpcExecutionReport.getLeavesQuantity()).ifPresent(qty->executionReportSummary.setLeavesQuantity(qty));
         getOrderId(inRpcExecutionReport).ifPresent(orderId->executionReportSummary.setOrderID(orderId));
+        BaseRpcUtil.getScaledQuantity(inRpcExecutionReport.getOrderQuantity()).ifPresent(qty->executionReportSummary.setOrderQuantity(qty));
         executionReportSummary.setOrderStatus(getOrderStatus(inRpcExecutionReport.getOrderStatus()));
+        executionReportSummary.setOrderType(getOrderType(inRpcExecutionReport.getOrderType()));
         getOriginalOrderId(inRpcExecutionReport).ifPresent(orderId->executionReportSummary.setOriginalOrderID(orderId));
         executionReportSummary.setReport(getReport(inRpcExecutionReport.getReport(),
                                                    inReportFactory,
@@ -1677,8 +1680,11 @@ public abstract class TradeRpcUtil
                          inExecutionReportSummary.getStrikePrice()).ifPresent(rpcInstrument->builder.setInstrument(rpcInstrument));
         BaseRpcUtil.getRpcQty(inExecutionReportSummary.getLastPrice()).ifPresent(value->builder.setLastPrice(value));
         BaseRpcUtil.getRpcQty(inExecutionReportSummary.getLastQuantity()).ifPresent(value->builder.setLastQuantity(value));
+        BaseRpcUtil.getRpcQty(inExecutionReportSummary.getLeavesQuantity()).ifPresent(value->builder.setLeavesQuantity(value));
         getRpcOrderId(inExecutionReportSummary.getOrderID()).ifPresent(value->builder.setOrderId(value));
+        BaseRpcUtil.getRpcQty(inExecutionReportSummary.getOrderQuantity()).ifPresent(value->builder.setOrderQuantity(value));
         builder.setOrderStatus(getRpcOrderStatus(inExecutionReportSummary.getOrderStatus()));
+        builder.setOrderType(getRpcOrderType(inExecutionReportSummary.getOrderType()));
         getRpcOrderId(inExecutionReportSummary.getOriginalOrderID()).ifPresent(value->builder.setOriginalOrderId(value));
         builder.setReport(getRpcReport(inExecutionReportSummary.getReport()));
         getRpcOrderId(inExecutionReportSummary.getRootOrderID()).ifPresent(value->builder.setRootOrderId(value));

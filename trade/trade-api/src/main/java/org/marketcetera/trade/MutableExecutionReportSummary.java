@@ -161,4 +161,22 @@ public interface MutableExecutionReportSummary
      * @param inInstrument an <code>Instrument</code> value
      */
     void setInstrument(Instrument inInstrument);
+    /**
+     * Set the leavesQuantity value.
+     *
+     * @param inLeavesQuantity a <code>BigDecimal</code> value
+     */
+    void setLeavesQuantity(BigDecimal inLeavesQuantity);
+    /**
+     * Set the orderQuantity value.
+     *
+     * @param inOrderQuantity a <code>BigDecimal</code> value
+     */
+    void setOrderQuantity(BigDecimal inOrderQuantity);
+    /**
+     * Set the orderType value.
+     *
+     * @param inOrderType an <code>OrderType</code> value
+     */
+    void setOrderType(OrderType inOrderType);
 }

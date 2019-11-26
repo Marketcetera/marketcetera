@@ -8,6 +8,7 @@ import org.marketcetera.web.converters.DateConverter;
 import org.marketcetera.web.converters.DecimalConverter;
 import org.marketcetera.web.converters.ExecutionTypeConverter;
 import org.marketcetera.web.converters.OrderStatusConverter;
+import org.marketcetera.web.converters.OrderTypeConverter;
 import org.marketcetera.web.converters.SecurityTypeConverter;
 import org.marketcetera.web.converters.SideConverter;
 import org.marketcetera.web.converters.UserConverter;
@@ -78,10 +79,11 @@ public abstract class AbstractExecutionReportView
                              "expiry",
                              "optionType",
                              "strikePrice",
+                             "orderType",
                              "transactTime",
-//                             "orderQuantity", TODO
+                             "orderQuantity",
                              "cumulativeQuantity",
-//                             "leavesQuantity", TODO
+                             "leavesQuantity",
 //                             "price", TODO
                              "averagePrice",
                              "account",
@@ -99,15 +101,15 @@ public abstract class AbstractExecutionReportView
         getGrid().getColumn("executionType").setConverter(ExecutionTypeConverter.instance).setHeaderCaption("Exec Type");
         getGrid().getColumn("lastPrice").setConverter(DecimalConverter.instance).setHeaderCaption("Last Px");
         getGrid().getColumn("lastQuantity").setHeaderCaption("Last Qty");
+        getGrid().getColumn("leavesQuantity").setHeaderCaption("Leaves Qty");
+        getGrid().getColumn("orderQuantity").setHeaderCaption("Ord Qty");
         getGrid().getColumn("orderStatus").setConverter(OrderStatusConverter.instance);
+        getGrid().getColumn("orderType").setHeaderCaption("Ord Type").setConverter(OrderTypeConverter.instance);
         getGrid().getColumn("securityType").setConverter(SecurityTypeConverter.instance);
         getGrid().getColumn("sendingTime").setConverter(DateConverter.instance);
         getGrid().getColumn("side").setConverter(SideConverter.instance);
         getGrid().getColumn("transactTime").setConverter(DateConverter.instance);
 //        getGrid().getColumn("instrument").setConverter(InstrumentConverter.instance);
-//        getGrid().getColumn("orderQuantity").setHeaderCaption("Ord Qty").setSortable(false); // TODO not sortable because this column is derived
-//        getGrid().getColumn("leavesQuantity").setHeaderCaption("Leaves Qty").setSortable(false); // TODO not sortable because this column is derived
-//        getGrid().getColumn("orderType").setHeaderCaption("Ord Type").setConverter(OrderTypeConverter.instance).setSortable(false); // TODO not sortable because this column is derived
 //        getGrid().getColumn("price").setConverter(DecimalConverter.instance).setHeaderCaption("Ord Px").setSortable(false); // TODO not sortable because this column is derived
     }
     /* (non-Javadoc)

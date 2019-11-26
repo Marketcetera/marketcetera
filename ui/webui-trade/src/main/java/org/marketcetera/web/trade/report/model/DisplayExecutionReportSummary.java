@@ -11,6 +11,7 @@ import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
@@ -310,6 +311,30 @@ public class DisplayExecutionReportSummary
     public String getExecutionId()
     {
         return executionReportSummary.getExecutionId();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getLeavesQuantity()
+     */
+    @Override
+    public BigDecimal getLeavesQuantity()
+    {
+        return executionReportSummary.getLeavesQuantity();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getOrderQuantity()
+     */
+    @Override
+    public BigDecimal getOrderQuantity()
+    {
+        return executionReportSummary.getOrderQuantity();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getOrderType()
+     */
+    @Override
+    public OrderType getOrderType()
+    {
+        return executionReportSummary.getOrderType();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

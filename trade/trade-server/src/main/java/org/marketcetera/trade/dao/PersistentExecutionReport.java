@@ -30,6 +30,7 @@ import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
@@ -77,6 +78,9 @@ public class PersistentExecutionReport
             strikePrice = summaryFields.getStrikePrice(instrument);
             expiry = summaryFields.getExpiry(instrument);
         }
+        setLeavesQuantity(inReport.getLeavesQuantity());
+        setOrderQuantity(inReport.getOrderQuantity());
+        setOrderType(inReport.getOrderType());
         account = inReport.getAccount();
         side = inReport.getSide();
         cumQuantity = inReport.getCumulativeQuantity();
@@ -548,6 +552,54 @@ public class PersistentExecutionReport
         }
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getLeavesQuantity()
+     */
+    @Override
+    public BigDecimal getLeavesQuantity()
+    {
+        return leavesQuantity;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setLeavesQuantity(java.math.BigDecimal)
+     */
+    @Override
+    public void setLeavesQuantity(BigDecimal inLeavesQuantity)
+    {
+        leavesQuantity = inLeavesQuantity==null?BigDecimal.ZERO:inLeavesQuantity;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getOrderQuantity()
+     */
+    @Override
+    public BigDecimal getOrderQuantity()
+    {
+        return orderQuantity;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setOrderQuantity(java.math.BigDecimal)
+     */
+    @Override
+    public void setOrderQuantity(BigDecimal inOrderQuantity)
+    {
+        orderQuantity = inOrderQuantity==null?BigDecimal.ZERO:inOrderQuantity;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getOrderType()
+     */
+    @Override
+    public OrderType getOrderType()
+    {
+        return orderType;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setOrderType(org.marketcetera.trade.OrderType)
+     */
+    @Override
+    public void setOrderType(OrderType inOrderType)
+    {
+        orderType = inOrderType;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableExecutionReportSummary#setInstrument(org.marketcetera.trade.Instrument)
      */
     @Override
@@ -598,7 +650,9 @@ public class PersistentExecutionReport
                 .append(viewer).append(", actor=").append(actor).append(", securityType=").append(securityType)
                 .append(", expiry=").append(expiry).append(", optionType=").append(optionType).append(", account=")
                 .append(account).append(", executionId=").append(executionId).append(", brokerOrderId=")
-                .append(brokerOrderId).append(", report=").append(report).append("]");
+                .append(brokerOrderId).append(", leavesQuantity=").append(leavesQuantity).append(", orderQuantity=")
+                .append(orderQuantity).append(", orderType=").append(orderType).append(", report=").append(report)
+                .append("]");
         return builder.toString();
     }
     /**
@@ -722,10 +776,26 @@ public class PersistentExecutionReport
     @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="broker_order_id",nullable=false))})
     private OrderID brokerOrderId;
     /**
+     * leaves quantity value</code>
+     */
+    @Column(name="leaves_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    private BigDecimal leavesQuantity;
+    /**
+     * leaves quantity value</code>
+     */
+    @Column(name="order_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    private BigDecimal orderQuantity;
+    /**
+     * order type value
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name="order_type",nullable=true)
+    private OrderType orderType;
+    /**
      * linked report value
      */
     @OneToOne(optional=false)
     @JoinColumn(name="report_id")
     private PersistentReport report;
-    private static final long serialVersionUID = -6684285496557983426L;
+    private static final long serialVersionUID = -1401320100194224727L;
 }

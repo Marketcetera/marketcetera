@@ -210,6 +210,14 @@ public class SimpleExecutionReportSummary
         return executionId;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getLeavesQuantity()
+     */
+    @Override
+    public BigDecimal getLeavesQuantity()
+    {
+        return leavesQuantity;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.ExecutionReportSummary#getMutableVersion()
      */
     @Override
@@ -402,6 +410,46 @@ public class SimpleExecutionReportSummary
         executionId = inExecutionId;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setLeavesQuantity(java.math.BigDecimal)
+     */
+    @Override
+    public void setLeavesQuantity(BigDecimal inLeavesQuantity)
+    {
+        leavesQuantity = inLeavesQuantity;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getOrderQuantity()
+     */
+    @Override
+    public BigDecimal getOrderQuantity()
+    {
+        return orderQuantity;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setOrderQuantity(java.math.BigDecimal)
+     */
+    @Override
+    public void setOrderQuantity(BigDecimal inOrderQuantity)
+    {
+        orderQuantity = inOrderQuantity;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getOrderType()
+     */
+    @Override
+    public OrderType getOrderType()
+    {
+        return orderType;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setOrderType(org.marketcetera.trade.OrderType)
+     */
+    @Override
+    public void setOrderType(OrderType inOrderType)
+    {
+        orderType = inOrderType;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableExecutionReportSummary#setInstrument(org.marketcetera.trade.Instrument)
      */
     @Override
@@ -442,7 +490,8 @@ public class SimpleExecutionReportSummary
                 .append(", orderStatus=").append(orderStatus).append(", executionType=").append(executionType)
                 .append(", sendingTime=").append(sendingTime).append(", viewer=").append(viewer).append(", actor=")
                 .append(actor).append(", report=").append(report).append(", brokerOrderId=").append(brokerOrderId)
-                .append(", executionId=").append(executionId).append("]");
+                .append(", executionId=").append(executionId).append(", leavesQuantity=").append(leavesQuantity)
+                .append(", orderQuantity=").append(orderQuantity).append(", orderType=").append(orderType).append("]");
         return builder.toString();
     }
     /**
@@ -537,4 +586,16 @@ public class SimpleExecutionReportSummary
      * execution id value
      */
     private String executionId;
+    /**
+     * leaves quantity value
+     */
+    private BigDecimal leavesQuantity;
+    /**
+     * order quantity value
+     */
+    private BigDecimal orderQuantity;
+    /**
+     * order type value
+     */
+    private OrderType orderType;
 }

@@ -161,6 +161,24 @@ public interface ExecutionReportSummary
      */
     String getExecutionId();
     /**
+     * Get the leaves quantity value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    BigDecimal getLeavesQuantity();
+    /**
+     * Get the order quantity value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    BigDecimal getOrderQuantity();
+    /**
+     * Get the order type value.
+     *
+     * @return an <code>OrderType</code> value
+     */
+    OrderType getOrderType();
+    /**
      * Get a mutable version of this object.
      *
      * @return a <code>MutableExecutionReportSummary</code> value

@@ -167,6 +167,9 @@ message ExecutionReportSummary {
     Report report = 17;
     string brokerOrderId = 18;
     string executionId = 19;
+    Qty leavesQuantity = 20;
+    Qty orderQuantity = 21;
+    OrderType orderType = 22;
 }
 
 message FixMessage {
