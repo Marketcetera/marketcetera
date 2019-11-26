@@ -450,6 +450,38 @@ public class SimpleExecutionReportSummary
         orderType = inOrderType;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getPrice()
+     */
+    @Override
+    public BigDecimal getPrice()
+    {
+        return price;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setPrice(java.math.BigDecimal)
+     */
+    @Override
+    public void setPrice(BigDecimal inPrice)
+    {
+        price = inPrice;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getTimeInForce()
+     */
+    @Override
+    public TimeInForce getTimeInForce()
+    {
+        return timeInForce;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setTimeInForce(org.marketcetera.trade.TimeInForce)
+     */
+    @Override
+    public void setTimeInForce(TimeInForce inTimeInForce)
+    {
+        timeInForce = inTimeInForce;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableExecutionReportSummary#setInstrument(org.marketcetera.trade.Instrument)
      */
     @Override
@@ -491,7 +523,8 @@ public class SimpleExecutionReportSummary
                 .append(", sendingTime=").append(sendingTime).append(", viewer=").append(viewer).append(", actor=")
                 .append(actor).append(", report=").append(report).append(", brokerOrderId=").append(brokerOrderId)
                 .append(", executionId=").append(executionId).append(", leavesQuantity=").append(leavesQuantity)
-                .append(", orderQuantity=").append(orderQuantity).append(", orderType=").append(orderType).append("]");
+                .append(", orderQuantity=").append(orderQuantity).append(", orderType=").append(orderType)
+                .append(", price=").append(price).append(", timeInForce=").append(timeInForce).append("]");
         return builder.toString();
     }
     /**
@@ -598,4 +631,12 @@ public class SimpleExecutionReportSummary
      * order type value
      */
     private OrderType orderType;
+    /**
+     * price value
+     */
+    private BigDecimal price;
+    /**
+     * time-in-force value
+     */
+    private TimeInForce timeInForce;
 }

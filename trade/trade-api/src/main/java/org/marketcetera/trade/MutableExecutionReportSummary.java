@@ -179,4 +179,16 @@ public interface MutableExecutionReportSummary
      * @param inOrderType an <code>OrderType</code> value
      */
     void setOrderType(OrderType inOrderType);
+    /**
+     * Set the price value.
+     *
+     * @param inPrice a <code>BigDecimal</code> value
+     */
+    void setPrice(BigDecimal inPrice);
+    /**
+     * Set the time-in-force value.
+     *
+     * @param inTimeInForce a <code>TimeInForce</code> value
+     */
+    void setTimeInForce(TimeInForce inTimeInForce);
 }

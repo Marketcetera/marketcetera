@@ -133,71 +133,96 @@ public abstract class TradeRpcUtil
      * Get the RPC time in force value for the given MATP time in force value.
      *
      * @param inTimeInForce a <code>TimeInForce</code> value
-     * @return a <code>TradeTypesRpc.TimeInForce</code> value
+     * @return an <code>Optional&lt;TradeTypesRpc.TimeInForce&gt;</code> value
      */
-    public static TradeTypesRpc.TimeInForce getRpcTimeInForce(TimeInForce inTimeInForce)
+    public static Optional<TradeTypesRpc.TimeInForce> getRpcTimeInForce(TimeInForce inTimeInForce)
     {
-        switch(inTimeInForce) {
-            case AtTheClose:
-                return TradeTypesRpc.TimeInForce.AtTheClose;
-            case AtTheOpening:
-                return TradeTypesRpc.TimeInForce.AtTheOpening;
-            case Day:
-                return TradeTypesRpc.TimeInForce.Day;
-            case FillOrKill:
-                return TradeTypesRpc.TimeInForce.FillOrKill;
-            case GoodTillCancel:
-                return TradeTypesRpc.TimeInForce.GoodTillCancel;
-            case GoodTillCrossing:
-                return TradeTypesRpc.TimeInForce.GoodTillCrossing;
-            case GoodTillDate:
-                return TradeTypesRpc.TimeInForce.GoodTillDate;
-            case ImmediateOrCancel:
-                return TradeTypesRpc.TimeInForce.ImmediateOrCancel;
-            case Unknown:
-                return TradeTypesRpc.TimeInForce.UnknownTimeInForce;
-            default:
-                throw new UnsupportedOperationException("Unsupported time in force: " + inTimeInForce);
+        TradeTypesRpc.TimeInForce result = null;
+        if(inTimeInForce != null) {
+            switch(inTimeInForce) {
+                case AtTheClose:
+                    result = TradeTypesRpc.TimeInForce.AtTheClose;
+                    break;
+                case AtTheOpening:
+                    result = TradeTypesRpc.TimeInForce.AtTheOpening;
+                    break;
+                case Day:
+                    result = TradeTypesRpc.TimeInForce.Day;
+                    break;
+                case FillOrKill:
+                    result = TradeTypesRpc.TimeInForce.FillOrKill;
+                    break;
+                case GoodTillCancel:
+                    result = TradeTypesRpc.TimeInForce.GoodTillCancel;
+                    break;
+                case GoodTillCrossing:
+                    result = TradeTypesRpc.TimeInForce.GoodTillCrossing;
+                    break;
+                case GoodTillDate:
+                    result = TradeTypesRpc.TimeInForce.GoodTillDate;
+                    break;
+                case ImmediateOrCancel:
+                    result = TradeTypesRpc.TimeInForce.ImmediateOrCancel;
+                    break;
+                case Unknown:
+                    result = TradeTypesRpc.TimeInForce.UnknownTimeInForce;
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Unsupported time in force: " + inTimeInForce);
+            }
         }
+        return Optional.ofNullable(result);
     }
     /**
      * Get the time in force value from the given RPC value.
      *
      * @param inTimeInForce a <code>TradingTypeRpc.TimeInForce</code> value
-     * @return a <code>TimeInForce</code> value
+     * @return an <code>Optional&lt;TimeInForce&gt;</code> value
      */
-    public static TimeInForce getTimeInForce(TradeTypesRpc.TimeInForce inTimeInForce)
+    public static Optional<TimeInForce> getTimeInForce(TradeTypesRpc.TimeInForce inTimeInForce)
     {
-        switch(inTimeInForce) {
-            case AtTheClose:
-                return TimeInForce.AtTheClose;
-            case AtTheOpening:
-                return TimeInForce.AtTheOpening;
-            case Day:
-                return TimeInForce.Day;
-            case FillOrKill:
-                return TimeInForce.FillOrKill;
-            case GoodTillCancel:
-                return TimeInForce.GoodTillCancel;
-            case GoodTillCrossing:
-                return TimeInForce.GoodTillCrossing;
-            case GoodTillDate:
-                return TimeInForce.GoodTillDate;
-            case ImmediateOrCancel:
-                return TimeInForce.ImmediateOrCancel;
-            case UNRECOGNIZED:
-            case UnknownTimeInForce:
-                return TimeInForce.Unknown;
-            default:
-                throw new UnsupportedOperationException("Unsupported time in force: " + inTimeInForce);
+        TimeInForce result = null;
+        if(inTimeInForce != null) {
+            switch(inTimeInForce) {
+                case AtTheClose:
+                    result = TimeInForce.AtTheClose;
+                    break;
+                case AtTheOpening:
+                    result = TimeInForce.AtTheOpening;
+                    break;
+                case Day:
+                    result = TimeInForce.Day;
+                    break;
+                case FillOrKill:
+                    result = TimeInForce.FillOrKill;
+                    break;
+                case GoodTillCancel:
+                    result = TimeInForce.GoodTillCancel;
+                    break;
+                case GoodTillCrossing:
+                    result = TimeInForce.GoodTillCrossing;
+                    break;
+                case GoodTillDate:
+                    result = TimeInForce.GoodTillDate;
+                    break;
+                case ImmediateOrCancel:
+                    result = TimeInForce.ImmediateOrCancel;
+                    break;
+                case UnknownTimeInForce:
+                case UNRECOGNIZED:
+                    // null value
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Unsupported time in force: " + inTimeInForce);
+            }
         }
+        return Optional.ofNullable(result);
     }
     /**
-     * 
+     * Get the RPC value from the given value.
      *
-     *
-     * @param inOrderCapacity
-     * @return
+     * @param inOrderCapacity an <code>OrderCapacity</code> value
+     * @return a <code>TradeTypeRpc.OrderCapacity</code> value
      */
     public static TradeTypesRpc.OrderCapacity getRpcOrderCapacity(OrderCapacity inOrderCapacity)
     {
@@ -291,107 +316,154 @@ public abstract class TradeRpcUtil
      * Get a MATP order type from an RPC order type.
      *
      * @param inOrderType a <code>TradeTypesRpc.OrderType</code> value
-     * @return an <code>OrderType</code> value
+     * @return an <code>Optional&lt;OrderType&gt;</code> value
      */
-    public static OrderType getOrderType(TradeTypesRpc.OrderType inOrderType)
+    public static Optional<OrderType> getOrderType(TradeTypesRpc.OrderType inOrderType)
     {
-        switch(inOrderType) {
-            case ForexLimit:
-                return OrderType.ForexLimit;
-            case ForexMarket:
-                return OrderType.ForexMarket;
-            case ForexPreviouslyQuoted:
-                return OrderType.ForexPreviouslyQuoted;
-            case ForexSwap:
-                return OrderType.ForexSwap;
-            case Funari:
-                return OrderType.Funari;
-            case Limit:
-                return OrderType.Limit;
-            case LimitOnClose:
-                return OrderType.LimitOnClose;
-            case LimitOrBetter:
-                return OrderType.LimitOrBetter;
-            case LimitWithOrWithout:
-                return OrderType.LimitWithOrWithout;
-            case Market:
-                return OrderType.Market;
-            case MarketOnClose:
-                return OrderType.MarketOnClose;
-            case OnBasis:
-                return OrderType.OnBasis;
-            case OnClose:
-                return OrderType.OnClose;
-            case Pegged:
-                return OrderType.Pegged;
-            case PreviouslyIndicated:
-                return OrderType.PreviouslyIndicated;
-            case PreviouslyQuoted:
-                return OrderType.PreviouslyQuoted;
-            case Stop:
-                return OrderType.Stop;
-            case StopLimit:
-                return OrderType.StopLimit;
-            case UnknownOrderType:
-                return OrderType.Unknown;
-            case WithOrWithout:
-                return OrderType.WithOrWithout;
-            default:
-                throw new UnsupportedOperationException("Unsupported side: " + inOrderType);
+        OrderType result = null;
+        if(inOrderType != null) {
+            switch(inOrderType) {
+                case ForexLimit:
+                    result = OrderType.ForexLimit;
+                    break;
+                case ForexMarket:
+                    result = OrderType.ForexMarket;
+                    break;
+                case ForexPreviouslyQuoted:
+                    result = OrderType.ForexPreviouslyQuoted;
+                    break;
+                case ForexSwap:
+                    result = OrderType.ForexSwap;
+                    break;
+                case Funari:
+                    result = OrderType.Funari;
+                    break;
+                case Limit:
+                    result = OrderType.Limit;
+                    break;
+                case LimitOnClose:
+                    result = OrderType.LimitOnClose;
+                    break;
+                case LimitOrBetter:
+                    result = OrderType.LimitOrBetter;
+                    break;
+                case LimitWithOrWithout:
+                    result = OrderType.LimitWithOrWithout;
+                    break;
+                case Market:
+                    result = OrderType.Market;
+                    break;
+                case MarketOnClose:
+                    result = OrderType.MarketOnClose;
+                    break;
+                case OnBasis:
+                    result = OrderType.OnBasis;
+                    break;
+                case OnClose:
+                    result = OrderType.OnClose;
+                    break;
+                case Pegged:
+                    result = OrderType.Pegged;
+                    break;
+                case PreviouslyIndicated:
+                    result = OrderType.PreviouslyIndicated;
+                    break;
+                case PreviouslyQuoted:
+                    result = OrderType.PreviouslyQuoted;
+                    break;
+                case Stop:
+                    result = OrderType.Stop;
+                    break;
+                case StopLimit:
+                    result = OrderType.StopLimit;
+                    break;
+                case UnknownOrderType:
+                    break;
+                case WithOrWithout:
+                    result = OrderType.WithOrWithout;
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Unsupported side: " + inOrderType);
+            }
         }
+        return Optional.ofNullable(result);
     }
     /**
      * Get an order type value from an RPC order type value.
      *
      * @param inOrderType an <code>OrderType</code> value
-     * @return a <code>TradeTypesRpc.OrderType</code> value
+     * @return an <code>Optional&lt;TradeTypesRpc.OrderType&gt;</code> value
      */
-    public static TradeTypesRpc.OrderType getRpcOrderType(OrderType inOrderType)
+    public static Optional<TradeTypesRpc.OrderType> getRpcOrderType(OrderType inOrderType)
     {
-        switch(inOrderType) {
-            case ForexLimit:
-                return TradeTypesRpc.OrderType.ForexLimit;
-            case ForexMarket:
-                return TradeTypesRpc.OrderType.ForexMarket;
-            case ForexPreviouslyQuoted:
-                return TradeTypesRpc.OrderType.ForexPreviouslyQuoted;
-            case ForexSwap:
-                return TradeTypesRpc.OrderType.ForexSwap;
-            case Funari:
-                return TradeTypesRpc.OrderType.Funari;
-            case Limit:
-                return TradeTypesRpc.OrderType.Limit;
-            case LimitOnClose:
-                return TradeTypesRpc.OrderType.LimitOnClose;
-            case LimitOrBetter:
-                return TradeTypesRpc.OrderType.LimitOrBetter;
-            case LimitWithOrWithout:
-                return TradeTypesRpc.OrderType.LimitWithOrWithout;
-            case Market:
-                return TradeTypesRpc.OrderType.Market;
-            case MarketOnClose:
-                return TradeTypesRpc.OrderType.MarketOnClose;
-            case OnBasis:
-                return TradeTypesRpc.OrderType.OnBasis;
-            case OnClose:
-                return TradeTypesRpc.OrderType.OnClose;
-            case Pegged:
-                return TradeTypesRpc.OrderType.Pegged;
-            case PreviouslyIndicated:
-                return TradeTypesRpc.OrderType.PreviouslyIndicated;
-            case PreviouslyQuoted:
-                return TradeTypesRpc.OrderType.PreviouslyQuoted;
-            case Stop:
-                return TradeTypesRpc.OrderType.Stop;
-            case StopLimit:
-                return TradeTypesRpc.OrderType.StopLimit;
-            case Unknown:
-                return TradeTypesRpc.OrderType.UnknownOrderType;
-            case WithOrWithout:
-                return TradeTypesRpc.OrderType.WithOrWithout;
-            default:
-                throw new UnsupportedOperationException("Unsupported order type: " + inOrderType);
+        TradeTypesRpc.OrderType result = null;
+        if(inOrderType != null) {
+            switch(inOrderType) {
+                case ForexLimit:
+                    result = TradeTypesRpc.OrderType.ForexLimit;
+                    break;
+                case ForexMarket:
+                    result = TradeTypesRpc.OrderType.ForexMarket;
+                    break;
+                case ForexPreviouslyQuoted:
+                    result = TradeTypesRpc.OrderType.ForexPreviouslyQuoted;
+                    break;
+                case ForexSwap:
+                    result = TradeTypesRpc.OrderType.ForexSwap;
+                    break;
+                case Funari:
+                    result = TradeTypesRpc.OrderType.Funari;
+                    break;
+                case Limit:
+                    result = TradeTypesRpc.OrderType.Limit;
+                    break;
+                case LimitOnClose:
+                    result = TradeTypesRpc.OrderType.LimitOnClose;
+                    break;
+                case LimitOrBetter:
+                    result = TradeTypesRpc.OrderType.LimitOrBetter;
+                    break;
+                case LimitWithOrWithout:
+                    result = TradeTypesRpc.OrderType.LimitWithOrWithout;
+                    break;
+                case Market:
+                    result = TradeTypesRpc.OrderType.Market;
+                    break;
+                case MarketOnClose:
+                    result = TradeTypesRpc.OrderType.MarketOnClose;
+                    break;
+                case OnBasis:
+                    result = TradeTypesRpc.OrderType.OnBasis;
+                    break;
+                case OnClose:
+                    result = TradeTypesRpc.OrderType.OnClose;
+                    break;
+                case Pegged:
+                    result = TradeTypesRpc.OrderType.Pegged;
+                    break;
+                case PreviouslyIndicated:
+                    result = TradeTypesRpc.OrderType.PreviouslyIndicated;
+                    break;
+                case PreviouslyQuoted:
+                    result = TradeTypesRpc.OrderType.PreviouslyQuoted;
+                    break;
+                case Stop:
+                    result = TradeTypesRpc.OrderType.Stop;
+                    break;
+                case StopLimit:
+                    result = TradeTypesRpc.OrderType.StopLimit;
+                    break;
+                case Unknown:
+                    result = TradeTypesRpc.OrderType.UnknownOrderType;
+                    break;
+                case WithOrWithout:
+                    result = TradeTypesRpc.OrderType.WithOrWithout;
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Unsupported order type: " + inOrderType);
+            }
         }
+        return Optional.ofNullable(result);
     }
     /**
      * Get a side value from an RPC side type.
@@ -1238,10 +1310,7 @@ public abstract class TradeRpcUtil
     public static void setOrderType(NewOrReplaceOrder inOrder,
                                     TradeTypesRpc.OrderBase.Builder inBuilder)
     {
-        if(inOrder.getOrderType() == null) {
-            return;
-        }
-        inBuilder.setOrderType(getRpcOrderType(inOrder.getOrderType()));
+        getRpcOrderType(inOrder.getOrderType()).ifPresent(rpcOrderType->inBuilder.setOrderType(rpcOrderType));
     }
     /**
      * Set the position effect from the given order on the given RPC builder.
@@ -1277,10 +1346,7 @@ public abstract class TradeRpcUtil
     public static void setTimeInForce(NewOrReplaceOrder inOrder,
                                       TradeTypesRpc.OrderBase.Builder inBuilder)
     {
-        if(inOrder.getTimeInForce() == null) {
-            return;
-        }
-        inBuilder.setTimeInForce(getRpcTimeInForce(inOrder.getTimeInForce()));
+        getRpcTimeInForce(inOrder.getTimeInForce()).ifPresent(rpcTimeInForce->inBuilder.setTimeInForce(rpcTimeInForce));
     }
     /**
      * Set the time in force value on the given MATP order from the given RPC order.
@@ -1291,11 +1357,7 @@ public abstract class TradeRpcUtil
     public static void setTimeInForce(NewOrReplaceOrder inOrder,
                                       TradeTypesRpc.OrderBase inRpcOrder)
     {
-        TimeInForce matpTif = getTimeInForce(inRpcOrder.getTimeInForce());
-        if(matpTif == null || matpTif == TimeInForce.Unknown) {
-            return;
-        }
-        inOrder.setTimeInForce(matpTif);
+        getTimeInForce(inRpcOrder.getTimeInForce()).ifPresent(timeInForce->inOrder.setTimeInForce(timeInForce));
     }
     /**
      * Set the position effect on the given MATP order from the given RPC order.
@@ -1321,11 +1383,7 @@ public abstract class TradeRpcUtil
     public static void setOrderType(NewOrReplaceOrder inOrder,
                                     TradeTypesRpc.OrderBase inRpcOrder)
     {
-        OrderType matpOrderType = getOrderType(inRpcOrder.getOrderType());
-        if(matpOrderType == null || matpOrderType == OrderType.Unknown) {
-            return;
-        }
-        inOrder.setOrderType(matpOrderType);
+        getOrderType(inRpcOrder.getOrderType()).ifPresent(orderType->inOrder.setOrderType(orderType));
     }
     /**
      * Set the order type on the given MATP order from the given RPC order.
@@ -1640,14 +1698,16 @@ public abstract class TradeRpcUtil
         getOrderId(inRpcExecutionReport).ifPresent(orderId->executionReportSummary.setOrderID(orderId));
         BaseRpcUtil.getScaledQuantity(inRpcExecutionReport.getOrderQuantity()).ifPresent(qty->executionReportSummary.setOrderQuantity(qty));
         executionReportSummary.setOrderStatus(getOrderStatus(inRpcExecutionReport.getOrderStatus()));
-        executionReportSummary.setOrderType(getOrderType(inRpcExecutionReport.getOrderType()));
+        getOrderType(inRpcExecutionReport.getOrderType()).ifPresent(orderType->executionReportSummary.setOrderType(orderType));
         getOriginalOrderId(inRpcExecutionReport).ifPresent(orderId->executionReportSummary.setOriginalOrderID(orderId));
+        BaseRpcUtil.getScaledQuantity(inRpcExecutionReport.getPrice()).ifPresent(qty->executionReportSummary.setPrice(qty));
         executionReportSummary.setReport(getReport(inRpcExecutionReport.getReport(),
                                                    inReportFactory,
                                                    inUserFactory));
         getRootOrderId(inRpcExecutionReport).ifPresent(orderId->executionReportSummary.setRootOrderID(orderId));
         BaseRpcUtil.getDateValue(inRpcExecutionReport.getSendingTime()).ifPresent(sendingTime->executionReportSummary.setSendingTime(sendingTime));
         executionReportSummary.setSide(getSide(inRpcExecutionReport.getSide()));
+        getTimeInForce(inRpcExecutionReport.getTimeInForce()).ifPresent(timeInForce->executionReportSummary.setTimeInForce(timeInForce));
         AdminRpcUtil.getUser(inRpcExecutionReport.getViewer(),
                              inUserFactory).ifPresent(viewer->executionReportSummary.setViewer(viewer));
         return executionReportSummary;
@@ -1684,12 +1744,14 @@ public abstract class TradeRpcUtil
         getRpcOrderId(inExecutionReportSummary.getOrderID()).ifPresent(value->builder.setOrderId(value));
         BaseRpcUtil.getRpcQty(inExecutionReportSummary.getOrderQuantity()).ifPresent(value->builder.setOrderQuantity(value));
         builder.setOrderStatus(getRpcOrderStatus(inExecutionReportSummary.getOrderStatus()));
-        builder.setOrderType(getRpcOrderType(inExecutionReportSummary.getOrderType()));
+        getRpcOrderType(inExecutionReportSummary.getOrderType()).ifPresent(rpcOrderType->builder.setOrderType(rpcOrderType));
         getRpcOrderId(inExecutionReportSummary.getOriginalOrderID()).ifPresent(value->builder.setOriginalOrderId(value));
+        BaseRpcUtil.getRpcQty(inExecutionReportSummary.getPrice()).ifPresent(value->builder.setPrice(value));
         builder.setReport(getRpcReport(inExecutionReportSummary.getReport()));
         getRpcOrderId(inExecutionReportSummary.getRootOrderID()).ifPresent(value->builder.setRootOrderId(value));
         BaseRpcUtil.getTimestampValue(inExecutionReportSummary.getSendingTime()).ifPresent(value->builder.setSendingTime(value));
         builder.setSide(getRpcSide(inExecutionReportSummary.getSide()));
+        getRpcTimeInForce(inExecutionReportSummary.getTimeInForce()).ifPresent(rpcTimeInForce->builder.setTimeInForce(rpcTimeInForce));
         AdminRpcUtil.getRpcUser(inExecutionReportSummary.getViewer()).ifPresent(value->builder.setViewer(value));
         return builder.build();
     }
@@ -1892,10 +1954,7 @@ public abstract class TradeRpcUtil
     public static void setTimeInForce(ExecutionReport inReport,
                                       TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
-        if(inReport.getTimeInForce() == null) {
-            return;
-        }
-        inBuilder.setTimeInForce(getRpcTimeInForce(inReport.getTimeInForce()));
+        getRpcTimeInForce(inReport.getTimeInForce()).ifPresent(rpcTimeInForce->inBuilder.setTimeInForce(rpcTimeInForce));
     }
     /**
      * Set the side from the given report on the given builder.
@@ -1945,10 +2004,7 @@ public abstract class TradeRpcUtil
     public static void setOrderType(ExecutionReport inReport,
                                     TradeTypesRpc.TradeMessage.Builder inBuilder)
     {
-        if(inReport.getOrderType() == null) {
-            return;
-        }
-        inBuilder.setOrderType(getRpcOrderType(inReport.getOrderType()));
+        getRpcOrderType(inReport.getOrderType()).ifPresent(rpcOrderType->inBuilder.setOrderType(rpcOrderType));
     }
     /**
      * Set the order quantity from value the given trade message on the given builder.

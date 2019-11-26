@@ -18,6 +18,7 @@ import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.ReportType;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.UserID;
 
 /* $License$ */
@@ -335,6 +336,22 @@ public class DisplayExecutionReportSummary
     public OrderType getOrderType()
     {
         return executionReportSummary.getOrderType();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getPrice()
+     */
+    @Override
+    public BigDecimal getPrice()
+    {
+        return executionReportSummary.getPrice();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getTimeInForce()
+     */
+    @Override
+    public TimeInForce getTimeInForce()
+    {
+        return executionReportSummary.getTimeInForce();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

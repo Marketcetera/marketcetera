@@ -11,6 +11,7 @@ import org.marketcetera.web.converters.OrderStatusConverter;
 import org.marketcetera.web.converters.OrderTypeConverter;
 import org.marketcetera.web.converters.SecurityTypeConverter;
 import org.marketcetera.web.converters.SideConverter;
+import org.marketcetera.web.converters.TimeInForceConverter;
 import org.marketcetera.web.converters.UserConverter;
 import org.marketcetera.web.trade.report.model.DisplayExecutionReportSummary;
 import org.marketcetera.web.view.AbstractGridView;
@@ -75,16 +76,16 @@ public abstract class AbstractExecutionReportView
                              "side",
                              "securityType",
                              "symbol",
-//                             "symbolSfx", TODO
                              "expiry",
                              "optionType",
                              "strikePrice",
                              "orderType",
+                             "timeInForce",
                              "transactTime",
                              "orderQuantity",
                              "cumulativeQuantity",
                              "leavesQuantity",
-//                             "price", TODO
+                             "price",
                              "averagePrice",
                              "account",
                              "lastQuantity",
@@ -105,12 +106,13 @@ public abstract class AbstractExecutionReportView
         getGrid().getColumn("orderQuantity").setHeaderCaption("Ord Qty");
         getGrid().getColumn("orderStatus").setConverter(OrderStatusConverter.instance);
         getGrid().getColumn("orderType").setHeaderCaption("Ord Type").setConverter(OrderTypeConverter.instance);
+        getGrid().getColumn("price").setConverter(DecimalConverter.instance).setHeaderCaption("Ord Px");
         getGrid().getColumn("securityType").setConverter(SecurityTypeConverter.instance);
         getGrid().getColumn("sendingTime").setConverter(DateConverter.instance);
         getGrid().getColumn("side").setConverter(SideConverter.instance);
+        getGrid().getColumn("timeInForce").setConverter(TimeInForceConverter.instance);
         getGrid().getColumn("transactTime").setConverter(DateConverter.instance);
 //        getGrid().getColumn("instrument").setConverter(InstrumentConverter.instance);
-//        getGrid().getColumn("price").setConverter(DecimalConverter.instance).setHeaderCaption("Ord Px").setSortable(false); // TODO not sortable because this column is derived
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#onActionSelect(com.vaadin.data.Property.ValueChangeEvent)

@@ -34,6 +34,7 @@ import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -81,6 +82,8 @@ public class PersistentExecutionReport
         setLeavesQuantity(inReport.getLeavesQuantity());
         setOrderQuantity(inReport.getOrderQuantity());
         setOrderType(inReport.getOrderType());
+        setPrice(inReport.getPrice());
+        setTimeInForce(inReport.getTimeInForce());
         account = inReport.getAccount();
         side = inReport.getSide();
         cumQuantity = inReport.getCumulativeQuantity();
@@ -600,6 +603,38 @@ public class PersistentExecutionReport
         orderType = inOrderType;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getPrice()
+     */
+    @Override
+    public BigDecimal getPrice()
+    {
+        return price;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setPrice(java.math.BigDecimal)
+     */
+    @Override
+    public void setPrice(BigDecimal inPrice)
+    {
+        price = inPrice;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ExecutionReportSummary#getTimeInForce()
+     */
+    @Override
+    public TimeInForce getTimeInForce()
+    {
+        return timeInForce;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setTimeInForce(org.marketcetera.trade.TimeInForce)
+     */
+    @Override
+    public void setTimeInForce(TimeInForce inTimeInForce)
+    {
+        timeInForce = inTimeInForce;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.MutableExecutionReportSummary#setInstrument(org.marketcetera.trade.Instrument)
      */
     @Override
@@ -651,8 +686,8 @@ public class PersistentExecutionReport
                 .append(", expiry=").append(expiry).append(", optionType=").append(optionType).append(", account=")
                 .append(account).append(", executionId=").append(executionId).append(", brokerOrderId=")
                 .append(brokerOrderId).append(", leavesQuantity=").append(leavesQuantity).append(", orderQuantity=")
-                .append(orderQuantity).append(", orderType=").append(orderType).append(", report=").append(report)
-                .append("]");
+                .append(orderQuantity).append(", orderType=").append(orderType).append(", price=").append(price)
+                .append(", timeInForce=").append(timeInForce).append(", report=").append(report).append("]");
         return builder.toString();
     }
     /**
@@ -776,12 +811,12 @@ public class PersistentExecutionReport
     @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="broker_order_id",nullable=false))})
     private OrderID brokerOrderId;
     /**
-     * leaves quantity value</code>
+     * leaves quantity value
      */
     @Column(name="leaves_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
     private BigDecimal leavesQuantity;
     /**
-     * leaves quantity value</code>
+     * leaves quantity value
      */
     @Column(name="order_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
     private BigDecimal orderQuantity;
@@ -791,6 +826,17 @@ public class PersistentExecutionReport
     @Enumerated(EnumType.STRING)
     @Column(name="order_type",nullable=true)
     private OrderType orderType;
+    /**
+     * price value
+     */
+    @Column(name="price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=true)
+    private BigDecimal price;
+    /**
+     * time-in-force value
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name="tif",nullable=true)
+    private TimeInForce timeInForce;
     /**
      * linked report value
      */

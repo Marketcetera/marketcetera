@@ -170,6 +170,8 @@ message ExecutionReportSummary {
     Qty leavesQuantity = 20;
     Qty orderQuantity = 21;
     OrderType orderType = 22;
+    Qty price = 23;
+    TimeInForce timeInForce = 24;
 }
 
 message FixMessage {

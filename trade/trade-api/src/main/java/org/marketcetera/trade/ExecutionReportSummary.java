@@ -179,6 +179,18 @@ public interface ExecutionReportSummary
      */
     OrderType getOrderType();
     /**
+     * Get the price value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    BigDecimal getPrice();
+    /**
+     * Get the time-in-force value.
+     *
+     * @return a <code>TimeInForce</code> value
+     */
+    TimeInForce getTimeInForce();
+    /**
      * Get a mutable version of this object.
      *
      * @return a <code>MutableExecutionReportSummary</code> value
