@@ -45,7 +45,7 @@ public class OrderTicketViewFactory
     @Override
     public int getWeight()
     {
-        return 300;
+        return 900;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()

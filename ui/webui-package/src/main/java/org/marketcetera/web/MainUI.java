@@ -11,12 +11,11 @@ import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
-import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.spring.navigator.SpringViewProvider;
+import com.vaadin.spring.navigator.SpringNavigator;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
@@ -66,8 +65,8 @@ public class MainUI
         rootLayout.addComponents(headerLayout,
                                  menuLayout,
                                  contentLayout);
-        Navigator navigator = new Navigator(this, contentLayout);
-        navigator.addProvider(viewProvider);
+        navigator.init(this,
+                       contentLayout);
         menuLayout.setVisible(false);
         // We use a view change handler to ensure the user is always redirected
         // to the login view if the user is not logged in.
@@ -119,9 +118,9 @@ public class MainUI
     @Autowired
     private ApplicationContext applicationContext;
     /**
-     * provides views defined to Spring
+     * navigator value
      */
     @Autowired
-    private SpringViewProvider viewProvider;
+    private SpringNavigator navigator;
     private static final long serialVersionUID = -56010080786096996L;
 }

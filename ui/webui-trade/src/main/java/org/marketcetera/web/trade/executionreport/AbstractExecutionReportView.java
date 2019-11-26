@@ -70,6 +70,8 @@ public abstract class AbstractExecutionReportView
     protected void setGridColumns()
     {
         getGrid().setColumns("sendingTime",
+                             "transactTime",
+                             "rootOrderID",
                              "orderID",
                              "orderStatus",
                              "executionType",
@@ -81,7 +83,6 @@ public abstract class AbstractExecutionReportView
                              "strikePrice",
                              "orderType",
                              "timeInForce",
-                             "transactTime",
                              "orderQuantity",
                              "cumulativeQuantity",
                              "leavesQuantity",
@@ -182,5 +183,6 @@ public abstract class AbstractExecutionReportView
 //                throw new UnsupportedOperationException("Unsupported action: " + action);
         }
     }
+    private static final String ACTION_FIX_MESSAGE_DETAILS = "View FIX Message Details";
     private static final long serialVersionUID = -3203095665399884857L;
 }
