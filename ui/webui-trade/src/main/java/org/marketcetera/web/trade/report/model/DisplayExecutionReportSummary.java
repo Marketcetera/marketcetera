@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.marketcetera.admin.User;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.ExecutionType;
@@ -21,6 +22,8 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.UserID;
 
+import quickfix.InvalidMessage;
+
 /* $License$ */
 
 /**
@@ -31,7 +34,7 @@ import org.marketcetera.trade.UserID;
  * @since $Release$
  */
 public class DisplayExecutionReportSummary
-        implements ExecutionReportSummary,Report
+        implements ExecutionReportSummary,Report,HasFIXMessage
 {
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Report#getActorID()
@@ -352,6 +355,18 @@ public class DisplayExecutionReportSummary
     public TimeInForce getTimeInForce()
     {
         return executionReportSummary.getTimeInForce();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.HasFIXMessage#getMessage()
+     */
+    @Override
+    public quickfix.Message getMessage()
+    {
+        try {
+            return new quickfix.Message(executionReportSummary.getReport().getFixMessage());
+        } catch (InvalidMessage e) {
+            throw new RuntimeException(e);
+        }
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

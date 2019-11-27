@@ -205,7 +205,6 @@ public class OpenOrderView
                     Properties replaceProperties = new Properties();
                     replaceProperties.setProperty(ExecutionReport.class.getCanonicalName(),
                                                   executionReportXml);
-                    System.out.println("COCO: " + replaceProperties);
                     ReplaceOrderEvent replaceOrderEvent = applicationContext.getBean(ReplaceOrderEvent.class,
                                                                                      executionReport,
                                                                                      replaceProperties);
