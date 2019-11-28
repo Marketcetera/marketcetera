@@ -1,4 +1,4 @@
-package org.marketcetera.web.trade.report.model;
+package org.marketcetera.web.trade.report.view;
 
 import java.util.Date;
 

@@ -1,4 +1,4 @@
-package org.marketcetera.web.trade.report.model;
+package org.marketcetera.web.trade.executionreport;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -20,7 +20,6 @@ import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.UserID;
-import org.marketcetera.web.trade.executionreport.FixMessageDisplayType;
 
 import quickfix.InvalidMessage;
 

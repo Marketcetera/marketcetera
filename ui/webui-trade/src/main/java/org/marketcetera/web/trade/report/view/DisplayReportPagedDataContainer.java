@@ -7,7 +7,6 @@ import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.Report;
 import org.marketcetera.web.service.trade.TradeClientService;
-import org.marketcetera.web.trade.report.model.DisplayReport;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.marketcetera.web.view.PagedViewProvider;
 

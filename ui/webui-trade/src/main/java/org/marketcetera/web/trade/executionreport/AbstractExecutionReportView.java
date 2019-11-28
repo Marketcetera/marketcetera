@@ -11,7 +11,6 @@ import org.marketcetera.web.converters.SecurityTypeConverter;
 import org.marketcetera.web.converters.SideConverter;
 import org.marketcetera.web.converters.TimeInForceConverter;
 import org.marketcetera.web.converters.UserConverter;
-import org.marketcetera.web.trade.report.model.DisplayExecutionReportSummary;
 
 /* $License$ */
 

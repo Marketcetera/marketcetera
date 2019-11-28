@@ -5,7 +5,6 @@ import java.util.Collection;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.web.trade.report.model.DisplayExecutionReportSummary;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.marketcetera.web.view.PagedViewProvider;
 

@@ -19,7 +19,6 @@ import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.trade.TradeClientService;
 import org.marketcetera.web.trade.event.FixMessageDetailsViewEvent;
 import org.marketcetera.web.trade.event.ReplaceOrderEvent;
-import org.marketcetera.web.trade.report.model.DisplayExecutionReportSummary;
 import org.marketcetera.web.view.AbstractGridView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

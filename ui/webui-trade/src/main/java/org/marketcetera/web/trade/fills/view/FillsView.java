@@ -3,7 +3,7 @@ package org.marketcetera.web.trade.fills.view;
 import java.util.Properties;
 
 import org.marketcetera.web.trade.executionreport.AbstractExecutionReportView;
-import org.marketcetera.web.trade.report.model.DisplayExecutionReportSummary;
+import org.marketcetera.web.trade.executionreport.DisplayExecutionReportSummary;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
