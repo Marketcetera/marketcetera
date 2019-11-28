@@ -11,7 +11,7 @@ import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.Side;
-import org.marketcetera.web.trade.executionreport.FixMessageDisplayType;
+import org.marketcetera.web.trade.executionreport.view.FixMessageDisplayType;
 
 import quickfix.InvalidMessage;
 

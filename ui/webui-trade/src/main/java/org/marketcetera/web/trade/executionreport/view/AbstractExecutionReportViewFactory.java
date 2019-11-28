@@ -1,4 +1,4 @@
-package org.marketcetera.web.trade.executionreport;
+package org.marketcetera.web.trade.executionreport.view;
 
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.web.trade.view.AbstractTradeViewFactory;

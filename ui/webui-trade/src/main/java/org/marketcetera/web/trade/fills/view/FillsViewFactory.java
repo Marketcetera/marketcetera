@@ -5,7 +5,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.marketcetera.trade.TradePermissions;
-import org.marketcetera.web.trade.executionreport.AbstractExecutionReportViewFactory;
+import org.marketcetera.web.trade.executionreport.view.AbstractExecutionReportViewFactory;
 import org.marketcetera.web.trade.openorders.view.OpenOrderView;
 import org.springframework.security.core.GrantedAuthority;
 

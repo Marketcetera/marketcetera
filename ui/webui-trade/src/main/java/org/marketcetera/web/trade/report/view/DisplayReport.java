@@ -10,7 +10,7 @@ import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.ReportType;
-import org.marketcetera.web.trade.executionreport.FixMessageDisplayType;
+import org.marketcetera.web.trade.executionreport.view.FixMessageDisplayType;
 
 import quickfix.InvalidMessage;
 

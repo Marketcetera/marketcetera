@@ -6,7 +6,7 @@ import org.marketcetera.web.converters.DateConverter;
 import org.marketcetera.web.converters.OrderStatusConverter;
 import org.marketcetera.web.converters.ReportTypeConverter;
 import org.marketcetera.web.converters.StringFixMessageConverter;
-import org.marketcetera.web.trade.executionreport.AbstractHasFixMessageView;
+import org.marketcetera.web.trade.executionreport.view.AbstractHasFixMessageView;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;

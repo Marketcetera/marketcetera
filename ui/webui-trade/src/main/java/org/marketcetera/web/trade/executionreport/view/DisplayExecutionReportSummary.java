@@ -1,4 +1,4 @@
-package org.marketcetera.web.trade.executionreport;
+package org.marketcetera.web.trade.executionreport.view;
 
 import java.math.BigDecimal;
 import java.util.Date;

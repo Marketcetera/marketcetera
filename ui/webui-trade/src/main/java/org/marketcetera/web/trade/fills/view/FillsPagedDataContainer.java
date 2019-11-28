@@ -6,8 +6,8 @@ import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.web.service.trade.TradeClientService;
-import org.marketcetera.web.trade.executionreport.AbstractExecutionReportPagedDataContainer;
-import org.marketcetera.web.trade.executionreport.DisplayExecutionReportSummary;
+import org.marketcetera.web.trade.executionreport.view.AbstractExecutionReportPagedDataContainer;
+import org.marketcetera.web.trade.executionreport.view.DisplayExecutionReportSummary;
 import org.marketcetera.web.view.PagedViewProvider;
 
 /* $License$ */
