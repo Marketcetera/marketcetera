@@ -13,27 +13,27 @@ import org.marketcetera.web.view.PagedViewProvider;
 /* $License$ */
 
 /**
- * Provides a <code>PagedDataContainer</code> implementation for <code>OrderSummary</code> values.
+ * Provides a <code>PagedDataContainer</code> implementation for <code>DisplayOrderSummary</code> values.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public class OrderSummaryPagedDataContainer
-        extends PagedDataContainer<OrderSummary>
+        extends PagedDataContainer<DisplayOrderSummary>
 {
     /**
      * Create a new OrderSummaryPagedDataContainer instance.
      *
-     * @param inCollection a <code>Collection&lt;? extends OrderSummary&gt;</code> value
+     * @param inCollection a <code>Collection&lt;? extends DisplayOrderSummary&gt;</code> value
      * @param inPagedViewProvider a <code>PagedViewProvider</code> value
      * @throws IllegalArgumentException if the container cannot be constructed
      */
-    public OrderSummaryPagedDataContainer(Collection<? extends OrderSummary> inCollection,
+    public OrderSummaryPagedDataContainer(Collection<? extends DisplayOrderSummary> inCollection,
                                           PagedViewProvider inPagedViewProvider)
             throws IllegalArgumentException
     {
-        super(OrderSummary.class,
+        super(DisplayOrderSummary.class,
               inCollection,
               inPagedViewProvider);
     }
@@ -46,23 +46,26 @@ public class OrderSummaryPagedDataContainer
     public OrderSummaryPagedDataContainer(PagedViewProvider inPagedViewProvider)
             throws IllegalArgumentException
     {
-        super(OrderSummary.class,
+        super(DisplayOrderSummary.class,
               inPagedViewProvider);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.PagedDataContainer#getDataContainerContents(org.marketcetera.core.PageRequest)
      */
     @Override
-    protected CollectionPageResponse<OrderSummary> getDataContainerContents(PageRequest inPageRequest)
+    protected CollectionPageResponse<DisplayOrderSummary> getDataContainerContents(PageRequest inPageRequest)
     {
-        return TradeClientService.getInstance().getOpenOrders(inPageRequest);
+        CollectionPageResponse<OrderSummary> response = TradeClientService.getInstance().getOpenOrders(inPageRequest);
+        CollectionPageResponse<DisplayOrderSummary> result = new CollectionPageResponse<>(response);
+        response.getElements().forEach(orderSummary->result.getElements().add(new DisplayOrderSummary(orderSummary)));
+        return result;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.PagedDataContainer#isDeepEquals(java.lang.Object, java.lang.Object)
      */
     @Override
-    protected boolean isDeepEquals(OrderSummary inO1,
-                                   OrderSummary inO2)
+    protected boolean isDeepEquals(DisplayOrderSummary inO1,
+                                   DisplayOrderSummary inO2)
     {
         // include values here that are likely to change over the course on an order
         return new EqualsBuilder().append(inO1.getAccount(),inO2.getAccount())
