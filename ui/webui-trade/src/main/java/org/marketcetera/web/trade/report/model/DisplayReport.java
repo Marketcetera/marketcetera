@@ -5,10 +5,14 @@ import java.util.Date;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.ReportType;
+import org.marketcetera.web.trade.executionreport.FixMessageDisplayType;
+
+import quickfix.InvalidMessage;
 
 /* $License$ */
 
@@ -23,6 +27,7 @@ import org.marketcetera.trade.ReportType;
  * @since $Release$
  */
 public class DisplayReport
+        implements FixMessageDisplayType
 {
     /**
      * Get the order id value.
@@ -142,6 +147,30 @@ public class DisplayReport
         return report.getText();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.HasFIXMessage#getMessage()
+     */
+    @Override
+    public quickfix.Message getMessage()
+    {
+        return fixMessage;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasOrderId#getOrderId()
+     */
+    @Override
+    public OrderID getOrderId()
+    {
+        return report.getOrderID();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasOrderStatus#getOrderStatus()
+     */
+    @Override
+    public OrderStatus getOrderStatus()
+    {
+        return orderStatus;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -159,9 +188,27 @@ public class DisplayReport
     public DisplayReport(Report inReport)
     {
         report = inReport;
+        try {
+            fixMessage = new quickfix.Message(report.getFixMessage());
+            if(fixMessage.isSetField(quickfix.field.OrdStatus.FIELD)) {
+                orderStatus = OrderStatus.getInstanceForFIXMessage(fixMessage);
+            } else {
+                orderStatus = OrderStatus.Unknown;
+            }
+        } catch (InvalidMessage e) {
+            throw new RuntimeException(e);
+        }
     }
+    /**
+     * order status of underlying FIX message, if available, will not be <code>null</code>
+     */
+    private final OrderStatus orderStatus;
     /**
      * report value
      */
     private final Report report;
+    /**
+     * FIX message value
+     */
+    private final quickfix.Message fixMessage;
 }
