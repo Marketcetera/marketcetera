@@ -38,6 +38,7 @@ import com.vaadin.ui.themes.ValoTheme;
  */
 public abstract class AbstractGridView<Clazz>
         extends AbstractContentView
+        implements PagedViewProvider
 {
     /* (non-Javadoc)
      * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)

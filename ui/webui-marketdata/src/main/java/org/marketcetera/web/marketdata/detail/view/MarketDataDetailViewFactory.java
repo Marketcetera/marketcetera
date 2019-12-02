@@ -1,6 +1,5 @@
-package org.marketcetera.web.trade.fixmessagedetails.view;
+package org.marketcetera.web.marketdata.detail.view;
 
-import org.marketcetera.web.trade.openorders.view.OpenOrderView;
 import org.marketcetera.web.view.AbstractContentViewFactory;
 import org.marketcetera.web.view.ContentView;
 
@@ -9,14 +8,14 @@ import com.vaadin.spring.annotation.SpringComponent;
 /* $License$ */
 
 /**
- * Creates {@link OpenOrderView} content objects.
+ * Creates {@link MarketDataDetailView} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @SpringComponent
-public class FixMessageDetailsViewFactory
+public class MarketDataDetailViewFactory
         extends AbstractContentViewFactory
 {
     /* (non-Javadoc)
@@ -25,6 +24,6 @@ public class FixMessageDetailsViewFactory
     @Override
     protected Class<? extends ContentView> getViewType()
     {
-        return FixMessageDetailsView.class;
+        return MarketDataDetailView.class;
     }
 }

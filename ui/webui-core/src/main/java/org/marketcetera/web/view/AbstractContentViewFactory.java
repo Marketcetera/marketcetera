@@ -2,6 +2,7 @@ package org.marketcetera.web.view;
 
 import java.util.Properties;
 
+import org.marketcetera.web.service.WebMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -50,4 +51,9 @@ public abstract class AbstractContentViewFactory
      */
     @Autowired
     private ApplicationContext applicationContext;
+    /**
+     * provides access to web message services
+     */
+    @Autowired
+    protected WebMessageService webMessageService;
 }

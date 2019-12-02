@@ -1,12 +1,10 @@
-package org.marketcetera.web.marketdata.service;
-
-import java.util.Properties;
+package org.marketcetera.web.marketdata.list.view;
 
 import org.marketcetera.web.events.NewWindowEvent;
-import org.marketcetera.web.service.WebMessageService;
+import org.marketcetera.web.view.AbstractContentViewFactory;
+import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.MenuContent;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
@@ -14,32 +12,21 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Window;
 
 /* $License$ */
 
 /**
- * Creates {@link MarketDataView} objects.
+ * Creates {@link MarketDataListView} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @SpringComponent
-public class MarketDataViewFactory
-        implements ContentViewFactory,MenuContent
+public class MarketDataListViewFactory
+        extends AbstractContentViewFactory
+        implements MenuContent
 {
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
-     */
-    @Override
-    public MarketDataView create(Window inParent,
-                                 Properties inViewProperties)
-    {
-        MarketDataView marketDataView = new MarketDataView(inViewProperties);
-        marketDataView.setWebMessageService(webMessageService);
-        return marketDataView;
-    }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCommand()
      */
@@ -59,7 +46,7 @@ public class MarketDataViewFactory
                     @Override
                     public ContentViewFactory getViewFactory()
                     {
-                        return MarketDataViewFactory.this;
+                        return MarketDataListViewFactory.this;
                     }
                 });
             }
@@ -98,9 +85,12 @@ public class MarketDataViewFactory
     {
         return FontAwesome.AREA_CHART;
     }
-    /**
-     * provides access to web message services
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractContentViewFactory#getViewType()
      */
-    @Autowired
-    private WebMessageService webMessageService;
+    @Override
+    protected Class<? extends ContentView> getViewType()
+    {
+        return MarketDataListView.class;
+    }
 }

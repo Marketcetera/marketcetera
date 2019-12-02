@@ -1,4 +1,4 @@
-package org.marketcetera.web.marketdata.service;
+package org.marketcetera.web.marketdata.detail.view;
 
 import java.util.Properties;
 
@@ -18,11 +18,15 @@ import org.marketcetera.event.HasInstrument;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.marketdata.service.MarketDataClientService;
 import org.marketcetera.web.service.WebMessageService;
-import org.marketcetera.web.view.ContentView;
+import org.marketcetera.web.view.AbstractContentView;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -31,6 +35,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -41,17 +46,22 @@ import com.vaadin.ui.VerticalLayout;
  * @version $Id$
  * @since $Release$
  */
-public class MarketDataView
-        extends CssLayout
-        implements ContentView
+@SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class MarketDataDetailView
+        extends AbstractContentView
 {
     /**
      * Create a new MarketDataView instance.
      *
-     * @param inViewProperties
+     * @param inParent a <code>Window</code> value
+     * @param inViewProperties a <code>Properties</code> value
      */
-    MarketDataView(Properties inViewProperties)
+    public MarketDataDetailView(Window inParent,
+                                Properties inViewProperties)
     {
+        super(inParent,
+              inViewProperties);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
@@ -178,7 +188,7 @@ public class MarketDataView
             @Override
             public void onError(Throwable inThrowable)
             {
-                SLF4JLoggerProxy.warn(MarketDataView.this,
+                SLF4JLoggerProxy.warn(MarketDataDetailView.this,
                                       inThrowable);
                 UI.getCurrent().access(() -> {
                     Notification.show("Market Data Request",

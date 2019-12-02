@@ -5,6 +5,7 @@ import java.util.Properties;
 import org.marketcetera.core.XmlService;
 import org.marketcetera.web.service.AuthorizationHelperService;
 import org.marketcetera.web.service.ServiceManager;
+import org.marketcetera.web.service.StyleService;
 import org.marketcetera.web.service.WebMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -23,7 +24,7 @@ import com.vaadin.ui.Window;
  */
 public abstract class AbstractContentView
         extends CssLayout
-        implements ContentView,PagedViewProvider
+        implements ContentView
 {
     /**
      * Get the viewProperties value.
@@ -55,6 +56,11 @@ public abstract class AbstractContentView
         parentWindow = inParentWindow;
         viewProperties = inViewProperties;
     }
+    /**
+     * provides access to style services
+     */
+    @Autowired
+    protected StyleService styleService;
     /**
      * provides access to XML services
      */
