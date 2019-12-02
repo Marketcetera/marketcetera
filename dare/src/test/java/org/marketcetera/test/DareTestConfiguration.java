@@ -21,6 +21,8 @@ import org.marketcetera.quickfix.QuickFIXSenderImpl;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.trade.AverageFillPriceFactory;
+import org.marketcetera.trade.SimpleAverageFillPriceFactory;
 import org.marketcetera.trade.client.DirectTradeClientFactory;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageBroadcastConnector;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageConverterConnector;
@@ -58,6 +60,16 @@ public class DareTestConfiguration
         IterativeSymbolResolver symbolResolverService = new IterativeSymbolResolver();
         symbolResolverService.getSymbolResolvers().add(new PatternSymbolResolver());
         return symbolResolverService;
+    }
+    /**
+     * Get the average fill price factory value.
+     *
+     * @return an <code>AverageFillPriceFactory</code> value
+     */
+    @Bean
+    public AverageFillPriceFactory getAverageFillPriceFactory()
+    {
+        return new SimpleAverageFillPriceFactory();
     }
     /**
      * Get the direct trade client factory value.
