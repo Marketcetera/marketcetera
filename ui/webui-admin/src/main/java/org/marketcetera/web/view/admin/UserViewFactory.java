@@ -1,11 +1,10 @@
 package org.marketcetera.web.view.admin;
 
-import java.util.Properties;
+import org.marketcetera.web.view.ContentView;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -20,17 +19,6 @@ import com.vaadin.ui.Window;
 public class UserViewFactory
         extends AbstractAdminViewFactory
 {
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
-     */
-    @Override
-    public UserView create(Window inParent,
-                           Properties inViewProperties)
-    {
-        UserView userView = new UserView(inViewProperties);
-        userView.setWebMessageService(webMessageService);
-        return userView;
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuCaption()
      */
@@ -62,5 +50,13 @@ public class UserViewFactory
     protected String getViewName()
     {
         return "Users";
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractContentViewFactory#getViewType()
+     */
+    @Override
+    protected Class<? extends ContentView> getViewType()
+    {
+        return UserView.class;
     }
 }

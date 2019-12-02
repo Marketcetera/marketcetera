@@ -7,6 +7,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
+import org.marketcetera.trade.AverageFillPrice;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionReportSummary;
 import org.marketcetera.trade.Instrument;
@@ -76,6 +77,16 @@ public class TradeClientService
     public CollectionPageResponse<ExecutionReportSummary> getFills(PageRequest inPageRequest)
     {
         return tradeClient.getFills(inPageRequest);
+    }
+    /**
+     * Get average price fills values.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>Collection&lt;AverageFillPrice&gt;</code> value
+     */
+    public CollectionPageResponse<AverageFillPrice> getAveragePrice(PageRequest inPageRequest)
+    {
+        return tradeClient.getAveragePriceFills(inPageRequest);
     }
     /**
      * Get open orders.

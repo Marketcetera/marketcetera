@@ -1,19 +1,18 @@
 package org.marketcetera.web.trade.openorders.view;
 
-import java.util.Locale;
 import java.util.Properties;
 
-import org.marketcetera.trade.Instrument;
 import org.marketcetera.web.converters.DateConverter;
 import org.marketcetera.web.converters.DecimalConverter;
+import org.marketcetera.web.converters.InstrumentConverter;
 import org.marketcetera.web.converters.UserConverter;
 import org.marketcetera.web.trade.executionreport.view.AbstractHasFixMessageView;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -40,11 +39,14 @@ public class OpenOrderView
     /**
      * Create a new OpenOrderView instance.
      *
+     * @param inParentWindow a <code>Window</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    public OpenOrderView(Properties inViewProperties)
+    public OpenOrderView(Window inParentWindow,
+                         Properties inViewProperties)
     {
-        super(inViewProperties);
+        super(inParentWindow,
+              inViewProperties);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#setGridColumns()
@@ -67,35 +69,7 @@ public class OpenOrderView
                              "lastPrice",
                              "actor");
         getGrid().getColumn("actor").setHeaderCaption("User").setConverter(UserConverter.instance);
-        getGrid().getColumn("instrument").setConverter(new Converter<String,Instrument>() {
-            @Override
-            public Instrument convertToModel(String inValue,
-                                             Class<? extends Instrument> inTargetType,
-                                             Locale inLocale)
-                    throws ConversionException
-            {
-                throw new UnsupportedOperationException(); // TODO
-            }
-            @Override
-            public String convertToPresentation(Instrument inValue,
-                                                Class<? extends String> inTargetType,
-                                                Locale inLocale)
-                    throws ConversionException
-            {
-                return inValue.getFullSymbol();
-            }
-            @Override
-            public Class<Instrument> getModelType()
-            {
-                return Instrument.class;
-            }
-            @Override
-            public Class<String> getPresentationType()
-            {
-                return String.class;
-            }
-            private static final long serialVersionUID = 2362260803441310303L;
-        });
+        getGrid().getColumn("instrument").setConverter(InstrumentConverter.instance);
         getGrid().getColumn("orderPrice").setConverter(DecimalConverter.instance).setHeaderCaption("Ord Px");
         getGrid().getColumn("averagePrice").setConverter(DecimalConverter.instance).setHeaderCaption("Avg Px");
         getGrid().getColumn("lastPrice").setConverter(DecimalConverter.instance).setHeaderCaption("Last Px");

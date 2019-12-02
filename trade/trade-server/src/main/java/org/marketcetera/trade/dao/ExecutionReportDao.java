@@ -1,6 +1,9 @@
 package org.marketcetera.trade.dao;
 
+import java.util.Set;
+
 import org.marketcetera.trade.ExecutionReportSummary;
+import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.domain.Page;
@@ -55,4 +58,14 @@ public interface ExecutionReportDao
      */
     @Query("select e from PersistentExecutionReport e where e.execType in ('PartialFill','Fill','Trade','TradeCorrect')")
     Page<ExecutionReportSummary> findAllFills(Pageable inPageRequest);
+    /**
+     * Find the average fill prices of a page of instrument/side tuples.
+     *
+     * @param inFillTypes a <code>Set&lt;ExecutionType&gt;</code> value
+     * @param inPageRequest a <code>Pageable</code> value
+     * @return a <code>Page&lt;AverageFillQueryResult&gt;</code> value
+     */
+    @Query("select new org.marketcetera.trade.dao.AverageFillQueryResult(e.symbol,e.securityType,e.expiry,e.strikePrice,e.optionType,e.side,sum(e.lastQuantity*e.lastPrice)/sum(e.lastQuantity),sum(e.cumQuantity)) from PersistentExecutionReport e where e.execType in ?1 group by e.symbol,e.securityType,e.expiry,e.strikePrice,e.optionType,e.side")
+    Page<AverageFillQueryResult> findAverageFillPrice(Set<ExecutionType> inFillTypes,
+                                                      Pageable inPageRequest);
 }

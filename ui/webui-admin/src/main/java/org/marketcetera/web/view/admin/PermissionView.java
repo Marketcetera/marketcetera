@@ -6,8 +6,12 @@ import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.impl.SimplePermission;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.PagedDataContainer;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -18,6 +22,8 @@ import com.vaadin.ui.Button.ClickEvent;
  * @version $Id$
  * @since $Release$
  */
+@SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PermissionView
         extends AbstractAdminView<Permission>
 {
@@ -32,10 +38,14 @@ public class PermissionView
     /**
      * Create a new PermissionView instance.
      *
-     * @param inViewProperties
+     * @param inParentWindow a <code>Window</code> value
+     * @param inViewProperties a <code>Properties</code> value
      */
-    PermissionView(Properties inViewProperties)
+    public PermissionView(Window inParentWindow,
+                          Properties inViewProperties)
     {
+        super(inParentWindow,
+              inViewProperties);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractAdminView#getViewSubjectName()

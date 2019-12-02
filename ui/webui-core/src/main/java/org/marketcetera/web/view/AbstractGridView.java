@@ -1,6 +1,7 @@
 package org.marketcetera.web.view;
 
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -23,6 +24,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 /* $License$ */
@@ -35,8 +37,7 @@ import com.vaadin.ui.themes.ValoTheme;
  * @since $Release$
  */
 public abstract class AbstractGridView<Clazz>
-        extends CssLayout
-        implements ContentView,PagedViewProvider
+        extends AbstractContentView
 {
     /* (non-Javadoc)
      * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
@@ -368,6 +369,18 @@ public abstract class AbstractGridView<Clazz>
     protected final Grid getGrid()
     {
         return grid;
+    }
+    /**
+     * Create a new AbstractGridView instance.
+     *
+     * @param inParentWindow a <code>Window</code> value
+     * @param inViewProperties a <code>Properties</code> value
+     */
+    protected AbstractGridView(Window inParentWindow,
+                               Properties inViewProperties)
+    {
+        super(inParentWindow,
+              inViewProperties);
     }
     /**
      * allows selection of the page size

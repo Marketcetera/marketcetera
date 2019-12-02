@@ -12,6 +12,8 @@ import org.marketcetera.web.converters.SideConverter;
 import org.marketcetera.web.converters.TimeInForceConverter;
 import org.marketcetera.web.converters.UserConverter;
 
+import com.vaadin.ui.Window;
+
 /* $License$ */
 
 /**
@@ -27,11 +29,14 @@ public abstract class AbstractExecutionReportView
     /**
      * Create a new FillsView instance.
      *
+     * @param inParentWindow a <code>Window</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    protected AbstractExecutionReportView(Properties inViewProperties)
+    protected AbstractExecutionReportView(Window inParentWindow,
+                                          Properties inViewProperties)
     {
-        super(inViewProperties);
+        super(inParentWindow,
+              inViewProperties);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#setGridColumns()

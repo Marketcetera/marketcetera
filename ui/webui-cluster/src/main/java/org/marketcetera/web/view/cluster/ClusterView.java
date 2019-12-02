@@ -8,9 +8,13 @@ import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.AbstractGridView;
 import org.marketcetera.web.view.PagedDataContainer;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -21,6 +25,8 @@ import com.vaadin.server.VaadinSession;
  * @version $Id$
  * @since $Release$
  */
+@SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ClusterView
         extends AbstractGridView<ClusterData>
 {
@@ -51,10 +57,14 @@ public class ClusterView
     /**
      * Create a new ClusterView instance.
      *
-     * @param inViewProperties
+     * @param inParentWindow a <code>Window</code> value
+     * @param inViewProperties a <code>Properties</code> value
      */
-    ClusterView(Properties inViewProperties)
+    public ClusterView(Window inParentWindow,
+                       Properties inViewProperties)
     {
+        super(inParentWindow,
+              inViewProperties);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#setGridColumns()

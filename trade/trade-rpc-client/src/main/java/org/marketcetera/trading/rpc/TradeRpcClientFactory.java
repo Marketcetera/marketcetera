@@ -8,6 +8,8 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
 import org.marketcetera.fix.MutableFixSessionFactory;
+import org.marketcetera.trade.AverageFillPrice;
+import org.marketcetera.trade.AverageFillPriceFactory;
 import org.marketcetera.trade.MutableExecutionReportSummary;
 import org.marketcetera.trade.MutableExecutionReportSummaryFactory;
 import org.marketcetera.trade.MutableOrderSummary;
@@ -38,6 +40,7 @@ public class TradeRpcClientFactory
     {
         TradeRpcClient tradeRpcClient = new TradeRpcClient(inParameters);
         tradeRpcClient.setActiveFixSessionFactory(activeFixSessionFactory);
+        tradeRpcClient.setAverageFillPriceFactory(averageFillPriceFactory);
         tradeRpcClient.setFixSessionFactory(fixSessionFactory);
         tradeRpcClient.setClusterDataFactory(clusterDataFactory);
         tradeRpcClient.setOrderSummaryFactory(orderSummaryFactory);
@@ -71,6 +74,11 @@ public class TradeRpcClientFactory
      */
     @Autowired
     private MutableActiveFixSessionFactory activeFixSessionFactory;
+    /**
+     * creates {@link AverageFillPrice} objects
+     */
+    @Autowired
+    private AverageFillPriceFactory averageFillPriceFactory;
     /**
      * creates {@link FixSession} objects
      */

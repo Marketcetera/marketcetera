@@ -27,9 +27,12 @@ import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptorFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
+import org.marketcetera.trade.AverageFillPriceFactory;
 import org.marketcetera.trade.MutableExecutionReportSummaryFactory;
 import org.marketcetera.trade.MutableOrderSummaryFactory;
 import org.marketcetera.trade.MutableReportFactory;
+import org.marketcetera.trade.SimpleAverageFillPrice;
+import org.marketcetera.trade.SimpleAverageFillPriceFactory;
 import org.marketcetera.trade.SimpleExecutionReportSummaryFactory;
 import org.marketcetera.trade.SimpleOrderSummaryFactory;
 import org.marketcetera.trade.SimpleReportFactory;
@@ -59,7 +62,7 @@ import com.google.common.eventbus.EventBus;
  * @since $Release$
  */
 @Configuration
-public class AppConfiguration
+public class WebUiConfiguration
         implements ApplicationContextAware
 {
     /**
@@ -94,6 +97,16 @@ public class AppConfiguration
     public MutableExecutionReportSummaryFactory getExecutionReportSummaryFactory()
     {
         return new SimpleExecutionReportSummaryFactory();
+    }
+    /**
+     * Get the average fill price factory value.
+     *
+     * @return an <code>AverageFillPriceFactory</code> value
+     */
+    @Bean
+    public AverageFillPriceFactory getAverageFillPriceFactory()
+    {
+        return new SimpleAverageFillPriceFactory();
     }
     /**
      * Get the admin client factory value.
@@ -307,6 +320,7 @@ public class AppConfiguration
     {
         XmlService xmlService = new XmlService();
         xmlService.getContextPath().addAll(Arrays.asList(new TradeContextClassProvider().getContextClasses()));
+        xmlService.getContextPath().add(SimpleAverageFillPrice.class);
         return xmlService;
     }
     /* (non-Javadoc)

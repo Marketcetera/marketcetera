@@ -41,12 +41,16 @@ import org.marketcetera.fix.dao.QPersistentIncomingMessage;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.trade.AverageFillPrice;
+import org.marketcetera.trade.AverageFillPriceFactory;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionReportSummary;
+import org.marketcetera.trade.ExecutionType;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.HasMutableReportID;
@@ -67,6 +71,7 @@ import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.dao.AverageFillQueryResult;
 import org.marketcetera.trade.dao.ExecutionReportDao;
 import org.marketcetera.trade.dao.PersistentExecutionReport;
 import org.marketcetera.trade.dao.PersistentOrderSummary;
@@ -489,6 +494,47 @@ public class ReportServiceImpl
         return executionReportDao.findAll(page);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.ReportService#getAverageFillPrice(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public CollectionPageResponse<AverageFillPrice> getAverageFillPrices(org.marketcetera.persist.PageRequest inPageRequest)
+    {
+        Sort sort = buildSort(inPageRequest,
+                              persistentExecutionReportAliases,
+                              Sort.by(new Sort.Order(Sort.Direction.ASC,
+                                                     QPersistentExecutionReport.persistentExecutionReport.symbol.getMetadata().getName())));
+        SLF4JLoggerProxy.debug(this,
+                               "getAverageFillPrice sort order is {} renders: {}",
+                               inPageRequest.getSortOrder(),
+                               sort);
+        Pageable pageRequest = PageRequest.of(inPageRequest.getPageNumber(),
+                                              inPageRequest.getPageSize(),
+                                              sort);
+        Page<AverageFillQueryResult> result = executionReportDao.findAverageFillPrice(ExecutionType.FILLS,
+                                                                                      pageRequest);
+        CollectionPageResponse<AverageFillPrice> response = new CollectionPageResponse<>();
+        response.setPageAttributes(result);
+        for(AverageFillQueryResult queryResult : result.getContent()) {
+            Instrument instrument = symbolResolverService.resolveSymbol(queryResult.getSymbol());
+            if(instrument == null) {
+                SLF4JLoggerProxy.warn(this,
+                                      "Could not resolve an instrument from {}, skipping average fill result",
+                                      queryResult);
+                // this will mess up the paging, but, it really should be fixed by the engagement-specific symbol resolver service
+                //  so, we won't worry about fixing the paging results
+                continue;
+            }
+            response.getElements().add(averageFillPriceFactory.create(instrument,
+                                                                      queryResult.getSide(),
+                                                                      queryResult.getCumulativeQuantity(),
+                                                                      queryResult.getWeightedAveragePrice()));
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "getAverageFillPrice: {}",
+                               response);
+        return response;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.service.ReportService#getPositionAsOf(org.marketcetera.admin.User, java.util.Date, org.marketcetera.trade.Instrument)
      */
     @Override
@@ -644,7 +690,8 @@ public class ReportServiceImpl
                 return PositionKeyFactory.createCurrencyKey(inSymbol,
                                                             inAccount,
                                                             inTraderId == null ? null : String.valueOf(inTraderId));
-            }});
+            }}
+        );
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getAllFuturePositionsAsOf(com.marketcetera.ors.security.SimpleUser, java.util.Date)
@@ -669,7 +716,8 @@ public class ReportServiceImpl
                                                           inExpiry,
                                                           inAccount,
                                                           inTraderId == null ? null : String.valueOf(inTraderId));
-            }});
+            }}
+        );
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getAllConvertibleBondPositionsAsOf(com.marketcetera.ors.security.SimpleUser, java.util.Date)
@@ -693,7 +741,8 @@ public class ReportServiceImpl
                 return PositionKeyFactory.createConvertibleBondKey(inSymbol,
                                                                    inAccount,
                                                                    inTraderId == null ? null : String.valueOf(inTraderId));
-            }});
+            }}
+        );
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getConvertibleBondPositionAsOf(com.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.ConvertibleBond)
@@ -1398,6 +1447,16 @@ public class ReportServiceImpl
      */
     @Autowired
     private IncomingMessageDao incomingMessageDao;
+    /**
+     * creates {@link AverageFillPrice} objects
+     */
+    @Autowired
+    private AverageFillPriceFactory averageFillPriceFactory;
+    /**
+     * resolves symbols to {@link Instrument} objects
+     */
+    @Autowired
+    private SymbolResolverService symbolResolverService;
     /**
      * entity manager value used to construct queries
      */

@@ -26,6 +26,8 @@ import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.options.OptionUtils;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpcUtil;
+import org.marketcetera.trade.AverageFillPrice;
+import org.marketcetera.trade.AverageFillPriceFactory;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
@@ -1666,6 +1668,40 @@ public abstract class TradeRpcUtil
         BaseRpcUtil.getTimestampValue(inReport.getTransactTime()).ifPresent(rpcTimestamp->reportBuilder.setTransactTime(rpcTimestamp));
         AdminRpcUtil.getRpcUser(inReport.getViewer()).ifPresent(rpcViewer->reportBuilder.setViewer(rpcViewer));
         return reportBuilder.build();
+    }
+    /**
+     * Get the average fill price value from the given RPC value.
+     *
+     * @param inRpcAverageFillPrice a <code>TradeTypesRpc.AverageFillPrice</code> value
+     * @return an <code>AverageFillPrice</code> value
+     */
+    public static AverageFillPrice getAverageFillPrice(TradeTypesRpc.AverageFillPrice inRpcAverageFillPrice,
+                                                       AverageFillPriceFactory inAverageFillPriceFactory)
+    {
+        Instrument instrument = getInstrument(inRpcAverageFillPrice.getInstrument()).orElse(null);
+        Side side = getSide(inRpcAverageFillPrice.getSide());
+        BigDecimal cumulativeQuantity = BaseRpcUtil.getScaledQuantity(inRpcAverageFillPrice.getCumulativeQuantity()).orElse(BigDecimal.ZERO);
+        BigDecimal averagePrice = BaseRpcUtil.getScaledQuantity(inRpcAverageFillPrice.getAveragePrice()).orElse(BigDecimal.ZERO);
+        AverageFillPrice executionReportSummary = inAverageFillPriceFactory.create(instrument,
+                                                                                   side,
+                                                                                   cumulativeQuantity,
+                                                                                   averagePrice);
+        return executionReportSummary;
+    }
+    /**
+     * Get the RPC average fill price value from the given value.
+     *
+     * @param inAverageFillPrice an <code>AverageFillPrice</code> value
+     * @return a <code>TradeTypesRpc.AverageFillPrice</code> value
+     */
+    public static TradeTypesRpc.AverageFillPrice getRpcAverageFillPrice(AverageFillPrice inAverageFillPrice)
+    {
+        TradeTypesRpc.AverageFillPrice.Builder builder = TradeTypesRpc.AverageFillPrice.newBuilder();
+        BaseRpcUtil.getRpcQty(inAverageFillPrice.getAveragePrice()).ifPresent(value->builder.setAveragePrice(value));
+        BaseRpcUtil.getRpcQty(inAverageFillPrice.getCumulativeQuantity()).ifPresent(value->builder.setCumulativeQuantity(value));
+        getRpcInstrument(inAverageFillPrice.getInstrument()).ifPresent(rpcInstrument->builder.setInstrument(rpcInstrument));
+        builder.setSide(getRpcSide(inAverageFillPrice.getSide()));
+        return builder.build();
     }
     /**
      * Get the execution report summary from the given RPC value.

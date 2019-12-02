@@ -13,6 +13,7 @@ import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.IncomingMessage;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
+import org.marketcetera.trade.AverageFillPrice;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
@@ -32,8 +33,6 @@ import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.domain.Page;
-
-import quickfix.SessionID;
 
 /* $License$ */
 
@@ -100,7 +99,7 @@ public interface ReportService
      * @param inPurgeDate a <code>Date</code> value
      * @return an <code>int</code> value containing the number of reports purged
      */
-    public int purgeReportsBefore(Date inPurgeDate);
+    int purgeReportsBefore(Date inPurgeDate);
     /**
      * Gets the reports visible to the given user since the given date.
      *
@@ -108,8 +107,8 @@ public interface ReportService
      * @param inDate a <code>Date</code> value
      * @return a <code>List&lt;ReportBase&gt;</code> value
      */
-    public List<ReportBase> getReportsSince(User inUser,
-                                            Date inDate);
+    List<ReportBase> getReportsSince(User inUser,
+                                     Date inDate);
     /**
      * Get the position of the given instrument as of the given date from the point of view of the given user.
      *
@@ -118,9 +117,9 @@ public interface ReportService
      * @param inInstrument an <code>Instrument</code> value
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getPositionAsOf(User inUser,
-                                      Date inDate,
-                                      Instrument inInstrument);
+    BigDecimal getPositionAsOf(User inUser,
+                               Date inDate,
+                               Instrument inInstrument);
     /**
      * Gets the position of the given equity as of the given date from the point of view
      * of the given user.
@@ -130,16 +129,16 @@ public interface ReportService
      * @param inEquity an <code>Equity</code> value
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getEquityPositionAsOf(User inUser,
-                                            Date inDate,
-                                            Equity inEquity);
+    BigDecimal getEquityPositionAsOf(User inUser,
+                                     Date inDate,
+                                     Equity inEquity);
     /**
      * Gets the open orders visible to the given user.
      *
      * @param inUser a <code>User</code> value
      * @return a <code>List&lt;ReportBaseImpl</code> value
      */
-    public List<ReportBaseImpl> getOpenOrders(User inUser);
+    List<ReportBaseImpl> getOpenOrders(User inUser);
     /**
      * Gets all equity positions as of the given date visible to the given user.
      *
@@ -147,8 +146,8 @@ public interface ReportService
      * @param inDate a <code>Date</code> value
      * @return a <code>Map&lt;PositionKey&lt;Equity&gt;,BigDecimal&lt;</code> value
      */
-    public Map<PositionKey<Equity>,BigDecimal> getAllEquityPositionsAsOf(User inUser,
-                                                                         Date inDate);
+    Map<PositionKey<Equity>,BigDecimal> getAllEquityPositionsAsOf(User inUser,
+                                                                  Date inDate);
     /**
      * Gets the position of the given currency as of the given date visible to the
      * given user.
@@ -158,9 +157,9 @@ public interface ReportService
      * @param inCurrency a <code>Currency</code> value
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getCurrencyPositionAsOf(User inUser,
-                                              Date inDate,
-                                              Currency inCurrency);
+    BigDecimal getCurrencyPositionAsOf(User inUser,
+                                       Date inDate,
+                                       Currency inCurrency);
     /**
      * Get all positions as of the given date visible to the given user.
      *
@@ -177,8 +176,8 @@ public interface ReportService
      * @param inDate a <code>Date</code> value
      * @return a <code>Map&lt;PositionKey&lt;Currency&gt;,BigDecimal&lt;</code> value
      */
-    public Map<PositionKey<Currency>,BigDecimal> getAllCurrencyPositionsAsOf(User inUser,
-                                                                             Date inDate);
+    Map<PositionKey<Currency>,BigDecimal> getAllCurrencyPositionsAsOf(User inUser,
+                                                                      Date inDate);
     /**
      * Gets all convertible bond positions as of the given date visible to the given user.
      *
@@ -186,8 +185,8 @@ public interface ReportService
      * @param inDate a <code>Date</code> value
      * @return a <code>Map&lt;PositionKey&lt;ConvertibleBond&gt;,BigDecimal&lt;</code> value
      */
-    public Map<PositionKey<ConvertibleBond>,BigDecimal> getAllConvertibleBondPositionsAsOf(User inUser,
-                                                                                           Date inDate);
+    Map<PositionKey<ConvertibleBond>,BigDecimal> getAllConvertibleBondPositionsAsOf(User inUser,
+                                                                                    Date inDate);
     /**
      * Gets all future positions as of the given date visible to the given user.
      *
@@ -195,8 +194,8 @@ public interface ReportService
      * @param inDate a <code>Date</code> value
      * @return a <code>Map&lt;PositionKey&lt;Future&gt;,BigDecimal&lt;</code> value
      */
-    public Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(User inUser,
-                                                                         Date inDate);
+    Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(User inUser,
+                                                                  Date inDate);
     /**
      * Gets the position of the given future as of the given date visible to the
      * given user.
@@ -206,9 +205,9 @@ public interface ReportService
      * @param inFuture a <code>Future</code> value
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getFuturePositionAsOf(User inUser,
-                                            Date inDate,
-                                            Future inFuture);
+    BigDecimal getFuturePositionAsOf(User inUser,
+                                     Date inDate,
+                                     Future inFuture);
     /**
      * Gets the position of the given convertible bond as of the given date visible to the
      * given user.
@@ -218,9 +217,9 @@ public interface ReportService
      * @param inConvertibleBond a <code>ConvertibleBond</code> value
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getConvertibleBondPositionAsOf(User inUser,
-                                                     Date inDate,
-                                                     ConvertibleBond inConvertibleBond);
+    BigDecimal getConvertibleBondPositionAsOf(User inUser,
+                                              Date inDate,
+                                              ConvertibleBond inConvertibleBond);
     /**
      * Gets the position of the given option as of the given date visible to the
      * given user.
@@ -230,9 +229,9 @@ public interface ReportService
      * @param inOption an <code>Option</code> value
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getOptionPositionAsOf(User inUser,
-                                            Date inDate,
-                                            Option inOption);
+    BigDecimal getOptionPositionAsOf(User inUser,
+                                     Date inDate,
+                                     Option inOption);
     /**
      * Gets all option positions as of the given date visible to the given user.
      *
@@ -240,8 +239,8 @@ public interface ReportService
      * @param inDate a <code>Date</code> value
      * @return a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&lt;</code> value
      */
-    public Map<PositionKey<Option>,BigDecimal> getAllOptionPositionsAsOf(User inUser,
-                                                                         Date inDate);
+    Map<PositionKey<Option>,BigDecimal> getAllOptionPositionsAsOf(User inUser,
+                                                                  Date inDate);
     /**
      * Gets the positions of the options of the given root symbols as of the given date
      * visible to the given user.
@@ -251,15 +250,15 @@ public interface ReportService
      * @param inSymbols a <code>String[]</code> value
      * @return a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&lt;</code> value
      */
-    public Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(User inUser,
-                                                                      Date inDate,
-                                                                      String[] inSymbols);
+    Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(User inUser,
+                                                               Date inDate,
+                                                               String[] inSymbols);
     /**
      * Saves the given report.
      *
      * @param inReport a <code>ReportBase</code> value
      */
-    public Report save(ReportBase inReport);
+    Report save(ReportBase inReport);
     /**
      * Delete the report with the given report ID.
      *
@@ -276,21 +275,21 @@ public interface ReportService
     /**
      * Finds the last sequence number known for the given session since the given moment in time.
      *
-     * @param inSessionId a <code>SessionID</code> value
+     * @param inSessionId a <code>quickfix.SessionID</code> value
      * @param inDate a <code>Date</code> value
      * @return an <code>int</code> value
      */
-    int findLastSequenceNumberFor(SessionID inSessionId,
+    int findLastSequenceNumberFor(quickfix.SessionID inSessionId,
                                   Date inDate);
     /**
      * Finds the ids of the unhandled incoming FIX messages of the given types for the given session since the given date.
      *
-     * @param inSessionId a <code>SessionID</code> value
+     * @param inSessionId a <code>quickfix.SessionID</code> value
      * @param inMessageTypes a <code>Set&lt;String&gt;</code> value
      * @param inSince a <code>Date</code> value
      * @return a <code>List&lt;Long&gt;</code> value
      */
-    List<Long> findUnhandledIncomingMessageIds(SessionID inSessionId,
+    List<Long> findUnhandledIncomingMessageIds(quickfix.SessionID inSessionId,
                                                Set<String> inMessageTypes,
                                                Date inSince);
     /**
@@ -331,4 +330,11 @@ public interface ReportService
     void addReport(HasFIXMessage inMessage,
                    BrokerID inBrokerID,
                    UserID inUserId);
+    /**
+     * Get the average fill price values.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;AverageFillPrice&gt;</code> value
+     */
+    CollectionPageResponse<AverageFillPrice> getAverageFillPrices(PageRequest inPageRequest);
 }

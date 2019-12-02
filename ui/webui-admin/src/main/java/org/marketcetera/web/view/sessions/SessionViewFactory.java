@@ -1,13 +1,13 @@
 package org.marketcetera.web.view.sessions;
 
 import java.util.Collections;
-import java.util.Properties;
 import java.util.Set;
 
 import org.marketcetera.admin.AdminPermissions;
-import org.marketcetera.fix.MutableActiveFixSessionFactory;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
+import org.marketcetera.web.view.AbstractContentViewFactory;
+import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.MenuContent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,6 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -33,20 +32,9 @@ import com.vaadin.ui.Window;
  */
 @SpringComponent
 public class SessionViewFactory
+        extends AbstractContentViewFactory
         implements ContentViewFactory,MenuContent
 {
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
-     */
-    @Override
-    public SessionView create(Window inParent,
-                              Properties inViewProperties)
-    {
-        SessionView sessionView = new SessionView(inViewProperties);
-        sessionView.setActiveFixSessionFactory(fixSessionFactory);
-        sessionView.setWebMessageService(webMessageService);
-        return sessionView;
-    }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
      */
@@ -113,6 +101,14 @@ public class SessionViewFactory
     {
         return requiredPermissions;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractContentViewFactory#getViewType()
+     */
+    @Override
+    protected Class<? extends ContentView> getViewType()
+    {
+        return SessionView.class;
+    }
     /**
      * permission(s) required to execute open order view
      */
@@ -122,9 +118,4 @@ public class SessionViewFactory
      */
     @Autowired
     private WebMessageService webMessageService;
-    /**
-     * creates new Fix Session values
-     */
-    @Autowired
-    private MutableActiveFixSessionFactory fixSessionFactory;
 }

@@ -19,6 +19,7 @@ import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.XmlService;
 import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.trade.AverageFillPrice;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
@@ -476,6 +477,14 @@ public class OrderTicketView
             brokerAlgoComboBox.setReadOnly(true);
             clearButton.setVisible(false);
         }
+        if(averageFillPriceOption.isPresent()) {
+            AverageFillPrice averageFillPrice = averageFillPriceOption.get();
+            symbolTextField.setValue(averageFillPrice.getInstrument().getFullSymbol());
+            quantityTextField.setValue(BigDecimalUtil.render(averageFillPrice.getCumulativeQuantity()));
+            orderTypeComboBox.setValue(OrderType.Limit);
+            priceTextField.setValue(BigDecimalUtil.renderCurrency(averageFillPrice.getAveragePrice()));
+            sideComboBox.setValue(averageFillPrice.getSide().isBuy()?Side.Sell:Side.Buy);
+        }
     }
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractComponent#detach()
@@ -571,6 +580,17 @@ public class OrderTicketView
             }
         }
         replaceExecutionReportOption = Optional.ofNullable(replaceExecutionReport);
+        xmlData = StringUtils.trimToNull(viewProperties.getProperty(AverageFillPrice.class.getCanonicalName()));
+        AverageFillPrice averageFillPrice = null;
+        if(xmlData != null) {
+            try {
+                averageFillPrice = xmlService.unmarshall(xmlData);
+            } catch (JAXBException e) {
+                Notification.show("Unable to trade order: " + PlatformServices.getMessage(e),
+                                  Type.ERROR_MESSAGE);
+            }
+        }
+        averageFillPriceOption = Optional.ofNullable(averageFillPrice);
     }
     /**
      * Create a new OrderTicketView instance.
@@ -675,6 +695,10 @@ public class OrderTicketView
      * optional replace execution report
      */
     private Optional<ExecutionReport> replaceExecutionReportOption;
+    /**
+     * optional average fill price
+     */
+    private Optional<AverageFillPrice> averageFillPriceOption;
     /**
      * token to indicate that the broker should be auto-selected
      */

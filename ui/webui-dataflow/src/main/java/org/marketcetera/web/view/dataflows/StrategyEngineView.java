@@ -15,11 +15,16 @@ import org.marketcetera.web.service.dataflow.DataFlowClientServiceInstance;
 import org.marketcetera.web.view.AbstractGridView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.PagedDataContainer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validatable;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -44,6 +49,8 @@ import com.vaadin.ui.themes.ValoTheme;
  * @version $Id$
  * @since $Release$
  */
+@SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class StrategyEngineView
         extends AbstractGridView<DecoratedStrategyEngine>
 {
@@ -84,10 +91,14 @@ public class StrategyEngineView
     /**
      * Create a new StrategyEngineView instance.
      *
-     * @param inViewProperties
+     * @param inParentWindow a <code>Window</code> value
+     * @param inViewProperties a <code>Properties</code> value
      */
-    StrategyEngineView(Properties inViewProperties)
+    public StrategyEngineView(Window inParentWindow,
+                              Properties inViewProperties)
     {
+        super(inParentWindow,
+              inViewProperties);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#onActionSelect(com.vaadin.data.Property.ValueChangeEvent)
@@ -130,7 +141,10 @@ public class StrategyEngineView
                     serviceInstance.disconnect();
                     break;
                 case ACTION_DATAFLOWS:
-                    ModuleView moduleView = new ModuleView(selectedItem);
+                    ModuleView moduleView = applicationContext.getBean(ModuleView.class,
+                                                                       getParentWindow(),
+                                                                       getViewProperties(),
+                                                                       selectedItem);
                     webMessageService.post(new NewWindowEvent() {
                         @Override
                         public String getWindowTitle()
@@ -351,27 +365,15 @@ public class StrategyEngineView
         UI.getCurrent().addWindow(formWindow);
     }
     /**
-     * Get the webMessageService value.
-     *
-     * @return a <code>WebMessageService</code> value
+     * provides access to the application context
      */
-    WebMessageService getWebMessageService()
-    {
-        return webMessageService;
-    }
-    /**
-     * Sets the webMessageService value.
-     *
-     * @param inWebMessageService a <code>WebMessageService</code> value
-     */
-    void setWebMessageService(WebMessageService inWebMessageService)
-    {
-        webMessageService = inWebMessageService;
-    }
+    @Autowired
+    private ApplicationContext applicationContext;
     /**
      * provides access to web message services
      */
-    protected WebMessageService webMessageService;
+    @Autowired
+    private WebMessageService webMessageService;
     /**
      * action examine data flows
      */

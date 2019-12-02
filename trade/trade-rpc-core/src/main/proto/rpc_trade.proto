@@ -38,6 +38,16 @@ message GetFillsResponse {
     repeated ExecutionReportSummary fills = 2;
 }
 
+message GetAverageFillPricesRequest {
+    string sessionId = 1;
+    PageRequest pageRequest = 2;
+}
+
+message GetAverageFillPricesResponse {
+    PageResponse pageResponse = 1;
+    repeated AverageFillPrice averageFillPrices = 2;
+}
+
 message SendOrderRequest {
     string sessionId = 1;
     repeated Order order = 2;
@@ -169,4 +179,5 @@ service TradeRpcService {
     rpc readAvailableFixInitiatorSessions(ReadAvailableFixInitiatorSessionsRequest) returns (ReadAvailableFixInitiatorSessionsResponse);
     rpc getReports(GetReportsRequest) returns (GetReportsResponse);
     rpc getFills(GetFillsRequest) returns (GetFillsResponse);
+    rpc getAverageFillPrices(GetAverageFillPricesRequest) returns (GetAverageFillPricesResponse);
 }

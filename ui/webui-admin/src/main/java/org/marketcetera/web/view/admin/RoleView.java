@@ -14,10 +14,14 @@ import org.marketcetera.admin.User;
 import org.marketcetera.admin.impl.SimpleRole;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.PagedDataContainer;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.TwinColSelect;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -28,16 +32,22 @@ import com.vaadin.ui.TwinColSelect;
  * @version $Id$
  * @since $Release$
  */
+@SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class RoleView
         extends AbstractAdminView<Role>
 {
     /**
      * Create a new RoleView instance.
      *
-     * @param inViewProperties
+     * @param inParentWindow a <code>Window</code> value
+     * @param inViewProperties a <code>Properties</code> value
      */
-    RoleView(Properties inViewProperties)
+    public RoleView(Window inParentWindow,
+                    Properties inViewProperties)
     {
+        super(inParentWindow,
+              inViewProperties);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.ContentView#getViewName()

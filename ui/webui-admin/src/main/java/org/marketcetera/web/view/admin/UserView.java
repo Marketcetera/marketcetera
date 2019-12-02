@@ -8,9 +8,12 @@ import org.marketcetera.admin.User;
 import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.PagedDataContainer;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Layout;
@@ -18,6 +21,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -28,17 +32,22 @@ import com.vaadin.ui.PasswordField;
  * @version $Id$
  * @since $Release$
  */
-@org.springframework.stereotype.Component
+@SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class UserView
         extends AbstractAdminView<User>
 {
     /**
      * Create a new UserView instance.
      *
-     * @param inViewProperties
+     * @param inParentWindow a <code>Window</code> value
+     * @param inViewProperties a <code>Properties</code> value
      */
-    UserView(Properties inViewProperties)
+    public UserView(Window inParentWindow,
+                    Properties inViewProperties)
     {
+        super(inParentWindow,
+              inViewProperties);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.ContentView#getViewName()

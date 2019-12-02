@@ -40,7 +40,9 @@ import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.trade.AverageFillPriceFactory;
 import org.marketcetera.trade.BasicSelector;
+import org.marketcetera.trade.SimpleAverageFillPriceFactory;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageBroadcastConnector;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageConverterConnector;
 import org.marketcetera.trade.event.connector.IncomingTradeMessagePersistenceConnector;
@@ -87,7 +89,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 @EntityScan(basePackages={"org.marketcetera","com.marketcetera"})
 @SpringBootApplication(scanBasePackages={"org.marketcetera","com.marketcetera"})
 @EnableJpaRepositories(basePackages={"org.marketcetera","com.marketcetera"})
-public class ServerApplication
+public class DareApplication
 {
     /**
      * Main application entry.
@@ -96,7 +98,7 @@ public class ServerApplication
      */
     public static void main(String[] inArgs)
     {
-        SpringApplication.run(ServerApplication.class,
+        SpringApplication.run(DareApplication.class,
                               inArgs);
     }
     /**
@@ -112,6 +114,16 @@ public class ServerApplication
                               org.marketcetera.core.Version.build_time,
                               org.marketcetera.core.Version.build_repository,
                               org.marketcetera.core.Version.build_path);
+    }
+    /**
+     * Get the average fill price factory value.
+     *
+     * @return an <code>AverageFillPriceFactory</code> value
+     */
+    @Bean
+    public AverageFillPriceFactory getAverageFillPriceFactory()
+    {
+        return new SimpleAverageFillPriceFactory();
     }
     /**
      * Get the message store configuration value.

@@ -254,7 +254,7 @@ public class MarketDataView
     /**
      * global name of this view
      */
-    private static final String NAME = "Cluster View";
+    private static final String NAME = "Market Data Detail View";
     /**
      * edit action label
      */

@@ -1,6 +1,7 @@
 package org.marketcetera.web.view.admin;
 
 import java.util.Iterator;
+import java.util.Properties;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.persist.NDEntityBase;
@@ -49,6 +50,18 @@ public abstract class AbstractAdminView<Clazz extends SummaryNDEntityBase>
     WebMessageService getWebMessageService()
     {
         return webMessageService;
+    }
+    /**
+     * Create a new AbstractAdminView instance.
+     *
+     * @param inParentWindow a <code>Window</code> value
+     * @param inViewProperties a <code>Properties</code> value
+     */
+    protected AbstractAdminView(Window inParentWindow,
+                                Properties inViewProperties)
+    {
+        super(inParentWindow,
+              inViewProperties);
     }
     /**
      * Sets the webMessageService value.

@@ -1,24 +1,22 @@
 package org.marketcetera.web.trade.fills.view;
 
 import java.util.Collections;
-import java.util.Properties;
 import java.util.Set;
 
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.web.trade.executionreport.view.AbstractExecutionReportViewFactory;
-import org.marketcetera.web.trade.openorders.view.OpenOrderView;
+import org.marketcetera.web.view.ContentView;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.collect.Sets;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Window;
 
 /* $License$ */
 
 /**
- * Creates {@link OpenOrderView} content objects.
+ * Creates {@link FillsView} content objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -28,16 +26,6 @@ import com.vaadin.ui.Window;
 public class FillsViewFactory
         extends AbstractExecutionReportViewFactory
 {
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
-     */
-    @Override
-    public FillsView create(Window inParent,
-                            Properties inViewProperties)
-    {
-        return applicationContext.getBean(FillsView.class,
-                                          inViewProperties);
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuCaption()
      */
@@ -52,7 +40,7 @@ public class FillsViewFactory
     @Override
     public int getWeight()
     {
-        return 400;
+        return fillsWeight;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
@@ -69,6 +57,14 @@ public class FillsViewFactory
     public Set<GrantedAuthority> getAllPermissions()
     {
         return requiredPermissions;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractContentViewFactory#getViewType()
+     */
+    @Override
+    protected Class<? extends ContentView> getViewType()
+    {
+        return FillsView.class;
     }
     /**
      * permission(s) required to execute open order view

@@ -2,6 +2,7 @@ package org.marketcetera.web.view.admin;
 
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
+import org.marketcetera.web.view.AbstractContentViewFactory;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.MenuContent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,8 @@ import com.vaadin.ui.MenuBar.MenuItem;
  * @since $Release$
  */
 public abstract class AbstractAdminViewFactory
-        implements ContentViewFactory,MenuContent
+        extends AbstractContentViewFactory
+        implements MenuContent
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCategory()

@@ -1,12 +1,10 @@
-package org.marketcetera.web.trade.orderticket.view;
+package org.marketcetera.web.trade.avgpx.view;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.marketcetera.core.Pair;
 import org.marketcetera.trade.TradePermissions;
-import org.marketcetera.web.trade.openorders.view.OpenOrderView;
-import org.marketcetera.web.trade.view.AbstractTradeViewFactory;
+import org.marketcetera.web.trade.executionreport.view.AbstractExecutionReportViewFactory;
 import org.marketcetera.web.view.ContentView;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -18,15 +16,15 @@ import com.vaadin.spring.annotation.SpringComponent;
 /* $License$ */
 
 /**
- * Creates {@link OpenOrderView} content objects.
+ * Creates {@link AveragePriceView} content objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @SpringComponent
-public class OrderTicketViewFactory
-        extends AbstractTradeViewFactory
+public class AveragePriceViewFactory
+        extends AbstractExecutionReportViewFactory
 {
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuCaption()
@@ -34,7 +32,7 @@ public class OrderTicketViewFactory
     @Override
     public String getMenuCaption()
     {
-        return "Order Ticket";
+        return "Average Price";
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getWeight()
@@ -42,7 +40,7 @@ public class OrderTicketViewFactory
     @Override
     public int getWeight()
     {
-        return orderTicketWeight;
+        return averagePriceWeight;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
@@ -50,7 +48,7 @@ public class OrderTicketViewFactory
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.BOOK;
+        return FontAwesome.CALCULATOR;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getAllPermissions()
@@ -61,32 +59,15 @@ public class OrderTicketViewFactory
         return requiredPermissions;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.web.trade.openorders.view.AbstractTradeViewFactory#getViewName()
-     */
-    @Override
-    protected String getViewName()
-    {
-        return getMenuCaption();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.trade.openorders.view.AbstractTradeViewFactory#getWindowSize()
-     */
-    @Override
-    protected Pair<String,String> getWindowSize()
-    {
-        return Pair.create("1350px", 
-                           "655px");
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.web.view.AbstractContentViewFactory#getViewType()
      */
     @Override
     protected Class<? extends ContentView> getViewType()
     {
-        return OrderTicketView.class;
+        return AveragePriceView.class;
     }
     /**
      * permission(s) required to execute open order view
      */
-    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(TradePermissions.SendOrderAction,TradePermissions.ViewBrokerStatusAction));
+    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(TradePermissions.ViewReportAction));
 }

@@ -1,20 +1,17 @@
 package org.marketcetera.web.trade.report.view;
 
 import java.util.Collections;
-import java.util.Properties;
 import java.util.Set;
 
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.web.trade.view.AbstractTradeViewFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.marketcetera.web.view.ContentView;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.collect.Sets;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -30,14 +27,12 @@ public class ReportViewFactory
         extends AbstractTradeViewFactory
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
+     * @see org.marketcetera.web.view.AbstractContentViewFactory#getViewType()
      */
     @Override
-    public ReportView create(Window inParent,
-                             Properties inViewProperties)
+    protected Class<? extends ContentView> getViewType()
     {
-        return applicationContext.getBean(ReportView.class,
-                                          inViewProperties);
+        return ReportView.class;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuCaption()
@@ -53,7 +48,7 @@ public class ReportViewFactory
     @Override
     public int getWeight()
     {
-        return 200;
+        return fixMessagesWeight;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
@@ -79,11 +74,6 @@ public class ReportViewFactory
     {
         return requiredPermissions;
     }
-    /**
-     * provides access to the application context
-     */
-    @Autowired
-    private ApplicationContext applicationContext;
     /**
      * permission(s) required to execute open order view
      */

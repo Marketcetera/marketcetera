@@ -3,6 +3,7 @@ package org.marketcetera.web.trade.view;
 import org.marketcetera.core.Pair;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
+import org.marketcetera.web.view.AbstractContentViewFactory;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.MenuContent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ import com.vaadin.ui.MenuBar.MenuItem;
  * @since $Release$
  */
 public abstract class AbstractTradeViewFactory
-        implements ContentViewFactory,MenuContent
+        extends AbstractContentViewFactory
+        implements MenuContent
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCategory()
@@ -97,6 +99,26 @@ public abstract class AbstractTradeViewFactory
             return AbstractTradeViewFactory.this.getWindowSize();
         }
     }
+    /**
+     * weight of open orders menu item
+     */
+    protected static final int openOrdersWeight = 100;
+    /**
+     * weight of average price menu item
+     */
+    protected static final int averagePriceWeight = 200;
+    /**
+     * weight of fills menu item
+     */
+    protected static final int fillsWeight = 300;
+    /**
+     * weight of fix messages menu item
+     */
+    protected static final int fixMessagesWeight = 400;
+    /**
+     * weight of order ticket menu item
+     */
+    protected static final int orderTicketWeight = 500;
     /**
      * provides access to web message services
      */

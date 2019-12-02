@@ -12,6 +12,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
 import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -38,11 +39,14 @@ public class ReportView
     /**
      * Create a new SessionView instance.
      *
+     * @param inParentWindow a <code>Window</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    public ReportView(Properties inViewProperties)
+    public ReportView(Window inParentWindow,
+                      Properties inViewProperties)
     {
-        super(inViewProperties);
+        super(inParentWindow,
+              inViewProperties);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#setGridColumns()

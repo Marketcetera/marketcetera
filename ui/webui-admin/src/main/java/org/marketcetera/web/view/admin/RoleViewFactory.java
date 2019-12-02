@@ -1,13 +1,11 @@
 package org.marketcetera.web.view.admin;
 
-import java.util.Properties;
-
 import org.marketcetera.admin.Role;
+import org.marketcetera.web.view.ContentView;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -22,17 +20,6 @@ import com.vaadin.ui.Window;
 public class RoleViewFactory
         extends AbstractAdminViewFactory
 {
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
-     */
-    @Override
-    public RoleView create(Window inParent,
-                           Properties inViewProperties)
-    {
-        RoleView roleView = new RoleView(inViewProperties);
-        roleView.setWebMessageService(webMessageService);
-        return roleView;
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuCaption()
      */
@@ -64,5 +51,13 @@ public class RoleViewFactory
     protected String getViewName()
     {
         return "Roles";
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractContentViewFactory#getViewType()
+     */
+    @Override
+    protected Class<? extends ContentView> getViewType()
+    {
+        return RoleView.class;
     }
 }

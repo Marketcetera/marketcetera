@@ -1,9 +1,9 @@
 package org.marketcetera.web.view.cluster;
 
-import java.util.Properties;
-
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
+import org.marketcetera.web.view.AbstractContentViewFactory;
+import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.MenuContent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -27,19 +26,9 @@ import com.vaadin.ui.Window;
  */
 @SpringComponent
 public class ClusterViewFactory
-        implements ContentViewFactory,MenuContent
+        extends AbstractContentViewFactory
+        implements MenuContent
 {
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
-     */
-    @Override
-    public ClusterView create(Window inParent,
-                              Properties inViewProperties)
-    {
-        ClusterView ClusterView = new ClusterView(inViewProperties);
-        ClusterView.setWebMessageService(webMessageService);
-        return ClusterView;
-    }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
      */
@@ -97,6 +86,14 @@ public class ClusterViewFactory
             }
             private static final long serialVersionUID = 49365592058433460L;
         };
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractContentViewFactory#getViewType()
+     */
+    @Override
+    protected Class<? extends ContentView> getViewType()
+    {
+        return ClusterView.class;
     }
     /**
      * provides access to web message services

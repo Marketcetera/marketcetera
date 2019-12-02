@@ -27,6 +27,8 @@ import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.AbstractGridView;
 import org.marketcetera.web.view.PagedDataContainer;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 import org.vaadin.teemu.wizards.event.WizardCancelledEvent;
@@ -46,6 +48,7 @@ import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -80,6 +83,8 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
+@SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SessionView
         extends AbstractGridView<DisplayFixSession>
 {
@@ -140,10 +145,14 @@ public class SessionView
     /**
      * Create a new SessionView instance.
      *
+     * @param inParentWindow a <code>Window</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    SessionView(Properties inViewProperties)
+    public SessionView(Window inParentWindow,
+                       Properties inViewProperties)
     {
+        super(inParentWindow,
+              inViewProperties);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#setGridColumns()

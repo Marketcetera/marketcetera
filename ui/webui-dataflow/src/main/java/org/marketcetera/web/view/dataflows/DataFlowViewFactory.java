@@ -1,9 +1,9 @@
 package org.marketcetera.web.view.dataflows;
 
-import java.util.Properties;
-
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
+import org.marketcetera.web.view.AbstractContentViewFactory;
+import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.MenuContent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -27,18 +26,16 @@ import com.vaadin.ui.Window;
  */
 @SpringComponent
 public class DataFlowViewFactory
-        implements ContentViewFactory,MenuContent
+        extends AbstractContentViewFactory
+        implements MenuContent
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
+     * @see org.marketcetera.web.view.AbstractContentViewFactory#getViewType()
      */
     @Override
-    public StrategyEngineView create(Window inParent,
-                                     Properties inViewProperties)
+    protected Class<? extends ContentView> getViewType()
     {
-        StrategyEngineView StrategyEngineView = new StrategyEngineView(inViewProperties);
-        StrategyEngineView.setWebMessageService(webMessageService);
-        return StrategyEngineView;
+        return StrategyEngineView.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getMenuCaption()

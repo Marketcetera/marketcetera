@@ -251,7 +251,7 @@
               <systemProperties>
                 <systemProperty>
                   <key>org.marketcetera.app</key>
-                  <value>org.marketcetera.server.ServerApplication</value>
+                  <value>org.marketcetera.server.DareApplication</value>
                 </systemProperty>
                 <systemProperty>
                   <key>org.marketcetera.appDir</key>

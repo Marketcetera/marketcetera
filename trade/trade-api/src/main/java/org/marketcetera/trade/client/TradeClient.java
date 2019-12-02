@@ -12,6 +12,7 @@ import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
+import org.marketcetera.trade.AverageFillPrice;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionReportSummary;
@@ -173,4 +174,11 @@ public interface TradeClient
      * @return a <code>CollectionPageResponse&lt;ExecutionReportSummary&gt;</code> value
      */
     CollectionPageResponse<ExecutionReportSummary> getFills(PageRequest inPageRequest);
+    /**
+     * Get average price fills values.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;AveragePriceFill&gt;</code> value
+     */
+    CollectionPageResponse<AverageFillPrice> getAveragePriceFills(PageRequest inPageRequest);
 }

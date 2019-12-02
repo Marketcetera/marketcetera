@@ -37,6 +37,8 @@ import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.rpc.base.BaseRpcUtil.AbstractClientListenerProxy;
 import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.rpc.paging.PagingRpcUtil;
+import org.marketcetera.trade.AverageFillPrice;
+import org.marketcetera.trade.AverageFillPriceFactory;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionReportSummary;
@@ -490,6 +492,39 @@ public class TradeRpcClient
         });
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#getAveragePriceFills(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public CollectionPageResponse<AverageFillPrice> getAveragePriceFills(PageRequest inPageRequest)
+    {
+        return executeCall(new Callable<CollectionPageResponse<AverageFillPrice>>(){
+            @Override
+            public CollectionPageResponse<AverageFillPrice> call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{}: {}",
+                                       getSessionId(),
+                                       inPageRequest);
+                TradeRpc.GetAverageFillPricesRequest.Builder requestBuilder = TradeRpc.GetAverageFillPricesRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setPageRequest(PagingRpcUtil.buildPageRequest(inPageRequest));
+                TradeRpc.GetAverageFillPricesResponse response = getBlockingStub().getAverageFillPrices(requestBuilder.build());
+                CollectionPageResponse<AverageFillPrice> results = new CollectionPageResponse<>();
+                response.getAverageFillPricesList().forEach(rpcAverageFillPrice->results.getElements().add(TradeRpcUtil.getAverageFillPrice(rpcAverageFillPrice,
+                                                                                                                                            averageFillPriceFactory)));
+                PagingRpcUtil.setPageResponse(inPageRequest,
+                                              response.getPageResponse(),
+                                              results);
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       results);
+                return results;
+            }
+        });
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#getOpenOrders()
      */
     @Override
@@ -926,11 +961,29 @@ public class TradeRpcClient
         executionReportSummaryFactory = inExecutionReportSummaryFactory;
     }
     /**
+     * Get the averageFillPriceFactory value.
+     *
+     * @return an <code>AverageFillPriceFactory</code> value
+     */
+    public AverageFillPriceFactory getAverageFillPriceFactory()
+    {
+        return averageFillPriceFactory;
+    }
+    /**
+     * Sets the averageFillPriceFactory value.
+     *
+     * @param inAverageFillPriceFactory an <code>AverageFillPriceFactory</code> value
+     */
+    public void setAverageFillPriceFactory(AverageFillPriceFactory inAverageFillPriceFactory)
+    {
+        averageFillPriceFactory = inAverageFillPriceFactory;
+    }
+    /**
      * Create a new TradeRpcClient instance.
      *
      * @param inParameters a <code>TradeRpcClientParameters</code> value
      */
-    TradeRpcClient(TradeRpcClientParameters inParameters)
+    public TradeRpcClient(TradeRpcClientParameters inParameters)
     {
         super(inParameters);
     }
@@ -1041,6 +1094,10 @@ public class TradeRpcClient
             super(inTradeMessageListener);
         }
     }
+    /**
+     * creates {@link AverageFillPrice} objects
+     */
+    private AverageFillPriceFactory averageFillPriceFactory;
     /**
      * creates {@link MutableExecutionReportSummary} objects
      */

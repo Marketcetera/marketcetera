@@ -20,6 +20,7 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.trade.AverageFillPrice;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionReportSummary;
@@ -287,6 +288,14 @@ public class DirectTradeClient
     public ExecutionReport getLatestExecutionReportForOrderChain(OrderID inOrderId)
     {
         return reportService.getLatestExecutionReportForOrderChain(inOrderId).orElse(null);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#getAveragePriceFills(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public CollectionPageResponse<AverageFillPrice> getAveragePriceFills(PageRequest inPageRequest)
+    {
+        return reportService.getAverageFillPrices(inPageRequest);
     }
     /**
      * Get the applicationContext value.

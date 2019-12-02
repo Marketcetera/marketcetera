@@ -5,7 +5,6 @@ import java.util.Properties;
 import javax.xml.bind.JAXBException;
 
 import org.marketcetera.core.PlatformServices;
-import org.marketcetera.core.XmlService;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderCancel;
@@ -13,19 +12,15 @@ import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
-import org.marketcetera.web.service.AuthorizationHelperService;
-import org.marketcetera.web.service.ServiceManager;
-import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.trade.TradeClientService;
 import org.marketcetera.web.trade.event.FixMessageDetailsViewEvent;
 import org.marketcetera.web.trade.event.ReplaceOrderEvent;
 import org.marketcetera.web.view.AbstractGridView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -78,11 +73,14 @@ public abstract class AbstractHasFixMessageView<DisplayClazz extends FixMessageD
     /**
      * Create a new FillsView instance.
      *
+     * @param inParentWindow a <code>Window</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    protected AbstractHasFixMessageView(Properties inViewProperties)
+    protected AbstractHasFixMessageView(Window inParentWindow,
+                                        Properties inViewProperties)
     {
-        viewProperties = inViewProperties;
+        super(inParentWindow,
+              inViewProperties);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#onActionSelect(com.vaadin.data.Property.ValueChangeEvent)
@@ -164,35 +162,6 @@ public abstract class AbstractHasFixMessageView<DisplayClazz extends FixMessageD
                 throw new UnsupportedOperationException("Unsupported action: " + action);
         }
     }
-    /**
-     * provides access to XML services
-     */
-    @Autowired
-    private XmlService xmlService;
-    /**
-     * provides access to the application context
-     */
-    @Autowired
-    private ApplicationContext applicationContext;
-    /**
-     * provides access to web message services
-     */
-    @Autowired
-    private WebMessageService webMessageService;
-    /**
-     * provides access to client services
-     */
-    @Autowired
-    private ServiceManager serviceManager;
-    /**
-     * helps determine if authorization is granted for actions
-     */
-    @Autowired
-    private AuthorizationHelperService authzHelperService;
-    /**
-     * holds properties used to initialize view
-     */
-    protected final Properties viewProperties;
     /**
      * view FIX message details action
      */

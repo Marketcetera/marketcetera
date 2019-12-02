@@ -1,10 +1,16 @@
 package org.marketcetera.web.view.dataflows;
 
+import java.util.Properties;
+
 import org.marketcetera.web.view.AbstractGridView;
 import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.PagedDataContainer;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -15,6 +21,8 @@ import com.vaadin.data.Property.ValueChangeEvent;
  * @version $Id$
  * @since $Release$
  */
+@SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ModuleView
         extends AbstractGridView<DecoratedModuleInfo>
         implements ContentView
@@ -22,11 +30,17 @@ public class ModuleView
     /**
      * Create a new ModuleView instance.
      *
-     * @param inSelectedItem a <code>DecoratedStrategyEngine</code> value
+     * @param inParentWindow a <code>Window</code> value
+     * @param inViewProperties a <code>Properties</code> value
+     * @param inStrategyEngine a <code>DecoratedStrategyEngine</code> value
      */
-    public ModuleView(DecoratedStrategyEngine inSelectedItem)
+    public ModuleView(Window inParentWindow,
+                      Properties inViewProperties,
+                      DecoratedStrategyEngine inStrategyEngine)
     {
-        strategyEngine = inSelectedItem;
+        super(inParentWindow,
+              inViewProperties);
+        strategyEngine = inStrategyEngine;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()

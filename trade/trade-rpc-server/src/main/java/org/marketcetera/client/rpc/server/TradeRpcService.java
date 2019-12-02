@@ -30,6 +30,7 @@ import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.trade.AverageFillPrice;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionReportSummary;
@@ -58,6 +59,8 @@ import org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsAsOfRequest;
 import org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsAsOfResponse;
 import org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsByRootAsOfRequest;
 import org.marketcetera.trade.rpc.TradeRpc.GetAllPositionsByRootAsOfResponse;
+import org.marketcetera.trade.rpc.TradeRpc.GetAverageFillPricesRequest;
+import org.marketcetera.trade.rpc.TradeRpc.GetAverageFillPricesResponse;
 import org.marketcetera.trade.rpc.TradeRpc.GetFillsRequest;
 import org.marketcetera.trade.rpc.TradeRpc.GetFillsResponse;
 import org.marketcetera.trade.rpc.TradeRpc.GetLatestExecutionReportForOrderChainRequest;
@@ -225,6 +228,37 @@ public class TradeRpcService<SessionClazz>
                 responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
                                                                               reportPage));
                 TradeRpc.GetFillsResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Responding: {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,
+                            inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#getAverageFillPrices(org.marketcetera.trade.rpc.TradeRpc.GetAverageFillPricesRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getAverageFillPrices(GetAverageFillPricesRequest inRequest,
+                                         StreamObserver<GetAverageFillPricesResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradePermissions.ViewReportAction.name());
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Received {}",
+                                       inRequest);
+                TradeRpc.GetAverageFillPricesResponse.Builder responseBuilder = TradeRpc.GetAverageFillPricesResponse.newBuilder();
+                PageRequest pageRequest = inRequest.hasPageRequest()?PagingRpcUtil.getPageRequest(inRequest.getPageRequest()):PageRequest.ALL;
+                CollectionPageResponse<AverageFillPrice> reportPage = reportService.getAverageFillPrices(pageRequest);
+                reportPage.getElements().forEach(averageFillPrice->responseBuilder.addAverageFillPrices(TradeRpcUtil.getRpcAverageFillPrice(averageFillPrice)));
+                responseBuilder.setPageResponse(PagingRpcUtil.getPageResponse(pageRequest,
+                                                                              reportPage));
+                TradeRpc.GetAverageFillPricesResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
                                        "Responding: {}",
                                        response);

@@ -1,20 +1,17 @@
 package org.marketcetera.web.trade.openorders.view;
 
 import java.util.Collections;
-import java.util.Properties;
 import java.util.Set;
 
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.web.trade.view.AbstractTradeViewFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.marketcetera.web.view.ContentView;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.collect.Sets;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Window;
 
 /* $License$ */
 
@@ -30,16 +27,6 @@ public class OpenOrderViewFactory
         extends AbstractTradeViewFactory
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
-     */
-    @Override
-    public OpenOrderView create(Window inParent,
-                                Properties inViewProperties)
-    {
-        return applicationContext.getBean(OpenOrderView.class,
-                                          inViewProperties);
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuCaption()
      */
     @Override
@@ -53,7 +40,7 @@ public class OpenOrderViewFactory
     @Override
     public int getWeight()
     {
-        return 100;
+        return openOrdersWeight;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
@@ -79,11 +66,14 @@ public class OpenOrderViewFactory
     {
         return requiredPermissions;
     }
-    /**
-     * provides access to the application context
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractContentViewFactory#getViewType()
      */
-    @Autowired
-    private ApplicationContext applicationContext;
+    @Override
+    protected Class<? extends ContentView> getViewType()
+    {
+        return OpenOrderView.class;
+    }
     /**
      * permission(s) required to execute open order view
      */
