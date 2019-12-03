@@ -1,6 +1,7 @@
 package org.marketcetera.web.marketdata.list.view;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,8 @@ import org.marketcetera.web.view.AbstractContentView;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.google.common.collect.Maps;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.grid.ColumnResizeMode;
@@ -29,6 +32,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -96,18 +100,18 @@ public class MarketDataListView
         addComponents(symbolEntryLayout,
                       marketDataGridLayout);
         marketDataGrid = new Grid();
-        marketDataGrid.addColumn("Symbol",
-                                 String.class);
+        Column symbolColumn = marketDataGrid.addColumn("Symbol",
+                                                       String.class);
         marketDataGrid.addColumn("Trade Px",
-                                 BigDecimal.class).setConverter(DecimalConverter.instance);
+                                 BigDecimal.class).setConverter(DecimalConverter.instanceZeroAsNull);
         marketDataGrid.addColumn("Trade Qty",
                                  BigDecimal.class);
         marketDataGrid.addColumn("Bid Qty",
                                  BigDecimal.class);
         marketDataGrid.addColumn("Bid Px",
-                                 BigDecimal.class).setConverter(DecimalConverter.instance);
+                                 BigDecimal.class).setConverter(DecimalConverter.instanceZeroAsNull);
         marketDataGrid.addColumn("Offer Px",
-                                 BigDecimal.class).setConverter(DecimalConverter.instance);
+                                 BigDecimal.class).setConverter(DecimalConverter.instanceZeroAsNull);
         marketDataGrid.addColumn("Offer Qty",
                                  BigDecimal.class);
 //                                  "Trade Qty",
@@ -125,46 +129,36 @@ public class MarketDataListView
         marketDataGrid.setColumnReorderingAllowed(true);
         marketDataGrid.setColumnResizeMode(ColumnResizeMode.ANIMATED);
         marketDataGrid.setSelectionMode(SelectionMode.SINGLE);
+//        marketDataGrid.setSortOrder(Lists.newArrayList(new SortOrder(symbolColumn,
+//                                                                     SortDirection.ASCENDING)));
         marketDataGrid.setId(getClass().getCanonicalName() + ".marketDataGrid");
         styleService.addStyle(marketDataGrid);
         marketDataGridLayout.addComponents(marketDataGrid);
         marketDataSymbolText = new TextField();
+        marketDataSymbolText.addValueChangeListener(inEvent -> {
+            String value = StringUtils.trimToNull(marketDataSymbolText.getValue());
+            addMarketDataSymbolButton.setReadOnly(value != null);
+        });
         addMarketDataSymbolButton = new Button();
+        addMarketDataSymbolButton.setReadOnly(true);
         addMarketDataSymbolButton.setIcon(FontAwesome.PLUS_CIRCLE);
+        addMarketDataSymbolButton.setClickShortcut(KeyCode.ENTER);
         addMarketDataSymbolButton.addClickListener(inClickEvent -> {
             String newSymbol = StringUtils.trimToNull(marketDataSymbolText.getValue());
-            if(newSymbol != null) {
-                MarketDataClientService marketDataClientService = serviceManager.getService(MarketDataClientService.class);
-                Instrument resolvedInstrument = serviceManager.getService(TradeClientService.class).resolveSymbol(newSymbol);
-                AssetClass assetClass = AssetClass.EQUITY;
-                if(resolvedInstrument != null) {
-                    assetClass = AssetClass.getFor(resolvedInstrument.getSecurityType());
-                }
-                MarketDataRequestBuilder requestBuilder = MarketDataRequestBuilder.newRequest();
-                requestBuilder.withAssetClass(assetClass).withSymbols(newSymbol).withContent(Content.LATEST_TICK,Content.MARKET_STAT,Content.TOP_OF_BOOK);
-                String requestId = marketDataClientService.request(requestBuilder.create(),
-                                                                   new MarketDataListener() {
-                    /* (non-Javadoc)
-                     * @see org.marketcetera.marketdata.MarketDataListener#receiveMarketData(org.marketcetera.event.Event)
-                     */
-                    @Override
-                    public void receiveMarketData(org.marketcetera.event.Event inEvent)
-                    {
-                        SLF4JLoggerProxy.warn(MarketDataListView.this,
-                                              "COCO: received {}",
-                                              inEvent);
-                    }
-                    /* (non-Javadoc)
-                     * @see org.marketcetera.marketdata.MarketDataListener#onError(java.lang.Throwable)
-                     */
-                    @Override
-                    public void onError(Throwable inThrowable)
-                    {
-                        SLF4JLoggerProxy.warn(MarketDataListView.this,
-                                              inThrowable,
-                                              "COCO: error");
-                    }
-                });
+            if(newSymbol != null && !rowsBySymbol.containsKey(newSymbol)) {
+                Object rowId = marketDataGrid.addRow(newSymbol,
+                                                     null,
+                                                     null,
+                                                     null,
+                                                     null,
+                                                     null,
+                                                     null);
+                MarketDataRow marketDataRow = new MarketDataRow(newSymbol,
+                                                                rowId);
+                rowsBySymbol.put(newSymbol,
+                                 marketDataRow);
+                marketDataSymbolText.clear();
+                marketDataSymbolText.focus();
             }
         });
         addMarketDataSymbolButton.setId(getClass().getCanonicalName() + ".addMarketDataSymbolButton");
@@ -172,9 +166,30 @@ public class MarketDataListView
         symbolEntryLayout.addComponents(marketDataSymbolText,
                                         addMarketDataSymbolButton);
     }
+    private final Map<String,MarketDataRow> rowsBySymbol = Maps.newHashMap();
     private class MarketDataRow
-            implements Comparable<MarketDataRow>
+            implements Comparable<MarketDataRow>,MarketDataListener
     {
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.MarketDataListener#receiveMarketData(org.marketcetera.event.Event)
+         */
+        @Override
+        public void receiveMarketData(org.marketcetera.event.Event inEvent)
+        {
+            SLF4JLoggerProxy.warn(MarketDataListView.this,
+                                  "COCO: received {}",
+                                  inEvent);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.MarketDataListener#onError(java.lang.Throwable)
+         */
+        @Override
+        public void onError(Throwable inThrowable)
+        {
+            SLF4JLoggerProxy.warn(MarketDataListView.this,
+                                  inThrowable,
+                                  "COCO: error");
+        }
         /* (non-Javadoc)
          * @see java.lang.Comparable#compareTo(java.lang.Object)
          */
@@ -183,8 +198,34 @@ public class MarketDataListView
         {
             return inO.symbol.compareTo(symbol);
         }
-        private String requestId;
-        private String symbol;
+        /**
+         * Create a new MarketDataRow instance.
+         *
+         * @param inSymbol
+         * @param inAssetClass
+         * @param inRowId 
+         */
+        private MarketDataRow(String inSymbol,
+                              Object inRowId)
+        {
+            symbol = inSymbol;
+            rowId = inRowId;
+            AssetClass assetClass = AssetClass.EQUITY;
+            MarketDataClientService marketDataClientService = serviceManager.getService(MarketDataClientService.class);
+            Instrument resolvedInstrument = serviceManager.getService(TradeClientService.class).resolveSymbol(symbol);
+            if(resolvedInstrument != null) {
+                assetClass = AssetClass.getFor(resolvedInstrument.getSecurityType());
+            }
+            MarketDataRequestBuilder requestBuilder = MarketDataRequestBuilder.newRequest();
+            requestBuilder.withAssetClass(assetClass).withSymbols(symbol).withContent(Content.LATEST_TICK,
+                                                                                      Content.MARKET_STAT,
+                                                                                      Content.TOP_OF_BOOK);
+            requestId = marketDataClientService.request(requestBuilder.create(),
+                                                        this);
+        }
+        private final String symbol;
+        private final Object rowId;
+        private final String requestId;
         private BidEvent bidEvent;
         private AskEvent askEvent;
         private TradeEvent tradeEvent;

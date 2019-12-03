@@ -33,6 +33,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>marketdata-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>eventbus-api</artifactId>
+    </dependency>
     <!-- test -->
     <dependency>
       <groupId>${project.groupId}</groupId>

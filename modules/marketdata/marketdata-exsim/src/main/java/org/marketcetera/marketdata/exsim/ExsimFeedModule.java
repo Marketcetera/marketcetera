@@ -10,11 +10,16 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.BatchQueueProcessor;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
@@ -25,22 +30,17 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
-import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.CapabilityCollection;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.OrderBook;
+import org.marketcetera.marketdata.event.MarketDataRequestEvent;
+import org.marketcetera.marketdata.event.SimpleGeneratedMarketDataEvent;
 import org.marketcetera.module.AutowiredModule;
-import org.marketcetera.module.DataEmitter;
-import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.Module;
-import org.marketcetera.module.ModuleException;
-import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.RequestDataException;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.StopDataFlowException;
@@ -59,32 +59,18 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import quickfix.Application;
-import quickfix.ConfigError;
-import quickfix.DoNotSend;
-import quickfix.FieldNotFound;
-import quickfix.Group;
-import quickfix.IncorrectDataFormat;
-import quickfix.IncorrectTagValue;
-import quickfix.LogFactory;
-import quickfix.MemoryStoreFactory;
-import quickfix.Message;
-import quickfix.MessageStoreFactory;
-import quickfix.RejectLogon;
-import quickfix.Session;
-import quickfix.SessionFactory;
-import quickfix.SessionID;
-import quickfix.SessionNotFound;
-import quickfix.SessionSettings;
-import quickfix.SocketInitiator;
-import quickfix.UnsupportedMessageType;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.eventbus.Subscribe;
+
+import quickfix.ConfigError;
+
 
 /* $License$ */
 
@@ -96,14 +82,9 @@ import com.google.common.collect.Maps;
  * @since $Release$
  */
 @AutowiredModule
+@EnableAutoConfiguration
 public class ExsimFeedModule
-        extends Module
-        implements DataEmitter,AbstractMarketDataModuleMXBean
 {
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getFeedStatus()
-     */
-    @Override
     public String getFeedStatus()
     {
         if(feedStatus == null) {
@@ -111,50 +92,30 @@ public class ExsimFeedModule
         }
         return feedStatus.name();
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#reconnect()
-     */
-    @Override
     public void reconnect()
+            throws quickfix.ConfigError
     {
-        preStop();
-        preStart();
+        stop();
+        start();
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#disconnect()
-     */
-    @Override
     public void disconnect()
     {
-        preStop();
+        stop();
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getCapabilities()
-     */
-    @Override
     public Set<Capability> getCapabilities()
     {
         return supportedCapabilities;
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getAssetClasses()
-     */
-    @Override
     public Set<AssetClass> getAssetClasses()
     {
         return supportedAssetClasses;
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
-     */
-    @Override
-    public void requestData(DataRequest inRequest,
-                            DataEmitterSupport inSupport)
-            throws RequestDataException
+    private void requestData(MarketDataRequest inMarketDataRequest,
+                            String inRequestId)
     {
         SLF4JLoggerProxy.debug(this,
                                "Received a data flow request: {}", //$NON-NLS-1$
-                               inRequest);
+                               inMarketDataRequest);
         if(!feedStatus.isRunning()) {
             try {
                 long timestamp = System.currentTimeMillis();
@@ -162,57 +123,32 @@ public class ExsimFeedModule
                     Thread.sleep(100);
                 }
             } catch (InterruptedException e) {
-                throw new RequestDataException(Messages.FEED_OFFLINE);
+                throw new CoreException(Messages.FEED_OFFLINE);
             }
             if(!feedStatus.isRunning()) {
-                throw new RequestDataException(Messages.FEED_OFFLINE);
+                throw new CoreException(Messages.FEED_OFFLINE);
             }
         }
-        Object payload = inRequest.getData();
         try {
-            if(payload == null) {
-                throw new RequestDataException(Messages.DATA_REQUEST_PAYLOAD_REQUIRED);
-            }
-            if(payload instanceof String) {
-                String stringPayload = (String)payload;
-                try {
-                    doMarketDataRequest(MarketDataRequestBuilder.newRequestFromString(stringPayload),
-                                        inRequest,
-                                        inSupport);
-                } catch (Exception e) {
-                    throw new RequestDataException(new I18NBoundMessage2P(Messages.INVALID_DATA_REQUEST_PAYLOAD,
-                                                                          stringPayload,
-                                                                          ExceptionUtils.getRootCause(e)));
-                }
-            } else if(payload instanceof MarketDataRequest) {
-                doMarketDataRequest((MarketDataRequest)payload,
-                                    inRequest,
-                                    inSupport);
-            } else {
-                throw new RequestDataException(new I18NBoundMessage1P(Messages.UNSUPPORTED_DATA_REQUEST_PAYLOAD,
-                                                                      payload.getClass().getSimpleName()));
-            }
+            doMarketDataRequest(inMarketDataRequest,
+                                inRequestId);
         } catch (Exception e) {
             if(SLF4JLoggerProxy.isDebugEnabled(this)) {
                 Messages.MARKET_DATA_REQUEST_FAILED.warn(this,
                                                          e,
-                                                         inRequest,
+                                                         inMarketDataRequest,
                                                          ExceptionUtils.getRootCauseMessage(e));
             } else {
                 Messages.MARKET_DATA_REQUEST_FAILED.warn(this,
-                                                         inRequest,
+                                                         inMarketDataRequest,
                                                          ExceptionUtils.getRootCauseMessage(e));
             }
             throw new RequestDataException(e,
                                            new I18NBoundMessage2P(Messages.MARKET_DATA_REQUEST_FAILED,
-                                                                  inRequest,
+                                                                  inMarketDataRequest,
                                                                   ExceptionUtils.getRootCause(e)));
         }
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.DataFlowID, org.marketcetera.module.RequestID)
-     */
-    @Override
     public void cancel(DataFlowID inFlowId,
                        RequestID inRequestID)
     {
@@ -240,84 +176,109 @@ public class ExsimFeedModule
             }
         }
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.module.Module#preStart()
+    /**
+     * Notifies the object when a new market data request is made.
+     *
+     * @param inEvent a <code>MarketDataRequestEvent</code> value
      */
-    @Override
-    protected void preStart()
-            throws ModuleException
+    @Subscribe
+    public void onMarketDataRequest(MarketDataRequestEvent inEvent)
     {
-        if(exsimFeedConfig == null) {
-            throw new ModuleException(Messages.FEED_CONFIG_REQUIRED);
-        }
-        try {
-            CapabilityCollection.reportCapability(getCapabilities());
-            fixMessageProcessor = new FixMessageProcessor();
-            fixMessageProcessor.start();
-            String aplVersion = exsimFeedConfig.getFixAplVersion();
-            FIXVersion version;
-            if(aplVersion == null) {
-                version = FIXVersion.getFIXVersion(exsimFeedConfig.getFixVersion());
-            } else {
-                version = FIXVersion.getFIXVersion(aplVersion);
-            }
-            messageFactory = version.getMessageFactory();
-            application = new FixApplication();
-            sessionId = exsimFeedConfig.getSessionId();
-            SessionSettings sessionSettings = new SessionSettings();
-            exsimFeedConfig.populateSessionSettings(sessionSettings);
-            sessionSettings.setString(SessionFactory.SETTING_CONNECTION_TYPE,
-                                      SessionFactory.INITIATOR_CONNECTION_TYPE);
+        if(!inEvent.getMarketDataRequestProvider().isPresent() || StringUtils.equalsIgnoreCase(inEvent.getMarketDataRequestProvider().get(),
+                                                                                       IDENTIFIER)) {
+            SLF4JLoggerProxy.info(this,
+                                  "{} accepting {}",
+                                  IDENTIFIER,
+                                  inEvent);
+            requestData(inEvent.getMarketDataRequest(),
+                        inEvent.getMarketDataRequestId());
+        } else {
             SLF4JLoggerProxy.debug(this,
-                                   "Session settings: {}", //$NON-NLS-1$
-                                   sessionSettings);
-            LogFactory logFactory = new NullLogFactory();
-            MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
-            socketInitiator = new SocketInitiator(application,
-                                                  messageStoreFactory,
-                                                  sessionSettings,
-                                                  logFactory,
-                                                  messageFactory.getUnderlyingMessageFactory());
-            socketInitiator.start();
-        } catch (ConfigError e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
-            throw new ModuleException(e);
+                                   "Ignoring {} because we're the wrong provider",
+                                   inEvent);
         }
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.module.Module#preStop()
+    /**
+     * Validate and start the object.
+     *
+     * @throws ConfigError if the object cannot be started
      */
-    @Override
-    protected void preStop()
-            throws ModuleException
+    @PostConstruct
+    public void start()
+            throws quickfix.ConfigError
     {
-        updateFeedStatus(FeedStatus.OFFLINE);
-        if(fixMessageProcessor != null) {
-            try {
-                fixMessageProcessor.stop();
-            } catch (Exception ignored) {}
-            fixMessageProcessor = null;
+        CapabilityCollection.reportCapability(getCapabilities());
+        fixMessageProcessor = new FixMessageProcessor();
+        fixMessageProcessor.start();
+        FIXVersion version;
+        fixAplVersion = StringUtils.trimToNull(fixAplVersion);
+        if(fixAplVersion == null) {
+            version = FIXVersion.getFIXVersion(fixVersion);
+        } else {
+            version = FIXVersion.getFIXVersion(fixAplVersion);
         }
-        if(socketInitiator != null) {
-            try {
-                socketInitiator.stop();
-            } catch (Exception ignored) {}
-            socketInitiator = null;
+        messageFactory = version.getMessageFactory();
+        application = new FixApplication();
+        if(senderCompId == null) {
+            throw new CoreException(Messages.SENDER_COMPID_REQURED);
         }
-        messageFactory = null;
-        sessionId = null;
-        application = null;
+        sessionId = new quickfix.SessionID(fixVersion,
+                                           senderCompId,
+                                           targetCompId);
+        quickfix.SessionSettings sessionSettings = new quickfix.SessionSettings();
+        populateSessionSettings(sessionSettings);
+        sessionSettings.setString(quickfix.SessionFactory.SETTING_CONNECTION_TYPE,
+                                  quickfix.SessionFactory.INITIATOR_CONNECTION_TYPE);
+        SLF4JLoggerProxy.debug(this,
+                               "Session settings: {}", //$NON-NLS-1$
+                               sessionSettings);
+        quickfix.LogFactory logFactory = new NullLogFactory();
+        quickfix.MessageStoreFactory messageStoreFactory = new quickfix.MemoryStoreFactory();
+        socketInitiator = new quickfix.SocketInitiator(application,
+                                                       messageStoreFactory,
+                                                       sessionSettings,
+                                                       logFactory,
+                                                       messageFactory.getUnderlyingMessageFactory());
+        socketInitiator.start();
+        eventBusService.register(this);
+        SLF4JLoggerProxy.info(this,
+                              "{} started",
+                              PlatformServices.getServiceName(getClass()));
+    }
+    /**
+     * Stop the object.
+     */
+    @PreDestroy
+    public void stop()
+    {
+        try {
+            updateFeedStatus(FeedStatus.OFFLINE);
+            if(fixMessageProcessor != null) {
+                try {
+                    fixMessageProcessor.stop();
+                } catch (Exception ignored) {}
+                fixMessageProcessor = null;
+            }
+            if(socketInitiator != null) {
+                try {
+                    socketInitiator.stop();
+                } catch (Exception ignored) {}
+                socketInitiator = null;
+            }
+            messageFactory = null;
+            sessionId = null;
+            application = null;
+        } finally {
+            SLF4JLoggerProxy.info(this,
+                                  "{} stopped",
+                                  PlatformServices.getServiceName(getClass()));
+        }
     }
     /**
      * Create a new ExsimFeedModule instance.
-     *
-     * @param inInstanceUrn a <code>ModuleURN</code> value
      */
-    protected ExsimFeedModule(ModuleURN inInstanceUrn)
+    public ExsimFeedModule()
     {
-        super(inInstanceUrn,
-              false);
         feedStatus = FeedStatus.OFFLINE;
         orderBooksByInstrument = CacheBuilder.newBuilder().build(new CacheLoader<OrderBookKey,OrderBook>() {
             @Override
@@ -329,18 +290,82 @@ public class ExsimFeedModule
         });
     }
     /**
+     * Populates the given session settings value with the settings established for this config.
+     *
+     * @param inSessionSettings a <code>quickfix.SessionSettings</code> value
+     */
+    private void populateSessionSettings(quickfix.SessionSettings inSessionSettings)
+    {
+        inSessionSettings.setString(sessionId,
+                                    quickfix.Initiator.SETTING_SOCKET_CONNECT_HOST,
+                                    hostname);
+        inSessionSettings.setLong(sessionId,
+                                  quickfix.Initiator.SETTING_SOCKET_CONNECT_PORT,
+                                  port);
+        inSessionSettings.setLong(sessionId,
+                                  quickfix.Session.SETTING_HEARTBTINT,
+                                  heartBtInt);
+        inSessionSettings.setString(sessionId,
+                                    quickfix.Session.SETTING_START_TIME,
+                                    startTime);
+        inSessionSettings.setString(sessionId,
+                                    quickfix.Session.SETTING_END_TIME,
+                                    endTime);
+        inSessionSettings.setString(sessionId,
+                                    quickfix.Session.SETTING_TIMEZONE,
+                                    timeZone);
+        inSessionSettings.setString(sessionId,
+                                    quickfix.Session.SETTING_RESET_ON_LOGON,
+                                    "Y");
+        inSessionSettings.setString(sessionId,
+                                    quickfix.Session.SETTING_RESET_ON_LOGOUT,
+                                    "Y");
+        inSessionSettings.setString(sessionId,
+                                    quickfix.Session.SETTING_RESET_ON_DISCONNECT,
+                                    "Y");
+        inSessionSettings.setString(sessionId,
+                                    quickfix.Session.SETTING_RESET_ON_ERROR,
+                                    "Y");
+        inSessionSettings.setString(sessionId,
+                                    quickfix.Session.SETTING_DATA_DICTIONARY,
+                                    dataDictionary);
+        inSessionSettings.setString(sessionId,
+                                    quickfix.SessionSettings.BEGINSTRING,
+                                    sessionId.getBeginString());
+        inSessionSettings.setString(sessionId,
+                                    quickfix.SessionSettings.SENDERCOMPID,
+                                    sessionId.getSenderCompID());
+        inSessionSettings.setString(sessionId,
+                                    quickfix.SessionSettings.TARGETCOMPID,
+                                    sessionId.getTargetCompID());
+        inSessionSettings.setLong(sessionId,
+                                  quickfix.Initiator.SETTING_RECONNECT_INTERVAL,
+                                  reconnectInterval);
+        inSessionSettings.setString(sessionId,
+                                    quickfix.Session.SETTING_PERSIST_MESSAGES,
+                                    "N");
+        if(appDataDictionary != null) {
+            inSessionSettings.setString(sessionId,
+                                        quickfix.Session.SETTING_APP_DATA_DICTIONARY,
+                                        appDataDictionary);
+        }
+        if(fixAplVersion != null) {
+            inSessionSettings.setString(sessionId,
+                                        quickfix.Session.SETTING_DEFAULT_APPL_VER_ID,
+                                        fixAplVersion);
+        }
+    }
+    /**
      * Perform the market data request
      *
      * @param inPayload a <code>MarketDataRequest</code> value
-     * @param inRequest a <code>DataRequest</code> value
-     * @param inSupport a <code>DataEmitterSupport</code> value
-     * @throws FieldNotFound if the request could not be built
-     * @throws SessionNotFound if the message could not be sent
+     * @param inRequestId a <code>String</code> value
+     * @throws quickfix.FieldNotFound if the request could not be built
+     * @throws quickfix.SessionNotFound if the message could not be sent
      */
     private void doMarketDataRequest(MarketDataRequest inPayload,
-                                     DataRequest inRequest,
-                                     DataEmitterSupport inSupport)
-            throws FieldNotFound, SessionNotFound
+                                     String inRequestId)
+            throws quickfix.FieldNotFound,quickfix.SessionNotFound
     {
         // build some number of market data request object and fire it off
         List<Instrument> requestedInstruments = Lists.newArrayList();
@@ -354,29 +379,24 @@ public class ExsimFeedModule
             }
         }
         String id = UUID.randomUUID().toString();
-        Message marketDataRequest = messageFactory.newMarketDataRequest(id,
-                                                                        requestedInstruments,
-                                                                        inPayload.getExchange(),
-                                                                        Lists.newArrayList(inPayload.getContent()),
-                                                                        quickfix.field.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
+        quickfix.Message marketDataRequest = messageFactory.newMarketDataRequest(id,
+                                                                                 requestedInstruments,
+                                                                                 inPayload.getExchange(),
+                                                                                 Lists.newArrayList(inPayload.getContent()),
+                                                                                 quickfix.field.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
         SLF4JLoggerProxy.debug(this,
-                               "Built {} for {} from {}", //$NON-NLS-1$
+                               "Built {} from {}", //$NON-NLS-1$
                                marketDataRequest,
-                               inRequest,
                                inPayload);
         RequestData requestData = new RequestData(marketDataRequest,
-                                                  inSupport,
                                                   id,
                                                   inPayload,
                                                   requestedInstruments);
         requestsByRequestId.put(id,
                                 requestData);
-        requestsByDataFlowId.put(inSupport.getFlowID(),
-                                 requestData);
-        if(!Session.sendToTarget(marketDataRequest,
-                                 sessionId)) {
+        if(!quickfix.Session.sendToTarget(marketDataRequest,
+                                          sessionId)) {
             requestsByRequestId.remove(id);
-            requestsByDataFlowId.remove(inSupport.getFlowID());
             throw new StopDataFlowException(new I18NBoundMessage1P(Messages.CANNOT_REQUEST_DATA,
                                                                    marketDataRequest));
         }
@@ -385,19 +405,19 @@ public class ExsimFeedModule
      * Cancel the market data request with the given id.
      *
      * @param inMarketDataRequestData a <code>String</code> value
-     * @throws FieldNotFound if the market data request cancel cannot be constructed
-     * @throws SessionNotFound if the cancel message cannot be sent
+     * @throws quickfix.FieldNotFound if the market data request cancel cannot be constructed
+     * @throws quickfix.SessionNotFound if the cancel message cannot be sent
      */
     private void cancelMarketDataRequest(RequestData inMarketDataRequestData)
-            throws FieldNotFound, SessionNotFound
+            throws quickfix.FieldNotFound,quickfix.SessionNotFound
     {
-        Message marketDataCancel = messageFactory.newMarketDataRequest(inMarketDataRequestData.requestId,
-                                                                       inMarketDataRequestData.requestedInstruments,
-                                                                       inMarketDataRequestData.marketDataRequest.getExchange(),
-                                                                       Lists.newArrayList(inMarketDataRequestData.marketDataRequest.getContent()),
-                                                                       quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST);
-        if(!Session.sendToTarget(marketDataCancel,
-                                 sessionId)) {
+        quickfix.Message marketDataCancel = messageFactory.newMarketDataRequest(inMarketDataRequestData.requestId,
+                                                                                inMarketDataRequestData.requestedInstruments,
+                                                                                inMarketDataRequestData.marketDataRequest.getExchange(),
+                                                                                Lists.newArrayList(inMarketDataRequestData.marketDataRequest.getContent()),
+                                                                                quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST);
+        if(!quickfix.Session.sendToTarget(marketDataCancel,
+                                          sessionId)) {
             throw new CoreException(new I18NBoundMessage2P(Messages.CANNOT_CANCEL_DATA,
                                                            marketDataCancel,
                                                            sessionId));
@@ -419,7 +439,7 @@ public class ExsimFeedModule
                                inNewStatus);
         feedStatus = inNewStatus;
         Messages.FEED_STATUS_UPDATE.info(this,
-                                         ExsimFeedModuleFactory.IDENTIFIER.toUpperCase(),
+                                         IDENTIFIER.toUpperCase(),
                                          feedStatus);
         if(feedStatus.isRunning()) {
             orderBooksByInstrument.invalidateAll();
@@ -430,7 +450,7 @@ public class ExsimFeedModule
 //                    try {
 //                        SLF4JLoggerProxy.debug(this,
 //                                               "Canceling {}",
-//                                               requestData);
+//                       )                        requestData);
 //                        requestData.resubmitting = true;
 //                        cancelMarketDataRequest(requestData);
 //                    } catch (Exception e) {
@@ -471,15 +491,15 @@ public class ExsimFeedModule
      * @param inMessageWrapper a <code>MessageWrapper</code>value
      * @param inIsSnapshot a <code>boolean</code> vlue
      * @return a <code>List&lt;Event&gt;</code> value containing the constructed events
-     * @throws FieldNotFound if an expected field cannot be found
+     * @throws quickfix.FieldNotFound if an expected field cannot be found
      */
     private List<Event> getEvents(MessageWrapper inMessageWrapper,
                                   boolean inIsSnapshot)
-            throws FieldNotFound
+            throws quickfix.FieldNotFound
     {
-        Message message = inMessageWrapper.getMessage();
+        quickfix.Message message = inMessageWrapper.getMessage();
         String requestId = inMessageWrapper.getRequestId();
-        List<Group> mdEntries = messageFactory.getMdEntriesFromMessage(message);
+        List<quickfix.Group> mdEntries = messageFactory.getMdEntriesFromMessage(message);
         long receivedTimestamp = inMessageWrapper.getReceivedTimestamp();
         List<Event> events = Lists.newArrayList();
         boolean marketstat = false;
@@ -499,7 +519,7 @@ public class ExsimFeedModule
         if(message.isSetField(quickfix.field.TotalVolumeTraded.FIELD)) {
             volume = message.getDecimal(quickfix.field.TotalVolumeTraded.FIELD);
         }
-        for(Group mdEntry : mdEntries) {
+        for(quickfix.Group mdEntry : mdEntries) {
             SLF4JLoggerProxy.debug(this,
                                    "Examining group {}", //$NON-NLS-1$
                                    mdEntry);
@@ -551,7 +571,7 @@ public class ExsimFeedModule
                     bidBuilder.withLevel(level);
                     bidBuilder.withPrice(mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD));
                     bidBuilder.withProcessedTimestamp(System.nanoTime());
-                    bidBuilder.withProvider(ExsimFeedModuleFactory.IDENTIFIER);
+                    bidBuilder.withProvider(IDENTIFIER);
                     bidBuilder.withQuoteDate(eventDate);
                     bidBuilder.withReceivedTimestamp(receivedTimestamp);
                     bidBuilder.withSize(mdEntry.getDecimal(quickfix.field.MDEntrySize.FIELD));
@@ -587,7 +607,7 @@ public class ExsimFeedModule
                     askBuilder.withLevel(level);
                     askBuilder.withPrice(mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD));
                     askBuilder.withProcessedTimestamp(System.nanoTime());
-                    askBuilder.withProvider(ExsimFeedModuleFactory.IDENTIFIER);
+                    askBuilder.withProvider(IDENTIFIER);
                     askBuilder.withQuoteDate(eventDate);
                     askBuilder.withReceivedTimestamp(receivedTimestamp);
                     askBuilder.withSize(mdEntry.getDecimal(quickfix.field.MDEntrySize.FIELD));
@@ -619,7 +639,7 @@ public class ExsimFeedModule
                     tradeBuilder.withExchange(exchange);
                     tradeBuilder.withPrice(mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD));
                     tradeBuilder.withProcessedTimestamp(System.nanoTime());
-                    tradeBuilder.withProvider(ExsimFeedModuleFactory.IDENTIFIER);
+                    tradeBuilder.withProvider(IDENTIFIER);
                     tradeBuilder.withTradeDate(eventDate);
                     tradeBuilder.withReceivedTimestamp(receivedTimestamp);
                     tradeBuilder.withSize(mdEntry.getDecimal(quickfix.field.MDEntrySize.FIELD));
@@ -768,22 +788,21 @@ public class ExsimFeedModule
                                "Publishing {} to {}", //$NON-NLS-1$
                                inEvents,
                                inRequestId);
-        for(Event event : inEvents) {
-            try {
-                requestData.getDataEmitterSupport().send(event);
-            } catch (Exception e) {
-                if(SLF4JLoggerProxy.isDebugEnabled(this)) {
-                    Messages.IGNORED_EXCEPTION_ON_SEND.warn(this,
-                                                            e,
-                                                            ExceptionUtils.getRootCause(e),
-                                                            event,
-                                                            requestData);
-                } else {
-                    Messages.IGNORED_EXCEPTION_ON_SEND.warn(this,
-                                                            ExceptionUtils.getRootCause(e),
-                                                            event,
-                                                            requestData);
-                }
+        try {
+            eventBusService.post(new SimpleGeneratedMarketDataEvent(inRequestId,
+                                                                    inEvents));
+        } catch (Exception e) {
+            if(SLF4JLoggerProxy.isDebugEnabled(this)) {
+                Messages.IGNORED_EXCEPTION_ON_SEND.warn(this,
+                                                        e,
+                                                        ExceptionUtils.getRootCause(e),
+                                                        inEvents,
+                                                        requestData);
+            } else {
+                Messages.IGNORED_EXCEPTION_ON_SEND.warn(this,
+                                                        ExceptionUtils.getRootCause(e),
+                                                        inEvents,
+                                                        requestData);
             }
         }
     }
@@ -813,7 +832,7 @@ public class ExsimFeedModule
                 throws Exception
         {
             for(MessageWrapper messageWrapper : inData) {
-                Message message = messageWrapper.getMessage();
+                quickfix.Message message = messageWrapper.getMessage();
                 try {
                     SLF4JLoggerProxy.trace(ExsimFeedModule.this,
                                            "{} processing {}", //$NON-NLS-1$
@@ -849,7 +868,6 @@ public class ExsimFeedModule
                             } else {
                                 if(!requestData.resubmitting) {
                                     requestsByRequestId.remove(messageWrapper.getRequestId());
-                                    requestsByDataFlowId.remove(requestData.getDataEmitterSupport().getFlowID());
                                     I18NBoundMessage errorMessage;
                                     if(message.isSetField(quickfix.field.Text.FIELD)) {
                                         errorMessage = new I18NBoundMessage1P(Messages.MARKETDATA_REJECT_WITH_MESSAGE,
@@ -857,8 +875,8 @@ public class ExsimFeedModule
                                     } else {
                                         errorMessage = new I18NBoundMessage0P(Messages.MARKETDATA_REJECT_WITHOUT_MESSAGE);
                                     }
-                                    requestData.getDataEmitterSupport().dataEmitError(errorMessage,
-                                                                                      true);
+//                                    requestData.getDataEmitterSupport().dataEmitError(errorMessage, TODO
+//                                                                                      true);
                                 }
                             }
                             break;
@@ -886,11 +904,11 @@ public class ExsimFeedModule
         /**
          * Add the given message to the processing queue.
          *
-         * @param inMessage a <code>Message</code> value
-         * @throws FieldNotFound if the message is invalid
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @throws quickfix.FieldNotFound if the message is invalid
          */
-        private void add(Message inMessage)
-                throws FieldNotFound
+        private void add(quickfix.Message inMessage)
+                throws quickfix.FieldNotFound
         {
             super.add(new MessageWrapper(inMessage));
         }
@@ -919,11 +937,11 @@ public class ExsimFeedModule
         /**
          * Create a new MessageWrapper instance.
          *
-         * @param inMessage a <code>Message</code> value
-         * @throws FieldNotFound if the message is invalid
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @throws quickfix.FieldNotFound if the message is invalid
          */
-        private MessageWrapper(Message inMessage)
-                throws FieldNotFound
+        private MessageWrapper(quickfix.Message inMessage)
+                throws quickfix.FieldNotFound
         {
             message = inMessage;
             msgType = message.getHeader().getString(quickfix.field.MsgType.FIELD);
@@ -950,9 +968,9 @@ public class ExsimFeedModule
         /**
          * Get the message value.
          *
-         * @return a <code>Message</code> value
+         * @return a <code>quickfix.Message</code> value
          */
-        private Message getMessage()
+        private quickfix.Message getMessage()
         {
             return message;
         }
@@ -972,7 +990,7 @@ public class ExsimFeedModule
         /**
          * message value
          */
-        private final Message message;
+        private final quickfix.Message message;
         /**
          * message type value
          */
@@ -990,13 +1008,13 @@ public class ExsimFeedModule
      * @since $Release$
      */
     private class FixApplication
-            implements Application
+            implements quickfix.Application
     {
         /* (non-Javadoc)
          * @see quickfix.Application#onCreate(quickfix.SessionID)
          */
         @Override
-        public void onCreate(SessionID inSessionId)
+        public void onCreate(quickfix.SessionID inSessionId)
         {
             SLF4JLoggerProxy.debug(ExsimFeedModule.this,
                                    "Session {} created", //$NON-NLS-1$
@@ -1006,7 +1024,7 @@ public class ExsimFeedModule
          * @see quickfix.Application#onLogon(quickfix.SessionID)
          */
         @Override
-        public void onLogon(SessionID inSessionId)
+        public void onLogon(quickfix.SessionID inSessionId)
         {
             SLF4JLoggerProxy.debug(ExsimFeedModule.this,
                                    "Session {} logon", //$NON-NLS-1$
@@ -1017,7 +1035,7 @@ public class ExsimFeedModule
          * @see quickfix.Application#onLogout(quickfix.SessionID)
          */
         @Override
-        public void onLogout(SessionID inSessionId)
+        public void onLogout(quickfix.SessionID inSessionId)
         {
             SLF4JLoggerProxy.debug(ExsimFeedModule.this,
                                    "Session {} logout", //$NON-NLS-1$
@@ -1028,8 +1046,8 @@ public class ExsimFeedModule
          * @see quickfix.Application#toAdmin(quickfix.Message, quickfix.SessionID)
          */
         @Override
-        public void toAdmin(Message inMessage,
-                            SessionID inSessionId)
+        public void toAdmin(quickfix.Message inMessage,
+                            quickfix.SessionID inSessionId)
         {
             SLF4JLoggerProxy.trace(ExsimFeedModule.this,
                                    "{} sending admin {}", //$NON-NLS-1$
@@ -1040,9 +1058,9 @@ public class ExsimFeedModule
          * @see quickfix.Application#fromAdmin(quickfix.Message, quickfix.SessionID)
          */
         @Override
-        public void fromAdmin(Message inMessage,
-                              SessionID inSessionId)
-                throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, RejectLogon
+        public void fromAdmin(quickfix.Message inMessage,
+                              quickfix.SessionID inSessionId)
+                throws quickfix.FieldNotFound,quickfix.IncorrectDataFormat,quickfix.IncorrectTagValue,quickfix.RejectLogon
         {
             SLF4JLoggerProxy.trace(ExsimFeedModule.this,
                                    "{} received admin {}", //$NON-NLS-1$
@@ -1053,9 +1071,9 @@ public class ExsimFeedModule
          * @see quickfix.Application#toApp(quickfix.Message, quickfix.SessionID)
          */
         @Override
-        public void toApp(Message inMessage,
-                          SessionID inSessionId)
-                throws DoNotSend
+        public void toApp(quickfix.Message inMessage,
+                          quickfix.SessionID inSessionId)
+                throws quickfix.DoNotSend
         {
             SLF4JLoggerProxy.trace(ExsimFeedModule.this,
                                    "{} sending app {}", //$NON-NLS-1$
@@ -1070,9 +1088,9 @@ public class ExsimFeedModule
          * @see quickfix.Application#fromApp(quickfix.Message, quickfix.SessionID)
          */
         @Override
-        public void fromApp(Message inMessage,
-                            SessionID inSessionId)
-                throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType
+        public void fromApp(quickfix.Message inMessage,
+                            quickfix.SessionID inSessionId)
+                throws quickfix.FieldNotFound,quickfix.IncorrectDataFormat,quickfix.IncorrectTagValue,quickfix.UnsupportedMessageType
         {
             SLF4JLoggerProxy.trace(ExsimFeedModule.this,
                                    "{} received app {}", //$NON-NLS-1$
@@ -1109,40 +1127,28 @@ public class ExsimFeedModule
         /**
          * Get the requestMessage value.
          *
-         * @return a <code>Message</code> value
+         * @return a <code>quickfix.Message</code> value
          */
         @SuppressWarnings("unused")
-        private Message getRequestMessage()
+        private quickfix.Message getRequestMessage()
         {
             return requestMessage;
         }
         /**
-         * Get the dataEmitterSupport value.
-         *
-         * @return a <code>DataEmitterSupport</code> value
-         */
-        private DataEmitterSupport getDataEmitterSupport()
-        {
-            return dataEmitterSupport;
-        }
-        /**
          * Create a new RequestData instance.
          *
-         * @param inRequestMessage a <code>Message</code> value
-         * @param inDataEmitterSupport a <code>DataEmitterSupport</code> value
+         * @param inRequestMessage a <code>quickfix.Message</code> value
          * @param inRequestId a <code>String</code> value
          * @param inMarketDataRequest a <code>MarketDataRequest</code> value
          * @param inRequestedInstruments a <code>List&lt;Instrument&gt;</code> value
          */
-        private RequestData(Message inRequestMessage,
-                            DataEmitterSupport inDataEmitterSupport,
+        private RequestData(quickfix.Message inRequestMessage,
                             String inRequestId,
                             MarketDataRequest inMarketDataRequest,
                             List<Instrument> inRequestedInstruments)
         {
             requestMessage = inRequestMessage;
-            dataEmitterSupport = inDataEmitterSupport;
-            description = RequestData.class.getSimpleName() + " [" + inDataEmitterSupport.getFlowID() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+            description = RequestData.class.getSimpleName() + " [" + inRequestId + "]"; //$NON-NLS-1$ //$NON-NLS-2$
             requestId = inRequestId;
             requestedInstruments = inRequestedInstruments;
             marketDataRequest = inMarketDataRequest;
@@ -1158,11 +1164,7 @@ public class ExsimFeedModule
         /**
          * original request message sent to the exchange
          */
-        private final Message requestMessage;
-        /**
-         * information about the data flow requester
-         */
-        private final DataEmitterSupport dataEmitterSupport;
+        private final quickfix.Message requestMessage;
         /**
          * request id of the request
          */
@@ -1244,13 +1246,9 @@ public class ExsimFeedModule
      */
     private FixMessageProcessor fixMessageProcessor;
     /**
-     * session ID value that the module will use to connect
-     */
-    private SessionID sessionId;
-    /**
      * handles physical connection to the simualted exchange
      */
-    private SocketInitiator socketInitiator;
+    private quickfix.SocketInitiator socketInitiator;
     /**
      * message factory for the specified FIX version
      */
@@ -1260,19 +1258,89 @@ public class ExsimFeedModule
      */
     private FixApplication application;
     /**
-     * configuration used to connect to the exchange
+     * session ID value that the module will use to connect
      */
-    @Autowired
-    private ExsimFeedConfig exsimFeedConfig;
+    private quickfix.SessionID sessionId;
+    /**
+     * sender comp id value to use
+     */
+    @Value("${metc.marketdata.exsim.senderCompId}")
+    private String senderCompId;
+    /**
+     * target comp id value to use
+     */
+    @Value("${metc.marketdata.exsim.targetCompId:MRKTC-EXCH}")
+    private String targetCompId;
+    /**
+     * hostname to connect to
+     */
+    @Value("${metc.marketdata.exsim.hostname:exchange.marketcetera.com}")
+    private String hostname;
+    /**
+     * port to connect to
+     */
+    @Value("${metc.marketdata.exsim.port:7001}")
+    private int port = 7001;
+    /**
+     * FIX version to use for exchange traffic
+     */
+    @Value("${metc.marketdata.exsim.fixVersion:FIX.4.4}")
+    private String fixVersion = FIXVersion.FIX44.getVersion();
+    /**
+     * FIX application version if using FIXT11 for the {{@link #fixVersion}}
+     */
+    @Value("${metc.marketdata.exsim.fixAplVersion}")
+    private String fixAplVersion;
+    /**
+     * interval at which to connect to the exchange
+     */
+    @Value("${metc.marketdata.exsim.reconnectInterval:5}")
+    private int reconnectInterval;
+    /**
+     * session heart beat interval
+     */
+    @Value("${metc.marketdata.exsim.heartBtInt:30}")
+    private int heartBtInt;
+    /**
+     * session start time
+     */
+    @Value("${metc.marketdata.exsim.startTime:00:00:00}")
+    private String startTime;
+    /**
+     * session end time
+     */
+    @Value("${metc.marketdata.exsim.endTime:22:45:00}")
+    private String endTime;
+    /**
+     * session time zone
+     */
+    @Value("${metc.marketdata.exsim.timeZone:US/Pacific}")
+    private String timeZone;
+    /**
+     * session FIX dictionary
+     */
+    @Value("${metc.marketdata.exsim.dataDictionary:FIX44.xml}")
+    private String dataDictionary;
+    /**
+     * session FIX application data dictionary
+     */
+    @Value("${metc.marketdata.exsim.appDataDictionary}")
+    private String appDataDictionary;
+    /**
+     * number of milliseconds to wait for the feed to become available if a request is made while it is offline
+     */
+    @Value("${metc.marketdata.exsim.feedAvailableTimeout:10000}")
+    private long feedAvailableTimeout;
     /**
      * resolves symbols to instruments
      */
     @Autowired
     private SymbolResolverService symbolResolverService;
     /**
-     * number of milliseconds to wait for the feed to become available if a request is made while it is offline
+     * provides access to event bus services
      */
-    private long feedAvailableTimeout = 10000;
+    @Autowired
+    private EventBusService eventBusService;
     /**
      * current status of the feed
      */
@@ -1301,4 +1369,8 @@ public class ExsimFeedModule
      * supported capabilities for this provider
      */
     private static final Set<Capability> supportedCapabilities = EnumSet.of(Capability.BBO10,Capability.EVENT_BOUNDARY,Capability.LATEST_TICK,Capability.MARKET_STAT,Capability.TOP_OF_BOOK);
+    /**
+     * market data provider identifier
+     */
+    public static final String IDENTIFIER = "exsim";  //$NON-NLS-1$
 }

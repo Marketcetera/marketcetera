@@ -40,5 +40,4 @@ public interface Messages
     static final I18NMessage2P IGNORING_UNEXPECTED_MESSAGE = new I18NMessage2P(LOGGER,"ignoring_unexpected_message"); //$NON-NLS-1$
     static final I18NMessage3P UNABLE_TO_PROCESS_MESSAGE = new I18NMessage3P(LOGGER,"unable_to_process_message"); //$NON-NLS-1$
     static final I18NMessage2P MARKET_DATA_REQUEST_FAILED = new I18NMessage2P(LOGGER,"market_data_request_failed"); //$NON-NLS-1$
-    static final I18NMessage0P FEED_CONFIG_REQUIRED = new I18NMessage0P(LOGGER,"feed_config_required"); //$NON-NLS-1$
 }

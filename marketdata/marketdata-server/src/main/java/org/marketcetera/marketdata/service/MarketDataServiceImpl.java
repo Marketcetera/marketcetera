@@ -6,20 +6,23 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import javax.annotation.PostConstruct;
+
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.Event;
+import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
-import org.marketcetera.marketdata.NoMarketDataProvidersAvailable;
 import org.marketcetera.marketdata.cache.MarketDataCacheModuleFactory;
-import org.marketcetera.marketdata.core.manager.MarketDataManagerModuleFactory;
+import org.marketcetera.marketdata.event.GeneratedMarketDataEvent;
+import org.marketcetera.marketdata.event.MarketDataRequestEvent;
+import org.marketcetera.marketdata.event.SimpleMarketDataRequestEvent;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleManager;
@@ -37,6 +40,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
 
 /* $License$ */
 
@@ -112,44 +116,50 @@ public class MarketDataServiceImpl
         String provider = inRequest.getProvider();
         // TODO make sure request id is unique
         String requestId = inRequest.getRequestId();
+        MarketDataRequestEvent requestEvent = new SimpleMarketDataRequestEvent(inRequest,
+                                                                               requestId,
+                                                                               provider);
+        RequestMetaData requestMetaData = new RequestMetaData(inMarketDataListener);
+        requestsByRequestId.put(requestId,
+                                requestMetaData);
         SLF4JLoggerProxy.debug(this,
-                               "Requesting market data: {} from {}",
-                               inRequest,
-                               provider);
-        if(provider == null) {
-            SLF4JLoggerProxy.debug(this,
-                                   "No provider requested, issuing request to all providers");
-            boolean atLeastOne = false;
-            for(ModuleURN providerUrn : moduleManager.getProviders()) {
-                String providerType = providerUrn.providerType();
-                String providerName = providerUrn.providerName();
-                if(providerType.equals("mdata") && !providerName.equals(MarketDataManagerModuleFactory.PROVIDER_NAME)) {
-                    for(ModuleURN instanceUrn : ModuleManager.getInstance().getModuleInstances(providerUrn)) {
-                        try {
-                            doDataRequest(inRequest,
-                                          instanceUrn,
-                                          inMarketDataListener,
-                                          requestId);
-                            atLeastOne = true;
-                        } catch (Exception e) {
-                            SLF4JLoggerProxy.warn(this,
-                                                  "Unable to request market data from {}: {}",
-                                                  instanceUrn,
-                                                  ExceptionUtils.getRootCauseMessage(e));
-                        }
-                    }
-                }
-            }
-            if(!atLeastOne) {
-                throw new NoMarketDataProvidersAvailable(new IllegalArgumentException("No market data providers available for request " + requestId));
-            }
-        } else {
-            ModuleURN sourceUrn = getInstanceUrn(provider);
-            doDataRequest(inRequest,
-                          sourceUrn,
-                          inMarketDataListener,
-                          requestId);
-        }
+                               "Requesting market data: {}",
+                               requestEvent);
+        eventBusService.post(requestEvent);
+//        if(provider == null) {
+//            SLF4JLoggerProxy.debug(this,
+//                                   "No provider requested, issuing request to all providers");
+//            boolean atLeastOne = false;
+//            for(ModuleURN providerUrn : moduleManager.getProviders()) {
+//                String providerType = providerUrn.providerType();
+//                String providerName = providerUrn.providerName();
+//                if(providerType.equals("mdata") && !providerName.equals(MarketDataManagerModuleFactory.PROVIDER_NAME)) {
+//                    for(ModuleURN instanceUrn : ModuleManager.getInstance().getModuleInstances(providerUrn)) {
+//                        try {
+//                            doDataRequest(inRequest,
+//                                          instanceUrn,
+//                                          inMarketDataListener,
+//                                          requestId);
+//                            atLeastOne = true;
+//                        } catch (Exception e) {
+//                            SLF4JLoggerProxy.warn(this,
+//                                                  "Unable to request market data from {}: {}",
+//                                                  instanceUrn,
+//                                                  ExceptionUtils.getRootCauseMessage(e));
+//                        }
+//                    }
+//                }
+//            }
+//            if(!atLeastOne) {
+//                throw new NoMarketDataProvidersAvailable(new IllegalArgumentException("No market data providers available for request " + requestId));
+//            }
+//        } else {
+//            ModuleURN sourceUrn = getInstanceUrn(provider);
+//            doDataRequest(inRequest,
+//                          sourceUrn,
+//                          inMarketDataListener,
+//                          requestId);
+//        }
         return requestId;
     }
     /* (non-Javadoc)
@@ -266,6 +276,42 @@ public class MarketDataServiceImpl
         synchronized(cacheProviders) {
             cacheProviders.forEach(value->value.clear());
         }
+    }
+    /**
+     * Receives generated market data events.
+     *
+     * @param inMarketDataEvent a <code>GeneratedMarketDataEvent</code> value
+     */
+    @Subscribe
+    public void onGeneratedMarketDataEvent(GeneratedMarketDataEvent inMarketDataEvent)
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "Received {}",
+                               inMarketDataEvent);
+        RequestMetaData requestMetaData = requestsByRequestId.getIfPresent(inMarketDataEvent.getMarketDataRequestId());
+        if(requestMetaData != null) {
+            for(Event event : inMarketDataEvent.getEvents()) {
+                try {
+                    requestMetaData.doPublish(event);
+                    SLF4JLoggerProxy.trace(this,
+                                           "Published {}",
+                                           event);
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(this,
+                                          e,
+                                          "Cannot publish {}",
+                                          event);
+                }
+            }
+        }
+    }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        eventBusService.register(this);
     }
     /**
      * Get the instance URN for the given market data provider name.
@@ -424,6 +470,11 @@ public class MarketDataServiceImpl
          */
         private DataFlowID dataFlowId;
     }
+    /**
+     * provides access to event bus services
+     */
+    @Autowired
+    private EventBusService eventBusService;
     /**
      * provides access to module services
      */
