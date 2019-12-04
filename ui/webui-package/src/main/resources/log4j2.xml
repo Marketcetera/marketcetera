@@ -22,6 +22,5 @@
     <!-- logger name="org.marketcetera.web" level="debug"/-->
     <!-- logger name="org.marketcetera.web.fixadmin.FixSessionWatcher" level="trace"/-->
     <!-- logger name="org.marketcetera.web.service.StyleService" level="trace"/-->
-    <logger name="org.marketcetera.marketdata.rpc.client.MarketDataRpcClient" level="trace"/>
   </Loggers>
 </Configuration>

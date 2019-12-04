@@ -64,10 +64,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>cluster-rpc-server</artifactId>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>marketdata-exsim</artifactId>
-    </dependency>
     <!-- other compile -->
     <dependency>
       <groupId>io.springfox</groupId>
@@ -83,6 +79,11 @@
       <artifactId>quickfixj-all</artifactId>
     </dependency>
     <!-- local runtime -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-exsim</artifactId>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>dare</artifactId>

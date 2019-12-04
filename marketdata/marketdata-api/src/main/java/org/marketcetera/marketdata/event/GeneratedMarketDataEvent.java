@@ -1,7 +1,5 @@
 package org.marketcetera.marketdata.event;
 
-import java.util.Deque;
-
 import org.marketcetera.event.Event;
 
 /* $License$ */
@@ -17,9 +15,9 @@ public interface GeneratedMarketDataEvent
         extends HasMarketDataRequestId
 {
     /**
-     * Get the market data event values.
+     * Get the market data event value.
      *
-     * @return a <code>Deque&lt;Event&gt;</code> value
+     * @return an <code>Event;</code> value
      */
-    Deque<Event> getEvents();
+    Event getEvent();
 }

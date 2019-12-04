@@ -66,9 +66,6 @@
     <!-- logger name="org.marketcetera.fix.dao" level="trace"/-->
     <!-- logger name="org.marketcetera.trade.service.impl.ReportServiceImpl" level="trace"/-->
     <!-- logger name="org.marketcetera.client.rpc.server.TradeRpcService" level="trace"/-->
-    <logger name="org.marketcetera.marketdata.exsim.ExsimFeedModule" level="trace"/>
-    <logger name="org.marketcetera.marketdata.rpc.server.MarketDataRpcService" level="trace"/>
-    <logger name="org.marketcetera.marketdata.service.MarketDataServiceImpl" level="trace"/>
     <logger name="metc.restore" level="info" additivity="false">
       <AppenderRef ref="RESTORE"/>
       <AppenderRef ref="FILE"/>

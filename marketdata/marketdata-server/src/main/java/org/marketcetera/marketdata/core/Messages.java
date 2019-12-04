@@ -54,4 +54,5 @@ public interface Messages
     static final I18NMessage1P NO_SUBSCRIBER = new I18NMessage1P(LOGGER,"no_subscriber"); //$NON-NLS-1$
     static final I18NMessage2P PUBLISHING_ERROR = new I18NMessage2P(LOGGER,"publishing_error"); //$NON-NLS-1$
     static final I18NMessage2P NO_INSTRUMENT = new I18NMessage2P(LOGGER,"no_instrument"); //$NON-NLS-1$
+    static final I18NMessage0P EVENT_MODULE_CONNECTOR_PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,"event_module_connector_provider_description");//$NON-NLS-1$
 }

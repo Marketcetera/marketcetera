@@ -1,7 +1,5 @@
 package org.marketcetera.marketdata.event;
 
-import java.util.Deque;
-
 import org.marketcetera.event.Event;
 
 /* $License$ */
@@ -28,9 +26,9 @@ public class SimpleGeneratedMarketDataEvent
      * @see org.marketcetera.marketdata.event.MarketDataEvent#getEvents()
      */
     @Override
-    public Deque<Event> getEvents()
+    public Event getEvent()
     {
-        return events;
+        return event;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -39,8 +37,8 @@ public class SimpleGeneratedMarketDataEvent
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("SimpleMarketDataEvent [marketDataRequestId=").append(marketDataRequestId).append(", events=")
-                .append(events).append("]");
+        builder.append("SimpleMarketDataEvent [marketDataRequestId=").append(marketDataRequestId).append(", event=")
+                .append(event).append("]");
         return builder.toString();
     }
     /**
@@ -53,25 +51,25 @@ public class SimpleGeneratedMarketDataEvent
         marketDataRequestId = inMarketDataRequestId;
     }
     /**
-     * Sets the events value.
+     * Sets the event value.
      *
-     * @param inEvents a <code>Deque&lt;Event&gt;</code> value
+     * @param inEvent an <code>Event</code> value
      */
-    public void setEvents(Deque<Event> inEvents)
+    public void setEvent(Event inEvent)
     {
-        events = inEvents;
+        event = inEvent;
     }
     /**
      * Create a new SimpleGeneratedMarketDataEvent instance.
      *
      * @param inMarketDataRequestId a <code>String</code> value
-     * @param inEvents a <code>Deque&lt;Event&gt;</code> value
+     * @param inEvent an <code>Event</code> value
      */
     public SimpleGeneratedMarketDataEvent(String inMarketDataRequestId,
-                                          Deque<Event> inEvents)
+                                          Event inEvent)
     {
         marketDataRequestId = inMarketDataRequestId;
-        events = inEvents;
+        event = inEvent;
     }
     /**
      * Create a new SimpleGeneratedMarketDataEvent instance.
@@ -84,5 +82,5 @@ public class SimpleGeneratedMarketDataEvent
     /**
      * market data events value
      */
-    private Deque<Event> events;
+    private Event event;
 }
