@@ -289,7 +289,12 @@ public class MarketDataServiceImpl
                                "Received {}",
                                inMarketDataEvent);
         RequestMetaData requestMetaData = requestsByRequestId.getIfPresent(inMarketDataEvent.getMarketDataRequestId());
-        if(requestMetaData != null) {
+        if(requestMetaData == null) {
+            SLF4JLoggerProxy.trace(this,
+                                   "No request for {} in {}",
+                                   inMarketDataEvent.getMarketDataRequestId(),
+                                   requestsByRequestId);
+        } else {
             for(Event event : inMarketDataEvent.getEvents()) {
                 try {
                     requestMetaData.doPublish(event);

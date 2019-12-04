@@ -161,7 +161,7 @@ public class ExsimFeedModule
                                    "Canceling data flow {} with market data request id {}", //$NON-NLS-1$
                                    inFlowId,
                                    requestData);
-            requestsByRequestId.remove(requestData.requestId);
+            requestsByRequestId.remove(requestData.exchangeRequestId);
             try {
                 cancelMarketDataRequest(requestData);
             } catch (Exception e) {
@@ -252,6 +252,14 @@ public class ExsimFeedModule
     public void stop()
     {
         try {
+            synchronized(requestsByRequestId) {
+                for(RequestData request : requestsByRequestId.values()) {
+                    try {
+                        cancelMarketDataRequest(request);
+                    } catch (quickfix.FieldNotFound | quickfix.SessionNotFound ignored) {}
+                }
+                requestsByRequestId.clear();
+            }
             updateFeedStatus(FeedStatus.OFFLINE);
             if(fixMessageProcessor != null) {
                 try {
@@ -358,18 +366,18 @@ public class ExsimFeedModule
     /**
      * Perform the market data request
      *
-     * @param inPayload a <code>MarketDataRequest</code> value
-     * @param inRequestId a <code>String</code> value
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inClientRequestId a <code>String</code> value
      * @throws quickfix.FieldNotFound if the request could not be built
      * @throws quickfix.SessionNotFound if the message could not be sent
      */
-    private void doMarketDataRequest(MarketDataRequest inPayload,
-                                     String inRequestId)
+    private void doMarketDataRequest(MarketDataRequest inRequest,
+                                     String inClientRequestId)
             throws quickfix.FieldNotFound,quickfix.SessionNotFound
     {
         // build some number of market data request object and fire it off
         List<Instrument> requestedInstruments = Lists.newArrayList();
-        for(String symbol : inPayload.getSymbols()) {
+        for(String symbol : inRequest.getSymbols()) {
             Instrument instrument = symbolResolverService.resolveSymbol(symbol);
             if(instrument == null) {
                 Messages.CANNOT_RESOLVE_SYMBOL.warn(this,
@@ -378,25 +386,26 @@ public class ExsimFeedModule
                 requestedInstruments.add(instrument);
             }
         }
-        String id = UUID.randomUUID().toString();
-        quickfix.Message marketDataRequest = messageFactory.newMarketDataRequest(id,
+        String exchangeRequestId = UUID.randomUUID().toString();
+        quickfix.Message marketDataRequest = messageFactory.newMarketDataRequest(exchangeRequestId,
                                                                                  requestedInstruments,
-                                                                                 inPayload.getExchange(),
-                                                                                 Lists.newArrayList(inPayload.getContent()),
+                                                                                 inRequest.getExchange(),
+                                                                                 Lists.newArrayList(inRequest.getContent()),
                                                                                  quickfix.field.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
         SLF4JLoggerProxy.debug(this,
                                "Built {} from {}", //$NON-NLS-1$
                                marketDataRequest,
-                               inPayload);
+                               inRequest);
         RequestData requestData = new RequestData(marketDataRequest,
-                                                  id,
-                                                  inPayload,
+                                                  inClientRequestId,
+                                                  exchangeRequestId,
+                                                  inRequest,
                                                   requestedInstruments);
-        requestsByRequestId.put(id,
+        requestsByRequestId.put(exchangeRequestId,
                                 requestData);
         if(!quickfix.Session.sendToTarget(marketDataRequest,
                                           sessionId)) {
-            requestsByRequestId.remove(id);
+            requestsByRequestId.remove(exchangeRequestId);
             throw new StopDataFlowException(new I18NBoundMessage1P(Messages.CANNOT_REQUEST_DATA,
                                                                    marketDataRequest));
         }
@@ -411,7 +420,7 @@ public class ExsimFeedModule
     private void cancelMarketDataRequest(RequestData inMarketDataRequestData)
             throws quickfix.FieldNotFound,quickfix.SessionNotFound
     {
-        quickfix.Message marketDataCancel = messageFactory.newMarketDataRequest(inMarketDataRequestData.requestId,
+        quickfix.Message marketDataCancel = messageFactory.newMarketDataRequest(inMarketDataRequestData.exchangeRequestId,
                                                                                 inMarketDataRequestData.requestedInstruments,
                                                                                 inMarketDataRequestData.marketDataRequest.getExchange(),
                                                                                 Lists.newArrayList(inMarketDataRequestData.marketDataRequest.getContent()),
@@ -771,25 +780,26 @@ public class ExsimFeedModule
      * Publish the given events to the data flow associated with the given id.
      *
      * @param inEvents a <code>Deque&lt;Event&gt;</code> value
-     * @param inRequestId a <code>String</code> value
+     * @param inExchangeRequestId a <code>String</code> value
      */
     private void publishEvents(Deque<Event> inEvents,
-                               String inRequestId)
+                               String inExchangeRequestId)
     {
-        RequestData requestData = requestsByRequestId.get(inRequestId);
+        RequestData requestData = requestsByRequestId.get(inExchangeRequestId);
         if(requestData == null) {
             SLF4JLoggerProxy.debug(this,
-                                   "Not publishing {} to {} because it seems to have just been canceled", //$NON-NLS-1$
+                                   "Not publishing {} from {} because it seems to have just been canceled", //$NON-NLS-1$
                                    inEvents,
-                                   inRequestId);
+                                   inExchangeRequestId);
+            // TODO maybe send a cancel for this request?
             return;
         }
         SLF4JLoggerProxy.trace(this,
                                "Publishing {} to {}", //$NON-NLS-1$
                                inEvents,
-                               inRequestId);
+                               requestData.getClientRequestId());
         try {
-            eventBusService.post(new SimpleGeneratedMarketDataEvent(inRequestId,
+            eventBusService.post(new SimpleGeneratedMarketDataEvent(requestData.getClientRequestId(),
                                                                     inEvents));
         } catch (Exception e) {
             if(SLF4JLoggerProxy.isDebugEnabled(this)) {
@@ -1135,21 +1145,33 @@ public class ExsimFeedModule
             return requestMessage;
         }
         /**
+         * Get the clientRequestId value.
+         *
+         * @return a <code>String</code> value
+         */
+        private String getClientRequestId()
+        {
+            return clientRequestId;
+        }
+        /**
          * Create a new RequestData instance.
          *
          * @param inRequestMessage a <code>quickfix.Message</code> value
-         * @param inRequestId a <code>String</code> value
+         * @param inClientRequestId a <code>String</code> value
+         * @param inExchangeRequestId a <code>String</code> value
          * @param inMarketDataRequest a <code>MarketDataRequest</code> value
          * @param inRequestedInstruments a <code>List&lt;Instrument&gt;</code> value
          */
         private RequestData(quickfix.Message inRequestMessage,
-                            String inRequestId,
+                            String inClientRequestId,
+                            String inExchangeRequestId,
                             MarketDataRequest inMarketDataRequest,
                             List<Instrument> inRequestedInstruments)
         {
             requestMessage = inRequestMessage;
-            description = RequestData.class.getSimpleName() + " [" + inRequestId + "]"; //$NON-NLS-1$ //$NON-NLS-2$
-            requestId = inRequestId;
+            description = RequestData.class.getSimpleName() + " [" + inExchangeRequestId + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+            clientRequestId = inClientRequestId;
+            exchangeRequestId = inExchangeRequestId;
             requestedInstruments = inRequestedInstruments;
             marketDataRequest = inMarketDataRequest;
         }
@@ -1166,9 +1188,13 @@ public class ExsimFeedModule
          */
         private final quickfix.Message requestMessage;
         /**
-         * request id of the request
+         * request id of the request sent to the exchange
          */
-        private final String requestId;
+        private final String exchangeRequestId;
+        /**
+         * request id of the request sent from the client
+         */
+        private final String clientRequestId;
         /**
          * instruments requested
          */

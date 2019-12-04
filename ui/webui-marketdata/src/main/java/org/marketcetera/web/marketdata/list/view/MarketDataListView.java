@@ -1,7 +1,9 @@
 package org.marketcetera.web.marketdata.list.view;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +24,11 @@ import org.marketcetera.web.view.AbstractContentView;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -99,26 +105,49 @@ public class MarketDataListView
         styleService.addStyle(marketDataGridLayout);
         addComponents(symbolEntryLayout,
                       marketDataGridLayout);
-        marketDataGrid = new Grid();
+        final String tradePriceColumn = "Trade Px";
+        final String tradeQuantityColumn = "Trade Qty";
+        final String bidQuantityColumn = "Bid Qty";
+        final String bidPriceColumn = "Bid Px";
+        final String offerPriceColumn = "Offer Px";
+        final String offerQuantityColumn = "Offer Qty";
+        List<MarketDataRow> marketDataRows = Lists.newArrayList();
+        BeanItemContainer<MarketDataRow> marketDataBeanItemContainer = new BeanItemContainer<>(MarketDataRow.class,
+                                                                                               marketDataRows);
+        marketDataGrid = new Grid(marketDataBeanItemContainer);
+//        marketDataContainer.addContainerProperty(tradePriceColumn,
+//                                                 BigDecimal.class,
+//                                                 null);
+//        marketDataContainer.addContainerProperty(tradeQuantityColumn,
+//                                                 BigDecimal.class,
+//                                                 null);
+//        marketDataContainer.addContainerProperty(bidQuantityColumn,
+//                                                 BigDecimal.class,
+//                                                 null);
+//        marketDataContainer.addContainerProperty(bidPriceColumn,
+//                                                 BigDecimal.class,
+//                                                 null);
+//        marketDataContainer.addContainerProperty(offerPriceColumn,
+//                                                 BigDecimal.class,
+//                                                 null);
+//        marketDataContainer.addContainerProperty(offerQuantityColumn,
+//                                                 BigDecimal.class,
+//                                                 null);
+        marketDataGrid.setContainerDataSource(marketDataBeanItemContainer);
         Column symbolColumn = marketDataGrid.addColumn("Symbol",
                                                        String.class);
-        marketDataGrid.addColumn("Trade Px",
+        marketDataGrid.addColumn(tradePriceColumn,
                                  BigDecimal.class).setConverter(DecimalConverter.instanceZeroAsNull);
-        marketDataGrid.addColumn("Trade Qty",
+        marketDataGrid.addColumn(tradeQuantityColumn,
                                  BigDecimal.class);
-        marketDataGrid.addColumn("Bid Qty",
+        marketDataGrid.addColumn(bidQuantityColumn,
                                  BigDecimal.class);
-        marketDataGrid.addColumn("Bid Px",
+        marketDataGrid.addColumn(bidPriceColumn,
                                  BigDecimal.class).setConverter(DecimalConverter.instanceZeroAsNull);
-        marketDataGrid.addColumn("Offer Px",
+        marketDataGrid.addColumn(offerPriceColumn,
                                  BigDecimal.class).setConverter(DecimalConverter.instanceZeroAsNull);
-        marketDataGrid.addColumn("Offer Qty",
+        marketDataGrid.addColumn(offerQuantityColumn,
                                  BigDecimal.class);
-//                                  "Trade Qty",
-//                                  "Bid Qty",
-//                                  "Bid Px",
-//                                  "Offer Px",
-//                                  "Offer Qty",
 //                                  "Prev Close Px",
 //                                  "Open/Close Px",
 //                                  "High Px",
@@ -146,15 +175,15 @@ public class MarketDataListView
         addMarketDataSymbolButton.addClickListener(inClickEvent -> {
             String newSymbol = StringUtils.trimToNull(marketDataSymbolText.getValue());
             if(newSymbol != null && !rowsBySymbol.containsKey(newSymbol)) {
-                Object rowId = marketDataGrid.addRow(newSymbol,
-                                                     null,
-                                                     null,
-                                                     null,
-                                                     null,
-                                                     null,
-                                                     null);
-                MarketDataRow marketDataRow = new MarketDataRow(newSymbol,
-                                                                rowId);
+//                Object rowId = marketDataGrid.addRow(newSymbol,
+//                                                     null,
+//                                                     null,
+//                                                     null,
+//                                                     null,
+//                                                     null,
+//                                                     null);
+                MarketDataRow marketDataRow = new MarketDataRow(newSymbol);
+                marketDataRow.setItem(marketDataContainer.addItem(marketDataRow));
                 rowsBySymbol.put(newSymbol,
                                  marketDataRow);
                 marketDataSymbolText.clear();
@@ -166,19 +195,86 @@ public class MarketDataListView
         symbolEntryLayout.addComponents(marketDataSymbolText,
                                         addMarketDataSymbolButton);
     }
+    private IndexedContainer marketDataContainer;
     private final Map<String,MarketDataRow> rowsBySymbol = Maps.newHashMap();
     private class MarketDataRow
             implements Comparable<MarketDataRow>,MarketDataListener
     {
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(symbol);
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj)
+        {
+            if(this == obj) {
+                return true;
+            }
+            if(obj == null) {
+                return false;
+            }
+            if(!(obj instanceof MarketDataRow)) {
+                return false;
+            }
+            MarketDataRow other = (MarketDataRow)obj;
+            return Objects.equals(symbol,
+                                  other.symbol);
+        }
+        /*
+        final String tradePriceColumn = "Trade Px";
+        final String tradeQuantityColumn = "Trade Qty";
+        final String bidQuantityColumn = "Bid Qty";
+        final String bidPriceColumn = "Bid Px";
+        final String offerPriceColumn = "Offer Px";
+        final String offerQuantityColumn = "Offer Qty";
+         */
+        public BigDecimal getTradePx()
+        {
+            return tradePrice;
+        }
+        private BigDecimal tradePrice = BigDecimal.ZERO;
+        private BigDecimal tradeQuantity = BigDecimal.ZERO;
+        private BigDecimal bidQuantity = BigDecimal.ZERO;
+        private BigDecimal bidPrice = BigDecimal.ZERO;
+        private BigDecimal offerPrice = BigDecimal.ZERO;
+        private BigDecimal offerQuantity = BigDecimal.ZERO;
         /* (non-Javadoc)
          * @see org.marketcetera.marketdata.MarketDataListener#receiveMarketData(org.marketcetera.event.Event)
          */
         @Override
         public void receiveMarketData(org.marketcetera.event.Event inEvent)
         {
-            SLF4JLoggerProxy.warn(MarketDataListView.this,
-                                  "COCO: received {}",
-                                  inEvent);
+            SLF4JLoggerProxy.trace(MarketDataListView.this,
+                                   "Received {}",
+                                   inEvent);
+            if(inEvent instanceof BidEvent) {
+                BidEvent bidEvent = (BidEvent)inEvent;
+//                marketDataGrid.get
+            } else if(inEvent instanceof AskEvent) {
+                AskEvent askEvent = (AskEvent)inEvent;
+            } else if(inEvent instanceof TradeEvent) {
+                TradeEvent tradeEvent = (TradeEvent)inEvent;
+            } else if(inEvent instanceof MarketstatEvent) {
+                MarketstatEvent marketstatEvent = (MarketstatEvent)inEvent;
+            } else {
+                
+            }
+        }
+        /**
+         *
+         *
+         * @param inItem
+         */
+        private void setItem(Item inItem)
+        {
+            rowItem = inItem;
         }
         /* (non-Javadoc)
          * @see org.marketcetera.marketdata.MarketDataListener#onError(java.lang.Throwable)
@@ -201,15 +297,11 @@ public class MarketDataListView
         /**
          * Create a new MarketDataRow instance.
          *
-         * @param inSymbol
-         * @param inAssetClass
-         * @param inRowId 
+         * @param inSymbol a <code>String</code> value
          */
-        private MarketDataRow(String inSymbol,
-                              Object inRowId)
+        private MarketDataRow(String inSymbol)
         {
             symbol = inSymbol;
-            rowId = inRowId;
             AssetClass assetClass = AssetClass.EQUITY;
             MarketDataClientService marketDataClientService = serviceManager.getService(MarketDataClientService.class);
             Instrument resolvedInstrument = serviceManager.getService(TradeClientService.class).resolveSymbol(symbol);
@@ -224,12 +316,16 @@ public class MarketDataListView
                                                         this);
         }
         private final String symbol;
-        private final Object rowId;
         private final String requestId;
         private BidEvent bidEvent;
         private AskEvent askEvent;
         private TradeEvent tradeEvent;
         private MarketstatEvent marketStatEvent;
+        private Item rowItem;
+        private MarketDataListView getOuterType()
+        {
+            return MarketDataListView.this;
+        }
     }
     /**
      * triggers the add symbol action
