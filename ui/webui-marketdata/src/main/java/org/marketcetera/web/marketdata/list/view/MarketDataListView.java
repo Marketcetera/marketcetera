@@ -20,7 +20,9 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.marketdata.service.MarketDataClientService;
 import org.marketcetera.web.service.trade.TradeClientService;
 import org.marketcetera.web.view.AbstractContentView;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Scope;
 
 import com.google.common.collect.Lists;
@@ -50,6 +52,7 @@ import com.vaadin.ui.Window;
  * @since $Release$
  */
 @SpringComponent
+@EnableAutoConfiguration
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class MarketDataListView
         extends AbstractContentView
@@ -139,7 +142,13 @@ public class MarketDataListView
         addMarketDataSymbolButton.setClickShortcut(KeyCode.ENTER);
         addMarketDataSymbolButton.addClickListener(inClickEvent -> {
             String newSymbol = StringUtils.trimToNull(marketDataSymbolText.getValue());
-            if(newSymbol != null && !rowsBySymbol.containsKey(newSymbol)) {
+            if(newSymbol == null) {
+                return;
+            }
+            if(!allowLowerCaseSymbols) {
+                newSymbol = newSymbol.toUpperCase();
+            }
+            if(!rowsBySymbol.containsKey(newSymbol)) {
                 MarketDataRow marketDataRow = new MarketDataRow(newSymbol);
                 marketDataBeanItemContainer.addBean(marketDataRow);
                 rowsBySymbol.put(newSymbol,
@@ -464,6 +473,11 @@ public class MarketDataListView
          */
         private final String requestId;
     }
+    /**
+     * indicate whether to allow lower case symbols or not
+     */
+    @Value("${metc.marketdata.view.allowLowerCaseSymbols:false}")
+    private boolean allowLowerCaseSymbols;
     /**
      * triggers the add symbol action
      */
