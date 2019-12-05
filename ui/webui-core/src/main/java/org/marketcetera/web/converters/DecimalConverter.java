@@ -28,7 +28,7 @@ public class DecimalConverter
             throws ConversionException
     {
         if(inValue == null) {
-            return BigDecimal.ZERO;
+            return treatNullAsZero?BigDecimal.ZERO:null;
         }
         return new BigDecimal(inValue);
     }
@@ -42,7 +42,7 @@ public class DecimalConverter
             throws ConversionException
     {
         if(inValue == null || BigDecimal.ZERO.compareTo(inValue) == 0) {
-            return "0.00";
+            return treatNullAsZero?zero:null;
         } else {
             inValue = inValue.stripTrailingZeros();
             if(inValue.scale() > 7) {
@@ -72,8 +72,26 @@ public class DecimalConverter
         return String.class;
     }
     /**
-     * static instance for easy use
+     * Create a new DecimalConverter instance.
+     *
+     * @param inTreatNullAsZero a <code>boolean</code> value
      */
-    public static final DecimalConverter instance = new DecimalConverter();
+    public DecimalConverter(boolean inTreatNullAsZero)
+    {
+        treatNullAsZero = inTreatNullAsZero;
+    }
+    private static final String zero = "0.00";
+    /**
+     * indicates how to treat null values
+     */
+    private final boolean treatNullAsZero;
+    /**
+     * static instance which renders null values as zero
+     */
+    public static final DecimalConverter instance = new DecimalConverter(true);
+    /**
+     * static instance which renders null values as null
+     */
+    public static final DecimalConverter instanceZeroAsNull = new DecimalConverter(false);
     private static final long serialVersionUID = 7344196492499105259L;
 }

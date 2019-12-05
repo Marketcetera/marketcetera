@@ -6,25 +6,21 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import javax.annotation.PostConstruct;
+
 import org.marketcetera.core.PlatformServices;
-import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.Event;
+import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
-import org.marketcetera.marketdata.NoMarketDataProvidersAvailable;
-import org.marketcetera.marketdata.cache.MarketDataCacheModuleFactory;
-import org.marketcetera.marketdata.core.manager.MarketDataManagerModuleFactory;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.ModuleManager;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.modules.publisher.PublisherModuleFactory;
+import org.marketcetera.marketdata.event.GeneratedMarketDataEvent;
+import org.marketcetera.marketdata.event.MarketDataRequestEvent;
+import org.marketcetera.marketdata.event.SimpleMarketDataRequestEvent;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.persist.PageResponse;
@@ -37,6 +33,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
 
 /* $License$ */
 
@@ -112,44 +109,16 @@ public class MarketDataServiceImpl
         String provider = inRequest.getProvider();
         // TODO make sure request id is unique
         String requestId = inRequest.getRequestId();
+        MarketDataRequestEvent requestEvent = new SimpleMarketDataRequestEvent(inRequest,
+                                                                               requestId,
+                                                                               provider);
+        RequestMetaData requestMetaData = new RequestMetaData(inMarketDataListener);
+        requestsByRequestId.put(requestId,
+                                requestMetaData);
         SLF4JLoggerProxy.debug(this,
-                               "Requesting market data: {} from {}",
-                               inRequest,
-                               provider);
-        if(provider == null) {
-            SLF4JLoggerProxy.debug(this,
-                                   "No provider requested, issuing request to all providers");
-            boolean atLeastOne = false;
-            for(ModuleURN providerUrn : moduleManager.getProviders()) {
-                String providerType = providerUrn.providerType();
-                String providerName = providerUrn.providerName();
-                if(providerType.equals("mdata") && !providerName.equals(MarketDataManagerModuleFactory.PROVIDER_NAME)) {
-                    for(ModuleURN instanceUrn : ModuleManager.getInstance().getModuleInstances(providerUrn)) {
-                        try {
-                            doDataRequest(inRequest,
-                                          instanceUrn,
-                                          inMarketDataListener,
-                                          requestId);
-                            atLeastOne = true;
-                        } catch (Exception e) {
-                            SLF4JLoggerProxy.warn(this,
-                                                  "Unable to request market data from {}: {}",
-                                                  instanceUrn,
-                                                  ExceptionUtils.getRootCauseMessage(e));
-                        }
-                    }
-                }
-            }
-            if(!atLeastOne) {
-                throw new NoMarketDataProvidersAvailable(new IllegalArgumentException("No market data providers available for request " + requestId));
-            }
-        } else {
-            ModuleURN sourceUrn = getInstanceUrn(provider);
-            doDataRequest(inRequest,
-                          sourceUrn,
-                          inMarketDataListener,
-                          requestId);
-        }
+                               "Requesting market data: {}",
+                               requestEvent);
+        eventBusService.post(requestEvent);
         return requestId;
     }
     /* (non-Javadoc)
@@ -168,10 +137,10 @@ public class MarketDataServiceImpl
         }
         requestMetaData.setIsActive(false);
         try {
-            SLF4JLoggerProxy.debug(this,
-                                   "Canceling market data request: {}",
-                                   requestMetaData.getDataFlowId());
-            moduleManager.cancel(requestMetaData.getDataFlowId());
+//            SLF4JLoggerProxy.debug(this,
+//                                   "Canceling market data request: {}",
+//                                   requestMetaData.getDataFlowId());
+//            moduleManager.cancel(requestMetaData.getDataFlowId());
         } catch (Exception e) {
             PlatformServices.handleException(this,
                                              "Cancel market data request",
@@ -268,82 +237,44 @@ public class MarketDataServiceImpl
         }
     }
     /**
-     * Get the instance URN for the given market data provider name.
+     * Receives generated market data events.
      *
-     * @param inProviderName a <code>String</code> value
-     * @return a <code>ModuleURN</code> value
+     * @param inMarketDataEvent a <code>GeneratedMarketDataEvent</code> value
      */
-    private ModuleURN getInstanceUrn(String inProviderName)
+    @Subscribe
+    public void onGeneratedMarketDataEvent(GeneratedMarketDataEvent inMarketDataEvent)
     {
-        ModuleURN instanceUrn = instanceUrnsByProviderName.getIfPresent(inProviderName);
-        if(instanceUrn == null) {
-            // this will be our guess in case we don't find something
-            instanceUrn = new ModuleURN("metc:mdata:" + inProviderName+":single");
-            for(ModuleURN moduleUrn : ModuleManager.getInstance().getProviders()) {
-                String providerType = moduleUrn.providerType();
-                if(providerType.equals("mdata") && moduleUrn.providerName().equals(inProviderName)) {
-                    instanceUrn = new ModuleURN(moduleUrn,
-                                                "single");
-                    instanceUrnsByProviderName.put(inProviderName,
-                                                   instanceUrn);
-                    break;
-                }
+        SLF4JLoggerProxy.trace(this,
+                               "Received {}",
+                               inMarketDataEvent);
+        RequestMetaData requestMetaData = requestsByRequestId.getIfPresent(inMarketDataEvent.getMarketDataRequestId());
+        if(requestMetaData == null) {
+            SLF4JLoggerProxy.trace(this,
+                                   "No request for {} in {}",
+                                   inMarketDataEvent.getMarketDataRequestId(),
+                                   requestsByRequestId);
+        } else {
+            Event event = inMarketDataEvent.getEvent();
+            try {
+                requestMetaData.doPublish(event);
+                SLF4JLoggerProxy.trace(this,
+                                       "Published {}",
+                                       event);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Cannot publish {}",
+                                      event);
             }
         }
-        return instanceUrn;
     }
     /**
-     * Execute the given market data request.
-     *
-     * @param inMarketDataRequest a <code>MarketDataRequest</code> value
-     * @param inSourceUrn a <code>ModuleURN</code> value
-     * @param inListener an <code>ISubscriber</code> value
-     * @param inRequestId a <code>long</code> value
+     * Validate and start the object.
      */
-    private void doDataRequest(MarketDataRequest inMarketDataRequest,
-                               ModuleURN inSourceUrn,
-                               MarketDataListener inListener,
-                               String inRequestId)
+    @PostConstruct
+    public void start()
     {
-        DataRequest sourceRequest = new DataRequest(inSourceUrn,
-                                                    inMarketDataRequest);
-        RequestMetaData requestMetaData = new RequestMetaData(inListener);
-        ModuleManager.startModulesIfNecessary(moduleManager,
-                                              MarketDataCacheModuleFactory.INSTANCE_URN,
-                                              inSourceUrn);
-        DataRequest cacheRequest = new DataRequest(MarketDataCacheModuleFactory.INSTANCE_URN);
-        DataRequest targetRequest = new DataRequest(createPublisherModule(requestMetaData));
-        DataFlowID dataFlowId = moduleManager.createDataFlow(new DataRequest[] { sourceRequest,cacheRequest,targetRequest });
-        requestMetaData.setDataFlowId(dataFlowId);
-        requestsByRequestId.put(inRequestId,
-                                requestMetaData);
-        SLF4JLoggerProxy.debug(this,
-                               "Submitting {} to {}: {}",
-                               inMarketDataRequest,
-                               inSourceUrn,
-                               dataFlowId);
-    }
-    /**
-     * Create a publisher module.
-     *
-     * @return a <code>ModuleURN</code> value
-     */
-    private ModuleURN createPublisherModule(final RequestMetaData inRequestMetaData)
-    {
-        ModuleURN publisherUrn = moduleManager.createModule(PublisherModuleFactory.PROVIDER_URN,
-                                                            new ISubscriber(){
-            @Override
-            public boolean isInteresting(Object inData)
-            {
-                return true;
-            }
-            @Override
-            public void publishTo(Object inData)
-            {
-                inRequestMetaData.doPublish(inData);
-            }}
-        );
-        return publisherUrn;
+        eventBusService.register(this);
     }
     /**
      * Holds data about the market data request.
@@ -354,24 +285,6 @@ public class MarketDataServiceImpl
      */
     private static class RequestMetaData
     {
-        /**
-         * Get the dataFlowId value.
-         *
-         * @return a <code>DataFlowID</code> value
-         */
-        private DataFlowID getDataFlowId()
-        {
-            return dataFlowId;
-        }
-        /**
-         * Sets the dataFlowId value.
-         *
-         * @param inDataFlowId a <code>DataFlowID</code> value
-         */
-        private void setDataFlowId(DataFlowID inDataFlowId)
-        {
-            dataFlowId = inDataFlowId;
-        }
         /**
          * Publish the given data.
          *
@@ -419,16 +332,12 @@ public class MarketDataServiceImpl
          * listener value
          */
         private final MarketDataListener marketDataListener;
-        /**
-         * data flow id value
-         */
-        private DataFlowID dataFlowId;
     }
     /**
-     * provides access to module services
+     * provides access to event bus services
      */
     @Autowired
-    private ModuleManager moduleManager;
+    private EventBusService eventBusService;
     /**
      * holds reported capabilities
      */
@@ -437,10 +346,6 @@ public class MarketDataServiceImpl
      * request data by request id
      */
     private final Cache<String,RequestMetaData> requestsByRequestId = CacheBuilder.newBuilder().build();
-    /**
-     * holds market data provider instances by provider name
-     */
-    private final Cache<String,ModuleURN> instanceUrnsByProviderName = CacheBuilder.newBuilder().build();
     /**
      * holds market data status listeners
      */

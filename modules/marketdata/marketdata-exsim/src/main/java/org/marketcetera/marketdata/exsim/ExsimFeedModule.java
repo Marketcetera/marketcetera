@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -59,26 +60,6 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import quickfix.Application;
-import quickfix.ConfigError;
-import quickfix.DoNotSend;
-import quickfix.FieldNotFound;
-import quickfix.Group;
-import quickfix.IncorrectDataFormat;
-import quickfix.IncorrectTagValue;
-import quickfix.LogFactory;
-import quickfix.MemoryStoreFactory;
-import quickfix.Message;
-import quickfix.MessageStoreFactory;
-import quickfix.RejectLogon;
-import quickfix.Session;
-import quickfix.SessionFactory;
-import quickfix.SessionID;
-import quickfix.SessionNotFound;
-import quickfix.SessionSettings;
-import quickfix.SocketInitiator;
-import quickfix.UnsupportedMessageType;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -254,7 +235,7 @@ public class ExsimFeedModule
             CapabilityCollection.reportCapability(getCapabilities());
             fixMessageProcessor = new FixMessageProcessor();
             fixMessageProcessor.start();
-            String aplVersion = exsimFeedConfig.getFixAplVersion();
+            String aplVersion = StringUtils.trimToNull(exsimFeedConfig.getFixAplVersion());
             FIXVersion version;
             if(aplVersion == null) {
                 version = FIXVersion.getFIXVersion(exsimFeedConfig.getFixVersion());
@@ -264,22 +245,22 @@ public class ExsimFeedModule
             messageFactory = version.getMessageFactory();
             application = new FixApplication();
             sessionId = exsimFeedConfig.getSessionId();
-            SessionSettings sessionSettings = new SessionSettings();
+            quickfix.SessionSettings sessionSettings = new quickfix.SessionSettings();
             exsimFeedConfig.populateSessionSettings(sessionSettings);
-            sessionSettings.setString(SessionFactory.SETTING_CONNECTION_TYPE,
-                                      SessionFactory.INITIATOR_CONNECTION_TYPE);
+            sessionSettings.setString(quickfix.SessionFactory.SETTING_CONNECTION_TYPE,
+                                      quickfix.SessionFactory.INITIATOR_CONNECTION_TYPE);
             SLF4JLoggerProxy.debug(this,
                                    "Session settings: {}", //$NON-NLS-1$
                                    sessionSettings);
-            LogFactory logFactory = new NullLogFactory();
-            MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
-            socketInitiator = new SocketInitiator(application,
-                                                  messageStoreFactory,
-                                                  sessionSettings,
-                                                  logFactory,
-                                                  messageFactory.getUnderlyingMessageFactory());
+            quickfix.LogFactory logFactory = new NullLogFactory();
+            quickfix.MessageStoreFactory messageStoreFactory = new quickfix.MemoryStoreFactory();
+            socketInitiator = new quickfix.SocketInitiator(application,
+                                                           messageStoreFactory,
+                                                           sessionSettings,
+                                                           logFactory,
+                                                           messageFactory.getUnderlyingMessageFactory());
             socketInitiator.start();
-        } catch (ConfigError e) {
+        } catch (quickfix.ConfigError e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
             throw new ModuleException(e);
@@ -292,6 +273,16 @@ public class ExsimFeedModule
     protected void preStop()
             throws ModuleException
     {
+        List<RequestData> requestsToCancel = Lists.newArrayList(requestsByDataFlowId.values());
+        for(RequestData request : requestsToCancel) {
+            try {
+                cancel(request.dataEmitterSupport.getFlowID(),
+                       request.dataEmitterSupport.getRequestID());
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+            }
+        }
         updateFeedStatus(FeedStatus.OFFLINE);
         if(fixMessageProcessor != null) {
             try {
@@ -334,13 +325,13 @@ public class ExsimFeedModule
      * @param inPayload a <code>MarketDataRequest</code> value
      * @param inRequest a <code>DataRequest</code> value
      * @param inSupport a <code>DataEmitterSupport</code> value
-     * @throws FieldNotFound if the request could not be built
-     * @throws SessionNotFound if the message could not be sent
+     * @throws quickfix.FieldNotFound if the request could not be built
+     * @throws quickfix.SessionNotFound if the message could not be sent
      */
     private void doMarketDataRequest(MarketDataRequest inPayload,
                                      DataRequest inRequest,
                                      DataEmitterSupport inSupport)
-            throws FieldNotFound, SessionNotFound
+            throws quickfix.FieldNotFound,quickfix.SessionNotFound
     {
         // build some number of market data request object and fire it off
         List<Instrument> requestedInstruments = Lists.newArrayList();
@@ -354,11 +345,11 @@ public class ExsimFeedModule
             }
         }
         String id = UUID.randomUUID().toString();
-        Message marketDataRequest = messageFactory.newMarketDataRequest(id,
-                                                                        requestedInstruments,
-                                                                        inPayload.getExchange(),
-                                                                        Lists.newArrayList(inPayload.getContent()),
-                                                                        quickfix.field.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
+        quickfix.Message marketDataRequest = messageFactory.newMarketDataRequest(id,
+                                                                                 requestedInstruments,
+                                                                                 inPayload.getExchange(),
+                                                                                 Lists.newArrayList(inPayload.getContent()),
+                                                                                 quickfix.field.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
         SLF4JLoggerProxy.debug(this,
                                "Built {} for {} from {}", //$NON-NLS-1$
                                marketDataRequest,
@@ -373,8 +364,8 @@ public class ExsimFeedModule
                                 requestData);
         requestsByDataFlowId.put(inSupport.getFlowID(),
                                  requestData);
-        if(!Session.sendToTarget(marketDataRequest,
-                                 sessionId)) {
+        if(!quickfix.Session.sendToTarget(marketDataRequest,
+                                          sessionId)) {
             requestsByRequestId.remove(id);
             requestsByDataFlowId.remove(inSupport.getFlowID());
             throw new StopDataFlowException(new I18NBoundMessage1P(Messages.CANNOT_REQUEST_DATA,
@@ -385,19 +376,19 @@ public class ExsimFeedModule
      * Cancel the market data request with the given id.
      *
      * @param inMarketDataRequestData a <code>String</code> value
-     * @throws FieldNotFound if the market data request cancel cannot be constructed
-     * @throws SessionNotFound if the cancel message cannot be sent
+     * @throws quickfix.FieldNotFound if the market data request cancel cannot be constructed
+     * @throws quickfix.SessionNotFound if the cancel message cannot be sent
      */
     private void cancelMarketDataRequest(RequestData inMarketDataRequestData)
-            throws FieldNotFound, SessionNotFound
+            throws quickfix.FieldNotFound,quickfix.SessionNotFound
     {
-        Message marketDataCancel = messageFactory.newMarketDataRequest(inMarketDataRequestData.requestId,
-                                                                       inMarketDataRequestData.requestedInstruments,
-                                                                       inMarketDataRequestData.marketDataRequest.getExchange(),
-                                                                       Lists.newArrayList(inMarketDataRequestData.marketDataRequest.getContent()),
-                                                                       quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST);
-        if(!Session.sendToTarget(marketDataCancel,
-                                 sessionId)) {
+        quickfix.Message marketDataCancel = messageFactory.newMarketDataRequest(inMarketDataRequestData.requestId,
+                                                                                inMarketDataRequestData.requestedInstruments,
+                                                                                inMarketDataRequestData.marketDataRequest.getExchange(),
+                                                                                Lists.newArrayList(inMarketDataRequestData.marketDataRequest.getContent()),
+                                                                                quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST);
+        if(!quickfix.Session.sendToTarget(marketDataCancel,
+                                          sessionId)) {
             throw new CoreException(new I18NBoundMessage2P(Messages.CANNOT_CANCEL_DATA,
                                                            marketDataCancel,
                                                            sessionId));
@@ -471,15 +462,15 @@ public class ExsimFeedModule
      * @param inMessageWrapper a <code>MessageWrapper</code>value
      * @param inIsSnapshot a <code>boolean</code> vlue
      * @return a <code>List&lt;Event&gt;</code> value containing the constructed events
-     * @throws FieldNotFound if an expected field cannot be found
+     * @throws quickfix.FieldNotFound if an expected field cannot be found
      */
     private List<Event> getEvents(MessageWrapper inMessageWrapper,
                                   boolean inIsSnapshot)
-            throws FieldNotFound
+            throws quickfix.FieldNotFound
     {
-        Message message = inMessageWrapper.getMessage();
+        quickfix.Message message = inMessageWrapper.getMessage();
         String requestId = inMessageWrapper.getRequestId();
-        List<Group> mdEntries = messageFactory.getMdEntriesFromMessage(message);
+        List<quickfix.Group> mdEntries = messageFactory.getMdEntriesFromMessage(message);
         long receivedTimestamp = inMessageWrapper.getReceivedTimestamp();
         List<Event> events = Lists.newArrayList();
         boolean marketstat = false;
@@ -499,7 +490,7 @@ public class ExsimFeedModule
         if(message.isSetField(quickfix.field.TotalVolumeTraded.FIELD)) {
             volume = message.getDecimal(quickfix.field.TotalVolumeTraded.FIELD);
         }
-        for(Group mdEntry : mdEntries) {
+        for(quickfix.Group mdEntry : mdEntries) {
             SLF4JLoggerProxy.debug(this,
                                    "Examining group {}", //$NON-NLS-1$
                                    mdEntry);
@@ -813,7 +804,7 @@ public class ExsimFeedModule
                 throws Exception
         {
             for(MessageWrapper messageWrapper : inData) {
-                Message message = messageWrapper.getMessage();
+                quickfix.Message message = messageWrapper.getMessage();
                 try {
                     SLF4JLoggerProxy.trace(ExsimFeedModule.this,
                                            "{} processing {}", //$NON-NLS-1$
@@ -886,11 +877,11 @@ public class ExsimFeedModule
         /**
          * Add the given message to the processing queue.
          *
-         * @param inMessage a <code>Message</code> value
-         * @throws FieldNotFound if the message is invalid
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @throws quickfix.FieldNotFound if the message is invalid
          */
-        private void add(Message inMessage)
-                throws FieldNotFound
+        private void add(quickfix.Message inMessage)
+                throws quickfix.FieldNotFound
         {
             super.add(new MessageWrapper(inMessage));
         }
@@ -919,11 +910,11 @@ public class ExsimFeedModule
         /**
          * Create a new MessageWrapper instance.
          *
-         * @param inMessage a <code>Message</code> value
-         * @throws FieldNotFound if the message is invalid
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @throws quickfix.FieldNotFound if the message is invalid
          */
-        private MessageWrapper(Message inMessage)
-                throws FieldNotFound
+        private MessageWrapper(quickfix.Message inMessage)
+                throws quickfix.FieldNotFound
         {
             message = inMessage;
             msgType = message.getHeader().getString(quickfix.field.MsgType.FIELD);
@@ -950,9 +941,9 @@ public class ExsimFeedModule
         /**
          * Get the message value.
          *
-         * @return a <code>Message</code> value
+         * @return a <code>quickfix.Message</code> value
          */
-        private Message getMessage()
+        private quickfix.Message getMessage()
         {
             return message;
         }
@@ -972,7 +963,7 @@ public class ExsimFeedModule
         /**
          * message value
          */
-        private final Message message;
+        private final quickfix.Message message;
         /**
          * message type value
          */
@@ -990,13 +981,13 @@ public class ExsimFeedModule
      * @since $Release$
      */
     private class FixApplication
-            implements Application
+            implements quickfix.Application
     {
         /* (non-Javadoc)
          * @see quickfix.Application#onCreate(quickfix.SessionID)
          */
         @Override
-        public void onCreate(SessionID inSessionId)
+        public void onCreate(quickfix.SessionID inSessionId)
         {
             SLF4JLoggerProxy.debug(ExsimFeedModule.this,
                                    "Session {} created", //$NON-NLS-1$
@@ -1006,7 +997,7 @@ public class ExsimFeedModule
          * @see quickfix.Application#onLogon(quickfix.SessionID)
          */
         @Override
-        public void onLogon(SessionID inSessionId)
+        public void onLogon(quickfix.SessionID inSessionId)
         {
             SLF4JLoggerProxy.debug(ExsimFeedModule.this,
                                    "Session {} logon", //$NON-NLS-1$
@@ -1017,7 +1008,7 @@ public class ExsimFeedModule
          * @see quickfix.Application#onLogout(quickfix.SessionID)
          */
         @Override
-        public void onLogout(SessionID inSessionId)
+        public void onLogout(quickfix.SessionID inSessionId)
         {
             SLF4JLoggerProxy.debug(ExsimFeedModule.this,
                                    "Session {} logout", //$NON-NLS-1$
@@ -1028,8 +1019,8 @@ public class ExsimFeedModule
          * @see quickfix.Application#toAdmin(quickfix.Message, quickfix.SessionID)
          */
         @Override
-        public void toAdmin(Message inMessage,
-                            SessionID inSessionId)
+        public void toAdmin(quickfix.Message inMessage,
+                            quickfix.SessionID inSessionId)
         {
             SLF4JLoggerProxy.trace(ExsimFeedModule.this,
                                    "{} sending admin {}", //$NON-NLS-1$
@@ -1040,9 +1031,9 @@ public class ExsimFeedModule
          * @see quickfix.Application#fromAdmin(quickfix.Message, quickfix.SessionID)
          */
         @Override
-        public void fromAdmin(Message inMessage,
-                              SessionID inSessionId)
-                throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, RejectLogon
+        public void fromAdmin(quickfix.Message inMessage,
+                              quickfix.SessionID inSessionId)
+                throws quickfix.FieldNotFound,quickfix.IncorrectDataFormat,quickfix.IncorrectTagValue,quickfix.RejectLogon
         {
             SLF4JLoggerProxy.trace(ExsimFeedModule.this,
                                    "{} received admin {}", //$NON-NLS-1$
@@ -1053,9 +1044,9 @@ public class ExsimFeedModule
          * @see quickfix.Application#toApp(quickfix.Message, quickfix.SessionID)
          */
         @Override
-        public void toApp(Message inMessage,
-                          SessionID inSessionId)
-                throws DoNotSend
+        public void toApp(quickfix.Message inMessage,
+                          quickfix.SessionID inSessionId)
+                throws quickfix.DoNotSend
         {
             SLF4JLoggerProxy.trace(ExsimFeedModule.this,
                                    "{} sending app {}", //$NON-NLS-1$
@@ -1070,9 +1061,9 @@ public class ExsimFeedModule
          * @see quickfix.Application#fromApp(quickfix.Message, quickfix.SessionID)
          */
         @Override
-        public void fromApp(Message inMessage,
-                            SessionID inSessionId)
-                throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType
+        public void fromApp(quickfix.Message inMessage,
+                            quickfix.SessionID inSessionId)
+                throws quickfix.FieldNotFound,quickfix.IncorrectDataFormat,quickfix.IncorrectTagValue,quickfix.UnsupportedMessageType
         {
             SLF4JLoggerProxy.trace(ExsimFeedModule.this,
                                    "{} received app {}", //$NON-NLS-1$
@@ -1109,10 +1100,10 @@ public class ExsimFeedModule
         /**
          * Get the requestMessage value.
          *
-         * @return a <code>Message</code> value
+         * @return a <code>quickfix.Message</code> value
          */
         @SuppressWarnings("unused")
-        private Message getRequestMessage()
+        private quickfix.Message getRequestMessage()
         {
             return requestMessage;
         }
@@ -1128,13 +1119,13 @@ public class ExsimFeedModule
         /**
          * Create a new RequestData instance.
          *
-         * @param inRequestMessage a <code>Message</code> value
+         * @param inRequestMessage a <code>quickfix.Message</code> value
          * @param inDataEmitterSupport a <code>DataEmitterSupport</code> value
          * @param inRequestId a <code>String</code> value
          * @param inMarketDataRequest a <code>MarketDataRequest</code> value
          * @param inRequestedInstruments a <code>List&lt;Instrument&gt;</code> value
          */
-        private RequestData(Message inRequestMessage,
+        private RequestData(quickfix.Message inRequestMessage,
                             DataEmitterSupport inDataEmitterSupport,
                             String inRequestId,
                             MarketDataRequest inMarketDataRequest,
@@ -1158,7 +1149,7 @@ public class ExsimFeedModule
         /**
          * original request message sent to the exchange
          */
-        private final Message requestMessage;
+        private final quickfix.Message requestMessage;
         /**
          * information about the data flow requester
          */
@@ -1246,11 +1237,11 @@ public class ExsimFeedModule
     /**
      * session ID value that the module will use to connect
      */
-    private SessionID sessionId;
+    private quickfix.SessionID sessionId;
     /**
-     * handles physical connection to the simualted exchange
+     * handles physical connection to the simulated exchange
      */
-    private SocketInitiator socketInitiator;
+    private quickfix.SocketInitiator socketInitiator;
     /**
      * message factory for the specified FIX version
      */

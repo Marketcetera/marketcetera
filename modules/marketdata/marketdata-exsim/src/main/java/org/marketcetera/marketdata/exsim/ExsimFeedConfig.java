@@ -3,12 +3,9 @@ package org.marketcetera.marketdata.exsim;
 import javax.annotation.PostConstruct;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.quickfix.FIXVersion;
-
-import quickfix.Initiator;
-import quickfix.Session;
-import quickfix.SessionID;
-import quickfix.SessionSettings;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.stereotype.Component;
 
 /* $License$ */
 
@@ -19,6 +16,8 @@ import quickfix.SessionSettings;
  * @version $Id$
  * @since $Release$
  */
+@Component
+@EnableAutoConfiguration
 public class ExsimFeedConfig
 {
     /**
@@ -260,7 +259,7 @@ public class ExsimFeedConfig
      *
      * @return a <code>SessionID</code> value
      */
-    public SessionID getSessionId()
+    public quickfix.SessionID getSessionId()
     {
         return sessionId;
     }
@@ -273,130 +272,148 @@ public class ExsimFeedConfig
         if(senderCompId == null) {
             throw new CoreException(Messages.SENDER_COMPID_REQURED);
         }
-        sessionId = new SessionID(fixVersion,
-                                  senderCompId,
-                                  targetCompId);
+        sessionId = new quickfix.SessionID(fixVersion,
+                                           senderCompId,
+                                           targetCompId);
     }
     /**
      * Populates the given session settings value with the settings established for this config.
      *
-     * @param inSessionSettings a <code>SessionSettings</code> value
+     * @param inSessionSettings a <code>quickfix.SessionSettings</code> value
      */
-    void populateSessionSettings(SessionSettings inSessionSettings)
+    void populateSessionSettings(quickfix.SessionSettings inSessionSettings)
     {
         inSessionSettings.setString(sessionId,
-                                    Initiator.SETTING_SOCKET_CONNECT_HOST,
+                                    quickfix.Initiator.SETTING_SOCKET_CONNECT_HOST,
                                     hostname);
         inSessionSettings.setLong(sessionId,
-                                  Initiator.SETTING_SOCKET_CONNECT_PORT,
+                                  quickfix.Initiator.SETTING_SOCKET_CONNECT_PORT,
                                   port);
         inSessionSettings.setLong(sessionId,
-                                  Session.SETTING_HEARTBTINT,
+                                  quickfix.Session.SETTING_HEARTBTINT,
                                   heartBtInt);
         inSessionSettings.setString(sessionId,
-                                    Session.SETTING_START_TIME,
+                                    quickfix.Session.SETTING_START_TIME,
                                     startTime);
         inSessionSettings.setString(sessionId,
-                                    Session.SETTING_END_TIME,
+                                    quickfix.Session.SETTING_END_TIME,
                                     endTime);
         inSessionSettings.setString(sessionId,
-                                    Session.SETTING_TIMEZONE,
+                                    quickfix.Session.SETTING_TIMEZONE,
                                     timeZone);
         inSessionSettings.setString(sessionId,
-                                    Session.SETTING_RESET_ON_LOGON,
+                                    quickfix.Session.SETTING_RESET_ON_LOGON,
                                     "Y");
         inSessionSettings.setString(sessionId,
-                                    Session.SETTING_RESET_ON_LOGOUT,
+                                    quickfix.Session.SETTING_RESET_ON_LOGOUT,
                                     "Y");
         inSessionSettings.setString(sessionId,
-                                    Session.SETTING_RESET_ON_DISCONNECT,
+                                    quickfix.Session.SETTING_RESET_ON_DISCONNECT,
                                     "Y");
         inSessionSettings.setString(sessionId,
-                                    Session.SETTING_RESET_ON_ERROR,
+                                    quickfix.Session.SETTING_RESET_ON_ERROR,
                                     "Y");
         inSessionSettings.setString(sessionId,
-                                    Session.SETTING_DATA_DICTIONARY,
+                                    quickfix.Session.SETTING_DATA_DICTIONARY,
                                     dataDictionary);
         inSessionSettings.setString(sessionId,
-                                    SessionSettings.BEGINSTRING,
+                                    quickfix.SessionSettings.BEGINSTRING,
                                     sessionId.getBeginString());
         inSessionSettings.setString(sessionId,
-                                    SessionSettings.SENDERCOMPID,
+                                    quickfix.SessionSettings.SENDERCOMPID,
                                     sessionId.getSenderCompID());
         inSessionSettings.setString(sessionId,
-                                    SessionSettings.TARGETCOMPID,
+                                    quickfix.SessionSettings.TARGETCOMPID,
                                     sessionId.getTargetCompID());
         inSessionSettings.setLong(sessionId,
-                                  Initiator.SETTING_RECONNECT_INTERVAL,
+                                  quickfix.Initiator.SETTING_RECONNECT_INTERVAL,
                                   reconnectInterval);
         inSessionSettings.setString(sessionId,
-                                    Session.SETTING_PERSIST_MESSAGES,
+                                    quickfix.Session.SETTING_PERSIST_MESSAGES,
                                     "N");
         if(appDataDictionary != null) {
             inSessionSettings.setString(sessionId,
-                                        Session.SETTING_APP_DATA_DICTIONARY,
+                                        quickfix.Session.SETTING_APP_DATA_DICTIONARY,
                                         appDataDictionary);
         }
         if(fixAplVersion != null) {
             inSessionSettings.setString(sessionId,
-                                        Session.SETTING_DEFAULT_APPL_VER_ID,
+                                        quickfix.Session.SETTING_DEFAULT_APPL_VER_ID,
                                         fixAplVersion);
         }
     }
     /**
-     * session id value
+     * session ID value that the module will use to connect
      */
-    private SessionID sessionId;
+    private quickfix.SessionID sessionId;
     /**
      * sender comp id value to use
      */
+    @Value("${metc.marketdata.exsim.senderCompId}")
     private String senderCompId;
     /**
      * target comp id value to use
      */
-    private String targetCompId = "MRKTC-EXCH";
+    @Value("${metc.marketdata.exsim.targetCompId:MRKTC-EXCH}")
+    private String targetCompId;
     /**
      * hostname to connect to
      */
-    private String hostname = "exchange.marketcetera.com";
+    @Value("${metc.marketdata.exsim.hostname:exchange.marketcetera.com}")
+    private String hostname;
     /**
      * port to connect to
      */
-    private int port = 7001;
+    @Value("${metc.marketdata.exsim.port:7001}")
+    private int port;
     /**
      * FIX version to use for exchange traffic
      */
-    private String fixVersion = FIXVersion.FIX44.getVersion();
+    @Value("${metc.marketdata.exsim.fixVersion:FIX.4.4}")
+    private String fixVersion;
     /**
-     * FIX application version if using FIXT11 for the {{@link #fixVersion}}
+     * FIX application version if using FIXT11 for the {@link #fixVersion}
      */
-    private String fixAplVersion = null;
+    @Value("${metc.marketdata.exsim.fixAplVersion}")
+    private String fixAplVersion;
     /**
      * interval at which to connect to the exchange
      */
-    private int reconnectInterval = 5;
+    @Value("${metc.marketdata.exsim.reconnectInterval:5}")
+    private int reconnectInterval;
     /**
      * session heart beat interval
      */
-    private int heartBtInt = 30;
+    @Value("${metc.marketdata.exsim.heartBtInt:30}")
+    private int heartBtInt;
     /**
      * session start time
      */
-    private String startTime = "00:00:00";
+    @Value("${metc.marketdata.exsim.startTime:00:00:00}")
+    private String startTime;
     /**
      * session end time
      */
-    private String endTime = "22:45:00";
+    @Value("${metc.marketdata.exsim.endTime:22:45:00}")
+    private String endTime;
     /**
      * session time zone
      */
-    private String timeZone = "US/Pacific";
+    @Value("${metc.marketdata.exsim.timeZone:US/Pacific}")
+    private String timeZone;
     /**
      * session FIX dictionary
      */
-    private String dataDictionary = "FIX44.xml";
+    @Value("${metc.marketdata.exsim.dataDictionary:FIX44.xml}")
+    private String dataDictionary;
     /**
      * session FIX application data dictionary
      */
-    private String appDataDictionary = null;
+    @Value("${metc.marketdata.exsim.appDataDictionary}")
+    private String appDataDictionary;
+    /**
+     * number of milliseconds to wait for the feed to become available if a request is made while it is offline
+     */
+    @Value("${metc.marketdata.exsim.feedAvailableTimeout:10000}")
+    private long feedAvailableTimeout;
 }
