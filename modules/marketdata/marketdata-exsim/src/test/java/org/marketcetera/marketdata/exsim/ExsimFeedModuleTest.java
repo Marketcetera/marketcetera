@@ -17,9 +17,11 @@ import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleState;
 import org.springframework.beans.BeansException;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /* $License$ */
@@ -32,7 +34,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @since $Release$
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"file:src/test/sample_data/conf/test.xml"})
+@SpringBootTest(classes=ExsimTestConfiguration.class)
+@ComponentScan(basePackages={"org.marketcetera","com.marketcetera"})
+@EntityScan(basePackages={"org.marketcetera","com.marketcetera"})
 public class ExsimFeedModuleTest
         implements ApplicationContextAware
 {

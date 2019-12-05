@@ -57,6 +57,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>eventbus-guava</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>marketdata-bogus</artifactId>
       <scope>test</scope>
     </dependency>
