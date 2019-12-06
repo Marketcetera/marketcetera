@@ -190,79 +190,79 @@ public class MarketDataListView
     @Override
     protected void onActionSelect(ValueChangeEvent inEvent)
     {
-        DisplayClazz selectedItem = getSelectedItem();
-        if(selectedItem == null || inEvent.getProperty().getValue() == null) {
-            return;
-        }
-        String action = String.valueOf(inEvent.getProperty().getValue());
-        SLF4JLoggerProxy.info(this,
-                              "{}: {} {} '{}'",
-                              SessionUser.getCurrentUser().getUsername(),
-                              getViewName(),
-                              action,
-                              selectedItem);
-        switch(action) {
-            case ACTION_CANCEL:
-            case ACTION_REPLACE:
-                TradeClientService tradeClient = serviceManager.getService(TradeClientService.class);
-                ExecutionReport executionReport = tradeClient.getLatestExecutionReportForOrderChain(selectedItem.getOrderId());
-                if(executionReport == null) {
-                    Notification.show("Unable to cancel or replace " + selectedItem.getOrderId() + ": no execution report",
-                                      Type.ERROR_MESSAGE);
-                    return;
-                }
-                if(action == ACTION_CANCEL) {
-                    OrderCancel orderCancel = Factory.getInstance().createOrderCancel(executionReport);
-                    SLF4JLoggerProxy.info(this,
-                                          "{} sending {}",
-                                          SessionUser.getCurrentUser().getUsername(),
-                                          orderCancel);
-                    SendOrderResponse response = tradeClient.send(orderCancel);
-                    if(response.getFailed()) {
-                        Notification.show("Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
-                                          Type.ERROR_MESSAGE);
-                        return;
-                    } else {
-                        Notification.show(response.getOrderId() + " submitted",
-                                          Type.TRAY_NOTIFICATION);
-                    }
-                } else if(action == ACTION_REPLACE) {
-                    String executionReportXml;
-                    try {
-                        executionReportXml = xmlService.marshall(executionReport);
-                    } catch (JAXBException e) {
-                        Notification.show("Unable to cancel or replace " + selectedItem.getOrderId() + ": " + PlatformServices.getMessage(e),
-                                          Type.ERROR_MESSAGE);
-                        return;
-                    }
-                    Properties replaceProperties = new Properties();
-                    replaceProperties.setProperty(ExecutionReport.class.getCanonicalName(),
-                                                  executionReportXml);
-                    ReplaceOrderEvent replaceOrderEvent = applicationContext.getBean(ReplaceOrderEvent.class,
-                                                                                     executionReport,
-                                                                                     replaceProperties);
-                    webMessageService.post(replaceOrderEvent);
-                    return;
-                } else {
-                    throw new UnsupportedOperationException("Unsupported action: " + action);
-                }
-                break;
-            case ACTION_FIX_MESSAGE_DETAILS:
-                Properties replaceProperties = new Properties();
-                replaceProperties.setProperty(quickfix.Message.class.getCanonicalName(),
-                                              selectedItem.getMessage().toString());
-                FixMessageDetailsViewEvent viewFixMessageDetailsEvent = applicationContext.getBean(FixMessageDetailsViewEvent.class,
-                                                                                                   selectedItem,
-                                                                                                   replaceProperties);
-                webMessageService.post(viewFixMessageDetailsEvent);
-                return;
-            case ACTION_ADD:
-                break;
-            case ACTION_DELETE:
-                break;
-            default:
-                throw new UnsupportedOperationException("Unsupported action: " + action);
-        }
+//        DisplayClazz selectedItem = getSelectedItem();
+//        if(selectedItem == null || inEvent.getProperty().getValue() == null) {
+//            return;
+//        }
+//        String action = String.valueOf(inEvent.getProperty().getValue());
+//        SLF4JLoggerProxy.info(this,
+//                              "{}: {} {} '{}'",
+//                              SessionUser.getCurrentUser().getUsername(),
+//                              getViewName(),
+//                              action,
+//                              selectedItem);
+//        switch(action) {
+//            case ACTION_CANCEL:
+//            case ACTION_REPLACE:
+//                TradeClientService tradeClient = serviceManager.getService(TradeClientService.class);
+//                ExecutionReport executionReport = tradeClient.getLatestExecutionReportForOrderChain(selectedItem.getOrderId());
+//                if(executionReport == null) {
+//                    Notification.show("Unable to cancel or replace " + selectedItem.getOrderId() + ": no execution report",
+//                                      Type.ERROR_MESSAGE);
+//                    return;
+//                }
+//                if(action == ACTION_CANCEL) {
+//                    OrderCancel orderCancel = Factory.getInstance().createOrderCancel(executionReport);
+//                    SLF4JLoggerProxy.info(this,
+//                                          "{} sending {}",
+//                                          SessionUser.getCurrentUser().getUsername(),
+//                                          orderCancel);
+//                    SendOrderResponse response = tradeClient.send(orderCancel);
+//                    if(response.getFailed()) {
+//                        Notification.show("Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
+//                                          Type.ERROR_MESSAGE);
+//                        return;
+//                    } else {
+//                        Notification.show(response.getOrderId() + " submitted",
+//                                          Type.TRAY_NOTIFICATION);
+//                    }
+//                } else if(action == ACTION_REPLACE) {
+//                    String executionReportXml;
+//                    try {
+//                        executionReportXml = xmlService.marshall(executionReport);
+//                    } catch (JAXBException e) {
+//                        Notification.show("Unable to cancel or replace " + selectedItem.getOrderId() + ": " + PlatformServices.getMessage(e),
+//                                          Type.ERROR_MESSAGE);
+//                        return;
+//                    }
+//                    Properties replaceProperties = new Properties();
+//                    replaceProperties.setProperty(ExecutionReport.class.getCanonicalName(),
+//                                                  executionReportXml);
+//                    ReplaceOrderEvent replaceOrderEvent = applicationContext.getBean(ReplaceOrderEvent.class,
+//                                                                                     executionReport,
+//                                                                                     replaceProperties);
+//                    webMessageService.post(replaceOrderEvent);
+//                    return;
+//                } else {
+//                    throw new UnsupportedOperationException("Unsupported action: " + action);
+//                }
+//                break;
+//            case ACTION_FIX_MESSAGE_DETAILS:
+//                Properties replaceProperties = new Properties();
+//                replaceProperties.setProperty(quickfix.Message.class.getCanonicalName(),
+//                                              selectedItem.getMessage().toString());
+//                FixMessageDetailsViewEvent viewFixMessageDetailsEvent = applicationContext.getBean(FixMessageDetailsViewEvent.class,
+//                                                                                                   selectedItem,
+//                                                                                                   replaceProperties);
+//                webMessageService.post(viewFixMessageDetailsEvent);
+//                return;
+//            case ACTION_ADD:
+//                break;
+//            case ACTION_DELETE:
+//                break;
+//            default:
+//                throw new UnsupportedOperationException("Unsupported action: " + action);
+//        }
     }
     /**
      * Represents a single row in the market data list.
