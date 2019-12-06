@@ -13,7 +13,7 @@ import org.marketcetera.web.converters.DecimalConverter;
 import org.marketcetera.web.converters.InstrumentConverter;
 import org.marketcetera.web.converters.SideConverter;
 import org.marketcetera.web.trade.event.TradeOrderEvent;
-import org.marketcetera.web.view.AbstractGridView;
+import org.marketcetera.web.view.AbstractPagedGridView;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -36,7 +36,7 @@ import com.vaadin.ui.Window;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AveragePriceView
-        extends AbstractGridView<AverageFillPrice>
+        extends AbstractPagedGridView<AverageFillPrice>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.AbstractGridView#attach()

@@ -2,7 +2,7 @@ package org.marketcetera.web.view.dataflows;
 
 import java.util.Properties;
 
-import org.marketcetera.web.view.AbstractGridView;
+import org.marketcetera.web.view.AbstractPagedGridView;
 import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -24,7 +24,7 @@ import com.vaadin.ui.Window;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ModuleView
-        extends AbstractGridView<DecoratedModuleInfo>
+        extends AbstractPagedGridView<DecoratedModuleInfo>
         implements ContentView
 {
     /**

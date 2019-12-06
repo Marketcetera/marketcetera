@@ -12,7 +12,7 @@ import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.dataflow.DataFlowClientService;
 import org.marketcetera.web.service.dataflow.DataFlowClientServiceInstance;
-import org.marketcetera.web.view.AbstractGridView;
+import org.marketcetera.web.view.AbstractPagedGridView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class StrategyEngineView
-        extends AbstractGridView<DecoratedStrategyEngine>
+        extends AbstractPagedGridView<DecoratedStrategyEngine>
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.ContentView#getViewName()

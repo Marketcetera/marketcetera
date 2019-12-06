@@ -1,5 +1,7 @@
 package org.marketcetera.marketdata;
 
+import org.springframework.security.core.GrantedAuthority;
+
 /* $License$ */
 
 /**
@@ -10,6 +12,7 @@ package org.marketcetera.marketdata;
  * @since $Release$
  */
 public enum MarketDataPermissions
+        implements GrantedAuthority
 {
     /**
      * permission to request updated market data
@@ -18,5 +21,13 @@ public enum MarketDataPermissions
     /**
      * permission to request snapshot market data
      */
-    RequestMarketDataSnapshotAction
+    RequestMarketDataSnapshotAction;
+    /* (non-Javadoc)
+     * @see org.springframework.security.core.GrantedAuthority#getAuthority()
+     */
+    @Override
+    public String getAuthority()
+    {
+        return name();
+    }
 }

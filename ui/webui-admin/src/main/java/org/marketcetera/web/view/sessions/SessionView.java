@@ -25,7 +25,7 @@ import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.entity.DisplayFixSession;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.admin.AdminClientService;
-import org.marketcetera.web.view.AbstractGridView;
+import org.marketcetera.web.view.AbstractPagedGridView;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -86,7 +86,7 @@ import quickfix.SessionID;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SessionView
-        extends AbstractGridView<DisplayFixSession>
+        extends AbstractPagedGridView<DisplayFixSession>
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()

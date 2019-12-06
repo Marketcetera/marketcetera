@@ -1,12 +1,14 @@
 package org.marketcetera.web.marketdata.list.view;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.lang3.StringUtils;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.MarketstatEvent;
@@ -14,31 +16,35 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.marketdata.MarketDataPermissions;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.TradePermissions;
+import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.marketdata.list.view.MarketDataListView.MarketDataRow;
 import org.marketcetera.web.marketdata.service.MarketDataClientService;
 import org.marketcetera.web.service.trade.TradeClientService;
-import org.marketcetera.web.view.AbstractContentView;
+import org.marketcetera.web.trade.event.FixMessageDetailsViewEvent;
+import org.marketcetera.web.trade.event.ReplaceOrderEvent;
+import org.marketcetera.web.view.AbstractGridView;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Scope;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.grid.ColumnResizeMode;
-import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.Grid.SelectionMode;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 
@@ -55,7 +61,7 @@ import com.vaadin.ui.Window;
 @EnableAutoConfiguration
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class MarketDataListView
-        extends AbstractContentView
+        extends AbstractGridView<MarketDataRow,MarketDataListDataContainer>
 {
     /**
      * Create a new MarketDataView instance.
@@ -78,89 +84,185 @@ public class MarketDataListView
         return NAME;
     }
     /* (non-Javadoc)
-     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-     */
-    @Override
-    public void enter(ViewChangeEvent inEvent)
-    {
-    }
-    /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractComponent#attach()
      */
     @Override
     public void attach()
     {
         super.attach();
-        setSizeFull();
-        CssLayout symbolEntryLayout = new CssLayout();
-        symbolEntryLayout.setId(getClass().getCanonicalName() + ".symbolEntryLayout");
-        symbolEntryLayout.setWidth("100%");
-        styleService.addStyle(symbolEntryLayout);
-        HorizontalLayout marketDataGridLayout = new HorizontalLayout();
-        marketDataGridLayout.setId(getClass().getCanonicalName() + ".marketDataGridLayout");
-        marketDataGridLayout.setWidth("100%");
-        marketDataGridLayout.setMargin(true);
-        marketDataGridLayout.setHeight("75%");
-        styleService.addStyle(marketDataGridLayout);
-        addComponents(symbolEntryLayout,
-                      marketDataGridLayout);
-        List<MarketDataRow> marketDataRows = Lists.newArrayList();
-        BeanItemContainer<MarketDataRow> marketDataBeanItemContainer = new BeanItemContainer<>(MarketDataRow.class,
-                                                                                               marketDataRows);
-        marketDataGrid = new Grid(marketDataBeanItemContainer);
-        marketDataGrid.setColumnOrder(symbolColumn,
-                                      tradePriceColumn,
-                                      tradeQuantityColumn,
-                                      tradeExchangeColumn,
-                                      bidExchangeColumn,
-                                      bidQuantityColumn,
-                                      bidPriceColumn,
-                                      offerPriceColumn,
-                                      offerQuantityColumn,
-                                      offerExchangeColumn,
-                                      openColumn,
-                                      highColumn,
-                                      lowColumn,
-                                      closeColumn,
-                                      volumeColumn);
-        marketDataGrid.setHeightMode(HeightMode.CSS);
-        marketDataGrid.setSizeFull();
-        marketDataGrid.setColumnReorderingAllowed(true);
-        marketDataGrid.setColumnResizeMode(ColumnResizeMode.ANIMATED);
-        marketDataGrid.setSelectionMode(SelectionMode.SINGLE);
-        marketDataGrid.setId(getClass().getCanonicalName() + ".marketDataGrid");
-        styleService.addStyle(marketDataGrid);
-        marketDataGridLayout.addComponents(marketDataGrid);
+        getCreateNewButton().setCaption("");
         marketDataSymbolText = new TextField();
         marketDataSymbolText.addTextChangeListener(inEvent -> {
             String value = StringUtils.trimToNull(marketDataSymbolText.getValue());
-            addMarketDataSymbolButton.setReadOnly(value != null);
+            getCreateNewButton().setReadOnly(value != null);
         });
-        addMarketDataSymbolButton = new Button();
-        addMarketDataSymbolButton.setReadOnly(true);
-        addMarketDataSymbolButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        addMarketDataSymbolButton.setClickShortcut(KeyCode.ENTER);
-        addMarketDataSymbolButton.addClickListener(inClickEvent -> {
-            String newSymbol = StringUtils.trimToNull(marketDataSymbolText.getValue());
-            if(newSymbol == null) {
+        marketDataSymbolText.setId(getClass().getCanonicalName() + ".marketDataSymbolText");
+        styleService.addStyle(marketDataSymbolText);
+        getAboveTheGridLayout().removeAllComponents();
+        getAboveTheGridLayout().addComponents(getActionSelect(),
+                                              marketDataSymbolText,
+                                              getCreateNewButton());
+        getCreateNewButton().setClickShortcut(KeyCode.ENTER);
+        getActionSelect().setNullSelectionAllowed(false);
+        getActionSelect().setReadOnly(true);
+        getGrid().addSelectionListener(inEvent -> {
+            MarketDataRow selectedObject = getSelectedItem();
+            getActionSelect().removeAllItems();
+            if(selectedObject == null) {
+                getActionSelect().setReadOnly(true);
+            } else {
+                getActionSelect().setReadOnly(false);
+                // adjust the available actions based on the status of the selected row
+                if(authzHelperService.hasPermission(MarketDataPermissions.RequestMarketDataAction)) { 
+                    getActionSelect().addItems(ACTION_DETAIL);
+                }
+                if(authzHelperService.hasPermission(TradePermissions.SendOrderAction)) {
+                    getActionSelect().addItem(ACTION_BUY);
+                    getActionSelect().addItem(ACTION_SELL);
+                }
+                getActionSelect().addItem(ACTION_REMOVE);
+            }
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractGridView#onCreateNew(com.vaadin.ui.Button.ClickEvent)
+     */
+    @Override
+    protected void onCreateNew(ClickEvent inEvent)
+    {
+        String newSymbol = StringUtils.trimToNull(marketDataSymbolText.getValue());
+        if(newSymbol == null) {
+            return;
+        }
+        if(!allowLowerCaseSymbols) {
+            newSymbol = newSymbol.toUpperCase();
+        }
+        if(!rowsBySymbol.containsKey(newSymbol)) {
+            MarketDataRow marketDataRow = new MarketDataRow(newSymbol);
+            getDataContainer().addBean(marketDataRow);
+            rowsBySymbol.put(newSymbol,
+                             marketDataRow);
+        }
+        marketDataSymbolText.clear();
+        marketDataSymbolText.focus();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractGridView#setGridColumns()
+     */
+    @Override
+    protected void setGridColumns()
+    {
+        getGrid().setColumns(symbolColumn,
+                             tradePriceColumn,
+                             tradeQuantityColumn,
+                             tradeExchangeColumn,
+                             bidExchangeColumn,
+                             bidQuantityColumn,
+                             bidPriceColumn,
+                             offerPriceColumn,
+                             offerQuantityColumn,
+                             offerExchangeColumn,
+                             openColumn,
+                             highColumn,
+                             lowColumn,
+                             closeColumn,
+                             volumeColumn);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractGridView#createDataContainer()
+     */
+    @Override
+    protected MarketDataListDataContainer createDataContainer()
+    {
+        return new MarketDataListDataContainer();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractGridView#getViewSubjectName()
+     */
+    @Override
+    protected String getViewSubjectName()
+    {
+        return NAME;
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.web.view.AbstractGridView#onActionSelect(com.vaadin.data.Property.ValueChangeEvent)
+     */
+    @Override
+    protected void onActionSelect(ValueChangeEvent inEvent)
+    {
+        DisplayClazz selectedItem = getSelectedItem();
+        if(selectedItem == null || inEvent.getProperty().getValue() == null) {
+            return;
+        }
+        String action = String.valueOf(inEvent.getProperty().getValue());
+        SLF4JLoggerProxy.info(this,
+                              "{}: {} {} '{}'",
+                              SessionUser.getCurrentUser().getUsername(),
+                              getViewName(),
+                              action,
+                              selectedItem);
+        switch(action) {
+            case ACTION_CANCEL:
+            case ACTION_REPLACE:
+                TradeClientService tradeClient = serviceManager.getService(TradeClientService.class);
+                ExecutionReport executionReport = tradeClient.getLatestExecutionReportForOrderChain(selectedItem.getOrderId());
+                if(executionReport == null) {
+                    Notification.show("Unable to cancel or replace " + selectedItem.getOrderId() + ": no execution report",
+                                      Type.ERROR_MESSAGE);
+                    return;
+                }
+                if(action == ACTION_CANCEL) {
+                    OrderCancel orderCancel = Factory.getInstance().createOrderCancel(executionReport);
+                    SLF4JLoggerProxy.info(this,
+                                          "{} sending {}",
+                                          SessionUser.getCurrentUser().getUsername(),
+                                          orderCancel);
+                    SendOrderResponse response = tradeClient.send(orderCancel);
+                    if(response.getFailed()) {
+                        Notification.show("Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
+                                          Type.ERROR_MESSAGE);
+                        return;
+                    } else {
+                        Notification.show(response.getOrderId() + " submitted",
+                                          Type.TRAY_NOTIFICATION);
+                    }
+                } else if(action == ACTION_REPLACE) {
+                    String executionReportXml;
+                    try {
+                        executionReportXml = xmlService.marshall(executionReport);
+                    } catch (JAXBException e) {
+                        Notification.show("Unable to cancel or replace " + selectedItem.getOrderId() + ": " + PlatformServices.getMessage(e),
+                                          Type.ERROR_MESSAGE);
+                        return;
+                    }
+                    Properties replaceProperties = new Properties();
+                    replaceProperties.setProperty(ExecutionReport.class.getCanonicalName(),
+                                                  executionReportXml);
+                    ReplaceOrderEvent replaceOrderEvent = applicationContext.getBean(ReplaceOrderEvent.class,
+                                                                                     executionReport,
+                                                                                     replaceProperties);
+                    webMessageService.post(replaceOrderEvent);
+                    return;
+                } else {
+                    throw new UnsupportedOperationException("Unsupported action: " + action);
+                }
+                break;
+            case ACTION_FIX_MESSAGE_DETAILS:
+                Properties replaceProperties = new Properties();
+                replaceProperties.setProperty(quickfix.Message.class.getCanonicalName(),
+                                              selectedItem.getMessage().toString());
+                FixMessageDetailsViewEvent viewFixMessageDetailsEvent = applicationContext.getBean(FixMessageDetailsViewEvent.class,
+                                                                                                   selectedItem,
+                                                                                                   replaceProperties);
+                webMessageService.post(viewFixMessageDetailsEvent);
                 return;
-            }
-            if(!allowLowerCaseSymbols) {
-                newSymbol = newSymbol.toUpperCase();
-            }
-            if(!rowsBySymbol.containsKey(newSymbol)) {
-                MarketDataRow marketDataRow = new MarketDataRow(newSymbol);
-                marketDataBeanItemContainer.addBean(marketDataRow);
-                rowsBySymbol.put(newSymbol,
-                                 marketDataRow);
-            }
-            marketDataSymbolText.clear();
-            marketDataSymbolText.focus();
-        });
-        addMarketDataSymbolButton.setId(getClass().getCanonicalName() + ".addMarketDataSymbolButton");
-        styleService.addStyle(addMarketDataSymbolButton);
-        symbolEntryLayout.addComponents(marketDataSymbolText,
-                                        addMarketDataSymbolButton);
+            case ACTION_ADD:
+                break;
+            case ACTION_DELETE:
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported action: " + action);
+        }
     }
     /**
      * Represents a single row in the market data list.
@@ -198,6 +300,23 @@ public class MarketDataListView
             MarketDataRow other = (MarketDataRow)obj;
             return Objects.equals(symbol,
                                   other.symbol);
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("MarketDataRow [symbol=").append(symbol).append(", tradePrice=").append(tradePrice)
+                    .append(", tradeQuantity=").append(tradeQuantity).append(", tradeExchange=").append(tradeExchange)
+                    .append(", bidExchange=").append(bidExchange).append(", bidQuantity=").append(bidQuantity)
+                    .append(", bidPrice=").append(bidPrice).append(", offerPrice=").append(offerPrice)
+                    .append(", offerQuantity=").append(offerQuantity).append(", offerExchange=").append(offerExchange)
+                    .append(", volume=").append(volume).append(", open=").append(open).append(", high=").append(high)
+                    .append(", low=").append(low).append(", close=").append(close).append(", requestId=")
+                    .append(requestId).append("]");
+            return builder.toString();
         }
         /**
          * Get the symbol value.
@@ -368,7 +487,8 @@ public class MarketDataListView
             } else {
                 return;
             }
-            marketDataGrid.refreshAllRows();
+            BeanItem<MarketDataRow> beanRow = getDataContainer().getItem(this);
+            beanRow.setBean(this);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.marketdata.MarketDataListener#onError(java.lang.Throwable)
@@ -479,17 +599,9 @@ public class MarketDataListView
     @Value("${metc.marketdata.view.allowLowerCaseSymbols:false}")
     private boolean allowLowerCaseSymbols;
     /**
-     * triggers the add symbol action
-     */
-    private Button addMarketDataSymbolButton;
-    /**
      * allows new market data symbols to be entered
      */
     private TextField marketDataSymbolText;
-    /**
-     * shows market data elements in a grid
-     */
-    private Grid marketDataGrid;
     /**
      * global name of this view
      */
@@ -558,5 +670,9 @@ public class MarketDataListView
      * volume column value
      */
     private static final String volumeColumn = "volume";
+    private static final String ACTION_BUY = "Buy";
+    private static final String ACTION_SELL = "Sell";
+    private static final String ACTION_REMOVE = "Remove";
+    private static final String ACTION_DETAIL = "Show Details";
     private static final long serialVersionUID = -4416759265511242121L;
 }
