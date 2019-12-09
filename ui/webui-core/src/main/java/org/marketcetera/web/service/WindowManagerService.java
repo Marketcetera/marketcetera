@@ -125,6 +125,7 @@ public class WindowManagerService
         windowRegistry.addWindow(newWindowWrapper);
         // create the new window content - initially, the properties will be mostly or completely empty, one would expect
         ContentView contentView = viewFactory.create(newWindow,
+                                                     inEvent,
                                                      newWindowWrapper.getProperties());
         styleService.addStyle(contentView);
         // set the content of the new window
@@ -313,6 +314,53 @@ public class WindowManagerService
         return registry;
     }
     /**
+     * Event used to open a new window on restart.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private class RestartNewWindowEvent
+            implements NewWindowEvent
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.events.NewWindowEvent#getWindowTitle()
+         */
+        @Override
+        public String getWindowTitle()
+        {
+            return windowTitle;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.events.NewWindowEvent#getViewFactory()
+         */
+        @Override
+        public ContentViewFactory getViewFactory()
+        {
+            return contentViewFactory;
+        }
+        /**
+         * Create a new RestartNewWindowEvent instance.
+         *
+         * @param inContentViewFactory a <code>ContentViewFactory</code> value
+         * @param inWindowTitle a <code>String</code> value
+         */
+        private RestartNewWindowEvent(ContentViewFactory inContentViewFactory,
+                                      String inWindowTitle)
+        {
+            contentViewFactory = inContentViewFactory;
+            windowTitle = inWindowTitle;
+        }
+        /**
+         * content view factory value
+         */
+        private final ContentViewFactory contentViewFactory;
+        /**
+         * window title value
+         */
+        private final String windowTitle;
+    }
+    /**
      * Holds meta-data for windows.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -365,6 +413,8 @@ public class WindowManagerService
             try {
                 ContentViewFactory contentViewFactory = (ContentViewFactory)applicationContext.getBean(Class.forName(inProperties.getProperty(windowContentViewFactoryProp)));
                 ContentView contentView = contentViewFactory.create(window,
+                                                                    new RestartNewWindowEvent(contentViewFactory,
+                                                                                              properties.getProperty(windowTitleProp)),
                                                                     properties);
                 styleService.addStyle(contentView);
                 window.setContent(contentView);

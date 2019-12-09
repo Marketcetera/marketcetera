@@ -12,6 +12,7 @@ import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.converters.DecimalConverter;
 import org.marketcetera.web.converters.InstrumentConverter;
 import org.marketcetera.web.converters.SideConverter;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.trade.event.TradeOrderEvent;
 import org.marketcetera.web.view.AbstractPagedGridView;
 import org.marketcetera.web.view.PagedDataContainer;
@@ -89,12 +90,15 @@ public class AveragePriceView
      * Create a new AveragePriceView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public AveragePriceView(Window inParentWindow,
+                            NewWindowEvent inEvent,
                             Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)

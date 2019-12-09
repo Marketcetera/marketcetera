@@ -29,11 +29,13 @@ import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.Suggestion;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.client.OrderValidationException;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.StyleService;
 import org.marketcetera.web.service.admin.AdminClientService;
@@ -486,6 +488,7 @@ public class OrderTicketView
             sideComboBox.setValue(averageFillPrice.getSide().isBuy()?Side.Sell:Side.Buy);
         }
     }
+    private Optional<Suggestion> suggestionOption;
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractComponent#detach()
      */
@@ -596,12 +599,15 @@ public class OrderTicketView
      * Create a new OrderTicketView instance.
      *
      * @param inParent a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
     public OrderTicketView(Window inParent,
+                           NewWindowEvent inEvent,
                            Properties inProperties)
     {
         parent = inParent;
+        event = inEvent;
         viewProperties = inProperties;
     }
     /**
@@ -691,6 +697,10 @@ public class OrderTicketView
      * parent window opened for the content
      */
     private final Window parent;
+    /**
+     * new window event that caused the view to be opened
+     */
+    private final NewWindowEvent event;
     /**
      * optional replace execution report
      */

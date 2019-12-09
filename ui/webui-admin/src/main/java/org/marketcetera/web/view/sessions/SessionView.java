@@ -23,6 +23,7 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.entity.DisplayFixSession;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.AbstractPagedGridView;
@@ -146,12 +147,15 @@ public class SessionView
      * Create a new SessionView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public SessionView(Window inParentWindow,
+                       NewWindowEvent inEvent,
                        Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)

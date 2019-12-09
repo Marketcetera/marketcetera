@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.view.AbstractContentView;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -103,12 +104,15 @@ public class FixMessageDetailsView
      * Create a new FixMessageDetailsView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public FixMessageDetailsView(Window inParent,
+                                 NewWindowEvent inEvent,
                                  Properties inViewProperties)
     {
         super(inParent,
+              inEvent,
               inViewProperties);
         String rawFixMessage = inViewProperties.getProperty(quickfix.Message.class.getCanonicalName());
         try {

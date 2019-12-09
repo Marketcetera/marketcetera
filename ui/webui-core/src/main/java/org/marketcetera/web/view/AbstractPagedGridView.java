@@ -3,6 +3,8 @@ package org.marketcetera.web.view;
 import java.util.List;
 import java.util.Properties;
 
+import org.marketcetera.web.events.NewWindowEvent;
+
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.server.FontAwesome;
@@ -15,7 +17,7 @@ import com.vaadin.ui.themes.ValoTheme;
 /* $License$ */
 
 /**
- *
+ * Provides common behaviors for {@link AbstractGridView} implementations with paged data.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -186,12 +188,15 @@ public abstract class AbstractPagedGridView<DataClazz>
      * Create a new AbstractPagedGridView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     protected AbstractPagedGridView(Window inParentWindow,
+                                    NewWindowEvent inEvent,
                                     Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /**

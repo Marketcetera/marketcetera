@@ -3,6 +3,7 @@ package org.marketcetera.marketdata.rpc.server;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 /* $License$ */
@@ -360,7 +362,7 @@ public class MarketDataRpcService<SessionClazz>
      * @version $Id$
      * @since $Release$
      */
-    private static class MarketDataStatusListenerProxy
+    private class MarketDataStatusListenerProxy
             extends BaseRpcUtil.AbstractServerListenerProxy<MarketDataRpc.MarketDataStatusListenerResponse>
             implements MarketDataStatusListener
     {
@@ -370,15 +372,27 @@ public class MarketDataRpcService<SessionClazz>
         @Override
         public void receiveMarketDataStatus(MarketDataStatus inMarketDataStatus)
         {
-            MarketDataRpcUtil.getRpcMarketDataStatus(inMarketDataStatus).ifPresent(value->responseBuilder.setMarketDataStatus(value));
-            MarketDataRpc.MarketDataStatusListenerResponse response = responseBuilder.build();
-            SLF4JLoggerProxy.trace(MarketDataRpcService.class,
-                                   "{} received market data status {}, sending {}",
-                                   getId(),
-                                   inMarketDataStatus,
-                                   response);
-            getObserver().onNext(response);
-            responseBuilder.clear();
+            try {
+                MarketDataRpcUtil.getRpcMarketDataStatus(inMarketDataStatus).ifPresent(value->responseBuilder.setMarketDataStatus(value));
+                MarketDataRpc.MarketDataStatusListenerResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(MarketDataRpcService.class,
+                                       "{} received market data status {}, sending {}",
+                                       getId(),
+                                       inMarketDataStatus,
+                                       response);
+                getObserver().onNext(response);
+                responseBuilder.clear();
+            } catch (StatusRuntimeException e) {
+                SLF4JLoggerProxy.info(MarketDataRpcService.class,
+                                      "Client disconnected, canceling market data listener: {}",
+                                      ExceptionUtils.getRootCauseMessage(e));
+                marketDataService.removeMarketDataStatusListener(this);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(MarketDataRpcService.class,
+                                      e,
+                                      "Unable to transmit market data to listener, closing client");
+                marketDataService.removeMarketDataStatusListener(this);
+            }
         }
         /**
          * Create a new MarketDataStatusListenerProxy instance.
@@ -404,7 +418,7 @@ public class MarketDataRpcService<SessionClazz>
      * @version $Id$
      * @since $Release$
      */
-    private static class MarketDataListenerProxy
+    private class MarketDataListenerProxy
             extends BaseRpcUtil.AbstractServerListenerProxy<MarketDataRpc.EventsResponse>
             implements MarketDataListener
     {
@@ -414,16 +428,28 @@ public class MarketDataRpcService<SessionClazz>
         @Override
         public void receiveMarketData(Event inEvent)
         {
-            MarketDataRpcUtil.getRpcEventHolder(inEvent).ifPresent(value->responseBuilder.setEvent(value));
-            responseBuilder.setRequestId(clientRequestId);
-            MarketDataRpc.EventsResponse response = responseBuilder.build();
-            SLF4JLoggerProxy.trace(MarketDataRpcService.class,
-                                   "{} received event {}, sending {}",
-                                   getId(),
-                                   inEvent,
-                                   response);
-            getObserver().onNext(response);
-            responseBuilder.clear();
+            try {
+                MarketDataRpcUtil.getRpcEventHolder(inEvent).ifPresent(value->responseBuilder.setEvent(value));
+                responseBuilder.setRequestId(clientRequestId);
+                MarketDataRpc.EventsResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(MarketDataRpcService.class,
+                                       "{} received event {}, sending {}",
+                                       getId(),
+                                       inEvent,
+                                       response);
+                getObserver().onNext(response);
+                responseBuilder.clear();
+            } catch (StatusRuntimeException e) {
+                SLF4JLoggerProxy.info(MarketDataRpcService.class,
+                                      "Client disconnected, canceling market data listener: {}",
+                                      ExceptionUtils.getRootCauseMessage(e));
+                marketDataService.cancel(getId());
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(MarketDataRpcService.class,
+                                      e,
+                                      "Unable to transmit market data to listener, closing client");
+                marketDataService.cancel(getId());
+            }
         }
         /**
          * Create a new MarketDataListenerProxy instance.

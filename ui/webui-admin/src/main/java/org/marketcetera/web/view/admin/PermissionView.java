@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.impl.SimplePermission;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -39,12 +40,15 @@ public class PermissionView
      * Create a new PermissionView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public PermissionView(Window inParentWindow,
+                          NewWindowEvent inEvent,
                           Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)

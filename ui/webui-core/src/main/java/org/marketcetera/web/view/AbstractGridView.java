@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.events.NewWindowEvent;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -255,16 +256,28 @@ public abstract class AbstractGridView<DataClazz,DataContainerClazz extends Bean
      * Create a new AbstractGridView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     protected AbstractGridView(Window inParentWindow,
+                               NewWindowEvent inEvent,
                                Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
+    /**
+     * layout above the grid
+     */
     private CssLayout aboveTheGridLayout;
+    /**
+     * layout below the grid
+     */
     private CssLayout belowTheGridLayout;
+    /**
+     * grid layout value
+     */
     private VerticalLayout gridLayout;
     /**
      * creates new objects

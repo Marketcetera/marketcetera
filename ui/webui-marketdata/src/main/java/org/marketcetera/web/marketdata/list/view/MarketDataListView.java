@@ -5,10 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
-import javax.xml.bind.JAXBException;
-
 import org.apache.commons.lang3.StringUtils;
-import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.MarketstatEvent;
@@ -18,19 +15,13 @@ import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataPermissions;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.TradePermissions;
-import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.marketdata.list.view.MarketDataListView.MarketDataRow;
 import org.marketcetera.web.marketdata.service.MarketDataClientService;
 import org.marketcetera.web.service.trade.TradeClientService;
-import org.marketcetera.web.trade.event.FixMessageDetailsViewEvent;
-import org.marketcetera.web.trade.event.ReplaceOrderEvent;
 import org.marketcetera.web.view.AbstractGridView;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -43,8 +34,6 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 
@@ -67,12 +56,15 @@ public class MarketDataListView
      * Create a new MarketDataView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public MarketDataListView(Window inParentWindow,
+                              NewWindowEvent inEvent,
                               Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)

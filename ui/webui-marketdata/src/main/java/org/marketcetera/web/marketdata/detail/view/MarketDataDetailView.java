@@ -18,6 +18,7 @@ import org.marketcetera.event.HasInstrument;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.marketdata.service.MarketDataClientService;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.AbstractContentView;
@@ -55,12 +56,15 @@ public class MarketDataDetailView
      * Create a new MarketDataView instance.
      *
      * @param inParent a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public MarketDataDetailView(Window inParent,
+                                NewWindowEvent inEvent,
                                 Properties inViewProperties)
     {
         super(inParent,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)

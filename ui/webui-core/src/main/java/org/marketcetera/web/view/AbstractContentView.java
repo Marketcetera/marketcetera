@@ -3,6 +3,7 @@ package org.marketcetera.web.view;
 import java.util.Properties;
 
 import org.marketcetera.core.XmlService;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.AuthorizationHelperService;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.StyleService;
@@ -45,15 +46,27 @@ public abstract class AbstractContentView
         return parentWindow;
     }
     /**
+     * Get the newWindowEvent value.
+     *
+     * @return a <code>NewWindowEvent</code> value
+     */
+    protected NewWindowEvent getNewWindowEvent()
+    {
+        return newWindowEvent;
+    }
+    /**
      * Create a new AbstractContentView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     protected AbstractContentView(Window inParentWindow,
+                                  NewWindowEvent inEvent,
                                   Properties inViewProperties)
     {
         parentWindow = inParentWindow;
+        newWindowEvent = inEvent;
         viewProperties = inViewProperties;
     }
     /**
@@ -86,6 +99,10 @@ public abstract class AbstractContentView
      */
     @Autowired
     protected AuthorizationHelperService authzHelperService;
+    /**
+     * event which signaled the view to be opened
+     */
+    private final NewWindowEvent newWindowEvent;
     /**
      * parent window that owns the view
      */

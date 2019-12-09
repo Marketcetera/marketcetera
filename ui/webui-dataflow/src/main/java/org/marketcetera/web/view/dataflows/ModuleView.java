@@ -2,6 +2,7 @@ package org.marketcetera.web.view.dataflows;
 
 import java.util.Properties;
 
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.view.AbstractPagedGridView;
 import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.PagedDataContainer;
@@ -31,14 +32,17 @@ public class ModuleView
      * Create a new ModuleView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      * @param inStrategyEngine a <code>DecoratedStrategyEngine</code> value
      */
     public ModuleView(Window inParentWindow,
+                      NewWindowEvent inEvent,
                       Properties inViewProperties,
                       DecoratedStrategyEngine inStrategyEngine)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
         strategyEngine = inStrategyEngine;
     }

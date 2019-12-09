@@ -13,6 +13,7 @@ import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.dataflow.DataFlowClientService;
 import org.marketcetera.web.service.dataflow.DataFlowClientServiceInstance;
 import org.marketcetera.web.view.AbstractPagedGridView;
+import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,12 +93,15 @@ public class StrategyEngineView
      * Create a new StrategyEngineView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public StrategyEngineView(Window inParentWindow,
+                              NewWindowEvent inEvent,
                               Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)
@@ -161,8 +165,9 @@ public class StrategyEngineView
                         {
                             return new ContentViewFactory() {
                                 @Override
-                                public ModuleView create(Window inParent,
-                                                         Properties inViewProperties)
+                                public ContentView create(Window inParent,
+                                                          NewWindowEvent inEvent,
+                                                          Properties inViewProperties)
                                 {
                                     return moduleView;
                                 }
