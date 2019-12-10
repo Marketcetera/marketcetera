@@ -1,8 +1,7 @@
 package org.marketcetera.web.marketdata.list.view;
 
 import org.marketcetera.web.marketdata.list.view.MarketDataListView.MarketDataRow;
-
-import com.vaadin.data.util.BeanItemContainer;
+import org.marketcetera.web.view.GridDataContainer;
 
 /* $License$ */
 
@@ -14,7 +13,7 @@ import com.vaadin.data.util.BeanItemContainer;
  * @since $Release$
  */
 public class MarketDataListDataContainer
-        extends BeanItemContainer<MarketDataRow>
+        extends GridDataContainer<MarketDataRow>
 {
     /**
      * Create a new MarketDataListDataContainer instance.
@@ -26,6 +25,12 @@ public class MarketDataListDataContainer
     {
         super(MarketDataRow.class);
     }
-    
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.GridDataContainer#configure()
+     */
+    @Override
+    protected void configure()
+    {
+    }
     private static final long serialVersionUID = 9212034203343277029L;
 }

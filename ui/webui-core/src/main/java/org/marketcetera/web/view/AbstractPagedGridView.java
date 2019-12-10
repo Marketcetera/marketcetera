@@ -37,8 +37,7 @@ public abstract class AbstractPagedGridView<DataClazz>
         getGrid().addSortListener(inEvent -> {
             getDataContainer().update();
         });
-        getDataContainer().setItemsPerPage(25); // TODO config
-        getDataContainer().setCurrentPage(0);
+        System.out.println("COCO: configuring data container for " + getClass().getSimpleName());
         getDataContainer().start();
         pageSizeSelect = new ComboBox("Items per page");
         pageSizeSelect.setNullSelectionAllowed(false);

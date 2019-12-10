@@ -8,7 +8,6 @@ import org.marketcetera.web.events.NewWindowEvent;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.grid.ColumnResizeMode;
@@ -35,7 +34,7 @@ import com.vaadin.ui.themes.ValoTheme;
  * @version $Id$
  * @since $Release$
  */
-public abstract class AbstractGridView<DataClazz,DataContainerClazz extends BeanItemContainer<DataClazz>>
+public abstract class AbstractGridView<DataClazz,DataContainerClazz extends GridDataContainer<DataClazz>>
         extends AbstractContentView
 {
     /* (non-Javadoc)
@@ -72,6 +71,7 @@ public abstract class AbstractGridView<DataClazz,DataContainerClazz extends Bean
         grid.setHeightMode(HeightMode.CSS);
         grid.setSizeFull();
         dataContainer = createDataContainer();
+        dataContainer.configure();
         grid.setContainerDataSource(dataContainer);
         grid.setColumnReorderingAllowed(true);
         grid.setColumnResizeMode(ColumnResizeMode.ANIMATED);

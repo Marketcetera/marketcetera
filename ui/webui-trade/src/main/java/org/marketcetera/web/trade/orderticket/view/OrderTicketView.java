@@ -488,7 +488,6 @@ public class OrderTicketView
             sideComboBox.setValue(averageFillPrice.getSide().isBuy()?Side.Sell:Side.Buy);
         }
     }
-    private Optional<Suggestion> suggestionOption;
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractComponent#detach()
      */
@@ -701,6 +700,7 @@ public class OrderTicketView
      * new window event that caused the view to be opened
      */
     private final NewWindowEvent event;
+    private Optional<Suggestion> suggestionOption;
     /**
      * optional replace execution report
      */

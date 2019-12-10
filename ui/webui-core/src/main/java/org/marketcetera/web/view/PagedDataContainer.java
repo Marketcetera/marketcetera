@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.google.common.collect.Lists;
 import com.vaadin.data.sort.SortOrder;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.UI;
 
@@ -30,7 +29,7 @@ import com.vaadin.ui.UI;
  * @since $Release$
  */
 public abstract class PagedDataContainer<Clazz>
-        extends BeanItemContainer<Clazz>
+        extends GridDataContainer<Clazz>
 {
     /**
      * Create a new PagedDataContainer instance.
@@ -289,6 +288,15 @@ public abstract class PagedDataContainer<Clazz>
                 pagedViewProvider.getTotalItemsLabel().setCaption(output.toString());
             }
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.GridDataContainer#configure()
+     */
+    @Override
+    protected void configure()
+    {
+        setItemsPerPage(25); // TODO config
+        setCurrentPage(0);
     }
     /**
      * Generate the page request for the current state of the container.
