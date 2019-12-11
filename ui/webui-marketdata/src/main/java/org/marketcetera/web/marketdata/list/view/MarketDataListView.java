@@ -1,13 +1,16 @@
 package org.marketcetera.web.marketdata.list.view;
 
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
+import java.util.SortedMap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.marketcetera.core.Util;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.HasInstrument;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.AssetClass;
@@ -15,10 +18,17 @@ import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataPermissions;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderSingleSuggestion;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.events.NewWindowEvent;
+import org.marketcetera.web.marketdata.event.MarketDataSuggestionEvent;
 import org.marketcetera.web.marketdata.list.view.MarketDataListView.MarketDataRow;
 import org.marketcetera.web.marketdata.service.MarketDataClientService;
 import org.marketcetera.web.service.trade.TradeClientService;
@@ -29,6 +39,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Scope;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -100,7 +111,7 @@ public class MarketDataListView
         getGrid().addSelectionListener(inEvent -> {
             MarketDataRow selectedObject = getSelectedItem();
             getActionSelect().removeAllItems();
-            if(selectedObject == null) {
+            if(selectedObject == null || selectedObject.getInstrument() == null) {
                 getActionSelect().setReadOnly(true);
             } else {
                 getActionSelect().setReadOnly(false);
@@ -115,6 +126,7 @@ public class MarketDataListView
                 getActionSelect().addItem(ACTION_REMOVE);
             }
         });
+        restoreSymbols();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.AbstractGridView#onCreateNew(com.vaadin.ui.Button.ClickEvent)
@@ -126,15 +138,7 @@ public class MarketDataListView
         if(newSymbol == null) {
             return;
         }
-        if(!allowLowerCaseSymbols) {
-            newSymbol = newSymbol.toUpperCase();
-        }
-        if(!rowsBySymbol.containsKey(newSymbol)) {
-            MarketDataRow marketDataRow = new MarketDataRow(newSymbol);
-            getDataContainer().addBean(marketDataRow);
-            rowsBySymbol.put(newSymbol,
-                             marketDataRow);
-        }
+        doAddSymbolToGrid(newSymbol);
         marketDataSymbolText.clear();
         marketDataSymbolText.focus();
     }
@@ -190,18 +194,36 @@ public class MarketDataListView
     @Override
     protected void onActionSelect(ValueChangeEvent inEvent)
     {
-//        DisplayClazz selectedItem = getSelectedItem();
-//        if(selectedItem == null || inEvent.getProperty().getValue() == null) {
-//            return;
-//        }
-//        String action = String.valueOf(inEvent.getProperty().getValue());
-//        SLF4JLoggerProxy.info(this,
-//                              "{}: {} {} '{}'",
-//                              SessionUser.getCurrentUser().getUsername(),
-//                              getViewName(),
-//                              action,
-//                              selectedItem);
-//        switch(action) {
+        MarketDataRow selectedItem = getSelectedItem();
+        if(selectedItem == null || inEvent.getProperty().getValue() == null || selectedItem.getInstrument() == null) {
+            return;
+        }
+        String action = String.valueOf(inEvent.getProperty().getValue());
+        SLF4JLoggerProxy.info(this,
+                              "{}: {} {} '{}'",
+                              SessionUser.getCurrentUser().getUsername(),
+                              getViewName(),
+                              action,
+                              selectedItem);
+        switch(action) {
+            case ACTION_BUY:
+            case ACTION_SELL:
+                OrderSingle orderSingle = Factory.getInstance().createOrderSingle();
+                orderSingle.setInstrument(selectedItem.getInstrument());
+                orderSingle.setOrderType(OrderType.Limit);
+                orderSingle.setPrice(action.equals(ACTION_BUY)?selectedItem.getOfferPx():selectedItem.getBidPx());
+                orderSingle.setSide(action.equals(ACTION_BUY)?Side.Buy:Side.Sell);
+                OrderSingleSuggestion suggestion = Factory.getInstance().createOrderSingleSuggestion();
+                suggestion.setIdentifier("Market Data List View Action");
+                suggestion.setScore(BigDecimal.ONE);
+                suggestion.setOrder(orderSingle);
+                webMessageService.post(new MarketDataSuggestionEvent((action.equals(ACTION_BUY)?"Buy ":"Sell ") + selectedItem.getSymbol(),
+                                                                     suggestion));
+                break;
+            case ACTION_REMOVE:
+                break;
+            case ACTION_DETAIL:
+                break;
 //            case ACTION_CANCEL:
 //            case ACTION_REPLACE:
 //                TradeClientService tradeClient = serviceManager.getService(TradeClientService.class);
@@ -236,7 +258,7 @@ public class MarketDataListView
 //                        return;
 //                    }
 //                    Properties replaceProperties = new Properties();
-//                    replaceProperties.setProperty(ExecutionReport.class.getCanonicalName(),
+//                    replacePropertie)s.setProperty(ExecutionReport.class.getCanonicalName(),
 //                                                  executionReportXml);
 //                    ReplaceOrderEvent replaceOrderEvent = applicationContext.getBean(ReplaceOrderEvent.class,
 //                                                                                     executionReport,
@@ -260,9 +282,66 @@ public class MarketDataListView
 //                break;
 //            case ACTION_DELETE:
 //                break;
-//            default:
-//                throw new UnsupportedOperationException("Unsupported action: " + action);
-//        }
+            default:
+                throw new UnsupportedOperationException("Unsupported action: " + action);
+        }
+    }
+    private void doAddSymbolToGrid(String inSymbol)
+    {
+        if(!allowLowerCaseSymbols) {
+            inSymbol = inSymbol.toUpperCase();
+        }
+        if(!getSymbols().contains(inSymbol)) {
+            MarketDataRow marketDataRow = new MarketDataRow(inSymbol);
+            getDataContainer().addBean(marketDataRow);
+            addSymbol(inSymbol);
+        }
+    }
+    private void restoreSymbols()
+    {
+        String rawData = getViewProperties().getProperty(existingSymbolsKey);
+        if(rawData != null) {
+            Properties symbolProperties = Util.propertiesFromString(rawData);
+            for(Object key : symbolProperties.keySet()) {
+                doAddSymbolToGrid(String.valueOf(key));
+            }
+        }
+    }
+    private Set<String> getSymbols()
+    {
+        return gridSymbols;
+    }
+    private void addSymbol(String inSymbol)
+    {
+        // sortedGridSymbols holds the symbols that currently exist in the grid sorted by the order in which they were added
+        //  note that there may be gaps if something was added then removed - that's ok, doesn't matter, we just want to be
+        //  able to retain the original order they were added in so we can restore them to the same order if the grid isn't otherwise
+        //  sorted
+        sortedGridSymbols.put(sortedGridIndex++,
+                              inSymbol);
+        String rawData = getViewProperties().getProperty(existingSymbolsKey);
+        Properties symbolProperties;
+        if(rawData == null) {
+            symbolProperties = new Properties();
+        } else {
+            symbolProperties = Util.propertiesFromString(rawData);
+        }
+        symbolProperties.setProperty(inSymbol,
+                                     "active");
+        getViewProperties().setProperty(existingSymbolsKey,
+                                        Util.propertiesToString(symbolProperties));
+        gridSymbols.add(inSymbol);
+    }
+    private void removeSymbol(String inSymbol)
+    {
+        String rawData = getViewProperties().getProperty(existingSymbolsKey);
+        if(rawData != null) {
+            Properties symbolProperties = Util.propertiesFromString(rawData);
+            symbolProperties.remove(inSymbol);
+            getViewProperties().setProperty(existingSymbolsKey,
+                                            Util.propertiesToString(symbolProperties));
+        }
+        gridSymbols.remove(inSymbol);
     }
     /**
      * Represents a single row in the market data list.
@@ -462,6 +541,9 @@ public class MarketDataListView
             SLF4JLoggerProxy.trace(MarketDataListView.this,
                                    "Received {}",
                                    inEvent);
+            if(inEvent instanceof HasInstrument) {
+                instrument = ((HasInstrument)inEvent).getInstrument();
+            }
             if(inEvent instanceof BidEvent) {
                 BidEvent bidEvent = (BidEvent)inEvent;
                 bidPrice = bidEvent.getPrice();
@@ -506,6 +588,15 @@ public class MarketDataListView
         public int compareTo(MarketDataRow inO)
         {
             return inO.symbol.compareTo(symbol);
+        }
+        /**
+         * Get the instrument value.
+         *
+         * @return an <code>Instrument</code> value
+         */
+        private Instrument getInstrument()
+        {
+            return instrument;
         }
         /**
          * Create a new MarketDataRow instance.
@@ -592,6 +683,10 @@ public class MarketDataListView
          * market data request id value
          */
         private final String requestId;
+        /**
+         * instrument value
+         */
+        private Instrument instrument;
     }
     /**
      * indicate whether to allow lower case symbols or not
@@ -606,10 +701,6 @@ public class MarketDataListView
      * global name of this view
      */
     private static final String NAME = "Market Data View";
-    /**
-     * holds requested rows by symbol
-     */
-    private final Map<String,MarketDataRow> rowsBySymbol = Maps.newHashMap();
     /**
      * symbol column value
      */
@@ -674,5 +765,9 @@ public class MarketDataListView
     private static final String ACTION_SELL = "Sell";
     private static final String ACTION_REMOVE = "Remove";
     private static final String ACTION_DETAIL = "Show Details";
+    private static final String existingSymbolsKey = MarketDataListView.class.getSimpleName() + ".symbols";
+    private final Set<String> gridSymbols = Sets.newHashSet();
+    private final SortedMap<Integer,String> sortedGridSymbols = Maps.newTreeMap();
+    private int sortedGridIndex = 0;
     private static final long serialVersionUID = -4416759265511242121L;
 }

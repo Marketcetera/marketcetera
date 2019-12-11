@@ -494,7 +494,11 @@ public class OrderTicketView
             if(suggestion instanceof OrderSingleSuggestion) {
                 OrderSingleSuggestion orderSingleSuggestion = (OrderSingleSuggestion)suggestion;
                 symbolTextField.setValue(orderSingleSuggestion.getOrder().getInstrument().getFullSymbol());
-                quantityTextField.setValue(BigDecimalUtil.render(orderSingleSuggestion.getOrder().getQuantity()));
+                if(!BigDecimalUtil.isNullOrZero(orderSingleSuggestion.getOrder().getQuantity())) {
+                    quantityTextField.setValue(BigDecimalUtil.render(orderSingleSuggestion.getOrder().getQuantity()));
+                } else {
+                    quantityTextField.focus();
+                }
                 orderTypeComboBox.setValue(OrderType.Limit);
                 priceTextField.setValue(BigDecimalUtil.renderCurrency(orderSingleSuggestion.getOrder().getPrice()));
                 sideComboBox.setValue(orderSingleSuggestion.getOrder().getSide());
@@ -644,6 +648,20 @@ public class OrderTicketView
             if(!orderType.isMarketOrder()) {
                 enabled &= StringUtils.trimToNull(priceTextField.getValue()) != null;
             }
+        }
+        StringBuilder windowCaption = new StringBuilder();
+        if(sideComboBox.getValue() == null) {
+            windowCaption.append("Trade");
+        } else {
+            Side currentSide = (Side)sideComboBox.getValue();
+            if(currentSide.isBuy()) {
+                windowCaption.append("Buy");
+            } else {
+                windowCaption.append("Sell");
+            }
+        }
+        if(resolvedInstrument != null) {
+            windowCaption.append(" ").append(resolvedInstrument.getFullSymbol());
         }
         // time in force is optional
         // account is optional
