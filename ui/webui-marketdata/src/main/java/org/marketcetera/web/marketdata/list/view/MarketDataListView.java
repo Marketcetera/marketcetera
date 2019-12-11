@@ -1,10 +1,12 @@
 package org.marketcetera.web.marketdata.list.view;
 
 import java.math.BigDecimal;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.Util;
@@ -299,17 +301,22 @@ public class MarketDataListView
     }
     private void restoreSymbols()
     {
-        String rawData = getViewProperties().getProperty(existingSymbolsKey);
-        if(rawData != null) {
-            Properties symbolProperties = Util.propertiesFromString(rawData);
-            for(Object key : symbolProperties.keySet()) {
-                doAddSymbolToGrid(String.valueOf(key));
+        synchronized(sortedGridSymbols) {
+            String rawData = getViewProperties().getProperty(existingSymbolsKey);
+            if(rawData != null) {
+                Properties symbolProperties = Util.propertiesFromString(rawData);
+                symbolProperties.forEach((index,symbol) -> sortedGridSymbols.put(Integer.parseInt(String.valueOf(index)),String.valueOf(symbol)));
+                for(String symbol : sortedGridSymbols.values()) {
+                    doAddSymbolToGrid(symbol);
+                }
             }
         }
     }
     private Set<String> getSymbols()
     {
-        return gridSymbols;
+        synchronized(sortedGridSymbols) {
+            return Sets.newHashSet(sortedGridSymbols.values());
+        }
     }
     private void addSymbol(String inSymbol)
     {
@@ -317,31 +324,43 @@ public class MarketDataListView
         //  note that there may be gaps if something was added then removed - that's ok, doesn't matter, we just want to be
         //  able to retain the original order they were added in so we can restore them to the same order if the grid isn't otherwise
         //  sorted
-        sortedGridSymbols.put(sortedGridIndex++,
-                              inSymbol);
-        String rawData = getViewProperties().getProperty(existingSymbolsKey);
-        Properties symbolProperties;
-        if(rawData == null) {
-            symbolProperties = new Properties();
-        } else {
-            symbolProperties = Util.propertiesFromString(rawData);
-        }
-        symbolProperties.setProperty(inSymbol,
-                                     "active");
-        getViewProperties().setProperty(existingSymbolsKey,
-                                        Util.propertiesToString(symbolProperties));
-        gridSymbols.add(inSymbol);
-    }
-    private void removeSymbol(String inSymbol)
-    {
-        String rawData = getViewProperties().getProperty(existingSymbolsKey);
-        if(rawData != null) {
-            Properties symbolProperties = Util.propertiesFromString(rawData);
-            symbolProperties.remove(inSymbol);
+        synchronized(sortedGridSymbols) {
+            int index = sortedGridIndex.incrementAndGet();
+            sortedGridSymbols.put(index,
+                                  inSymbol);
+            String rawData = getViewProperties().getProperty(existingSymbolsKey);
+            Properties symbolProperties;
+            if(rawData == null) {
+                symbolProperties = new Properties();
+            } else {
+                symbolProperties = Util.propertiesFromString(rawData);
+            }
+            symbolProperties.setProperty(inSymbol,
+                                         String.valueOf(index));
             getViewProperties().setProperty(existingSymbolsKey,
                                             Util.propertiesToString(symbolProperties));
         }
-        gridSymbols.remove(inSymbol);
+    }
+    private void removeSymbol(String inSymbol)
+    {
+        synchronized(sortedGridSymbols) {
+            String rawData = getViewProperties().getProperty(existingSymbolsKey);
+            if(rawData != null) {
+                Properties symbolProperties = Util.propertiesFromString(rawData);
+                symbolProperties.remove(inSymbol);
+                getViewProperties().setProperty(existingSymbolsKey,
+                                                Util.propertiesToString(symbolProperties));
+            }
+            Iterator<Integer> sortedGridSymbolsIterator = sortedGridSymbols.keySet().iterator();
+            while(sortedGridSymbolsIterator.hasNext()) {
+                int index = sortedGridSymbolsIterator.next();
+                String symbol = sortedGridSymbols.get(index);
+                if(inSymbol.equals(symbol)) {
+                    sortedGridSymbolsIterator.remove();
+                    break;
+                }
+            }
+        }
     }
     /**
      * Represents a single row in the market data list.
@@ -766,8 +785,7 @@ public class MarketDataListView
     private static final String ACTION_REMOVE = "Remove";
     private static final String ACTION_DETAIL = "Show Details";
     private static final String existingSymbolsKey = MarketDataListView.class.getSimpleName() + ".symbols";
-    private final Set<String> gridSymbols = Sets.newHashSet();
     private final SortedMap<Integer,String> sortedGridSymbols = Maps.newTreeMap();
-    private int sortedGridIndex = 0;
+    private AtomicInteger sortedGridIndex = new AtomicInteger(0);
     private static final long serialVersionUID = -4416759265511242121L;
 }
