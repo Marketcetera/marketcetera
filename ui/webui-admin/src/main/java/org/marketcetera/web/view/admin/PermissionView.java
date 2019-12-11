@@ -6,7 +6,6 @@ import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.impl.SimplePermission;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.admin.AdminClientService;
-import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -60,12 +59,12 @@ public class PermissionView
         return "Permission";
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<Permission> createDataContainer()
+    protected Class<PermissionPagedDataContainer> getDataContainerType()
     {
-        return new PermissionPagedDataContainer(this);
+        return PermissionPagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#onCreateNew(com.vaadin.ui.Button.ClickEvent)

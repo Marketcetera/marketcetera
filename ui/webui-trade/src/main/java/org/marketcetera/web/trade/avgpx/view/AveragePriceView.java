@@ -15,7 +15,6 @@ import org.marketcetera.web.converters.SideConverter;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.trade.event.TradeOrderEvent;
 import org.marketcetera.web.view.AbstractPagedGridView;
-import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -102,12 +101,12 @@ public class AveragePriceView
               inViewProperties);
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<AverageFillPrice> createDataContainer()
+    protected Class<AveragePricePagedDataContainer> getDataContainerType()
     {
-        return new AveragePricePagedDataContainer(this);
+        return AveragePricePagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#getViewSubjectName()

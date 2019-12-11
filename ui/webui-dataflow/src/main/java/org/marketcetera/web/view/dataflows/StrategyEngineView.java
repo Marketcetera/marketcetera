@@ -15,7 +15,6 @@ import org.marketcetera.web.service.dataflow.DataFlowClientServiceInstance;
 import org.marketcetera.web.view.AbstractPagedGridView;
 import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
-import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -215,12 +214,12 @@ public class StrategyEngineView
         return "Data Flow";
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createDataContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<DecoratedStrategyEngine> createDataContainer()
+    protected Class<StrategyEnginePagedDataContainer> getDataContainerType()
     {
-        return new StrategyEnginePagedDataContainer(this);
+        return StrategyEnginePagedDataContainer.class;
     }
     /**
      * Create or edit the given strategy engine.

@@ -27,7 +27,6 @@ import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.AbstractPagedGridView;
-import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.vaadin.teemu.wizards.Wizard;
@@ -220,12 +219,12 @@ public class SessionView
         }
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<DisplayFixSession> createDataContainer()
+    protected Class<SessionPagedDataContainer> getDataContainerType()
     {
-        return new SessionPagedDataContainer(this);
+        return SessionPagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#getViewSubjectName()

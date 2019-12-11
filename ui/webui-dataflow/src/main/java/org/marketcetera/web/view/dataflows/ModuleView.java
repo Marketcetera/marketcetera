@@ -120,8 +120,17 @@ public class ModuleView
     @Override
     protected PagedDataContainer<DecoratedModuleInfo> createDataContainer()
     {
-        return new ModuleInfoPagedDataContainer(this,
-                                                strategyEngine);
+        return applicationContext.getBean(ModuleInfoPagedDataContainer.class,
+                                          this,
+                                          strategyEngine);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
+     */
+    @Override
+    protected Class<ModuleInfoPagedDataContainer> getDataContainerType()
+    {
+        return ModuleInfoPagedDataContainer.class;
     }
     /**
      * start action

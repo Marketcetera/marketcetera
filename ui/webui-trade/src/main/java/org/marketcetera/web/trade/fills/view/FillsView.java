@@ -4,8 +4,6 @@ import java.util.Properties;
 
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.trade.executionreport.view.AbstractExecutionReportView;
-import org.marketcetera.web.trade.executionreport.view.DisplayExecutionReportSummary;
-import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -50,12 +48,12 @@ public class FillsView
               inViewProperties);
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<DisplayExecutionReportSummary> createDataContainer()
+    protected Class<FillsPagedDataContainer> getDataContainerType()
     {
-        return new FillsPagedDataContainer(this);
+        return FillsPagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#getViewSubjectName()

@@ -8,7 +8,6 @@ import org.marketcetera.web.converters.InstrumentConverter;
 import org.marketcetera.web.converters.UserConverter;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.trade.executionreport.view.AbstractHasFixMessageView;
-import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -85,12 +84,12 @@ public class OpenOrderView
         getGrid().getColumn("orderStatus").setHeaderCaption("Ord Status");
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<DisplayOrderSummary> createDataContainer()
+    protected Class<OrderSummaryPagedDataContainer> getDataContainerType()
     {
-        return new OrderSummaryPagedDataContainer(this);
+        return OrderSummaryPagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#getViewSubjectName()

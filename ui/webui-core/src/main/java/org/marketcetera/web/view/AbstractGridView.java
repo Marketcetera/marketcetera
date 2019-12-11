@@ -161,11 +161,21 @@ public abstract class AbstractGridView<DataClazz,DataContainerClazz extends Grid
      */
     protected abstract String getViewSubjectName();
     /**
+     * Get the data container type class value.
+     *
+     * @return a <code>Class&lt;DataContainerClazz&gt;</code> value
+     */
+    protected abstract Class<? extends DataContainerClazz> getDataContainerType();
+    /**
      * Create a new data container.
      *
      * @return a <code>DataContainerClazz</code> value
      */
-    protected abstract DataContainerClazz createDataContainer();
+    protected DataContainerClazz createDataContainer()
+    {
+        return applicationContext.getBean(getDataContainerType(),
+                                          this);
+    }
     /**
      * Get the click listener to use when the create new button is invoked.
      *

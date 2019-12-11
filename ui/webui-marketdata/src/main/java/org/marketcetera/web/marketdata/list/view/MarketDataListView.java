@@ -161,6 +161,14 @@ public class MarketDataListView
                              volumeColumn);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
+     */
+    @Override
+    protected Class<MarketDataListDataContainer> getDataContainerType()
+    {
+        return MarketDataListDataContainer.class;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.web.view.AbstractGridView#createDataContainer()
      */
     @Override

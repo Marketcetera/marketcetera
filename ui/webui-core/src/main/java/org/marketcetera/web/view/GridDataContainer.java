@@ -19,8 +19,8 @@ public abstract class GridDataContainer<DataClazz>
     /**
      * Create a new GridDataContainer instance.
      *
-     * @param inType
-     * @throws IllegalArgumentException
+     * @param inType a <code>Class&lt;? super DataClazz&gt;</code> vauel
+     * @throws IllegalArgumentException if the container cannot be created
      */
     protected GridDataContainer(Class<? super DataClazz> inType)
             throws IllegalArgumentException
@@ -30,9 +30,9 @@ public abstract class GridDataContainer<DataClazz>
     /**
      * Create a new GridDataContainer instance.
      *
-     * @param inType
-     * @param inCollection
-     * @throws IllegalArgumentException
+     * @param inType a <code>Class&lt;? super DataClazz&gt;</code> value
+     * @param inCollection a <code>Collection&lt;? extends DataClazz&gt;</code> value
+     * @throws IllegalArgumentException if the container cannot be created
      */
     protected GridDataContainer(Class<? super DataClazz> inType,
                                 Collection<? extends DataClazz> inCollection)
@@ -44,6 +44,8 @@ public abstract class GridDataContainer<DataClazz>
     /**
      * Configure the data container as necessary before start.
      */
-    protected abstract void configure();
+    protected void configure()
+    {
+    }
     private static final long serialVersionUID = 8619929729440103508L;
 }

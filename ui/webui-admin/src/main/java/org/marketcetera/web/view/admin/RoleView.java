@@ -14,7 +14,6 @@ import org.marketcetera.admin.User;
 import org.marketcetera.admin.impl.SimpleRole;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.admin.AdminClientService;
-import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -70,12 +69,12 @@ public class RoleView
         return "Role";
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<Role> createDataContainer()
+    protected Class<RolePagedDataContainer> getDataContainerType()
     {
-        return new RolePagedDataContainer(this);
+        return RolePagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#onCreateNew(com.vaadin.ui.Button.ClickEvent)

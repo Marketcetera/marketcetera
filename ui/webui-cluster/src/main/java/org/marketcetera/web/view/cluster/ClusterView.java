@@ -8,7 +8,6 @@ import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.AbstractPagedGridView;
-import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -104,12 +103,12 @@ public class ClusterView
                               selectedItem);
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<ClusterData> createDataContainer()
+    protected Class<ClusterPagedDataContainer> getDataContainerType()
     {
-        return new ClusterPagedDataContainer(this);
+        return ClusterPagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#getViewSubjectName()

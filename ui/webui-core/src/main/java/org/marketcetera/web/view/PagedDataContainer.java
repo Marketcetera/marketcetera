@@ -295,7 +295,7 @@ public abstract class PagedDataContainer<Clazz>
     @Override
     protected void configure()
     {
-        setItemsPerPage(25); // TODO config
+        setItemsPerPage(itemsPerPage);
         setCurrentPage(0);
     }
     /**

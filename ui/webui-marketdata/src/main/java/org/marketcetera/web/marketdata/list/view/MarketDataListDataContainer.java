@@ -2,6 +2,10 @@ package org.marketcetera.web.marketdata.list.view;
 
 import org.marketcetera.web.marketdata.list.view.MarketDataListView.MarketDataRow;
 import org.marketcetera.web.view.GridDataContainer;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+
+import com.vaadin.spring.annotation.SpringComponent;
 
 /* $License$ */
 
@@ -12,6 +16,8 @@ import org.marketcetera.web.view.GridDataContainer;
  * @version $Id$
  * @since $Release$
  */
+@SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class MarketDataListDataContainer
         extends GridDataContainer<MarketDataRow>
 {
@@ -24,13 +30,6 @@ public class MarketDataListDataContainer
             throws IllegalArgumentException
     {
         super(MarketDataRow.class);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.view.GridDataContainer#configure()
-     */
-    @Override
-    protected void configure()
-    {
     }
     private static final long serialVersionUID = 9212034203343277029L;
 }
