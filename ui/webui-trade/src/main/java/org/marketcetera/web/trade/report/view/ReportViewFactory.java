@@ -74,6 +74,14 @@ public class ReportViewFactory
     {
         return requiredPermissions;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.trade.view.AbstractTradeViewFactory#getViewFactoryType()
+     */
+    @Override
+    protected Class<? extends AbstractTradeViewFactory> getViewFactoryType()
+    {
+        return ReportViewFactory.class;
+    }
     /**
      * permission(s) required to execute open order view
      */

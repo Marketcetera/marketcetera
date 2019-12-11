@@ -13,7 +13,6 @@ import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.dataflow.DataFlowClientService;
 import org.marketcetera.web.service.dataflow.DataFlowClientServiceInstance;
 import org.marketcetera.web.view.AbstractPagedGridView;
-import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -160,17 +159,18 @@ public class StrategyEngineView
                             return "NewModuleViewEvent: " + selectedItem.getName();
                         }
                         @Override
-                        public ContentViewFactory getViewFactory()
+                        public Class<? extends ContentViewFactory> getViewFactoryType()
                         {
-                            return new ContentViewFactory() {
-                                @Override
-                                public ContentView create(Window inParent,
-                                                          NewWindowEvent inEvent,
-                                                          Properties inViewProperties)
-                                {
-                                    return moduleView;
-                                }
-                            };
+//                            return new ContentViewFactory() {
+//                                @Override
+//                                public ContentView create(Window inParent,
+//                                                          NewWindowEvent inEvent,
+//                                                          Properties inViewProperties)
+//                                {
+//                                    return moduleView;
+//                                }
+//                            };
+                            throw new UnsupportedOperationException(); // TODO
                         }
                     });
                     break;

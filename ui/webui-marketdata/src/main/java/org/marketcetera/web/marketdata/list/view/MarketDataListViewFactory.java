@@ -44,9 +44,9 @@ public class MarketDataListViewFactory
                         return getMenuCaption();
                     }
                     @Override
-                    public ContentViewFactory getViewFactory()
+                    public Class<? extends ContentViewFactory> getViewFactoryType()
                     {
-                        return MarketDataListViewFactory.this;
+                        return MarketDataListViewFactory.class;
                     }
                 });
             }

@@ -23,10 +23,12 @@ import org.marketcetera.trade.AverageFillPrice;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.HasSuggestion;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.Suggestion;
@@ -487,6 +489,17 @@ public class OrderTicketView
             priceTextField.setValue(BigDecimalUtil.renderCurrency(averageFillPrice.getAveragePrice()));
             sideComboBox.setValue(averageFillPrice.getSide().isBuy()?Side.Sell:Side.Buy);
         }
+        if(suggestionOption.isPresent()) {
+            Suggestion suggestion = suggestionOption.get();
+            if(suggestion instanceof OrderSingleSuggestion) {
+                OrderSingleSuggestion orderSingleSuggestion = (OrderSingleSuggestion)suggestion;
+                symbolTextField.setValue(orderSingleSuggestion.getOrder().getInstrument().getFullSymbol());
+                quantityTextField.setValue(BigDecimalUtil.render(orderSingleSuggestion.getOrder().getQuantity()));
+                orderTypeComboBox.setValue(OrderType.Limit);
+                priceTextField.setValue(BigDecimalUtil.renderCurrency(orderSingleSuggestion.getOrder().getPrice()));
+                sideComboBox.setValue(orderSingleSuggestion.getOrder().getSide());
+            }
+        }
     }
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractComponent#detach()
@@ -593,6 +606,11 @@ public class OrderTicketView
             }
         }
         averageFillPriceOption = Optional.ofNullable(averageFillPrice);
+        Suggestion suggestion = null;
+        if(event instanceof HasSuggestion) {
+            suggestion = ((HasSuggestion)event).getSuggestion();
+        }
+        suggestionOption = Optional.ofNullable(suggestion);
     }
     /**
      * Create a new OrderTicketView instance.
@@ -700,6 +718,9 @@ public class OrderTicketView
      * new window event that caused the view to be opened
      */
     private final NewWindowEvent event;
+    /**
+     * optional suggestion that might have been included on the new window event
+     */
     private Optional<Suggestion> suggestionOption;
     /**
      * optional replace execution report

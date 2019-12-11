@@ -86,9 +86,9 @@ public class DataFlowViewFactory
                         return getMenuCaption();
                     }
                     @Override
-                    public ContentViewFactory getViewFactory()
+                    public Class<? extends ContentViewFactory> getViewFactoryType()
                     {
-                        return DataFlowViewFactory.this;
+                        return DataFlowViewFactory.class;
                     }
                 });
             }

@@ -7,9 +7,7 @@ import org.marketcetera.trade.HasAverageFillPrice;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.trade.orderticket.view.OrderTicketViewFactory;
 import org.marketcetera.web.view.ContentViewFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 
 import com.vaadin.spring.annotation.SpringComponent;
@@ -45,12 +43,12 @@ public class TradeOrderEvent
         return "Trade " + averageFillPrice.getInstrumentAsString();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.web.events.NewWindowEvent#getViewFactory()
+     * @see org.marketcetera.web.events.NewWindowEvent#getViewFactoryType()
      */
     @Override
-    public ContentViewFactory getViewFactory()
+    public Class<? extends ContentViewFactory> getViewFactoryType()
     {
-        return applicationContext.getBean(OrderTicketViewFactory.class);
+        return OrderTicketViewFactory.class;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.events.NewWindowEvent#getProperties()
@@ -83,11 +81,6 @@ public class TradeOrderEvent
         averageFillPrice = inAverageFillPrice;
         windowProperties = inProperties;
     }
-    /**
-     * provides access to the application context
-     */
-    @Autowired
-    private ApplicationContext applicationContext;
     /**
      * average fill price value
      */

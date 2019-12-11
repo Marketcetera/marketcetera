@@ -78,9 +78,9 @@ public class ClusterViewFactory
                         return getMenuCaption();
                     }
                     @Override
-                    public ContentViewFactory getViewFactory()
+                    public Class<? extends ContentViewFactory> getViewFactoryType()
                     {
-                        return ClusterViewFactory.this;
+                        return ClusterViewFactory.class;
                     }
                 });
             }

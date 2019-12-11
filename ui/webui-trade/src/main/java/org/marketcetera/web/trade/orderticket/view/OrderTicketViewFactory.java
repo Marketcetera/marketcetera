@@ -85,6 +85,14 @@ public class OrderTicketViewFactory
     {
         return OrderTicketView.class;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.trade.view.AbstractTradeViewFactory#getViewFactoryType()
+     */
+    @Override
+    protected Class<? extends AbstractTradeViewFactory> getViewFactoryType()
+    {
+        return OrderTicketViewFactory.class;
+    }
     /**
      * permission(s) required to execute open order view
      */

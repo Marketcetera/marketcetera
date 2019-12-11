@@ -11,6 +11,8 @@ import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.MenuContent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.collect.Sets;
@@ -31,6 +33,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
  * @since $Release$
  */
 @SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SessionViewFactory
         extends AbstractContentViewFactory
         implements ContentViewFactory,MenuContent
@@ -84,9 +87,9 @@ public class SessionViewFactory
                         return getMenuCaption();
                     }
                     @Override
-                    public ContentViewFactory getViewFactory()
+                    public Class<? extends ContentViewFactory> getViewFactoryType()
                     {
-                        return SessionViewFactory.this;
+                        return SessionViewFactory.class;
                     }}
                 );
             }

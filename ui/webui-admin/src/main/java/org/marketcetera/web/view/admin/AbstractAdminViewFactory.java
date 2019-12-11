@@ -72,12 +72,12 @@ public abstract class AbstractAdminViewFactory
             return AbstractAdminViewFactory.this.getViewName();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.web.events.NewWindowEvent#getViewFactory()
+         * @see org.marketcetera.web.events.NewWindowEvent#getViewFactoryType()
          */
         @Override
-        public ContentViewFactory getViewFactory()
+        public Class<? extends ContentViewFactory> getViewFactoryType()
         {
-            return AbstractAdminViewFactory.this;
+            return AbstractAdminViewFactory.class;
         }
     }
     /**

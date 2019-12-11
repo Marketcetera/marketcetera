@@ -116,7 +116,7 @@ public class WindowManagerService
         newWindow.setWidth(inEvent.getWindowSize().getFirstMember());
         newWindow.setHeight(inEvent.getWindowSize().getSecondMember());
         // the content view factory will be used to create the new window content
-        ContentViewFactory viewFactory = inEvent.getViewFactory();
+        ContentViewFactory viewFactory = applicationContext.getBean(inEvent.getViewFactoryType());
         // create the window meta data object, which will track data about the window
         WindowRegistry windowRegistry = getCurrentUserRegistry();
         WindowMetaData newWindowWrapper = new WindowMetaData(inEvent,
@@ -332,12 +332,12 @@ public class WindowManagerService
             return windowTitle;
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.web.events.NewWindowEvent#getViewFactory()
+         * @see org.marketcetera.web.events.NewWindowEvent#getViewFactoryType()
          */
         @Override
-        public ContentViewFactory getViewFactory()
+        public Class<? extends ContentViewFactory> getViewFactoryType()
         {
-            return contentViewFactory;
+            return contentViewFactory.getClass();
         }
         /**
          * Create a new RestartNewWindowEvent instance.
