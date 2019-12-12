@@ -223,67 +223,10 @@ public class MarketDataListView
                                                                      suggestion));
                 break;
             case ACTION_REMOVE:
+                removeSymbol(selectedItem);
                 break;
             case ACTION_DETAIL:
                 break;
-//            case ACTION_CANCEL:
-//            case ACTION_REPLACE:
-//                TradeClientService tradeClient = serviceManager.getService(TradeClientService.class);
-//                ExecutionReport executionReport = tradeClient.getLatestExecutionReportForOrderChain(selectedItem.getOrderId());
-//                if(executionReport == null) {
-//                    Notification.show("Unable to cancel or replace " + selectedItem.getOrderId() + ": no execution report",
-//                                      Type.ERROR_MESSAGE);
-//                    return;
-//                }
-//                if(action == ACTION_CANCEL) {
-//                    OrderCancel orderCancel = Factory.getInstance().createOrderCancel(executionReport);
-//                    SLF4JLoggerProxy.info(this,
-//                                          "{} sending {}",
-//                                          SessionUser.getCurrentUser().getUsername(),
-//                                          orderCancel);
-//                    SendOrderResponse response = tradeClient.send(orderCancel);
-//                    if(response.getFailed()) {
-//                        Notification.show("Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
-//                                          Type.ERROR_MESSAGE);
-//                        return;
-//                    } else {
-//                        Notification.show(response.getOrderId() + " submitted",
-//                                          Type.TRAY_NOTIFICATION);
-//                    }
-//                } else if(action == ACTION_REPLACE) {
-//                    String executionReportXml;
-//                    try {
-//                        executionReportXml = xmlService.marshall(executionReport);
-//                    } catch (JAXBException e) {
-//                        Notification.show("Unable to cancel or replace " + selectedItem.getOrderId() + ": " + PlatformServices.getMessage(e),
-//                                          Type.ERROR_MESSAGE);
-//                        return;
-//                    }
-//                    Properties replaceProperties = new Properties();
-//                    replacePropertie)s.setProperty(ExecutionReport.class.getCanonicalName(),
-//                                                  executionReportXml);
-//                    ReplaceOrderEvent replaceOrderEvent = applicationContext.getBean(ReplaceOrderEvent.class,
-//                                                                                     executionReport,
-//                                                                                     replaceProperties);
-//                    webMessageService.post(replaceOrderEvent);
-//                    return;
-//                } else {
-//                    throw new UnsupportedOperationException("Unsupported action: " + action);
-//                }
-//                break;
-//            case ACTION_FIX_MESSAGE_DETAILS:
-//                Properties replaceProperties = new Properties();
-//                replaceProperties.setProperty(quickfix.Message.class.getCanonicalName(),
-//                                              selectedItem.getMessage().toString());
-//                FixMessageDetailsViewEvent viewFixMessageDetailsEvent = applicationContext.getBean(FixMessageDetailsViewEvent.class,
-//                                                                                                   selectedItem,
-//                                                                                                   replaceProperties);
-//                webMessageService.post(viewFixMessageDetailsEvent);
-//                return;
-//            case ACTION_ADD:
-//                break;
-//            case ACTION_DELETE:
-//                break;
             default:
                 throw new UnsupportedOperationException("Unsupported action: " + action);
         }
@@ -305,7 +248,12 @@ public class MarketDataListView
             String rawData = getViewProperties().getProperty(existingSymbolsKey);
             if(rawData != null) {
                 Properties symbolProperties = Util.propertiesFromString(rawData);
-                symbolProperties.forEach((index,symbol) -> sortedGridSymbols.put(Integer.parseInt(String.valueOf(index)),String.valueOf(symbol)));
+                symbolProperties.forEach((symbol,index) -> {
+                    // set the index to the highest value of all the symbols so that the next new symbol
+                    //  will be given an index higher than any already in use
+                    sortedGridIndex.set(Math.max(sortedGridIndex.get(),Integer.parseInt(String.valueOf(index))));
+                    sortedGridSymbols.put(sortedGridIndex.get(),String.valueOf(symbol));
+                });
                 for(String symbol : sortedGridSymbols.values()) {
                     doAddSymbolToGrid(symbol);
                 }
@@ -341,25 +289,30 @@ public class MarketDataListView
                                             Util.propertiesToString(symbolProperties));
         }
     }
-    private void removeSymbol(String inSymbol)
+    private void removeSymbol(MarketDataRow inItem)
     {
+        String symbolToRemove = inItem.getSymbol();
         synchronized(sortedGridSymbols) {
+            // remove from persisted symbols
             String rawData = getViewProperties().getProperty(existingSymbolsKey);
             if(rawData != null) {
                 Properties symbolProperties = Util.propertiesFromString(rawData);
-                symbolProperties.remove(inSymbol);
+                symbolProperties.remove(symbolToRemove);
                 getViewProperties().setProperty(existingSymbolsKey,
                                                 Util.propertiesToString(symbolProperties));
             }
+            // find this symbol in the grid and remove it from the grid-backing set
             Iterator<Integer> sortedGridSymbolsIterator = sortedGridSymbols.keySet().iterator();
             while(sortedGridSymbolsIterator.hasNext()) {
                 int index = sortedGridSymbolsIterator.next();
                 String symbol = sortedGridSymbols.get(index);
-                if(inSymbol.equals(symbol)) {
+                if(symbol.equals(symbol)) {
                     sortedGridSymbolsIterator.remove();
                     break;
                 }
             }
+            // remove the symbol from the grid
+            getDataContainer().removeItem(inItem);
         }
     }
     /**

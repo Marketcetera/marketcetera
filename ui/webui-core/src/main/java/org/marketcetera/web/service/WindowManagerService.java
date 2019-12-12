@@ -519,15 +519,15 @@ public class WindowManagerService
          * Set the immutable properties of this window to the underlying properties storage.
          *
          * @param inContentViewFactory a <code>ContentViewFactory</code> value
-         * @param inUid a <code>String</code>value
+         * @param inUuid a <code>String</code>value
          */
         private void setWindowStaticProperties(ContentViewFactory inContentViewFactory,
-                                               String inUid)
+                                               String inUuid)
         {
             properties.setProperty(windowContentViewFactoryProp,
                                    inContentViewFactory.getClass().getCanonicalName());
-            properties.setProperty(windowUidProp,
-                                   inUid);
+            properties.setProperty(windowUuidProp,
+                                   inUuid);
         }
         /**
          * Close this window and remove it from active use.
@@ -537,16 +537,16 @@ public class WindowManagerService
             getWindow().close();
         }
         /**
-         * Get the window uid value.
+         * Get the window uuid value.
          *
          * @return a <code>String</code> value
          */
-        private String getUid()
+        private String getUuid()
         {
-            if(uid == null) {
-                uid = properties.getProperty(windowUidProp);
+            if(uuid == null) {
+                uuid = properties.getProperty(windowUuidProp);
             }
-            return uid;
+            return uuid;
         }
         /**
          * Get the hasFocus value.
@@ -571,9 +571,9 @@ public class WindowManagerService
          */
         private transient boolean hasFocus;
         /**
-         * cached uid value
+         * cached uuid value
          */
-        private transient String uid;
+        private transient String uuid;
         /**
          * properties used to record details about this window
          */
@@ -1024,11 +1024,12 @@ public class WindowManagerService
             synchronized(activeWindows) {
                 Properties displayLayout = new Properties();
                 for(WindowMetaData activeWindow : activeWindows) {
-                    String windowKey = activeWindow.getUid();
+                    String windowKey = activeWindow.getUuid();
                     String windowValue = activeWindow.getStorableValue();
                     displayLayout.setProperty(windowKey,
                                               windowValue);
                 }
+                System.out.println("COCO: all props: " + displayLayout);
                 return displayLayout;
             }
         }
@@ -1054,9 +1055,9 @@ public class WindowManagerService
      */
     private static final String propId = WindowMetaData.class.getSimpleName();
     /**
-     * window uid key name
+     * window uuid key name
      */
-    private static final String windowUidProp = propId + "_uid";
+    public static final String windowUuidProp = propId + "_uid";
     /**
      * window content view factory key name
      */
