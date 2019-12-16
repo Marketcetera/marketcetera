@@ -383,11 +383,12 @@ public class DareTestBase
      * @param inRootOrderId an <code>OrderID</code> value
      * @param inOrderId an <code>OrderID</code> value
      * @param inExpectedOrderStatus an <code>OrderStatus</code> value
+     * @param return an <code>OrderSummary</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected void verifyOrderStatus(final OrderID inRootOrderId,
-                                     final OrderID inOrderId,
-                                     final OrderStatus inExpectedOrderStatus)
+    protected OrderSummary verifyOrderStatus(final OrderID inRootOrderId,
+                                             final OrderID inOrderId,
+                                             final OrderStatus inExpectedOrderStatus)
             throws Exception
     {
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
@@ -403,6 +404,8 @@ public class DareTestBase
                 return orderStatus.getOrderStatus() == inExpectedOrderStatus;
             }
         },10);
+        return orderSummaryService.findByRootOrderIdAndOrderId(inRootOrderId,
+                                                               inOrderId);
     }
     /**
      * Create a host acceptor session with the given index.
