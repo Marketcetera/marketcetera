@@ -310,12 +310,13 @@ public class TradeServiceImpl
                                   "Order status for {}: {}",
                                   orderId,
                                   orderStatusEvent);
-            if(orderStatusEvent.getFailed()) {
+            if(orderStatusEvent == null || orderStatusEvent.getFailed()) {
+                String message = orderStatusEvent==null?"none":orderStatusEvent.getErrorMessage();
                 SLF4JLoggerProxy.warn(this,
                                       "Unable to submit {}: {}",
                                       orderId,
-                                      orderStatusEvent.getErrorMessage());
-                throw new SendOrderFailed(orderStatusEvent.getErrorMessage());
+                                      message);
+                throw new SendOrderFailed(message);
             }
         } else {
             SLF4JLoggerProxy.info(this,
