@@ -310,9 +310,21 @@ public class DareTestBase
     protected void clearOrderData()
             throws Exception
     {
-        orderStatusDao.deleteAllInBatch();
-        executionReportDao.deleteAll();
-        reportDao.deleteAllInBatch();
+        boolean complete = false;
+        int retries = 0;
+        while(!complete && retries < 10) {
+            try {
+                orderStatusDao.deleteAllInBatch();
+                executionReportDao.deleteAll();
+                reportDao.deleteAllInBatch();
+                complete = true;
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+                retries += 1;
+                Thread.sleep(1000);
+            }
+        }
     }
     /**
      * Get the host base to use for new sessions.
