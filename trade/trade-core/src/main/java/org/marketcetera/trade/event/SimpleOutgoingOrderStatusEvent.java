@@ -94,10 +94,10 @@ public class SimpleOutgoingOrderStatusEvent
      * @param inFixMessage a <code>quickfix.Message</code> value
      */
     public SimpleOutgoingOrderStatusEvent(String inMessage,
-                                     boolean inFailed,
-                                     Order inOrder,
-                                     OrderID inOrderId,
-                                     quickfix.Message inFixMessage)
+                                          boolean inFailed,
+                                          Order inOrder,
+                                          OrderID inOrderId,
+                                          quickfix.Message inFixMessage)
     {
         message = inMessage;
         failed = inFailed;
