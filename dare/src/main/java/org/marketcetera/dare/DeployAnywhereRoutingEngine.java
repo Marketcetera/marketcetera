@@ -96,6 +96,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.codahale.metrics.Counter;
@@ -2446,6 +2447,7 @@ public class DeployAnywhereRoutingEngine
     /**
      * maximum number of order pools to have active at once
      */
+    @Value("${metc.dare.max.execution.pools:5}")
     private int maxExecutionPools = 5;
     /**
      * interval to wait between checks for available order pools
