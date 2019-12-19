@@ -97,6 +97,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Service;
 
 import com.codahale.metrics.Counter;
@@ -129,6 +130,7 @@ import quickfix.mina.acceptor.AcceptorSessionProvider;
  * @since $Release$
  */
 @Service
+@EnableAutoConfiguration
 @ClusterWorkUnit(id="MATP.DARE",type=ClusterWorkUnitType.SINGLETON_RUNTIME)
 public class DeployAnywhereRoutingEngine
         implements quickfix.ApplicationExtended,DirectoryWatcherSubscriber
@@ -1371,9 +1373,9 @@ public class DeployAnywhereRoutingEngine
                                                           sessionNameProvider,
                                                           fixSettingsProviderFactory,
                                                           clusterData);
-            socketAcceptor.setSessionProvider(new InetSocketAddress(fixSettingsProvider.getAcceptorHost(),
-                                                                    fixSettingsProvider.getAcceptorPort()),
-                                              provider);
+//            socketAcceptor.setSessionProvider(new InetSocketAddress(dareAcceptorHostname,
+//                                                                    dareAcceptorPort),
+//                                              provider);
 //            jmxExporter = new JmxExporter();
 //            jmxExporter.setRegistrationBehavior(JmxExporter.REGISTRATION_REPLACE_EXISTING);
 //            exportedAcceptorName = jmxExporter.register(socketAcceptor);
@@ -2449,6 +2451,16 @@ public class DeployAnywhereRoutingEngine
      */
     @Value("${metc.dare.max.execution.pools:5}")
     private int maxExecutionPools = 5;
+    /**
+     * hostname on which to listen for incoming FIX messages
+     */
+    @Value("${metc.dare.acceptor.hostname:0.0.0.0}")
+    private String dareAcceptorHostname;
+    /**
+     * port on which to listen for incoming FIX messages
+     */
+    @Value("${metc.dare.acceptor.port:9800}")
+    private int dareAcceptorPort;
     /**
      * interval to wait between checks for available order pools
      */

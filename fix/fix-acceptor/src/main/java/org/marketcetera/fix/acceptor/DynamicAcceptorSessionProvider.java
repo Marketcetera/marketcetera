@@ -11,7 +11,6 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Lists;
 
-import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.ConfigError;
 import quickfix.DefaultSessionFactory;
@@ -100,13 +99,14 @@ public class DynamicAcceptorSessionProvider
         // session exists in the DB, generate FIX settings for it
         SessionSettings fixSessionSettings = brokerService.generateSessionSettings(Lists.newArrayList(fixSession));
         FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
-        if(fixSession.isAcceptor()) {
-            // inject the acceptor port here, if available
-            fixSessionSettings.setString(Acceptor.SETTING_SOCKET_ACCEPT_ADDRESS,
-                                         String.valueOf(fixSettingsProvider.getAcceptorHost()));
-            fixSessionSettings.setString(Acceptor.SETTING_SOCKET_ACCEPT_PORT,
-                                         String.valueOf(fixSettingsProvider.getAcceptorPort()));
-        }
+//        if(fixSession.isAcceptor()) {
+//            // inject the acceptor port here, if available
+//            fixSessionSettings.setString(Acceptor.SETTING_SOCKET_ACCEPT_ADDRESS,
+//                                         String.valueOf(fixSettingsProvider.getAcceptorHost()));
+//            fixSessionSettings.setString(Acceptor.SETTING_SOCKET_ACCEPT_PORT,
+//                                         String.valueOf(fixSettingsProvider.getAcceptorPort()));
+//        }
+        System.out.println("\n\nCOCO: fixSessionSettings: " + fixSessionSettings + "\n\n");
         SessionFactory factory = new DefaultSessionFactory(application,
                                                            fixSettingsProvider.getMessageStoreFactory(fixSessionSettings),
                                                            fixSettingsProvider.getLogFactory(fixSessionSettings),
