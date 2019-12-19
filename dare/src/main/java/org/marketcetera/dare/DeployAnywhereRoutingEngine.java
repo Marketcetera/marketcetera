@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -95,6 +96,8 @@ import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
+import org.marketcetera.util.ws.stateful.PortDescriptor;
+import org.marketcetera.util.ws.stateful.UsesPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -133,7 +136,7 @@ import quickfix.mina.acceptor.AcceptorSessionProvider;
 @EnableAutoConfiguration
 @ClusterWorkUnit(id="MATP.DARE",type=ClusterWorkUnitType.SINGLETON_RUNTIME)
 public class DeployAnywhereRoutingEngine
-        implements quickfix.ApplicationExtended,DirectoryWatcherSubscriber
+        implements quickfix.ApplicationExtended,DirectoryWatcherSubscriber,UsesPort
 {
     /* (non-Javadoc)
      * @see quickfix.Application#onCreate(quickfix.SessionID)
@@ -536,6 +539,14 @@ public class DeployAnywhereRoutingEngine
     public String toString()
     {
         return getClusterWorkUnitUid();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.util.ws.stateful.UsesPort#getPortDescriptors()
+     */
+    @Override
+    public Collection<PortDescriptor> getPortDescriptors()
+    {
+        return ports;
     }
     /**
      * Receive outgoing owned messages.
@@ -1384,6 +1395,8 @@ public class DeployAnywhereRoutingEngine
 //            jmxExporter.setRegistrationBehavior(JmxExporter.REGISTRATION_REPLACE_EXISTING);
 //            exportedAcceptorName = jmxExporter.register(socketAcceptor);
             socketAcceptor.start();
+            ports.add(new PortDescriptor(dareAcceptorPort,
+                                         "DARE Acceptor"));
         }
     }
     /**
@@ -2560,4 +2573,8 @@ public class DeployAnywhereRoutingEngine
      * provides dynamic sessions
      */
     private AcceptorSessionProvider provider;
+    /**
+     * indicates ports in use
+     */
+    private final Collection<PortDescriptor> ports = Lists.newArrayList();
 }
