@@ -5,7 +5,9 @@ import javax.annotation.PostConstruct;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import quickfix.LogFactory;
@@ -23,6 +25,7 @@ import quickfix.MessageStoreFactory;
  */
 @Component
 @EnableAutoConfiguration
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class FixSettingsProviderFactoryImpl
         implements FixSettingsProviderFactory
 {

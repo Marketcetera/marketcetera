@@ -104,6 +104,30 @@ public class FixSettingsProviderImpl
     {
         return acceptorProtocol;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSettingsProvider#setAcceptorPort(int)
+     */
+    @Override
+    public void setAcceptorPort(int inAcceptorPort)
+    {
+        acceptorPort = inAcceptorPort;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSettingsProvider#setAcceptorHost(java.lang.String)
+     */
+    @Override
+    public void setAcceptorHost(String inAcceptorHost)
+    {
+        acceptorHost = inAcceptorHost;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSettingsProvider#setAcceptorProtocol(java.lang.String)
+     */
+    @Override
+    public void setAcceptorProtocol(String inAcceptorProtocol)
+    {
+        acceptorProtocol = inAcceptorProtocol;
+    }
     /**
      * acceptor socket protocol value
      */

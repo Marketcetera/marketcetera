@@ -1349,6 +1349,10 @@ public class DeployAnywhereRoutingEngine
                 return;
             }
             SessionSettings fixSessionSettings = brokerService.generateSessionSettings(sessions);
+            fixSessionSettings.setString(quickfix.Acceptor.SETTING_SOCKET_ACCEPT_ADDRESS,
+                                         String.valueOf(dareAcceptorHostname));
+            fixSessionSettings.setString(quickfix.Acceptor.SETTING_SOCKET_ACCEPT_PORT,
+                                         String.valueOf(dareAcceptorPort));
             FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
             if(SLF4JLoggerProxy.isInfoEnabled(this)) {
                 Set<String> sessionsForDisplay = new TreeSet<>();
@@ -1371,11 +1375,11 @@ public class DeployAnywhereRoutingEngine
                                                           brokerService,
                                                           fixSessionProvider,
                                                           sessionNameProvider,
-                                                          fixSettingsProviderFactory,
+                                                          fixSettingsProvider,
                                                           clusterData);
-//            socketAcceptor.setSessionProvider(new InetSocketAddress(dareAcceptorHostname,
-//                                                                    dareAcceptorPort),
-//                                              provider);
+            socketAcceptor.setSessionProvider(new InetSocketAddress(dareAcceptorHostname,
+                                                                    dareAcceptorPort),
+                                              provider);
 //            jmxExporter = new JmxExporter();
 //            jmxExporter.setRegistrationBehavior(JmxExporter.REGISTRATION_REPLACE_EXISTING);
 //            exportedAcceptorName = jmxExporter.register(socketAcceptor);
