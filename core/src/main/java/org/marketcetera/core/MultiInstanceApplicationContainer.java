@@ -778,7 +778,7 @@ public class MultiInstanceApplicationContainer
     /**
      * instance properties file name
      */
-    public static final String INSTANCE_PROPERTIES_FILE = "instance.properties";
+    public static final String INSTANCE_PROPERTIES_FILE = "application.properties";
     /**
      * name of the host id file
      */
