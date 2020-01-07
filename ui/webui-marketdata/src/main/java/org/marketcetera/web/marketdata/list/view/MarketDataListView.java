@@ -223,7 +223,7 @@ public class MarketDataListView
                                                                      suggestion));
                 break;
             case ACTION_REMOVE:
-                removeSymbol(selectedItem);
+                removeRow(selectedItem);
                 break;
             case ACTION_DETAIL:
                 break;
@@ -231,6 +231,13 @@ public class MarketDataListView
                 throw new UnsupportedOperationException("Unsupported action: " + action);
         }
     }
+    /**
+     * Add the given symbol to the display grid.
+     *
+     * <p>This method will add the symbol only if it is not already present.
+     *
+     * @param inSymbol a <code>String</code> value
+     */
     private void doAddSymbolToGrid(String inSymbol)
     {
         if(!allowLowerCaseSymbols) {
@@ -242,30 +249,42 @@ public class MarketDataListView
             addSymbol(inSymbol);
         }
     }
+    /**
+     * Restore all saved symbols to the display grid.
+     */
     private void restoreSymbols()
     {
         synchronized(sortedGridSymbols) {
             String rawData = getViewProperties().getProperty(existingSymbolsKey);
             if(rawData != null) {
                 Properties symbolProperties = Util.propertiesFromString(rawData);
-                symbolProperties.forEach((symbol,index) -> {
-                    // set the index to the highest value of all the symbols so that the next new symbol
-                    //  will be given an index higher than any already in use
-                    sortedGridIndex.set(Math.max(sortedGridIndex.get(),Integer.parseInt(String.valueOf(index))));
-                    sortedGridSymbols.put(sortedGridIndex.get(),String.valueOf(symbol));
+                final SortedMap<Integer,String> tempSortedSymbols = Maps.newTreeMap();
+                symbolProperties.forEach((index,symbol) -> {
+                    tempSortedSymbols.put(Integer.parseInt(String.valueOf(index)),
+                                          String.valueOf(symbol));
                 });
-                for(String symbol : sortedGridSymbols.values()) {
+                for(String symbol : tempSortedSymbols.values()) {
                     doAddSymbolToGrid(symbol);
                 }
             }
         }
     }
+    /**
+     * Get the set of current symbols.
+     *
+     * @return a <code>Set&lt;String&gt;</code> value
+     */
     private Set<String> getSymbols()
     {
         synchronized(sortedGridSymbols) {
             return Sets.newHashSet(sortedGridSymbols.values());
         }
     }
+    /**
+     * Add the given symbol to the display grid.
+     *
+     * @param inSymbol a <code>String</code> value
+     */
     private void addSymbol(String inSymbol)
     {
         // sortedGridSymbols holds the symbols that currently exist in the grid sorted by the order in which they were added
@@ -283,13 +302,18 @@ public class MarketDataListView
             } else {
                 symbolProperties = Util.propertiesFromString(rawData);
             }
-            symbolProperties.setProperty(inSymbol,
-                                         String.valueOf(index));
+            symbolProperties.setProperty(String.valueOf(index),
+                                         inSymbol);
             getViewProperties().setProperty(existingSymbolsKey,
                                             Util.propertiesToString(symbolProperties));
         }
     }
-    private void removeSymbol(MarketDataRow inItem)
+    /**
+     * Remove the given row from the display grid.
+     *
+     * @param inItem a <code>MarketDataRow</code> value
+     */
+    private void removeRow(MarketDataRow inItem)
     {
         String symbolToRemove = inItem.getSymbol();
         synchronized(sortedGridSymbols) {
@@ -733,12 +757,33 @@ public class MarketDataListView
      * volume column value
      */
     private static final String volumeColumn = "volume";
+    /**
+     * buy action value
+     */
     private static final String ACTION_BUY = "Buy";
+    /**
+     * sell action value
+     */
     private static final String ACTION_SELL = "Sell";
+    /**
+     * remove action value
+     */
     private static final String ACTION_REMOVE = "Remove";
+    /**
+     * show details action value
+     */
     private static final String ACTION_DETAIL = "Show Details";
+    /**
+     * persisted properties existing symbols key
+     */
     private static final String existingSymbolsKey = MarketDataListView.class.getSimpleName() + ".symbols";
+    /**
+     * holds the current sorted grid symbols keyed by counter - note that the counter may have gaps
+     */
     private final SortedMap<Integer,String> sortedGridSymbols = Maps.newTreeMap();
+    /**
+     * value of the next sorted grid symbol index
+     */
     private AtomicInteger sortedGridIndex = new AtomicInteger(0);
     private static final long serialVersionUID = -4416759265511242121L;
 }

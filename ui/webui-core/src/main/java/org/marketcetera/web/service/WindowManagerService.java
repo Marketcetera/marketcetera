@@ -1029,7 +1029,6 @@ public class WindowManagerService
                     displayLayout.setProperty(windowKey,
                                               windowValue);
                 }
-                System.out.println("COCO: all props: " + displayLayout);
                 return displayLayout;
             }
         }
