@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.Util;
+import org.marketcetera.core.XmlService;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.HasInstrument;
@@ -29,6 +30,7 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.converters.DecimalConverter;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.marketdata.event.MarketDataDetailEvent;
 import org.marketcetera.web.marketdata.event.MarketDataSuggestionEvent;
@@ -36,6 +38,7 @@ import org.marketcetera.web.marketdata.list.view.MarketDataListView.MarketDataRo
 import org.marketcetera.web.marketdata.service.MarketDataClientService;
 import org.marketcetera.web.service.trade.TradeClientService;
 import org.marketcetera.web.view.AbstractGridView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -166,6 +169,13 @@ public class MarketDataListView
                              lowColumn,
                              closeColumn,
                              volumeColumn);
+        getGrid().getColumn(tradePriceColumn).setConverter(DecimalConverter.instance);
+        getGrid().getColumn(bidPriceColumn).setConverter(DecimalConverter.instance);
+        getGrid().getColumn(offerPriceColumn).setConverter(DecimalConverter.instance);
+        getGrid().getColumn(openColumn).setConverter(DecimalConverter.instance);
+        getGrid().getColumn(highColumn).setConverter(DecimalConverter.instance);
+        getGrid().getColumn(lowColumn).setConverter(DecimalConverter.instance);
+        getGrid().getColumn(closeColumn).setConverter(DecimalConverter.instance);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
