@@ -30,6 +30,7 @@ import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.events.NewWindowEvent;
+import org.marketcetera.web.marketdata.event.MarketDataDetailEvent;
 import org.marketcetera.web.marketdata.event.MarketDataSuggestionEvent;
 import org.marketcetera.web.marketdata.list.view.MarketDataListView.MarketDataRow;
 import org.marketcetera.web.marketdata.service.MarketDataClientService;
@@ -226,6 +227,10 @@ public class MarketDataListView
                 removeRow(selectedItem);
                 break;
             case ACTION_DETAIL:
+                MarketDataDetailEvent viewFixMessageDetailsEvent = applicationContext.getBean(MarketDataDetailEvent.class,
+                                                                                              selectedItem.getInstrument().getFullSymbol(),
+                                                                                              selectedItem.getInstrument());
+                webMessageService.post(viewFixMessageDetailsEvent);
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported action: " + action);

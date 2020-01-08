@@ -23,6 +23,7 @@ import org.marketcetera.web.marketdata.service.MarketDataClientService;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.AbstractContentView;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Scope;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -48,6 +49,7 @@ import com.vaadin.ui.Window;
  * @since $Release$
  */
 @SpringComponent
+@EnableAutoConfiguration
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class MarketDataDetailView
         extends AbstractContentView
