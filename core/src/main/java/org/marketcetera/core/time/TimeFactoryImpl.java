@@ -27,6 +27,22 @@ public class TimeFactoryImpl
         implements TimeFactory
 {
     /* (non-Javadoc)
+     * @see org.marketcetera.core.Factory#create()
+     */
+    @Override
+    public DateTime create()
+    {
+        return DateTime.now();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.Factory#create(java.lang.Object)
+     */
+    @Override
+    public DateTime create(DateTime inObject)
+    {
+        return new DateTime(inObject);
+    }
+    /* (non-Javadoc)
      * @see com.marketcetera.ramius.inputs.TimeFactory#create(java.lang.String)
      */
     @Override
