@@ -32,6 +32,14 @@ public class SimpleOutgoingOrderEvent
         return user;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.admin.HasUser#setUser(org.marketcetera.admin.User)
+     */
+    @Override
+    public void setUser(User inUser)
+    {
+        user = inUser;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -60,5 +68,5 @@ public class SimpleOutgoingOrderEvent
     /**
      * user that owns the order
      */
-    private final User user;
+    private User user;
 }

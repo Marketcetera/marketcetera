@@ -35,6 +35,14 @@ public class SubmitOrderWrapper
         return user;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.admin.HasUser#setUser(org.marketcetera.admin.User)
+     */
+    @Override
+    public void setUser(User inUser)
+    {
+        user = inUser;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.HasStatus#getFailed()
      */
     @Override
@@ -101,7 +109,7 @@ public class SubmitOrderWrapper
     /**
      * user value
      */
-    private final User user;
+    private User user;
     /**
      * order value
      */
