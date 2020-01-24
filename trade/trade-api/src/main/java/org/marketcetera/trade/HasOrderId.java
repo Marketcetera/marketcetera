@@ -17,4 +17,10 @@ public interface HasOrderId
      * @return an <code>OrderID</code> value
      */
     OrderID getOrderId();
+    /**
+     * Set the order id value.
+     *
+     * @param inOrderId an <code>OrderID</code> value
+     */
+    void setOrderId(OrderID inOrderId);
 }

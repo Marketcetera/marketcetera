@@ -500,7 +500,6 @@ public abstract class TradeRpcUtil
                 return null;
             default:
                 throw new UnsupportedOperationException("Unsupported side value: " + inSideType);
-            
         }
     }
     /**

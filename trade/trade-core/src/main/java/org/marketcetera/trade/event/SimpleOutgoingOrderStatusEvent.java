@@ -73,6 +73,14 @@ public class SimpleOutgoingOrderStatusEvent
         return orderId;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasOrderId#setOrderId(org.marketcetera.trade.OrderID)
+     */
+    @Override
+    public void setOrderId(OrderID inOrderId)
+    {
+        orderId = inOrderId;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -125,5 +133,5 @@ public class SimpleOutgoingOrderStatusEvent
     /**
      * outgoing order id value, may not be <code>null</code>
      */
-    private final OrderID orderId;
+    private OrderID orderId;
 }

@@ -38,6 +38,14 @@ public class DisplayReport
     {
         return report.getOrderID();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasOrderId#setOrderId(org.marketcetera.trade.OrderID)
+     */
+    @Override
+    public void setOrderId(OrderID inOrderId)
+    {
+        throw new UnsupportedOperationException();
+    }
     /**
      * Get the trader name value.
      *
