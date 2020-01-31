@@ -138,8 +138,8 @@ public class OrderSummaryServiceImpl
         } else {
             where = where.and(r.viewer.eq(persistentViewer));
         }
-        Sort sort = new Sort(Sort.Direction.DESC,
-                             r.sendingTime.getMetadata().getName());
+        Sort sort = Sort.by(Sort.Direction.DESC,
+                            r.sendingTime.getMetadata().getName());
         // can expose the page and page size to allow paging through the api interfaces
         PageRequest page = PageRequest.of(0,
                                           Integer.MAX_VALUE,

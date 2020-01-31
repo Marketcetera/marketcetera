@@ -369,8 +369,8 @@ public class ReportServiceImpl
             return OrderStatus.Unknown;
         }
         BooleanBuilder where = new BooleanBuilder().and(QPersistentExecutionReport.persistentExecutionReport.rootOrderId.eq(rootId));
-        Sort sort = new Sort(Sort.Direction.DESC,
-                             QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName());
+        Sort sort = Sort.by(Sort.Direction.DESC,
+                            QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName());
         PageRequest page = PageRequest.of(0,
                                           1,
                                           sort);
@@ -407,8 +407,8 @@ public class ReportServiceImpl
             return Optional.empty();
         }
         BooleanBuilder where = new BooleanBuilder().and(QPersistentExecutionReport.persistentExecutionReport.rootOrderId.eq(rootId));
-        Sort sort = new Sort(Sort.Direction.DESC,
-                             QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName());
+        Sort sort = Sort.by(Sort.Direction.DESC,
+                            QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName());
         PageRequest page = PageRequest.of(0,
                                           1,
                                           sort);
@@ -466,8 +466,8 @@ public class ReportServiceImpl
         } else {
             where = where.and(r.viewer.eq((PersistentUser)inUser));
         }
-        Sort sort = new Sort(Sort.Direction.ASC,
-                             r.sendingTime.getMetadata().getName());
+        Sort sort = Sort.by(Sort.Direction.ASC,
+                            r.sendingTime.getMetadata().getName());
         // can expose the page and page size to allow paging through the api interfaces
         PageRequest page = PageRequest.of(0,
                                           Integer.MAX_VALUE,
@@ -488,8 +488,8 @@ public class ReportServiceImpl
                                                                 int inPageSize)
     {
         QPersistentExecutionReport e = QPersistentExecutionReport.persistentExecutionReport;
-        Sort sort = new Sort(Sort.Direction.ASC,
-                             e.sendingTime.getMetadata().getName());
+        Sort sort = Sort.by(Sort.Direction.ASC,
+                            e.sendingTime.getMetadata().getName());
         PageRequest page = PageRequest.of(inPageNumber,
                                           inPageSize,
                                           sort);
