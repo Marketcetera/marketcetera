@@ -3,7 +3,6 @@ option java_generic_services = true;
 option java_package = "org.marketcetera.cluster.rpc";
 option java_outer_classname = "ClusterRpc";
 import "rpc_base.proto";
-import "rpc_paging.proto";
 
 message ClusterData {
     string hostId = 1;
