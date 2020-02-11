@@ -420,6 +420,31 @@ public class DareTestBase
                                                                inOrderId);
     }
     /**
+     * Find the order status for the given root/order id pair.
+     *
+     * @param inRootOrderId an <code>OrderID</code> value
+     * @param inOrderId an <code>OrderID</code> value
+     * @param return an <code>OrderSummary</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected OrderSummary findOrderStatus(final OrderID inRootOrderId,
+                                           final OrderID inOrderId)
+            throws Exception
+    {
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                OrderSummary orderStatus = orderSummaryService.findByRootOrderIdAndOrderId(inRootOrderId,
+                                                                                           inOrderId);
+                return orderStatus != null;
+            }
+        },10);
+        return orderSummaryService.findByRootOrderIdAndOrderId(inRootOrderId,
+                                                               inOrderId);
+    }
+    /**
      * Create a host acceptor session with the given index.
      *
      * @param inSessionIndex an <code>int</code> value
