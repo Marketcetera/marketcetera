@@ -1,6 +1,7 @@
 package org.marketcetera.trade.dao;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.marketcetera.trade.OrderID;
@@ -48,12 +49,12 @@ public interface OrderSummaryDao
     PersistentOrderSummary findByRootOrderIdAndOrderId(OrderID inRootID,
                                                       OrderID inOrderID);
     /**
-     * Find the order status values with the given order id.
+     * Find the order status value with the given order id.
      *
      * @param inOrderId an <code>OrderID</code> value
-     * @return a <code>List&lt;PersistentOrderStatus&gt;</code> value
+     * @return a <code>Optional&lt;PersistentOrderStatus&gt;</code> value
      */
-    List<PersistentOrderSummary> findByOrderId(OrderID inOrderId);
+    Optional<PersistentOrderSummary> findByOrderId(OrderID inOrderId);
     /**
      * Find the most recent member from each order chain where the most recent member is open.
      *
