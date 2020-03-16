@@ -1,7 +1,10 @@
 package org.marketcetera.trade.service;
 
+import java.util.List;
+
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.IdentifyOwnerStrategy;
 import org.marketcetera.trade.UserID;
 
 import quickfix.Message;
@@ -37,4 +40,10 @@ public interface MessageOwnerService
     UserID getMessageOwner(HasFIXMessage inIncomingMessage,
                            SessionID inSessionId,
                            BrokerID inBrokerId);
+    /**
+     * Get the identifyOwnerStrategies value.
+     *
+     * @return a <code>List&lt;IdentifyOwnerStrategy&gt;</code> value
+     */
+    List<IdentifyOwnerStrategy> getIdentifyOwnerStrategies();
 }

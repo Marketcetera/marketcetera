@@ -7,6 +7,8 @@ import org.marketcetera.trade.IdentifyOwnerStrategy;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
 import quickfix.Message;
 import quickfix.SessionID;
@@ -23,6 +25,7 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
+@EnableAutoConfiguration
 public class DefaultOwnerStrategy
         implements IdentifyOwnerStrategy
 {
@@ -91,6 +94,10 @@ public class DefaultOwnerStrategy
     /**
      * username value of the default owner
      */
+    /**
+     * max number of order owners to cache
+     */
+    @Value("${metc.default.owner.username}")
     private String username;
     /**
      * resolved name of the default user

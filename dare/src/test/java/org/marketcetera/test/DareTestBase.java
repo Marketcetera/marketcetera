@@ -88,6 +88,7 @@ import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
@@ -2669,6 +2670,11 @@ public class DareTestBase
      * used to guarantee unique values
      */
     protected static final AtomicInteger counter = new AtomicInteger(0);
+    /**
+     * RPC services port
+     */
+    @Value("${metc.rpc.port}")
+    protected int rpcPort;
     /**
      * test artifact used to identify the current test case
      */
