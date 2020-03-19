@@ -8,11 +8,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
+import org.marketcetera.metrics.MetricService;
 
 /* $License$ */
 
 /**
- *
+ * Tests {@link BatchQueueProcessor}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -97,4 +98,9 @@ public class BatchQueueProcessorTest
      * test processor
      */
     private TestQueueProcessor testQueueProcessor;
+    /**
+     * provides metric services
+     */
+    @SuppressWarnings("unused")
+    private static MetricService metricService = new MetricService();
 }

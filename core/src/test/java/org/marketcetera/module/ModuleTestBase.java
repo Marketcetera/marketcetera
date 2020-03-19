@@ -22,6 +22,7 @@ import javax.management.openmbean.SimpleType;
 
 import org.marketcetera.core.Pair;
 import org.marketcetera.marketdata.MockMarketDataFeedModuleFactory;
+import org.marketcetera.metrics.MetricService;
 import org.marketcetera.persist.TransactionModuleFactory;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.test.CollectionAssert;
@@ -549,4 +550,9 @@ public class ModuleTestBase {
                 new LinkedList<FlowData>();
         private boolean mThrowException;
     }
+    /**
+     * provides metric services
+     */
+    @SuppressWarnings("unused")
+    private static MetricService metricService = new MetricService();
 }

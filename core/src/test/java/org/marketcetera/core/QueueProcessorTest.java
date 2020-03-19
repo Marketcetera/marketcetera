@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.metrics.MetricService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -281,4 +282,9 @@ public class QueueProcessorTest
      * test queue value
      */
     private BlockingQueue<MockData> testQueue;
+    /**
+     * provides metric services
+     */
+    @SuppressWarnings("unused")
+    private static MetricService metricService = new MetricService();
 }
