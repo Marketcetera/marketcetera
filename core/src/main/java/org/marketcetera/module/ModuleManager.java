@@ -2040,7 +2040,9 @@ public final class ModuleManager
                         new DataFlowSupportImpl(inModule,this));
             }
             try {
-                autowireModule(inModule);
+                if(inModule.getClass().isAnnotationPresent(AutowiredModule.class)) {
+                    autowireModule(inModule);
+                }
             } catch (RuntimeException e) {
                 throw new ModuleCreationException(e,
                                                   new I18NBoundMessage1P(Messages.CANNOT_AUTOWIRE_MODULE,
