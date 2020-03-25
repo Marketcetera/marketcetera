@@ -1,5 +1,6 @@
 package org.marketcetera.marketdata.core.provider;
 
+import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +18,7 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.marketdata.FeedStatus;
@@ -55,6 +57,11 @@ public class MarketDataProviderWatcher
                          Messages.MBEAN_SERVER_REQUIRED.getText());
         Validate.notNull(moduleName,
                          Messages.MODULE_NAME_REQUIRED.getText());
+        if(isCommandLineEnabled()) {
+            Messages.COMMAND_LINE_ENABLED.info(this,
+                                               moduleName,
+                                               commandLineFile);
+        }
         timerService = Executors.newSingleThreadScheduledExecutor();
         timerService.scheduleAtFixedRate(new Watcher(),
                                          monitoringInterval,
@@ -131,6 +138,24 @@ public class MarketDataProviderWatcher
             marketDataStatusListeners.addAll(inMarketDataStatusListeners);
         }
     }
+    /**
+     * Get the commandLineFile value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getCommandLineFile()
+    {
+        return commandLineFile;
+    }
+    /**
+     * Sets the commandLineFile value.
+     *
+     * @param inCommandLineFile a <code>String</code> value
+     */
+    public void setCommandLineFile(String inCommandLineFile)
+    {
+        commandLineFile = inCommandLineFile;
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.provider.MarketDataStatusProvider#addMarketDataStatusListener(org.marketcetera.marketdata.core.provider.MarketDataStatusListener)
      */
@@ -172,6 +197,37 @@ public class MarketDataProviderWatcher
     public void setModuleManager(ModuleManager inModuleManager)
     {
         moduleManager = inModuleManager;
+    }
+    /**
+     * Indicate if command-line mode is enabled.
+     *
+     * @return a <code>boolean</code> value
+     */
+    private boolean isCommandLineEnabled()
+    {
+        return commandLineFile != null;
+    }
+    /**
+     * Checks to see if a command-line reset has been requested.
+     *
+     * <p>This method also resets the command-line reset indicator, if it has been triggered.
+     *
+     * @return a <code>boolean</code> value
+     */
+    private boolean checkForCommandLineCommand()
+    {
+        if(!isCommandLineEnabled()) {
+            return false;
+        }
+        File commandLineFileObject = new File(commandLineFile);
+        boolean result = false;
+        if(commandLineFileObject.exists() && commandLineFileObject.isFile() && commandLineFileObject.canRead()) {
+            result = true;
+            FileUtils.deleteQuietly(commandLineFileObject);
+            Messages.COMMAND_LINE_TRIGGERED.info(this,
+                                                 moduleName);
+        }
+        return result;
     }
     /**
      * Gets the admin bean for the given session.
@@ -274,6 +330,7 @@ public class MarketDataProviderWatcher
                     status = providerStatus;
                     isRunning = providerStatus.isRunning();
                 }
+                isRunning &= !checkForCommandLineCommand();
                 if(isRunning) {
                     SLF4JLoggerProxy.trace(MarketDataProviderWatcher.this,
                                            "{} feed status is {}", //$NON-NLS-1$
@@ -330,6 +387,10 @@ public class MarketDataProviderWatcher
      */
     @Autowired
     private ModuleManager moduleManager;
+    /**
+     * file to watch for in order to trigger a market data reset
+     */
+    private String commandLineFile;
     /**
      * indicates the last know status for the provider
      */
