@@ -6,7 +6,7 @@ import java.util.concurrent.Callable;
 
 import org.junit.After;
 import org.junit.Before;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.event.MockEventTranslator;
 
@@ -45,12 +45,12 @@ public class MarketDataFeedTestBase
         }
         inSubscriber.reset();
     }
-    protected void resetSubscribers(ISubscriber... inSubscribers)
+    protected void resetSubscribers(Subscriber... inSubscribers)
     {
         if(inSubscribers == null) {
             return;
         }
-        for(ISubscriber subscriber : inSubscribers) {
+        for(Subscriber subscriber : inSubscribers) {
             if(subscriber != null) {
                 MockSubscriber s = (MockSubscriber)subscriber;
                 resetSubscriber(s);
@@ -58,24 +58,24 @@ public class MarketDataFeedTestBase
         }
     }
     /**
-     * This {@link ISubscriber} implementation requests all publications and does
+     * This {@link Subscriber} implementation requests all publications and does
      * nothing with them.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
      * @since 0.43-SNAPSHOT
      */
-    public static class DoNothingSubscriber implements ISubscriber {
+    public static class DoNothingSubscriber implements Subscriber {
         public Object mData;
         /* (non-Javadoc)
-         * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
+         * @see org.marketcetera.core.publisher.Subscriber#isInteresting(java.lang.Object)
          */
         public boolean isInteresting(Object inData)
         {
             return true;
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
+         * @see org.marketcetera.core.publisher.Subscriber#publishTo(java.lang.Object)
          */
         public void publishTo(Object inData)
         {

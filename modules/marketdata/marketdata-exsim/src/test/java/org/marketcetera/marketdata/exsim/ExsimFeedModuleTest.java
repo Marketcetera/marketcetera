@@ -13,7 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.marketdata.MarketDataModuleMXBean;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleState;
 import org.springframework.beans.BeansException;
@@ -78,7 +78,7 @@ public class ExsimFeedModuleTest
         assertEquals(ModuleState.STARTED,
                      moduleManager.getModuleInfo(ExsimFeedModuleFactory.INSTANCE_URN).getState());
         // uncomment this next block to make it actually connect
-//        final AbstractMarketDataModuleMXBean moduleBean = getModuleBean();
+//        final MarketDataModuleMXBean moduleBean = getModuleBean();
 //        assertNotNull(moduleBean);
 //        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
 //            @Override
@@ -103,17 +103,17 @@ public class ExsimFeedModuleTest
     /**
      * Gets the admin bean for the given session.
      *
-     * @return an <code>AbstractMarketDataModuleMXBean</code> value
+     * @return an <code>MarketDataModuleMXBean</code> value
      * @throws MalformedObjectNameException if an error occurs getting the provider bean
      */
     @SuppressWarnings("unused")
-    private AbstractMarketDataModuleMXBean getModuleBean()
+    private MarketDataModuleMXBean getModuleBean()
             throws MalformedObjectNameException
     {
         ObjectName sessionObjectName = getModuleObjectName();
-        AbstractMarketDataModuleMXBean sessionAdmin = JMX.newMXBeanProxy(mbeanServer,
+        MarketDataModuleMXBean sessionAdmin = JMX.newMXBeanProxy(mbeanServer,
                                                                          sessionObjectName,
-                                                                         AbstractMarketDataModuleMXBean.class,
+                                                                         MarketDataModuleMXBean.class,
                                                                          true);
         return sessionAdmin;
     }

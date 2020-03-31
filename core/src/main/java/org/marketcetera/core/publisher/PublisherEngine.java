@@ -23,14 +23,14 @@ public final class PublisherEngine
     /**
      * the queue of subscribers - should be maintained in FIFO order
      */
-    private final LinkedHashSet<ISubscriber> mSubscribers = new LinkedHashSet<ISubscriber>();
+    private final LinkedHashSet<Subscriber> mSubscribers = new LinkedHashSet<Subscriber>();
     /**
      * A mirror of {@link #mSubscribers} kept for fast traversal when
      * publishing events without needing locks . The contents of this array are
      * never modified. To make any changes, a new copy of this array is created
      * and the reference is updated to point to the new array.
      */
-    private volatile ISubscriber[] mSubscriberArray;
+    private volatile Subscriber[] mSubscriberArray;
     /**
      * the pool of notifiers common to all <code>PublisherEngine</code> objects
      */
@@ -116,10 +116,10 @@ public final class PublisherEngine
         }
     }      
     /* (non-Javadoc)
-     * @see org.marketcetera.core.publisher.IPublisher#subscribe(org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.core.publisher.IPublisher#subscribe(org.marketcetera.core.publisher.Subscriber)
      */
     @Override
-    public void subscribe(ISubscriber inSubscriber)
+    public void subscribe(Subscriber inSubscriber)
     {
         if(inSubscriber == null) {
             return;
@@ -133,10 +133,10 @@ public final class PublisherEngine
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.publisher.IPublisher#unsubscribe(org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.core.publisher.IPublisher#unsubscribe(org.marketcetera.core.publisher.Subscriber)
      */
     @Override
-    public void unsubscribe(ISubscriber inSubscriber)
+    public void unsubscribe(Subscriber inSubscriber)
     {
         if(inSubscriber == null) {
             return;
@@ -165,7 +165,7 @@ public final class PublisherEngine
      */
     private void synchronizeSubscriberArray()  {
         mSubscriberArray = mSubscribers.toArray(
-                new ISubscriber[mSubscribers.size()]);
+                new Subscriber[mSubscribers.size()]);
     }
     /**
      * Perform the actual publication to subscribers.
@@ -177,7 +177,7 @@ public final class PublisherEngine
      */
     private Future<?> doPublish(final Object inData)
     {
-        final ISubscriber[] subscribers = mSubscriberArray;
+        final Subscriber[] subscribers = mSubscriberArray;
         
         SLF4JLoggerProxy.debug(this,
                 "Publishing {} to {} subscriber(s)", //$NON-NLS-1$
@@ -205,10 +205,10 @@ public final class PublisherEngine
      * @param inSubscribers The list of subscribers that need to be notified.
      * @param inData the data to publish to the subscribers.
      */
-    private static void publishToSubscribers(ISubscriber[] inSubscribers,
+    private static void publishToSubscribers(Subscriber[] inSubscribers,
                                              Object inData)
     {
-        for (ISubscriber subscriber: inSubscribers) {
+        for (Subscriber subscriber: inSubscribers) {
             try {
                 if (subscriber.isInteresting(inData)) {
                     subscriber.publishTo(inData);

@@ -1,5 +1,6 @@
 package org.marketcetera.marketdata.event;
 
+import org.marketcetera.marketdata.HasMarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
 
 /* $License$ */
@@ -12,6 +13,6 @@ import org.marketcetera.marketdata.MarketDataRequest;
  * @since $Release$
  */
 public interface MarketDataRequestEvent
-        extends HasMarketDataRequest,HasMarketDataRequestId,HasOptionalMarketDataRequestProvider
+        extends HasMarketDataRequest,HasMarketDataRequestId,HasOptionalMarketDataRequestProvider,HasMarketDataListener
 {
 }

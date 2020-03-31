@@ -17,7 +17,7 @@ public class MockPublisher
     /* (non-Javadoc)
      * @see org.marketcetera.core.publisher.Publisher#subscribe(org.marketcetera.core.publisher.Subscriber)
      */
-    public void subscribe(ISubscriber inSubscriber)
+    public void subscribe(Subscriber inSubscriber)
     {
         mEngine.subscribe(inSubscriber);
     }
@@ -25,7 +25,7 @@ public class MockPublisher
     /* (non-Javadoc)
      * @see org.marketcetera.core.publisher.Publisher#unsubscribe(org.marketcetera.core.publisher.Subscriber)
      */
-    public void unsubscribe(ISubscriber inSubscriber)
+    public void unsubscribe(Subscriber inSubscriber)
     {
         mEngine.unsubscribe(inSubscriber);
     }

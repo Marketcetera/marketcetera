@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.HasInstrument;
 import org.marketcetera.marketdata.Content;
@@ -72,7 +72,7 @@ public class MarketDataManagerModule
                             Object inData)
             throws ReceiveDataException
     {
-        ISubscriber subscriber = subscribersByDataFlowId.get(inFlowId);
+        Subscriber subscriber = subscribersByDataFlowId.get(inFlowId);
         long timestamp = System.currentTimeMillis();
         try {
             while(subscriber == null && System.currentTimeMillis() < (timestamp+subscriberTimeout)) {
@@ -184,11 +184,11 @@ public class MarketDataManagerModule
      * Request market data and delivers the market data to the given subscriber.
      *
      * @param inRequest a <code>MarketDataRequest</code> value
-     * @param inSubscriber an <code>ISubscriber</code> value
+     * @param inSubscriber an <code>Subscriber</code> value
      * @return a <code>long</code> value
      */
     public long requestMarketData(MarketDataRequest inRequest,
-                                  ISubscriber inSubscriber)
+                                  Subscriber inSubscriber)
     {
         long requestId = counter.incrementAndGet();
         String provider = inRequest.getProvider();
@@ -310,12 +310,12 @@ public class MarketDataManagerModule
      *
      * @param inMarketDataRequest a <code>MarketDataRequest</code> value
      * @param inSourceUrn a <code>ModuleURN</code> value
-     * @param inSubscriber an <code>ISubscriber</code> value
+     * @param inSubscriber an <code>Subscriber</code> value
      * @param inRequestId a <code>long</code> value
      */
     private void doDataRequest(MarketDataRequest inMarketDataRequest,
                                ModuleURN inSourceUrn,
-                               ISubscriber inSubscriber,
+                               Subscriber inSubscriber,
                                long inRequestId)
     {
         DataRequest sourceRequest = new DataRequest(inSourceUrn,
@@ -360,7 +360,7 @@ public class MarketDataManagerModule
     /**
      * holds active subscribers by data flow id
      */
-    private final Map<DataFlowID,ISubscriber> subscribersByDataFlowId = new HashMap<>();
+    private final Map<DataFlowID,Subscriber> subscribersByDataFlowId = new HashMap<>();
     /**
      * holds active data flows by request id
      */

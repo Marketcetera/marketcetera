@@ -2,7 +2,7 @@ package org.marketcetera.core.notifications;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.publisher.IPublisher;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 
 /* $License$ */
 
@@ -20,19 +20,19 @@ public interface INotificationManager
     /**
      * Subscribes to all notifications.
      * 
-     * <p>If the given <code>ISubscriber</code> is already subscribed this method does nothing.
+     * <p>If the given <code>Subscriber</code> is already subscribed this method does nothing.
      *
-     * @param inSubscriber an <code>ISubscriber</code> value
+     * @param inSubscriber an <code>Subscriber</code> value
      */
-    public void subscribe(ISubscriber inSubscriber);
+    public void subscribe(Subscriber inSubscriber);
     /**
      * Unsubscribes to all notifications.
      * 
-     * <p>If the given <code>ISubscriber</code> is not already subscribed this method does nothing.
+     * <p>If the given <code>Subscriber</code> is not already subscribed this method does nothing.
      *
-     * @param inSubscriber an <code>ISubscriber</code> value
+     * @param inSubscriber an <code>Subscriber</code> value
      */
-    public void unsubscribe(ISubscriber inSubscriber);
+    public void unsubscribe(Subscriber inSubscriber);
     /**
      * Publishes an <code>INotification</code>.
      * 

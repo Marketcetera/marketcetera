@@ -26,7 +26,7 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
-import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.marketdata.MarketDataModuleMXBean;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.CapabilityCollection;
@@ -79,10 +79,10 @@ import com.google.common.collect.Maps;
 @AutowiredModule
 public class ExsimFeedModule
         extends Module
-        implements DataEmitter,AbstractMarketDataModuleMXBean
+        implements DataEmitter,MarketDataModuleMXBean
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getFeedStatus()
+     * @see org.marketcetera.marketdata.MarketDataModuleMXBean#getFeedStatus()
      */
     @Override
     public String getFeedStatus()
@@ -93,7 +93,7 @@ public class ExsimFeedModule
         return feedStatus.name();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#reconnect()
+     * @see org.marketcetera.marketdata.MarketDataModuleMXBean#reconnect()
      */
     @Override
     public void reconnect()
@@ -102,7 +102,7 @@ public class ExsimFeedModule
         preStart();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#disconnect()
+     * @see org.marketcetera.marketdata.MarketDataModuleMXBean#disconnect()
      */
     @Override
     public void disconnect()
@@ -110,7 +110,7 @@ public class ExsimFeedModule
         preStop();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getCapabilities()
+     * @see org.marketcetera.marketdata.MarketDataModuleMXBean#getCapabilities()
      */
     @Override
     public Set<Capability> getCapabilities()
@@ -118,7 +118,7 @@ public class ExsimFeedModule
         return supportedCapabilities;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getAssetClasses()
+     * @see org.marketcetera.marketdata.MarketDataModuleMXBean#getAssetClasses()
      */
     @Override
     public Set<AssetClass> getAssetClasses()

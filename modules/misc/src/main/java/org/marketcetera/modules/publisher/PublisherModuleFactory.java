@@ -2,7 +2,7 @@ package org.marketcetera.modules.publisher;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleFactory;
@@ -29,7 +29,7 @@ public class PublisherModuleFactory
               Messages.PROVIDER_DESCRIPTION,
               true,
               false,
-              ISubscriber.class);
+              Subscriber.class);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
@@ -41,7 +41,7 @@ public class PublisherModuleFactory
         if(inParameters == null || inParameters.length != 1) {
             throw new ModuleCreationException(Messages.PARAMETER_COUNT_ERROR);
         }
-        ISubscriber subscriber = (ISubscriber)inParameters[0];
+        Subscriber subscriber = (Subscriber)inParameters[0];
         return new PublisherModule(new ModuleURN(PROVIDER_URN,
                                                  "instance"+counter.incrementAndGet()),
                                                  subscriber);

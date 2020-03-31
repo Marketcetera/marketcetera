@@ -2,7 +2,7 @@ package org.marketcetera.marketdata.yahoo;
 
 import javax.management.MXBean;
 
-import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.marketdata.MarketDataModuleMXBean;
 import org.marketcetera.module.DisplayName;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -19,7 +19,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @DisplayName("Management Interface for the Yahoo Marketdata Feed")
 @ClassVersion("$Id$")
 public interface YahooFeedMXBean
-        extends AbstractMarketDataModuleMXBean
+        extends MarketDataModuleMXBean
 {
     /**
      * Returns the URL that describes the location of the Yahoo server.

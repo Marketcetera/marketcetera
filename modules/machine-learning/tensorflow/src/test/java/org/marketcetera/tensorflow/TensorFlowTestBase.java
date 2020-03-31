@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleManager;
@@ -213,7 +213,7 @@ public class TensorFlowTestBase
     {
         if(publisherUrn == null) {
             publisherUrn = moduleManager.createModule(PublisherModuleFactory.PROVIDER_URN,
-                                                      new ISubscriber(){
+                                                      new Subscriber(){
                 @Override
                 public boolean isInteresting(Object inData)
                 {

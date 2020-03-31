@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -107,11 +108,11 @@ public class MarketDataServiceImpl
                           MarketDataListener inMarketDataListener)
     {
         String provider = inRequest.getProvider();
-        // TODO make sure request id is unique
-        String requestId = inRequest.getRequestId();
+        String requestId = UUID.randomUUID().toString();
         MarketDataRequestEvent requestEvent = new SimpleMarketDataRequestEvent(inRequest,
                                                                                requestId,
-                                                                               provider);
+                                                                               provider,
+                                                                               inMarketDataListener);
         RequestMetaData requestMetaData = new RequestMetaData(inMarketDataListener);
         requestsByRequestId.put(requestId,
                                 requestMetaData);

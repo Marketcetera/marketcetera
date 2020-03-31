@@ -11,7 +11,7 @@ package org.marketcetera.core.publisher;
  * @version $Id$
  * @see IPublisher
  */
-public interface ISubscriber
+public interface Subscriber
 {
     /**
      * Determines if the <code>Subscriber</code> would be interested in receiving the given object as an update.
@@ -27,7 +27,7 @@ public interface ISubscriber
     /**
      * Receives an update from the <code>Publisher</code>.
      * 
-     * <p>This method will be called only if the <code>Subscriber</code> returns true from {@link ISubscriber#isInteresting(Object)}.
+     * <p>This method will be called only if the <code>Subscriber</code> returns true from {@link Subscriber#isInteresting(Object)}.
      * 
      * @param inData an <code>Object</code> value containing the implementation-dependent update
      */

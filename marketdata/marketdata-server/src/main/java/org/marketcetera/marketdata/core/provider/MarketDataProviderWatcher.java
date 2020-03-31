@@ -18,7 +18,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.marketdata.MarketDataModuleMXBean;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataProviderStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
@@ -155,16 +155,16 @@ public class MarketDataProviderWatcher
     /**
      * Gets the admin bean for the given session.
      *
-     * @return an <code>AbstractMarketDataModuleMXBean</code> value
+     * @return an <code>MarketDataModuleMXBean</code> value
      * @throws MalformedObjectNameException if an error occurs getting the provider bean
      */
-    private AbstractMarketDataModuleMXBean getModuleBean()
+    private MarketDataModuleMXBean getModuleBean()
             throws MalformedObjectNameException
     {
         ObjectName sessionObjectName = getModuleObjectName();
-        AbstractMarketDataModuleMXBean sessionAdmin = JMX.newMXBeanProxy(mbeanServer,
+        MarketDataModuleMXBean sessionAdmin = JMX.newMXBeanProxy(mbeanServer,
                                                                          sessionObjectName,
-                                                                         AbstractMarketDataModuleMXBean.class,
+                                                                         MarketDataModuleMXBean.class,
                                                                          true);
         return sessionAdmin;
     }
@@ -232,7 +232,7 @@ public class MarketDataProviderWatcher
                 boolean isRunning = false;
                 Object status = null;
                 MarketDataProviderMBean providerBean = null;
-                AbstractMarketDataModuleMXBean moduleBean = null;
+                MarketDataModuleMXBean moduleBean = null;
                 if(useModule) {
                     try {
                         moduleBean = getModuleBean();

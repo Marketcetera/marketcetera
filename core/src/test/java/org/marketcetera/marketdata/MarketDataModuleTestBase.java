@@ -125,17 +125,17 @@ public abstract class MarketDataModuleTestBase
     /**
      * Returns an <code>MXBean</code> Proxy for the market data module being tested.
      *
-     * @return an <code>AbstractMarketDataModuleMXBean</code> value
+     * @return an <code>MarketDataModuleMXBean</code> value
      * @throws Exception if an error occurs
      */
-    protected final AbstractMarketDataModuleMXBean getMXBeanProxy()
+    protected final MarketDataModuleMXBean getMXBeanProxy()
         throws Exception
     {
         ObjectName objectName = getInstanceURN().toObjectName();
         MBeanServerConnection mMBeanServer = ModuleTestBase.getMBeanServer(); 
         return JMX.newMXBeanProxy(mMBeanServer,
                                   objectName,
-                                  AbstractMarketDataModuleMXBean.class,
+                                  MarketDataModuleMXBean.class,
                                   true);
     }
     /**
@@ -151,7 +151,7 @@ public abstract class MarketDataModuleTestBase
     public void capabilities()
         throws Exception
     {
-        AbstractMarketDataModuleMXBean mBeanProxy = getMXBeanProxy();
+        MarketDataModuleMXBean mBeanProxy = getMXBeanProxy();
         CollectionAssert.assertArrayPermutation(getExpectedCapabilities(),
                                                 mBeanProxy.getCapabilities().toArray(new Capability[0]));
         Capability unsupportedCapability = getUnexpectedCapability();
@@ -257,9 +257,9 @@ public abstract class MarketDataModuleTestBase
         // TODO - need to figure out how to make this magic incantation work
 //        ObjectName objectName = getInstanceURN().toObjectName();
 //        MBeanServerConnection mMBeanServer = null;
-//        AbstractMarketDataModuleMXBean mMBeanProxy = JMX.newMXBeanProxy(mMBeanServer,
+//        MarketDataModuleMXBean mMBeanProxy = JMX.newMXBeanProxy(mMBeanServer,
 //                                                                        objectName,
-//                                                                        AbstractMarketDataModuleMXBean.class,
+//                                                                        MarketDataModuleMXBean.class,
 //                                                                        true);
     }
     /**

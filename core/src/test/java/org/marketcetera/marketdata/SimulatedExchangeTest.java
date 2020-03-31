@@ -26,7 +26,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -2099,10 +2099,10 @@ public class SimulatedExchangeTest
      */
     @ThreadSafe
     private static class TopOfBookSubscriber
-        implements ISubscriber
+        implements Subscriber
     {
         /* (non-Javadoc)
-         * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
+         * @see org.marketcetera.core.publisher.Subscriber#isInteresting(java.lang.Object)
          */
         @Override
         public boolean isInteresting(Object inData)
@@ -2110,7 +2110,7 @@ public class SimulatedExchangeTest
             return inData instanceof QuoteEvent;
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
+         * @see org.marketcetera.core.publisher.Subscriber#publishTo(java.lang.Object)
          */
         @Override
         public synchronized void publishTo(Object inData)
@@ -2161,14 +2161,14 @@ public class SimulatedExchangeTest
     * @since 1.5.0
     */
    private static class AllEventsSubscriber
-       implements ISubscriber
+       implements Subscriber
    {
        /**
         * the events received
         */
        private final List<Event> events = new ArrayList<Event>();
        /* (non-Javadoc)
-        * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
+        * @see org.marketcetera.core.publisher.Subscriber#isInteresting(java.lang.Object)
         */
        @Override
        public boolean isInteresting(Object inData)
@@ -2176,7 +2176,7 @@ public class SimulatedExchangeTest
            return true;
        }
        /* (non-Javadoc)
-        * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
+        * @see org.marketcetera.core.publisher.Subscriber#publishTo(java.lang.Object)
         */
        @Override
        public void publishTo(Object inData)
