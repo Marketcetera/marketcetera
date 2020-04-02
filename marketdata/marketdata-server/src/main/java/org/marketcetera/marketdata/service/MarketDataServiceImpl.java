@@ -19,8 +19,10 @@ import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
+import org.marketcetera.marketdata.event.CancelMarketDataRequestEvent;
 import org.marketcetera.marketdata.event.GeneratedMarketDataEvent;
 import org.marketcetera.marketdata.event.MarketDataRequestEvent;
+import org.marketcetera.marketdata.event.SimpleCancelMarketDataRequestEvent;
 import org.marketcetera.marketdata.event.SimpleMarketDataRequestEvent;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
@@ -138,10 +140,11 @@ public class MarketDataServiceImpl
         }
         requestMetaData.setIsActive(false);
         try {
-//            SLF4JLoggerProxy.debug(this,
-//                                   "Canceling market data request: {}",
-//                                   requestMetaData.getDataFlowId());
-//            moduleManager.cancel(requestMetaData.getDataFlowId());
+            CancelMarketDataRequestEvent requestEvent = new SimpleCancelMarketDataRequestEvent(inRequestId);
+            SLF4JLoggerProxy.debug(this,
+                                   "Canceling market data request: {}",
+                                   inRequestId);
+            eventBusService.post(requestEvent);
         } catch (Exception e) {
             PlatformServices.handleException(this,
                                              "Cancel market data request",
