@@ -1,20 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
-<!--
-  - Author: anshul@marketcetera.com
-  - Since: 0.9.0
-  - Version: $Id$
-  - $License$
-  -->
-
-<project
- xmlns="http://maven.apache.org/POM/4.0.0"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation=
- "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>modules</artifactId>
@@ -22,23 +10,18 @@
   </parent>
   <artifactId>misc</artifactId>
   <packaging>jar</packaging>
-
   <name>Miscellaneous Modules</name>
-
   <dependencies>
-
     <!-- Compile. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.marketcetera.fork</groupId>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
     </dependency>
-    
     <!-- Runtime. -->
-
     <!-- Testing. -->
     <dependency>
       <groupId>org.hamcrest</groupId>
@@ -54,19 +37,4 @@
       <artifactId>util-test</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-
-      <!-- Configure Eclipse IDE metadata. -->
-      <plugin>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <pde>true</pde>
-          <manifest>null</manifest>
-          <resolveDependencies>false</resolveDependencies>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

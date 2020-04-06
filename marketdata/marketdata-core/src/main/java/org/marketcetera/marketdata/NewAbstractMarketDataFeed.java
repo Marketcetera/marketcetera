@@ -31,7 +31,7 @@ import com.google.common.eventbus.Subscribe;
 /* $License$ */
 
 /**
- *
+ * Provides common behavior for market data feeds.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -40,6 +40,14 @@ import com.google.common.eventbus.Subscribe;
 public abstract class NewAbstractMarketDataFeed
         implements MarketDataModuleMXBean
 {
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return serviceName;
+    }
     /**
      * Validate and start the object.
      */

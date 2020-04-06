@@ -1,8 +1,13 @@
 package org.marketcetera.marketdata.csv;
 
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.core.CoreException;
-import org.marketcetera.marketdata.AbstractMarketDataModule;
+import org.marketcetera.marketdata.AssetClass;
+import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.NewAbstractMarketDataFeed;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -15,10 +20,56 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class CSVFeedModule
-        extends AbstractMarketDataModule<CSVFeedToken,
-                                         CSVFeedCredentials>
+        extends NewAbstractMarketDataFeed
         implements CSVFeedMXBean
 {
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.NewAbstractMarketDataFeed#doMarketDataRequest(org.marketcetera.marketdata.MarketDataRequest, java.lang.String, org.marketcetera.marketdata.MarketDataListener)
+     */
+    @Override
+    protected void doMarketDataRequest(MarketDataRequest inMarketDataRequest,
+                                       String inMarketDataRequestId,
+                                       MarketDataListener inMarketDataListener)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.NewAbstractMarketDataFeed#doCancel(java.lang.String)
+     */
+    @Override
+    protected void doCancel(String inMarketDataRequestId)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.NewAbstractMarketDataFeed#doGetCapabilities()
+     */
+    @Override
+    protected Set<Capability> doGetCapabilities()
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.NewAbstractMarketDataFeed#doGetAssetClasses()
+     */
+    @Override
+    protected Set<AssetClass> doGetAssetClasses()
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.NewAbstractMarketDataFeed#getProviderName()
+     */
+    @Override
+    protected String getProviderName()
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getReplayRate()
      */
@@ -51,74 +102,18 @@ public class CSVFeedModule
     {
         marketdataDirectory = StringUtils.trimToNull(inDirectory);
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getEventTranslatorClassName()
-     */
-    @Override
-    public String getEventTranslatorClassName()
-    {
-        return eventTranslatorClassname;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#setEventTranslatorClassName(java.lang.String)
-     */
-    @Override
-    public void setEventTranslatorClassName(String inEventTranslatorClassname)
-    {
-        eventTranslatorClassname = inEventTranslatorClassname;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getReplayEvents()
-     */
-    @Override
-    public String getReplayEvents()
-    {
-        return String.valueOf(replayEvents);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#setReplayEvents(String)
-     */
-    @Override
-    public void setReplayEvents(String inReplayEvents)
-    {
-        replayEvents = Boolean.valueOf(StringUtils.trimToNull(inReplayEvents));
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString()
-    {
-        return String.format("CSVFeedModule [translator: %s]", //$NON-NLS-1$
-                             eventTranslatorClassname);
-    }
-    /**
-     * Create a new CSVFeedModule instance.
-     * 
-     * @throws org.marketcetera.core.CoreException 
-     */
-    CSVFeedModule()
-            throws CoreException
-    {
-        super(CSVFeedModuleFactory.INSTANCE_URN,
-              CSVFeedFactory.getInstance().getMarketDataFeed());
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModule#getCredentials()
-     */
-    @Override
-    protected CSVFeedCredentials getCredentials()
-        throws CoreException
-    {
-        return CSVFeedCredentials.getInstance(replayRate,
-                                              replayEvents,
-                                              marketdataDirectory,
-                                              getEventTranslatorClassName());
-    }
-    /**
-     * the event translator classname to use
-     */
-    private volatile String eventTranslatorClassname = BasicCSVFeedEventTranslator.class.getName();
+//    /* (non-Javadoc)
+//     * @see org.marketcetera.marketdata.AbstractMarketDataModule#getCredentials()
+//     */
+//    @Override
+//    protected CSVFeedCredentials getCredentials()
+//        throws CoreException
+//    {
+//        return CSVFeedCredentials.getInstance(replayRate,
+//                                              replayEvents,
+//                                              marketdataDirectory,
+//                                              getEventTranslatorClassName());
+//    }
     /**
      * delay between each event
      */
@@ -127,8 +122,4 @@ public class CSVFeedModule
      * the directory in which to find marketdata
      */
     private volatile String marketdataDirectory;
-    /**
-     * indicates if events should be replayed upon completion
-     */
-    private volatile boolean replayEvents = false;
 }

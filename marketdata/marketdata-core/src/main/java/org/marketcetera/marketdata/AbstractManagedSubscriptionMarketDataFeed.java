@@ -26,7 +26,8 @@ import com.google.common.collect.Sets;
 /* $License$ */
 
 /**
- *
+ * Provides common subscription management behaviors for market data feeds that do not need to subscribe to receive market data - they receive all the market data
+ * and need to sort out who wants what data based on requests.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -68,7 +69,7 @@ public abstract class AbstractManagedSubscriptionMarketDataFeed
                                                                                  requestId,
                                                                                  listener);
                 subscribersByMarketDataRequestId.put(requestId,
-                                            subscriber);
+                                                     subscriber);
                 try(CloseableLock subscriberLock = CloseableLock.create(subscribers.lock.writeLock())) {
                     subscriberLock.lock();
                     subscribers.subscribers.add(subscriber);
@@ -95,16 +96,37 @@ public abstract class AbstractManagedSubscriptionMarketDataFeed
         }
         subscribersByMarketDataRequestId.invalidate(inMarketDataRequestId);
     }
-    protected void sendEvent(Event event,
-                             Instrument instrument,
-                             Content content,
-                             String exchange)
+    /**
+     * Send an event with the given instrument, content, and exchange.
+     *
+     * @param inEvent an <code>Event</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inContent a <code>Content</code> value
+     * @param inExchange a <code>String</code> value
+     */
+    protected void sendEvent(Event inEvent,
+                             Instrument inInstrument,
+                             Content inContent,
+                             String inExchange)
     {
-            MarketDataKey key = new MarketDataKey(instrument,
-                                                  content,
-                                                  exchange);
-            Set<MarketDataSubscriber> subscribersToNotify = Sets.newLinkedHashSet();
-            MarketDataSubscribers subscribers = subscribersByKey.getIfPresent(key);
+        MarketDataKey key = new MarketDataKey(inInstrument,
+                                              inContent,
+                                              inExchange);
+        Set<MarketDataSubscriber> subscribersToNotify = Sets.newLinkedHashSet();
+        MarketDataSubscribers subscribers = subscribersByKey.getIfPresent(key);
+        if(subscribers != null) {
+            try(CloseableLock lock = CloseableLock.create(subscribers.lock.readLock())) {
+                lock.lock();
+                for(MarketDataSubscriber subscriber : subscribers.subscribers) {
+                    subscribersToNotify.add(subscriber);
+                }
+            }
+        }
+        if(usesExchangeWildcard()) {
+            MarketDataKey wildcardKey = new MarketDataKey(inInstrument,
+                                                          inContent,
+                                                          getExchangeWildcard());
+            subscribers = subscribersByKey.getIfPresent(wildcardKey);
             if(subscribers != null) {
                 try(CloseableLock lock = CloseableLock.create(subscribers.lock.readLock())) {
                     lock.lock();
@@ -113,38 +135,37 @@ public abstract class AbstractManagedSubscriptionMarketDataFeed
                     }
                 }
             }
-            if(usesExchangeWildcard()) {
-                MarketDataKey wildcardKey = new MarketDataKey(instrument,
-                                                              content,
-                                                              getExchangeWildcard());
-                subscribers = subscribersByKey.getIfPresent(wildcardKey);
-                if(subscribers != null) {
-                    try(CloseableLock lock = CloseableLock.create(subscribers.lock.readLock())) {
-                        lock.lock();
-                        for(MarketDataSubscriber subscriber : subscribers.subscribers) {
-                            subscribersToNotify.add(subscriber);
-                        }
-                    }
-                }
+        }
+        for(MarketDataSubscriber subscriber : subscribersToNotify) {
+            try(CloseableLock sendLock = CloseableLock.create(subscriber.getSendLock().writeLock())) {
+                sendLock.lock();
+                SLF4JLoggerProxy.trace(this,
+                                       "Emitting {} to {}",
+                                       inEvent,
+                                       subscriber.marketDataRequestId);
+                subscriber.send(inEvent);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
             }
-            for(MarketDataSubscriber subscriber : subscribersToNotify) {
-                try(CloseableLock sendLock = CloseableLock.create(subscriber.getSendLock().writeLock())) {
-                    sendLock.lock();
-                    SLF4JLoggerProxy.trace(this,
-                                           "Emitting {} to {}",
-                                           event,
-                                           subscriber.marketDataRequestId);
-                    subscriber.send(event);
-                } catch (Exception e) {
-                    SLF4JLoggerProxy.warn(this,
-                                          e);
-                }
-            }
+        }
     }
+    /**
+     * Indicates if the feed uses an exchange wildcard to mean "all exchanges".
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean usesExchangeWildcard()
     {
         return false;
     }
+    /**
+     * Get the exchange wildcard value.
+     * 
+     * <p>Used only if {@link #usesExchangeWildcard()} returns <code>true</code>.
+     *
+     * @return a <code>String</code> value
+     */
     protected String getExchangeWildcard()
     {
         return null;
@@ -188,7 +209,7 @@ public abstract class AbstractManagedSubscriptionMarketDataFeed
      * @version $Id$
      * @since $Release$
      */
-    private class MarketDataSubscriber
+    protected class MarketDataSubscriber
     {
         /* (non-Javadoc)
          * @see java.lang.Object#hashCode()
@@ -232,7 +253,7 @@ public abstract class AbstractManagedSubscriptionMarketDataFeed
          *
          * @param inEvent an <code>Event</code> value
          */
-        private void send(Event inEvent)
+        protected void send(Event inEvent)
         {
             incomingMessagesMeter.mark();
             subscriber.receiveMarketData(inEvent);

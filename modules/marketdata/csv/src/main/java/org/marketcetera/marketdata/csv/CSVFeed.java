@@ -51,7 +51,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public class CSVFeed 
         extends AbstractMarketDataFeed<CSVFeedToken,
-                                       CSVFeedCredentials,
+                                       CSVFeedConfiguration,
                                        CSVFeedMessageTranslator,
                                        CSVFeedEventTranslator,
                                        MarketDataRequest,
@@ -170,7 +170,7 @@ public class CSVFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doLogin(org.marketcetera.marketdata.AbstractMarketDataFeedCredentials)
      */
     @Override
-    protected final boolean doLogin(CSVFeedCredentials inCredentials)
+    protected final boolean doLogin(CSVFeedConfiguration inCredentials)
     {
         setLoggedIn(true);
         credentials = inCredentials;
@@ -264,7 +264,7 @@ public class CSVFeed
     /**
      * the credentials object used to initiate the feed
      */
-    private CSVFeedCredentials credentials;
+    private CSVFeedConfiguration credentials;
     /**
      * holds active market data requests
      */

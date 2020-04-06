@@ -13,7 +13,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>In order to use the CSV market data adapter, it is required to provide
  * a subclass of <code>CSVFeedEventTranslator</code> that handles a single
  * line from the CSV file.  In the subclass, override {@link #toEvent(Object, String)}.
- * Provide the FQN of the subclass to the {@link CSVFeedCredentials} object so the
+ * Provide the FQN of the subclass to the {@link CSVFeedConfiguration} object so the
  * feed knows what event translator to use.  Make sure that the subclass is compiled
  * and available in the classpath.
  * 

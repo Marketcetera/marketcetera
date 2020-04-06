@@ -4,7 +4,7 @@
  * 
  * <p>There is no assumed order or format for the CSV file.  Instead, users should implement a subclass of {@link CSVFeedEventTranslator}
  * that knows how to parse the data according to the particulars of a given CSV file.  The subclass can be compiled and placed on the classpath
- * or an instantiated object can be constructed and passed to the {@link CSVFeedCredentials} constructor.</p>
+ * or an instantiated object can be constructed and passed to the {@link CSVFeedConfiguration} constructor.</p>
  * 
  * <p>To use the <code>CSVFeed</code>, create a {@link org.marketcetera.marketdata.MarketDataRequest} and pass it to the feed similarly to how other feeds process
  * market data requests.  This can be via the Strategy API, in which case the request should use 

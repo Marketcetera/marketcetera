@@ -12,7 +12,7 @@ import org.marketcetera.module.ExpectedFailure;
 /* $License$ */
 
 /**
- * Tests {@link CSVFeedCredentials}.
+ * Tests {@link CSVFeedConfiguration}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -64,7 +64,7 @@ public class CSVFeedCredentialsTest
             protected void run()
                     throws Exception
             {
-                CSVFeedCredentials.getInstance(0,
+                CSVFeedConfiguration.getInstance(0,
                                                false,
                                                marketdataDirectory,
                                                (String)null);
@@ -77,7 +77,7 @@ public class CSVFeedCredentialsTest
             protected void run()
                     throws Exception
             {
-                CSVFeedCredentials.getInstance(0,
+                CSVFeedConfiguration.getInstance(0,
                                                false,
                                                marketdataDirectory,
                                                "");
@@ -90,7 +90,7 @@ public class CSVFeedCredentialsTest
             protected void run()
                     throws Exception
             {
-                CSVFeedCredentials.getInstance(0,
+                CSVFeedConfiguration.getInstance(0,
                                                false,
                                                marketdataDirectory,
                                                "this-is-not-a-class");
@@ -103,14 +103,14 @@ public class CSVFeedCredentialsTest
             protected void run()
                     throws Exception
             {
-                CSVFeedCredentials.getInstance(0,
+                CSVFeedConfiguration.getInstance(0,
                                                false,
                                                marketdataDirectory,
                                                String.class.getName());
             }
         };
         assertEquals(new MockCSVFeedEventTranslator().getClass(),
-                     CSVFeedCredentials.getInstance(0,
+                     CSVFeedConfiguration.getInstance(0,
                                                     false,
                                                     marketdataDirectory,
                                                     MockCSVFeedEventTranslator.class.getName()).getEventTranslator().getClass());
@@ -131,7 +131,7 @@ public class CSVFeedCredentialsTest
             protected void run()
                     throws Exception
             {
-                CSVFeedCredentials.getInstance(0,
+                CSVFeedConfiguration.getInstance(0,
                                                false,
                                                marketdataDirectory,
                                                (CSVFeedEventTranslator)null);
@@ -139,7 +139,7 @@ public class CSVFeedCredentialsTest
         };
         CSVFeedEventTranslator translator = new MockCSVFeedEventTranslator();
         assertEquals(translator,
-                     CSVFeedCredentials.getInstance(0,
+                     CSVFeedConfiguration.getInstance(0,
                                                     false,
                                                     marketdataDirectory,
                                                     translator).getEventTranslator());
