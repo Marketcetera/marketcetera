@@ -3,10 +3,12 @@ package org.marketcetera.marketdata;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.concurrent.GuardedBy;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -22,16 +24,21 @@ import org.marketcetera.metrics.MetricService;
 import org.marketcetera.module.DisplayName;
 import org.marketcetera.module.RequestDataException;
 import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
 
 /* $License$ */
 
 /**
- *
+ * Provides common behaviors for market data feeds.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -66,6 +73,9 @@ public abstract class NewAbstractMarketDataFeed
                                   serviceName);
         }
     }
+    /**
+     * Stop the object.
+     */
     @PreDestroy
     public final void stop()
     {
@@ -181,6 +191,37 @@ public abstract class NewAbstractMarketDataFeed
                                        "Request has no specific provider, accepted");
             }
             if(feedStatus.isRunning()) {
+                Map<String,RequestData> requestDataByRequestId = Maps.newHashMap();
+                RequestData requestData = new RequestData(request,
+                                                          requestId,
+                                                          listener);
+                requestDataByRequestId.put(requestId,
+                                           requestData);
+                // TODO have to handle symbols vs underlying symbols for options and dividends
+                for(String symbol : request.getSymbols()) {
+                    Instrument instrument = symbolResolverService.resolveSymbol(symbol);
+                    if(instrument == null) {
+                        I18NBoundMessage message = new I18NBoundMessage1P(Messages.INVALID_SYMBOLS,
+                                                                          symbol);
+                        message.warn(this);
+                        listener.onError(message);
+                    } else {
+                        for(Content content : request.getContent()) {
+                            Capability requiredCapability = content.getAsCapability();
+                            if(getCapabilities().contains(requiredCapability)) {
+                                String exchange = request.getExchange();
+                                MarketDataRequestKey requestKey = new MarketDataRequestKey(instrument,
+                                                                                           content,
+                                                                                           exchange);
+                            } else {
+                                I18NBoundMessage message = new I18NBoundMessage1P(Messages.INVALID_CONTENT,
+                                                                                  content);
+                                message.warn(this);
+                                listener.onError(message);
+                            }
+                        }
+                    }
+                }
                 doMarketDataRequest(request,
                                     requestId,
                                     listener);
@@ -221,6 +262,11 @@ public abstract class NewAbstractMarketDataFeed
                                inEvent);
         doCancel(inEvent.getMarketDataRequestId());
     }
+    /**
+     * Indicates that the feed status has changed.
+     *
+     * @param inNewFeedStatus a <code>FeedStatus</code> value
+     */
     protected void onUpdatedFeedStatus(FeedStatus inNewFeedStatus)
     {
         if(inNewFeedStatus == feedStatus) {
@@ -276,6 +322,32 @@ public abstract class NewAbstractMarketDataFeed
     protected abstract Set<Capability> doGetCapabilities();
     protected abstract Set<AssetClass> doGetAssetClasses();
     protected abstract String getProviderName();
+    @GuardedBy("requestDataByKey")
+    private final Multimap<MarketDataRequestKey,RequestData> requestDataByKey = HashMultimap.create();
+    protected class RequestData
+    {
+        /**
+         * Create a new RequestData instance.
+         *
+         * @param inMarketDataRequest
+         * @param inMarketDataRequestId
+         * @param inMarketDataListener
+         */
+        private RequestData(MarketDataRequest inMarketDataRequest,
+                            String inMarketDataRequestId,
+                            MarketDataListener inMarketDataListener)
+        {
+            marketDataRequest = inMarketDataRequest;
+            marketDataRequestId = inMarketDataRequestId;
+            marketDataListener = inMarketDataListener;
+        }
+        private final MarketDataRequest marketDataRequest;
+        private final String marketDataRequestId;
+        private final MarketDataListener marketDataListener;
+    }
+    /**
+     * provides a unique JMX {@link ObjectName} for each market data provider
+     */
     private final String JMX_NAME = getClass().getCanonicalName() + ":type=mdata";
     /**
      * current status of the feed
