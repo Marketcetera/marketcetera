@@ -2,23 +2,27 @@ package org.marketcetera.marketdata;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.concurrent.GuardedBy;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.assertj.core.util.Lists;
+import org.assertj.core.util.Sets;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.notifications.NotificationExecutor;
+import org.marketcetera.event.Event;
 import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.marketdata.event.CancelMarketDataRequestEvent;
 import org.marketcetera.marketdata.event.MarketDataRequestEvent;
 import org.marketcetera.marketdata.event.SimpleMarketDataFeedStatusEvent;
 import org.marketcetera.marketdata.event.SimpleMarketDataRequestAcceptedEvent;
+import org.marketcetera.marketdata.event.SimpleMarketDataRequestCanceledEvent;
 import org.marketcetera.marketdata.event.SimpleMarketDataRequestRejectedEvent;
 import org.marketcetera.metrics.MetricService;
 import org.marketcetera.module.DisplayName;
@@ -30,9 +34,10 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
 
 /* $License$ */
@@ -191,12 +196,13 @@ public abstract class NewAbstractMarketDataFeed
                                        "Request has no specific provider, accepted");
             }
             if(feedStatus.isRunning()) {
-                Map<String,RequestData> requestDataByRequestId = Maps.newHashMap();
-                RequestData requestData = new RequestData(request,
-                                                          requestId,
-                                                          listener);
-                requestDataByRequestId.put(requestId,
-                                           requestData);
+                final RequestData requestData = new RequestData(request,
+                                                                requestId,
+                                                                listener);
+                synchronized(requestDataByRequestId) {
+                    requestDataByRequestId.put(requestId,
+                                               requestData);
+                }
                 // TODO have to handle symbols vs underlying symbols for options and dividends
                 for(String symbol : request.getSymbols()) {
                     Instrument instrument = symbolResolverService.resolveSymbol(symbol);
@@ -210,9 +216,36 @@ public abstract class NewAbstractMarketDataFeed
                             Capability requiredCapability = content.getAsCapability();
                             if(getCapabilities().contains(requiredCapability)) {
                                 String exchange = request.getExchange();
-                                MarketDataRequestKey requestKey = new MarketDataRequestKey(instrument,
+                                MarketDataSubRequest subRequest = new MarketDataSubRequest(instrument,
                                                                                            content,
                                                                                            exchange);
+                                final Set<RequestData> interestedRequesters = requestDataBySubRequest.getUnchecked(subRequest);
+                                synchronized(interestedRequesters) {
+                                    interestedRequesters.add(requestData);
+                                }
+                                // TODO reference counting
+                                try {
+                                    SLF4JLoggerProxy.debug(this,
+                                                           "Submitting {} to {}",
+                                                           subRequest,
+                                                           getProviderName());
+                                    synchronized(requestData) {
+                                        requestData.getSubRequests().add(subRequest);
+                                    }
+                                    doMarketDataRequest(request,
+                                                        subRequest);
+                                } catch (Exception e) {
+                                    SLF4JLoggerProxy.warn(this,
+                                                          e,
+                                                          "Unable to submit market data sub-request {} for request {} to {}",
+                                                          subRequest,
+                                                          request,
+                                                          getProviderName());
+                                    listener.onError(e);
+                                    synchronized(requestData) {
+                                        requestData.getSubRequests().remove(subRequest);
+                                    }
+                                }
                             } else {
                                 I18NBoundMessage message = new I18NBoundMessage1P(Messages.INVALID_CONTENT,
                                                                                   content);
@@ -222,9 +255,6 @@ public abstract class NewAbstractMarketDataFeed
                         }
                     }
                 }
-                doMarketDataRequest(request,
-                                    requestId,
-                                    listener);
             } else {
                 throw new MarketDataException(new I18NBoundMessage1P(Messages.FEED_NOT_AVAILABLE,
                                                                      feedStatus));
@@ -258,9 +288,56 @@ public abstract class NewAbstractMarketDataFeed
     public void onCancel(CancelMarketDataRequestEvent inEvent)
     {
         SLF4JLoggerProxy.debug(this,
-                               "Processing market data cancel: {}",
+                               "{} processing market data cancel: {}",
+                               serviceName,
                                inEvent);
-        doCancel(inEvent.getMarketDataRequestId());
+        final String requestId = inEvent.getMarketDataRequestId();
+        final RequestData requestData;
+        synchronized(requestDataByRequestId) {
+            requestData = requestDataByRequestId.remove(requestId);
+        }
+        if(requestData == null) {
+            SLF4JLoggerProxy.warn(this,
+                                  "{} no request data for {}",
+                                  serviceName,
+                                  requestId);
+            return;
+        }
+        try {
+            final Collection<MarketDataSubRequest> subRequests;
+            synchronized(requestData) {
+                subRequests = Lists.newArrayList(requestData.getSubRequests());
+                requestData.getSubRequests().clear();
+            }
+            for(MarketDataSubRequest subRequest : subRequests) {
+                try {
+                    final Set<RequestData> requestDataForSubRequest = requestDataBySubRequest.getIfPresent(subRequest);
+                    if(requestDataForSubRequest == null) {
+
+                    } else {
+                        synchronized(requestDataForSubRequest) {
+                            requestDataForSubRequest.remove(requestData);
+                        }
+                    }
+                    SLF4JLoggerProxy.debug(this,
+                                           "{} cancelling {} for {}",
+                                           serviceName,
+                                           subRequest,
+                                           requestId);
+                    doCancel(subRequest);
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(this,
+                                          e,
+                                          "{} error processing cancel of {} for {}, ignoring",
+                                          serviceName,
+                                          subRequest,
+                                          requestId);
+                }
+            }
+        } finally {
+            eventBusService.post(new SimpleMarketDataRequestCanceledEvent(requestId,
+                                                                          getProviderName()));
+        }
     }
     /**
      * Indicates that the feed status has changed.
@@ -288,9 +365,29 @@ public abstract class NewAbstractMarketDataFeed
                                                                  getProviderName()));
     }
     protected abstract void doMarketDataRequest(MarketDataRequest inMarketDataRequest,
-                                                String inMarketDataRequestId,
-                                                MarketDataListener inMarketDataListener);
-    protected abstract void doCancel(String inMarketDataRequestId);
+                                                MarketDataSubRequest inMarketDataRequestKey);
+    protected abstract void doCancel(MarketDataSubRequest inMarketDataRequestKey);
+    protected void postEvents(MarketDataSubRequest inMarketDataSubRequest,
+                              Event...inEvents)
+    {
+        final Set<RequestData> interestedRequesters = requestDataBySubRequest.getIfPresent(inMarketDataSubRequest);
+        if(interestedRequesters == null) {
+            
+        } else {
+            synchronized(interestedRequesters) {
+                for(RequestData requestData : interestedRequesters) {
+                    MarketDataListener listener = requestData.getMarketDataListener();
+                    for(Event event : inEvents) {
+                        try {
+                            listener.receiveMarketData(event);
+                        } catch (Exception e) {
+                            listener.onError(e);
+                        }
+                    }
+                }
+            }
+        }
+    }
     /**
      * Get the symbolResolverService value.
      *
@@ -322,8 +419,6 @@ public abstract class NewAbstractMarketDataFeed
     protected abstract Set<Capability> doGetCapabilities();
     protected abstract Set<AssetClass> doGetAssetClasses();
     protected abstract String getProviderName();
-    @GuardedBy("requestDataByKey")
-    private final Multimap<MarketDataRequestKey,RequestData> requestDataByKey = HashMultimap.create();
     protected class RequestData
     {
         /**
@@ -341,10 +436,39 @@ public abstract class NewAbstractMarketDataFeed
             marketDataRequestId = inMarketDataRequestId;
             marketDataListener = inMarketDataListener;
         }
+        /**
+         * 
+         *
+         *
+         * @return
+         */
+        private MarketDataListener getMarketDataListener()
+        {
+            return marketDataListener;
+        }
+        /**
+         *
+         *
+         * @return
+         */
+        private Collection<MarketDataSubRequest> getSubRequests()
+        {
+            return subRequests;
+        }
         private final MarketDataRequest marketDataRequest;
         private final String marketDataRequestId;
         private final MarketDataListener marketDataListener;
+        private final Collection<MarketDataSubRequest> subRequests = Lists.newArrayList();
     }
+    private final LoadingCache<MarketDataSubRequest,Set<RequestData>> requestDataBySubRequest = CacheBuilder.newBuilder().build(new CacheLoader<MarketDataSubRequest,Set<RequestData>>() {
+        @Override
+        public Set<RequestData> load(MarketDataSubRequest inKey)
+                throws Exception
+        {
+            return Sets.newHashSet();
+        }}
+    );
+    private final Map<String,RequestData> requestDataByRequestId = Maps.newHashMap();
     /**
      * provides a unique JMX {@link ObjectName} for each market data provider
      */

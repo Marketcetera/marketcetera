@@ -13,7 +13,7 @@ import org.marketcetera.trade.Instrument;
  * @version $Id$
  * @since $Release$
  */
-public class MarketDataRequestKey
+public class MarketDataSubRequest
 {
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -34,10 +34,10 @@ public class MarketDataRequestKey
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof MarketDataRequestKey)) {
+        if (!(obj instanceof MarketDataSubRequest)) {
             return false;
         }
-        MarketDataRequestKey other = (MarketDataRequestKey) obj;
+        MarketDataSubRequest other = (MarketDataSubRequest) obj;
         return content == other.content && Objects.equals(exchange,other.exchange) && Objects.equals(instrument,other.instrument);
     }
     /* (non-Javadoc)
@@ -47,7 +47,7 @@ public class MarketDataRequestKey
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("MarketDataRequestKey [instrument=").append(instrument).append(", content=").append(content)
+        builder.append("MarketDataSubRequest [instrument=").append(instrument).append(", content=").append(content)
                 .append(", exchange=").append(exchange).append("]");
         return builder.toString();
     }
@@ -58,7 +58,7 @@ public class MarketDataRequestKey
      * @param inContent a <code>Content</code> value
      * @param inExchange a <code>String</code> value or <code>null</code>
      */
-    public MarketDataRequestKey(Instrument inInstrument,
+    public MarketDataSubRequest(Instrument inInstrument,
                                 Content inContent,
                                 String inExchange)
     {
