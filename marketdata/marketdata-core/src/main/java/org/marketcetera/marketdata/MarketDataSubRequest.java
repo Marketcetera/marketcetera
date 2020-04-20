@@ -94,19 +94,46 @@ public class MarketDataSubRequest
         return exchange;
     }
     /**
+     * Sets the instrument value.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     */
+    public void setInstrument(Instrument inInstrument)
+    {
+        instrument = inInstrument;
+    }
+    /**
+     * Sets the content value.
+     *
+     * @param inContent a <code>Content</code> value
+     */
+    public void setContent(Content inContent)
+    {
+        content = inContent;
+    }
+    /**
+     * Sets the exchange value.
+     *
+     * @param inExchange a <code>String</code> value
+     */
+    public void setExchange(String inExchange)
+    {
+        exchange = inExchange;
+    }
+    /**
      * instrument value
      */
-    private final Instrument instrument;
+    private Instrument instrument;
     /**
      * content value
      */
-    private final Content content;
+    private Content content;
     /**
      * exchange value
      */
-    private final String exchange;
+    private String exchange;
     /**
      * indicates that a request is for all exchanges
      */
-    public static final String ALL_EXCHANGES = "**ALL**";
+    public static String ALL_EXCHANGES = "**ALL**";
 }

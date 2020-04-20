@@ -196,9 +196,7 @@ public abstract class NewAbstractMarketDataFeed
                                        "Request has no specific provider, accepted");
             }
             if(feedStatus.isRunning()) {
-                final RequestData requestData = new RequestData(request,
-                                                                requestId,
-                                                                listener);
+                final RequestData requestData = new RequestData(listener);
                 synchronized(requestDataByRequestId) {
                     requestDataByRequestId.put(requestId,
                                                requestData);
@@ -219,10 +217,7 @@ public abstract class NewAbstractMarketDataFeed
                                 MarketDataSubRequest subRequest = new MarketDataSubRequest(instrument,
                                                                                            content,
                                                                                            exchange);
-                                final Set<RequestData> interestedRequesters = requestDataBySubRequest.getUnchecked(subRequest);
-                                synchronized(interestedRequesters) {
-                                    interestedRequesters.add(requestData);
-                                }
+                                requestDataBySubRequest.getUnchecked(subRequest).add(requestData);
                                 // TODO reference counting
                                 try {
                                     SLF4JLoggerProxy.debug(this,
@@ -340,55 +335,6 @@ public abstract class NewAbstractMarketDataFeed
         }
     }
     /**
-     * Indicates that the feed status has changed.
-     *
-     * @param inNewFeedStatus a <code>FeedStatus</code> value
-     */
-    protected void onUpdatedFeedStatus(FeedStatus inNewFeedStatus)
-    {
-        if(inNewFeedStatus == feedStatus) {
-            return;
-        }
-        SLF4JLoggerProxy.debug(this,
-                               "Setting feed status from {} to {}",
-                               feedStatus,
-                               inNewFeedStatus);
-        feedStatus = inNewFeedStatus;
-        sendFeedStatus();
-    }
-    /**
-     * Send the feed status to all interested subscribers.
-     */
-    private void sendFeedStatus()
-    {
-        eventBusService.post(new SimpleMarketDataFeedStatusEvent(feedStatus,
-                                                                 getProviderName()));
-    }
-    protected abstract void doMarketDataRequest(MarketDataRequest inMarketDataRequest,
-                                                MarketDataSubRequest inMarketDataRequestKey);
-    protected abstract void doCancel(MarketDataSubRequest inMarketDataRequestKey);
-    protected void postEvents(MarketDataSubRequest inMarketDataSubRequest,
-                              Event...inEvents)
-    {
-        final Set<RequestData> interestedRequesters = requestDataBySubRequest.getIfPresent(inMarketDataSubRequest);
-        if(interestedRequesters == null) {
-            
-        } else {
-            synchronized(interestedRequesters) {
-                for(RequestData requestData : interestedRequesters) {
-                    MarketDataListener listener = requestData.getMarketDataListener();
-                    for(Event event : inEvents) {
-                        try {
-                            listener.receiveMarketData(event);
-                        } catch (Exception e) {
-                            listener.onError(e);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    /**
      * Get the symbolResolverService value.
      *
      * @return a <code>SymbolResolverService</code> value
@@ -406,60 +352,163 @@ public abstract class NewAbstractMarketDataFeed
     {
         symbolResolverService = inSymbolResolverService;
     }
-    protected void onStop()
-            throws Exception
+    /**
+     * Indicates that the feed status has changed.
+     *
+     * @param inNewFeedStatus a <code>FeedStatus</code> value
+     */
+    protected void onUpdatedFeedStatus(FeedStatus inNewFeedStatus)
     {
-        
+        if(inNewFeedStatus == feedStatus) {
+            return;
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "Setting feed status from {} to {}",
+                               feedStatus,
+                               inNewFeedStatus);
+        feedStatus = inNewFeedStatus;
+        sendFeedStatus();
     }
-    protected void onStart()
-            throws Exception
-    {
-        
-    }
+    /**
+     * Execute the given market data sub-request with the market data request provided as context.
+     *
+     * @param inMarketDataRequest a <code>MarketDataRequest</code> value
+     * @param inMarketDataSubRequest a <code>MarketDataSubRequest</code> value
+     */
+    protected abstract void doMarketDataRequest(MarketDataRequest inMarketDataRequest,
+                                                MarketDataSubRequest inMarketDataSubRequest);
+    /**
+     * Cancel the request identified by this sub-request.
+     *
+     * @param inMarketDataSubRequest a <code>MarketDataSubRequest</code> value
+     */
+    protected abstract void doCancel(MarketDataSubRequest inMarketDataSubRequest);
+    /**
+     * Get the capabilities of this feed.
+     *
+     * @return a <code>Set&lt;Capability&gt;</code> value
+     */
     protected abstract Set<Capability> doGetCapabilities();
+    /**
+     * Get the asset classes supported by this feed.
+     *
+     * @return a <code>Set&lt;AssetClass&gt;</code> value
+     */
     protected abstract Set<AssetClass> doGetAssetClasses();
+    /**
+     * Get the human-readable unique provider name.
+     *
+     * @return a <code>String</code> value
+     */
     protected abstract String getProviderName();
+    /**
+     * Post events created for the given sub-request.
+     *
+     * @param inMarketDataSubRequest a <code>MarketDataSubRequest</code> value
+     * @param inEvents an <code>Event...</code> value
+     */
+    protected void postEvents(MarketDataSubRequest inMarketDataSubRequest,
+                              Event...inEvents)
+    {
+        final Set<RequestData> requestersToNotify = Sets.newHashSet();
+        Set<RequestData> interestedRequesters = requestDataBySubRequest.getIfPresent(inMarketDataSubRequest);
+        if(interestedRequesters != null) {
+            requestersToNotify.addAll(interestedRequesters);
+        }
+        inMarketDataSubRequest.setExchange(MarketDataSubRequest.ALL_EXCHANGES);
+        Set<RequestData> interestedRequestersNoExchange = requestDataBySubRequest.getIfPresent(inMarketDataSubRequest);
+        if(interestedRequestersNoExchange != null) {
+            requestersToNotify.addAll(interestedRequestersNoExchange);
+        }
+        if(requestersToNotify.isEmpty()) {
+            SLF4JLoggerProxy.warn(this,
+                                  "{} received {} event(s) for {}, but no subscribers are interested",
+                                  serviceName,
+                                  inEvents.length,
+                                  inMarketDataSubRequest);
+            return;
+        }
+        for(RequestData requestData : requestersToNotify) {
+            MarketDataListener listener = requestData.getMarketDataListener();
+            for(Event event : inEvents) {
+                try {
+                    listener.receiveMarketData(event);
+                } catch (Exception e) {
+                    listener.onError(e);
+                }
+            }
+        }
+    }
+    /**
+     * Called when the feed stops.
+     *
+     * @throws Exception if an error occurs stopping the feed
+     */
+    protected void onStop()
+            throws Exception {}
+    /**
+     * Called when the feed starts.
+     *
+     * @throws Exception if the feed cannot be started
+     */
+    protected void onStart()
+            throws Exception {}
+    /**
+     * Send the feed status to all interested subscribers.
+     */
+    private void sendFeedStatus()
+    {
+        eventBusService.post(new SimpleMarketDataFeedStatusEvent(feedStatus,
+                                                                 getProviderName()));
+    }
+    /**
+     * Stores meta data for each request.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
     protected class RequestData
     {
         /**
          * Create a new RequestData instance.
          *
-         * @param inMarketDataRequest
-         * @param inMarketDataRequestId
          * @param inMarketDataListener
          */
-        private RequestData(MarketDataRequest inMarketDataRequest,
-                            String inMarketDataRequestId,
-                            MarketDataListener inMarketDataListener)
+        private RequestData(MarketDataListener inMarketDataListener)
         {
-            marketDataRequest = inMarketDataRequest;
-            marketDataRequestId = inMarketDataRequestId;
             marketDataListener = inMarketDataListener;
         }
         /**
-         * 
+         * Market data listener to which to deliver events.
          *
-         *
-         * @return
+         * @return a <code>MarketDataListener</code> value
          */
         private MarketDataListener getMarketDataListener()
         {
             return marketDataListener;
         }
         /**
+         * Get the sub-requests for this request.
          *
-         *
-         * @return
+         * @return a <code>Collection&lt;MarketDataSubRequest&gt;</code> value
          */
         private Collection<MarketDataSubRequest> getSubRequests()
         {
             return subRequests;
         }
-        private final MarketDataRequest marketDataRequest;
-        private final String marketDataRequestId;
+        /**
+         * listener for market data
+         */
         private final MarketDataListener marketDataListener;
+        /**
+         * sub-requests for this request
+         */
         private final Collection<MarketDataSubRequest> subRequests = Lists.newArrayList();
     }
+    /**
+     * stores requesters by the sub-request in which they are interested
+     */
     private final LoadingCache<MarketDataSubRequest,Set<RequestData>> requestDataBySubRequest = CacheBuilder.newBuilder().build(new CacheLoader<MarketDataSubRequest,Set<RequestData>>() {
         @Override
         public Set<RequestData> load(MarketDataSubRequest inKey)
@@ -468,6 +517,9 @@ public abstract class NewAbstractMarketDataFeed
             return Sets.newHashSet();
         }}
     );
+    /**
+     * stores request data by market data request id
+     */
     private final Map<String,RequestData> requestDataByRequestId = Maps.newHashMap();
     /**
      * provides a unique JMX {@link ObjectName} for each market data provider
