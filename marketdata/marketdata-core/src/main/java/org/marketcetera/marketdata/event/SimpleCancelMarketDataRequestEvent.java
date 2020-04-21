@@ -10,6 +10,7 @@ package org.marketcetera.marketdata.event;
  * @since $Release$
  */
 public class SimpleCancelMarketDataRequestEvent
+        extends AbstractMarketDataRequestCancelEvent
         implements CancelMarketDataRequestEvent
 {
     /* (non-Javadoc)
@@ -19,26 +20,9 @@ public class SimpleCancelMarketDataRequestEvent
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("SimpleCancelMarketDataRequestEvent [marketDataRequestId=").append(marketDataRequestId)
+        builder.append("SimpleCancelMarketDataRequestEvent [marketDataRequestId=").append(getMarketDataRequestId())
                 .append("]");
         return builder.toString();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.event.HasMarketDataRequestId#getMarketDataRequestId()
-     */
-    @Override
-    public String getMarketDataRequestId()
-    {
-        return marketDataRequestId;
-    }
-    /**
-     * Sets the marketDataRequestId value.
-     *
-     * @param inMarketDataRequestId a <code>String</code> value
-     */
-    public void setMarketDataRequestId(String inMarketDataRequestId)
-    {
-        marketDataRequestId = inMarketDataRequestId;
     }
     /**
      * Create a new SimpleCancelMarketDataRequestEvent instance.
@@ -47,10 +31,6 @@ public class SimpleCancelMarketDataRequestEvent
      */
     public SimpleCancelMarketDataRequestEvent(String inMarketDataRequestId)
     {
-        marketDataRequestId = inMarketDataRequestId;
+        super(inMarketDataRequestId);
     }
-    /**
-     * market data request id value
-     */
-    private String marketDataRequestId;
 }
