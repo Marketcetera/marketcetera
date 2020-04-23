@@ -200,6 +200,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>${project.groupId}.fork</groupId>
+        <artifactId>commons-csv</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-bogus</artifactId>
         <version>${project.version}</version>
@@ -227,11 +232,6 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-csv</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>misc</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -433,11 +433,6 @@
         <version>1.9.0</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-csv</artifactId>
-        <version>1.8</version>
-      </dependency>
-      <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>2.6</version>
@@ -461,6 +456,11 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-math3</artifactId>
         <version>3.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-csv</artifactId>
+        <version>1.8</version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
@@ -1215,30 +1215,23 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-    <!--repository>
+    <repository>
       <id>com.springsource.repository.bundles.release</id>
       <name>EBR Spring Release Repository</name>
-      <url>https://repository.springsource.com/maven/bundles/release</url>
-    </repository-->
-    <!--repository>
+      <url>http://repository.springsource.com/maven/bundles/release</url>
+    </repository>
+    <repository>
       <id>com.springsource.repository.bundles.external</id>
       <name>EBR External Release Repository</name>
-      <url>https://repository.springsource.com/maven/bundles/external</url>
-    </repository-->
-    <!--repository>
-      <id>central</id>
-      <url>http://repo1.maven.org/maven2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository-->
-    <!--repository>
+      <url>http://repository.springsource.com/maven/bundles/external</url>
+    </repository>
+    <repository>
       <id>java.net</id>
       <url>http://download.java.net/maven/2</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-    </repository-->
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>

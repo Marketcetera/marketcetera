@@ -46,10 +46,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>admin-server</artifactId>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>misc</artifactId>
-    </dependency>
     <!-- other compile -->
     <dependency>
       <groupId>com.querydsl</groupId>
