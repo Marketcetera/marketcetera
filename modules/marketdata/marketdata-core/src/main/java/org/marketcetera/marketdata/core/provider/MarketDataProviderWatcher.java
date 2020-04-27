@@ -177,6 +177,24 @@ public class MarketDataProviderWatcher
         return lastStatus;
     }
     /**
+     * Get the restart value.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean getRestart()
+    {
+        return restart;
+    }
+    /**
+     * Sets the restart value.
+     *
+     * @param inRestart a <code>boolean</code> value
+     */
+    public void setRestart(boolean inRestart)
+    {
+        restart = inRestart;
+    }
+    /**
      * Indicate if command-line mode is enabled.
      *
      * @return a <code>boolean</code> value
@@ -309,6 +327,19 @@ public class MarketDataProviderWatcher
                     isRunning = providerStatus.isRunning();
                 }
                 isRunning &= !checkForCommandLineCommand();
+                if(lastStatus != isRunning) {
+                    MarketDataProviderStatus newStatus = new MarketDataProviderStatus(moduleName,
+                                                                                      isRunning);
+                    for(MarketDataStatusListener listener : marketDataStatusListeners) {
+                        try {
+                            listener.receiveMarketDataProviderStatus(newStatus);
+                        } catch (Exception e) {
+                            SLF4JLoggerProxy.warn(MarketDataProviderWatcher.this,
+                                                  e);
+                        }
+                    }
+                    lastStatus = isRunning;
+                }
                 if(isRunning) {
                     SLF4JLoggerProxy.trace(MarketDataProviderWatcher.this,
                                            "{} feed status is {}", //$NON-NLS-1$
@@ -318,31 +349,21 @@ public class MarketDataProviderWatcher
                     Messages.BAD_FEED_STATUS.warn(MarketDataProviderWatcher.this,
                                                   moduleName,
                                                   status);
-                    try {
-                        if(useModule) {
-                            moduleBean.reconnect();
-                        } else {
-                            providerBean.stop();
-                            providerBean.start();
-                        }
-                    } catch (Exception e) {
-                        Messages.CANNOT_RECONNECT_FEED.warn(MarketDataProviderWatcher.this,
-                                                            e,
-                                                            moduleName,
-                                                            monitoringInterval);
-                    }
-                }
-                if(lastStatus != isRunning) {
-                    MarketDataProviderStatus newStatus = new MarketDataProviderStatus(moduleName,
-                                                                                      isRunning);
-                    for(MarketDataStatusListener listener : marketDataStatusListeners) {
+                    if(restart) {
                         try {
-                            listener.receiveMarketDataProviderStatus(newStatus);
+                            if(useModule) {
+                                moduleBean.reconnect();
+                            } else {
+                                providerBean.stop();
+                                providerBean.start();
+                            }
                         } catch (Exception e) {
-                            // TODO warn
+                            Messages.CANNOT_RECONNECT_FEED.warn(MarketDataProviderWatcher.this,
+                                                                e,
+                                                                moduleName,
+                                                                monitoringInterval);
                         }
                     }
-                    lastStatus = isRunning;
                 }
             } catch (Exception e) {
                 Messages.CANNOT_DETERMINE_FEED_STATUS.warn(MarketDataProviderWatcher.this,
@@ -355,6 +376,10 @@ public class MarketDataProviderWatcher
          */
         private boolean useModule = true;
     }
+    /**
+     * indicates whether to perform the restart action or not
+     */
+    private boolean restart = true;
     /**
      * file to watch for in order to trigger a market data reset
      */
