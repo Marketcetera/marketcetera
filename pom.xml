@@ -32,7 +32,11 @@
   </developers>
   <properties>
     <mvn.javase.version>8</mvn.javase.version>
-    <mvn.spring.boot.version>2.2.4.RELEASE</mvn.spring.boot.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <mvn.spring.boot.version>2.2.6.RELEASE</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
     <mvn.log4j.version>2.11.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
@@ -1203,16 +1207,25 @@
     <module>rpc-core</module>
     <module>trade</module>
     <module>tools</module>
-    <module>ui</module>
     <module>util</module>
     <module>util-test</module>
+    <module>webui</module>
   </modules>
   <repositories>
+    <!-- The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. -->
     <repository>
       <id>internal</id>
       <url>https://repo.marketcetera.org/maven</url>
       <snapshots>
         <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <!-- Main Maven repository -->
+    <repository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
       </snapshots>
     </repository>
     <repository>
@@ -1237,6 +1250,14 @@
     <pluginRepository>
       <id>internal</id>
       <url>https://repo.marketcetera.org/maven</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <!-- Main Maven repository -->
+    <pluginRepository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
