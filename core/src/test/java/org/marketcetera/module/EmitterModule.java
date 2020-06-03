@@ -172,7 +172,7 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
                 //Loop a maximum of 10 times
                 while(i < 10) {
                     if (mData instanceof Map) {
-                        Map m = (Map) mData;
+                        Map<?,?> m = (Map<?,?>)mData;
                         Object obj = m.get("value");
                         Object error = m.get("error");
                         int times = (Integer)m.get("times");
