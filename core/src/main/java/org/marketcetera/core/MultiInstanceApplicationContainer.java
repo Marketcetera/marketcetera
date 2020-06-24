@@ -1,7 +1,6 @@
 package org.marketcetera.core;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -219,14 +218,14 @@ public class MultiInstanceApplicationContainer
         return getAndValidateSystemProperty(ApplicationBase.APP_DIR_PROP);
     }
     /**
-     * Gets the log4j configuration file path.
+     * Gets the log configuration file path.
      *
      * @return a <code>String</code> value
      */
-    private static String getLog4jConfigFile()
+    private static String getLogConfigFile()
     {
-        File log4jConfigFile = new File(getAndValidateSystemProperty(PARAM_LOG4J_CONFIGURATION_FILE));
-        return log4jConfigFile.getAbsolutePath();
+        File logConfigFile = new File(getAndValidateSystemProperty(PARAM_LOG_CONFIGURATION_FILE));
+        return logConfigFile.getAbsolutePath();
     }
     /**
      * Gets the output log directory.
@@ -606,8 +605,8 @@ public class MultiInstanceApplicationContainer
         arguments.add(DASH_D+"metc.max.instances="+String.valueOf(totalInstances));
         arguments.add(DASH_D+PARAM_METC_HOST+"="+prepareHostId());
         arguments.add(DASH_D+ApplicationBase.APP_DIR_PROP+"="+inInstanceDirName);
-        File parentLogFile = new File(getLog4jConfigFile());
-        arguments.add(DASH_D+PARAM_LOG4J_CONFIGURATION_FILE+"=file://"+inInstanceDirName+File.separator+"conf"+File.separator+parentLogFile.getName());
+        File parentLogFile = new File(getLogConfigFile());
+        arguments.add(DASH_D+PARAM_LOG_CONFIGURATION_FILE+"=file://"+inInstanceDirName+File.separator+"conf"+File.separator+parentLogFile.getName());
         String configFileList = buildConfigFileList(inInstancePropertiesFile);
         arguments.add(DASH_D+PARAM_SPRING_CONFIG_LOCATION+"=" + configFileList);
         if(enableProfiling()) {
@@ -657,11 +656,11 @@ public class MultiInstanceApplicationContainer
      *
      * @param inProcess a <code>jnr.process.Process</code> value
      * @param inInstance an <code>int</code> value
-     * @throws FileNotFoundException if the output cannot be written to a file
+     * @throws IOException if the output capture cannot be established
      */
     private static void captureOutput(jnr.process.Process inProcess,
                                       int inInstance)
-            throws FileNotFoundException
+            throws IOException
     {
         InputStreamConsumer errout;
         errout = new InputStreamConsumer(inProcess.getErrorStream(),
@@ -686,15 +685,19 @@ public class MultiInstanceApplicationContainer
          *
          * @param inInputStream an <code>InputStream</code> value
          * @param inInstanceNumber an <code>int</code> value
-         * @throws FileNotFoundException if the file cannot be created
+         * @throws IOException if the input stream cannot be established
          */
         private InputStreamConsumer(InputStream inInputStream,
                                     int inInstanceNumber)
-                throws FileNotFoundException
+                throws IOException
         {
             inputStream = inInputStream;
-            File stdout = new File(getLogDir(),
-                              getLogName()+inInstanceNumber+".log");
+            File logDir = new File(getLogDir());
+            if(!logDir.exists()) {
+                FileUtils.forceMkdir(logDir);
+            }
+            File stdout = new File(logDir,
+                                   getLogName()+inInstanceNumber+".log");
             stdoutStream = new FileOutputStream(stdout);
         }
         /* (non-Javadoc)
@@ -790,7 +793,7 @@ public class MultiInstanceApplicationContainer
     /**
      * log4j configuration file param name
      */
-    public static final String PARAM_LOG4J_CONFIGURATION_FILE = "log4j.configurationFile";
+    public static final String PARAM_LOG_CONFIGURATION_FILE = "log.configurationFile";
     /**
      * spring configuration file param name
      */
