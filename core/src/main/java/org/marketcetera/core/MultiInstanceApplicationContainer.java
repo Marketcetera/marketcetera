@@ -244,7 +244,7 @@ public class MultiInstanceApplicationContainer
      */
     private static String getLogName()
     {
-        return getAndValidateSystemProperty(PARAM_METC_LOG_NAME);
+        return getSystemProperty(PARAM_METC_LOG_NAME);
     }
     /**
      * Gets the instance directory.
@@ -289,7 +289,8 @@ public class MultiInstanceApplicationContainer
         if(id == null) {
             id = UUID.randomUUID().toString();
             FileUtils.write(hostFile,
-                            id);
+                            id,
+                            Charset.defaultCharset());
         }
         return id;
     }
@@ -325,6 +326,7 @@ public class MultiInstanceApplicationContainer
                                inFile);
         FileUtils.write(inFile,
                         inName+"="+inValue+System.lineSeparator(),
+                        Charset.defaultCharset(),
                         true);
     }
     /**
@@ -508,11 +510,14 @@ public class MultiInstanceApplicationContainer
         long newPid = -1;
         synchronized (spawnProcessMutex) {
             if(SystemUtils.IS_OS_WINDOWS) {
-                File log = new File(getLogDir(),
-                                    getLogName()+inInstanceNumber+".log");
+                String logName = getLogName();
                 ProcessBuilder pb = new ProcessBuilder(arguments);
                 pb.redirectErrorStream(true);
-                pb.redirectOutput(Redirect.appendTo(log));
+                if(logName != null) {
+                    File log = new File(getLogDir(),
+                                        logName+inInstanceNumber+".log");
+                    pb.redirectOutput(Redirect.appendTo(log));
+                }
                 newPid = System.nanoTime();
                 Process spawnedProcess = pb.start();
                 windowsProcessInstances.put(newPid,
@@ -662,6 +667,9 @@ public class MultiInstanceApplicationContainer
                                       int inInstance)
             throws IOException
     {
+        if(getLogName() == null) {
+            return;
+        }
         InputStreamConsumer errout;
         errout = new InputStreamConsumer(inProcess.getErrorStream(),
                                          inInstance);
