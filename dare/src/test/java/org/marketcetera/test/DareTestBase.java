@@ -139,9 +139,9 @@ public class DareTestBase
                               "{} beginning setup",
                               name.getMethodName());
         fixSettingsProvider = fixSettingsProviderFactory.create();
-        User testUser = userService.findByName("trader");
+        traderUser = userService.findByName("trader");
         DirectTradeClientParameters tradeClientParameters = new DirectTradeClientParameters();
-        tradeClientParameters.setUsername(testUser.getName());
+        tradeClientParameters.setUsername(traderUser.getName());
         client = tradeClientFactory.create(tradeClientParameters);
         client.start();
         reports.clear();
@@ -1173,6 +1173,44 @@ public class DareTestBase
                            inOrder.getDecimal(quickfix.field.MaxFloor.FIELD));
         }
         return orderAckMsg;
+    }
+    /**
+     * Verify the order with the order summary for the given root order id and current order id has been canceled.
+     *
+     * @param inRootOrderId an <code>OrderID</code> value
+     * @param inOrderId an <code>OrderID</code> value
+     * @return an <code>OrderSummary</code> value
+     * @throws Exception if the given order cannot be found or has not bee canceled within a reasonable period of time
+     */
+    protected OrderSummary verifyOrderCanceled(OrderID inRootOrderId,
+                                               OrderID inOrderId)
+            throws Exception
+    {
+        try {
+            MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    OrderSummary orderStatus = orderSummaryService.findByRootOrderIdAndOrderId(inRootOrderId,
+                                                                                               inOrderId);
+                    if(orderStatus == null) {
+                        return false;
+                    }
+                    return orderStatus.getOrderStatus() == OrderStatus.Canceled;
+                }},10);
+        } catch (AssertionError e) {
+            OrderSummary orderStatus = orderSummaryService.findByRootOrderIdAndOrderId(inRootOrderId,
+                                                                                       inOrderId);
+            assertNotNull("No order summary for " + inRootOrderId + "/" + inOrderId,
+                          orderStatus);
+            assertEquals("Expected: " + OrderStatus.Canceled + " actual: " + orderStatus.getOrderStatus(),
+                         OrderStatus.Canceled,
+                         orderStatus.getOrderStatus());
+            throw e;
+        }
+        return orderSummaryService.findByRootOrderIdAndOrderId(inRootOrderId,
+                                                               inOrderId);
     }
     /**
      * Verify that the order was received, and canceled.
@@ -2670,6 +2708,10 @@ public class DareTestBase
      * used to guarantee unique values
      */
     protected static final AtomicInteger counter = new AtomicInteger(0);
+    /**
+     * test user
+     */
+    protected User traderUser;
     /**
      * RPC services port
      */
