@@ -85,6 +85,7 @@ import org.marketcetera.trade.dao.OrderSummaryDao;
 import org.marketcetera.trade.dao.PersistentReportDao;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
+import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -389,6 +390,24 @@ public class DareTestBase
     {
         MarketDataFeedTestBase.wait(inBlock,
                                     inSecondsTimeout);
+    }
+    protected OrderSummary verifyOrderStatus(final OrderID inRootOrderId,
+                                             final OrderStatus inExpectedOrderStatus)
+            throws Exception
+    {
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                OrderSummary orderStatus = orderSummaryService.findMostRecentByRootOrderId(inRootOrderId);
+                if(orderStatus == null) {
+                    return false;
+                }
+                return orderStatus.getOrderStatus() == inExpectedOrderStatus;
+            }
+        },10);
+        return orderSummaryService.findMostRecentByRootOrderId(inRootOrderId);
     }
     /**
      * Verify that the order status for the given root/order id pair exists.
@@ -1180,37 +1199,31 @@ public class DareTestBase
      * @param inRootOrderId an <code>OrderID</code> value
      * @param inOrderId an <code>OrderID</code> value
      * @return an <code>OrderSummary</code> value
-     * @throws Exception if the given order cannot be found or has not bee canceled within a reasonable period of time
+     * @throws Exception if the given order cannot be found or has not be canceled within a reasonable period of time
      */
     protected OrderSummary verifyOrderCanceled(OrderID inRootOrderId,
                                                OrderID inOrderId)
             throws Exception
     {
-        try {
-            MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-                @Override
-                public Boolean call()
-                        throws Exception
-                {
-                    OrderSummary orderStatus = orderSummaryService.findByRootOrderIdAndOrderId(inRootOrderId,
-                                                                                               inOrderId);
-                    if(orderStatus == null) {
-                        return false;
-                    }
-                    return orderStatus.getOrderStatus() == OrderStatus.Canceled;
-                }},10);
-        } catch (AssertionError e) {
-            OrderSummary orderStatus = orderSummaryService.findByRootOrderIdAndOrderId(inRootOrderId,
-                                                                                       inOrderId);
-            assertNotNull("No order summary for " + inRootOrderId + "/" + inOrderId,
-                          orderStatus);
-            assertEquals("Expected: " + OrderStatus.Canceled + " actual: " + orderStatus.getOrderStatus(),
-                         OrderStatus.Canceled,
-                         orderStatus.getOrderStatus());
-            throw e;
-        }
-        return orderSummaryService.findByRootOrderIdAndOrderId(inRootOrderId,
-                                                               inOrderId);
+        return verifyOrderStatus(inRootOrderId,
+                                 inOrderId,
+                                 OrderStatus.Canceled);
+    }
+    /**
+     * Verify the order with the order summary for the given root order id and current order id has been replaced.
+     *
+     * @param inRootOrderId an <code>OrderID</code> value
+     * @param inOrderId an <code>OrderID</code> value
+     * @return an <code>OrderSummary</code> value
+     * @throws Exception if the given order cannot be found or has not be replaced within a reasonable period of time
+     */
+    protected OrderSummary verifyOrderReplaced(OrderID inRootOrderId,
+                                               OrderID inOrderId)
+            throws Exception
+    {
+        return verifyOrderStatus(inRootOrderId,
+                                 inOrderId,
+                                 OrderStatus.Replaced);
     }
     /**
      * Verify that the order was received, and canceled.
@@ -2661,6 +2674,11 @@ public class DareTestBase
      */
     @Autowired
     protected ReportService reportService;
+    /**
+     * provides access to trade services
+     */
+    @Autowired
+    protected TradeService tradeService;
     /**
      * provides access to user services
      */
