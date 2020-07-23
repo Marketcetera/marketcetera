@@ -1,6 +1,7 @@
 package org.marketcetera.core;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -667,9 +668,6 @@ public class MultiInstanceApplicationContainer
                                       int inInstance)
             throws IOException
     {
-        if(getLogName() == null) {
-            return;
-        }
         InputStreamConsumer errout;
         errout = new InputStreamConsumer(inProcess.getErrorStream(),
                                          inInstance);
@@ -700,13 +698,18 @@ public class MultiInstanceApplicationContainer
                 throws IOException
         {
             inputStream = inInputStream;
-            File logDir = new File(getLogDir());
-            if(!logDir.exists()) {
-                FileUtils.forceMkdir(logDir);
+            if(getLogName() == null) {
+                // if no log name is specified, redirect the child process stdout to the parent process stdout
+                stdoutStream = new FileOutputStream(FileDescriptor.out);
+            } else {
+                File logDir = new File(getLogDir());
+                if(!logDir.exists()) {
+                    FileUtils.forceMkdir(logDir);
+                }
+                File stdout = new File(logDir,
+                                       getLogName()+inInstanceNumber+".log");
+                stdoutStream = new FileOutputStream(stdout);
             }
-            File stdout = new File(logDir,
-                                   getLogName()+inInstanceNumber+".log");
-            stdoutStream = new FileOutputStream(stdout);
         }
         /* (non-Javadoc)
          * @see java.lang.Runnable#run()
