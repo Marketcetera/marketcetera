@@ -95,6 +95,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
@@ -2101,7 +2102,7 @@ public class DareTestBase
          * @return a <code>quickfix.Message</code> value
          */
         public quickfix.Message generateOrderStatusRequest(quickfix.Message inOrderMessage,
-                                                  quickfix.SessionID inSessionId)
+                                                           quickfix.SessionID inSessionId)
                 throws Exception
         {
             FIXVersion version = FIXVersion.getFIXVersion(inOrderMessage);
@@ -2155,7 +2156,7 @@ public class DareTestBase
          * @throws Exception if an unexpected error occurs
          */
         public quickfix.Message generateOrder(Instrument inInstrument,
-                                     quickfix.SessionID inSenderSessionId)
+                                              quickfix.SessionID inSenderSessionId)
                 throws Exception
         {
             FIXVersion version = FIXVersion.getFIXVersion(inSenderSessionId);
@@ -2694,6 +2695,11 @@ public class DareTestBase
      */
     @Autowired
     protected DirectTradeClientFactory tradeClientFactory;
+    /**
+     * transaction manager value
+     */
+    @Autowired
+    protected JpaTransactionManager txManager;
     /**
      * default period of time to wait for a test condition to be true
      */
