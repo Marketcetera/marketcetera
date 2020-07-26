@@ -186,6 +186,20 @@ public class PersistentOutgoingMessage
     {
         return orderId;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("PersistentOutgoingMessage [brokerId=").append(brokerId).append(", senderCompId=")
+                .append(senderCompId).append(", targetCompId=").append(targetCompId).append(", messageValue=")
+                .append(messageValue).append(", sessionIdValue=").append(sessionIdValue).append(", messageType=")
+                .append(messageType).append(", msgSeqNum=").append(msgSeqNum).append(", actor=").append(actor)
+                .append(", orderId=").append(orderId).append("]");
+        return builder.toString();
+    }
     /**
      * broker id value
      */
