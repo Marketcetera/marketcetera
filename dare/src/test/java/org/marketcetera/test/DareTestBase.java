@@ -85,6 +85,7 @@ import org.marketcetera.trade.dao.OrderSummaryDao;
 import org.marketcetera.trade.dao.PersistentReportDao;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
+import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +95,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
@@ -139,9 +141,9 @@ public class DareTestBase
                               "{} beginning setup",
                               name.getMethodName());
         fixSettingsProvider = fixSettingsProviderFactory.create();
-        User testUser = userService.findByName("trader");
+        traderUser = userService.findByName("trader");
         DirectTradeClientParameters tradeClientParameters = new DirectTradeClientParameters();
-        tradeClientParameters.setUsername(testUser.getName());
+        tradeClientParameters.setUsername(traderUser.getName());
         client = tradeClientFactory.create(tradeClientParameters);
         client.start();
         reports.clear();
@@ -389,6 +391,24 @@ public class DareTestBase
     {
         MarketDataFeedTestBase.wait(inBlock,
                                     inSecondsTimeout);
+    }
+    protected OrderSummary verifyOrderStatus(final OrderID inRootOrderId,
+                                             final OrderStatus inExpectedOrderStatus)
+            throws Exception
+    {
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                OrderSummary orderStatus = orderSummaryService.findMostRecentByRootOrderId(inRootOrderId);
+                if(orderStatus == null) {
+                    return false;
+                }
+                return orderStatus.getOrderStatus() == inExpectedOrderStatus;
+            }
+        },10);
+        return orderSummaryService.findMostRecentByRootOrderId(inRootOrderId);
     }
     /**
      * Verify that the order status for the given root/order id pair exists.
@@ -1173,6 +1193,38 @@ public class DareTestBase
                            inOrder.getDecimal(quickfix.field.MaxFloor.FIELD));
         }
         return orderAckMsg;
+    }
+    /**
+     * Verify the order with the order summary for the given root order id and current order id has been canceled.
+     *
+     * @param inRootOrderId an <code>OrderID</code> value
+     * @param inOrderId an <code>OrderID</code> value
+     * @return an <code>OrderSummary</code> value
+     * @throws Exception if the given order cannot be found or has not be canceled within a reasonable period of time
+     */
+    protected OrderSummary verifyOrderCanceled(OrderID inRootOrderId,
+                                               OrderID inOrderId)
+            throws Exception
+    {
+        return verifyOrderStatus(inRootOrderId,
+                                 inOrderId,
+                                 OrderStatus.Canceled);
+    }
+    /**
+     * Verify the order with the order summary for the given root order id and current order id has been replaced.
+     *
+     * @param inRootOrderId an <code>OrderID</code> value
+     * @param inOrderId an <code>OrderID</code> value
+     * @return an <code>OrderSummary</code> value
+     * @throws Exception if the given order cannot be found or has not be replaced within a reasonable period of time
+     */
+    protected OrderSummary verifyOrderReplaced(OrderID inRootOrderId,
+                                               OrderID inOrderId)
+            throws Exception
+    {
+        return verifyOrderStatus(inRootOrderId,
+                                 inOrderId,
+                                 OrderStatus.Replaced);
     }
     /**
      * Verify that the order was received, and canceled.
@@ -2050,7 +2102,7 @@ public class DareTestBase
          * @return a <code>quickfix.Message</code> value
          */
         public quickfix.Message generateOrderStatusRequest(quickfix.Message inOrderMessage,
-                                                  quickfix.SessionID inSessionId)
+                                                           quickfix.SessionID inSessionId)
                 throws Exception
         {
             FIXVersion version = FIXVersion.getFIXVersion(inOrderMessage);
@@ -2104,7 +2156,7 @@ public class DareTestBase
          * @throws Exception if an unexpected error occurs
          */
         public quickfix.Message generateOrder(Instrument inInstrument,
-                                     quickfix.SessionID inSenderSessionId)
+                                              quickfix.SessionID inSenderSessionId)
                 throws Exception
         {
             FIXVersion version = FIXVersion.getFIXVersion(inSenderSessionId);
@@ -2624,6 +2676,11 @@ public class DareTestBase
     @Autowired
     protected ReportService reportService;
     /**
+     * provides access to trade services
+     */
+    @Autowired
+    protected TradeService tradeService;
+    /**
      * provides access to user services
      */
     @Autowired
@@ -2638,6 +2695,11 @@ public class DareTestBase
      */
     @Autowired
     protected DirectTradeClientFactory tradeClientFactory;
+    /**
+     * transaction manager value
+     */
+    @Autowired
+    protected JpaTransactionManager txManager;
     /**
      * default period of time to wait for a test condition to be true
      */
@@ -2670,6 +2732,10 @@ public class DareTestBase
      * used to guarantee unique values
      */
     protected static final AtomicInteger counter = new AtomicInteger(0);
+    /**
+     * test user
+     */
+    protected User traderUser;
     /**
      * RPC services port
      */

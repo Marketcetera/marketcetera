@@ -81,6 +81,7 @@ import org.marketcetera.trade.dao.QPersistentExecutionReport;
 import org.marketcetera.trade.dao.QPersistentOrderSummary;
 import org.marketcetera.trade.dao.QPersistentReport;
 import org.marketcetera.trade.event.SimpleInjectedFixMessageEvent;
+import org.marketcetera.trade.event.SimpleOrderSummaryEvent;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -1178,28 +1179,29 @@ public class ReportServiceImpl
                                       OrderID inRootId,
                                       PersistentReport inReport)
     {
-        OrderSummary orderStatus;
+        OrderSummary orderSummary;
         if(inReportBase instanceof OrderCancelReject) {
             // need to search for some particulars to help us fill out this record
-            orderStatus = orderStatusService.findMostRecentExecutionByRootOrderId(inRootId);
+            orderSummary = orderStatusService.findMostRecentExecutionByRootOrderId(inRootId);
         } else {
-            orderStatus = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
-                                                                         inReportBase.getOrderID());
-            if(orderStatus == null && inReportBase.getOriginalOrderID() != null) {
-                orderStatus = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
-                                                                             inReportBase.getOriginalOrderID());
+            orderSummary = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
+                                                                          inReportBase.getOrderID());
+            if(orderSummary == null && inReportBase.getOriginalOrderID() != null) {
+                orderSummary = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
+                                                                              inReportBase.getOriginalOrderID());
             }
         }
-        if(orderStatus == null) {
-            orderStatus = new PersistentOrderSummary(inReport,
-                                                     inReportBase,
-                                                     inRootId);
-            orderStatus = orderStatusService.save(orderStatus);
+        if(orderSummary == null) {
+            orderSummary = new PersistentOrderSummary(inReport,
+                                                      inReportBase,
+                                                      inRootId);
+            orderSummary = orderStatusService.save(orderSummary);
         } else {
-            orderStatusService.update(orderStatus,
-                                      inReport,
-                                      inReportBase);
+            orderSummary = orderStatusService.update(orderSummary,
+                                                     inReport,
+                                                     inReportBase);
         }
+        eventBusService.post(new SimpleOrderSummaryEvent(orderSummary));
     }
     /**
      * Get the planned session start for the given session id.
