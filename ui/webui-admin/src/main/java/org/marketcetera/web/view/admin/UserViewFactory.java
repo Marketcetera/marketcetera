@@ -1,6 +1,7 @@
 package org.marketcetera.web.view.admin;
 
 import org.marketcetera.web.view.ContentView;
+import org.marketcetera.web.view.ContentViewFactory;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
@@ -58,5 +59,13 @@ public class UserViewFactory
     protected Class<? extends ContentView> getViewType()
     {
         return UserView.class;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.admin.AbstractAdminViewFactory#getViewFactory()
+     */
+    @Override
+    protected Class<? extends ContentViewFactory> getViewFactory()
+    {
+        return getClass();
     }
 }

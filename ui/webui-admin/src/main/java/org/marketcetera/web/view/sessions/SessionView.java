@@ -27,6 +27,7 @@ import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.AbstractPagedGridView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.vaadin.teemu.wizards.Wizard;
@@ -1369,6 +1370,7 @@ public class SessionView
     /**
      * creates new Fix Session values
      */
+    @Autowired
     private MutableActiveFixSessionFactory fixSessionFactory;
     /**
      * provides access to web message services
