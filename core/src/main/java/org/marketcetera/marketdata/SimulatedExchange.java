@@ -34,7 +34,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -386,55 +386,55 @@ public class SimulatedExchange
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.Exchange#getDividends(org.marketcetera.marketdata.ExchangeRequest, org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.marketdata.Exchange#getDividends(org.marketcetera.marketdata.ExchangeRequest, org.marketcetera.core.publisher.Subscriber)
      */
     @Override
     public Token getDividends(ExchangeRequest inExchangeRequest,
-                              ISubscriber inSubscriber)
+                              Subscriber inSubscriber)
     {
         return doAsynchronousRequest(inExchangeRequest,
                                      inSubscriber,
                                      Type.DIVIDENDS);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.Exchange#getStatistics(org.marketcetera.marketdata.ExchangeRequest, org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.marketdata.Exchange#getStatistics(org.marketcetera.marketdata.ExchangeRequest, org.marketcetera.core.publisher.Subscriber)
      */
     @Override
     public Token getStatistics(ExchangeRequest inExchangeRequest,
-                               ISubscriber inSubscriber)
+                               Subscriber inSubscriber)
     {
         return doAsynchronousRequest(inExchangeRequest,
                                      inSubscriber,
                                      Type.STATISTICS);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.Exchange#getDepthOfBook(org.marketcetera.marketdata.ExchangeRequest, org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.marketdata.Exchange#getDepthOfBook(org.marketcetera.marketdata.ExchangeRequest, org.marketcetera.core.publisher.Subscriber)
      */
     @Override
     public Token getDepthOfBook(ExchangeRequest inExchangeRequest,
-                                ISubscriber inSubscriber)
+                                Subscriber inSubscriber)
     {
         return doAsynchronousRequest(inExchangeRequest,
                                      inSubscriber,
                                      Type.DEPTH_OF_BOOK);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.Exchange#getLatestTick(org.marketcetera.marketdata.ExchangeRequest, org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.marketdata.Exchange#getLatestTick(org.marketcetera.marketdata.ExchangeRequest, org.marketcetera.core.publisher.Subscriber)
      */
     @Override
     public Token getLatestTick(ExchangeRequest inExchangeRequest,
-                               ISubscriber inSubscriber)
+                               Subscriber inSubscriber)
     {
         return doAsynchronousRequest(inExchangeRequest,
                                      inSubscriber,
                                      Type.LATEST_TICK);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.Exchange#getTopOfBook(org.marketcetera.marketdata.ExchangeRequest, org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.marketdata.Exchange#getTopOfBook(org.marketcetera.marketdata.ExchangeRequest, org.marketcetera.core.publisher.Subscriber)
      */
     @Override
     public Token getTopOfBook(ExchangeRequest inExchangeRequest,
-                              ISubscriber inSubscriber)
+                              Subscriber inSubscriber)
     {
         return doAsynchronousRequest(inExchangeRequest,
                                      inSubscriber,
@@ -564,12 +564,12 @@ public class SimulatedExchange
      * Executes an asynchronous request with the given parameters. 
      *
      * @param inExchangeRequest an <code>ExchangeRequest</code> value
-     * @param inSubscriber an <code>ISubscriber</code> value
+     * @param inSubscriber an <code>Subscriber</code> value
      * @param inRequestType a <code>Type</code> value
      * @return a <code>Token</code> value
      */
     private Token doAsynchronousRequest(ExchangeRequest inExchangeRequest,
-                                        ISubscriber inSubscriber,
+                                        Subscriber inSubscriber,
                                         Type inRequestType)
     {
         long startingTime = System.currentTimeMillis();
@@ -669,14 +669,14 @@ public class SimulatedExchange
         return affectedBooks;
     }
     /**
-     * Validates that the given <code>ExchangeRequest</code> and <code>ISubscriber</code> are
+     * Validates that the given <code>ExchangeRequest</code> and <code>Subscriber</code> are
      * appropriate to be used for an asynchronous market data request.
      *
      * @param inRequest an <code>ExchangeRequest</code> value
-     * @param inSubscriber an <code>ISubscriber</code> value
+     * @param inSubscriber an <code>Subscriber</code> value
      */
     private void validateAsynchronousRequest(ExchangeRequest inRequest,
-                                             ISubscriber inSubscriber)
+                                             Subscriber inSubscriber)
     {
         // no status check for the exchange because subscription requests may be submitted any time
         if(inSubscriber == null) {
@@ -1743,7 +1743,7 @@ public class SimulatedExchange
         private final List<DividendEvent> dividends;
     }
     /**
-     * <code>ISubscriber</code> that filters publications to an enclosed <code>ISubscriber</code>
+     * <code>Subscriber</code> that filters publications to an enclosed <code>Subscriber</code>
      * based on the original type of market data request and instrument.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -1753,7 +1753,7 @@ public class SimulatedExchange
     @ThreadSafe
     @ClassVersion("$Id$")
     private static class FilteringSubscriber
-            implements ISubscriber
+            implements Subscriber
     {
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
@@ -1767,17 +1767,17 @@ public class SimulatedExchange
                                  instruments);
         }
         /**
-         * Subscribes the given <code>ISubscriber</code> to market data updates of the given
+         * Subscribes the given <code>Subscriber</code> to market data updates of the given
          * type for the given instrument. 
          *
-         * @param inOriginalSubscriber an <code>ISubscriber</code> value
+         * @param inOriginalSubscriber an <code>Subscriber</code> value
          * @param inType a <code>Type</code> value
          * @param inInstruments a <code>Collection&lt;Instrument&gt;</code> value
          * @param inExchange a <code>SimulatedExchange</code> value containing the owning exchange
          * @param inExchangeRequest an <code>ExchangeRequest</code> value containing the request
          * @return a <code>Token</code> value representing the subscription
          */
-        private static Token subscribe(ISubscriber inOriginalSubscriber,
+        private static Token subscribe(Subscriber inOriginalSubscriber,
                                        Type inType,
                                        Collection<Instrument> inInstruments,
                                        SimulatedExchange inExchange,
@@ -1803,12 +1803,12 @@ public class SimulatedExchange
         /**
          * Create a new FilteringSubscriber instance.
          *
-         * @param inSubscriber an <code>ISubscriber</code> value
+         * @param inSubscriber an <code>Subscriber</code> value
          * @param inType a <code>Type</code> value
          * @param inInstruments a <code>Collection&lt;Instrument&gt;</code> value
          * @param inExchange a <code>SimulatedExchange</code> value containing the owning exchange
          */
-        private FilteringSubscriber(ISubscriber inSubscriber,
+        private FilteringSubscriber(Subscriber inSubscriber,
                                     Type inType,
                                     Collection<Instrument> inInstruments,
                                     SimulatedExchange inExchange)
@@ -1822,7 +1822,7 @@ public class SimulatedExchange
             lastKnownDividends = Multimaps.synchronizedMultimap(dividends);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
+         * @see org.marketcetera.core.publisher.Subscriber#isInteresting(java.lang.Object)
          */
         @Override
         public boolean isInteresting(Object inData)
@@ -1864,7 +1864,7 @@ public class SimulatedExchange
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
+         * @see org.marketcetera.core.publisher.Subscriber#publishTo(java.lang.Object)
          */
         @Override
         public synchronized void publishTo(Object inData)
@@ -2093,7 +2093,7 @@ public class SimulatedExchange
         /**
          * the original (external to this class) subscriber
          */
-        private final ISubscriber originalSubscriber;
+        private final Subscriber originalSubscriber;
         /**
          * the type of request
          */
@@ -2236,9 +2236,9 @@ public class SimulatedExchange
      * 
      * <p>This object is used to identify a market data request.  When
      * executing a subscription request, as in to
-     * {@link Exchange#getDepthOfBook(ExchangeRequest, ISubscriber)}
+     * {@link Exchange#getDepthOfBook(ExchangeRequest, Subscriber)}
      * for instance, a <code>Token</code> value will be returned.  Updates will be published to the
-     * given {@link ISubscriber} until the exchange is stopped or the request is canceled via
+     * given {@link Subscriber} until the exchange is stopped or the request is canceled via
      * {@link Token#cancel()}.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -2254,7 +2254,7 @@ public class SimulatedExchange
         private final FilteringSubscriber subscriber;
         /**
          * Create a new Token instance.
-         * @param inSubscriber an <code>ISubscriber</code> value
+         * @param inSubscriber an <code>Subscriber</code> value
          */
         private Token(FilteringSubscriber inSubscriber)
         {

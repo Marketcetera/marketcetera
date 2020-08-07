@@ -2,7 +2,7 @@ package org.marketcetera.marketdata.core.request;
 
 import java.io.Serializable;
 
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -28,9 +28,9 @@ public interface MarketDataRequestToken
     /**
      * Gets the subscriber to which the market data will be delivered.
      *
-     * @return an <code>ISubscriber</code> value or <code>null</code> indicating no updates are to be sent
+     * @return an <code>Subscriber</code> value or <code>null</code> indicating no updates are to be sent
      */
-    public ISubscriber getSubscriber();
+    public Subscriber getSubscriber();
     /**
      * Gets the market data request.
      *

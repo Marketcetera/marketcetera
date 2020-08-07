@@ -17,4 +17,10 @@ public interface HasUser
      * @return a <code>User</code> value
      */
     User getUser();
+    /**
+     * Set the user value.
+     *
+     * @param inUser a <code>User</code> value
+     */
+    void setUser(User inUser);
 }

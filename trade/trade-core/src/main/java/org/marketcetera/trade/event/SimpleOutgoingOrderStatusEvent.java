@@ -73,6 +73,14 @@ public class SimpleOutgoingOrderStatusEvent
         return orderId;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasOrderId#setOrderId(org.marketcetera.trade.OrderID)
+     */
+    @Override
+    public void setOrderId(OrderID inOrderId)
+    {
+        orderId = inOrderId;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -94,10 +102,10 @@ public class SimpleOutgoingOrderStatusEvent
      * @param inFixMessage a <code>quickfix.Message</code> value
      */
     public SimpleOutgoingOrderStatusEvent(String inMessage,
-                                     boolean inFailed,
-                                     Order inOrder,
-                                     OrderID inOrderId,
-                                     quickfix.Message inFixMessage)
+                                          boolean inFailed,
+                                          Order inOrder,
+                                          OrderID inOrderId,
+                                          quickfix.Message inFixMessage)
     {
         message = inMessage;
         failed = inFailed;
@@ -125,5 +133,5 @@ public class SimpleOutgoingOrderStatusEvent
     /**
      * outgoing order id value, may not be <code>null</code>
      */
-    private final OrderID orderId;
+    private OrderID orderId;
 }

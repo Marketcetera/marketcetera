@@ -12,13 +12,13 @@ import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.Role;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.impl.SimpleRole;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.admin.AdminClientService;
-import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.Window;
@@ -41,12 +41,15 @@ public class RoleView
      * Create a new RoleView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public RoleView(Window inParentWindow,
+                    NewWindowEvent inEvent,
                     Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)
@@ -66,12 +69,12 @@ public class RoleView
         return "Role";
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<Role> createDataContainer()
+    protected Class<RolePagedDataContainer> getDataContainerType()
     {
-        return new RolePagedDataContainer(this);
+        return RolePagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#onCreateNew(com.vaadin.ui.Button.ClickEvent)

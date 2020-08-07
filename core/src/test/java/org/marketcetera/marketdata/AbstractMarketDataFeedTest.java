@@ -13,7 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.IFeedComponentListener;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.event.*;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
@@ -89,7 +89,7 @@ public class AbstractMarketDataFeedTest
         final MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         feed.start();
         feed.login(new MockMarketDataFeedCredentials());
-        ISubscriber[] subscribers = new ISubscriber[0];
+        Subscriber[] subscribers = new Subscriber[0];
         new ExpectedTestFailure(NullPointerException.class) {
             protected void execute()
                     throws Throwable
@@ -167,7 +167,7 @@ public class AbstractMarketDataFeedTest
         feed.setInitFails(false);
         assertTrue(feed.doInitialize(null));
         MarketDataFeedTokenSpec tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(dataRequest, 
-                                                                                      new ISubscriber[0]);
+                                                                                      new Subscriber[0]);
         MockMarketDataFeedToken token = MockMarketDataFeedToken.getToken(tokenSpec,
                                                                          feed);
         assertTrue(feed.doInitialize(token));
@@ -179,7 +179,7 @@ public class AbstractMarketDataFeedTest
         MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         assertTrue(feed.beforeDoExecute(null));
         MarketDataFeedTokenSpec tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(dataRequest, 
-                                                                                      new ISubscriber[0]);
+                                                                                      new Subscriber[0]);
         MockMarketDataFeedToken token = MockMarketDataFeedToken.getToken(tokenSpec,
                                                                          feed);
         assertTrue(feed.beforeDoExecute(token));
@@ -190,7 +190,7 @@ public class AbstractMarketDataFeedTest
     {
         MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         MarketDataFeedTokenSpec tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(dataRequest, 
-                                                                                      new ISubscriber[0]);
+                                                                                      new Subscriber[0]);
         MockMarketDataFeedToken token = MockMarketDataFeedToken.getToken(tokenSpec,
                                                                          feed);
         feed.afterDoExecute(null,
@@ -340,7 +340,7 @@ public class AbstractMarketDataFeedTest
         feed.login(new MockMarketDataFeedCredentials());
         feed.setShouldTimeout(true);
         final MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(MarketDataRequestBuilder.newRequest().withExchange("Exchange").withSymbols("GOOG").create(), 
-                                                                                       new ISubscriber[0]);
+                                                                                       new Subscriber[0]);
         new ExpectedTestFailure(FeedException.class,
                                 Messages.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getText()) {
             protected void execute()
@@ -587,7 +587,7 @@ public class AbstractMarketDataFeedTest
         MockMarketDataFeed feed = new MockMarketDataFeed();
         feed.start();
         feed.login(new MockMarketDataFeedCredentials());
-        ISubscriber[] subscribers = new ISubscriber[] { subscriber1, subscriber2, subscriber3 };
+        Subscriber[] subscribers = new Subscriber[] { subscriber1, subscriber2, subscriber3 };
         MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(dataRequest,
                                                                                  subscribers);
         MockMarketDataFeedToken token = feed.execute(spec);
@@ -1212,9 +1212,9 @@ public class AbstractMarketDataFeedTest
         final MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN,
                                                                "obnoxious-feed-name-with-dashes",
                                                                0);
-        final ISubscriber[] subscribers = inTokenSpec.getSubscribers();
+        final Subscriber[] subscribers = inTokenSpec.getSubscribers();
         if(subscribers != null) {
-            for(ISubscriber subscriber : subscribers) {
+            for(Subscriber subscriber : subscribers) {
                 if(subscriber != null) {
                     MockSubscriber s = (MockSubscriber)subscriber;
                     assertNull(s.getData());
@@ -1309,7 +1309,7 @@ public class AbstractMarketDataFeedTest
                                  boolean inRequestReturnsNull, 
                                  MockMarketDataFeed inFeed,
                                  MockMarketDataFeedToken inToken,
-                                 ISubscriber[] inSubscribers)
+                                 Subscriber[] inSubscribers)
         throws Exception
     {
         if(inExecThrows ||
@@ -1319,7 +1319,7 @@ public class AbstractMarketDataFeedTest
             assertEquals(MarketDataFeedToken.Status.EXECUTION_FAILED,
                          inToken.getStatus());
             if(inSubscribers != null) {
-                for(ISubscriber subscriber : inSubscribers) {
+                for(Subscriber subscriber : inSubscribers) {
                     if(subscriber != null) {
                         MockSubscriber s = (MockSubscriber)subscriber;
                         assertEquals(0,
@@ -1334,7 +1334,7 @@ public class AbstractMarketDataFeedTest
             assertEquals(Status.EXECUTION_FAILED,
                          inToken.getStatus());
             if(inSubscribers != null) {
-                for(ISubscriber subscriber : inSubscribers) {
+                for(Subscriber subscriber : inSubscribers) {
                     if(subscriber != null) {
                         MockSubscriber s = (MockSubscriber)subscriber;
                         assertEquals(0,
@@ -1351,7 +1351,7 @@ public class AbstractMarketDataFeedTest
             assertEquals(Status.ACTIVE,
                          inToken.getStatus());
             if(inSubscribers != null) {
-                for(ISubscriber subscriber : inSubscribers) {
+                for(Subscriber subscriber : inSubscribers) {
                     if(subscriber != null) {
                         MockSubscriber s = (MockSubscriber)subscriber;
                         assertEquals(0,
@@ -1364,7 +1364,7 @@ public class AbstractMarketDataFeedTest
         if(inSubscribers != null &&
            !inRequestReturnsZeroHandles &&
            !inRequestReturnsNull) {
-            for(ISubscriber subscriber : inSubscribers) {
+            for(Subscriber subscriber : inSubscribers) {
                 if(subscriber != null) {
                     MockSubscriber s = (MockSubscriber)subscriber;
                     waitForPublication(s);

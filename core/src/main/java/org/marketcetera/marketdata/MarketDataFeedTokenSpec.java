@@ -2,7 +2,7 @@ package org.marketcetera.marketdata;
 
 import java.util.Arrays;
 
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 
 /**
  * Stateless portion of the market data feed token.
@@ -32,7 +32,7 @@ public final class MarketDataFeedTokenSpec
     /**
      * the subscribers to whom to send query results
      */
-    private final ISubscriber[] mSubscribers;
+    private final Subscriber[] mSubscribers;
     /**
      * Generates a new token spec containing the passed information.
      *
@@ -42,13 +42,13 @@ public final class MarketDataFeedTokenSpec
      * for many transactions.
      * 
      * @param inRequest a <code>Message</code> value
-     * @param inSubscribers an <code>ISubscriber...</code> value which may be empty
+     * @param inSubscribers an <code>Subscriber...</code> value which may be empty
      *   or null if no subscribers need to be notified of query results
      * @return a <code>MarketDataFeedTokenSpec</code> value
      * @throws NullPointerException if the passed credentials or message is null
      */
     public static MarketDataFeedTokenSpec generateTokenSpec(MarketDataRequest inRequest,
-                                                            ISubscriber... inSubscribers)
+                                                            Subscriber... inSubscribers)
     {
         return new MarketDataFeedTokenSpec(inRequest,
                                            inSubscribers);
@@ -57,19 +57,19 @@ public final class MarketDataFeedTokenSpec
      * Create a new MarketDataFeedTokenSpec instance.
      *
      * @param inRequest a <code>MarketDataRequest</code> value
-     * @param inSubscribers an <code>ISubscriber...</code> value which may be empty
+     * @param inSubscribers an <code>Subscriber...</code> value which may be empty
      *   or null if no subscribers need to be notified of query results
      * @throws NullPointerException if the passed credentials or message is null
      */
     private MarketDataFeedTokenSpec(MarketDataRequest inRequest,
-                                    ISubscriber... inSubscribers)
+                                    Subscriber... inSubscribers)
     {
         if(inRequest == null) {
             throw new NullPointerException();
         }
         dataRequest = inRequest;
         if(inSubscribers == null) {
-            mSubscribers = new ISubscriber[0];
+            mSubscribers = new Subscriber[0];
         } else {
             mSubscribers = inSubscribers;
         }
@@ -86,9 +86,9 @@ public final class MarketDataFeedTokenSpec
     /**
      * Gets the subscribers associated with this token spec.
      *
-     * @return an <code>ISubscriber[]</code> value
+     * @return an <code>Subscriber[]</code> value
      */
-    public ISubscriber[] getSubscribers()
+    public Subscriber[] getSubscribers()
     {
         return Arrays.copyOf(mSubscribers,
                              mSubscribers.length);

@@ -8,8 +8,8 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
 
 /* $License$ */
@@ -30,23 +30,7 @@ public class MetricServiceLogReporter
     @PostConstruct
     public void start()
     {
-        Thread registerThread = new Thread(new Runnable() {
-            @Override
-            public void run()
-            {
-                try {
-                    MetricService service = null;
-                    metrics = null;
-                    while(metrics == null) {
-                        Thread.sleep(1000);
-                        service = MetricService.getInstance();
-                        metrics = service == null ? null : service.getMetrics();
-                    }
-                    register();
-                } catch (InterruptedException ignored) {}
-            }
-        },getClass().getSimpleName()+"-Register"); //$NON-NLS-1$
-        registerThread.start();
+        register();
     }
     /**
      * Stops the object.
@@ -82,9 +66,9 @@ public class MetricServiceLogReporter
      */
     private void register()
     {
-        SLF4JLoggerProxy.debug(this,
-                               "Registering metrics log reporter"); //$NON-NLS-1$
-        reporter = Slf4jReporter.forRegistry(metrics).convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS).outputTo(LoggerFactory.getLogger(category)).build();
+        SLF4JLoggerProxy.info(this,
+                              "Registering metrics log reporter"); //$NON-NLS-1$
+        reporter = Slf4jReporter.forRegistry(metricService.getMetrics()).convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS).outputTo(LoggerFactory.getLogger(category)).build();
         reporter.start(reportInterval,
                        TimeUnit.SECONDS);
     }
@@ -97,9 +81,10 @@ public class MetricServiceLogReporter
      */
     private int reportInterval = 30;
     /**
-     * metrics collection object
+     * metric service
      */
-    private MetricRegistry metrics;
+    @Autowired
+    private MetricService metricService;
     /**
      * logging category used to report metrics (at info level)
      */

@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.marketdata.AbstractMarketDataModule;
-import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.marketdata.MarketDataModuleMXBean;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * <tr><th>Stops data flows</th><td>No</td></tr>
  * <tr><th>Start Operation</th><td>Starts the feed, logs into it.</td></tr>
  * <tr><th>Stop Operation</th><td>Stops the data feed.</td></tr>
- * <tr><th>Management Interface</th><td>{@link AbstractMarketDataModuleMXBean}</td></tr>
+ * <tr><th>Management Interface</th><td>{@link MarketDataModuleMXBean}</td></tr>
  * <tr><th>MX Notification</th><td>{@link AttributeChangeNotification}
  * whenever {@link #getFeedStatus()} changes. </td></tr>
  * </table>

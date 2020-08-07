@@ -23,10 +23,11 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.entity.DisplayFixSession;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.admin.AdminClientService;
-import org.marketcetera.web.view.AbstractGridView;
-import org.marketcetera.web.view.PagedDataContainer;
+import org.marketcetera.web.view.AbstractPagedGridView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.vaadin.teemu.wizards.Wizard;
@@ -86,7 +87,7 @@ import quickfix.SessionID;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SessionView
-        extends AbstractGridView<DisplayFixSession>
+        extends AbstractPagedGridView<DisplayFixSession>
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
@@ -146,12 +147,15 @@ public class SessionView
      * Create a new SessionView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public SessionView(Window inParentWindow,
+                       NewWindowEvent inEvent,
                        Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)
@@ -216,12 +220,12 @@ public class SessionView
         }
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<DisplayFixSession> createDataContainer()
+    protected Class<SessionPagedDataContainer> getDataContainerType()
     {
-        return new SessionPagedDataContainer(this);
+        return SessionPagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#getViewSubjectName()
@@ -1366,6 +1370,7 @@ public class SessionView
     /**
      * creates new Fix Session values
      */
+    @Autowired
     private MutableActiveFixSessionFactory fixSessionFactory;
     /**
      * provides access to web message services

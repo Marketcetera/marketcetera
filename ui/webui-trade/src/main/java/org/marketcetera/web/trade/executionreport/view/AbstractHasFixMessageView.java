@@ -12,10 +12,11 @@ import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.trade.TradeClientService;
 import org.marketcetera.web.trade.event.FixMessageDetailsViewEvent;
 import org.marketcetera.web.trade.event.ReplaceOrderEvent;
-import org.marketcetera.web.view.AbstractGridView;
+import org.marketcetera.web.view.AbstractPagedGridView;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Notification;
@@ -32,7 +33,7 @@ import com.vaadin.ui.Window;
  * @since $Release$
  */
 public abstract class AbstractHasFixMessageView<DisplayClazz extends FixMessageDisplayType>
-        extends AbstractGridView<DisplayClazz>
+        extends AbstractPagedGridView<DisplayClazz>
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
@@ -74,12 +75,15 @@ public abstract class AbstractHasFixMessageView<DisplayClazz extends FixMessageD
      * Create a new FillsView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     protected AbstractHasFixMessageView(Window inParentWindow,
+                                        NewWindowEvent inEvent,
                                         Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)

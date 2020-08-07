@@ -12,6 +12,7 @@ import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeFactory;
 import org.marketcetera.admin.UserAttributeType;
 import org.marketcetera.admin.UserFactory;
+import org.marketcetera.trade.UserID;
 
 /* $License$ */
 
@@ -63,6 +64,34 @@ public abstract class AdminRpcUtil
         }
         userBuilder.setActive(inUser.isActive());
         return Optional.of(userBuilder.build());
+    }
+    /**
+     * Get the user id value from the given value, if possible.
+     *
+     * @param inValue a <code>String</code> value
+     * @return an <code>Optional&lt;UserID&gt;</code> value
+     */
+    public static Optional<UserID> getUserId(String inValue)
+    {
+        UserID userId = null;
+        if(inValue != null) {
+            userId = new UserID(Long.parseLong(inValue));
+        }
+        return Optional.ofNullable(userId);
+    }
+    /**
+     * Get the RPC user id value from the given value, if possible.
+     *
+     * @param inValue a <code>UserID</code> value
+     * @return an <code>Optional&lt;UserID&gt;</code> value
+     */
+    public static Optional<String> getRpcUserId(UserID inValue)
+    {
+        String UserId = null;
+        if(inValue != null) {
+            UserId = String.valueOf(inValue.getValue());
+        }
+        return Optional.ofNullable(UserId);
     }
     /**
      * Get an RPC role from the given value.

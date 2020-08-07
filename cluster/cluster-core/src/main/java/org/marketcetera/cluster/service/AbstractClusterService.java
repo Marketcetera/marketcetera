@@ -51,6 +51,7 @@ import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -1028,6 +1029,7 @@ public abstract class AbstractClusterService
     /**
      * cluster instance name to use instead of creating a new one
      */
+    @Value("${metc.cluster.instance.name:metc}")
     private String instanceName = "metc";
     /**
      * the number assigned to this host
@@ -1044,6 +1046,7 @@ public abstract class AbstractClusterService
     /**
      * the interval of time to wait for a lock
      */
+    @Value("${metc.cluster.lock.timeout:1000}")
     private long lockTimeout = 1000;
     /**
      * instance number of this cluster instance
@@ -1056,11 +1059,13 @@ public abstract class AbstractClusterService
     /**
      * indicates how long to wait before breaking an abandoned lock
      */
-    private long abandonedLockTimeout = 30000;
+    @Value("${metc.cluster.abandoned.lock.timeout:30000}")
+    private long abandonedLockTimeout;
     /**
      * determines how long to delay evaluation of work units
      */
-    private long workUnitEvaluationDelay = 1000;
+    @Value("${metc.cluster.work.unit.evaluation.delay:1000}")
+    private long workUnitEvaluationDelay;
     /**
      * caches the last reported meta data
      */

@@ -3,7 +3,7 @@ package org.marketcetera.core.notifications;
 import java.util.concurrent.ExecutionException;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -16,7 +16,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * objects generated.  Objects interested in receiving <code>INotification</code> objects should
  * register for them as follows:
  * <pre>
- *     NotificationManager.getNotificationManager().subscribe(ISubscriber);
+ *     NotificationManager.getNotificationManager().subscribe(Subscriber);
  * </pre>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -53,18 +53,18 @@ public class NotificationManager
         subscribe(new NotificationLogger());
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.notifications.INotificationManager#subscribe(org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.core.notifications.INotificationManager#subscribe(org.marketcetera.core.publisher.Subscriber)
      */
     @Override
-    public void subscribe(ISubscriber inSubscriber)
+    public void subscribe(Subscriber inSubscriber)
     {
         mPublisher.subscribe(inSubscriber);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.notifications.INotificationManager#unsubscribe(org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.core.notifications.INotificationManager#unsubscribe(org.marketcetera.core.publisher.Subscriber)
      */
     @Override
-    public void unsubscribe(ISubscriber inSubscriber)
+    public void unsubscribe(Subscriber inSubscriber)
     {
         mPublisher.unsubscribe(inSubscriber);
     }
@@ -122,14 +122,14 @@ public class NotificationManager
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
     private static class NotificationLogger
-        implements ISubscriber
+        implements Subscriber
     {
         /**
          * the special category to use for notifications
          */
         private static final String CATEGORY = "notifications.log"; //$NON-NLS-1$
         /* (non-Javadoc)
-         * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
+         * @see org.marketcetera.core.publisher.Subscriber#isInteresting(java.lang.Object)
          */
         @Override
         public boolean isInteresting(Object inData)
@@ -137,7 +137,7 @@ public class NotificationManager
             return inData instanceof INotification;
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
+         * @see org.marketcetera.core.publisher.Subscriber#publishTo(java.lang.Object)
          */
         @Override
         public void publishTo(Object inData)

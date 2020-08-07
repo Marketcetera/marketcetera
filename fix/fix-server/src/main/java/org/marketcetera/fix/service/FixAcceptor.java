@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 /* $License$ */
 
 /**
- *
+ * Describes the ports in use by a FIX acceptor.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

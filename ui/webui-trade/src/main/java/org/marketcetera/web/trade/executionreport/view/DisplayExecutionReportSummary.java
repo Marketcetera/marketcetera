@@ -132,6 +132,14 @@ public class DisplayExecutionReportSummary
         return executionReportSummary.getOrderID();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasOrderId#setOrderId(org.marketcetera.trade.OrderID)
+     */
+    @Override
+    public void setOrderId(OrderID inOrderId)
+    {
+        throw new UnsupportedOperationException();
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.ExecutionReportSummary#getOriginalOrderID()
      */
     @Override

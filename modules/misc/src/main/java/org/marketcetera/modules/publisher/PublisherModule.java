@@ -1,6 +1,6 @@
 package org.marketcetera.modules.publisher;
 
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.ModuleURN;
@@ -60,10 +60,10 @@ public class PublisherModule
      * Create a new PublisherModule instance.
      *
      * @param inModuleURN a <code>ModuleURN</code> value
-     * @param inSubscriber an <code>ISubscriber</code> value
+     * @param inSubscriber an <code>Subscriber</code> value
      */
     PublisherModule(ModuleURN inModuleURN,
-                    ISubscriber inSubscriber)
+                    Subscriber inSubscriber)
     {
         super(inModuleURN,
               true);
@@ -72,5 +72,5 @@ public class PublisherModule
     /**
      * subscriber to which to publish data
      */
-    private ISubscriber subscriber;
+    private Subscriber subscriber;
 }

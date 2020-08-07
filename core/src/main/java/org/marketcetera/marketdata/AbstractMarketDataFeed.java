@@ -16,7 +16,7 @@ import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.Event;
@@ -171,7 +171,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.IMarketDataFeed#execute(org.marketcetera.marketdata.AbstractMarketDataFeedCredentials, DataRequest, org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.marketdata.IMarketDataFeed#execute(org.marketcetera.marketdata.AbstractMarketDataFeedCredentials, DataRequest, org.marketcetera.core.publisher.Subscriber)
      */
     @Override
     public final T execute(MarketDataFeedTokenSpec inTokenSpec)
@@ -191,7 +191,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         }
         // these subscribers are all the ones that are interested in the results
         //  of the query we're about to execute - this list may be empty or null
-        ISubscriber[] subscribers = inTokenSpec.getSubscribers();
+        Subscriber[] subscribers = inTokenSpec.getSubscribers();
         // the token is used to track the request and its responses
         // generate a new token for this request
         T token;
@@ -1088,7 +1088,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
     /**
      * Wraps the {@link IFeedComponentListener} for this feed.
      *
-     * <p>The wrapper translates {@link ISubscriber} methods to
+     * <p>The wrapper translates {@link Subscriber} methods to
      * the {@link IFeedComponentListener} objects.
      * 
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -1097,7 +1097,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
     private static class FeedComponentListenerWrapper
-        implements ISubscriber
+        implements Subscriber
     {
         /**
          * the feed component listener to which to transmit feed status updates
@@ -1125,14 +1125,14 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             mParent = inParent;
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
+         * @see org.marketcetera.core.publisher.Subscriber#isInteresting(java.lang.Object)
          */
         public boolean isInteresting(Object inData)
         {
             return true;
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
+         * @see org.marketcetera.core.publisher.Subscriber#publishTo(java.lang.Object)
          */
         public void publishTo(Object inData)
         {

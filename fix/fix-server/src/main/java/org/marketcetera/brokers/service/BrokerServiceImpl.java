@@ -1027,10 +1027,12 @@ public class BrokerServiceImpl
             }
             return sequenceNumbers;
         } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e,
-                                  "Unable to determine session sequence numbers for {}",
-                                  inSessionId);
+            if(!PlatformServices.isShutdown(e)) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Unable to determine session sequence numbers for {}",
+                                      inSessionId);
+            }
             return null;
         }
     }

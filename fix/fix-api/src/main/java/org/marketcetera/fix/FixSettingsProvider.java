@@ -43,15 +43,33 @@ public interface FixSettingsProvider
      */
     int getAcceptorPort();
     /**
+     * Set the acceptor port value.
+     *
+     * @param inAcceptorPort an <code>int</code> value
+     */
+    void setAcceptorPort(int inAcceptorPort);
+    /**
      * Get the acceptor host value.
      *
      * @return a <code>String</code> value
      */
     String getAcceptorHost();
     /**
+     * Set the acceptor host value.
+     *
+     * @param inAcceptorHost a <code>String</code> value
+     */
+    void setAcceptorHost(String inAcceptorHost);
+    /**
      * Get the acceptor protocol value.
      *
      * @return a <code>String</code> value
      */
     String getAcceptorProtocol();
+    /**
+     * Set the acceptor protocol value.
+     *
+     * @param inAcceptorProtocol a <code>String</code> value
+     */
+    void setAcceptorProtocol(String inAcceptorProtocol);
 }

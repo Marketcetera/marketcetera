@@ -2,38 +2,57 @@ package org.marketcetera.web.marketdata.detail.view;
 
 import java.util.Properties;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.lang3.StringUtils;
+import javax.annotation.PostConstruct;
+import javax.xml.bind.JAXBException;
+
 import org.dussan.vaadin.dcharts.DCharts;
 import org.dussan.vaadin.dcharts.base.elements.XYaxis;
+import org.dussan.vaadin.dcharts.base.elements.XYseries;
 import org.dussan.vaadin.dcharts.data.DataSeries;
-import org.dussan.vaadin.dcharts.data.Ticks;
+import org.dussan.vaadin.dcharts.events.click.ChartDataClickEvent;
+import org.dussan.vaadin.dcharts.events.click.ChartDataClickHandler;
+import org.dussan.vaadin.dcharts.events.mouseenter.ChartDataMouseEnterEvent;
+import org.dussan.vaadin.dcharts.events.mouseenter.ChartDataMouseEnterHandler;
+import org.dussan.vaadin.dcharts.events.mouseleave.ChartDataMouseLeaveEvent;
+import org.dussan.vaadin.dcharts.events.mouseleave.ChartDataMouseLeaveHandler;
+import org.dussan.vaadin.dcharts.metadata.TooltipAxes;
+import org.dussan.vaadin.dcharts.metadata.XYaxes;
+import org.dussan.vaadin.dcharts.metadata.locations.TooltipLocations;
 import org.dussan.vaadin.dcharts.metadata.renderers.AxisRenderers;
-import org.dussan.vaadin.dcharts.metadata.renderers.SeriesRenderers;
 import org.dussan.vaadin.dcharts.options.Axes;
 import org.dussan.vaadin.dcharts.options.Highlighter;
 import org.dussan.vaadin.dcharts.options.Options;
-import org.dussan.vaadin.dcharts.options.SeriesDefaults;
+import org.dussan.vaadin.dcharts.options.Series;
+import org.dussan.vaadin.dcharts.renderers.series.OhlcRenderer;
+import org.dussan.vaadin.dcharts.renderers.tick.AxisTickRenderer;
+import org.marketcetera.core.BigDecimalUtil;
+import org.marketcetera.core.PlatformServices;
+import org.marketcetera.core.XmlService;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.HasInstrument;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.marketdata.AssetClass;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.marketdata.service.MarketDataClientService;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.AbstractContentView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Scope;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -47,20 +66,25 @@ import com.vaadin.ui.Window;
  * @since $Release$
  */
 @SpringComponent
+@EnableAutoConfiguration
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class MarketDataDetailView
         extends AbstractContentView
+        implements MarketDataListener
 {
     /**
      * Create a new MarketDataView instance.
      *
      * @param inParent a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public MarketDataDetailView(Window inParent,
+                                NewWindowEvent inEvent,
                                 Properties inViewProperties)
     {
         super(inParent,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)
@@ -71,10 +95,9 @@ public class MarketDataDetailView
     {
         super.attach();
         setSizeFull();
-        CssLayout symbolLayout = new CssLayout();
         VerticalLayout dataLayout = new VerticalLayout();
         VerticalLayout chartLayout = new VerticalLayout();
-        HorizontalLayout dataChartLayout = new HorizontalLayout();
+        CssLayout dataChartLayout = new CssLayout();
         dataLayout.addStyleName("layout-with-border2");
         dataLayout.setWidthUndefined();
         dataLayout.setHeightUndefined();
@@ -82,25 +105,6 @@ public class MarketDataDetailView
         chartLayout.setWidthUndefined();
         chartLayout.setHeightUndefined();
         dataChartLayout.addStyleName("layout-with-border3");
-        symbolButton = new Button();
-        symbolButton.setEnabled(false);
-        symbol = new TextField();
-        instrumentLabel = new Label();
-        symbol.setCaption("Symbol");
-        symbol.setSizeUndefined();
-        symbol.addTextChangeListener(inEvent-> {
-            symbolButton.setEnabled(StringUtils.trimToNull(inEvent.getText()) != null);
-        });
-        symbolLayout.setWidth("100%");
-        symbolButton.addClickListener(inEvent -> {
-            requestMarketData();
-        });
-        symbolButton.setSizeUndefined();
-        symbolButton.setIcon(FontAwesome.ARROW_CIRCLE_O_RIGHT);
-        instrumentLabel.setSizeUndefined();
-        symbolLayout.addComponents(symbol,
-                                   symbolButton,
-                                   instrumentLabel);
         lastText = new TextField();
         lastText.setCaption("Last");
         lastText.setWidth("100%");
@@ -129,75 +133,144 @@ public class MarketDataDetailView
                                  highText,
                                  lowText,
                                  closeText);
-        DataSeries dataSeries = new DataSeries().add(1, 5, 8, 2, 3);
-        SeriesDefaults seriesDefaults = new SeriesDefaults().setRenderer(SeriesRenderers.BAR);
-        Axes axes = new Axes().addAxis(
-                                       new XYaxis().setRenderer(AxisRenderers.CATEGORY)
-                                       .setTicks(new Ticks()
-                                                 .add("a", "b", "c", "d", "e")));
-
-        Highlighter highlighter = new Highlighter()
-                .setShow(false);
-
-        Options options = new Options()
-                .setSeriesDefaults(seriesDefaults)
-                .setAxes(axes)
-                .setHighlighter(highlighter);
-
-        DCharts chart = new DCharts()
-                .setDataSeries(dataSeries)
-                .setOptions(options)
-                .show();
+        setupChart();
         chart.setSizeFull();
         chartLayout.addComponent(chart);
+        chartLayout.setSizeFull();
         dataChartLayout.addComponents(dataLayout,
                                       chartLayout);
         dataChartLayout.setSizeFull();
-        addComponents(symbolLayout,
-                      dataChartLayout);
-        setWidth("100%");
+        addComponents(dataChartLayout);
+//        setWidth("100%");
+        requestMarketData();
     }
-    private synchronized void requestMarketData()
+    private void setupChart()
     {
-        MarketDataClientService marketDataClientService = MarketDataClientService.getInstance();
-        cancelMarketData();
-        MarketDataRequestBuilder requestBuilder = MarketDataRequestBuilder.newRequest();
-        requestBuilder.withSymbols(StringUtils.trim(symbol.getValue()));
-        marketDataRequestToken = marketDataClientService.request(requestBuilder.create(),
-                                                                 new MarketDataListener() {
-            /* (non-Javadoc)
-             * @see org.marketcetera.marketdata.MarketDataListener#receiveMarketData(org.marketcetera.event.Event)
-             */
+        // https://www.investopedia.com/articles/trading/10/data-based-intraday-chart-intervals.asp
+        DataSeries dataSeries = new DataSeries();
+        dataSeries.newSeries()
+            .add("04/13/2009",120.01,124.25,115.76,123.42,"s")
+            .add("04/14/2009",121.73,127.2,118.6,123.9,"t");
+        Axes axes = new Axes()
+                .addAxis(new XYaxis().setRenderer(AxisRenderers.DATE))
+                .addAxis(new XYaxis(XYaxes.Y).setTickOptions(new AxisTickRenderer().setPrefix("$")));
+        Series series = new Series().addSeries(new XYseries().setRendererOptions(new OhlcRenderer().setCandleStick(true)));
+        Highlighter highlighter = new Highlighter()
+                .setShow(true)
+                .setShowTooltip(true)
+                .setTooltipAlwaysVisible(true)
+                .setKeepTooltipInsideChart(true)
+                .setTooltipLocation(TooltipLocations.NORTH_WEST)
+                .setTooltipAxes(TooltipAxes.XY_OHLC);
+        Options options = new Options().setAxes(axes).setSeries(series).setHighlighter(highlighter);
+        chart = new DCharts();
+        chart.setEnableChartDataMouseEnterEvent(true);
+        chart.setEnableChartDataMouseLeaveEvent(true);
+        chart.setEnableChartDataClickEvent(true);
+        chart.addHandler(new ChartDataMouseEnterHandler() {
             @Override
-            public void receiveMarketData(org.marketcetera.event.Event inMarketDataEvent)
+            public void onChartDataMouseEnter(ChartDataMouseEnterEvent inEvent)
             {
-                if(inMarketDataEvent instanceof HasInstrument) {
-                    String fullSymbol = ((HasInstrument)inMarketDataEvent).getInstrument().getFullSymbol();
-                    if(fullSymbol == null) {
-                        instrumentLabel.setValue("");
-                    } else {
-                        if(!fullSymbol.equals(instrumentLabel.getValue())) {
-                            instrumentLabel.setValue(fullSymbol);
-                        }
-                    }
-                }
-            }
-            /* (non-Javadoc)
-             * @see org.marketcetera.marketdata.MarketDataListener#onError(java.lang.Throwable)
-             */
-            @Override
-            public void onError(Throwable inThrowable)
-            {
-                SLF4JLoggerProxy.warn(MarketDataDetailView.this,
-                                      inThrowable);
-                UI.getCurrent().access(() -> {
-                    Notification.show("Market Data Request",
-                                      ExceptionUtils.getRootCauseMessage(inThrowable),
-                                      Notification.Type.ERROR_MESSAGE);
-                });
-                cancelMarketData();
+                System.out.println("CHART DATA MOUSE ENTER: " + inEvent.getChartData());
             }
         });
+        chart.addHandler(new ChartDataMouseLeaveHandler() {
+            @Override
+            public void onChartDataMouseLeave(ChartDataMouseLeaveEvent inEvent)
+            {
+                System.out.println("CHART DATA MOUSE LEAVE: " + inEvent.getChartData());
+            }
+        });
+        chart.addHandler(new ChartDataClickHandler() {
+            @Override
+            public void onChartDataClick(ChartDataClickEvent inEvent)
+            {
+                System.out.println("CHART DATA MOUSE CLICK: " + inEvent.getChartData());
+            }
+        });
+        chart.setDataSeries(dataSeries).setOptions(options).show();
+    }
+    private DCharts chart;
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractComponent#detach()
+     */
+    @Override
+    public void detach()
+    {
+        cancelMarketData();
+        super.detach();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataListener#receiveMarketData(org.marketcetera.event.Event)
+     */
+    @Override
+    public void receiveMarketData(org.marketcetera.event.Event inEvent)
+    {
+        if(isAttached()) {
+            SLF4JLoggerProxy.trace(this,
+                                   "Received {}",
+                                   inEvent);
+            if(inEvent instanceof BidEvent) {
+                BidEvent bidEvent = (BidEvent)inEvent;
+                bidText.setValue(BigDecimalUtil.renderCurrency(bidEvent.getPrice()));
+            } else if(inEvent instanceof AskEvent) {
+                AskEvent askEvent = (AskEvent)inEvent;
+                offerText.setValue(BigDecimalUtil.renderCurrency(askEvent.getPrice()));
+            } else if(inEvent instanceof TradeEvent) {
+                TradeEvent tradeEvent = (TradeEvent)inEvent;
+                lastText.setValue(BigDecimalUtil.renderCurrency(tradeEvent.getPrice()));
+            } else if(inEvent instanceof MarketstatEvent) {
+                MarketstatEvent marketstatEvent = (MarketstatEvent)inEvent;
+                openText.setValue(BigDecimalUtil.renderCurrency(marketstatEvent.getOpen()));
+                highText.setValue(BigDecimalUtil.renderCurrency(marketstatEvent.getHigh()));
+                lowText.setValue(BigDecimalUtil.renderCurrency(marketstatEvent.getLow()));
+                closeText.setValue(BigDecimalUtil.renderCurrency(marketstatEvent.getClose()));
+            } else {
+                return;
+            }
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataListener#onError(java.lang.Throwable)
+     */
+    @Override
+    public void onError(Throwable inThrowable)
+    {
+    }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        if(getNewWindowEvent() instanceof HasInstrument) {
+            instrument = ((HasInstrument)getNewWindowEvent()).getInstrument();
+        } else {
+            String rawInstrument = getViewProperties().getProperty(Instrument.class.getCanonicalName());
+            try {
+                instrument = xmlService.unmarshall(rawInstrument);
+            } catch (JAXBException e) {
+                throw new UnsupportedOperationException("Launching event must have an instrument: " + getNewWindowEvent().getClass().getSimpleName() + " or view properties must include an instrument: " + PlatformServices.getMessage(e));
+            }
+        }
+        try {
+            getViewProperties().setProperty(Instrument.class.getCanonicalName(),
+                                            xmlService.marshall(instrument));
+        } catch (JAXBException e) {
+            throw new UnsupportedOperationException("Unable to persist instrument in the view properties: " + PlatformServices.getMessage(e));
+        }
+    }
+    private void requestMarketData()
+    {
+        String symbol = instrument.getFullSymbol();
+        AssetClass assetClass = AssetClass.getFor(instrument.getSecurityType());
+        MarketDataClientService marketDataClientService = serviceManager.getService(MarketDataClientService.class);
+        MarketDataRequestBuilder requestBuilder = MarketDataRequestBuilder.newRequest();
+        requestBuilder.withAssetClass(assetClass).withSymbols(symbol).withContent(Content.LATEST_TICK,
+                                                                                  Content.MARKET_STAT,
+                                                                                  Content.TOP_OF_BOOK);
+        marketDataRequestToken = marketDataClientService.request(requestBuilder.create(),
+                                                    this);
     }
     private void cancelMarketData()
     {
@@ -258,40 +331,15 @@ public class MarketDataDetailView
     private TextField highText;
     private TextField lowText;
     private TextField closeText;
-    private Label instrumentLabel;
-    private Button symbolButton;
-    private TextField symbol;
+    /**
+     * instrument for which to display detailed market data
+     */
+    private Instrument instrument;
     /**
      * global name of this view
      */
     private static final String NAME = "Market Data Detail View";
-    /**
-     * edit action label
-     */
-    private final String ACTION_EDIT = "Edit";
-    /**
-     * start action label
-     */
-    private final String ACTION_START = "Start";
-    /**
-     * stop action label
-     */
-    private final String ACTION_STOP = "Stop";
-    /**
-     * enable action label
-     */
-    private final String ACTION_ENABLE = "Enable";
-    /**
-     * disable action label
-     */
-    private final String ACTION_DISABLE = "Disable";
-    /**
-     * delete action label
-     */
-    private final String ACTION_DELETE = "Delete";
-    /**
-     * edit sequence numbers label
-     */
-    private final String ACTION_SEQUENCE = "Update Sequence Numbers";
+    @Autowired
+    private XmlService xmlService;
     private static final long serialVersionUID = 1901286026590258969L;
 }

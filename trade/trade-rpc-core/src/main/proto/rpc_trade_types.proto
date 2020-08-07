@@ -60,6 +60,7 @@ enum Side {
     Undisclosed = 7;
     Cross = 8;
     CrossShort = 9;
+    NoSide = 10;
 }
 
 enum SecurityType {

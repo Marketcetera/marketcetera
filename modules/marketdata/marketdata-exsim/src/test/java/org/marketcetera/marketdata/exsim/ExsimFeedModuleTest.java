@@ -1,5 +1,7 @@
 package org.marketcetera.marketdata.exsim;
 
+import static org.junit.Assert.assertEquals;
+
 import java.lang.management.ManagementFactory;
 
 import javax.management.JMX;
@@ -11,12 +13,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.marketdata.MarketDataModuleMXBean;
 import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleState;
 import org.springframework.beans.BeansException;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /* $License$ */
@@ -29,7 +34,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @since $Release$
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"file:src/test/sample_data/conf/test.xml"})
+@SpringBootTest(classes=ExsimTestConfiguration.class)
+@ComponentScan(basePackages={"org.marketcetera","com.marketcetera"})
+@EntityScan(basePackages={"org.marketcetera","com.marketcetera"})
 public class ExsimFeedModuleTest
         implements ApplicationContextAware
 {
@@ -55,7 +62,7 @@ public class ExsimFeedModuleTest
             throws Exception
     {
         try {
-//            moduleManager.stop(ExsimFeedModuleFactory.INSTANCE_URN);
+            moduleManager.stop(ExsimFeedModuleFactory.INSTANCE_URN);
         } catch (Exception ignored) {}
     }
     /**
@@ -67,11 +74,11 @@ public class ExsimFeedModuleTest
     public void testStartAndStop()
             throws Exception
     {
-//        moduleManager.start(ExsimFeedModuleFactory.INSTANCE_URN);
-//        assertEquals(ModuleState.STARTED,
-//                     moduleManager.getModuleInfo(ExsimFeedModuleFactory.INSTANCE_URN).getState());
+        moduleManager.start(ExsimFeedModuleFactory.INSTANCE_URN);
+        assertEquals(ModuleState.STARTED,
+                     moduleManager.getModuleInfo(ExsimFeedModuleFactory.INSTANCE_URN).getState());
         // uncomment this next block to make it actually connect
-//        final AbstractMarketDataModuleMXBean moduleBean = getModuleBean();
+//        final MarketDataModuleMXBean moduleBean = getModuleBean();
 //        assertNotNull(moduleBean);
 //        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
 //            @Override
@@ -96,17 +103,17 @@ public class ExsimFeedModuleTest
     /**
      * Gets the admin bean for the given session.
      *
-     * @return an <code>AbstractMarketDataModuleMXBean</code> value
+     * @return an <code>MarketDataModuleMXBean</code> value
      * @throws MalformedObjectNameException if an error occurs getting the provider bean
      */
     @SuppressWarnings("unused")
-    private AbstractMarketDataModuleMXBean getModuleBean()
+    private MarketDataModuleMXBean getModuleBean()
             throws MalformedObjectNameException
     {
         ObjectName sessionObjectName = getModuleObjectName();
-        AbstractMarketDataModuleMXBean sessionAdmin = JMX.newMXBeanProxy(mbeanServer,
+        MarketDataModuleMXBean sessionAdmin = JMX.newMXBeanProxy(mbeanServer,
                                                                          sessionObjectName,
-                                                                         AbstractMarketDataModuleMXBean.class,
+                                                                         MarketDataModuleMXBean.class,
                                                                          true);
         return sessionAdmin;
     }
@@ -121,7 +128,7 @@ public class ExsimFeedModuleTest
     {
         // sample for old module: org.marketcetera.module:type=mdata,provider=activ,name=single
         StringBuilder builder = new StringBuilder();
-//        builder.append("org.marketcetera.module:type=mdata,provider=").append(ExsimFeedModuleFactory.IDENTIFIER).append(",name=single"); //$NON-NLS-1$ //$NON-NLS-2$
+        builder.append("org.marketcetera.module:type=mdata,provider=").append(ExsimFeedModuleFactory.IDENTIFIER).append(",name=single"); //$NON-NLS-1$ //$NON-NLS-2$
         return new ObjectName(builder.toString());
     }
     /**

@@ -2,6 +2,7 @@ package org.marketcetera.trade.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.marketcetera.admin.User;
@@ -138,8 +139,8 @@ public class OrderSummaryServiceImpl
         } else {
             where = where.and(r.viewer.eq(persistentViewer));
         }
-        Sort sort = new Sort(Sort.Direction.DESC,
-                             r.sendingTime.getMetadata().getName());
+        Sort sort = Sort.by(Sort.Direction.DESC,
+                            r.sendingTime.getMetadata().getName());
         // can expose the page and page size to allow paging through the api interfaces
         PageRequest page = PageRequest.of(0,
                                           Integer.MAX_VALUE,
@@ -166,9 +167,17 @@ public class OrderSummaryServiceImpl
      * @see com.marketcetera.ors.dao.OrderStatusService#findByOrderId(org.marketcetera.trade.OrderID)
      */
     @Override
-    public List<OrderSummary> findByOrderId(OrderID inOrderId)
+    public Optional<? extends OrderSummary> findByOrderId(OrderID inOrderId)
     {
-        List<PersistentOrderSummary> results = orderStatusDao.findByOrderId(inOrderId);
+        return orderStatusDao.findByOrderId(inOrderId);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.OrderSummaryService#findByRootOrderId(org.marketcetera.trade.OrderID)
+     */
+    @Override
+    public List<OrderSummary> findByRootOrderId(OrderID inOrderId)
+    {
+        List<PersistentOrderSummary> results = orderStatusDao.findByRootOrderId(inOrderId);
         List<OrderSummary> actualResults = new ArrayList<>();
         if(results != null) {
             actualResults.addAll(results);

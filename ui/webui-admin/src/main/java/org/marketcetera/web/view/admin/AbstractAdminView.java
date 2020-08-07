@@ -7,9 +7,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.persist.SummaryNDEntityBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.admin.AdminClientService;
-import org.marketcetera.web.view.AbstractGridView;
+import org.marketcetera.web.view.AbstractPagedGridView;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validatable;
@@ -40,7 +41,7 @@ import com.vaadin.ui.Window;
  * @since $Release$
  */
 public abstract class AbstractAdminView<Clazz extends SummaryNDEntityBase>
-        extends AbstractGridView<Clazz>
+        extends AbstractPagedGridView<Clazz>
 {
     /**
      * Get the webMessageService value.
@@ -55,12 +56,15 @@ public abstract class AbstractAdminView<Clazz extends SummaryNDEntityBase>
      * Create a new AbstractAdminView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     protected AbstractAdminView(Window inParentWindow,
+                                NewWindowEvent inEvent,
                                 Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /**

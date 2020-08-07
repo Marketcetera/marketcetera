@@ -23,17 +23,21 @@ import org.marketcetera.trade.AverageFillPrice;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.HasSuggestion;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.Suggestion;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.client.OrderValidationException;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.StyleService;
 import org.marketcetera.web.service.admin.AdminClientService;
@@ -485,6 +489,21 @@ public class OrderTicketView
             priceTextField.setValue(BigDecimalUtil.renderCurrency(averageFillPrice.getAveragePrice()));
             sideComboBox.setValue(averageFillPrice.getSide().isBuy()?Side.Sell:Side.Buy);
         }
+        if(suggestionOption.isPresent()) {
+            Suggestion suggestion = suggestionOption.get();
+            if(suggestion instanceof OrderSingleSuggestion) {
+                OrderSingleSuggestion orderSingleSuggestion = (OrderSingleSuggestion)suggestion;
+                symbolTextField.setValue(orderSingleSuggestion.getOrder().getInstrument().getFullSymbol());
+                if(!BigDecimalUtil.isNullOrZero(orderSingleSuggestion.getOrder().getQuantity())) {
+                    quantityTextField.setValue(BigDecimalUtil.render(orderSingleSuggestion.getOrder().getQuantity()));
+                } else {
+                    quantityTextField.focus();
+                }
+                orderTypeComboBox.setValue(OrderType.Limit);
+                priceTextField.setValue(BigDecimalUtil.renderCurrency(orderSingleSuggestion.getOrder().getPrice()));
+                sideComboBox.setValue(orderSingleSuggestion.getOrder().getSide());
+            }
+        }
     }
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractComponent#detach()
@@ -591,17 +610,25 @@ public class OrderTicketView
             }
         }
         averageFillPriceOption = Optional.ofNullable(averageFillPrice);
+        Suggestion suggestion = null;
+        if(event instanceof HasSuggestion) {
+            suggestion = ((HasSuggestion)event).getSuggestion();
+        }
+        suggestionOption = Optional.ofNullable(suggestion);
     }
     /**
      * Create a new OrderTicketView instance.
      *
      * @param inParent a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
     public OrderTicketView(Window inParent,
+                           NewWindowEvent inEvent,
                            Properties inProperties)
     {
         parent = inParent;
+        event = inEvent;
         viewProperties = inProperties;
     }
     /**
@@ -621,6 +648,20 @@ public class OrderTicketView
             if(!orderType.isMarketOrder()) {
                 enabled &= StringUtils.trimToNull(priceTextField.getValue()) != null;
             }
+        }
+        StringBuilder windowCaption = new StringBuilder();
+        if(sideComboBox.getValue() == null) {
+            windowCaption.append("Trade");
+        } else {
+            Side currentSide = (Side)sideComboBox.getValue();
+            if(currentSide.isBuy()) {
+                windowCaption.append("Buy");
+            } else {
+                windowCaption.append("Sell");
+            }
+        }
+        if(resolvedInstrument != null) {
+            windowCaption.append(" ").append(resolvedInstrument.getFullSymbol());
         }
         // time in force is optional
         // account is optional
@@ -691,6 +732,14 @@ public class OrderTicketView
      * parent window opened for the content
      */
     private final Window parent;
+    /**
+     * new window event that caused the view to be opened
+     */
+    private final NewWindowEvent event;
+    /**
+     * optional suggestion that might have been included on the new window event
+     */
+    private Optional<Suggestion> suggestionOption;
     /**
      * optional replace execution report
      */

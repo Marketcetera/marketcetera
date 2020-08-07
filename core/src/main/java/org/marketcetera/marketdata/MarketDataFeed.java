@@ -21,7 +21,7 @@ public interface MarketDataFeed<T extends MarketDataFeedToken,
     /**
      * Executes the given <code>Message</code> on this Market Data Feed.
      * 
-     * <p>The <code>ISubscriber</code> value specified will receive the
+     * <p>The <code>Subscriber</code> value specified will receive the
      * response or responses from the market data feed either in the
      * case of a snapshot or a subscription.  To specify a subscription,
      * which will give updates as they become available until canceled,

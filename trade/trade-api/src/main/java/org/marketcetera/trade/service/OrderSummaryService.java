@@ -1,6 +1,7 @@
 package org.marketcetera.trade.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.marketcetera.admin.User;
@@ -37,9 +38,9 @@ public interface OrderSummaryService
      * or days. Therefore, this method might not retrieve unique results.
      *
      * @param inOrderId an <code>OrderID</code> value
-     * @return a <code>List&lt;OrderStatus&gt;</code> value
+     * @return an <code>Optional&lt;OrderStatus&gt;</code> value
      */
-    List<OrderSummary> findByOrderId(OrderID inOrderId);
+    Optional<? extends OrderSummary> findByOrderId(OrderID inOrderId);
     /**
      * Find the order status of the most recent order in the given order chain.
      *
@@ -91,7 +92,7 @@ public interface OrderSummaryService
      * @return an <code>OrderStatus</code>value or <code>null</code>
      */
     OrderSummary findByRootOrderIdAndOrderId(OrderID inRootID,
-                                            OrderID inOrderID);
+                                             OrderID inOrderID);
     /**
      * Find the open orders using the given page attributes.
      *
@@ -110,4 +111,11 @@ public interface OrderSummaryService
     OrderSummary update(OrderSummary inOrderStatus,
                        Report inReport,
                        ReportBase inReportBase);
+    /**
+     * Find the order summary values with the given root order id.
+     *
+     * @param inOrderId an <code>OrderID</code> value
+     * @return a <code>List&lt;OrderSummary</code> value
+     */
+    List<OrderSummary> findByRootOrderId(OrderID inOrderId);
 }

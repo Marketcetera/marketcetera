@@ -116,7 +116,7 @@ public class WindowManagerService
         newWindow.setWidth(inEvent.getWindowSize().getFirstMember());
         newWindow.setHeight(inEvent.getWindowSize().getSecondMember());
         // the content view factory will be used to create the new window content
-        ContentViewFactory viewFactory = inEvent.getViewFactory();
+        ContentViewFactory viewFactory = applicationContext.getBean(inEvent.getViewFactoryType());
         // create the window meta data object, which will track data about the window
         WindowRegistry windowRegistry = getCurrentUserRegistry();
         WindowMetaData newWindowWrapper = new WindowMetaData(inEvent,
@@ -125,6 +125,7 @@ public class WindowManagerService
         windowRegistry.addWindow(newWindowWrapper);
         // create the new window content - initially, the properties will be mostly or completely empty, one would expect
         ContentView contentView = viewFactory.create(newWindow,
+                                                     inEvent,
                                                      newWindowWrapper.getProperties());
         styleService.addStyle(contentView);
         // set the content of the new window
@@ -313,6 +314,53 @@ public class WindowManagerService
         return registry;
     }
     /**
+     * Event used to open a new window on restart.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private class RestartNewWindowEvent
+            implements NewWindowEvent
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.events.NewWindowEvent#getWindowTitle()
+         */
+        @Override
+        public String getWindowTitle()
+        {
+            return windowTitle;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.events.NewWindowEvent#getViewFactoryType()
+         */
+        @Override
+        public Class<? extends ContentViewFactory> getViewFactoryType()
+        {
+            return contentViewFactory.getClass();
+        }
+        /**
+         * Create a new RestartNewWindowEvent instance.
+         *
+         * @param inContentViewFactory a <code>ContentViewFactory</code> value
+         * @param inWindowTitle a <code>String</code> value
+         */
+        private RestartNewWindowEvent(ContentViewFactory inContentViewFactory,
+                                      String inWindowTitle)
+        {
+            contentViewFactory = inContentViewFactory;
+            windowTitle = inWindowTitle;
+        }
+        /**
+         * content view factory value
+         */
+        private final ContentViewFactory contentViewFactory;
+        /**
+         * window title value
+         */
+        private final String windowTitle;
+    }
+    /**
      * Holds meta-data for windows.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -365,6 +413,8 @@ public class WindowManagerService
             try {
                 ContentViewFactory contentViewFactory = (ContentViewFactory)applicationContext.getBean(Class.forName(inProperties.getProperty(windowContentViewFactoryProp)));
                 ContentView contentView = contentViewFactory.create(window,
+                                                                    new RestartNewWindowEvent(contentViewFactory,
+                                                                                              properties.getProperty(windowTitleProp)),
                                                                     properties);
                 styleService.addStyle(contentView);
                 window.setContent(contentView);
@@ -469,15 +519,15 @@ public class WindowManagerService
          * Set the immutable properties of this window to the underlying properties storage.
          *
          * @param inContentViewFactory a <code>ContentViewFactory</code> value
-         * @param inUid a <code>String</code>value
+         * @param inUuid a <code>String</code>value
          */
         private void setWindowStaticProperties(ContentViewFactory inContentViewFactory,
-                                               String inUid)
+                                               String inUuid)
         {
             properties.setProperty(windowContentViewFactoryProp,
                                    inContentViewFactory.getClass().getCanonicalName());
-            properties.setProperty(windowUidProp,
-                                   inUid);
+            properties.setProperty(windowUuidProp,
+                                   inUuid);
         }
         /**
          * Close this window and remove it from active use.
@@ -487,16 +537,16 @@ public class WindowManagerService
             getWindow().close();
         }
         /**
-         * Get the window uid value.
+         * Get the window uuid value.
          *
          * @return a <code>String</code> value
          */
-        private String getUid()
+        private String getUuid()
         {
-            if(uid == null) {
-                uid = properties.getProperty(windowUidProp);
+            if(uuid == null) {
+                uuid = properties.getProperty(windowUuidProp);
             }
-            return uid;
+            return uuid;
         }
         /**
          * Get the hasFocus value.
@@ -521,9 +571,9 @@ public class WindowManagerService
          */
         private transient boolean hasFocus;
         /**
-         * cached uid value
+         * cached uuid value
          */
-        private transient String uid;
+        private transient String uuid;
         /**
          * properties used to record details about this window
          */
@@ -974,7 +1024,7 @@ public class WindowManagerService
             synchronized(activeWindows) {
                 Properties displayLayout = new Properties();
                 for(WindowMetaData activeWindow : activeWindows) {
-                    String windowKey = activeWindow.getUid();
+                    String windowKey = activeWindow.getUuid();
                     String windowValue = activeWindow.getStorableValue();
                     displayLayout.setProperty(windowKey,
                                               windowValue);
@@ -1004,9 +1054,9 @@ public class WindowManagerService
      */
     private static final String propId = WindowMetaData.class.getSimpleName();
     /**
-     * window uid key name
+     * window uuid key name
      */
-    private static final String windowUidProp = propId + "_uid";
+    public static final String windowUuidProp = propId + "_uid";
     /**
      * window content view factory key name
      */

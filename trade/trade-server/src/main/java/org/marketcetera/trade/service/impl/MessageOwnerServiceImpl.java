@@ -1,6 +1,7 @@
 package org.marketcetera.trade.service.impl;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
@@ -16,6 +17,8 @@ import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.Messages;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -34,6 +37,7 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
+@EnableAutoConfiguration
 public class MessageOwnerServiceImpl
         implements MessageOwnerService,Cacheable
 {
@@ -163,7 +167,7 @@ public class MessageOwnerServiceImpl
     @PostConstruct
     public void start()
     {
-        usersByOrderId = CacheBuilder.newBuilder().maximumSize(orderCacheSize).build();
+        usersByOrderId = CacheBuilder.newBuilder().maximumSize(orderCacheSize).expireAfterAccess(orderCacheTtl,TimeUnit.MILLISECONDS).build();
         SLF4JLoggerProxy.info(this,
                               "Message owner service started");
     }
@@ -206,7 +210,13 @@ public class MessageOwnerServiceImpl
     /**
      * max number of order owners to cache
      */
-    private long orderCacheSize = 10000;
+    @Value("${metc.order.owner.cach.size:10000}")
+    private long orderCacheSize;
+    /**
+     * TTL for order cache
+     */
+    @Value("${metc.order.owner.cach.ttl:10000}")
+    private long orderCacheTtl;
     /**
      * caches owner id by order id
      */

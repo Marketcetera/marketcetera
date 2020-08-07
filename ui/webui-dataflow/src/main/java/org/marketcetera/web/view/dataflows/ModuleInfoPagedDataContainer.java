@@ -11,6 +11,10 @@ import org.marketcetera.web.service.dataflow.DataFlowClientService;
 import org.marketcetera.web.service.dataflow.DataFlowClientServiceInstance;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.marketcetera.web.view.PagedViewProvider;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+
+import com.vaadin.spring.annotation.SpringComponent;
 
 /* $License$ */
 
@@ -21,6 +25,8 @@ import org.marketcetera.web.view.PagedViewProvider;
  * @version $Id$
  * @since $Release$
  */
+@SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ModuleInfoPagedDataContainer
         extends PagedDataContainer<DecoratedModuleInfo>
 {

@@ -20,6 +20,7 @@ import javax.persistence.Table;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.user.PersistentUser;
+import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.instruments.InstrumentFromMessage;
 import org.marketcetera.persist.EntityBase;
 import org.marketcetera.trade.BrokerID;
@@ -329,9 +330,10 @@ public class PersistentOrderSummary
         StringBuilder builder = new StringBuilder();
         builder.append("PersistentOrderSummary [instrument=").append(getInstrument()).append(", rootOrderId=")
                 .append(rootOrderId).append(", orderId=").append(orderId).append(", orderStatus=").append(orderStatus)
-                .append(", cumulativeQuantity=").append(cumulativeQuantity).append(", averagePrice=")
-                .append(averagePrice).append(", leavesQuantity=").append(leavesQuantity).append(", lastQuantity=")
-                .append(lastQuantity).append(", lastPrice=").append(lastPrice).append(", orderQuantity=").append(orderQuantity).append(", account=")
+                .append(", cumulativeQuantity=").append(BigDecimalUtil.render(cumulativeQuantity)).append(", averagePrice=")
+                .append(BigDecimalUtil.renderCurrency(averagePrice)).append(", leavesQuantity=").append(BigDecimalUtil.render(leavesQuantity)).append(", lastQuantity=")
+                .append(BigDecimalUtil.render(lastQuantity)).append(", lastPrice=").append(BigDecimalUtil.renderCurrency(lastPrice))
+                .append(", orderQuantity=").append(BigDecimalUtil.render(orderQuantity)).append(", account=")
                 .append(account).append(", side=").append(side).append(", brokerId=").append(brokerId)
                 .append(", report=").append(report).append("]");
         return builder.toString();

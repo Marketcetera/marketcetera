@@ -2,7 +2,8 @@ package org.marketcetera.web.view.dataflows;
 
 import java.util.Properties;
 
-import org.marketcetera.web.view.AbstractGridView;
+import org.marketcetera.web.events.NewWindowEvent;
+import org.marketcetera.web.view.AbstractPagedGridView;
 import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -24,21 +25,24 @@ import com.vaadin.ui.Window;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ModuleView
-        extends AbstractGridView<DecoratedModuleInfo>
+        extends AbstractPagedGridView<DecoratedModuleInfo>
         implements ContentView
 {
     /**
      * Create a new ModuleView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      * @param inStrategyEngine a <code>DecoratedStrategyEngine</code> value
      */
     public ModuleView(Window inParentWindow,
+                      NewWindowEvent inEvent,
                       Properties inViewProperties,
                       DecoratedStrategyEngine inStrategyEngine)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
         strategyEngine = inStrategyEngine;
     }
@@ -116,8 +120,17 @@ public class ModuleView
     @Override
     protected PagedDataContainer<DecoratedModuleInfo> createDataContainer()
     {
-        return new ModuleInfoPagedDataContainer(this,
-                                                strategyEngine);
+        return applicationContext.getBean(ModuleInfoPagedDataContainer.class,
+                                          this,
+                                          strategyEngine);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
+     */
+    @Override
+    protected Class<ModuleInfoPagedDataContainer> getDataContainerType()
+    {
+        return ModuleInfoPagedDataContainer.class;
     }
     /**
      * start action

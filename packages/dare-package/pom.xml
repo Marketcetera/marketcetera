@@ -5,13 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.marketcetera</groupId>
   <artifactId>dare-package</artifactId>
-  <version>4.0.1-SNAPSHOT</version>
+  <version>4.0.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>DARE Package</name>
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>packages-parent</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.2-SNAPSHOT</version>
   </parent>
   <dependencies>
     <!-- local compile -->
@@ -275,7 +275,7 @@
                   <value>src/test/cmd_exec/conf/application.properties,target/local.properties</value>
                 </systemProperty>
                 <systemProperty>
-                  <key>log4j.configurationFile</key>
+                  <key>log.configurationFile</key>
                   <value>src/test/cmd_exec/conf/log4j2.xml</value>
                 </systemProperty>
                 <systemProperty>

@@ -12,9 +12,9 @@ import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.converters.DecimalConverter;
 import org.marketcetera.web.converters.InstrumentConverter;
 import org.marketcetera.web.converters.SideConverter;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.trade.event.TradeOrderEvent;
-import org.marketcetera.web.view.AbstractGridView;
-import org.marketcetera.web.view.PagedDataContainer;
+import org.marketcetera.web.view.AbstractPagedGridView;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -36,7 +36,7 @@ import com.vaadin.ui.Window;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AveragePriceView
-        extends AbstractGridView<AverageFillPrice>
+        extends AbstractPagedGridView<AverageFillPrice>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.AbstractGridView#attach()
@@ -89,21 +89,24 @@ public class AveragePriceView
      * Create a new AveragePriceView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public AveragePriceView(Window inParentWindow,
+                            NewWindowEvent inEvent,
                             Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<AverageFillPrice> createDataContainer()
+    protected Class<AveragePricePagedDataContainer> getDataContainerType()
     {
-        return new AveragePricePagedDataContainer(this);
+        return AveragePricePagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#getViewSubjectName()

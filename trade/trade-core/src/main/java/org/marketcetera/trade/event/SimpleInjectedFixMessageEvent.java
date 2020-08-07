@@ -22,7 +22,15 @@ public class SimpleInjectedFixMessageEvent
     @Override
     public User getUser()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return user;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.HasUser#setUser(org.marketcetera.admin.User)
+     */
+    @Override
+    public void setUser(User inUser)
+    {
+        user = inUser;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -53,5 +61,5 @@ public class SimpleInjectedFixMessageEvent
     /**
      * user value
      */
-    private final User user;
+    private User user;
 }

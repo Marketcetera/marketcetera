@@ -5,9 +5,9 @@ import java.util.Properties;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
-import org.marketcetera.web.view.AbstractGridView;
-import org.marketcetera.web.view.PagedDataContainer;
+import org.marketcetera.web.view.AbstractPagedGridView;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -28,7 +28,7 @@ import com.vaadin.ui.Window;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ClusterView
-        extends AbstractGridView<ClusterData>
+        extends AbstractPagedGridView<ClusterData>
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
@@ -58,12 +58,15 @@ public class ClusterView
      * Create a new ClusterView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public ClusterView(Window inParentWindow,
+                       NewWindowEvent inEvent,
                        Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)
@@ -100,12 +103,12 @@ public class ClusterView
                               selectedItem);
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<ClusterData> createDataContainer()
+    protected Class<ClusterPagedDataContainer> getDataContainerType()
     {
-        return new ClusterPagedDataContainer(this);
+        return ClusterPagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#getViewSubjectName()

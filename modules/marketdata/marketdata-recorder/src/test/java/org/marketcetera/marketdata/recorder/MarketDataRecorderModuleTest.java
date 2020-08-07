@@ -26,6 +26,7 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
@@ -49,9 +50,14 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.common.collect.Lists;
 
@@ -64,6 +70,10 @@ import com.google.common.collect.Lists;
  * @version $Id$
  * @since $Release$
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes=MarketDataRecorderTestConfiguration.class)
+@ComponentScan(basePackages={"org.marketcetera","com.marketcetera"})
+@EntityScan(basePackages={"org.marketcetera","com.marketcetera"})
 public class MarketDataRecorderModuleTest
 {
     /**
@@ -75,8 +85,6 @@ public class MarketDataRecorderModuleTest
     public void setup()
             throws Exception
     {
-        moduleManager = new ModuleManager();
-        moduleManager.init();
         moduleManager.start(TestFeedModuleFactory.INSTANCE_URN);
         moduleManager.start(BogusFeedModuleFactory.INSTANCE_URN);
         testMarketDataFeed = TestFeed.instance;
@@ -709,6 +717,7 @@ public class MarketDataRecorderModuleTest
      * @return an <code>int</code> value
      * @throws Exception if an unexpected error occurs
      */
+    @SuppressWarnings("deprecation")
     private int getEventCount(File inFile)
             throws Exception
     {
@@ -919,6 +928,7 @@ public class MarketDataRecorderModuleTest
     /**
      * manages modules
      */
+    @Autowired
     private ModuleManager moduleManager;
     /**
      * test session reset value

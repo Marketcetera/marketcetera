@@ -81,6 +81,7 @@ import org.marketcetera.trade.dao.QPersistentExecutionReport;
 import org.marketcetera.trade.dao.QPersistentOrderSummary;
 import org.marketcetera.trade.dao.QPersistentReport;
 import org.marketcetera.trade.event.SimpleInjectedFixMessageEvent;
+import org.marketcetera.trade.event.SimpleOrderSummaryEvent;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -201,7 +202,9 @@ public class ReportServiceImpl
         Sort sort = buildSort(inPageRequest,
                               persistentReportAliases,
                               Sort.by(new Sort.Order(Sort.Direction.DESC,
-                                                     QPersistentReport.persistentReport.sendingTime.getMetadata().getName())));
+                                                     QPersistentReport.persistentReport.sendingTime.getMetadata().getName()),
+                                      new Sort.Order(Sort.Direction.DESC,
+                                                     QPersistentReport.persistentReport.msgSeqNum.getMetadata().getName())));
         SLF4JLoggerProxy.debug(this,
                                "getReports sort order is {} renders: {}",
                                inPageRequest.getSortOrder(),
@@ -367,8 +370,8 @@ public class ReportServiceImpl
             return OrderStatus.Unknown;
         }
         BooleanBuilder where = new BooleanBuilder().and(QPersistentExecutionReport.persistentExecutionReport.rootOrderId.eq(rootId));
-        Sort sort = new Sort(Sort.Direction.DESC,
-                             QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName());
+        Sort sort = Sort.by(Sort.Direction.DESC,
+                            QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName());
         PageRequest page = PageRequest.of(0,
                                           1,
                                           sort);
@@ -405,8 +408,8 @@ public class ReportServiceImpl
             return Optional.empty();
         }
         BooleanBuilder where = new BooleanBuilder().and(QPersistentExecutionReport.persistentExecutionReport.rootOrderId.eq(rootId));
-        Sort sort = new Sort(Sort.Direction.DESC,
-                             QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName());
+        Sort sort = Sort.by(Sort.Direction.DESC,
+                            QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName());
         PageRequest page = PageRequest.of(0,
                                           1,
                                           sort);
@@ -464,8 +467,8 @@ public class ReportServiceImpl
         } else {
             where = where.and(r.viewer.eq((PersistentUser)inUser));
         }
-        Sort sort = new Sort(Sort.Direction.ASC,
-                             r.sendingTime.getMetadata().getName());
+        Sort sort = Sort.by(Sort.Direction.ASC,
+                            r.sendingTime.getMetadata().getName());
         // can expose the page and page size to allow paging through the api interfaces
         PageRequest page = PageRequest.of(0,
                                           Integer.MAX_VALUE,
@@ -486,8 +489,8 @@ public class ReportServiceImpl
                                                                 int inPageSize)
     {
         QPersistentExecutionReport e = QPersistentExecutionReport.persistentExecutionReport;
-        Sort sort = new Sort(Sort.Direction.ASC,
-                             e.sendingTime.getMetadata().getName());
+        Sort sort = Sort.by(Sort.Direction.ASC,
+                            e.sendingTime.getMetadata().getName());
         PageRequest page = PageRequest.of(inPageNumber,
                                           inPageSize,
                                           sort);
@@ -1176,28 +1179,29 @@ public class ReportServiceImpl
                                       OrderID inRootId,
                                       PersistentReport inReport)
     {
-        OrderSummary orderStatus;
+        OrderSummary orderSummary;
         if(inReportBase instanceof OrderCancelReject) {
             // need to search for some particulars to help us fill out this record
-            orderStatus = orderStatusService.findMostRecentExecutionByRootOrderId(inRootId);
+            orderSummary = orderStatusService.findMostRecentExecutionByRootOrderId(inRootId);
         } else {
-            orderStatus = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
-                                                                         inReportBase.getOrderID());
-            if(orderStatus == null && inReportBase.getOriginalOrderID() != null) {
-                orderStatus = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
-                                                                             inReportBase.getOriginalOrderID());
+            orderSummary = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
+                                                                          inReportBase.getOrderID());
+            if(orderSummary == null && inReportBase.getOriginalOrderID() != null) {
+                orderSummary = orderStatusService.findByRootOrderIdAndOrderId(inRootId,
+                                                                              inReportBase.getOriginalOrderID());
             }
         }
-        if(orderStatus == null) {
-            orderStatus = new PersistentOrderSummary(inReport,
-                                                     inReportBase,
-                                                     inRootId);
-            orderStatus = orderStatusService.save(orderStatus);
+        if(orderSummary == null) {
+            orderSummary = new PersistentOrderSummary(inReport,
+                                                      inReportBase,
+                                                      inRootId);
+            orderSummary = orderStatusService.save(orderSummary);
         } else {
-            orderStatusService.update(orderStatus,
-                                      inReport,
-                                      inReportBase);
+            orderSummary = orderStatusService.update(orderSummary,
+                                                     inReport,
+                                                     inReportBase);
         }
+        eventBusService.post(new SimpleOrderSummaryEvent(orderSummary));
     }
     /**
      * Get the planned session start for the given session id.

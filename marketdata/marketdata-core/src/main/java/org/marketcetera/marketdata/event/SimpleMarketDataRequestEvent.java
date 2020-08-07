@@ -2,6 +2,7 @@ package org.marketcetera.marketdata.event;
 
 import java.util.Optional;
 
+import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
 
 /* $License$ */
@@ -30,7 +31,7 @@ public class SimpleMarketDataRequestEvent
     @Override
     public String getMarketDataRequestId()
     {
-        return requestId;
+        return marketDataRequestId;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -39,7 +40,7 @@ public class SimpleMarketDataRequestEvent
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("SimpleMarketDataRequestEvent [requestId=").append(requestId).append(", requestedProvider=").append(requestedProvider)
+        builder.append("SimpleMarketDataRequestEvent [requestedProvider=").append(requestedProvider)
                 .append(", marketDataRequest=").append(marketDataRequest).append("]");
         return builder.toString();
     }
@@ -51,15 +52,6 @@ public class SimpleMarketDataRequestEvent
     public void setMarketDataRequest(MarketDataRequest inMarketDataRequest)
     {
         marketDataRequest = inMarketDataRequest;
-    }
-    /**
-     * Sets the requestId value.
-     *
-     * @param inRequestId a <code>String</code> value
-     */
-    public void setRequestId(String inRequestId)
-    {
-        requestId = inRequestId;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.event.MarketDataRequestEvent#getRequestedProvider()
@@ -78,20 +70,31 @@ public class SimpleMarketDataRequestEvent
     {
         requestedProvider = Optional.ofNullable(inRequestedProvider);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.HasMarketDataListener#getMarketDataListener()
+     */
+    @Override
+    public MarketDataListener getMarketDataListener()
+    {
+        return listener;
+    }
     /**
      * Create a new SimpleMarketDataRequestEvent instance.
      *
      * @param inMarketDataRequest a <code>MarketDataRequest</code> value
-     * @param inRequestId a <code>String</code> value
+     * @param inMarketDataRequestId a <code>String</code> value
      * @param inRequestedProvider a <code>String</code> value or <code>null</code>
+     * @param inListener a <code>MarketDataListener</code> value
      */
     public SimpleMarketDataRequestEvent(MarketDataRequest inMarketDataRequest,
-                                        String inRequestId,
-                                        String inRequestedProvider)
+                                        String inMarketDataRequestId,
+                                        String inRequestedProvider,
+                                        MarketDataListener inListener)
     {
         marketDataRequest = inMarketDataRequest;
-        requestId = inRequestId;
         requestedProvider = Optional.ofNullable(inRequestedProvider);
+        listener = inListener;
+        marketDataRequestId = inMarketDataRequestId;
     }
     /**
      * Create a new SimpleMarketDataRequestEvent instance.
@@ -102,9 +105,13 @@ public class SimpleMarketDataRequestEvent
      */
     private MarketDataRequest marketDataRequest;
     /**
-     * request id value
+     * market data request id value
      */
-    private String requestId;
+    private String marketDataRequestId;
+    /**
+     * market data listener value
+     */
+    private MarketDataListener listener;
     /**
      * optional requested provider
      */

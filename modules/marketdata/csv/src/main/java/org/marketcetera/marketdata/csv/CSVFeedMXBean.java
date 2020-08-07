@@ -2,7 +2,7 @@ package org.marketcetera.marketdata.csv;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.module.DisplayName;
-import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.marketdata.MarketDataModuleMXBean;
 
 import javax.management.MXBean;
 
@@ -18,7 +18,7 @@ import javax.management.MXBean;
 @DisplayName("Management Interface for CSV Market Data Adapter")
 @ClassVersion("$Id$")
 public interface CSVFeedMXBean
-        extends AbstractMarketDataModuleMXBean
+        extends MarketDataModuleMXBean
 {
     /**
      * Gets the rate at which data is replayed.

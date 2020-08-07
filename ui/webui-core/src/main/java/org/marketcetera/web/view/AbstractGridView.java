@@ -1,14 +1,13 @@
 package org.marketcetera.web.view;
 
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.events.NewWindowEvent;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.sort.SortOrder;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.grid.ColumnResizeMode;
@@ -20,7 +19,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.SelectionMode;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
@@ -36,9 +34,8 @@ import com.vaadin.ui.themes.ValoTheme;
  * @version $Id$
  * @since $Release$
  */
-public abstract class AbstractGridView<Clazz>
+public abstract class AbstractGridView<DataClazz,DataContainerClazz extends GridDataContainer<DataClazz>>
         extends AbstractContentView
-        implements PagedViewProvider
 {
     /* (non-Javadoc)
      * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
@@ -60,11 +57,11 @@ public abstract class AbstractGridView<Clazz>
     {
         super.attach();
         setSizeFull();
-        CssLayout aboveTheGridLayout = new CssLayout();
+        aboveTheGridLayout = new CssLayout();
         aboveTheGridLayout.setWidth("100%");
-        CssLayout belowTheGridLayout = new CssLayout();
+        belowTheGridLayout = new CssLayout();
         belowTheGridLayout.setWidth("100%");
-        VerticalLayout gridLayout = new VerticalLayout();
+        gridLayout = new VerticalLayout();
         gridLayout.setMargin(true);
         gridLayout.setWidth("100%");
         gridLayout.setHeight("75%");
@@ -73,13 +70,8 @@ public abstract class AbstractGridView<Clazz>
         grid.setSelectionMode(SelectionMode.SINGLE);
         grid.setHeightMode(HeightMode.CSS);
         grid.setSizeFull();
-        grid.addSortListener(inEvent -> {
-            dataContainer.update();
-        });
         dataContainer = createDataContainer();
-        dataContainer.setItemsPerPage(25); // TODO config
-        dataContainer.setCurrentPage(0);
-        dataContainer.start();
+        dataContainer.configure();
         grid.setContainerDataSource(dataContainer);
         grid.setColumnReorderingAllowed(true);
         grid.setColumnResizeMode(ColumnResizeMode.ANIMATED);
@@ -102,151 +94,23 @@ public abstract class AbstractGridView<Clazz>
         createNewButton.addClickListener(getCreateNewClickListener());
         aboveTheGridLayout.addComponents(actionSelect,
                                          createNewButton);
-        pageSizeSelect = new ComboBox("Items per page");
-        pageSizeSelect.setNullSelectionAllowed(false);
-        pageSizeSelect.setNewItemsAllowed(true);
-        pageSizeSelect.addItems(10,25,50);
-        pageSizeSelect.setValue(25);
-        pageSizeSelect.setNewItemHandler(inNewItemCaption -> {
-            try {
-                int newValue = Integer.parseInt(String.valueOf(inNewItemCaption));
-                if(newValue > 0) {
-                    pageSizeSelect.addItem(newValue);
-                }
-            } catch (Exception ignored) {
-            }
-        });
-        pageSizeSelect.addValueChangeListener(inEvent -> {
-            ValueChangeEvent event = (ValueChangeEvent)inEvent;
-            dataContainer.setItemsPerPage((Integer)event.getProperty().getValue());
-        });
-        firstPageButton = new Button();
-        firstPageButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-        firstPageButton.setIcon(FontAwesome.FAST_BACKWARD);
-        firstPageButton.addClickListener(inEvent -> {
-            dataContainer.firstPageClick();
-        });
-        prevPageButton = new Button();
-        prevPageButton.setIcon(FontAwesome.BACKWARD);
-        prevPageButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-        prevPageButton.addClickListener(inEvent -> {
-            dataContainer.prevPageClick();
-        });
-        currentPageLabel = new Label();
-        currentPageLabel.setWidthUndefined();
-        nextPageButton = new Button();
-        nextPageButton.setIcon(FontAwesome.FORWARD);
-        nextPageButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-        nextPageButton.addClickListener(inEvent -> {
-            dataContainer.nextPageClick();
-        });
-        lastPageButton = new Button();
-        lastPageButton.setIcon(FontAwesome.FAST_FORWARD);
-        lastPageButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-        lastPageButton.addClickListener(inEvent -> {
-            dataContainer.lastPageClick();
-        });
-        totalItemsLabel = new Label();
-        totalItemsLabel.setWidthUndefined();
-        belowTheGridLayout.addComponents(pageSizeSelect,
-                                         firstPageButton,
-                                         prevPageButton,
-                                         currentPageLabel,
-                                         nextPageButton,
-                                         lastPageButton,
-                                         totalItemsLabel);
         addComponents(aboveTheGridLayout,
                       gridLayout,
                       belowTheGridLayout);
     }
-    /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractComponent#detach()
-     */
-    @Override
-    public void detach()
-    {
-        super.detach();
-        if(dataContainer != null) {
-            dataContainer.stop();
-        }
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.PagedViewProvider#getPageSizeSelect()
-     */
-    @Override
-    public ComboBox getPageSizeSelect()
-    {
-        return pageSizeSelect;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.PagedViewProvider#getFirstPageButton()
-     */
-    @Override
-    public Button getFirstPageButton()
-    {
-        return firstPageButton;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.PagedViewProvider#getPrevPageButton()
-     */
-    @Override
-    public Button getPrevPageButton()
-    {
-        return prevPageButton;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.PagedViewProvider#getNextPageButton()
-     */
-    @Override
-    public Button getNextPageButton()
-    {
-        return nextPageButton;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.PagedViewProvider#getLastPageButton()
-     */
-    @Override
-    public Button getLastPageButton()
-    {
-        return lastPageButton;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.PagedViewProvider#getCurrentPageLabel()
-     */
-    @Override
-    public Label getCurrentPageLabel()
-    {
-        return currentPageLabel;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.PagedViewProvider#getTotalItemsLabel()
-     */
-    @Override
-    public Label getTotalItemsLabel()
-    {
-        return totalItemsLabel;
-    }
-    /* (non-Javadoc)
-     * @see com.marketcetera.web.view.PagedViewProvider#getSortOrder()
-     */
-    @Override
-    public List<SortOrder> getSortOrder()
-    {
-        return grid.getSortOrder();
-    }
     /**
      * Get the selected item.
      *
-     * @return a <code>Clazz</code> or <code>null</code>
+     * @return a <code>DataClazz</code> or <code>null</code>
      */
     @SuppressWarnings("unchecked")
-    protected Clazz getSelectedItem()
+    protected DataClazz getSelectedItem()
     {
         Object rawRow = getGrid().getSelectedRow();
         if(rawRow == null) {
             return null;
         }
-        return (Clazz)rawRow;
+        return (DataClazz)rawRow;
     }
     /**
      * Get the action value change listener to use when the action value changes.
@@ -271,7 +135,6 @@ public abstract class AbstractGridView<Clazz>
                                   Type.ERROR_MESSAGE);
             } finally {
                 getActionSelect().setValue(null);
-                getDataContainer().update();
             }
         };
     }
@@ -298,11 +161,21 @@ public abstract class AbstractGridView<Clazz>
      */
     protected abstract String getViewSubjectName();
     /**
+     * Get the data container type class value.
+     *
+     * @return a <code>Class&lt;DataContainerClazz&gt;</code> value
+     */
+    protected abstract Class<? extends DataContainerClazz> getDataContainerType();
+    /**
      * Create a new data container.
      *
-     * @return a <code>PagedDataContainer&lt;Clazz&gt;</code> value
+     * @return a <code>DataContainerClazz</code> value
      */
-    protected abstract PagedDataContainer<Clazz> createDataContainer();
+    protected DataContainerClazz createDataContainer()
+    {
+        return applicationContext.getBean(getDataContainerType(),
+                                          this);
+    }
     /**
      * Get the click listener to use when the create new button is invoked.
      *
@@ -338,9 +211,9 @@ public abstract class AbstractGridView<Clazz>
     /**
      * Get the bean item container for the view grid.
      *
-     * @return a <code>PagedDataContainer&lt;Clazz&gt;</code> value
+     * @return a <code>DataContainerClazz</code> value
      */
-    protected final PagedDataContainer<Clazz> getDataContainer()
+    protected DataContainerClazz getDataContainer()
     {
         return dataContainer;
     }
@@ -372,45 +245,50 @@ public abstract class AbstractGridView<Clazz>
         return grid;
     }
     /**
+     * Get the aboveTheGridLayout value.
+     *
+     * @return a <code>CssLayout</code> value
+     */
+    protected CssLayout getAboveTheGridLayout()
+    {
+        return aboveTheGridLayout;
+    }
+    /**
+     * Get the belowTheGridLayout value.
+     *
+     * @return a <code>CssLayout</code> value
+     */
+    protected CssLayout getBelowTheGridLayout()
+    {
+        return belowTheGridLayout;
+    }
+    /**
      * Create a new AbstractGridView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     protected AbstractGridView(Window inParentWindow,
+                               NewWindowEvent inEvent,
                                Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /**
-     * allows selection of the page size
+     * layout above the grid
      */
-    private ComboBox pageSizeSelect;
+    private CssLayout aboveTheGridLayout;
     /**
-     * changes the display to the first page
+     * layout below the grid
      */
-    private Button firstPageButton;
+    private CssLayout belowTheGridLayout;
     /**
-     * changes the display to the previous page
+     * grid layout value
      */
-    private Button prevPageButton;
-    /**
-     * describes the current page
-     */
-    private Label currentPageLabel;
-    /**
-     * describes the total number of items
-     */
-    private Label totalItemsLabel;
-    /**
-     * changes the display to the next page
-     */
-    private Button nextPageButton;
-    /**
-     * changes the display to the last page
-     */
-    private Button lastPageButton;
+    private VerticalLayout gridLayout;
     /**
      * creates new objects
      */
@@ -426,6 +304,6 @@ public abstract class AbstractGridView<Clazz>
     /**
      * holds data for the view
      */
-    private PagedDataContainer<Clazz> dataContainer;
+    private DataContainerClazz dataContainer;
     private static final long serialVersionUID = -7412752686777864724L;
 }

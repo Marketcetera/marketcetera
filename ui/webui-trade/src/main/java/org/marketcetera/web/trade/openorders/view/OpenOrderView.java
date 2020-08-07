@@ -6,8 +6,8 @@ import org.marketcetera.web.converters.DateConverter;
 import org.marketcetera.web.converters.DecimalConverter;
 import org.marketcetera.web.converters.InstrumentConverter;
 import org.marketcetera.web.converters.UserConverter;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.trade.executionreport.view.AbstractHasFixMessageView;
-import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -40,12 +40,15 @@ public class OpenOrderView
      * Create a new OpenOrderView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public OpenOrderView(Window inParentWindow,
+                         NewWindowEvent inEvent,
                          Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)
@@ -81,12 +84,12 @@ public class OpenOrderView
         getGrid().getColumn("orderStatus").setHeaderCaption("Ord Status");
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<DisplayOrderSummary> createDataContainer()
+    protected Class<OrderSummaryPagedDataContainer> getDataContainerType()
     {
-        return new OrderSummaryPagedDataContainer(this);
+        return OrderSummaryPagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#getViewSubjectName()

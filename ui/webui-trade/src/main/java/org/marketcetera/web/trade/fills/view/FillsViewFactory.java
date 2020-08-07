@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.web.trade.executionreport.view.AbstractExecutionReportViewFactory;
+import org.marketcetera.web.trade.view.AbstractTradeViewFactory;
 import org.marketcetera.web.view.ContentView;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -65,6 +66,14 @@ public class FillsViewFactory
     protected Class<? extends ContentView> getViewType()
     {
         return FillsView.class;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.trade.view.AbstractTradeViewFactory#getViewFactoryType()
+     */
+    @Override
+    protected Class<? extends AbstractTradeViewFactory> getViewFactoryType()
+    {
+        return FillsViewFactory.class;
     }
     /**
      * permission(s) required to execute open order view

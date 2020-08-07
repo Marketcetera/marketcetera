@@ -53,6 +53,7 @@ public abstract class AbstractAdminViewFactory
      * @return a <code>String</code> value
      */
     protected abstract String getViewName();
+    protected abstract Class<? extends ContentViewFactory> getViewFactory();
     /**
      * Indicates that an admin type has been selected.
      *
@@ -72,12 +73,12 @@ public abstract class AbstractAdminViewFactory
             return AbstractAdminViewFactory.this.getViewName();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.web.events.NewWindowEvent#getViewFactory()
+         * @see org.marketcetera.web.events.NewWindowEvent#getViewFactoryType()
          */
         @Override
-        public ContentViewFactory getViewFactory()
+        public Class<? extends ContentViewFactory> getViewFactoryType()
         {
-            return AbstractAdminViewFactory.this;
+            return getViewFactory();
         }
     }
     /**

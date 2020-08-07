@@ -80,8 +80,10 @@ public class SystemInformationLogger
                 try {
                     evaluate();
                 } catch (Exception e) {
-                    SLF4JLoggerProxy.warn(SystemInformationLogger.this,
-                                          e);
+                    if(!PlatformServices.isShutdown(e)) {
+                        SLF4JLoggerProxy.warn(SystemInformationLogger.this,
+                                              e);
+                    }
                 }
             }
         },pollingInterval,pollingInterval,TimeUnit.MILLISECONDS);

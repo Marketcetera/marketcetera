@@ -496,9 +496,10 @@ public abstract class TradeRpcUtil
                 return Side.Undisclosed;
             case UnknownSide:
                 return Side.Unknown;
+            case NoSide:
+                return null;
             default:
                 throw new UnsupportedOperationException("Unsupported side value: " + inSideType);
-            
         }
     }
     /**
@@ -509,6 +510,9 @@ public abstract class TradeRpcUtil
      */
     public static TradeTypesRpc.Side getRpcSide(Side inSide)
     {
+        if(inSide == null) {
+            return TradeTypesRpc.Side.NoSide;
+        }
         switch(inSide) {
             case Buy:
                 return TradeTypesRpc.Side.Buy;

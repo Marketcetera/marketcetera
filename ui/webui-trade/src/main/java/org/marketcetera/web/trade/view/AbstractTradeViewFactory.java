@@ -4,7 +4,6 @@ import org.marketcetera.core.Pair;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.AbstractContentViewFactory;
-import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.MenuContent;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -59,6 +58,12 @@ public abstract class AbstractTradeViewFactory
                            "50%");
     }
     /**
+     * Get the content view factory for this view factory.
+     *
+     * @return a <code>Class&lt;? extends AbstractTradeViewViewFactory&gt;</code> value
+     */
+    protected abstract Class<? extends AbstractTradeViewFactory> getViewFactoryType();
+    /**
      * Get the Vaadin name of the view.
      *
      * @return a <code>String</code> value
@@ -83,12 +88,12 @@ public abstract class AbstractTradeViewFactory
             return AbstractTradeViewFactory.this.getViewName();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.web.events.NewWindowEvent#getViewFactory()
+         * @see org.marketcetera.web.events.NewWindowEvent#getViewFactoryType()
          */
         @Override
-        public ContentViewFactory getViewFactory()
+        public Class<? extends AbstractTradeViewFactory> getViewFactoryType()
         {
-            return AbstractTradeViewFactory.this;
+            return AbstractTradeViewFactory.this.getViewFactoryType();
         }
         /* (non-Javadoc)
          * @see org.marketcetera.web.events.NewWindowEvent#getWindowSize()

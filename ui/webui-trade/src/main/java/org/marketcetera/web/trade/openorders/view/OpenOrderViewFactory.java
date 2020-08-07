@@ -74,6 +74,14 @@ public class OpenOrderViewFactory
     {
         return OpenOrderView.class;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.trade.view.AbstractTradeViewFactory#getViewFactoryType()
+     */
+    @Override
+    protected Class<? extends AbstractTradeViewFactory> getViewFactoryType()
+    {
+        return OpenOrderViewFactory.class;
+    }
     /**
      * permission(s) required to execute open order view
      */

@@ -43,9 +43,9 @@ public interface NewWindowEvent
     /**
      * Get the content view factory for this window.
      *
-     * @return a <code>ContentViewFactory</code> value
+     * @return a <code>Class&lt;? extends ContentViewFactory&gt;</code> value
      */
-    ContentViewFactory getViewFactory();
+    Class<? extends ContentViewFactory> getViewFactoryType();
     /**
      * Get the window size recommended for this window.
      * 

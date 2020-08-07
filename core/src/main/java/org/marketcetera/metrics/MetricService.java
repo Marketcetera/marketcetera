@@ -22,6 +22,7 @@ public class MetricService
     public MetricService()
     {
         metrics = new MetricRegistry();
+        instance = this;
     }
     /**
      * Get the singleton instance of the metric service.
@@ -44,7 +45,7 @@ public class MetricService
     /**
      * singleton metrics instance
      */
-    private static MetricService instance = new MetricService();
+    private static MetricService instance;
     /**
      * metrics registry
      */

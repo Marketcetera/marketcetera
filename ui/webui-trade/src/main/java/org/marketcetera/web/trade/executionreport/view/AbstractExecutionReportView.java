@@ -11,6 +11,7 @@ import org.marketcetera.web.converters.SecurityTypeConverter;
 import org.marketcetera.web.converters.SideConverter;
 import org.marketcetera.web.converters.TimeInForceConverter;
 import org.marketcetera.web.converters.UserConverter;
+import org.marketcetera.web.events.NewWindowEvent;
 
 import com.vaadin.ui.Window;
 
@@ -30,12 +31,15 @@ public abstract class AbstractExecutionReportView
      * Create a new FillsView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     protected AbstractExecutionReportView(Window inParentWindow,
+                                          NewWindowEvent inEvent,
                                           Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)

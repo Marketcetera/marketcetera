@@ -28,7 +28,6 @@ public class InstrumentConverter
             throws ConversionException
     {
         // TODO need to link in symbol resolver from applicationContext to achieve this - is it necessary?
-        System.out.println("Coco: attempting to convert " + inValue + " to an instrument");
         throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)

@@ -2,6 +2,7 @@ package org.marketcetera.web.view;
 
 import java.util.Properties;
 
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -21,14 +22,16 @@ public abstract class AbstractContentViewFactory
         implements ContentViewFactory
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, java.util.Properties)
+     * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, org.marketcetera.web.events.NewWindowEvent, java.util.Properties)
      */
     @Override
     public ContentView create(Window inParent,
+                              NewWindowEvent inEvent,
                               Properties inViewProperties)
     {
         return applicationContext.getBean(getViewType(),
                                           inParent,
+                                          inEvent,
                                           inViewProperties);
     }
     /**

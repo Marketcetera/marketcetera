@@ -2,7 +2,7 @@ package org.marketcetera.marketdata;
 
 import java.util.List;
 
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.event.DividendEvent;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.QuoteEvent;
@@ -35,11 +35,11 @@ public interface Exchange<T>
      * the exchange is stopped via {@link Exchange#stop}.
      *
      * @param inExchangeRequest an <code>ExchangeRequest</code> value
-     * @param inSubscriber an <code>ISubscriber</code> value containing the recipient of subscription updates
+     * @param inSubscriber an <code>Subscriber</code> value containing the recipient of subscription updates
      * @return a <code>T</code> value representing the subscription
      */
     public T getStatistics(ExchangeRequest inExchangeRequest,
-                           ISubscriber inSubscriber);
+                           Subscriber inSubscriber);
     /**
      * Gets the top of the exchange book for the given <code>ExchangeRequest</code>.
      *
@@ -54,11 +54,11 @@ public interface Exchange<T>
      * the exchange is stopped via {@link Exchange#stop}.
      *
      * @param inExchangeRequest an <code>ExchangeRequest</code> value
-     * @param inSubscriber an <code>ISubscriber</code> value containing the recipient of subscription updates
+     * @param inSubscriber an <code>Subscriber</code> value containing the recipient of subscription updates
      * @return a <code>T</code> value representing the subscription
      */
     public T getTopOfBook(ExchangeRequest inExchangeRequest,
-                          ISubscriber inSubscriber);
+                          Subscriber inSubscriber);
     /**
      * Gets the depth of the exchange book for the given <code>ExchangeRequest</code>.
      *
@@ -73,11 +73,11 @@ public interface Exchange<T>
      * the exchange is stopped via {@link Exchange#stop}.
      *
      * @param inExchangeRequest an <code>ExchangeRequest</code> value
-     * @param inSubscriber an <code>ISubscriber</code> value containing the recipient of subscription updates
+     * @param inSubscriber an <code>Subscriber</code> value containing the recipient of subscription updates
      * @return a <code>T</code> value representing the subscription
      */
     public T getDepthOfBook(ExchangeRequest inExchangeRequest,
-                            ISubscriber inSubscriber);
+                            Subscriber inSubscriber);
     /**
      * Gets the latest trade for the given <code>ExchangeRequest</code>.
      *
@@ -92,12 +92,12 @@ public interface Exchange<T>
      * the exchange is stopped via {@link Exchange#stop}.
      *
      * @param inExchangeRequest an <code>ExchangeRequest</code> value
-     * @param inSubscriber an <code>ISubscriber</code> value containing the recipient of subscription updates
+     * @param inSubscriber an <code>Subscriber</code> value containing the recipient of subscription updates
      *
      * @return a <code>T</code> value representing the subscription
      */
     public T getLatestTick(ExchangeRequest inExchangeRequest,
-                           ISubscriber inSubscriber);
+                           Subscriber inSubscriber);
     /**
      * Gets the dividends for the given <code>ExchangeRequest</code>.
      *
@@ -112,12 +112,12 @@ public interface Exchange<T>
      * the exchange is stopped via {@link Exchange#stop}.
      *
      * @param inExchangeRequest an <code>ExchangeRequest</code> value
-     * @param inSubscriber an <code>ISubscriber</code> value containing the recipient of subscription updates
+     * @param inSubscriber an <code>Subscriber</code> value containing the recipient of subscription updates
      *
      * @return a <code>T</code> value representing the subscription
      */
     public T getDividends(ExchangeRequest inExchangeRequest,
-                          ISubscriber inSubscriber);
+                          Subscriber inSubscriber);
     /**
      * Cancels the subscription represented by the given token.
      * 

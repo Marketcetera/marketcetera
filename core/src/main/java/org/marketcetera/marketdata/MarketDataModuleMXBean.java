@@ -20,7 +20,7 @@ import org.marketcetera.module.DisplayName;
 @ClassVersion("$Id$") //$NON-NLS-1$
 @MXBean(true)
 @DisplayName("Management Interface for Marketdata Feeds")
-public interface AbstractMarketDataModuleMXBean
+public interface MarketDataModuleMXBean
 {
     /**
      * Returns the status of the underlying feed.

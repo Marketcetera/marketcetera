@@ -19,7 +19,7 @@ import javax.management.NotificationListener;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.LockHelper;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.metrics.ThreadedMetric;
@@ -55,7 +55,7 @@ import com.google.common.collect.Maps;
  * <tr><th>Stops data flows</th><td>No</td></tr>
  * <tr><th>Start Operation</th><td>Starts the feed, logs into it.</td></tr>
  * <tr><th>Stop Operation</th><td>Stops the data feed.</td></tr>
- * <tr><th>Management Interface</th><td>{@link AbstractMarketDataModuleMXBean}</td></tr>
+ * <tr><th>Management Interface</th><td>{@link MarketDataModuleMXBean}</td></tr>
  * <tr><th>MX Notification</th><td>{@link AttributeChangeNotification}
  * whenever {@link #getFeedStatus()} changes. </td></tr>
  * </table>
@@ -68,7 +68,7 @@ import com.google.common.collect.Maps;
 public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken, 
                                                C extends MarketDataFeedCredentials>
         extends Module
-        implements DataEmitter, AbstractMarketDataModuleMXBean, NotificationEmitter
+        implements DataEmitter, MarketDataModuleMXBean, NotificationEmitter
 {
     /**
      * Gets the feed module with the given provider name.
@@ -90,7 +90,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         return feed.getFeedType();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getFeedStatus()
+     * @see org.marketcetera.marketdata.MarketDataModuleMXBean#getFeedStatus()
      */
     @Override
     public final String getFeedStatus()
@@ -101,7 +101,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         return feedStatus.toString();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#disconnect()
+     * @see org.marketcetera.marketdata.MarketDataModuleMXBean#disconnect()
      */
     @Override
     @DisplayName("Causes the feed to disconnect")
@@ -110,7 +110,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         feed.logout();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#reconnect()
+     * @see org.marketcetera.marketdata.MarketDataModuleMXBean#reconnect()
      */
     @Override
     public void reconnect()
@@ -176,7 +176,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
                                                       requestPayload);
         }
         try {
-            ISubscriber subscriber = new ISubscriber() {
+            Subscriber subscriber = new Subscriber() {
                 @Override
                 public boolean isInteresting(Object inData)
                 {
@@ -262,7 +262,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         mNotificationDelegate.removeNotificationListener(inListener);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getCapabilities()
+     * @see org.marketcetera.marketdata.MarketDataModuleMXBean#getCapabilities()
      */
     @Override
     public Set<Capability> getCapabilities()
@@ -275,7 +275,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         return capabilities;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getAssetClasses()
+     * @see org.marketcetera.marketdata.MarketDataModuleMXBean#getAssetClasses()
      */
     @Override
     public Set<AssetClass> getAssetClasses()

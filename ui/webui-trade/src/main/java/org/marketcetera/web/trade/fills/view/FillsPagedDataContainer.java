@@ -9,6 +9,10 @@ import org.marketcetera.web.service.trade.TradeClientService;
 import org.marketcetera.web.trade.executionreport.view.AbstractExecutionReportPagedDataContainer;
 import org.marketcetera.web.trade.executionreport.view.DisplayExecutionReportSummary;
 import org.marketcetera.web.view.PagedViewProvider;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+
+import com.vaadin.spring.annotation.SpringComponent;
 
 /* $License$ */
 
@@ -19,6 +23,8 @@ import org.marketcetera.web.view.PagedViewProvider;
  * @version $Id$
  * @since $Release$
  */
+@SpringComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class FillsPagedDataContainer
         extends AbstractExecutionReportPagedDataContainer
 {

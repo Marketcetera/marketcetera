@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -95,7 +96,11 @@ import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
+import org.marketcetera.util.ws.stateful.PortDescriptor;
+import org.marketcetera.util.ws.stateful.UsesPort;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Service;
 
 import com.codahale.metrics.Counter;
@@ -128,9 +133,10 @@ import quickfix.mina.acceptor.AcceptorSessionProvider;
  * @since $Release$
  */
 @Service
+@EnableAutoConfiguration
 @ClusterWorkUnit(id="MATP.DARE",type=ClusterWorkUnitType.SINGLETON_RUNTIME)
 public class DeployAnywhereRoutingEngine
-        implements quickfix.ApplicationExtended,DirectoryWatcherSubscriber
+        implements quickfix.ApplicationExtended,DirectoryWatcherSubscriber,UsesPort
 {
     /* (non-Javadoc)
      * @see quickfix.Application#onCreate(quickfix.SessionID)
@@ -533,6 +539,14 @@ public class DeployAnywhereRoutingEngine
     public String toString()
     {
         return getClusterWorkUnitUid();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.util.ws.stateful.UsesPort#getPortDescriptors()
+     */
+    @Override
+    public Collection<PortDescriptor> getPortDescriptors()
+    {
+        return ports;
     }
     /**
      * Receive outgoing owned messages.
@@ -1346,6 +1360,10 @@ public class DeployAnywhereRoutingEngine
                 return;
             }
             SessionSettings fixSessionSettings = brokerService.generateSessionSettings(sessions);
+            fixSessionSettings.setString(quickfix.Acceptor.SETTING_SOCKET_ACCEPT_ADDRESS,
+                                         String.valueOf(dareAcceptorHostname));
+            fixSessionSettings.setString(quickfix.Acceptor.SETTING_SOCKET_ACCEPT_PORT,
+                                         String.valueOf(dareAcceptorPort));
             FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
             if(SLF4JLoggerProxy.isInfoEnabled(this)) {
                 Set<String> sessionsForDisplay = new TreeSet<>();
@@ -1368,15 +1386,17 @@ public class DeployAnywhereRoutingEngine
                                                           brokerService,
                                                           fixSessionProvider,
                                                           sessionNameProvider,
-                                                          fixSettingsProviderFactory,
+                                                          fixSettingsProvider,
                                                           clusterData);
-            socketAcceptor.setSessionProvider(new InetSocketAddress(fixSettingsProvider.getAcceptorHost(),
-                                                                    fixSettingsProvider.getAcceptorPort()),
+            socketAcceptor.setSessionProvider(new InetSocketAddress(dareAcceptorHostname,
+                                                                    dareAcceptorPort),
                                               provider);
 //            jmxExporter = new JmxExporter();
 //            jmxExporter.setRegistrationBehavior(JmxExporter.REGISTRATION_REPLACE_EXISTING);
 //            exportedAcceptorName = jmxExporter.register(socketAcceptor);
             socketAcceptor.start();
+            ports.add(new PortDescriptor(dareAcceptorPort,
+                                         "DARE Acceptor"));
         }
     }
     /**
@@ -2446,7 +2466,18 @@ public class DeployAnywhereRoutingEngine
     /**
      * maximum number of order pools to have active at once
      */
+    @Value("${metc.dare.max.execution.pools:5}")
     private int maxExecutionPools = 5;
+    /**
+     * hostname on which to listen for incoming FIX messages
+     */
+    @Value("${metc.dare.acceptor.hostname:0.0.0.0}")
+    private String dareAcceptorHostname;
+    /**
+     * port on which to listen for incoming FIX messages
+     */
+    @Value("${metc.dare.acceptor.port:9800}")
+    private int dareAcceptorPort;
     /**
      * interval to wait between checks for available order pools
      */
@@ -2542,4 +2573,8 @@ public class DeployAnywhereRoutingEngine
      * provides dynamic sessions
      */
     private AcceptorSessionProvider provider;
+    /**
+     * indicates ports in use
+     */
+    private final Collection<PortDescriptor> ports = Lists.newArrayList();
 }

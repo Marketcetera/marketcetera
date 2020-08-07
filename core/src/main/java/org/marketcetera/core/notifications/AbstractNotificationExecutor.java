@@ -3,7 +3,7 @@ package org.marketcetera.core.notifications;
 import java.util.concurrent.ExecutionException;
 
 import org.marketcetera.core.notifications.INotification;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 
 /* $License$ */
@@ -27,18 +27,18 @@ public abstract class AbstractNotificationExecutor
         publish(inNotification);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.publisher.IPublisher#subscribe(org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.core.publisher.IPublisher#subscribe(org.marketcetera.core.publisher.Subscriber)
      */
     @Override
-    public void subscribe(ISubscriber inSubscriber)
+    public void subscribe(Subscriber inSubscriber)
     {
         publisher.subscribe(inSubscriber);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.publisher.IPublisher#unsubscribe(org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.core.publisher.IPublisher#unsubscribe(org.marketcetera.core.publisher.Subscriber)
      */
     @Override
-    public void unsubscribe(ISubscriber inSubscriber)
+    public void unsubscribe(Subscriber inSubscriber)
     {
         publisher.unsubscribe(inSubscriber);
     }

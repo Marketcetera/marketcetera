@@ -6,8 +6,8 @@ import org.marketcetera.web.converters.DateConverter;
 import org.marketcetera.web.converters.OrderStatusConverter;
 import org.marketcetera.web.converters.ReportTypeConverter;
 import org.marketcetera.web.converters.StringFixMessageConverter;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.trade.executionreport.view.AbstractHasFixMessageView;
-import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -40,12 +40,15 @@ public class ReportView
      * Create a new SessionView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public ReportView(Window inParentWindow,
+                      NewWindowEvent inEvent,
                       Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)
@@ -75,12 +78,12 @@ public class ReportView
         getGrid().getColumn("transactTime").setConverter(DateConverter.instance);
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<DisplayReport> createDataContainer()
+    protected Class<DisplayReportPagedDataContainer> getDataContainerType()
     {
-        return new DisplayReportPagedDataContainer(this);
+        return DisplayReportPagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#getViewSubjectName()

@@ -93,8 +93,8 @@ public class HibernateMessageStore
         where = where.and(m.sessionId.eq(sessionId.toString()));
         where = where.and(m.msgSeqNum.goe(inStartSequence));
         where = where.and(m.msgSeqNum.loe(inEndSequence));
-        Sort sort = new Sort(Sort.Direction.ASC,
-                             QMessageStoreMessage.messageStoreMessage.msgSeqNum.getMetadata().getName());
+        Sort sort = Sort.by(Sort.Direction.ASC,
+                            QMessageStoreMessage.messageStoreMessage.msgSeqNum.getMetadata().getName());
         PageRequest pageable = PageRequest.of(0,
                                               Integer.MAX_VALUE,
                                               sort);

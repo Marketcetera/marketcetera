@@ -3,8 +3,6 @@ package org.marketcetera.fix;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.marketcetera.fix.FixSettingsProvider;
-
 import quickfix.LogFactory;
 import quickfix.MessageFactory;
 import quickfix.MessageStoreFactory;
@@ -103,6 +101,30 @@ public class FixSettingsProviderImpl
     public String getAcceptorProtocol()
     {
         return acceptorProtocol;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSettingsProvider#setAcceptorPort(int)
+     */
+    @Override
+    public void setAcceptorPort(int inAcceptorPort)
+    {
+        acceptorPort = inAcceptorPort;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSettingsProvider#setAcceptorHost(java.lang.String)
+     */
+    @Override
+    public void setAcceptorHost(String inAcceptorHost)
+    {
+        acceptorHost = inAcceptorHost;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSettingsProvider#setAcceptorProtocol(java.lang.String)
+     */
+    @Override
+    public void setAcceptorProtocol(String inAcceptorProtocol)
+    {
+        acceptorProtocol = inAcceptorProtocol;
     }
     /**
      * acceptor socket protocol value

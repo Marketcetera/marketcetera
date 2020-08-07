@@ -403,8 +403,7 @@ class FactoryImpl
                     Messages.UNABLE_TO_GENERATE_IDS.getText(), e);
         }
     }
-    private volatile IDFactory mIDFactory = new InMemoryIDFactory(
-            System.currentTimeMillis());
+    private volatile IDFactory mIDFactory = new InMemoryIDFactory(System.nanoTime());
 
     /**
      * Returns all the fields contained in the supplied message as a map.

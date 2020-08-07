@@ -5,20 +5,11 @@ import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSettingsProvider;
-import org.marketcetera.fix.FixSettingsProviderFactory;
 import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Lists;
 
-import quickfix.Acceptor;
-import quickfix.Application;
-import quickfix.ConfigError;
-import quickfix.DefaultSessionFactory;
-import quickfix.Session;
-import quickfix.SessionFactory;
-import quickfix.SessionID;
-import quickfix.SessionSettings;
 import quickfix.mina.SessionConnector;
 import quickfix.mina.acceptor.AcceptorSessionProvider;
 
@@ -37,37 +28,37 @@ public class DynamicAcceptorSessionProvider
     /**
      * Create a new DynamicAcceptorSessionProvider instance.
      *
-     * @param inApplication an <code>Application</code> value
+     * @param inApplication a <code>quickfix.Application</code> value
      * @param inBrokerService a <code>BrokerService</code> value
      * @param inFixSessionProvider a <code>FixSessionProvider</code> value
      * @param inSessionNameProvider a <code>SessionNameProvider</code> value
-     * @param inFixSettingsProviderFactory a <code>FixSettingsProviderFactory</code> value
+     * @param inFixSettingsProvider a <code>FixSettingsProvider</code> value
      * @param inClusterData a <code>ClusterData</code> value
      */
-    public DynamicAcceptorSessionProvider(Application inApplication,
+    public DynamicAcceptorSessionProvider(quickfix.Application inApplication,
                                           BrokerService inBrokerService,
                                           FixSessionProvider inFixSessionProvider,
                                           SessionNameProvider inSessionNameProvider,
-                                          FixSettingsProviderFactory inFixSettingsProviderFactory,
+                                          FixSettingsProvider inFixSettingsProvider,
                                           ClusterData inClusterData)
     {
         application = inApplication;
         brokerService = inBrokerService;
         fixSessionProvider = inFixSessionProvider;
         sessionNameProvider = inSessionNameProvider;
-        fixSettingsProviderFactory = inFixSettingsProviderFactory;
+        fixSettingsProvider = inFixSettingsProvider;
         clusterData = inClusterData;
     }
     /* (non-Javadoc)
      * @see quickfix.mina.acceptor.AcceptorSessionProvider#getSession(quickfix.SessionID, quickfix.mina.SessionConnector)
      */
     @Override
-    public Session getSession(SessionID inSessionId,
-                              SessionConnector inConnector)
+    public quickfix.Session getSession(quickfix.SessionID inSessionId,
+                                       SessionConnector inConnector)
     {
         String sessionName = sessionNameProvider.getSessionName(inSessionId);
         // first, check to see if the session already exists
-        Session session = Session.lookupSession(inSessionId);
+        quickfix.Session session = quickfix.Session.lookupSession(inSessionId);
         if(session != null) {
             SLF4JLoggerProxy.debug(this,
                                    "Returning existing session {} for {}",
@@ -98,23 +89,22 @@ public class DynamicAcceptorSessionProvider
             return null;
         }
         // session exists in the DB, generate FIX settings for it
-        SessionSettings fixSessionSettings = brokerService.generateSessionSettings(Lists.newArrayList(fixSession));
-        FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
+        quickfix.SessionSettings fixSessionSettings = brokerService.generateSessionSettings(Lists.newArrayList(fixSession));
         if(fixSession.isAcceptor()) {
             // inject the acceptor port here, if available
-            fixSessionSettings.setString(Acceptor.SETTING_SOCKET_ACCEPT_ADDRESS,
+            fixSessionSettings.setString(quickfix.Acceptor.SETTING_SOCKET_ACCEPT_ADDRESS,
                                          String.valueOf(fixSettingsProvider.getAcceptorHost()));
-            fixSessionSettings.setString(Acceptor.SETTING_SOCKET_ACCEPT_PORT,
+            fixSessionSettings.setString(quickfix.Acceptor.SETTING_SOCKET_ACCEPT_PORT,
                                          String.valueOf(fixSettingsProvider.getAcceptorPort()));
         }
-        SessionFactory factory = new DefaultSessionFactory(application,
-                                                           fixSettingsProvider.getMessageStoreFactory(fixSessionSettings),
-                                                           fixSettingsProvider.getLogFactory(fixSessionSettings),
-                                                           fixSettingsProvider.getMessageFactory());
+        quickfix.SessionFactory factory = new quickfix.DefaultSessionFactory(application,
+                                                                             fixSettingsProvider.getMessageStoreFactory(fixSessionSettings),
+                                                                             fixSettingsProvider.getLogFactory(fixSessionSettings),
+                                                                             fixSettingsProvider.getMessageFactory());
         try {
             session = factory.create(inSessionId,
                                      fixSessionSettings);
-        } catch (ConfigError e) {
+        } catch (quickfix.ConfigError e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
         }
@@ -141,11 +131,11 @@ public class DynamicAcceptorSessionProvider
      */
     private final SessionNameProvider sessionNameProvider;
     /**
-     * constructs a FIX settings provider object
+     * provides FIX settings
      */
-    private final FixSettingsProviderFactory fixSettingsProviderFactory;
+    private final FixSettingsProvider fixSettingsProvider;
     /**
      * FIX application to provide to new sessions
      */
-    private Application application;
+    private quickfix.Application application;
 }

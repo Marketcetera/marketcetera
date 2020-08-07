@@ -6,8 +6,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.impl.SimpleUser;
+import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.admin.AdminClientService;
-import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -41,12 +41,15 @@ public class UserView
      * Create a new UserView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public UserView(Window inParentWindow,
+                    NewWindowEvent inEvent,
                     Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)
@@ -76,12 +79,12 @@ public class UserView
                              "active");
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createBeanItemContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<User> createDataContainer()
+    protected Class<UserPagedDataContainer> getDataContainerType()
     {
-        return new UserPagedDataContainer(this);
+        return UserPagedDataContainer.class;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#onCreateNew(com.vaadin.ui.Button.ClickEvent)

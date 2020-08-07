@@ -12,9 +12,8 @@ import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.service.dataflow.DataFlowClientService;
 import org.marketcetera.web.service.dataflow.DataFlowClientServiceInstance;
-import org.marketcetera.web.view.AbstractGridView;
+import org.marketcetera.web.view.AbstractPagedGridView;
 import org.marketcetera.web.view.ContentViewFactory;
-import org.marketcetera.web.view.PagedDataContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -52,7 +51,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class StrategyEngineView
-        extends AbstractGridView<DecoratedStrategyEngine>
+        extends AbstractPagedGridView<DecoratedStrategyEngine>
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.ContentView#getViewName()
@@ -92,12 +91,15 @@ public class StrategyEngineView
      * Create a new StrategyEngineView instance.
      *
      * @param inParentWindow a <code>Window</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public StrategyEngineView(Window inParentWindow,
+                              NewWindowEvent inEvent,
                               Properties inViewProperties)
     {
         super(inParentWindow,
+              inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)
@@ -157,16 +159,18 @@ public class StrategyEngineView
                             return "NewModuleViewEvent: " + selectedItem.getName();
                         }
                         @Override
-                        public ContentViewFactory getViewFactory()
+                        public Class<? extends ContentViewFactory> getViewFactoryType()
                         {
-                            return new ContentViewFactory() {
-                                @Override
-                                public ModuleView create(Window inParent,
-                                                         Properties inViewProperties)
-                                {
-                                    return moduleView;
-                                }
-                            };
+//                            return new ContentViewFactory() {
+//                                @Override
+//                                public ContentView create(Window inParent,
+//                                                          NewWindowEvent inEvent,
+//                                                          Properties inViewProperties)
+//                                {
+//                                    return moduleView;
+//                                }
+//                            };
+                            throw new UnsupportedOperationException(); // TODO
                         }
                     });
                     break;
@@ -210,12 +214,12 @@ public class StrategyEngineView
         return "Data Flow";
     }
     /* (non-Javadoc)
-     * @see com.marketcetera.web.view.AbstractGridView#createDataContainer()
+     * @see org.marketcetera.web.view.AbstractGridView#getDataContainerType()
      */
     @Override
-    protected PagedDataContainer<DecoratedStrategyEngine> createDataContainer()
+    protected Class<StrategyEnginePagedDataContainer> getDataContainerType()
     {
-        return new StrategyEnginePagedDataContainer(this);
+        return StrategyEnginePagedDataContainer.class;
     }
     /**
      * Create or edit the given strategy engine.

@@ -7,7 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeSet;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.brokers.service.DisableSessionTask;
@@ -17,6 +22,7 @@ import org.marketcetera.brokers.service.ReportBrokerStatusTask;
 import org.marketcetera.brokers.service.StartSessionTask;
 import org.marketcetera.brokers.service.StopSessionTask;
 import org.marketcetera.cluster.service.ClusterService;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionAttributeDescriptorFactory;
@@ -32,6 +38,8 @@ import org.marketcetera.persist.SortDirection;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -42,6 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.querydsl.core.BooleanBuilder;
 
 import quickfix.SessionFactory;
@@ -57,6 +66,7 @@ import quickfix.SessionSettings;
  * @version $Id$
  * @since $Release$
  */
+@EnableAutoConfiguration
 public class PersistentFixSessionProvider
         implements FixSessionProvider
 {
@@ -496,10 +506,12 @@ public class PersistentFixSessionProvider
                                     "Enable {} task completed successfully",
                                     enabledSession);
         } catch(Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e,
-                                  "Unable to enable {}",
-                                  enabledSession);
+            if(!PlatformServices.isShutdown(e)) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Unable to enable {}",
+                                      enabledSession);
+            }
             reportBrokerStatusFromAll(enabledSession,
                                       FixSessionStatus.DISABLED);
             enabledSession.setIsEnabled(false);
@@ -610,16 +622,41 @@ public class PersistentFixSessionProvider
         }
     }
     /**
-     * Set the FIX sessions value.
-     *
-     * @param inFixSessionsConfiguration a <code>FixSessionsConfiguration</code> value
+     * Validate and start the object.
      */
-    @Autowired(required=false)
-    public void setFixSessions(FixSessionsConfiguration inFixSessionsConfiguration)
+    @PostConstruct
+    public void start()
     {
+        // create and enable FIX sessions provided via configuration, but, this can cause a race condition on startup
+        //  with certain cluster implementations. therefore, allow, via config, the option to delay FIX session creation
+        if(fixSessionCreationDelay > 0) {
+            scheduledService.schedule(new Runnable() {
+                @Override
+                public void run()
+                {
+                    try {
+                        
+                    } catch (Exception e) {
+                        PlatformServices.handleException(PersistentFixSessionProvider.this,
+                                                         "Unable to provision FIX messages",
+                                                         e);
+                    }
+                    createFixSessionsFromConfig();
+                }},fixSessionCreationDelay,TimeUnit.MILLISECONDS);
+        } else {
+            createFixSessionsFromConfig();
+        }
+    }
+    /**
+     * Process FIX session info provided from config
+     */
+    private void createFixSessionsFromConfig()
+    {
+        SLF4JLoggerProxy.info(PersistentFixSessionProvider.this,
+                              "Begining FIX session provisioning");
         Map<String,FixSession> fixSessionsByName = Maps.newHashMap();
         FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
-        for(FixSessionsConfiguration.FixSessionDescriptor fixSessionsDescriptor : inFixSessionsConfiguration.getSessionDescriptors()) {
+        for(FixSessionsConfiguration.FixSessionDescriptor fixSessionsDescriptor : fixSessionsConfiguration.getSessionDescriptors()) {
             Map<String,String> globalSettings = fixSessionsDescriptor.getSettings();
             for(FixSessionsConfiguration.Session fixSessionDescriptor : fixSessionsDescriptor.getSessions()) {
                 Map<String,String> sessionSettings = Maps.newHashMap();
@@ -700,6 +737,20 @@ public class PersistentFixSessionProvider
                                                                              inStatusToReport);
         clusterService.execute(reportStatusTask);
     }
+    /**
+     * FIX session config provided in application start up
+     */
+    @Autowired
+    private FixSessionsConfiguration fixSessionsConfiguration;
+    /**
+     * schedules tasks
+     */
+    private ScheduledExecutorService scheduledService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat(getClass().getSimpleName()+"FixSessionConfigCreator").build());
+    /**
+     * indicates how long, if at all, to delay FIX session creation from config
+     */
+    @Value("${metc.fix.session.creation.delay:0}")
+    private long fixSessionCreationDelay;
     /**
      * provides FIX settings
      */
