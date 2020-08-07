@@ -53,6 +53,7 @@ public abstract class AbstractAdminViewFactory
      * @return a <code>String</code> value
      */
     protected abstract String getViewName();
+    protected abstract Class<? extends ContentViewFactory> getViewFactory();
     /**
      * Indicates that an admin type has been selected.
      *
@@ -77,7 +78,7 @@ public abstract class AbstractAdminViewFactory
         @Override
         public Class<? extends ContentViewFactory> getViewFactoryType()
         {
-            return AbstractAdminViewFactory.class;
+            return getViewFactory();
         }
     }
     /**

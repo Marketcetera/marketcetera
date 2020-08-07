@@ -2,6 +2,7 @@ package org.marketcetera.web.view.admin;
 
 import org.marketcetera.admin.Permission;
 import org.marketcetera.web.view.ContentView;
+import org.marketcetera.web.view.ContentViewFactory;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
@@ -59,5 +60,13 @@ public class PermissionViewFactory
     protected Class<? extends ContentView> getViewType()
     {
         return PermissionView.class;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.admin.AbstractAdminViewFactory#getViewFactory()
+     */
+    @Override
+    protected Class<? extends ContentViewFactory> getViewFactory()
+    {
+        return getClass();
     }
 }
