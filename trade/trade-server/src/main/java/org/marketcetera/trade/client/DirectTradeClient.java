@@ -9,7 +9,6 @@ import java.util.Map;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Lists;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.service.BrokerService;
@@ -40,6 +39,8 @@ import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ApplicationContext;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 

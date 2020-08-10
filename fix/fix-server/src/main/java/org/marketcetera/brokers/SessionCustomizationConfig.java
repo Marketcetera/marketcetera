@@ -3,9 +3,10 @@ package org.marketcetera.brokers;
 import java.util.List;
 import java.util.Set;
 
-import org.assertj.core.util.Lists;
-import org.assertj.core.util.Sets;
 import org.marketcetera.algo.BrokerAlgoSpec;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /* $License$ */
 
