@@ -5,9 +5,6 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.cluster.service.ClusterService;
-import org.marketcetera.fix.FixSession;
-import org.marketcetera.fix.SessionConnector;
-import org.marketcetera.fix.SessionConnectorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */
